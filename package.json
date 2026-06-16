@@ -11,6 +11,7 @@
   "dependencies": {
     "@upstash/redis": "^1.38.0",
     "futures-atlas-core": "github:laubaumau/futures-atlas-core",
+    "ioredis": "^5.11.1",
     "next": "15.5.19",
     "react": "19.1.0",
     "react-dom": "19.1.0"
