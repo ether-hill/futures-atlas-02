@@ -14,15 +14,29 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
       {/* plate */}
       <div
         className="relative flex h-[200px] items-end overflow-hidden border-b border-ink p-5"
-        style={{
-          backgroundColor: tint,
-          backgroundImage:
-            "repeating-linear-gradient(128deg, rgba(33,30,24,0.05) 0 1px, transparent 1px 13px)",
-        }}
+        style={
+          project.image
+            ? undefined
+            : {
+                backgroundColor: tint,
+                backgroundImage:
+                  "repeating-linear-gradient(128deg, rgba(33,30,24,0.05) 0 1px, transparent 1px 13px)",
+              }
+        }
       >
-        <span className="year text-[clamp(56px,7vw,96px)] leading-[0.8] text-[#211e18]/15">
-          {n}
-        </span>
+        {project.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={project.image}
+            alt={`${project.title} — preview`}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        ) : (
+          <span className="year text-[clamp(56px,7vw,96px)] leading-[0.8] text-[#211e18]/15">
+            {n}
+          </span>
+        )}
         <span
           className="absolute right-4 top-4 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper"
           style={{ background: live ? "var(--color-accent-deep)" : "#211e18" }}

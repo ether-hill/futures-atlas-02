@@ -15,6 +15,7 @@ export interface Project {
   status: ProjectStatus;
   url?: string; // external link if it exists
   path?: string; // internal path served within this site (reverse-proxied zone)
+  image?: string; // card thumbnail (else a hatch plate)
 }
 
 export const projects: Project[] = [
@@ -27,6 +28,7 @@ export const projects: Project[] = [
     field: "Rural futures",
     status: "live",
     path: "/hollow-villages", // the full project, served within this site
+    image: "/projects/hollow-villages.jpg",
   },
   {
     id: "underground-intelligence",
