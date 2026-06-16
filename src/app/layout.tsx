@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/google";
+// shared design system (defaults) — must precede ./globals.css
+import "futures-atlas-core/tokens.css";
+import "futures-atlas-core/kit.css";
 import "./globals.css";
+import { buildOverrideCss } from "futures-atlas-core";
+import { readOverrides } from "@/lib/store";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
@@ -37,11 +42,18 @@ export const metadata: Metadata = {
     "An atlas of speculative-design and futures projects: each one a grounded forecast of how things could be otherwise.",
 };
 
-export default function RootLayout({
+// Render per-request so the SSR-injected token overrides always reflect the
+// current store — live theming applies site-wide with no rebuild.
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // read the shared token overrides and inject them before paint (no flash)
+  const overrideCss = buildOverrideCss(await readOverrides());
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -50,6 +62,7 @@ export default function RootLayout({
             __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
           }}
         />
+        {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
       </head>
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}

@@ -21,7 +21,7 @@
 @theme inline {
   --color-surface: var(--c-surface);
   --color-band: var(--c-band);
-  --color-paper: #f4efe4;            /* always light: on-dark text, veils, chips */
+  --color-paper: var(--paper);       /* always light: on-dark text, veils, chips */
   --color-panel: var(--c-panel);
   --color-bone: var(--c-panel);      /* legacy alias -> panel */
   --color-mist: var(--c-panel);      /* legacy alias -> panel */
@@ -53,38 +53,31 @@
   --font-oracle: var(--font-bodoni);
 }
 
+/*
+  Colour + dark mode now come from futures-atlas-core's semantic tokens
+  (the single source of truth, and runtime-themeable via the store). These map
+  the app's existing --c-* names onto core's tokens so every existing utility
+  keeps working AND reflects live overrides. Put NO literal values here — edit
+  defaults in core/tokens.css or live via /style-guide.
+*/
 :root {
-  --c-surface: #f4efe4;
-  --c-band: #211e18;
-  --c-panel: #fbf8f0;
-  --c-haze: #ece4d4;
-  --c-ink: #211e18;
-  --c-ink70: #3a352b;
-  --c-graphite: #6b6456;
-  --c-faint: #9a9484;
-  --c-accent: oklch(0.55 0.13 245);
-  --c-accent-soft: oklch(0.93 0.045 245);
-  --c-accent-deep: oklch(0.42 0.11 245);
+  --c-surface: var(--bg);
+  --c-band: var(--band);
+  --c-panel: var(--panel);
+  --c-haze: var(--haze);
+  --c-ink: var(--text);
+  --c-ink70: var(--text-body);
+  --c-graphite: var(--muted);
+  --c-faint: var(--faint);
+  --c-accent: var(--accent);
+  --c-accent-soft: var(--accent-soft);
+  --c-accent-deep: var(--accent-deep);
 
   --background: var(--c-surface);
   --foreground: var(--c-ink);
-  color-scheme: light;
 }
-
-html.dark {
-  --c-surface: #211e18;   /* the warm greyish-black base (reused from light's ink) */
-  --c-band: #17140f;      /* feature sections, a touch deeper than the page */
-  --c-panel: #2b2722;     /* raised card, lifted off the page */
-  --c-haze: #16130f;
-  --c-ink: #f2ede2;       /* primary text / borders flip light */
-  --c-ink70: #d3ccbe;     /* body copy */
-  --c-graphite: #a69f91;  /* mono labels */
-  --c-faint: #7d7668;
-  --c-accent: oklch(0.64 0.13 245);       /* a touch brighter so it sings on dark */
-  --c-accent-soft: oklch(0.34 0.06 245);  /* dark-blue tint (used as a fill) */
-  --c-accent-deep: oklch(0.74 0.12 245);  /* bright blue (used as text on dark) */
-  color-scheme: dark;
-}
+/* core's tokens.css flips --bg/--text/--accent/… under html.dark, so the
+   --c-* aliases above flip with it — no separate dark block needed here. */
 
 * {
   box-sizing: border-box;

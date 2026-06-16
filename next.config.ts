@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // futures-atlas-core ships TSX source; Next must transpile it.
+  transpilePackages: ["futures-atlas-core"],
 };
 
 export default nextConfig;
