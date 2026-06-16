@@ -1,26 +1,240 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  "The Hollow Villages" — Claude Design comp system.
+  Architectural / urbanist: ink linework on warm bone paper, technical-drawing
+  annotations, a NOW → 2050 temporal spine. Single themeable accent (blue).
+  Display = Archivo · letters/oracle = Bodoni Moda · years = Saira Condensed ·
+  labels/data/body = IBM Plex Mono.
+*/
 
+/*
+  Theme tokens map to raw --c-* vars so they stay runtime-themeable even though
+  @theme is inline. Light values live in :root; html.dark overrides them.
+
+  Roles, to keep light + dark both deliberate:
+    surface  page ground (flips)        band  dark feature section (dark both)
+    panel    raised card (flips)        paper ALWAYS light — text/veils on dark
+    ink      primary text/border (flips light in dark)
+    accent   single blue accent
+*/
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--c-surface);
+  --color-band: var(--c-band);
+  --color-paper: #f4efe4;            /* always light: on-dark text, veils, chips */
+  --color-panel: var(--c-panel);
+  --color-bone: var(--c-panel);      /* legacy alias -> panel */
+  --color-mist: var(--c-panel);      /* legacy alias -> panel */
+  --color-haze: var(--c-haze);
+  --color-line: var(--c-ink);        /* hairline base (use with alpha) */
+
+  --color-ink: var(--c-ink);         /* primary text / borders */
+  --color-ink-70: var(--c-ink70);    /* body copy */
+  --color-graphite: var(--c-graphite); /* mono labels / captions */
+  --color-faint: var(--c-faint);     /* faint helper text */
+
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-deep: var(--c-accent-deep);
+
+  /* legacy accent aliases */
+  --color-blueprint: var(--c-accent);
+  --color-blueprint-deep: var(--c-accent-deep);
+  --color-amber: var(--c-accent);
+  --color-amber-deep: var(--c-accent-deep);
+  --color-render: var(--c-accent-deep);
+
+  /* type */
+  --font-display: var(--font-archivo);
+  --font-serif: var(--font-bodoni);
+  --font-condensed: var(--font-saira);
+  --font-mono: var(--font-plex-mono);
+  --font-data: var(--font-plex-mono);
+  --font-oracle: var(--font-bodoni);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --c-surface: #f4efe4;
+  --c-band: #211e18;
+  --c-panel: #fbf8f0;
+  --c-haze: #ece4d4;
+  --c-ink: #211e18;
+  --c-ink70: #3a352b;
+  --c-graphite: #6b6456;
+  --c-faint: #9a9484;
+  --c-accent: oklch(0.55 0.13 245);
+  --c-accent-soft: oklch(0.93 0.045 245);
+  --c-accent-deep: oklch(0.42 0.11 245);
+
+  --background: var(--c-surface);
+  --foreground: var(--c-ink);
+  color-scheme: light;
+}
+
+html.dark {
+  --c-surface: #211e18;   /* the warm greyish-black base (reused from light's ink) */
+  --c-band: #17140f;      /* feature sections, a touch deeper than the page */
+  --c-panel: #2b2722;     /* raised card, lifted off the page */
+  --c-haze: #16130f;
+  --c-ink: #f2ede2;       /* primary text / borders flip light */
+  --c-ink70: #d3ccbe;     /* body copy */
+  --c-graphite: #a69f91;  /* mono labels */
+  --c-faint: #7d7668;
+  --c-accent: oklch(0.64 0.13 245);       /* a touch brighter so it sings on dark */
+  --c-accent-soft: oklch(0.34 0.06 245);  /* dark-blue tint (used as a fill) */
+  --c-accent-deep: oklch(0.74 0.12 245);  /* bright blue (used as text on dark) */
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  border-color: color-mix(in srgb, var(--c-ink) 16%, transparent);
+}
+
+html {
+  background: var(--c-surface);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+}
+
+/* base element styles live in @layer base so Tailwind text-* / font-* utilities
+   (which are layered later) always win — e.g. `text-paper` on a heading. */
+@layer base {
+  body {
+    background: var(--color-surface);
+    color: var(--color-ink-70);
+    /* body / labels / data are mono per the comp */
+    font-family: var(--font-mono), ui-monospace, monospace;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* headings use the display face by default — no per-element class needed */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), system-ui, sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------- type-register utilities ---------- */
+
+/* the human "correspondence" / oracle-quote voice */
+.oracle-voice {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0;
+  color: var(--color-ink);
+}
+
+/* display face, for when a non-heading element needs it */
+.display {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.annot,
+.eyebrow {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-graphite);
+}
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.18em; }
+.annot { font-size: 0.72rem; }
+
+/* quiet, set-apart aside */
+.oracle-aside {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.8rem;
+  line-height: 1.65;
+  color: var(--color-graphite);
+}
+
+/* drafting year marker */
+.year {
+  font-family: var(--font-condensed), "Arial Narrow", sans-serif;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* ---------- architectural motifs ---------- */
+
+.plan-grid {
+  background-image:
+    linear-gradient(rgba(33, 30, 24, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(33, 30, 24, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* hatch placeholder, when no photo is present */
+.hatch {
+  background-color: #c4bdad;
+  background-image: repeating-linear-gradient(135deg, rgba(33, 30, 24, 0.06) 0 1px, transparent 1px 12px);
+}
+
+.tick::before {
+  content: "";
+  display: inline-block;
+  width: 0.7rem;
+  height: 1px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  background: var(--color-accent);
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-paper);
+}
+
+/* ---------- motion ---------- */
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+[data-reveal] { opacity: 0; }
+[data-reveal].is-in {
+  animation: rise 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-2px); }
+}
+.pulse-dot { animation: pulse-dot 1.1s ease-in-out infinite; }
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.caret-blink { animation: blink 1s step-end infinite; }
+
+@keyframes draw-line {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+.draw-line {
+  transform-origin: left;
+  animation: draw-line 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
 }
