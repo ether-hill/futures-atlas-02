@@ -14,6 +14,7 @@ export interface Project {
   field: string; // short category, e.g. "Rural futures"
   status: ProjectStatus;
   url?: string; // external link if it exists
+  path?: string; // internal path served within this site (reverse-proxied zone)
 }
 
 export const projects: Project[] = [
@@ -25,7 +26,7 @@ export const projects: Project[] = [
     year: "2026",
     field: "Rural futures",
     status: "live",
-    url: "https://village-revitalisation-oracle.vercel.app",
+    path: "/hollow-villages", // the full project, served within this site
   },
   {
     id: "underground-intelligence",

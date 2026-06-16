@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { projects, statusLabel, type Project } from "@/data/projects";
 
 // per-card hatch tint, deterministic by index so the grid has quiet variety
@@ -51,7 +52,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
         </p>
         <span className="mt-6 inline-flex items-center gap-2 self-start border-b-[1.5px] border-ink pb-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink">
           {live ? "Open the project" : "Forthcoming"}
-          {live && <span className="text-[13px]">↗</span>}
+          {live && <span className="text-[13px]">{project.path ? "→" : "↗"}</span>}
         </span>
       </div>
     </>
@@ -60,6 +61,15 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   const base =
     "group flex flex-col border border-ink bg-panel transition-colors";
 
+  // internal proxied project (served within this site) — same-tab Link
+  if (project.path) {
+    return (
+      <Link href={project.path} className={`${base} hover:border-accent`}>
+        {inner}
+      </Link>
+    );
+  }
+  // external project — new tab
   if (project.url) {
     return (
       <a
