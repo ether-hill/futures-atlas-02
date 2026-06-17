@@ -3,10 +3,11 @@ import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/
 // shared design system (defaults) — must precede ./globals.css
 import "futures-atlas-core/tokens.css";
 import "futures-atlas-core/kit.css";
+import "futures-atlas-core/nav.css";
 import "./globals.css";
 import { buildOverrideCss } from "futures-atlas-core";
 import { readOverrides } from "@/lib/store";
-import { Nav } from "@/components/Nav";
+import { AtlasNav } from "@/components/AtlasNav";
 import { Footer } from "@/components/Footer";
 
 const archivo = Archivo({
@@ -72,7 +73,7 @@ export default async function RootLayout({
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
       >
-        <Nav />
+        <AtlasNav />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>
