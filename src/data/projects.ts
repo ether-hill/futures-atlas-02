@@ -38,7 +38,8 @@ export const projects: Project[] = [
     year: "2025",
     field: "Systems & evidence",
     status: "live",
-    url: "https://underground-intelligence.vercel.app",
+    path: "/underground-intelligence", // the full project, served within this site
+    image: "/projects/underground-intelligence.jpg",
   },
   {
     id: "long-now-ledger",

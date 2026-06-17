@@ -18,6 +18,14 @@ const nextConfig: NextConfig = {
           source: "/hollow-villages/:path*",
           destination: "https://hollow-villages-zone.vercel.app/hollow-villages/:path*",
         },
+        {
+          source: "/underground-intelligence",
+          destination: "https://underground-intelligence-zone.vercel.app/underground-intelligence",
+        },
+        {
+          source: "/underground-intelligence/:path*",
+          destination: "https://underground-intelligence-zone.vercel.app/underground-intelligence/:path*",
+        },
       ],
     };
   },
