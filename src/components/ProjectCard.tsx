@@ -1,28 +1,20 @@
 import Link from "next/link";
 import { projects, statusLabel, type Project } from "@/data/projects";
 
-// per-card hatch tint, deterministic by index so the grid has quiet variety
-const tints = ["#cbc6b6", "#c4c7bc", "#c9c3b3", "#c6c8be"];
+// Fully token-driven (futures-atlas-core): every size/space/colour/font references
+// a semantic token, so the style-guide panel drives every dimension. Structural
+// utilities (flex/grid/absolute/aspect) are layout, not design values.
 
 export function ProjectCard({ project, index }: { project: Project; index: number }) {
   const n = String(index + 1).padStart(2, "0");
   const live = project.status === "live";
-  const tint = tints[index % tints.length];
 
   const inner = (
     <>
       {/* plate */}
       <div
-        className="relative flex aspect-[3/2] items-end overflow-hidden border-b border-ink p-5"
-        style={
-          project.image
-            ? undefined
-            : {
-                backgroundColor: tint,
-                backgroundImage:
-                  "repeating-linear-gradient(128deg, rgba(33,30,24,0.05) 0 1px, transparent 1px 13px)",
-              }
-        }
+        className={`group/plate relative flex aspect-[3/2] items-end overflow-hidden ${project.image ? "" : "fa-hatch"}`}
+        style={{ borderBottom: "var(--border-hairline) solid var(--text)", padding: "var(--space-5)" }}
       >
         {project.image ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -33,75 +25,94 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
             className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
-          <span className="year text-[clamp(56px,7vw,96px)] leading-[0.8] text-[#211e18]/15">
+          <span
+            className="fa-year"
+            style={{ fontSize: "var(--text-stat)", lineHeight: 0.8, color: "color-mix(in srgb, var(--text) 15%, transparent)" }}
+          >
             {n}
           </span>
         )}
         <span
-          className="absolute right-4 top-4 px-2.5 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-paper"
-          style={{ background: live ? "var(--color-accent-deep)" : "#211e18" }}
+          style={{
+            position: "absolute",
+            right: "var(--space-4)",
+            top: "var(--space-4)",
+            padding: "var(--space-1) var(--space-2)",
+            fontFamily: "var(--font-mono)",
+            fontSize: "var(--text-micro)",
+            textTransform: "uppercase",
+            letterSpacing: "var(--track-label)",
+            color: "var(--paper)",
+            background: live ? "var(--accent-deep)" : "var(--band)",
+          }}
         >
           {statusLabel[project.status]}
         </span>
       </div>
 
       {/* body */}
-      <div className="flex flex-1 flex-col p-[clamp(20px,2.4vw,32px)]">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <span className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-accent-deep">
-            {project.field}
-          </span>
-          <span className="font-mono text-[10.5px] uppercase tracking-[0.12em] text-graphite">
+      <div className="flex flex-1 flex-col" style={{ padding: "var(--space-card)" }}>
+        <div className="flex items-center justify-between" style={{ gap: "var(--space-3)", marginBottom: "var(--space-4)" }}>
+          <span className="fa-card__meta">{project.field}</span>
+          <span
+            style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-label)", textTransform: "uppercase", letterSpacing: "var(--track-label)", color: "var(--muted)" }}
+          >
             {project.year}
           </span>
         </div>
-        <h3
-          className="text-[clamp(22px,2.4vw,32px)] font-extrabold leading-[1.04] tracking-[-0.02em] text-ink"
-          style={{ fontFamily: "var(--font-archivo)" }}
+        <h3 className="fa-card__title">{project.title}</h3>
+        <p
+          style={{ marginTop: "var(--space-3)", maxWidth: "52ch", fontFamily: "var(--font-mono)", fontSize: "var(--text-body-size)", lineHeight: "var(--lh-body)", color: "var(--text-body)" }}
         >
-          {project.title}
-        </h3>
-        <p className="mt-3 max-w-[52ch] font-mono text-[12.5px] leading-[1.7] text-ink-70">
           {project.tagline}
         </p>
-        <span className="mt-6 inline-flex items-center gap-2 self-start border-b-[1.5px] border-ink pb-0.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink">
+        <span
+          className="self-start"
+          style={{
+            marginTop: "var(--space-6)",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "var(--space-2)",
+            borderBottom: "var(--border-emphasis) solid var(--text)",
+            paddingBottom: "2px",
+            fontFamily: "var(--font-mono)",
+            fontSize: "var(--text-label)",
+            textTransform: "uppercase",
+            letterSpacing: "var(--track-label)",
+            color: "var(--text)",
+          }}
+        >
           {live ? "Open the project" : "Forthcoming"}
-          {live && <span className="text-[13px]">{project.path ? "→" : "↗"}</span>}
+          {live && <span>{project.path ? "→" : "↗"}</span>}
         </span>
       </div>
     </>
   );
 
-  const base =
-    "group flex flex-col border border-ink bg-panel transition-colors";
-
-  // internal proxied project (served within this site) — same-tab Link
   if (project.path) {
     return (
-      <Link href={project.path} className={`${base} hover:border-accent`}>
+      <Link href={project.path} className="fa-card fa-card--link group">
         {inner}
       </Link>
     );
   }
-  // external project — new tab
   if (project.url) {
     return (
-      <a
-        href={project.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`${base} hover:border-accent`}
-      >
+      <a href={project.url} target="_blank" rel="noopener noreferrer" className="fa-card fa-card--link group">
         {inner}
       </a>
     );
   }
-  return <div className={`${base} opacity-90`}>{inner}</div>;
+  return (
+    <div className="fa-card group" style={{ opacity: 0.9 }}>
+      {inner}
+    </div>
+  );
 }
 
 export function ProjectGrid() {
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+    <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: "var(--space-5)" }}>
       {projects.map((p, i) => (
         <ProjectCard key={p.id} project={p} index={i} />
       ))}
