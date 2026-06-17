@@ -46,21 +46,19 @@ export function ContactForm() {
           Send a message
         </p>
         <p className="mt-2 font-mono text-[12px] leading-[1.6] text-graphite">
-          Everything is optional except the message. Tell us what you&rsquo;re
-          working on, or what you&rsquo;d like to see in the atlas.
+          Fill in the form and we&rsquo;ll get back to you.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <label className="flex flex-col gap-1.5">
-          <span className={labelCls}>Name</span>
-          <input type="text" autoComplete="name" className={fieldCls} />
-        </label>
-        <label className="flex flex-col gap-1.5">
-          <span className={labelCls}>Email</span>
-          <input type="email" autoComplete="email" className={fieldCls} />
-        </label>
-      </div>
+      <label className="flex flex-col gap-1.5">
+        <span className={labelCls}>Name</span>
+        <input type="text" autoComplete="name" className={fieldCls} />
+      </label>
+
+      <label className="flex flex-col gap-1.5">
+        <span className={labelCls}>Email *</span>
+        <input type="email" required autoComplete="email" className={fieldCls} />
+      </label>
 
       <label className="flex flex-col gap-1.5">
         <span className={labelCls}>Subject</span>
