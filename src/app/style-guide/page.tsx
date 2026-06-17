@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
 import { StyleGuide } from "futures-atlas-core";
 import { Container } from "@/components/Container";
+import { ProjectCard } from "@/components/ProjectCard";
+import { projects } from "@/data/projects";
 
 export const metadata: Metadata = {
   title: "Style guide — Futures Atlas",
   robots: { index: false, follow: false },
 };
+
+// the real cards from the site, shown live in the panel so token edits apply to them
+const samples = [
+  projects.find((p) => p.id === "hollow-villages")!,
+  projects.find((p) => p.status !== "live")!,
+].filter(Boolean);
 
 export default function StyleGuidePage() {
   return (
@@ -19,7 +27,15 @@ export default function StyleGuidePage() {
             Edit a token · it saves live for everyone
           </span>
         </div>
-        <StyleGuide />
+        <StyleGuide
+          extraShowcase={
+            <div className="grid max-w-[680px] gap-5 sm:grid-cols-2">
+              {samples.map((p, i) => (
+                <ProjectCard key={p.id} project={p} index={i} />
+              ))}
+            </div>
+          }
+        />
       </Container>
     </section>
   );

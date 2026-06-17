@@ -13,7 +13,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
     <>
       {/* plate */}
       <div
-        className="relative flex h-[200px] items-end overflow-hidden border-b border-ink p-5"
+        className="relative flex aspect-[3/2] items-end overflow-hidden border-b border-ink p-5"
         style={
           project.image
             ? undefined
