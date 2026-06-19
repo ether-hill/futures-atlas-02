@@ -23,18 +23,18 @@ export default function ContactPage() {
             Contact.
           </h1>
           <p className="mt-6 max-w-2xl font-mono text-[14px] leading-[1.7] text-ink-70">
-            Futures Atlas is a project by Frond Studio in partnership with the
-            Centre for Quantum &amp; Society, to make the futures we might live in
-            visible, tangible, and open to debate.
+            The Futures Atlas is a project by Frond Studio in partnership with
+            the Centre for Quantum &amp; Society, to make the futures we might
+            live in visible, tangible, and open to debate.
           </p>
           <p className="mt-4 max-w-2xl font-mono text-[14px] leading-[1.7] text-ink-70">
-            Whether you&rsquo;d like to collaborate, commission work, or join a
-            workshop, we&rsquo;d be glad to hear from you.
+            Whether you&rsquo;d like to collaborate, commission work, or simply
+            share a thought or question, we&rsquo;d be glad to hear from you.
           </p>
         </header>
 
         <div className="mt-12 max-w-2xl">
-          <ContactForm />
+          <ContactForm defaultProject="Futures Atlas" />
         </div>
       </Container>
     </section>

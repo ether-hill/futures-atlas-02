@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Research — The Odds</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Global Futures Atlas navbar — self-contained, styled to The Odds' dark palette */
+.faq-nav{position:fixed;top:0;left:0;right:0;height:50px;z-index:9000;display:flex;align-items:center;gap:10px;padding:0 18px;background:#0b0b0d;border-bottom:1px solid rgba(236,234,230,0.1);font-family:'Space Mono',monospace}
+.faq-brand{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:#ECEAE6;font-size:12px;letter-spacing:0.02em}
+.faq-mark{color:#E0481B;font-size:11px}
+.faq-brand:hover{text-decoration:underline}
+.faq-sep{color:rgba(236,234,230,0.4)}
+.faq-switch-wrap{position:relative}
+.faq-switch{background:none;border:none;color:#ECEAE6;cursor:pointer;font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border-radius:5px}
+.faq-switch:hover{background:rgba(236,234,230,0.07)}
+.faq-chev{color:rgba(236,234,230,0.6);font-size:10px}
+.faq-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:232px;display:none;flex-direction:column;background:#141416;border:1px solid rgba(236,234,230,0.14);border-radius:8px;padding:6px;z-index:50}
+.faq-menu.open{display:flex}
+.faq-menu a{text-decoration:none;color:rgba(236,234,230,0.85);font-size:12.5px;padding:8px 10px;border-radius:5px}
+.faq-menu a:hover{background:rgba(236,234,230,0.07);color:#ECEAE6}
+.faq-menu .faq-allp{color:#E0481B}
+.faq-pages{margin-left:auto;display:flex;gap:4px}
+.faq-pages a{text-decoration:none;color:rgba(236,234,230,0.6);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;padding:7px 11px;border-radius:5px}
+.faq-pages a:hover{color:#ECEAE6;background:rgba(236,234,230,0.06)}
+.faq-pages a.active{color:#E0481B}
+@media(max-width:640px){.faq-brand .faq-word{display:none}.faq-pages a{padding:7px 8px;font-size:10px}}
+
+/* FA family dark black (#211e18) + container/padding forced on, per spec */
+:root{--bg:#211e18;--panel:#2a2620;--line:rgba(236,234,230,0.12);--line2:rgba(236,234,230,0.24);--text:#ECEAE6;--muted:rgba(236,234,230,0.62);--faint:rgba(236,234,230,0.4);--accent:#E0481B}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;padding-top:50px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1500px;margin:0 auto;padding:56px clamp(20px,5vw,56px) 110px}
+.eyebrow{font-size:11px;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,6vw,62px);line-height:1;letter-spacing:-0.02em;margin:16px 0 0}
+.lead{font-size:15px;line-height:1.7;color:var(--muted);max-width:62ch;margin-top:20px}
+.filters{display:flex;flex-direction:column;gap:10px;margin:36px 0 30px;border-bottom:1px solid var(--line);padding-bottom:22px}
+.frow{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.faxis{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--faint);min-width:42px}
+.fbtn{cursor:pointer;font-family:inherit;background:none;border:1px solid var(--line2);color:var(--muted);font-size:12px;padding:7px 14px;border-radius:20px;transition:border-color .15s,color .15s}
+.fbtn:hover{border-color:var(--muted);color:var(--text)}
+.fbtn.active{border-color:var(--accent);color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px}
+.card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s}
+.card:hover{border-color:var(--line2);transform:translateY(-3px)}
+.media{position:relative;aspect-ratio:16/10;background:#0e0e10;overflow:hidden;cursor:pointer}
+.media img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block}
+.credit{position:absolute;right:0;bottom:0;z-index:2;max-width:100%;padding:2px 6px;background:rgba(8,8,10,0.7);color:rgba(236,234,230,0.8);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plate{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:14px;background:linear-gradient(150deg,#1a0b2e 0%,#0e0e10 100%)}
+.plate .src{font-size:13px;color:rgba(236,234,230,0.88)}
+.tag{position:absolute;top:0;left:0;z-index:2;background:var(--accent);color:#0a0a0a;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;padding:4px 8px}
+.play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2;width:52px;height:52px;border-radius:50%;border:none;background:var(--accent);color:#0a0a0a;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding-left:3px}
+.media iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.body{padding:16px 18px 18px;display:flex;flex-direction:column;flex:1}
+.meta{font-size:11px;color:var(--faint);margin-bottom:8px}
+.ctitle{font-family:'Archivo',sans-serif;font-weight:700;font-size:16px;line-height:1.25;color:var(--text)}
+.desc{font-size:13px;line-height:1.55;color:var(--muted);margin-top:9px}
+.rel{font-size:12.5px;line-height:1.5;color:var(--faint);font-style:italic;border-left:2px solid var(--accent);padding-left:10px;margin-top:11px}
+.cta{margin-top:auto;padding-top:14px;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent)}
+</style>
+</head>
+<body>
+
+<nav class="faq-nav">
+  <a class="faq-brand" href="/" aria-label="Futures Atlas home"><span class="faq-mark">◆</span><span class="faq-word">Futures Atlas</span></a>
+  <span class="faq-sep">/</span>
+  <div class="faq-switch-wrap">
+    <button class="faq-switch" id="faqSwitch" aria-haspopup="true" aria-expanded="false">The Odds <span class="faq-chev">▾</span></button>
+    <div class="faq-menu" id="faqMenu" role="menu">
+      <a href="/hollow-villages">The Hollow Villages</a>
+      <a href="/underground-intelligence">Underground Intelligence</a>
+      <a href="/odds-of-surviving-ai">The Odds</a>
+      <a class="faq-allp" href="/">All projects →</a>
+    </div>
+  </div>
+  <div class="faq-pages">
+    <a href="/odds-of-surviving-ai">The piece</a>
+    <a href="/odds-of-surviving-ai/research" class="active">Research</a>
+    <a href="/odds-of-surviving-ai/contact">Contact</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="eyebrow">The evidence base</div>
+  <h1>Where the numbers come from.</h1>
+  <p class="lead">The piece plays three public p(doom) estimates as games of chance. Here are the real interviews, statements, talks and resources behind them — so you can trace each probability back to who said it, where, and what they actually meant. The estimates are differently defined and not comparable.</p>
+
+  <div class="filters">
+    <div class="frow" id="typebar" role="tablist" aria-label="Filter by type"></div>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+(function(){var b=document.getElementById('faqSwitch'),m=document.getElementById('faqMenu');if(!b||!m)return;
+b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});
+document.addEventListener('click',function(e){if(!m.contains(e.target)&&e.target!==b)m.classList.remove('open');});})();
+
+const R=[
+{type:'news',title:'Amodei: “there’s a 25% chance that things go really, really badly”',source:'Axios',year:'2025',
+ summary:'Asked for his p(doom) at the Axios AI+DC Summit, Anthropic CEO Dario Amodei put the chance AI goes “really, really badly” at about 25% — and the chance it goes really well at 75%.',
+ relation:'The die plays Amodei’s 25%: three doom faces in twelve.',
+ url:'https://www.axios.com/2025/09/17/anthropic-dario-amodei-p-doom-25-percent',
+ thumbnail:'/odds-of-surviving-ai/research/amodei.jpg', credit:'Wikipedia'},
+{type:'news',title:'Elon Musk: “only a 20% chance of annihilation” with AI',source:'Yahoo Finance',year:'2024',
+ summary:'On the Joe Rogan podcast Musk pegged the odds of a good AI outcome at ~80% — leaving roughly a 20% chance of annihilation, a figure he has floated in the 10–20% range before.',
+ relation:'The wheel plays Musk’s split: a blue 80% good outcome against a red annihilation wedge.',
+ url:'https://finance.yahoo.com/news/elon-musk-says-theres-only-001804190.html',
+ thumbnail:'/odds-of-surviving-ai/research/musk.jpg', credit:'Wikipedia'},
+{type:'research',title:'Statement on AI Risk',source:'Center for AI Safety',year:'2023',
+ summary:'A single sentence — “Mitigating the risk of extinction from AI should be a global priority alongside other societal-scale risks such as pandemics and nuclear war” — signed by Hinton, Bengio, Altman, Hassabis and Amodei, among hundreds.',
+ relation:'The real consensus that makes these otherwise-flippant probabilities worth taking seriously.',
+ url:'https://safe.ai/work/statement-on-ai-risk',
+ thumbnail:'/odds-of-surviving-ai/research/cais.jpg', credit:'safe.ai'},
+{type:'video',title:'How to Keep AI Under Control',source:'TED',year:'2023',authors:'Max Tegmark',
+ summary:'Tegmark’s TED talk argues superintelligence may arrive within a few years, and lays out why keeping it under control is the defining task of the moment.',
+ relation:'Tegmark is the third player — no single number, a deck of twelve futures from Life 3.0.',
+ url:'https://www.youtube.com/watch?v=xUNx_PxNHrY'},
+{type:'video',title:'P(doom): the probability AI destroys civilization',source:'Lex Clips',year:'2024',authors:'Roman Yampolskiy',
+ summary:'AI-safety researcher Roman Yampolskiy explains the p(doom) framing and why his own estimate sits far above the lab CEOs’.',
+ relation:'The clearest primer on what a “p(doom)” number even is — the unit this whole piece plays with.',
+ url:'https://www.youtube.com/watch?v=xW0xjAMD60c'},
+{type:'video',title:'Inside the Mind of Anthropic CEO Dario Amodei',source:'Bloomberg Originals',year:'2025',
+ summary:'An extended profile interview with Amodei on building Claude, racing rivals, and his case that powerful AI is both imminent and genuinely dangerous.',
+ relation:'Context for the 25% — where Amodei’s caution and ambition meet.',
+ url:'https://www.youtube.com/watch?v=x2VHFgyawPE'},
+{type:'resource',title:'Future of Life Institute',source:'futureoflife.org',
+ summary:'The non-profit Tegmark co-founded in 2014 to reduce existential risk from advanced AI — research, policy, and the open letters that shaped the debate.',
+ relation:'The institutional home of the “define the future you want” argument behind Tegmark’s cards.',
+ url:'https://futureoflife.org',
+ thumbnail:'/odds-of-surviving-ai/research/fli.jpg', credit:'futureoflife.org'},
+{type:'resource',title:'Life 3.0: Being Human in the Age of Artificial Intelligence',source:'Max Tegmark',year:'2017',
+ summary:'The book this piece’s third mechanic is drawn from — twelve qualitatively different AI futures, from benevolent utopias to extinction, none reduced to a single number.',
+ relation:'The source of the twelve cards you pick from for Tegmark.',
+ url:'https://www.goodreads.com/book/show/34272565-life-3-0',
+ thumbnail:'/odds-of-surviving-ai/research/life30.jpg', credit:'Wikipedia'},
+{type:'resource',title:'p(doom)',source:'Wikipedia',
+ summary:'The term itself: a (semi-serious) probability that AI causes human extinction or an irreversible global catastrophe, plus a survey of who estimates what.',
+ relation:'The vocabulary this whole experience is built on — and a reminder the numbers are non-comparable.',
+ url:'https://en.wikipedia.org/wiki/P(doom)',
+ thumbnail:'/odds-of-surviving-ai/research/pdoom.jpg', credit:'Wikipedia'},
+];
+
+const ORDER=['news','research','video','resource'];
+const LABEL={news:'News',research:'Research',video:'Videos',resource:'Resources'};
+const TAG={news:'News',research:'Research',video:'Video',resource:'Resource'};
+const CTA={news:'Read the source ↗',research:'Read the source ↗',video:'Watch on YouTube ↗',resource:'Open ↗'};
+function ytId(u){const m=String(u).match(/(?:youtu\.be\/|[?&]v=|\/embed\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+let filter='all';
+
+function cardHTML(it){
+  const t=it.type, tag='<span class="tag">'+TAG[t]+'</span>';
+  let media;
+  if(t==='video'){const id=ytId(it.url);media='<div class="media yt" data-yt="'+id+'">'+tag+'<img src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg" alt="" loading="lazy"><button class="play" type="button" aria-label="Play video">▶</button></div>';}
+  else if(it.thumbnail){media='<div class="media">'+tag+'<img src="'+it.thumbnail+'" alt="'+it.source+'" loading="lazy">'+(it.credit?'<span class="credit">'+it.credit+'</span>':'')+'</div>';}
+  else{media='<div class="media">'+tag+'<div class="plate"><span class="src">'+it.source+'</span></div></div>';}
+  const body='<div class="body"><div class="meta">'+it.source+(it.authors?' · '+it.authors:'')+(it.year?' · '+it.year:'')+'</div>'+
+    '<div class="ctitle">'+it.title+'</div><p class="desc">'+it.summary+'</p>'+
+    (it.relation?'<p class="rel">'+it.relation+'</p>':'')+'<span class="cta">'+CTA[t]+'</span></div>';
+  if(t==='video'){return '<div class="card" data-type="video">'+media+'<a href="'+it.url+'" target="_blank" rel="noopener noreferrer" style="text-decoration:none;color:inherit">'+body+'</a></div>';}
+  return '<a class="card" data-type="'+t+'" href="'+it.url+'" target="_blank" rel="noopener noreferrer">'+media+body+'</a>';
+}
+function render(){
+  const counts={all:R.length};R.forEach(r=>counts[r.type]=(counts[r.type]||0)+1);
+  const present=ORDER.filter(t=>counts[t]);
+  document.getElementById('typebar').innerHTML='<span class="faxis">Type</span>'+
+    ['all',...present].map(t=>'<button class="fbtn'+(t===filter?' active':'')+'" data-type="'+t+'">'+(t==='all'?'All':LABEL[t])+' <span style="opacity:.55">'+(t==='all'?R.length:counts[t])+'</span></button>').join('');
+  document.getElementById('grid').innerHTML=R.filter(r=>filter==='all'||r.type===filter).map(cardHTML).join('');
+}
+render();
+document.getElementById('typebar').addEventListener('click',e=>{const b=e.target.closest('.fbtn');if(!b)return;filter=b.dataset.type;render();});
+document.getElementById('grid').addEventListener('click',e=>{const v=e.target.closest('.media.yt');if(!v||v.querySelector('iframe'))return;e.preventDefault();const id=v.dataset.yt;if(!id)return;v.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0" title="video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';});
+</script>
+</body>
+</html>

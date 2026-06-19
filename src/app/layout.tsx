@@ -7,8 +7,6 @@ import "futures-atlas-core/nav.css";
 import "./globals.css";
 import { buildOverrideCss } from "futures-atlas-core";
 import { readOverrides } from "@/lib/store";
-import { AtlasNav } from "@/components/AtlasNav";
-import { Footer } from "@/components/Footer";
 
 const archivo = Archivo({
   variable: "--font-archivo",
@@ -65,7 +63,7 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='light'){document.documentElement.classList.add('dark');}}catch(e){document.documentElement.classList.add('dark');}})();`,
           }}
         />
         {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
@@ -73,9 +71,7 @@ export default async function RootLayout({
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
       >
-        <AtlasNav />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

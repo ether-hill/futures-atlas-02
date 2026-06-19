@@ -2,12 +2,23 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { contactProjects } from "@/data/projects";
 
 const fieldCls =
   "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 font-mono text-[13px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent";
 const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graphite";
 
-export function ContactForm() {
+/**
+ * The projects a visitor can address a message to — derived from the central
+ * registry (`src/data/projects.ts`), so adding a project lists it here too.
+ */
+export const CONTACT_PROJECTS = contactProjects;
+
+export function ContactForm({
+  defaultProject = "Futures Atlas",
+}: {
+  defaultProject?: string;
+}) {
   const [sent, setSent] = useState(false);
 
   if (sent) {
@@ -49,6 +60,17 @@ export function ContactForm() {
           Fill in the form and we&rsquo;ll get back to you.
         </p>
       </div>
+
+      <label className="flex flex-col gap-1.5">
+        <span className={labelCls}>Project</span>
+        <select name="project" defaultValue={defaultProject} className={fieldCls}>
+          {CONTACT_PROJECTS.map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+      </label>
 
       <label className="flex flex-col gap-1.5">
         <span className={labelCls}>Name</span>

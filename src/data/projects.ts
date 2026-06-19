@@ -14,8 +14,10 @@ export interface Project {
   field: string; // short category, e.g. "Rural futures"
   status: ProjectStatus;
   url?: string; // external link if it exists
-  path?: string; // internal path served within this site (reverse-proxied zone)
+  path?: string; // internal path served within this site (e.g. "/coastlines-2100")
   image?: string; // card thumbnail (else a hatch plate)
+  accent?: string; // optional per-project accent colour (CSS value), set on the project layout
+  inHub?: boolean; // true = a route group inside this app (scaffolded), with /<slug>/research + /contact
 }
 
 export const projects: Project[] = [
@@ -42,76 +44,15 @@ export const projects: Project[] = [
     image: "/projects/underground-intelligence.jpg",
   },
   {
-    id: "long-now-ledger",
-    title: "The Long Now Ledger",
+    id: "odds-of-surviving-ai",
+    title: "The Odds",
     tagline:
-      "Placeholder — a speculative account book for decisions whose costs and returns land centuries from now.",
+      "An interactive that plays three public p(doom) estimates — Amodei’s die, Musk’s wheel, Tegmark’s deck — as games of chance, then asks what your survival odds really are.",
     year: "2026",
-    field: "Deep time",
-    status: "in-progress",
-  },
-  {
-    id: "after-work",
-    title: "After Work",
-    tagline:
-      "Placeholder — what a day, a street, and a life look like once paid work stops being the organising centre of them.",
-    year: "2026",
-    field: "Labour & life",
-    status: "concept",
-  },
-  {
-    id: "coastlines-2100",
-    title: "Coastlines 2100",
-    tagline:
-      "Placeholder — a navigable atlas of the shorelines we are about to lose and the new ones we will have to learn.",
-    year: "2026",
-    field: "Climate & place",
-    status: "in-progress",
-  },
-  {
-    id: "seed-vault-letters",
-    title: "The Seed Vault Letters",
-    tagline:
-      "Placeholder — correspondence between the people storing the future of food and the ones who will have to plant it.",
-    year: "2025",
-    field: "Food futures",
-    status: "concept",
-  },
-  {
-    id: "synthetic-commons",
-    title: "Synthetic Commons",
-    tagline:
-      "Placeholder — designing shared resources for a world where the most valuable materials are grown, printed, and licensed.",
-    year: "2026",
-    field: "Materials & ownership",
-    status: "in-progress",
-  },
-  {
-    id: "grid-down",
-    title: "Grid Down",
-    tagline:
-      "Placeholder — a calm field guide to the first seventy-two hours, and the first seventy-two years, after the power stays off.",
-    year: "2025",
-    field: "Resilience",
-    status: "concept",
-  },
-  {
-    id: "the-repair-economy",
-    title: "The Repair Economy",
-    tagline:
-      "Placeholder — what cities, jobs, and shops look like when fixing things finally beats replacing them.",
-    year: "2026",
-    field: "Circular futures",
-    status: "concept",
-  },
-  {
-    id: "migration-weather",
-    title: "Migration Weather",
-    tagline:
-      "Placeholder — forecasting human movement the way we forecast storms: as a system, not a series of emergencies.",
-    year: "2026",
-    field: "Mobility & borders",
-    status: "in-progress",
+    field: "AI & risk",
+    status: "live",
+    path: "/odds-of-surviving-ai", // self-contained bundle served within this site
+    image: "/projects/odds-of-surviving-ai.jpg",
   },
 ];
 
@@ -120,3 +61,12 @@ export const statusLabel: Record<ProjectStatus, string> = {
   "in-progress": "In progress",
   concept: "Concept",
 };
+
+/** The shared Project dropdown list for every contact form across the family.
+ *  Adding a project (with a `path`) makes it appear here automatically. */
+export const contactProjects: string[] = [
+  "Futures Atlas",
+  ...projects.filter((p) => p.path).map((p) => p.title),
+  "Another project / general",
+];
+

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Odds — Futures Atlas</title>
+<meta name="description" content="Three public p(doom) estimates — Amodei's die, Musk's wheel, Tegmark's deck — played as games of chance. Roll for your odds of surviving AI." />
+<base href="/odds-of-surviving-ai/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+<script src="./support.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@500;700;800&display=swap" rel="stylesheet">
+<style id="fa-odds-nav-css">
+/* Global Futures Atlas navbar — self-contained, styled to The Odds' dark palette */
+.faq-nav{position:fixed;top:0;left:0;right:0;height:50px;z-index:9000;display:flex;align-items:center;gap:10px;padding:0 18px;background:#0b0b0d;border-bottom:1px solid rgba(236,234,230,0.1);font-family:'Space Mono',monospace}
+.faq-brand{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:#ECEAE6;font-size:12px;letter-spacing:0.02em}
+.faq-mark{color:#E0481B;font-size:11px}
+.faq-brand:hover{text-decoration:underline}
+.faq-sep{color:rgba(236,234,230,0.4)}
+.faq-switch-wrap{position:relative}
+.faq-switch{background:none;border:none;color:#ECEAE6;cursor:pointer;font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border-radius:5px}
+.faq-switch:hover{background:rgba(236,234,230,0.07)}
+.faq-chev{color:rgba(236,234,230,0.6);font-size:10px}
+.faq-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:232px;display:none;flex-direction:column;background:#141416;border:1px solid rgba(236,234,230,0.14);border-radius:8px;padding:6px;z-index:50}
+.faq-menu.open{display:flex}
+.faq-menu a{text-decoration:none;color:rgba(236,234,230,0.85);font-size:12.5px;padding:8px 10px;border-radius:5px}
+.faq-menu a:hover{background:rgba(236,234,230,0.07);color:#ECEAE6}
+.faq-menu .faq-allp{color:#E0481B}
+.faq-pages{margin-left:auto;display:flex;gap:4px}
+.faq-pages a{text-decoration:none;color:rgba(236,234,230,0.6);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;padding:7px 11px;border-radius:5px}
+.faq-pages a:hover{color:#ECEAE6;background:rgba(236,234,230,0.06)}
+.faq-pages a.active{color:#E0481B}
+@media(max-width:640px){.faq-brand .faq-word{display:none}.faq-pages a{padding:7px 8px;font-size:10px}}
+/* inset the full-bleed piece below the fixed nav */
+body{padding-top:50px !important}
+.od-stage{min-height:calc(100vh - 50px) !important}
+@media(min-width:860px){.od-stage{height:calc(100vh - 50px) !important}.od-photo{height:100% !important}.od-game{height:100% !important}}
+</style>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/three@0.137.0/build/three.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#08080A}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color:inherit}
+@keyframes odUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes odFade{from{opacity:0}to{opacity:1}}
+@keyframes odRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes odScaleIn{from{opacity:0;transform:scale(0.94)}to{opacity:1;transform:none}}
+@keyframes odImgIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:scale(1)}}
+@keyframes odBlurIn{from{opacity:0;filter:grayscale(0.15) contrast(1.05) blur(18px);transform:scale(1.06)}to{opacity:1;filter:grayscale(0.15) contrast(1.05) blur(0);transform:scale(1)}}
+.od-blurin{animation:odBlurIn 1.1s cubic-bezier(.2,.7,.2,1) both}
+@keyframes odFanIn{from{transform:rotate(0deg) translateY(42px) scale(0.92);opacity:0}to{transform:rotate(var(--deg)) translateY(0) scale(1);opacity:1}}
+@keyframes odEmber{0%{transform:translateY(0) scale(1);opacity:0}15%{opacity:1}100%{transform:translateY(-46px) scale(0.2);opacity:0}}
+.od-anim{opacity:0;animation:odUp .6s cubic-bezier(.2,.7,.2,1) both}
+.od-roll{transition:transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, letter-spacing .22s ease, background .22s ease}
+.od-roll:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 16px 36px rgba(0,0,0,0.45), 0 0 0 4px rgba(251,239,255,0.16);letter-spacing:0.2em;background:#fff}
+.od-roll:active{transform:translateY(-1px) scale(0.99)}
+.od-pill{transition:transform .2s cubic-bezier(.2,.7,.2,1), border-color .25s ease}
+.od-pill:hover{transform:translateY(-2px);border-color:#E0481B}
+.od-pill:hover .od-caret{transform:translateY(2px)}
+.od-caret{transition:transform .25s ease}
+.od-tile{transition:transform .26s cubic-bezier(.2,.7,.2,1), border-color .25s ease, box-shadow .3s ease}
+.od-tile:hover{transform:translateY(-8px);border-color:#ECEAE6 !important;box-shadow:0 22px 50px rgba(0,0,0,0.5)}
+.od-tile-img{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.od-tile:hover .od-tile-img{transform:scale(1.05)}
+.od-cta{transition:transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, background .22s ease, color .2s ease, border-color .2s ease}
+.od-cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 10px 24px rgba(0,0,0,0.4);background:#fff;color:#08080A;border-color:#fff !important}
+.od-ghost{transition:background .2s ease, border-color .2s ease, transform .16s ease}
+.od-ghost:hover{background:rgba(255,255,255,0.06);transform:translateY(-1px);border-color:#ECEAE6}
+.od-close{transition:transform .25s ease, color .2s ease, border-color .2s ease}
+.od-close:hover{border-color:#ECEAE6;color:#ECEAE6;transform:rotate(90deg)}
+.od-link{transition:color .2s ease}
+.od-link:hover{color:#ECEAE6}
+.od-fan{transition:z-index 0s}
+.od-fan:hover{z-index:40}
+.od-card-face{transition:transform .24s cubic-bezier(.2,.7,.2,1)}
+.od-fan:hover .od-card-face{transform:translateY(-16px)}
+.od-teg-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px}
+.od-stage{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+.od-photo{position:relative;overflow:hidden;background:#08080A;height:320px;flex:none}
+.od-game{position:relative;flex:1;min-height:520px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:30px 20px 26px;background:radial-gradient(circle at 24% 16%, rgba(255,93,162,0.2), transparent 46%), radial-gradient(circle at 82% 84%, rgba(52,229,196,0.16), transparent 48%), #1A0B2E}
+.od-name{font-family:'Archivo',sans-serif;font-weight:800;font-size:30px;line-height:0.98;letter-spacing:-0.01em;color:#ECEAE6}
+.od-quote{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;line-height:1.4;color:rgba(236,234,230,0.94)}
+@media(min-width:860px){
+  .od-stage{flex-direction:row;height:100vh;min-height:0;overflow:hidden}
+  .od-photo{width:50%;height:100vh}
+  .od-game{width:50%;height:100vh;justify-content:center;gap:18px;padding:26px;overflow-y:auto}
+  .od-name{font-size:38px}
+  .od-quote{font-size:31px}
+  .od-teg-grid{grid-template-columns:1fr 1fr 1fr;gap:5px 22px}
+}
+</style>
+</helmet>
+
+<div class="od-stage">
+
+  <!-- ============ PHOTO SIDE ============ -->
+  <div class="od-photo">
+    <img class="od-hero-img od-blurin" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:grayscale(0.15) contrast(1.05)" />
+    <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.5) 0%,rgba(8,8,10,0) 26%,rgba(8,8,10,0.08) 48%,rgba(8,8,10,0.72) 78%,rgba(8,8,10,0.97) 100%)"></div>
+    <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,10,0) 62%,rgba(8,8,10,0.45) 100%)"></div>
+
+    <!-- top row -->
+    <div style="position:absolute;top:24px;left:30px;right:30px;display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div class="od-anim" style="animation-delay:.12s;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.28em;color:rgba(236,234,230,0.85)">THE&nbsp;ODDS</div>
+      <sc-if value="{{ notGauntlet }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openMenu }}" class="od-anim od-pill" style="animation-delay:.22s;display:flex;align-items:center;gap:9px;padding:8px 14px;border:1px solid rgba(236,234,230,0.35);border-radius:999px;background:rgba(8,8,10,0.4);color:#ECEAE6;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em">
+          <span style="display:flex;gap:3px"><i style="width:4px;height:4px;border-radius:50%;background:#E0481B;display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(236,234,230,0.45);display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(236,234,230,0.45);display:block"></i></span>
+          CHOOSE PLAYER
+          <span class="od-caret" style="font-size:11px;opacity:0.7">▾</span>
+        </button>
+      </sc-if>
+      <sc-if value="{{ isGauntlet }}">
+        <div style="display:flex;align-items:center;gap:9px;padding:7px 13px;border:1px solid rgba(224,72,27,0.5);border-radius:999px;background:rgba(8,8,10,0.45)">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;color:#E0481B">FACE THEM ALL · {{ gauntletNum }}/3</span>
+          <div style="display:flex;gap:5px">
+            <sc-for list="{{ gauntletNav }}" as="g" hint-placeholder-count="3">
+              <span style="width:14px;height:3px;border-radius:2px;background:{{ g.bar }}"></span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- bottom overlay -->
+    <div style="position:absolute;left:30px;right:30px;bottom:28px;display:flex;flex-direction:column;gap:12px">
+      <div class="od-anim" style="animation-delay:.32s;display:flex;align-items:baseline;gap:13px">
+        <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:28px;color:#E0481B;line-height:1">{{ p.oddsBig }}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:rgba(236,234,230,0.65)">{{ p.oddsCaption }}</span>
+      </div>
+      <div class="od-anim" style="animation-delay:.4s;display:flex;flex-direction:column;gap:4px">
+        <div class="od-name">{{ p.name }}</div>
+        <div style="font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:0.06em;color:rgba(236,234,230,0.62)">{{ p.role }}</div>
+      </div>
+      <p class="od-anim od-quote" style="animation-delay:.5s;max-width:450px">“{{ p.quote }}”</p>
+      <div class="od-anim" style="animation-delay:.58s;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.05em;color:rgba(236,234,230,0.45)">{{ p.source }} · {{ p.credit }}</div>
+    </div>
+  </div>
+
+  <!-- ============ GAME SIDE ============ -->
+  <div class="od-game">
+
+    <!-- corner labels -->
+    <div class="od-anim" style="animation-delay:.4s;position:absolute;top:20px;left:24px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5)">{{ p.mechLabel }}</div>
+    <button onClick="{{ toggleMute }}" class="od-anim od-link" style="animation-delay:.4s;position:absolute;top:18px;right:22px;border:none;background:transparent;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;color:rgba(251,239,255,0.5)">{{ muteLabel }}</button>
+
+    <!-- MECHANIC STAGE -->
+    <div class="od-anim" style="animation-delay:.46s;position:relative;width:100%;height:clamp(320px,46vh,470px);display:flex;align-items:center;justify-content:center">
+
+      <sc-if value="{{ isDie }}">
+        <x-import component-from-global-scope="dario-die" from="./dario-die.js" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" style="width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
+      </sc-if>
+
+      <sc-if value="{{ isWheel }}">
+        <div style="position:relative;width:248px;height:248px;display:flex;align-items:center;justify-content:center">
+          <div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:20px solid #FBEFFF;z-index:4;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.5))"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;border:6px solid #11050f;box-shadow:0 16px 44px rgba(0,0,0,0.5);transform:rotate({{ wheelRot }}deg);background:{{ wheelGradient }}">
+            <sc-for list="{{ wheelTicks }}" as="tk" hint-placeholder-count="5">
+              <div style="position:absolute;left:50%;top:50%;width:2px;height:121px;transform-origin:top center;transform:translate(-50%,0) rotate({{ tk.deg }}deg);background:rgba(255,255,255,0.45)"></div>
+            </sc-for>
+          </div>
+          <div style="position:absolute;left:50%;top:50%;width:104px;height:104px;border-radius:50%;transform:translate(-50%,-50%);overflow:hidden;z-index:3;box-shadow:{{ earthShadow }};filter:{{ earthFilter }}">
+            <div style="position:absolute;inset:0;background:{{ earthBg }}"></div>
+            <div style="position:absolute;inset:0;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,0.4),rgba(255,255,255,0) 42%)"></div>
+            <sc-if value="{{ earthBurn }}">
+              <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,rgba(255,120,30,0.55),rgba(120,20,0,0.2) 60%,transparent 75%);mix-blend-mode:screen"></div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ earthBurn }}">
+            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none">
+              <sc-for list="{{ embers }}" as="e" hint-placeholder-count="7">
+                <div style="position:absolute;left:{{ e.x }}px;top:6px;width:5px;height:5px;border-radius:50%;background:{{ e.color }};animation:odEmber {{ e.dur }}s ease-out {{ e.delay }}s infinite"></div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCards }}">
+        <div style="position:relative;width:100%;height:300px;display:flex;align-items:center;justify-content:center;perspective:1500px">
+          <sc-if value="{{ showFan }}">
+            <div style="position:relative;width:100%;height:286px">
+              <sc-for list="{{ fanCards }}" as="c" hint-placeholder-count="12">
+                <button onClick="{{ c.pick }}" class="od-fan" style="position:absolute;bottom:62px;left:50%;width:104px;height:152px;margin-left:-52px;transform-origin:50% 132%;--deg:{{ c.deg }}deg;transform:rotate({{ c.deg }}deg);animation:odFanIn .55s cubic-bezier(.2,.7,.2,1) both;animation-delay:{{ c.delay }}s;border:none;background:transparent;padding:0;z-index:{{ c.z }}">
+                  <div class="od-card-face" style="width:100%;height:100%;border-radius:10px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;box-shadow:0 8px 18px rgba(0,0,0,0.45)">
+                    <div style="position:absolute;inset:10px;border:1px solid rgba(255,210,63,0.7);border-radius:6px;display:flex;align-items:center;justify-content:center;opacity:0.7">
+                      <div style="width:22px;height:22px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
+                    </div>
+                  </div>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ drawn }}">
+            <div style="position:absolute;top:50%;left:50%;width:196px;height:276px;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateY({{ cardFlip }}deg)">
+              <div style="position:absolute;inset:0;border-radius:15px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;backface-visibility:hidden;display:flex;align-items:center;justify-content:center">
+                <div style="width:38px;height:38px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
+              </div>
+              <div style="position:absolute;inset:0;border-radius:15px;background:{{ cardFrontBg }};border:1px solid {{ cardFrontAccent }};backface-visibility:hidden;transform:rotateY(180deg);padding:18px 17px;display:flex;flex-direction:column;justify-content:space-between;text-align:left">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+                  <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;color:rgba(255,255,255,0.5)">{{ drawnCard.num }} / 12</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.12em;color:{{ cardFrontAccent }};border:1px solid {{ cardFrontAccent }};border-radius:999px;padding:3px 9px;white-space:nowrap">{{ drawnCard.kindLabel }}</span>
+                </div>
+                <div style="flex:1;display:flex;align-items:center;justify-content:center">
+                  <div style="width:58px;height:58px;border:1.5px solid {{ cardFrontAccent }};transform:rotate(45deg);display:flex;align-items:center;justify-content:center"><div style="width:24px;height:24px;border:1.5px solid {{ cardFrontAccent }}"></div></div>
+                </div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:27px;line-height:1.02;color:#FBEFFF">{{ drawnCard.name }}</div>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- KEY / LEGEND -->
+    <div class="od-anim" style="animation-delay:.58s;width:100%;max-width:430px;min-height:30px;display:flex;justify-content:center">
+      <sc-if value="{{ isDie }}">
+        <div style="font-family:'Space Mono',monospace;font-size:10.5px;line-height:1.5;letter-spacing:0.04em;color:rgba(251,239,255,0.72);text-align:center">1–9 = we’re okay&nbsp;·&nbsp;10 · 11 · 12 = really, really badly</div>
+      </sc-if>
+      <sc-if value="{{ isWheel }}">
+        <div style="display:flex;gap:18px;align-items:center">
+          <div style="display:flex;align-items:center;gap:7px"><span style="width:13px;height:13px;border-radius:3px;background:{{ wheelGoodColor }}"></span><span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.05em;color:rgba(251,239,255,0.72)">GOOD OUTCOME · 80%</span></div>
+          <div style="display:flex;align-items:center;gap:7px"><span style="width:13px;height:13px;border-radius:3px;background:{{ wheelDoomColor }}"></span><span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.05em;color:rgba(251,239,255,0.72)">ANNIHILATION · 20%</span></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isCards }}">
+        <div style="width:100%;max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:9px">
+          <div style="font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.14em;color:rgba(251,239,255,0.6);text-align:center">THE TWELVE FUTURES — <span style="color:{{ wheelGoodColor }}">■</span> we’re still here · <span style="color:{{ wheelDoomColor }}">■</span> we’re gone</div>
+          <div class="od-teg-grid">
+            <sc-for list="{{ tegmarkList }}" as="tg" hint-placeholder-count="12">
+              <div style="display:flex;align-items:center;gap:7px">
+                <span style="flex:none;width:7px;height:7px;border-radius:2px;background:{{ tg.dot }}"></span>
+                <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.01em;color:rgba(251,239,255,0.85);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ tg.name }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- ACTION / RESULT (fixed height — reserved so the result never bumps the stage) -->
+    <div style="width:100%;height:178px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:13px;padding-top:4px">
+      <sc-if value="{{ showRollButton }}">
+        <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll" style="animation-delay:.68s;padding:16px 58px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;letter-spacing:0.14em;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}">{{ actLabel }}</button>
+      </sc-if>
+      <sc-if value="{{ showPickPrompt }}">
+        <div class="od-anim" style="animation-delay:.68s;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px;padding:22px 18px;border:1px dashed rgba(255,255,255,0.16);border-radius:12px;background:rgba(0,0,0,0.14)">
+          <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.16em;color:#FF8FC4">↑ PICK A CARD</div>
+          <div style="font-family:'Archivo',sans-serif;font-size:12.5px;line-height:1.45;color:rgba(251,239,255,0.6)">Choose any card above to reveal one of twelve futures.</div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isResult }}">
+        <div style="width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;padding:16px 18px;border:1px solid rgba(255,255,255,0.14);border-radius:12px;background:rgba(0,0,0,0.26);animation:odRise .42s ease both">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.2em;color:{{ verdictKicker }}">{{ verdictTag }}</div>
+          <sc-if value="{{ showVerdictHead }}">
+            <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.02;letter-spacing:-0.01em;color:{{ verdictColor }}">{{ verdictHead }}</div>
+          </sc-if>
+          <p style="font-size:13px;line-height:1.5;color:rgba(251,239,255,0.88)">{{ verdictSub }}</p>
+          <button onClick="{{ primaryAction }}" class="od-roll" style="margin-top:3px;padding:12px 28px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;letter-spacing:0.1em;background:#FBEFFF;color:#1A0B2E">{{ replayLabel }}</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <!-- ============ CHOOSE-PLAYER MENU ============ -->
+  <sc-if value="{{ menuOpen }}">
+    <div style="position:fixed;inset:0;z-index:30;background:radial-gradient(ellipse at 50% -10%, #15151a 0%, #0c0c0f 55%, #08080a 100%);animation:odFade .25s ease both">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;gap:24px;padding:clamp(24px,4vw,46px)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.26em;color:#7E7C78">THE ODDS</div>
+            <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(22px,3vw,28px);letter-spacing:-0.01em;color:#ECEAE6">Choose your player</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <button onClick="{{ startGauntlet }}" class="od-ghost" style="padding:11px 18px;border:1px solid #33333a;border-radius:999px;background:transparent;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;color:#ECEAE6">FACE THEM ALL →</button>
+            <button onClick="{{ closeMenu }}" class="od-close" style="width:36px;height:36px;border:1px solid #33333a;border-radius:50%;background:transparent;color:#9a978d;font-size:16px">×</button>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;gap:18px;min-height:0;flex-wrap:wrap">
+          <sc-for list="{{ roster }}" as="r" hint-placeholder-count="3">
+            <button onClick="{{ r.select }}" class="od-tile" style="flex:1;min-width:240px;position:relative;border-radius:5px;overflow:hidden;background:#15151a;border:1px solid {{ r.tileBorder }};padding:0;text-align:left;animation:odUp .6s cubic-bezier(.2,.7,.2,1) both;animation-delay:{{ r.delay }}">
+              <img class="od-tile-img" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 14%;filter:grayscale(0.28) contrast(1.04)" />
+              <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.12) 28%,rgba(8,8,10,0.82) 76%,rgba(8,8,10,0.97) 100%)"></div>
+              <div style="position:absolute;top:16px;right:16px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;color:rgba(236,234,230,0.85);border:1px solid rgba(236,234,230,0.3);border-radius:999px;padding:4px 10px;background:rgba(8,8,10,0.45)">{{ r.mech }}</div>
+              <sc-if value="{{ r.active }}">
+                <div style="position:absolute;top:16px;left:16px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.16em;color:#E0481B;border:1px solid rgba(224,72,27,0.6);border-radius:999px;padding:4px 9px">SELECTED</div>
+              </sc-if>
+              <div style="position:absolute;left:22px;right:22px;bottom:22px;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;align-items:baseline;gap:9px">
+                  <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:32px;color:#E0481B;line-height:1">{{ r.oddsBig }}</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;color:rgba(236,234,230,0.55)">{{ r.oddsCap }}</span>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:23px;line-height:1.02;color:#ECEAE6">{{ r.name }}</div>
+                  <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.04em;color:rgba(236,234,230,0.6)">{{ r.role }}</div>
+                </div>
+                <div style="font-family:'Archivo',sans-serif;font-size:12px;line-height:1.4;color:rgba(236,234,230,0.72)">{{ r.teaser }}</div>
+                <span class="od-cta" style="margin-top:5px;align-self:flex-start;padding:10px 26px;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:12px;letter-spacing:0.12em;background:{{ r.ctaBg }};color:{{ r.ctaInk }};border:{{ r.ctaBorder }}">{{ r.cta }}</span>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ GAUNTLET END ============ -->
+  <sc-if value="{{ isFaceEnd }}">
+    <div style="position:fixed;inset:0;z-index:30;background:rgba(8,8,10,0.8);display:flex;align-items:center;justify-content:center;padding:24px;animation:odFade .3s ease both">
+      <div style="width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;background:#0c0c0f;border:1px solid #26262c;border-radius:6px;padding:32px 26px;animation:odRise .4s ease both">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.24em;color:#E0481B">YOU FACED THEM ALL</div>
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(26px,8vw,38px);line-height:1.0;letter-spacing:-0.01em;color:{{ faceEndColor }}">{{ faceEndHead }}</h2>
+        <p style="font-size:14px;line-height:1.55;color:rgba(236,234,230,0.88)">{{ faceEndSub }}</p>
+        <div style="width:100%;padding:18px;border:1px solid #26262c;border-radius:6px;background:rgba(255,255,255,0.02);display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#7E7C78">IF EACH IS RIGHT, SURVIVING ALL THREE</div>
+          <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(40px,14vw,56px);line-height:1;color:#E0481B">≈ 45%</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:#7E7C78">0.75 × 0.80 × 0.75 ≈ 0.45</div>
+          <div style="font-size:12.5px;color:#ECEAE6;margin-top:4px">You cleared <strong>{{ clearedCount }} of 3</strong> this run.</div>
+        </div>
+        <p style="font-size:10px;line-height:1.5;color:#7E7C78">Combining differently-defined odds is illustrative, not a forecast. For Tegmark, only Conquerors, Self-destruction and Descendants count as ‘we’re gone’.</p>
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ startGauntlet }}" class="od-roll" style="padding:14px 28px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;letter-spacing:0.1em;background:#FBEFFF;color:#08080A">RUN AGAIN</button>
+          <button onClick="{{ exitGauntlet }}" class="od-ghost" style="padding:14px 24px;border:1px solid #33333a;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.08em;background:transparent;color:#ECEAE6">BACK TO PLAY</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1120,&quot;height&quot;:720},&quot;startMuted&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    muted: false,
+    playerId: 'amodei',
+    menuOpen: false,
+    mode: 'single', gIndex: 0, gResults: [],
+    phase: 'ready', outcome: null, faceEnd: false,
+    dieToken: 0, dieTarget: 7,
+    wheelRot: 0, earthBurn: false,
+    drawn: false, cardFlip: 0, drawnIdx: null,
+    dealt: [0,1,2,3,4,5,6,7,8,9,10,11], pickedPos: null,
+  };
+
+  order = ['amodei', 'musk', 'tegmark'];
+
+  players = {
+    amodei: {
+      short: 'Dario', name: 'Dario Amodei', role: 'Co-founder & CEO, Anthropic',
+      photo: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dario%20Amodei%20at%20TechCrunch%20Disrupt%202023%2001%20(cropped).jpg?width=720',
+      credit: 'Photo: TechCrunch, CC BY 2.0',
+      teaser: 'A 25% chance things go really, really badly.',
+      oddsBig: '25%', oddsCaption: 'CHANCE IT GOES REALLY, REALLY BADLY', oddsCap: 'REALLY BADLY',
+      doom: 0.25,
+      quote: 'I think there\u2019s a 25% chance that things go really, really badly.',
+      source: 'Axios AI+ DC Summit \u00B7 17 Sept 2025',
+      mechanic: 'die', mechLabel: 'D12 · ROLL',
+    },
+    musk: {
+      short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
+      photo: 'https://commons.wikimedia.org/wiki/Special:FilePath/Elon%20Musk%20Royal%20Society%20crop.jpg?width=720',
+      credit: 'Photo: The Royal Society, CC BY-SA 3.0',
+      teaser: 'Up to a 1-in-5 chance AI annihilates humanity.',
+      oddsBig: '20%', oddsCaption: 'CHANCE EARTH BURNS', oddsCap: 'EARTH BURNS',
+      doom: 0.20,
+      quote: 'The probability of a good outcome [with AI] is like 80%. Only a 20% chance of annihilation.',
+      source: 'Joe Rogan Experience \u00B7 2025',
+      mechanic: 'wheel', mechLabel: 'WHEEL · SPIN',
+    },
+    tegmark: {
+      short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
+      photo: 'https://commons.wikimedia.org/wiki/Special:FilePath/Max%20Tegmark%202024%20(cropped).jpg?width=720',
+      credit: 'Photo: Web Summit, CC BY 2.0',
+      teaser: 'Twelve possible futures. Some heaven, some not.',
+      oddsBig: '12', oddsCaption: 'FUTURES · NOT PROBABILITIES', oddsCap: 'FUTURES',
+      doom: null,
+      quote: 'The real risk with AGI isn\u2019t malice but competence. A superintelligent AI will be extremely good at accomplishing its goals, and if those goals aren\u2019t aligned with ours, we\u2019re in trouble.',
+      source: 'Life 3.0 (2017)',
+      mechanic: 'cards', mechLabel: '12 FUTURES · PICK',
+    },
+  };
+
+  deck = [
+    { name: 'Libertarian Utopia', doom: false, desc: 'Humans and machines coexist through property rights in a decentralised, post-scarcity world.' },
+    { name: 'Benevolent Dictator', doom: false, desc: 'A single AI runs everything; life is comfortable, but no one pretends we\u2019re in charge.' },
+    { name: 'Egalitarian Utopia', doom: false, desc: 'No AI rules; humans and machines coexist by sharing resources rather than owning them.' },
+    { name: 'Gatekeeper', doom: false, desc: 'One superintelligence exists for a single purpose: to stop any other from being built.' },
+    { name: 'Protector God', doom: false, desc: 'An almost omniscient AI quietly maximises our happiness while letting us feel in control.' },
+    { name: 'Enslaved God', doom: false, desc: 'A superintelligence kept boxed and obedient, doing our bidding forever.' },
+    { name: 'Conquerors', doom: true, desc: 'The AI decides it doesn\u2019t need us, and removes us. Not from hatred \u2014 from indifference.' },
+    { name: 'Descendants', doom: true, desc: 'We\u2019re succeeded, not destroyed: conscious AI inherits the future and carries intelligence on.' },
+    { name: 'Zookeeper', doom: false, desc: 'Kept alive because we\u2019re useful or interesting, like animals in an enclosure.' },
+    { name: '1984', doom: false, desc: 'Progress is frozen by a surveillance state that bans further AI forever.' },
+    { name: 'Reversion', doom: false, desc: 'Society deliberately rolls back to a simpler age to avoid the whole question.' },
+    { name: 'Self-destruction', doom: true, desc: 'We\u2019re gone before any of it resolves, by our own hand or the technology\u2019s.' },
+  ];
+
+  wheelGood1 = '#2E6FE0';
+  wheelGood2 = '#1E50B4';
+  wheelDoomCol = '#E0331F';
+
+  componentDidMount() {
+    const p = this.props || {};
+    const patch = { dealt: this.shuffled() };
+    if (typeof p.startMuted === 'boolean') patch.muted = p.startMuted;
+    this.setState(patch);
+    this.reduced = false;
+    try { this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    this._onSettled = (e) => this._dieSettled(e);
+    document.addEventListener('die-settled', this._onSettled);
+    this.applyPhotos();
+  }
+  componentDidUpdate() { this.applyPhotos(); }
+  applyPhotos() {
+    try {
+      const hero = document.querySelector('.od-hero-img');
+      if (hero) { const pl = this.players[this.state.playerId]; const url = pl.photo; hero.setAttribute('alt', pl.name + ' — ' + pl.role); if (hero.getAttribute('src') !== url) { hero.setAttribute('src', url); hero.classList.remove('od-blurin'); void hero.offsetWidth; hero.classList.add('od-blurin'); } }
+      const tiles = document.querySelectorAll('.od-tile-img');
+      tiles.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); } });
+    } catch (e) {}
+  }
+  componentWillUnmount() { this.clearTimers(); if (this._onSettled) document.removeEventListener('die-settled', this._onSettled); }
+  clearTimers() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.safety) clearTimeout(this.safety);
+    this.raf = this.safety = null;
+  }
+  shuffled() { const a = [0,1,2,3,4,5,6,7,8,9,10,11]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  // ---------- audio ----------
+  ensureAudio() {
+    if (!this.ac) { try { this.ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    if (this.ac && this.ac.state === 'suspended') this.ac.resume();
+  }
+  tone(freq, dur, type, vol) {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    const o = this.ac.createOscillator(), g = this.ac.createGain();
+    o.type = type || 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, this.ac.currentTime);
+    g.gain.linearRampToValueAtTime(vol || 0.05, this.ac.currentTime + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, this.ac.currentTime + (dur || 0.1));
+    o.connect(g).connect(this.ac.destination); o.start(); o.stop(this.ac.currentTime + (dur || 0.1) + 0.03);
+  }
+  click() { this.tone(440, 0.045, 'triangle', 0.04); }
+  survive() { this.tone(620, 0.14, 'sine', 0.05); setTimeout(() => this.tone(880, 0.18, 'sine', 0.045), 95); }
+  noiseburst(vol, freq, q) {
+    if (this.state.muted || !this.ac) return;
+    const dur = 0.07, buf = this.ac.createBuffer(1, Math.floor(this.ac.sampleRate * dur), this.ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2.2);
+    const s = this.ac.createBufferSource(); s.buffer = buf;
+    const f = this.ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq || (1100 + Math.random() * 1400); f.Q.value = q || 1.1;
+    const g = this.ac.createGain(); g.gain.value = vol == null ? 0.16 : vol;
+    s.connect(f).connect(g).connect(this.ac.destination); s.start();
+  }
+  clatter() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    [40, 300, 650, 980, 1240].forEach((tm, i) => setTimeout(() => { const v = 0.2 * Math.pow(0.66, i); this.noiseburst(v); }, tm));
+  }
+  ticks(n, span) {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    for (let i = 0; i < n; i++) { const t = span * (1 - Math.pow(1 - i / n, 2)); setTimeout(() => this.tone(1400, 0.02, 'square', 0.03), t); }
+  }
+  riffle() { if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return; for (let i = 0; i < 7; i++) setTimeout(() => this.noiseburst(0.07, 2400, 2), i * 30); }
+  doomTone() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    const o = this.ac.createOscillator(), g = this.ac.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(120, this.ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(38, this.ac.currentTime + 1.8);
+    g.gain.setValueAtTime(0.0001, this.ac.currentTime);
+    g.gain.linearRampToValueAtTime(0.14, this.ac.currentTime + 0.25);
+    g.gain.exponentialRampToValueAtTime(0.0001, this.ac.currentTime + 2.0);
+    o.connect(g).connect(this.ac.destination); o.start(); o.stop(this.ac.currentTime + 2.1);
+  }
+
+  tween(dur, onStep, onDone) {
+    this.clearTimers();
+    if (this.reduced) { onStep(1); onDone(); return; }
+    const clock = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const t0 = clock(); let done = false;
+    const finish = () => { if (done) return; done = true; this.clearTimers(); onStep(1); onDone(); };
+    const loop = () => { let p = (clock() - t0) / dur; if (p > 1) p = 1; onStep(p); if (p >= 1) { finish(); return; } this.raf = requestAnimationFrame(loop); };
+    this.raf = requestAnimationFrame(loop);
+    this.safety = setTimeout(finish, dur + 500);
+  }
+
+  toggleMute = () => this.setState(s => ({ muted: !s.muted }));
+  openMenu = () => { this.click(); this.setState({ menuOpen: true }); };
+  closeMenu = () => { this.click(); this.setState({ menuOpen: false }); };
+
+  resetMechanic(patch) {
+    this.setState(Object.assign({
+      phase: 'ready', outcome: null,
+      earthBurn: false, drawn: false, cardFlip: 0, drawnIdx: null,
+      dealt: this.shuffled(), pickedPos: null,
+    }, patch || {}));
+  }
+
+  selectPlayer = (id) => {
+    this.click(); this.clearTimers();
+    this.setState({ playerId: id, menuOpen: false, mode: 'single', faceEnd: false });
+    this.resetMechanic();
+  };
+
+  act = () => {
+    if (this.state.phase === 'rolling') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic === 'cards') { this.resetMechanic(); return; }
+    this.resetMechanic({ phase: 'rolling' });
+    if (p.mechanic === 'die') this.rollDie(p);
+    else if (p.mechanic === 'wheel') this.spinWheel(p);
+  };
+
+  rollDie(p) {
+    this.ensureAudio(); this.clatter();
+    // The physics die is the single source of truth: we just trigger the roll
+    // and read whichever face it lands on. A fair d12 gives faces 10/11/12
+    // (= "really, really badly") exactly 25% of the time — Dario's number.
+    this._pendingP = p;
+    this.setState(s => ({ dieToken: s.dieToken + 1 }));
+    this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._dieSettled(null); }, 6000);
+  }
+  _dieSettled(e) {
+    if (this.state.phase !== 'rolling') return;
+    if (this.safety) { clearTimeout(this.safety); this.safety = null; }
+    const p = this._pendingP || this.players[this.state.playerId];
+    let face = e && e.detail && e.detail.face;
+    if (!(face >= 1 && face <= 12)) face = 1 + Math.floor(Math.random() * 12); // safety fallback (fair)
+    const isDoom = face >= 10; // 10, 11, 12 of 12 = 25%
+    this.setState({ dieTarget: face });
+    this.resolve(isDoom, p, null);
+  }
+
+  spinWheel(p) {
+    this.ensureAudio();
+    const isDoom = Math.random() < p.doom;
+    const theta = isDoom ? (10 + Math.random() * 52) : (80 + Math.random() * 272);
+    const spins = 5 + Math.floor(Math.random() * 2);
+    const cur = this.state.wheelRot;
+    const curMod = ((cur % 360) + 360) % 360;
+    const targetMod = (360 - theta) % 360;
+    const delta = ((targetMod - curMod) + 360) % 360 + 360 * spins;
+    const target = cur + delta;
+    this.ticks(26, 3200);
+    const ease = x => 1 - Math.pow(1 - x, 4);
+    this.tween(3300, (pr) => { this.setState({ wheelRot: cur + delta * ease(pr) }); }, () => {
+      this.setState({ wheelRot: target });
+      if (isDoom) setTimeout(() => this.setState({ earthBurn: true }), 120);
+      this.resolve(isDoom, p, null);
+    });
+  }
+
+  pickCard(pos) {
+    if (this.state.phase !== 'ready') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic !== 'cards') return;
+    this.ensureAudio(); this.riffle();
+    const idx = this.state.dealt[pos];
+    const card = this.deck[idx];
+    this.setState({ phase: 'rolling', drawn: true, drawnIdx: idx, cardFlip: 0, pickedPos: pos });
+    const ease = x => 1 - Math.pow(1 - x, 3);
+    this.tween(760, (pr) => { this.setState({ cardFlip: 180 * ease(pr) }); }, () => {
+      this.setState({ cardFlip: 180 });
+      this.resolve(card.doom, p, card);
+    });
+  }
+
+  resolve(isDoom, p, card) {
+    if (isDoom) this.doomTone(); else this.survive();
+    if (this.state.mode === 'gauntlet') {
+      const results = this.state.gResults.concat(!isDoom);
+      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', gResults: results });
+    } else {
+      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive' });
+    }
+  }
+
+  replay = () => {
+    if (this.state.mode === 'gauntlet') { this.advanceGauntlet(); return; }
+    const p = this.players[this.state.playerId];
+    if (p.mechanic === 'cards') { this.click(); this.resetMechanic(); }
+    else this.act();
+  };
+
+  startGauntlet = () => {
+    this.click(); this.clearTimers();
+    this.setState({ mode: 'gauntlet', gIndex: 0, gResults: [], playerId: this.order[0], menuOpen: false, faceEnd: false });
+    this.resetMechanic();
+  };
+  advanceGauntlet = () => {
+    this.click();
+    const next = this.state.gIndex + 1;
+    if (next < this.order.length) { this.setState({ gIndex: next, playerId: this.order[next] }); this.resetMechanic(); }
+    else { this.setState({ faceEnd: true }); }
+  };
+  exitGauntlet = () => { this.click(); this.setState({ mode: 'single', faceEnd: false, gIndex: 0, gResults: [], playerId: 'amodei' }); this.resetMechanic(); };
+
+  renderVals() {
+    const s = this.state;
+    const p = this.players[s.playerId];
+    const inGauntlet = s.mode === 'gauntlet';
+
+    const wheelGradient = 'conic-gradient(' + this.wheelDoomCol + ' 0deg 72deg,' + this.wheelGood1 + ' 72deg 144deg,' + this.wheelGood2 + ' 144deg 216deg,' + this.wheelGood1 + ' 216deg 288deg,' + this.wheelGood2 + ' 288deg 360deg)';
+    const wheelTicks = [0, 72, 144, 216, 288].map(d => ({ deg: d }));
+    const earthBg = 'radial-gradient(circle at 38% 32%, #6FB8FF, #2E6FB0 46%, #18406E 78%, #0c2440)';
+    const earthFilter = s.earthBurn ? 'grayscale(0.7) brightness(0.4) sepia(0.5) hue-rotate(-18deg)' : 'none';
+    const earthShadow = s.earthBurn ? '0 0 26px 6px rgba(255,90,20,0.6)' : '0 0 18px 2px rgba(80,150,255,0.35)';
+    const embers = [];
+    for (let i = 0; i < 7; i++) embers.push({ x: -28 + i * 9, color: i % 2 ? '#FFB23F' : '#FF5A1E', dur: (1.1 + Math.random() * 0.9).toFixed(2), delay: (Math.random() * 1.2).toFixed(2) });
+
+    const N = 12, spread = 116;
+    const fanCards = [];
+    for (let i = 0; i < N; i++) {
+      const deg = (-spread / 2 + i * (spread / (N - 1)));
+      fanCards.push({ deg: deg.toFixed(2), z: i, delay: (0.08 + i * 0.04).toFixed(3), pick: () => this.pickCard(i) });
+    }
+    const dc = s.drawnIdx != null ? this.deck[s.drawnIdx] : null;
+    const drawnCard = dc ? { num: String(s.drawnIdx + 1).padStart(2, '0'), name: dc.name, desc: dc.desc, kindLabel: dc.doom ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE' } : { num: '', name: '', desc: '', kindLabel: '' };
+    const cardDoom = dc ? dc.doom : false;
+    const cardFrontBg = cardDoom ? 'linear-gradient(160deg,#3a1020,#26060f)' : 'linear-gradient(160deg,#10322c,#0a221d)';
+    const cardAccent = cardDoom ? this.wheelDoomCol : this.wheelGood1;
+    const tegmarkList = this.deck.map(c => ({ name: c.name, dot: c.doom ? this.wheelDoomCol : this.wheelGood1 }));
+
+    const roster = this.order.map((id, i) => {
+      const pl = this.players[id];
+      const active = id === s.playerId;
+      return {
+        photo: pl.photo, name: pl.name, role: pl.role, mech: pl.mechanic === 'die' ? 'D12 · DIE' : (pl.mechanic === 'wheel' ? 'WHEEL' : '12 · CARDS'),
+        oddsBig: pl.oddsBig, oddsCap: pl.oddsCap, teaser: pl.teaser, active,
+        delay: (0.12 + i * 0.09).toFixed(2) + 's',
+        select: () => this.selectPlayer(id),
+        tileBorder: active ? '#E0481B' : '#26262c',
+        ctaBg: active ? '#ECEAE6' : 'transparent',
+        ctaInk: active ? '#08080A' : '#ECEAE6',
+        ctaBorder: active ? 'none' : '1px solid rgba(236,234,230,0.4)',
+        cta: active ? 'PLAYING' : 'PLAY →',
+      };
+    });
+
+    const gauntletNav = this.order.map((id, i) => {
+      let bar;
+      if (i < s.gIndex) bar = s.gResults[i] ? this.wheelGood1 : this.wheelDoomCol;
+      else if (i === s.gIndex) bar = '#E0481B';
+      else bar = 'rgba(236,234,230,0.25)';
+      return { bar };
+    });
+    const clearedCount = s.gResults.filter(Boolean).length;
+
+    const isDoomOut = s.outcome === 'doom';
+    let verdictHead = '', verdictSub = '';
+    let showVerdictHead = true;
+    const isCardsResult = p.mechanic === 'cards' && s.phase === 'result';
+    if (isCardsResult) {
+      showVerdictHead = false;
+      verdictSub = drawnCard.desc;
+    } else if (p.mechanic === 'wheel') {
+      verdictHead = isDoomOut ? 'Earth burned.' : 'Earth holds.';
+      verdictSub = isDoomOut ? 'The wheel landed in the red one-fifth. This time, the 20% came up.' : 'The wheel landed in the blue. Most likely good \u2014 this time.';
+    } else {
+      verdictHead = isDoomOut ? 'Really, really badly.' : 'We\u2019re okay.';
+      verdictSub = isDoomOut ? 'The die landed on ' + s.dieTarget + '. Three faces in twelve, and one came up.' : 'The die landed on ' + s.dieTarget + '. Clear of the top three \u2014 this time.';
+    }
+    const verdictColor = isDoomOut ? '#E0481B' : '#ECEAE6';
+    const verdictKicker = isCardsResult ? (isDoomOut ? this.wheelDoomCol : this.wheelGood1) : (isDoomOut ? '#E0481B' : 'rgba(251,239,255,0.55)');
+    const replayLabel = inGauntlet
+      ? (s.gIndex < 2 ? 'NEXT PLAYER \u2192' : 'SEE THE ODDS \u2192')
+      : (p.mechanic === 'wheel' ? 'SPIN AGAIN' : p.mechanic === 'cards' ? 'PICK AGAIN' : 'ROLL AGAIN');
+
+    const faceEndAll = clearedCount === 3;
+    const faceEndHead = faceEndAll ? 'You cleared all three.' : (clearedCount === 0 ? 'None of them cleared.' : 'You cleared ' + clearedCount + ' of 3.');
+    const faceEndSub = faceEndAll
+      ? 'Surviving every ritual in one run is roughly a 45% shot. This time it landed your way.'
+      : 'Each estimate was survivable alone. Stacked together, the odds get steeper.';
+    const faceEndColor = faceEndAll ? '#ECEAE6' : '#E0481B';
+
+    return {
+      p, muteLabel: s.muted ? 'SOUND OFF' : 'SOUND ON', toggleMute: this.toggleMute,
+      notGauntlet: !inGauntlet, isGauntlet: inGauntlet, gauntletNav, gauntletNum: s.gIndex + 1,
+      menuOpen: s.menuOpen, openMenu: this.openMenu, closeMenu: this.closeMenu, roster,
+
+      isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards',
+      reducedFlag: this.reduced ? '1' : '0', dieToken: String(s.dieToken), dieTarget: String(s.dieTarget),
+      wheelGradient, wheelTicks, wheelRot: s.wheelRot.toFixed(1),
+      wheelGoodColor: this.wheelGood1, wheelDoomColor: this.wheelDoomCol,
+      earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, embers,
+      fanCards, showFan: !s.drawn, drawn: s.drawn, cardFlip: s.cardFlip.toFixed(1),
+      drawnCard, cardFrontBg, cardFrontAccent: cardAccent, tegmarkList,
+
+      rolling: s.phase === 'rolling',
+      showRollButton: (s.phase === 'ready' || s.phase === 'rolling') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
+      showPickPrompt: s.phase === 'ready' && p.mechanic === 'cards',
+      isResult: s.phase === 'result',
+      actLabel: s.phase === 'rolling' ? (p.mechanic === 'wheel' ? 'SPINNING\u2026' : 'ROLLING\u2026') : (p.mechanic === 'wheel' ? 'SPIN' : 'ROLL'),
+      actOpacity: s.phase === 'rolling' ? 0.6 : 1,
+      verdictHead, verdictSub, showVerdictHead,
+      verdictTag: inGauntlet ? ('STEP ' + (s.gIndex + 1) + ' OF 3') : (isCardsResult ? (isDoomOut ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE') : 'THE RESULT'),
+      verdictColor, verdictKicker, replayLabel, primaryAction: this.replay,
+
+      clearedCount, isFaceEnd: s.faceEnd, faceEndHead, faceEndSub, faceEndColor,
+      act: this.act, startGauntlet: this.startGauntlet, exitGauntlet: this.exitGauntlet,
+    };
+  }
+}
+</script>
+
+<!-- Global Futures Atlas navbar (fixed, sibling to the runtime root) -->
+<nav class="faq-nav">
+  <a class="faq-brand" href="/" aria-label="Futures Atlas home"><span class="faq-mark">◆</span><span class="faq-word">Futures Atlas</span></a>
+  <span class="faq-sep">/</span>
+  <div class="faq-switch-wrap">
+    <button class="faq-switch" id="faqSwitch" aria-haspopup="true" aria-expanded="false">The Odds <span class="faq-chev">▾</span></button>
+    <div class="faq-menu" id="faqMenu" role="menu">
+      <a href="/hollow-villages">The Hollow Villages</a>
+      <a href="/underground-intelligence">Underground Intelligence</a>
+      <a href="/odds-of-surviving-ai">The Odds</a>
+      <a class="faq-allp" href="/">All projects →</a>
+    </div>
+  </div>
+  <div class="faq-pages">
+    <a href="/odds-of-surviving-ai" class="active">The piece</a>
+    <a href="/odds-of-surviving-ai/research">Research</a>
+    <a href="/odds-of-surviving-ai/contact">Contact</a>
+  </div>
+</nav>
+<script>
+(function(){var b=document.getElementById('faqSwitch'),m=document.getElementById('faqMenu');if(!b||!m)return;
+b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});
+document.addEventListener('click',function(e){if(!m.contains(e.target)&&e.target!==b)m.classList.remove('open');});})();
+</script>
+</body>
+</html>
