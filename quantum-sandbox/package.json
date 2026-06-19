@@ -1,0 +1,20 @@
+{
+  "name": "quantum-sandbox",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Futures Atlas — Quantum Sandbox. A prototyping dashboard for quantum-computing generative systems. Visualise the complex amplitude: magnitude → density, phase → hue.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "tweakpane": "^4.0.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
+  }
+}

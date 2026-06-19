@@ -1,0 +1,177 @@
+/* Dark, OKLCH-driven chrome. The field is the subject; chrome stays quiet. */
+:root {
+  --bg: oklch(0.16 0.01 250);
+  --panel: oklch(0.21 0.012 250);
+  --line: oklch(0.32 0.015 250);
+  --ink: oklch(0.93 0.01 250);
+  --muted: oklch(0.68 0.012 250);
+  --accent: oklch(0.72 0.15 200);
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 12px;
+  -webkit-font-smoothing: antialiased;
+}
+#app {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── sidebar ─────────────────────────────────────────────────────────────── */
+.side {
+  background: var(--panel);
+  border-right: 1px solid var(--line);
+  padding: 16px 14px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.side h1 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+.side h1 span {
+  color: var(--muted);
+  font-weight: 400;
+}
+.systems {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.systems button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 8px;
+  text-align: left;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  padding: 8px 10px;
+  color: var(--ink);
+  cursor: pointer;
+}
+.systems button:hover {
+  border-color: var(--line);
+}
+.systems button.on {
+  background: oklch(0.26 0.02 250);
+  border-color: var(--accent);
+}
+.systems .t {
+  font-weight: 600;
+}
+.systems .b {
+  grid-column: 1 / 2;
+  color: var(--muted);
+  font-size: 10.5px;
+}
+.systems .be {
+  grid-row: 1 / 3;
+  align-self: center;
+  color: var(--accent);
+  font-size: 9.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.spine {
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+/* ── stage ───────────────────────────────────────────────────────────────── */
+.stage-wrap {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  flex-wrap: wrap;
+}
+.transport {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.transport .sep {
+  width: 1px;
+  height: 18px;
+  background: var(--line);
+  margin: 0 4px;
+}
+.transport button {
+  background: oklch(0.26 0.012 250);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-family: var(--mono);
+  font-size: 11px;
+  cursor: pointer;
+}
+.transport button:hover {
+  border-color: var(--accent);
+}
+.transport .rec.on {
+  border-color: oklch(0.6 0.2 25);
+  color: oklch(0.78 0.2 25);
+}
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background: var(--bg);
+}
+.view {
+  position: absolute;
+  inset: 0;
+  display: block;
+}
+
+/* ── PerfHUD ─────────────────────────────────────────────────────────────── */
+.perf-hud {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.perf-hud .on {
+  color: var(--accent);
+}
+.perf-hud .diag {
+  color: var(--ink);
+}
+
+/* Tweakpane sits in the sidebar; let it stretch */
+.panel {
+  --tp-base-background-color: transparent;
+}

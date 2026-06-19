@@ -26,6 +26,8 @@ const nextConfig: NextConfig = {
         { source: "/odds-of-surviving-ai", destination: "/odds-of-surviving-ai/index.html" },
         { source: "/odds-of-surviving-ai/research", destination: "/odds-of-surviving-ai/research.html" },
         { source: "/odds-of-surviving-ai/contact", destination: "/odds-of-surviving-ai/contact.html" },
+        // Quantum Sandbox — single-page Vite static app (base path baked in)
+        { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
       ],
     };
   },

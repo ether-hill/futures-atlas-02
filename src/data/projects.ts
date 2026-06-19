@@ -54,6 +54,16 @@ export const projects: Project[] = [
     path: "/odds-of-surviving-ai", // self-contained bundle served within this site
     image: "/projects/odds-of-surviving-ai.jpg",
   },
+  {
+    id: "quantum-sandbox",
+    title: "Quantum Sandbox",
+    tagline:
+      "A prototyping dashboard for quantum-computing generative systems — every amplitude drawn as colour, with magnitude as density and phase as hue.",
+    year: "2026",
+    field: "Quantum & computation",
+    status: "in-progress",
+    path: "/quantum-sandbox", // self-contained Vite static bundle served within this site
+  },
 ];
 
 export const statusLabel: Record<ProjectStatus, string> = {

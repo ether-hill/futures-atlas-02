@@ -1,0 +1,7 @@
+# Quantum Sandbox (Vite app). The built bundle is committed at
+# ../public/quantum-sandbox (served by the Next site), not here.
+node_modules
+dist
+*.local
+.DS_Store
+*.tsbuildinfo
