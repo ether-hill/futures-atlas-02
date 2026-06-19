@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@upstash/redis": "^1.38.0",
-    "futures-atlas-core": "github:laubaumau/futures-atlas-core",
+    "futures-atlas-core": "git+https://github.com/laubaumau/futures-atlas-core.git",
     "ioredis": "^5.11.1",
     "next": "15.5.19",
     "react": "19.1.0",
