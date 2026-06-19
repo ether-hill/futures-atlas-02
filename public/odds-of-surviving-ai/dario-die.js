@@ -76,10 +76,10 @@
         usedN[a] = usedN[anti] = true; faceNum[a] = next; faceNum[anti] = 13 - next; next++;
       }
       const inrad = Math.abs(dot(V[faces[0][0]], nUnit[0]));
-      const RADIUS = 0.735;         // reference R=1.05, 30% smaller
+      const RADIUS = 0.92;          // larger die to suit the bigger mat
       const SCALE = RADIUS / circ;
       const FLOOR_Y = 0;
-      const BOUND = 1.95;           // square play field — sized to stay fully in frame
+      const BOUND = 2.9;            // square play field (~50% bigger mat)
       this._inradWorld = inrad * SCALE; this._floorY = FLOOR_Y; this._bound = BOUND;
 
       // ---- three scene ----
@@ -92,8 +92,8 @@
       this.appendChild(renderer.domElement); this._renderer = renderer;
       const scene = new THREE.Scene(); this._scene = scene;
       // reference framing, pulled in a touch for this panel (physics unchanged)
-      const camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 100);
-      camera.position.set(0, 5.7, 5.3); camera.lookAt(0, 0.1, 0); this._camera = camera;
+      const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
+      camera.position.set(0, 6.9, 6.7); camera.lookAt(0, 0.05, 0); this._camera = camera;
 
       try {
         const pmrem = new THREE.PMREMGenerator(renderer);
@@ -119,16 +119,15 @@
       // visible boundary — marks exactly where the die is allowed to travel
       const bPts = [[-BOUND, -BOUND], [BOUND, -BOUND], [BOUND, BOUND], [-BOUND, BOUND], [-BOUND, -BOUND]]
         .map(([x, z]) => new THREE.Vector3(x, FLOOR_Y + 0.015, z));
-      const bLine = new THREE.Line(
-        new THREE.BufferGeometry().setFromPoints(bPts),
-        new THREE.LineBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0.34 })
-      );
+      const bLineMat = new THREE.LineBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0 });
+      const bLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bPts), bLineMat);
       scene.add(bLine);
-      const bGlow = new THREE.Mesh(
-        new THREE.PlaneGeometry(BOUND * 2, BOUND * 2),
-        new THREE.MeshBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0.045, side: THREE.DoubleSide })
-      );
+      const bGlowMat = new THREE.MeshBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0, side: THREE.DoubleSide });
+      const bGlow = new THREE.Mesh(new THREE.PlaneGeometry(BOUND * 2, BOUND * 2), bGlowMat);
       bGlow.rotation.x = -Math.PI / 2; bGlow.position.y = FLOOR_Y + 0.008; scene.add(bGlow);
+      // the mat fades in on load (paired with the die falling onto it)
+      this._matMats = [{ mat: bLineMat, target: 0.34 }, { mat: bGlowMat, target: 0.05 }];
+      this._matFade = 0;
 
       // body mesh
       const positions = [], normals = [], numByFace = [];
@@ -199,9 +198,15 @@
         this.dispatchEvent(new CustomEvent('die-impact', { detail: { strength }, bubbles: true, composed: true }));
       });
 
-      this._restToFaceUp(7, true);  // initial pose: a face up, at rest
-      this._phase = 'rest'; this._rolling = false;
       this._ready = true;
+      this._matT0 = performance.now();
+      if (this.getAttribute('reduced') === '1') {
+        // reduced motion: no drop, mat already visible
+        this._restToFaceUp(7, true); this._phase = 'rest'; this._rolling = false;
+        this._matFade = 1; this._matMats.forEach((m) => { m.mat.opacity = m.target; });
+      } else {
+        this._introDrop();          // the die falls onto the mat as it fades in
+      }
       this._ro = new ResizeObserver(() => this._resize()); this._ro.observe(this);
       this._loop();
     }
@@ -274,6 +279,20 @@
       return num;
     }
 
+    // load-in: drop the die from above so it falls onto the mat. Not a "roll" —
+    // it settles silently (no result highlight, no die-settled emit).
+    _introDrop() {
+      const b = this._dieBody;
+      b.wakeUp();
+      b.position.set(0, this._floorY + 2.7, 0);
+      b.velocity.set(0, -0.4, 0);
+      b.angularVelocity.set((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 5);
+      b.quaternion.setFromEuler(Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28);
+      this._calm = 0;
+      this._phase = 'intro'; this._rolling = false;
+      this._t0 = performance.now(); this._last = performance.now();
+    }
+
     _roll() {
       if (!this._ready || this._rolling) return;
       const b = this._dieBody;
@@ -300,7 +319,7 @@
         if (this._stop) return;
         this._raf = requestAnimationFrame(step);
         const b = this._dieBody;
-        if (this._phase === 'tumble') {
+        if (this._phase === 'tumble' || this._phase === 'intro') {
           // exact reference integration: real frame dt, fixed 1/120 step, 4 substeps
           const now = performance.now();
           const dt = Math.min((now - this._last) / 1000, 0.05); this._last = now;
@@ -313,13 +332,22 @@
           if (b.sleepState === CANNON.Body.SLEEPING || this._calm > 0.22 || now - this._t0 > 8000) {
             // settled once, stays exactly there — read the actual top face
             b.sleep();
+            const wasIntro = this._phase === 'intro';
             this._phase = 'rest'; this._rolling = false;
-            const tf = this._topFace();
-            this._highlight(tf);   // accent the result face so it's unambiguous
-            this._emit(tf);
+            if (!wasIntro) {
+              const tf = this._topFace();
+              this._highlight(tf);   // accent the result face so it's unambiguous
+              this._emit(tf);
+            }
           }
         }
         // 'rest': do nothing — the die stays exactly where it landed.
+        // fade the mat in over the first ~0.9s (paired with the intro drop)
+        if (this._matMats && this._matFade < 1) {
+          const k = Math.min(1, (performance.now() - this._matT0) / 900);
+          this._matFade = k;
+          this._matMats.forEach((m) => { m.mat.opacity = m.target * k; });
+        }
         if (this._numMeshes) {
           const camDir = this._camera.position.clone().sub(this._die.position).normalize();
           const dq = this._die.quaternion;
