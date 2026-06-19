@@ -79,8 +79,8 @@
       const RADIUS = 0.735;         // reference R=1.05, 30% smaller
       const SCALE = RADIUS / circ;
       const FLOOR_Y = 0;
-      const BOUND = 2.6;            // reference square play field
-      this._inradWorld = inrad * SCALE; this._floorY = FLOOR_Y;
+      const BOUND = 1.95;           // square play field — sized to stay fully in frame
+      this._inradWorld = inrad * SCALE; this._floorY = FLOOR_Y; this._bound = BOUND;
 
       // ---- three scene ----
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -92,8 +92,8 @@
       this.appendChild(renderer.domElement); this._renderer = renderer;
       const scene = new THREE.Scene(); this._scene = scene;
       // reference framing, pulled in a touch for this panel (physics unchanged)
-      const camera = new THREE.PerspectiveCamera(36, w / h, 0.1, 100);
-      camera.position.set(0, 5.2, 4.5); camera.lookAt(0, 0.35, 0); this._camera = camera;
+      const camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 100);
+      camera.position.set(0, 5.7, 5.3); camera.lookAt(0, 0.1, 0); this._camera = camera;
 
       try {
         const pmrem = new THREE.PMREMGenerator(renderer);
@@ -115,6 +115,20 @@
 
       const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.34 }));
       floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; floor.receiveShadow = true; scene.add(floor);
+
+      // visible boundary — marks exactly where the die is allowed to travel
+      const bPts = [[-BOUND, -BOUND], [BOUND, -BOUND], [BOUND, BOUND], [-BOUND, BOUND], [-BOUND, -BOUND]]
+        .map(([x, z]) => new THREE.Vector3(x, FLOOR_Y + 0.015, z));
+      const bLine = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(bPts),
+        new THREE.LineBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0.34 })
+      );
+      scene.add(bLine);
+      const bGlow = new THREE.Mesh(
+        new THREE.PlaneGeometry(BOUND * 2, BOUND * 2),
+        new THREE.MeshBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0.045, side: THREE.DoubleSide })
+      );
+      bGlow.rotation.x = -Math.PI / 2; bGlow.position.y = FLOOR_Y + 0.008; scene.add(bGlow);
 
       // body mesh
       const positions = [], normals = [], numByFace = [];
@@ -169,6 +183,21 @@
       const dieBody = new CANNON.Body({ mass: 1, shape, linearDamping: 0.03, angularDamping: 0.05 });
       dieBody.sleepSpeedLimit = 0.12; dieBody.sleepTimeLimit = 0.55; dieBody.allowSleep = true;
       world.addBody(dieBody); this._dieBody = dieBody;
+
+      // collision-driven audio: emit one 'die-impact' per real bounce so the
+      // host's clatter tracks the actual physics instead of a fixed timeline
+      this._lastImpact = -1;
+      dieBody.addEventListener('collide', (ev) => {
+        if (this._phase !== 'tumble') return;
+        const now = performance.now();
+        if (now - this._lastImpact < 55) return;
+        let v = 0;
+        try { v = Math.abs(ev.contact.getImpactVelocityAlongNormal()); } catch (e) {}
+        if (v < 1.4) return;
+        this._lastImpact = now;
+        const strength = Math.min(1, v / 9);
+        this.dispatchEvent(new CustomEvent('die-impact', { detail: { strength }, bubbles: true, composed: true }));
+      });
 
       this._restToFaceUp(7, true);  // initial pose: a face up, at rest
       this._phase = 'rest'; this._rolling = false;
@@ -228,7 +257,8 @@
       const q = new THREE.Quaternion().setFromUnitVectors(n, new THREE.Vector3(0, 1, 0));
       q.premultiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.random() * Math.PI * 2));
       b.quaternion.set(q.x, q.y, q.z, q.w);
-      b.position.set((Math.random() - 0.5) * 0.5, this._floorY + this._inradWorld, (Math.random() - 0.5) * 0.5);
+      // rest centred so the die always starts balanced in the middle of the field
+      b.position.set(0, this._floorY + this._inradWorld, 0);
       b.velocity.setZero(); b.angularVelocity.setZero(); b.sleep();
       this._syncMesh();
       if (instant) { this._phase = 'rest'; this._rolling = false; this._emit(face); }
@@ -250,11 +280,17 @@
       this._clearHi();
       if (this.getAttribute('reduced') === '1') { const f = 1 + Math.floor(Math.random() * 12); this._restToFaceUp(f, true); this._highlight(f); return; }
       b.wakeUp();
-      // exact reference throw — from above-centre, strong velocity + spin
-      b.position.set((Math.random() - 0.5) * 1.4, 3.7, (Math.random() - 0.5) * 1.4);
-      b.velocity.set((Math.random() - 0.5) * 6, -2, (Math.random() - 0.5) * 6);
-      b.angularVelocity.set((Math.random() - 0.5) * 30, (Math.random() - 0.5) * 30, (Math.random() - 0.5) * 30);
-      b.quaternion.setFromEuler(Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28);
+      // Throw from where the die currently rests — a real hop, not a teleport
+      // from off-screen. Keep its current orientation/position for continuity;
+      // just lift it a touch and give it lateral drift + strong random spin.
+      // The chaotic tumble keeps it a fair d12; the walls keep it in frame.
+      const m = this._bound - this._inradWorld - 0.2;
+      const cx = Math.max(-m, Math.min(m, b.position.x));
+      const cz = Math.max(-m, Math.min(m, b.position.z));
+      b.position.set(cx, this._floorY + this._inradWorld + 0.06, cz);
+      b.velocity.set((Math.random() - 0.5) * 3.0, 5.4, (Math.random() - 0.5) * 3.0);
+      b.angularVelocity.set((Math.random() - 0.5) * 26, (Math.random() - 0.5) * 26, (Math.random() - 0.5) * 26);
+      this._calm = 0;
       this._rolling = true; this._phase = 'tumble'; this._t0 = performance.now(); this._last = performance.now();
     }
 
@@ -270,8 +306,13 @@
           const dt = Math.min((now - this._last) / 1000, 0.05); this._last = now;
           this._world.step(1 / 120, dt, 4);
           this._syncMesh();
-          if (b.sleepState === CANNON.Body.SLEEPING || now - this._t0 > 8000) {
+          // settle as soon as the die has actually stopped moving — don't wait
+          // on cannon's sleep timer (which can lag the visible stop by seconds).
+          const motion = b.velocity.length() + b.angularVelocity.length();
+          if (motion < 0.3 && now - this._t0 > 350) { this._calm += dt; } else { this._calm = 0; }
+          if (b.sleepState === CANNON.Body.SLEEPING || this._calm > 0.22 || now - this._t0 > 8000) {
             // settled once, stays exactly there — read the actual top face
+            b.sleep();
             this._phase = 'rest'; this._rolling = false;
             const tf = this._topFace();
             this._highlight(tf);   // accent the result face so it's unambiguous

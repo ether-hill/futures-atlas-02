@@ -156,7 +156,7 @@ let filter='all';
 function cardHTML(it){
   const t=it.type, tag='<span class="tag">'+TAG[t]+'</span>';
   let media;
-  if(t==='video'){const id=ytId(it.url);media='<div class="media yt" data-yt="'+id+'">'+tag+'<img src="https://i.ytimg.com/vi/'+id+'/hqdefault.jpg" alt="" loading="lazy"><button class="play" type="button" aria-label="Play video">▶</button></div>';}
+  if(t==='video'){const id=ytId(it.url);media='<div class="media yt" data-yt="'+id+'">'+tag+'<img src="/odds-of-surviving-ai/research/yt-'+id+'.jpg" alt="'+it.title+'" loading="lazy"><button class="play" type="button" aria-label="Play video">▶</button></div>';}
   else if(it.thumbnail){media='<div class="media">'+tag+'<img src="'+it.thumbnail+'" alt="'+it.source+'" loading="lazy">'+(it.credit?'<span class="credit">'+it.credit+'</span>':'')+'</div>';}
   else{media='<div class="media">'+tag+'<div class="plate"><span class="src">'+it.source+'</span></div></div>';}
   const body='<div class="body"><div class="meta">'+it.source+(it.authors?' · '+it.authors:'')+(it.year?' · '+it.year:'')+'</div>'+

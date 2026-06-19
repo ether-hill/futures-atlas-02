@@ -355,7 +355,7 @@ class Component extends DCLogic {
   players = {
     amodei: {
       short: 'Dario', name: 'Dario Amodei', role: 'Co-founder & CEO, Anthropic',
-      photo: 'https://commons.wikimedia.org/wiki/Special:FilePath/Dario%20Amodei%20at%20TechCrunch%20Disrupt%202023%2001%20(cropped).jpg?width=720',
+      photo: '/odds-of-surviving-ai/research/dario-amodei.jpg',
       credit: 'Photo: TechCrunch, CC BY 2.0',
       teaser: 'A 25% chance things go really, really badly.',
       oddsBig: '25%', oddsCaption: 'CHANCE IT GOES REALLY, REALLY BADLY', oddsCap: 'REALLY BADLY',
@@ -366,7 +366,7 @@ class Component extends DCLogic {
     },
     musk: {
       short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
-      photo: 'https://commons.wikimedia.org/wiki/Special:FilePath/Elon%20Musk%20Royal%20Society%20crop.jpg?width=720',
+      photo: '/odds-of-surviving-ai/research/elon-musk.jpg',
       credit: 'Photo: The Royal Society, CC BY-SA 3.0',
       teaser: 'Up to a 1-in-5 chance AI annihilates humanity.',
       oddsBig: '20%', oddsCaption: 'CHANCE EARTH BURNS', oddsCap: 'EARTH BURNS',
@@ -377,7 +377,7 @@ class Component extends DCLogic {
     },
     tegmark: {
       short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
-      photo: 'https://commons.wikimedia.org/wiki/Special:FilePath/Max%20Tegmark%202024%20(cropped).jpg?width=720',
+      photo: '/odds-of-surviving-ai/research/max-tegmark.jpg',
       credit: 'Photo: Web Summit, CC BY 2.0',
       teaser: 'Twelve possible futures. Some heaven, some not.',
       oddsBig: '12', oddsCaption: 'FUTURES · NOT PROBABILITIES', oddsCap: 'FUTURES',
@@ -416,18 +416,20 @@ class Component extends DCLogic {
     try { this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
     this._onSettled = (e) => this._dieSettled(e);
     document.addEventListener('die-settled', this._onSettled);
+    this._onImpact = (e) => this._dieImpact(e);
+    document.addEventListener('die-impact', this._onImpact);
     this.applyPhotos();
   }
   componentDidUpdate() { this.applyPhotos(); }
   applyPhotos() {
     try {
       const hero = document.querySelector('.od-hero-img');
-      if (hero) { const pl = this.players[this.state.playerId]; const url = pl.photo; hero.setAttribute('alt', pl.name + ' — ' + pl.role); if (hero.getAttribute('src') !== url) { hero.setAttribute('src', url); hero.classList.remove('od-blurin'); void hero.offsetWidth; hero.classList.add('od-blurin'); } }
+      if (hero) { const pl = this.players[this.state.playerId]; const url = pl.photo; hero.setAttribute('alt', pl.name + ' — ' + pl.role); if (hero.getAttribute('src') !== url) { hero.onload = () => { hero.classList.remove('od-blurin'); void hero.offsetWidth; hero.classList.add('od-blurin'); }; hero.setAttribute('src', url); } }
       const tiles = document.querySelectorAll('.od-tile-img');
       tiles.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); } });
     } catch (e) {}
   }
-  componentWillUnmount() { this.clearTimers(); if (this._onSettled) document.removeEventListener('die-settled', this._onSettled); }
+  componentWillUnmount() { this.clearTimers(); if (this._onSettled) document.removeEventListener('die-settled', this._onSettled); if (this._onImpact) document.removeEventListener('die-impact', this._onImpact); }
   clearTimers() {
     if (this.raf) cancelAnimationFrame(this.raf);
     if (this.safety) clearTimeout(this.safety);
@@ -520,13 +522,22 @@ class Component extends DCLogic {
   };
 
   rollDie(p) {
-    this.ensureAudio(); this.clatter();
+    this.ensureAudio(); this.diceLaunch();
     // The physics die is the single source of truth: we just trigger the roll
     // and read whichever face it lands on. A fair d12 gives faces 10/11/12
     // (= "really, really badly") exactly 25% of the time — Dario's number.
+    // Per-bounce clatter comes from the die's 'die-impact' events (synced to
+    // the real physics), not a fixed timeline. Safety sits past the die's own
+    // 8s hard cap so the die is always the authority on when it settled.
     this._pendingP = p;
     this.setState(s => ({ dieToken: s.dieToken + 1 }));
-    this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._dieSettled(null); }, 6000);
+    this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._dieSettled(null); }, 8600);
+  }
+  diceLaunch() { if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return; this.noiseburst(0.14, 560, 0.7); }
+  _dieImpact(e) {
+    if (this.state.muted || !this.ac) return;
+    const s = (e && e.detail && typeof e.detail.strength === 'number') ? e.detail.strength : 0.4;
+    this.noiseburst(0.05 + s * 0.17, 900 + Math.random() * 1500, 1.1);
   }
   _dieSettled(e) {
     if (this.state.phase !== 'rolling') return;
