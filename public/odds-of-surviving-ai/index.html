@@ -122,9 +122,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
     <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.5) 0%,rgba(8,8,10,0) 26%,rgba(8,8,10,0.08) 48%,rgba(8,8,10,0.72) 78%,rgba(8,8,10,0.97) 100%)"></div>
     <div style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,10,0) 62%,rgba(8,8,10,0.45) 100%)"></div>
 
-    <!-- top row -->
-    <div style="position:absolute;top:24px;left:30px;right:30px;display:flex;align-items:center;justify-content:space-between;gap:10px">
-      <div class="od-anim" style="animation-delay:.12s;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.28em;color:rgba(236,234,230,0.85)">THE&nbsp;ODDS</div>
+    <!-- top row — Choose Player button sits top-left (replaces the old "THE ODDS" label) -->
+    <div style="position:absolute;top:24px;left:30px;right:30px;display:flex;align-items:center;justify-content:flex-start;gap:10px">
       <sc-if value="{{ notGauntlet }}" hint-placeholder-val="{{ true }}">
         <button onClick="{{ openMenu }}" class="od-anim od-pill" style="animation-delay:.22s;display:flex;align-items:center;gap:9px;padding:8px 14px;border:1px solid rgba(236,234,230,0.35);border-radius:999px;background:rgba(8,8,10,0.4);color:#ECEAE6;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em">
           <span style="display:flex;gap:3px"><i style="width:4px;height:4px;border-radius:50%;background:#E0481B;display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(236,234,230,0.45);display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(236,234,230,0.45);display:block"></i></span>
