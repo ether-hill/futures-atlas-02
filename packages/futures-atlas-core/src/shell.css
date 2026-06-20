@@ -11,10 +11,8 @@
 :root { --fa-nav-h: 64px; }
 
 .fa-shell {
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   z-index: 60;
   height: var(--fa-nav-h);
   display: flex;

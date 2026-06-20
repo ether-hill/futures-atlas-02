@@ -18,13 +18,25 @@ const LINKS = [
 
 export function FaShell() {
   const [open, setOpen] = useState(false);
-  const [light, setLight] = useState(false);
+  const [dark, setDark] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     try {
-      setLight(document.documentElement.classList.contains("light"));
+      setDark(document.documentElement.classList.contains("dark"));
     } catch {}
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const el = headerRef.current;
+      if (!el) return;
+      const y = window.scrollY;
+      if (y > lastY && y > 90) el.classList.add("is-hidden");
+      else el.classList.remove("is-hidden");
+      lastY = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
@@ -37,14 +49,14 @@ export function FaShell() {
   }, [open]);
 
   const toggleTheme = () => {
-    const next = !light;
-    setLight(next);
-    document.documentElement.classList.toggle("light", next);
-    try { localStorage.setItem("fa-theme", next ? "light" : "dark"); } catch {}
+    const next = !dark;
+    setDark(next);
+    document.documentElement.classList.toggle("dark", next);
+    try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
   };
 
   return (
-    <header className="fa-shell">
+    <header className="fa-shell" ref={headerRef}>
       <div className="fa-shell__left">
         <a className="fa-shell__home" href={FA_HOME} aria-label="Futures Atlas home">
           <span className="fa-shell__mark" aria-hidden="true"><FaMark /></span>
@@ -101,7 +113,7 @@ export function FaShell() {
           ))}
         </div>
         <button type="button" className="fa-shell__toggle" aria-label="Toggle theme" onClick={toggleTheme}>
-          {light ? (
+          {!dark ? (
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M16 11.2A6.2 6.2 0 1 1 8.8 4a4.8 4.8 0 0 0 7.2 7.2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
           ) : (
             <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3.6" stroke="currentColor" strokeWidth="1.5" /><path d="M10 2.2v2M10 15.8v2M2.2 10h2M15.8 10h2M4.6 4.6l1.4 1.4M14 14l1.4 1.4M15.4 4.6L14 6M6 14l-1.4 1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>

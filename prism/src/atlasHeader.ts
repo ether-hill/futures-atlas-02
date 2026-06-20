@@ -72,6 +72,19 @@ export function mountAtlasHeader(current: FaProject): void {
 
   document.body.insertBefore(header, document.body.firstChild);
 
+  // hide on scroll-down, reveal on scroll-up (frond-style)
+  let lastY = window.scrollY;
+  window.addEventListener(
+    "scroll",
+    () => {
+      const y = window.scrollY;
+      if (y > lastY && y > 90) header.classList.add("is-hidden");
+      else header.classList.remove("is-hidden");
+      lastY = y;
+    },
+    { passive: true },
+  );
+
   // breadcrumb dropdown
   const crumb = header.querySelector<HTMLDivElement>(".fa-shell__crumb")!;
   const btn = header.querySelector<HTMLButtonElement>(".fa-shell__current")!;
@@ -91,20 +104,20 @@ export function mountAtlasHeader(current: FaProject): void {
     if (e.key === "Escape") setOpen(false);
   });
 
-  // theme toggle (dark-first tool; flips the `light` class + persists)
+  // theme toggle — light by default; flips `html.dark` + persists "theme"
   const toggle = header.querySelector<HTMLButtonElement>(".fa-shell__toggle")!;
   const root = document.documentElement;
-  const paint = () => (toggle.innerHTML = root.classList.contains("light") ? MOON : SUN);
+  const paint = () => (toggle.innerHTML = root.classList.contains("dark") ? SUN : MOON);
   try {
-    if (localStorage.getItem("fa-theme") === "light") root.classList.add("light");
+    if (localStorage.getItem("theme") === "dark") root.classList.add("dark");
   } catch {
     /* ignore */
   }
   paint();
   toggle.addEventListener("click", () => {
-    const light = root.classList.toggle("light");
+    const dark = root.classList.toggle("dark");
     try {
-      localStorage.setItem("fa-theme", light ? "light" : "dark");
+      localStorage.setItem("theme", dark ? "dark" : "light");
     } catch {
       /* ignore */
     }
