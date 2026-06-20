@@ -383,6 +383,24 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     drawFrame(ctx, w, h, activeFrame, getImg, isCorp && activeFrame.kind === "portrait", tFor(activeFrame), styleFor(activeFrame), composeMotion(bgFor(activeFrame), taFor(activeFrame), 1, durFor(activeFrame)), getVideo);
   }, [activeFrame, w, h, getImg, getVideo, isCorp, tFor, bgFor, taFor, durFor, styleFor]);
 
+  /* Canvas text never triggers a web-font download, so the composed posts fall
+   * back to a system serif/mono until the FA families happen to be loaded by the
+   * DOM. Explicitly load the weights the renderer uses (Bodoni Moda 400–700,
+   * IBM Plex Mono 400–600), then bump a tick so the preview redraws with them. */
+  const [fontsReady, setFontsReady] = useState(false);
+  useEffect(() => {
+    if (!document.fonts) { setFontsReady(true); return; }
+    const faces = [
+      '400 40px "Bodoni Moda"', '500 40px "Bodoni Moda"', '600 40px "Bodoni Moda"', '700 40px "Bodoni Moda"',
+      'italic 500 40px "Bodoni Moda"',
+      '400 40px "IBM Plex Mono"', '500 40px "IBM Plex Mono"', '600 40px "IBM Plex Mono"',
+    ];
+    let cancelled = false;
+    Promise.all(faces.map((f) => document.fonts.load(f).catch(() => undefined)))
+      .then(() => { if (!cancelled) setFontsReady(true); });
+    return () => { cancelled = true; };
+  }, []);
+
   /* Live preview — animate the sequence while playing; while paused show the
    * selected slide in its final state. */
   const previewRef = useRef<HTMLCanvasElement | null>(null);
@@ -403,7 +421,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     if (isAnimated && playing) raf = requestAnimationFrame(frame);
     else drawActiveFinal(ctx);
     return () => { cancelled = true; if (raf) cancelAnimationFrame(raf); };
-  }, [w, h, renderFrameAt, drawActiveFinal, isAnimated, playing, totalDuration]);
+  }, [w, h, renderFrameAt, drawActiveFinal, isAnimated, playing, totalDuration, fontsReady]);
 
   /* Post type / selection */
   const selectPostType = useCallback((id: PostTypeId) => {

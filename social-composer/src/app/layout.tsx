@@ -8,7 +8,7 @@ import { FaShell } from "./fa-shell";
 const script = Bodoni_Moda({
   variable: "--ff-script",
   subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   display: "swap",
 });
