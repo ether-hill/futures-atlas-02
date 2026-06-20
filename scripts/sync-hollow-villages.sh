@@ -19,5 +19,6 @@ echo "→ refreshing $HERE/public/hollow-villages"
 rm -rf "$HERE/public/hollow-villages"
 mkdir -p "$HERE/public/hollow-villages"
 cp -R "$SRC/out/." "$HERE/public/hollow-villages/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/hollow-villages"
 
 echo "✓ hollow-villages bundle synced"
