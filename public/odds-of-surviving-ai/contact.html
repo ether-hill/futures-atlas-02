@@ -53,7 +53,17 @@ textarea{resize:vertical;min-height:120px}
 .sent h2{font-family:'Archivo',sans-serif;font-size:22px;margin-bottom:10px}
 .sent p{font-size:13.5px;line-height:1.6;color:var(--muted)}
 </style>
-<link rel="stylesheet" href="/atlas-nav.css"><script src="/atlas-nav.js" defer></script></head>
+<link rel="stylesheet" href="/atlas-nav.css">
+<style id="fa-nav-unify">
+/* The master /atlas-nav.js fa-shell is the one global bar: fix it at the very
+   top, demote this zone's faq-nav to a slim tab row just beneath it, and drop
+   the stage below both. Brand + switcher hidden (the master owns them). */
+.fa-shell{position:fixed!important;top:0;left:0;right:0;z-index:9001!important}
+.faq-nav{top:var(--fa-nav-h)!important;z-index:9000!important}
+.faq-brand,.faq-switch-wrap,.faq-sep,.faq-mark,.faq-word{display:none!important}
+body{padding-top:calc(var(--fa-nav-h) + 50px)!important}
+.od-stage{min-height:calc(100vh - var(--fa-nav-h) - 50px)!important;height:calc(100vh - var(--fa-nav-h) - 50px)!important}
+</style><script src="/atlas-nav.js" defer></script></head>
 <body>
 
 <nav class="faq-nav">

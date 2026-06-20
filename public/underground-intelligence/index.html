@@ -1130,7 +1130,14 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 #fa-switch-menu{display:none}
 #fa-switch-menu.fa-open{display:flex}
 </style>
-<link rel="stylesheet" href="/atlas-nav.css"><script src="/atlas-nav.js" defer></script></head>
+<link rel="stylesheet" href="/atlas-nav.css">
+<style id="fa-nav-unify">
+/* The master /atlas-nav.js fa-shell is the one global bar. Demote this zone's
+   own #nav to a slim tab row directly beneath it: hide the duplicate brand +
+   project switcher, keep the page tabs, drop it below the master. */
+#nav{top:var(--fa-nav-h)!important}
+#nav .fa-atlas,#nav .fa-switch-wrap,#nav .fa-sep,#nav .fa-menu{display:none!important}
+</style><script src="/atlas-nav.js" defer></script></head>
 <body>
 
 <!-- ── NAV ────────────────────────────────────────────────────────────────── -->

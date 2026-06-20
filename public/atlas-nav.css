@@ -158,3 +158,46 @@ html.dark .fa-foot__link { color: rgba(243, 241, 236, 0.72); }
 html.dark .fa-foot__link:hover { color: #f3f1ec; }
 html.dark .fa-foot__tag { color: rgba(243, 241, 236, 0.5); }
 @media (max-width: 680px) { .fa-foot { padding-top: clamp(40px, 12vw, 70px); } }
+
+/* ── Project sub-nav ────────────────────────────────────────────────────────
+   A slim row of the CURRENT project's own tabs, sitting directly below the one
+   master .fa-shell. No brand / switcher / toggle — the master owns those. Used
+   by the zones that have internal pages (Villages, Underground Intelligence,
+   The Odds) so every zone reads as: one master bar + a slim tab row. ── */
+.fa-subnav {
+  position: sticky;
+  top: var(--fa-nav-h);
+  z-index: 55;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  height: 46px;
+  padding: 0 28px;
+  background: rgba(243, 241, 236, 0.92);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  color: #171410;
+  border-bottom: 1px solid rgba(23, 20, 16, 0.1);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: background-color 0.5s, color 0.5s, border-color 0.5s;
+}
+.fa-subnav__link {
+  padding: 7px 12px;
+  border-radius: 5px;
+  color: currentColor;
+  opacity: 0.6;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.fa-subnav__link:hover { opacity: 0.9; }
+.fa-subnav__link.is-active { opacity: 1; color: #b4541e; }
+html.dark .fa-subnav { background: rgba(18, 17, 15, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
+html.dark .fa-subnav__link.is-active { color: #7fb2e6; }
+

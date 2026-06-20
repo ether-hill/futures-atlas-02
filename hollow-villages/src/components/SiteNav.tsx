@@ -1,19 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Navbar } from "futures-atlas-core";
-import { ThemeToggle } from "./ThemeToggle";
 
 const BASE = "/hollow-villages";
 
-// shared platform switcher list
-const PROJECTS = [
-  { name: "The Hollow Villages", slug: "hollow-villages" },
-  { name: "Underground Intelligence", slug: "underground-intelligence" },
-  { name: "The Odds", slug: "odds-of-surviving-ai" },
-];
-
-// this project's own pages
+// this project's own pages — rendered as the slim sub-nav below the one global
+// master bar (the shared /atlas-nav.js fa-shell, which owns brand + project
+// switcher + global links + theme toggle).
 const PAGES = [
   { label: "Home", href: BASE },
   { label: "Oracle", href: `${BASE}/oracle` },
@@ -25,13 +18,17 @@ export function SiteNav() {
   const pathname = usePathname(); // basePath-stripped, e.g. "/research" or "/"
   const activeHref = pathname === "/" ? BASE : `${BASE}${pathname}`;
   return (
-    <Navbar
-      currentProject={{ name: "The Hollow Villages", slug: "hollow-villages" }}
-      projects={PROJECTS}
-      pages={PAGES}
-      activeHref={activeHref}
-      homeHref="/"
-      trailing={<ThemeToggle />}
-    />
+    <nav className="fa-subnav" aria-label="The Hollow Villages">
+      {PAGES.map((p) => (
+        <a
+          key={p.href}
+          href={p.href}
+          className={`fa-subnav__link${p.href === activeHref ? " is-active" : ""}`}
+          aria-current={p.href === activeHref ? "page" : undefined}
+        >
+          {p.label}
+        </a>
+      ))}
+    </nav>
   );
 }
