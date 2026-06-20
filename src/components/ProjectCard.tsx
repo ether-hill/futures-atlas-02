@@ -106,7 +106,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
 
 export function ProjectGrid({ items = projects }: { items?: Project[] }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: "var(--space-5)" }}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: "clamp(24px, 2.2vw, 40px)" }}>
       {items.map((p, i) => (
         <ProjectCard key={p.id} project={p} index={i} />
       ))}

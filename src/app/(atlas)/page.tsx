@@ -2,11 +2,9 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
-import { projects, projectsByDate } from "@/data/projects";
+import { projectsByDate } from "@/data/projects";
 
 export default function Home() {
-  const live = projects.filter((p) => p.status === "live").length;
-
   return (
     <div>
       {/* Hero — generic placeholder */}
@@ -45,17 +43,8 @@ export default function Home() {
       <section id="projects" className="scroll-mt-20 bg-surface py-[clamp(58px,9vw,130px)]">
         <Container>
           <Reveal>
-            <div className="mb-3.5 flex flex-wrap items-baseline gap-4">
-              <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-accent-deep">
-                The projects
-              </span>
-              <span className="h-px min-w-10 flex-1 bg-ink/[0.18]" />
-              <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-graphite">
-                {live} live · {projects.length} in the atlas
-              </span>
-            </div>
             <h2 className="mb-[clamp(30px,5vw,56px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
-              Ten ways the world could go.
+              Latest.
             </h2>
           </Reveal>
 
