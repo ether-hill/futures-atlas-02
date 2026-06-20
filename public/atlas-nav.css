@@ -37,6 +37,9 @@
 .fa-shell__home { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
 .fa-shell__mark { display: inline-flex; }
 .fa-shell__word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; }
+/* The "Futures Atlas" wordmark shows only on the main Atlas pages. On a project
+   page the logo stands in for the brand and the breadcrumb names the project. */
+.fa-shell:has(.fa-shell__crumb) .fa-shell__word { display: none; }
 
 .fa-shell__sep { color: currentColor; opacity: 0.32; padding: 0 4px; font-size: 18px; }
 
@@ -129,9 +132,11 @@ html.dark .fa-shell__item.is-current { color: rgba(243, 241, 236, 0.45); }
 html.dark .fa-shell__item--accent { color: #7fb2e6; }
 
 @media (max-width: 680px) {
-  .fa-shell { padding: 0 16px; }
-  .fa-shell__word { display: none; }
+  .fa-shell { padding: 0 14px; gap: 8px; }
   .fa-shell__navlink { padding: 8px 7px; letter-spacing: 0.08em; }
+  .fa-shell__word { font-size: 17px; }
+  .fa-shell__current { max-width: 56vw; } /* project name has the row to itself now */
+  .fa-shell__burger { flex: 0 0 auto; }
 }
 
 /* ── shared project-page footer — mirrors the Atlas home footer; themes with the light/dark toggle ── */
@@ -348,4 +353,6 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
   .fa-shell__burger { display: inline-flex; align-items: center; justify-content: center; }
   .fa-subnav { display: none; } /* Villages tabs move into the sheet */
 }
+
+
 
