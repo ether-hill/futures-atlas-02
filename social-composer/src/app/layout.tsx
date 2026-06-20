@@ -15,7 +15,7 @@ const script = Bodoni_Moda({
 const display = Archivo({
   variable: "--ff-display",
   subsets: ["latin"],
-  weight: ["800"],
+  weight: ["500", "700", "800"],
   style: ["normal"],
   display: "swap",
 });

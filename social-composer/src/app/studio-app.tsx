@@ -412,8 +412,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   useEffect(() => {
     if (!document.fonts) { setFontsReady(true); return; }
     const faces = [
-      '400 40px "Bodoni Moda"', '500 40px "Bodoni Moda"', '600 40px "Bodoni Moda"', '700 40px "Bodoni Moda"',
-      'italic 500 40px "Bodoni Moda"',
+      '500 40px "Archivo"', '700 40px "Archivo"', '800 40px "Archivo"',
+      '400 40px "Bodoni Moda"', '500 40px "Bodoni Moda"', '600 40px "Bodoni Moda"',
       '400 40px "IBM Plex Mono"', '500 40px "IBM Plex Mono"', '600 40px "IBM Plex Mono"',
     ];
     let cancelled = false;

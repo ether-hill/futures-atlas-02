@@ -79,16 +79,30 @@ function revealCut(lines: string[], reveal: number, mode: RevealMode): string[] 
 function paintLines(ctx: CanvasRenderingContext2D, lines: string[], x: number, y: number, lh: number, m: MotionState, color: string, align: Align) {
   const cut = revealCut(lines, m.reveal, m.revealMode);
   ctx.textAlign = "left";
+  // Type On · Blue: one even highlight band per line. Derive the glyph extent
+  // (cap-top → descender) from font metrics so the blue fills the type area
+  // uniformly with equal padding, instead of a fixed line-height fraction.
+  let band: { top: number; height: number; padX: number } | null = null;
+  if (m.highlight) {
+    const ref = ctx.measureText("HgyÅ");
+    const asc = ref.actualBoundingBoxAscent;   // top alignment line → glyph top
+    const desc = ref.actualBoundingBoxDescent; // top alignment line → glyph bottom
+    const padV = lh * 0.10;
+    if (Number.isFinite(asc) && Number.isFinite(desc) && desc - -asc > 0) {
+      band = { top: -asc - padV, height: (desc + asc) + padV * 2, padX: lh * 0.13 };
+    } else {
+      band = { top: lh * 0.0, height: lh, padX: lh * 0.13 };
+    }
+  }
   for (let i = 0; i < lines.length; i++) {
     const shown = cut[i] ?? "";
     if (!shown) continue;
     const ly = y + i * lh;
     const tw = ctx.measureText(shown).width;
     const tx = align === "center" ? x - tw / 2 : align === "right" ? x - tw : x;
-    if (m.highlight) {
-      const pad = lh * 0.1;
+    if (band) {
       ctx.fillStyle = ACCENT;
-      ctx.fillRect(tx - pad, ly + lh * 0.04, tw + pad * 2, lh * 0.86);
+      ctx.fillRect(tx - band.padX, ly + band.top, tw + band.padX * 2, band.height);
       ctx.fillStyle = "#F4EFE6";
     } else {
       ctx.fillStyle = color;
@@ -105,26 +119,28 @@ function rgbTriplet(hex: string): string {
   return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
 }
 
-// Composed posts use the Futures Atlas type families. next/font registers them
-// under generated names exposed on CSS vars (--ff-script = Bodoni Moda, the FA
-// serif voice; --ff-docket = IBM Plex Mono), so read those at runtime — the raw
-// "Bodoni Moda" / "IBM Plex Mono" names aren't registered and would fall back.
-let _faFonts: { serif: string; mono: string } | null = null;
+// Composed posts use the Futures Atlas type families: Archivo for the headline
+// ("main" voice) and IBM Plex Mono for sub-text/labels. next/font registers them
+// under generated names exposed on CSS vars (--ff-display = Archivo, --ff-docket
+// = IBM Plex Mono), so read those at runtime — the raw names aren't registered
+// and would fall back.
+let _faFonts: { heading: string; mono: string } | null = null;
 function faFonts() {
   if (_faFonts) return _faFonts;
-  if (typeof document === "undefined") return { serif: "Georgia, serif", mono: "ui-monospace, monospace" };
+  if (typeof document === "undefined") return { heading: "system-ui, sans-serif", mono: "ui-monospace, monospace" };
   const cs = getComputedStyle(document.documentElement);
-  const script = cs.getPropertyValue("--ff-script").trim();
+  const display = cs.getPropertyValue("--ff-display").trim();
   const docket = cs.getPropertyValue("--ff-docket").trim();
   _faFonts = {
-    serif: script ? `${script}, "Bodoni Moda", Georgia, serif` : `"Bodoni Moda", Georgia, serif`,
+    heading: display ? `${display}, "Archivo", system-ui, sans-serif` : `"Archivo", system-ui, sans-serif`,
     mono: docket ? `${docket}, "IBM Plex Mono", ui-monospace, monospace` : `"IBM Plex Mono", ui-monospace, monospace`,
   };
   return _faFonts;
 }
 
-function serif(px: number, weight = 700, italic = false) {
-  return `${italic ? "italic " : ""}${weight} ${px}px ${faFonts().serif}`;
+// Headline / main composed text — Archivo (Bold by default).
+function heading(px: number, weight = 700, italic = false) {
+  return `${italic ? "italic " : ""}${weight} ${px}px ${faFonts().heading}`;
 }
 function mono(px: number, weight = 500) {
   return `${weight} ${px}px ${faFonts().mono}`;
@@ -205,7 +221,7 @@ function textBlock(
   const portrait = rh > rw;
   const maxW = rw - padX * 2;
   const hSize = Math.round(rw * 0.075 * style.sizeMul);
-  const hFont = serif(hSize);
+  const hFont = heading(hSize);
   const hLines = wrap(ctx, headline, maxW, hFont, portrait ? 14 : 10);
   const hLh = Math.round(hSize * 1.06);
   const hBlock = hLines.length * hLh;
@@ -423,7 +439,7 @@ function drawCentered(
   wordmark(ctx, w, padX, padY, textCol, label);
   const size = Math.round(w * 0.072 * style.sizeMul);
   const display = quote ? `“${big}”` : big;
-  const lines = wrap(ctx, display, w - padX * 2, serif(size), h > w ? 16 : 12);
+  const lines = wrap(ctx, display, w - padX * 2, heading(size), h > w ? 16 : 12);
   const lh = Math.round(size * 1.12);
   const subSize = Math.round(w * 0.034);
   const subLh = Math.round(subSize * 1.4);
@@ -435,7 +451,7 @@ function drawCentered(
   ctx.globalAlpha = m.textProgress;
   ctx.translate(0, (1 - m.textProgress) * h * 0.04 * m.textRise);
   y += Math.round(size * 0.6);
-  ctx.font = serif(size); ctx.textBaseline = "top";
+  ctx.font = heading(size); ctx.textBaseline = "top";
   paintLines(ctx, lines, anchorX, y, lh, m, textCol, style.align);
   y += lines.length * lh;
   if (subLines.length) {
@@ -468,7 +484,7 @@ function drawSummary(
   const len = headline.length;
   const base = len > 320 ? 0.04 : len > 180 ? 0.05 : 0.062;
   const size = Math.round(w * base * style.sizeMul);
-  const lines = wrap(ctx, headline, w - padX * 2, serif(size, 500), h > w ? 24 : 16);
+  const lines = wrap(ctx, headline, w - padX * 2, heading(size, 500), h > w ? 24 : 16);
   const lh = Math.round(size * 1.28);
   const subSize = Math.round(w * 0.032);
   const subLh = Math.round(subSize * 1.4);
@@ -477,7 +493,7 @@ function drawSummary(
   let y = style.placement === "top" ? padY + Math.round(h * 0.08) : style.placement === "bottom" ? h - padY - total : Math.max(padY + size, (h - total) / 2);
   const anchorX = style.align === "center" ? w / 2 : style.align === "right" ? w - padX : padX;
   y += Math.round(size * 0.5);
-  ctx.font = serif(size, 500); ctx.textBaseline = "top";
+  ctx.font = heading(size, 500); ctx.textBaseline = "top";
   paintLines(ctx, lines, anchorX, y, lh, m, textCol, style.align);
   y += lines.length * lh;
   if (subLines.length) {
@@ -504,15 +520,15 @@ function drawStat(
   ctx.translate(0, (1 - m.textProgress) * h * 0.04 * m.textRise);
   const vSize = Math.round(w * 0.3);
   const capSize = Math.round(w * 0.05 * style.sizeMul);
-  const capLines = wrap(ctx, headline, w - padX * 2, serif(capSize, 500), 6);
+  const capLines = wrap(ctx, headline, w - padX * 2, heading(capSize, 500), 6);
   const capLh = Math.round(capSize * 1.2);
   const total = vSize + Math.round(capSize) + capLines.length * capLh;
   let y = (h - total) / 2;
   ctx.textAlign = "left"; ctx.textBaseline = "top";
-  ctx.font = serif(vSize); ctx.fillStyle = ACCENT;
+  ctx.font = heading(vSize); ctx.fillStyle = ACCENT;
   ctx.fillText(value, padX, y);
   y += vSize + Math.round(capSize * 0.3);
-  ctx.font = serif(capSize, 500); ctx.fillStyle = style.textColor;
+  ctx.font = heading(capSize, 500); ctx.fillStyle = style.textColor;
   capLines.forEach((ln, i) => ctx.fillText(ln, padX, y + i * capLh));
   if (sub) {
     const subSize = Math.round(w * 0.030), subLh = Math.round(subSize * 1.4);
@@ -534,7 +550,7 @@ function drawTimeline(
   let topY = padY + Math.round(h * 0.06);
   ctx.save();
   ctx.globalAlpha = m.textProgress;
-  ctx.font = serif(Math.round(w * 0.07)); ctx.fillStyle = style.textColor;
+  ctx.font = heading(Math.round(w * 0.07)); ctx.fillStyle = style.textColor;
   ctx.textAlign = "left"; ctx.textBaseline = "top";
   ctx.fillText(headline, padX, topY);
   topY += Math.round(w * 0.07) * 1.5;
@@ -573,8 +589,8 @@ function drawTimeline(
     ctx.font = mono(Math.round(w * 0.026), 600); ctx.fillStyle = ACCENT; ctx.textBaseline = "top";
     ctx.fillText(ev.date.toUpperCase(), anchorX, cy - step * 0.32);
     const lSize = Math.round(w * 0.044);
-    const lLines = wrap(ctx, ev.label, tw, serif(lSize), 2);
-    ctx.font = serif(lSize); ctx.fillStyle = style.textColor;
+    const lLines = wrap(ctx, ev.label, tw, heading(lSize), 2);
+    ctx.font = heading(lSize); ctx.fillStyle = style.textColor;
     lLines.forEach((ln, j) => ctx.fillText(ln, anchorX, cy - step * 0.32 + Math.round(w * 0.036) + j * lSize * 1.05));
     void tx;
   });
@@ -592,9 +608,9 @@ function drawVideoGrid(
   ctx.save();
   ctx.globalAlpha = m.textProgress;
   let y = padY + Math.round(h * 0.06);
-  ctx.font = serif(Math.round(w * 0.06)); ctx.fillStyle = style.textColor;
+  ctx.font = heading(Math.round(w * 0.06)); ctx.fillStyle = style.textColor;
   ctx.textAlign = "left"; ctx.textBaseline = "top";
-  const titleLines = wrap(ctx, frame.headline, w - padX * 2, serif(Math.round(w * 0.06)), 2);
+  const titleLines = wrap(ctx, frame.headline, w - padX * 2, heading(Math.round(w * 0.06)), 2);
   titleLines.forEach((ln, i) => ctx.fillText(ln, padX, y + i * Math.round(w * 0.06) * 1.05));
   y += titleLines.length * Math.round(w * 0.06) * 1.1 + Math.round(h * 0.02);
   ctx.strokeStyle = "rgba(236,228,208,0.25)"; ctx.lineWidth = 1.5;
@@ -625,8 +641,8 @@ function drawVideoGrid(
     ctx.font = mono(Math.round(w * 0.02), 600); ctx.fillStyle = ACCENT;
     ctx.fillText(it.source.toUpperCase().slice(0, 28), cx, cy + cellH + Math.round(h * 0.008));
     const tSize = Math.round(w * 0.026);
-    const tLines = wrap(ctx, it.title, cellW, serif(tSize, 500), 2);
-    ctx.font = serif(tSize, 500); ctx.fillStyle = style.textColor;
+    const tLines = wrap(ctx, it.title, cellW, heading(tSize, 500), 2);
+    ctx.font = heading(tSize, 500); ctx.fillStyle = style.textColor;
     tLines.forEach((ln, j) => ctx.fillText(ln, cx, cy + cellH + Math.round(h * 0.028) + j * tSize * 1.1));
   });
   ctx.restore();
@@ -642,9 +658,9 @@ function drawPressGrid(
   ctx.save();
   ctx.globalAlpha = m.textProgress;
   let y = padY + Math.round(h * 0.06);
-  ctx.font = serif(Math.round(w * 0.06)); ctx.fillStyle = style.textColor;
+  ctx.font = heading(Math.round(w * 0.06)); ctx.fillStyle = style.textColor;
   ctx.textAlign = "left"; ctx.textBaseline = "top";
-  const titleLines = wrap(ctx, frame.headline, w - padX * 2, serif(Math.round(w * 0.06)), 2);
+  const titleLines = wrap(ctx, frame.headline, w - padX * 2, heading(Math.round(w * 0.06)), 2);
   titleLines.forEach((ln, i) => ctx.fillText(ln, padX, y + i * Math.round(w * 0.06) * 1.05));
   y += titleLines.length * Math.round(w * 0.06) * 1.1 + Math.round(h * 0.02);
   ctx.strokeStyle = "rgba(236,228,208,0.25)"; ctx.lineWidth = 1.5;
@@ -663,8 +679,8 @@ function drawPressGrid(
     ctx.font = mono(Math.round(w * 0.019), 600); ctx.fillStyle = ACCENT;
     ctx.fillText(`${it.outlet}${it.date ? ` · ${it.date}` : ""}`.toUpperCase().slice(0, 34), cx, cy + cellH + Math.round(h * 0.008));
     const tSize = Math.round(w * 0.026);
-    const tLines = wrap(ctx, it.title, cellW, serif(tSize, 500), 3);
-    ctx.font = serif(tSize, 500); ctx.fillStyle = style.textColor;
+    const tLines = wrap(ctx, it.title, cellW, heading(tSize, 500), 3);
+    ctx.font = heading(tSize, 500); ctx.fillStyle = style.textColor;
     tLines.forEach((ln, j) => ctx.fillText(ln, cx, cy + cellH + Math.round(h * 0.028) + j * tSize * 1.1));
   });
   ctx.restore();
