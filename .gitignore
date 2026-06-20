@@ -17,6 +17,20 @@
 /.next/
 /out/
 
+# sub-app bundles — built from source on every deploy by scripts/build-subapps.sh
+# (NOT committed, so two builders can never clobber each other's bundle). The
+# three zone bundles under public/ are NOT ignored — their source lives outside
+# this repo, so they stay committed.
+/public/prism/
+/public/quantum-sandbox/
+/public/social-composer/
+/prism/node_modules/
+/quantum-sandbox/node_modules/
+/social-composer/node_modules/
+/social-composer/out/
+/prism/dist/
+/quantum-sandbox/dist/
+
 # production
 /build
 

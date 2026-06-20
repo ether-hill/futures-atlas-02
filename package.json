@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build:subapps": "bash scripts/build-subapps.sh",
+    "build": "bash scripts/build-subapps.sh && next build",
     "start": "next start",
     "lint": "eslint"
   },

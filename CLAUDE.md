@@ -57,6 +57,17 @@ is no reason to deploy prebuilt from a local tree.
 ./scripts/safe-deploy.sh   # fetches, refuses if behind origin/main, then pushes
 ```
 
+**Sub-apps build from source on every deploy.** The build command is
+`bash scripts/build-subapps.sh && next build` (package.json `build`), so the Vite
+apps (`prism`, `quantum-sandbox`) and the Next export (`social-composer`) are
+rebuilt from their in-repo source into `public/` by Vercel — their bundles are
+**git-ignored, never committed** (so two people can't clobber each other's
+bundle). Just edit the source, commit, and deploy; no manual `sync-*.sh` step.
+(For a local preview of a sub-app, run `npm run build:subapps`.) The three zone
+bundles — `hollow-villages`, `underground-intelligence`, `odds-of-surviving-ai` —
+stay committed under `public/<slug>/` because their source lives outside this
+repo; rebuild those with their `sync-*.sh` (needs the sibling source).
+
 **NEVER run `vercel deploy --prebuilt --prod` for this project.** A prebuilt CLI
 deploy from a local tree that is behind `origin/main` overwrites production with a
 stale snapshot and wipes teammates' work. (This happened once: a deploy from a
