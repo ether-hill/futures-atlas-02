@@ -39,6 +39,10 @@ echo "→ building hollow-villages"
 rm -rf "$HERE/public/hollow-villages"
 mkdir -p "$HERE/public/hollow-villages"
 cp -R "$HERE/hollow-villages/out/." "$HERE/public/hollow-villages/"
-echo "✓ hollow-villages → public/hollow-villages"
+# Re-inject the shared master nav (atlas-nav) into every built page, matching the
+# other zone bundles (underground-intelligence / odds-of-surviving-ai carry the
+# same two tags). Idempotent; node is always present in the Vercel build.
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/hollow-villages"
+echo "✓ hollow-villages → public/hollow-villages (with atlas-nav)"
 
 echo "✓ all sub-apps built"
