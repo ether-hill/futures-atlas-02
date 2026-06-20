@@ -17,7 +17,8 @@ export interface Project {
   status: ProjectStatus;
   url?: string; // external link if it exists
   path?: string; // internal path served within this site (e.g. "/coastlines-2100")
-  image?: string; // card thumbnail (else a hatch plate)
+  image?: string; // card thumbnail / video poster (else a hatch plate)
+  video?: string; // looping card video (autoplay-muted); `image` is its poster
   accent?: string; // optional per-project accent colour (CSS value), set on the project layout
   inHub?: boolean; // true = a route group inside this app (scaffolded), with /<slug>/research + /contact
 }
@@ -82,6 +83,7 @@ export const projects: Project[] = [
     status: "in-progress",
     path: "/prism", // self-contained Vite static bundle (dashboard + embed player)
     image: "/projects/prism.jpg",
+    video: "/projects/prism.webm", // looping Lattice Waves capture
   },
   {
     id: "social-composer",
@@ -93,6 +95,8 @@ export const projects: Project[] = [
     field: "Creative tools",
     status: "live",
     path: "/social-composer", // self-contained Next static export served within this site
+    image: "/projects/social-composer.jpg",
+    video: "/projects/social-composer.webm",
   },
   {
     id: "hi-mike",
