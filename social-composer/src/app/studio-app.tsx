@@ -165,6 +165,15 @@ function useVideos(urls: string[]) {
   return useCallback((url: string | null | undefined) => (url ? cache.current.get(url) ?? null : null), []);
 }
 
+// Target play-head (seconds) for a video on a slide of length `dur` at the
+// slide-local progress `localT`. Wraps at the clip length only when the clip is
+// shorter than the slide; otherwise the slide's own duration is the loop point.
+function videoTargetTime(v: HTMLVideoElement, localT: number, dur: number): number {
+  const span = isFinite(v.duration) && v.duration > 0 ? v.duration : Infinity;
+  const t = Math.max(0, localT) * dur;
+  return isFinite(span) ? t % span : t;
+}
+
 export function StudioApp({ source }: { source: ComposerSource }) {
   const isCorp = source.kind === "corporation";
   const slugKey = source.url;
@@ -286,17 +295,50 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     return () => window.clearInterval(id);
   }, [slugKey, working]);
 
-  /* The shared render closure (used by preview + every exporter). Sequences
-   * allocate each slide its own duration, with a quick cross-fade at joins. */
-  const renderFrameAt = useCallback((ctx: CanvasRenderingContext2D, t: number) => {
+  /* ── Video clock ───────────────────────────────────────────────────────
+   * Videos play from their first frame and restart at the slide's set duration
+   * (a 5s slide shows only the first 5s of an 8s clip, then loops) — honoured in
+   * the live preview, the real-time MP4/WebM export, and the GIF export. */
+  const videoSyncMode = useRef<"realtime" | "seek">("realtime");
+
+  // Real-time path (preview + MP4/WebM): let the muted element play and correct
+  // it only on the slide-loop wrap or large drift, so playback stays smooth.
+  const syncVideoRealtime = useCallback((f: ComposerFrame, localT: number) => {
+    if (f.kind !== "video" || videoSyncMode.current !== "realtime") return;
+    const v = getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl);
+    if (!v || v.readyState < 1) return; // no metadata yet → can't play/seek
+    const dur = durFor(f);
+    // Not yet active (fading in): hold the very first frame, paused.
+    if (localT <= 0) { if (!v.paused) v.pause(); if (v.currentTime > 0.05) { try { v.currentTime = 0; } catch { /* */ } } return; }
+    if (v.paused) v.play().catch(() => { /* */ });
+    const target = videoTargetTime(v, localT, dur);
+    const drift = target - v.currentTime;
+    // Correct on the loop wrap (big negative drift) or if it has run past the
+    // slide's window — so an 8s clip on a 5s slide never shows past 5s.
+    if (drift < -0.3 || drift > 0.6 || v.currentTime > dur + 0.1) {
+      try { v.currentTime = target; } catch { /* */ }
+    }
+  }, [getVideo, durFor]);
+
+  // Seek path (GIF, frame-stepped): position the clip exactly and wait for it.
+  const seekVideoTo = useCallback((v: HTMLVideoElement, target: number) => new Promise<void>((resolve) => {
+    if (!v.paused) v.pause();
+    if (Math.abs(v.currentTime - target) < 0.01) { resolve(); return; }
+    let settled = false;
+    const finish = () => { if (settled) return; settled = true; v.removeEventListener("seeked", finish); resolve(); };
+    v.addEventListener("seeked", finish);
+    try { v.currentTime = target; } catch { finish(); }
+    window.setTimeout(finish, 400); // never hang the export on a stubborn seek
+  }), []);
+
+  /* Which slide(s) are on screen at sequence-progress `t`, each with its own
+   * continuous local clock + crossfade alpha. The incoming slide gets a slightly
+   * negative localT through the fade so its background motion is already moving
+   * as it appears — no static "pause" before the motion starts. */
+  const segmentDraws = useCallback((t: number): Array<{ frame: ComposerFrame; localT: number; alpha: number }> => {
     const list = selFrames.length ? selFrames : (activeFrame ? [activeFrame] : []);
-    if (!list.length) { ctx.fillStyle = "#08070A"; ctx.fillRect(0, 0, w, h); return; }
-    const draw = (f: ComposerFrame, lt: number, alpha = 1) => {
-      if (alpha < 1) { ctx.save(); ctx.globalAlpha = alpha; }
-      drawFrame(ctx, w, h, f, getImg, isCorp && f.kind === "portrait", tFor(f), styleFor(f), composeMotion(bgFor(f), taFor(f), lt, durFor(f)), getVideo);
-      if (alpha < 1) ctx.restore();
-    };
-    if (list.length === 1) { draw(list[0], t); return; }
+    if (!list.length) return [];
+    if (list.length === 1) return [{ frame: list[0], localT: t, alpha: 1 }];
     const durs = list.map((f) => durFor(f));
     const total = durs.reduce((a, d) => a + d, 0) || 1;
     const tt = t * total;
@@ -304,12 +346,40 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     for (let i = 0; i < list.length; i++) { if (tt < acc + durs[i] || i === list.length - 1) { idx = i; break; } acc += durs[i]; }
     const dur = durs[idx];
     const localT = Math.min(1, (tt - acc) / dur);
-    draw(list[idx], localT);
+    const out = [{ frame: list[idx], localT, alpha: 1 }];
     const fadeFrac = Math.min(0.4, dur * 0.25) / dur;
     if (idx < list.length - 1 && localT > 1 - fadeFrac) {
-      draw(list[idx + 1], 0, (localT - (1 - fadeFrac)) / fadeFrac);
+      const nextDur = durs[idx + 1];
+      const nextLocalT = (tt - (acc + dur)) / nextDur; // negative through the fade → motion already underway
+      const alpha = (localT - (1 - fadeFrac)) / fadeFrac;
+      out.push({ frame: list[idx + 1], localT: nextLocalT, alpha });
     }
-  }, [selFrames, activeFrame, w, h, getImg, getVideo, isCorp, tFor, bgFor, taFor, durFor, styleFor]);
+    return out;
+  }, [selFrames, activeFrame, durFor]);
+
+  // Seek every on-screen video to its clock position for sequence-progress `t`.
+  const prepareVideosAt = useCallback(async (t: number) => {
+    await Promise.all(segmentDraws(t).map(({ frame, localT }) => {
+      if (frame.kind !== "video") return Promise.resolve();
+      const v = getVideo((frame as Extract<ComposerFrame, { kind: "video" }>).videoUrl);
+      if (!v || v.readyState < 1) return Promise.resolve();
+      const target = videoTargetTime(v, localT, durFor(frame));
+      return seekVideoTo(v, target);
+    }));
+  }, [segmentDraws, getVideo, durFor, seekVideoTo]);
+
+  /* The shared render closure (used by preview + every exporter). Sequences
+   * allocate each slide its own duration, with a quick cross-fade at joins. */
+  const renderFrameAt = useCallback((ctx: CanvasRenderingContext2D, t: number) => {
+    const draws = segmentDraws(t);
+    if (!draws.length) { ctx.fillStyle = "#08070A"; ctx.fillRect(0, 0, w, h); return; }
+    for (const { frame, localT, alpha } of draws) {
+      syncVideoRealtime(frame, localT);
+      if (alpha < 1) { ctx.save(); ctx.globalAlpha = alpha; }
+      drawFrame(ctx, w, h, frame, getImg, isCorp && frame.kind === "portrait", tFor(frame), styleFor(frame), composeMotion(bgFor(frame), taFor(frame), localT, durFor(frame)), getVideo);
+      if (alpha < 1) ctx.restore();
+    }
+  }, [segmentDraws, syncVideoRealtime, w, h, getImg, getVideo, isCorp, tFor, bgFor, taFor, durFor, styleFor]);
 
   /* Draw just the selected slide in its finished state (text fully revealed,
    * motion settled) — what you see while paused so you can edit and judge it. */
@@ -484,8 +554,9 @@ export function StudioApp({ source }: { source: ComposerSource }) {
 
   // Per-slide animation renderer (used by the carousel ZIP video clips).
   const singleRenderer = useCallback((f: ComposerFrame) => (ctx: CanvasRenderingContext2D, t: number) => {
+    syncVideoRealtime(f, t);
     drawFrame(ctx, w, h, f, getImg, isCorp && f.kind === "portrait", tFor(f), styleFor(f), composeMotion(bgFor(f), taFor(f), t, durFor(f)), getVideo);
-  }, [w, h, getImg, getVideo, isCorp, tFor, bgFor, taFor, durFor, styleFor]);
+  }, [syncVideoRealtime, w, h, getImg, getVideo, isCorp, tFor, bgFor, taFor, durFor, styleFor]);
 
   const onDownloadPNG = useCallback(async () => {
     if (!activeFrame) return;
@@ -510,7 +581,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
         if (slideIsStill(f)) {
           const d = renderStill(f); if (d) entries[`${base}.png`] = dataUrlToBytes(d);
         } else {
-          const res = await renderVideoBlob({ renderFrame: singleRenderer(f), w, h, fps, durationSec: durFor(f) });
+          const prep = async () => { const v = f.kind === "video" ? getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl) : null; if (v && isFinite(v.duration) && v.duration > 0) await seekVideoTo(v, 0); };
+          const res = await renderVideoBlob({ renderFrame: singleRenderer(f), prepareFrame: prep, w, h, fps, durationSec: durFor(f) });
           if (res) entries[`${base}.${res.ext}`] = await blobToBytes(res.blob);
           else { const d = renderStill(f); if (d) entries[`${base}.png`] = dataUrlToBytes(d); }
         }
@@ -519,7 +591,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
       zipDownload(entries, `airapture-${slugToken}-slides.zip`);
       showToast(`Downloaded ${selFrames.length}-slide ZIP`);
     } catch { showToast("ZIP export failed"); } finally { setBusy(null); }
-  }, [selFrames, slideIsStill, slugToken, singleRenderer, w, h, fps, durFor, renderStill, showToast]);
+  }, [selFrames, slideIsStill, slugToken, singleRenderer, w, h, fps, durFor, renderStill, showToast, getVideo, seekVideoTo]);
 
   const moveSlide = useCallback((id: string, dir: -1 | 1) => {
     setSelected((prev) => {
@@ -535,18 +607,19 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const onDownloadGIF = useCallback(async () => {
     if (!activeFrame) return;
     setBusy("gif");
-    try { await exportGIF({ renderFrame: renderFrameAt, w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}.gif` }); showToast("Downloaded GIF"); }
-    catch { showToast("GIF export failed"); } finally { setBusy(null); }
-  }, [activeFrame, renderFrameAt, w, h, fps, totalDuration, slugToken, showToast]);
+    videoSyncMode.current = "seek"; // GIF is frame-stepped → seek videos exactly
+    try { await exportGIF({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}.gif` }); showToast("Downloaded GIF"); }
+    catch { showToast("GIF export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); }
+  }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast]);
 
   const onDownloadVideo = useCallback(async () => {
     if (!activeFrame) return;
     setBusy("video");
     try {
-      const res = await exportVideo({ renderFrame: renderFrameAt, w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}` });
+      const res = await exportVideo({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}` });
       showToast(res.ok ? `Downloaded ${res.ext?.toUpperCase()}` : "Video not supported in this browser");
     } catch { showToast("Video export failed"); } finally { setBusy(null); }
-  }, [activeFrame, renderFrameAt, w, h, fps, totalDuration, slugToken, showToast]);
+  }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast]);
 
   const onBatchAll = useCallback(async () => {
     setBusy("batch");

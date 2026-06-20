@@ -38,9 +38,12 @@ export function zipDownload(entries: Record<string, Uint8Array>, zipName: string
 
 type RenderFrame = (ctx: CanvasRenderingContext2D, t: number) => void;
 
-/** Animated GIF — rendered at a reduced size for a sane file size. */
+/** Animated GIF — rendered at a reduced size for a sane file size.
+ *  `prepareFrame(t)` (optional) is awaited before each frame is drawn, so video
+ *  slides can be seeked frame-accurately to their clock position first. */
 export async function exportGIF(opts: {
   renderFrame: RenderFrame; w: number; h: number; fps: number; durationSec: number; name: string;
+  prepareFrame?: (t: number) => Promise<void>;
 }) {
   const maxW = 540;
   const scale = Math.min(1, maxW / opts.w);
@@ -57,6 +60,7 @@ export async function exportGIF(opts: {
   ctx.scale(scale, scale);
   for (let i = 0; i < total; i++) {
     const t = total === 1 ? 0 : i / (total - 1);
+    if (opts.prepareFrame) await opts.prepareFrame(t);
     opts.renderFrame(ctx, t);
     const { data } = ctx.getImageData(0, 0, gw, gh);
     const palette = quantize(data, 256);
@@ -83,9 +87,12 @@ export function pickVideoMime(): { mime: string; ext: string } | null {
   return null;
 }
 
-/** Record an animation to a video Blob via canvas captureStream. */
+/** Record an animation to a video Blob via canvas captureStream.
+ *  `prepareFrame(0)` (optional) is awaited before recording starts so video
+ *  slides are seeked to their first frame; real-time playback then advances. */
 export async function renderVideoBlob(opts: {
   renderFrame: RenderFrame; w: number; h: number; fps: number; durationSec: number;
+  prepareFrame?: (t: number) => Promise<void>;
 }): Promise<{ blob: Blob; ext: string } | null> {
   const picked = pickVideoMime();
   const canvas = document.createElement("canvas");
@@ -98,6 +105,7 @@ export async function renderVideoBlob(opts: {
   const chunks: BlobPart[] = [];
   rec.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
   const done = new Promise<void>((resolve) => { rec.onstop = () => resolve(); });
+  if (opts.prepareFrame) await opts.prepareFrame(0);
   rec.start();
   const startT = performance.now();
   await new Promise<void>((resolve) => {
@@ -118,6 +126,7 @@ export async function renderVideoBlob(opts: {
 /** Record + download a single combined reel video. */
 export async function exportVideo(opts: {
   renderFrame: RenderFrame; w: number; h: number; fps: number; durationSec: number; name: string;
+  prepareFrame?: (t: number) => Promise<void>;
 }): Promise<{ ok: boolean; ext?: string }> {
   const res = await renderVideoBlob(opts);
   if (!res) return { ok: false };
