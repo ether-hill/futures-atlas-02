@@ -20,13 +20,13 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # Vite apps build straight into public/<slug> via their vite.config outDir.
 for app in prism quantum-sandbox; do
   echo "→ building $app"
-  ( cd "$HERE/$app" && npm install --no-audit --no-fund && npm run build )
+  ( cd "$HERE/$app" && npm install --include=dev --no-audit --no-fund && npm run build )
   echo "✓ $app → public/$app"
 done
 
 # Social Composer: Next static export → out/, then copy into public/.
 echo "→ building social-composer"
-( cd "$HERE/social-composer" && npm install --no-audit --no-fund && npm run build )
+( cd "$HERE/social-composer" && npm install --include=dev --no-audit --no-fund && npm run build )
 rm -rf "$HERE/public/social-composer"
 mkdir -p "$HERE/public/social-composer"
 cp -R "$HERE/social-composer/out/." "$HERE/public/social-composer/"
