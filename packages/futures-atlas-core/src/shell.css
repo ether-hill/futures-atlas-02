@@ -1,40 +1,46 @@
 /*
-  The one standard global nav — modelled on frond-studio.vercel.app: a light,
-  editorial bar with a dark wordmark on the left and uppercase, letter-spaced
-  links + a circular theme toggle on the right. Full-bleed. On a project page a
-  breadcrumb project-switcher dropdown sits after the wordmark. Self-contained
-  (literal colours) so it renders identically across host, React and vanilla
-  project apps.
+  The one standard global nav — modelled on frond-studio.vercel.app:
+  • position: fixed, full-bleed, frosted glass (translucent + backdrop-blur)
+  • hides on scroll-down, reveals on scroll-up (the `.is-hidden` transform)
+  • light by default, dark under `html.dark` (the toggle flips that class)
+  Left: brand mark + "Futures Atlas" (+ project breadcrumb dropdown on a project
+  page). Right: uppercase links + circular theme toggle. Self-contained colours
+  so it renders identically across host, React and vanilla project apps.
+  Consumers offset their content by --fa-nav-h (64px).
 */
+:root { --fa-nav-h: 64px; }
+
 .fa-shell {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 60;
-  flex: 0 0 auto;
-  height: 64px;
+  height: var(--fa-nav-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
   padding: 0 28px;
-  background: #f3f1ec;
+  background: rgba(243, 241, 236, 0.82);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
   color: #171410;
-  border-bottom: 1px solid rgba(23, 20, 16, 0.1);
+  border-bottom: 1px solid rgba(23, 20, 16, 0.12);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s, border-color 0.5s, color 0.5s;
+  transform: translateY(0);
 }
+.fa-shell.is-hidden { transform: translateY(-100%); }
+
 .fa-shell__left { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .fa-shell__right { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 
-.fa-shell__home {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  color: #171410;
-  text-decoration: none;
-}
+.fa-shell__home { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
 .fa-shell__mark { display: inline-flex; }
 .fa-shell__word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; }
 
-.fa-shell__sep { color: rgba(23, 20, 16, 0.3); padding: 0 4px; font-size: 18px; }
+.fa-shell__sep { color: currentColor; opacity: 0.32; padding: 0 4px; font-size: 18px; }
 
 /* project breadcrumb + switcher (project pages only) */
 .fa-shell__crumb { position: relative; min-width: 0; }
@@ -47,7 +53,7 @@
   border: 0;
   border-radius: 5px;
   background: transparent;
-  color: #171410;
+  color: inherit;
   font: inherit;
   font-size: 16px;
   cursor: pointer;
@@ -69,15 +75,7 @@
   flex-direction: column;
 }
 .fa-shell__menu[hidden] { display: none; }
-.fa-shell__item {
-  display: block;
-  padding: 9px 11px;
-  border-radius: 6px;
-  color: #171410;
-  text-decoration: none;
-  font-size: 14px;
-  white-space: nowrap;
-}
+.fa-shell__item { display: block; padding: 9px 11px; border-radius: 6px; color: #171410; text-decoration: none; font-size: 14px; white-space: nowrap; }
 .fa-shell__item:hover { background: rgba(23, 20, 16, 0.06); }
 .fa-shell__item.is-current { color: rgba(23, 20, 16, 0.45); cursor: default; }
 .fa-shell__item--accent { color: #b4541e; }
@@ -88,7 +86,8 @@
 .fa-shell__navlink {
   padding: 8px 12px;
   border-radius: 5px;
-  color: rgba(23, 20, 16, 0.66);
+  color: currentColor;
+  opacity: 0.66;
   text-decoration: none;
   font-size: 12px;
   font-weight: 500;
@@ -96,8 +95,7 @@
   letter-spacing: 0.13em;
   white-space: nowrap;
 }
-.fa-shell__navlink:hover { color: #171410; }
-.fa-shell__navlink.is-active { color: #171410; }
+.fa-shell__navlink:hover, .fa-shell__navlink.is-active { opacity: 1; }
 
 /* circular theme toggle */
 .fa-shell__toggle {
@@ -107,13 +105,30 @@
   width: 38px;
   height: 38px;
   margin-left: 8px;
-  border: 1px solid rgba(23, 20, 16, 0.28);
+  border: 1px solid currentColor;
+  border-color: rgba(23, 20, 16, 0.28);
   border-radius: 50%;
   background: transparent;
-  color: #171410;
+  color: inherit;
   cursor: pointer;
 }
 .fa-shell__toggle:hover { background: rgba(23, 20, 16, 0.06); }
+
+/* ── dark theme ─────────────────────────────────────────────────────────── */
+html.dark .fa-shell {
+  background: rgba(18, 17, 15, 0.8);
+  color: #f3f1ec;
+  border-bottom-color: rgba(255, 255, 255, 0.14);
+}
+html.dark .fa-shell__current:hover,
+html.dark .fa-shell__toggle:hover { background: rgba(255, 255, 255, 0.08); }
+html.dark .fa-shell__toggle { border-color: rgba(255, 255, 255, 0.3); }
+html.dark .fa-shell__mark img { filter: invert(1); } /* vanilla <img> marks → white */
+html.dark .fa-shell__menu { background: #16140f; border-color: rgba(255, 255, 255, 0.14); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55); }
+html.dark .fa-shell__item { color: #f3f1ec; }
+html.dark .fa-shell__item:hover { background: rgba(255, 255, 255, 0.08); }
+html.dark .fa-shell__item.is-current { color: rgba(243, 241, 236, 0.45); }
+html.dark .fa-shell__item--accent { color: #7fb2e6; }
 
 @media (max-width: 680px) {
   .fa-shell { padding: 0 16px; }

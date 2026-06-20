@@ -35,6 +35,22 @@ export function GlobalNav({
 }) {
   const [open, setOpen] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+
+  // hide on scroll-down, reveal on scroll-up (frond-style)
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = () => {
+      const el = headerRef.current;
+      if (!el) return;
+      const y = window.scrollY;
+      if (y > last && y > 90) el.classList.add("is-hidden");
+      else el.classList.remove("is-hidden");
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -51,7 +67,7 @@ export function GlobalNav({
   }, [open]);
 
   return (
-    <header className="fa-shell">
+    <header className="fa-shell" ref={headerRef}>
       <div className="fa-shell__left">
         <a className="fa-shell__home" href={homeHref} aria-label="Futures Atlas home">
           <span className="fa-shell__mark" aria-hidden="true">
