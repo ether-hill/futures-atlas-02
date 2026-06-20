@@ -25,12 +25,54 @@ body {
 #app {
   display: grid;
   grid-template-columns: 232px 1fr 304px;
-  height: 100vh;
+  height: calc(100vh - 44px);
   overflow: hidden;
 }
 button {
   font-family: var(--mono);
   cursor: pointer;
+}
+
+/* global Futures Atlas master header */
+.atlas-bar {
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  background: #05070d;
+  border-bottom: 1px solid var(--line);
+  color: #fff;
+  font-size: 13px;
+}
+.atlas-bar__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  text-decoration: none;
+}
+.atlas-bar__home:hover {
+  opacity: 0.85;
+}
+.atlas-bar__back {
+  opacity: 0.7;
+  font-size: 16px;
+}
+.atlas-bar__mark {
+  height: 18px;
+  width: auto;
+  display: block;
+  filter: invert(1);
+}
+.atlas-bar__word {
+  font-weight: 600;
+}
+.atlas-bar__sep {
+  opacity: 0.35;
+}
+.atlas-bar__project {
+  opacity: 0.85;
 }
 
 /* sidebar */
