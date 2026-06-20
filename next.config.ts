@@ -30,6 +30,8 @@ const nextConfig: NextConfig = {
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
         // Prism — Vite static app; the dashboard + a separate embed.html player
         { source: "/prism", destination: "/prism/index.html" },
+        // Social Composer — Next static export (basePath baked in, trailingSlash)
+        { source: "/social-composer", destination: "/social-composer/index.html" },
       ],
     };
   },

@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  /* Futures Atlas DARK palette. `ink` = text (warm light), `bone` = page,
+     `vellum` = lifted surface, `oxblood`/`gilt` = the FA blue accent pair used
+     across the UI and canvas. Re-skinned values only — component classes
+     (bg-bone, text-ink, text-oxblood, …) are unchanged; opacity modifiers
+     (e.g. text-ink/72) still derive from these. */
+  --color-ink: #f2ede2;
+  --color-bone: #211e18;
+  --color-vellum: #2b2722;
+  --color-oxblood: oklch(0.64 0.13 245);
+  --color-gilt: oklch(0.74 0.12 245);
+  --color-seal: #a69f91;
+
+  /* Futures Atlas type system — wired from next/font in layout.tsx via --ff-*.
+     docket = IBM Plex Mono (dominant UI + body voice), display = Archivo 800
+     (headings), script = Bodoni Moda (explicit serif moments). */
+  --font-script: var(--ff-script), "Bodoni Moda", Georgia, "Times New Roman", serif;
+  --font-display: var(--ff-display), "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-docket: var(--ff-docket), "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+
+html {
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+  text-rendering: optimizeLegibility;
+}
+body {
+  /* FA body-in-mono: default to the IBM Plex Mono voice (Bodoni Moda is rough
+     as long body text; it stays available via the font-script slot). */
+  font-family: var(--font-docket);
+  line-height: 1.32;
+}
+
+.font-docket,
+[class*="font-docket"] {
+  font-family: var(--font-docket);
+  letter-spacing: 0;
+}
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+.label-archival {
+  font-family: var(--font-docket);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}

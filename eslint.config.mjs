@@ -18,9 +18,10 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
-      // self-contained Vite sub-apps with their own build, tsconfig & deps
+      // self-contained sub-apps with their own build, tsconfig & deps
       "quantum-sandbox/**",
       "prism/**",
+      "social-composer/**",
     ],
   },
 ];

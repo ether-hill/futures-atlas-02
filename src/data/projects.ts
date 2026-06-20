@@ -74,6 +74,16 @@ export const projects: Project[] = [
     status: "in-progress",
     path: "/prism", // self-contained Vite static bundle (dashboard + embed player)
   },
+  {
+    id: "social-composer",
+    title: "Social Composer",
+    tagline:
+      "A standalone social-post composer — post types, layouts, motion, and PNG / GIF / video export, with a URL “transmutate” importer that pulls the reusable pieces out of any article.",
+    year: "2026",
+    field: "Creative tools",
+    status: "live",
+    path: "/social-composer", // self-contained Next static export served within this site
+  },
 ];
 
 export const statusLabel: Record<ProjectStatus, string> = {
