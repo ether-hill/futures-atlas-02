@@ -1,0 +1,6 @@
+# Prism (Vite app). The built bundle is committed at ../public/prism, not here.
+node_modules
+dist
+*.local
+.DS_Store
+*.tsbuildinfo

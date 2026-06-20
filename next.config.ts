@@ -28,6 +28,8 @@ const nextConfig: NextConfig = {
         { source: "/odds-of-surviving-ai/contact", destination: "/odds-of-surviving-ai/contact.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
+        // Prism — Vite static app; the dashboard + a separate embed.html player
+        { source: "/prism", destination: "/prism/index.html" },
       ],
     };
   },

@@ -1,0 +1,1 @@
+import{r as o,f as t,d as r,P as a}from"./config-BwNRebg2.js";const i=document.getElementById("stage"),n=o()??(t()?r(t().id):null);if(n){const s=new a(i,n,{sizing:"fit"});let e=0;window.addEventListener("resize",()=>{clearTimeout(e),e=window.setTimeout(()=>s.refit(),150)})}else i.textContent="Prism: no config";

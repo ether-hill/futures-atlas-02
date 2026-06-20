@@ -64,6 +64,16 @@ export const projects: Project[] = [
     status: "in-progress",
     path: "/quantum-sandbox", // self-contained Vite static bundle served within this site
   },
+  {
+    id: "prism",
+    title: "Prism",
+    tagline:
+      "A generative-visual lab — a smorgasbord of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
+    year: "2026",
+    field: "Generative visuals",
+    status: "in-progress",
+    path: "/prism", // self-contained Vite static bundle (dashboard + embed player)
+  },
 ];
 
 export const statusLabel: Record<ProjectStatus, string> = {
