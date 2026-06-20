@@ -1,5 +1,8 @@
-// The Prism dashboard: pick a piece, shape it (params + complexity/chaos +
-// resolution + theme), and get it out (preview-in-tab, copy-embed, PNG, WebM).
+// The Prism project page (frond-studio /projects layout): a clear title +
+// summary with the treatment (algo) dropdown up top, the viewer + parameter
+// panel below, and an About section beneath — all inside the master content
+// grid. Pick a treatment, shape it (params + complexity/chaos + resolution +
+// theme), and get it out (preview-in-tab, copy-embed, PNG, WebM).
 
 import { Pane } from "tweakpane";
 import type { Config, ParamSchema, Params } from "../core/piece";
@@ -25,13 +28,18 @@ interface PaneLike {
 
 export class Dashboard {
   private stage: HTMLElement;
-  private piecesNav: HTMLElement;
+  private algoSelect: HTMLSelectElement;
   private resEl: HTMLElement;
   private metaEl: HTMLElement;
   private paramsEl: HTMLElement;
   private fpsEl: HTMLElement;
   private playBtn: HTMLButtonElement;
   private toast: HTMLElement;
+  private aboutTitle: HTMLElement;
+  private aboutBody: HTMLElement;
+  private aboutBackend: HTMLElement;
+  private aboutTags: HTMLElement;
+  private aboutLoop: HTMLElement;
 
   private player: Player | null = null;
   private pane: PaneLike | null = null;
@@ -39,35 +47,60 @@ export class Dashboard {
 
   constructor(host: HTMLElement) {
     host.innerHTML = `
-      <aside class="side">
-        <h1>Prism <span>· Futures Atlas</span></h1>
-        <nav class="pieces"></nav>
-        <p class="tagline">generative visual treatments · animated · embeddable</p>
-      </aside>
-      <main class="stage-wrap">
-        <div class="topbar">
-          <button class="play">❚❚ pause</button>
-          <span class="fps">—</span>
-          <span class="grow"></span>
-          <button data-act="preview">Preview ↗</button>
-          <button data-act="copy">Copy embed</button>
-          <button data-act="png">PNG</button>
-          <button data-act="webm">WebM loop</button>
-        </div>
-        <div class="stage"></div>
-      </main>
-      <aside class="controls">
-        <div class="grp res"></div>
-        <div class="grp meta"></div>
-        <div class="grp row2">
-          <button data-act="randomise">⟳ Randomise</button>
-          <button data-act="restart">↺ Restart</button>
-        </div>
-        <div class="grp params"></div>
-      </aside>
+      <div class="wrap">
+        <header class="head">
+          <h1 class="title">Prism</h1>
+          <div class="intro">
+            <p class="summary">A generative-visual lab — a smorgasbord of animated, embeddable treatments for the visual language of a quantum-computing futures project. Pick a treatment, shape it, size it to any banner, and copy a paste-ready embed.</p>
+            <label class="algo">
+              <span class="algo-lbl">Treatment</span>
+              <select class="algo-select"></select>
+            </label>
+          </div>
+        </header>
+
+        <section class="work">
+          <div class="viewer">
+            <div class="topbar">
+              <button class="play">❚❚ pause</button>
+              <span class="fps">—</span>
+              <span class="grow"></span>
+              <button data-act="preview">Preview ↗</button>
+              <button data-act="copy">Copy embed</button>
+              <button data-act="png">PNG</button>
+              <button data-act="webm">WebM loop</button>
+            </div>
+            <div class="stage"></div>
+          </div>
+          <aside class="controls">
+            <div class="grp res"></div>
+            <div class="grp meta"></div>
+            <div class="grp row2">
+              <button data-act="randomise">⟳ Randomise</button>
+              <button data-act="restart">↺ Restart</button>
+            </div>
+            <div class="grp params"></div>
+          </aside>
+        </section>
+
+        <section class="about">
+          <div class="lbl">About</div>
+          <div class="about-cols">
+            <div class="about-main">
+              <h2 class="about-title"></h2>
+              <p class="about-body"></p>
+            </div>
+            <dl class="about-meta">
+              <div><dt>Backend</dt><dd class="ab-backend"></dd></div>
+              <div><dt>Texture</dt><dd class="ab-tags"></dd></div>
+              <div><dt>Loop</dt><dd class="ab-loop"></dd></div>
+            </dl>
+          </div>
+        </section>
+      </div>
       <div class="toast"></div>`;
 
-    this.piecesNav = host.querySelector(".pieces")!;
+    this.algoSelect = host.querySelector(".algo-select")!;
     this.stage = host.querySelector(".stage")!;
     this.resEl = host.querySelector(".res")!;
     this.metaEl = host.querySelector(".meta")!;
@@ -75,14 +108,22 @@ export class Dashboard {
     this.fpsEl = host.querySelector(".fps")!;
     this.playBtn = host.querySelector(".play")!;
     this.toast = host.querySelector(".toast")!;
+    this.aboutTitle = host.querySelector(".about-title")!;
+    this.aboutBody = host.querySelector(".about-body")!;
+    this.aboutBackend = host.querySelector(".ab-backend")!;
+    this.aboutTags = host.querySelector(".ab-tags")!;
+    this.aboutLoop = host.querySelector(".ab-loop")!;
 
     for (const d of descriptors) {
-      const b = document.createElement("button");
-      b.dataset.id = d.id;
-      b.innerHTML = `<span class="t">${d.title}</span><span class="tg">${d.tags.join(" · ")}</span>`;
-      b.addEventListener("click", () => this.select(d));
-      this.piecesNav.appendChild(b);
+      const o = document.createElement("option");
+      o.value = d.id;
+      o.textContent = d.title;
+      this.algoSelect.appendChild(o);
     }
+    this.algoSelect.addEventListener("change", () => {
+      const d = getDescriptor(this.algoSelect.value);
+      if (d) this.select(d);
+    });
 
     this.playBtn.addEventListener("click", () => {
       this.player?.toggle();
@@ -132,8 +173,21 @@ export class Dashboard {
     this.buildResolution(config);
     this.buildMeta(config);
     this.buildParams(d.schema, config.params);
-    this.piecesNav.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.id === d.id));
+    this.algoSelect.value = d.id;
+    this.updateAbout(d);
     this.persist();
+  }
+
+  private updateAbout(d: Descriptor): void {
+    this.aboutTitle.textContent = d.title;
+    this.aboutBody.textContent =
+      `${d.title} is a ${d.tags.join(" · ")} treatment, animated in real time and built to be embedded. ` +
+      `Tune complexity, chaos, palette and its parameters on the right, size it to any banner (hero, square, story), ` +
+      `then preview it in a tab, copy the embed snippet, or export a PNG still or a seamless WebM loop.`;
+    const backendLabel: Record<string, string> = { canvas2d: "Canvas 2D", webgl2: "WebGL2 (GPU)", three: "Three.js (WebGL)", p5: "p5.js" };
+    this.aboutBackend.textContent = backendLabel[d.backend] ?? d.backend;
+    this.aboutTags.textContent = d.tags.join(" · ");
+    this.aboutLoop.textContent = d.loopSeconds ? `${d.loopSeconds}s` : "continuous";
   }
 
   private buildResolution(config: Config): void {
