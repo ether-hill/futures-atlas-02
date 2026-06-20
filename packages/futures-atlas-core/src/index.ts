@@ -10,6 +10,8 @@ export { ResearchTemplate, type ResearchItem } from "./components/ResearchTempla
 export { ContactTemplate } from "./components/ContactTemplate";
 
 // navbar
+export { GlobalNav, type NavLink, type SwitcherProject } from "./components/GlobalNav";
+export { FaLogoMark } from "./components/FaLogoMark";
 export { Navbar } from "./components/Navbar";
 export { AtlasBar, type AtlasProject } from "./components/AtlasBar";
 export { ProjectNav, type NavPage } from "./components/ProjectNav";

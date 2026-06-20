@@ -4,6 +4,7 @@ import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/
 import "futures-atlas-core/tokens.css";
 import "futures-atlas-core/kit.css";
 import "futures-atlas-core/nav.css";
+import "futures-atlas-core/shell.css";
 import "./globals.css";
 import { buildOverrideCss } from "futures-atlas-core";
 import { readOverrides } from "@/lib/store";
