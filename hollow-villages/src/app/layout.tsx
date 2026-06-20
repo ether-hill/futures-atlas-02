@@ -1,0 +1,77 @@
+import type { Metadata } from "next";
+import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/google";
+import "futures-atlas-core/tokens.css";
+import "futures-atlas-core/nav.css";
+import "./globals.css";
+import { SiteNav } from "@/components/SiteNav";
+import { Footer } from "@/components/Footer";
+
+// Display / headings
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
+});
+
+// Letters / oracle quotes
+const bodoni = Bodoni_Moda({
+  variable: "--font-bodoni",
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+// Year markers
+const saira = Saira_Condensed({
+  variable: "--font-saira",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+// Labels, data, captions, body
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "The Hollow Villages — a forecast instrument for emptying villages",
+  description:
+    "A speculative-design oracle that forecasts how depopulating rural villages could be revived. Write a letter; it answers at every scale and shows you the place in 2050. Everything it reads is real.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Futures Atlas F favicon (same across the whole platform) */}
+        <link rel="icon" href="/hollow-villages/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/hollow-villages/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+        {/* Set the theme class before paint to avoid a flash. Honours a saved
+            choice, otherwise the OS preference. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body
+        className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
+      >
+        <SiteNav />
+        <main className="flex-1">{children}</main>
+        <Footer />
+      </body>
+    </html>
+  );
+}
