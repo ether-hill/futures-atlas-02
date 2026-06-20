@@ -75,7 +75,7 @@ function revealCut(lines: string[], reveal: number, mode: RevealMode): string[] 
   return lines.map((l) => { const take = Math.max(0, Math.min(l.length, show)); show -= take; return l.slice(0, take); });
 }
 
-/** Paint headline lines with optional progressive reveal + red highlight. */
+/** Paint headline lines with optional progressive reveal + accent highlight. */
 function paintLines(ctx: CanvasRenderingContext2D, lines: string[], x: number, y: number, lh: number, m: MotionState, color: string, align: Align) {
   const cut = revealCut(lines, m.reveal, m.revealMode);
   ctx.textAlign = "left";
@@ -105,11 +105,29 @@ function rgbTriplet(hex: string): string {
   return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
 }
 
+// Composed posts use the Futures Atlas type families. next/font registers them
+// under generated names exposed on CSS vars (--ff-script = Bodoni Moda, the FA
+// serif voice; --ff-docket = IBM Plex Mono), so read those at runtime — the raw
+// "Bodoni Moda" / "IBM Plex Mono" names aren't registered and would fall back.
+let _faFonts: { serif: string; mono: string } | null = null;
+function faFonts() {
+  if (_faFonts) return _faFonts;
+  if (typeof document === "undefined") return { serif: "Georgia, serif", mono: "ui-monospace, monospace" };
+  const cs = getComputedStyle(document.documentElement);
+  const script = cs.getPropertyValue("--ff-script").trim();
+  const docket = cs.getPropertyValue("--ff-docket").trim();
+  _faFonts = {
+    serif: script ? `${script}, "Bodoni Moda", Georgia, serif` : `"Bodoni Moda", Georgia, serif`,
+    mono: docket ? `${docket}, "IBM Plex Mono", ui-monospace, monospace` : `"IBM Plex Mono", ui-monospace, monospace`,
+  };
+  return _faFonts;
+}
+
 function serif(px: number, weight = 700, italic = false) {
-  return `${italic ? "italic " : ""}${weight} ${px}px "DM Serif Display", Georgia, serif`;
+  return `${italic ? "italic " : ""}${weight} ${px}px ${faFonts().serif}`;
 }
 function mono(px: number, weight = 500) {
-  return `${weight} ${px}px "IBM Plex Mono", ui-monospace, monospace`;
+  return `${weight} ${px}px ${faFonts().mono}`;
 }
 
 type Drawable = HTMLImageElement | HTMLCanvasElement;
@@ -710,7 +728,7 @@ export const MOTION_PRESETS: Array<{ id: MotionId; label: string }> = [
 ];
 
 /** Text animation presets. */
-export type TextAnimId = "none" | "fade-up" | "fade-in" | "rise" | "type-on" | "word-cascade" | "type-on-red";
+export type TextAnimId = "none" | "fade-up" | "fade-in" | "rise" | "type-on" | "word-cascade" | "type-on-blue" | "type-on-red";
 export const TEXT_ANIMS: Array<{ id: TextAnimId; label: string }> = [
   { id: "none", label: "None" },
   { id: "fade-up", label: "Fade Up" },
@@ -718,7 +736,7 @@ export const TEXT_ANIMS: Array<{ id: TextAnimId; label: string }> = [
   { id: "rise", label: "Rise" },
   { id: "type-on", label: "Type On" },
   { id: "word-cascade", label: "Word Cascade" },
-  { id: "type-on-red", label: "Type On · Red" },
+  { id: "type-on-blue", label: "Type On · Blue" },
 ];
 
 function bgMotionAt(id: MotionId, t: number): { scale: number; dx: number; dy: number } {
@@ -745,7 +763,7 @@ function textAnimAt(id: TextAnimId, p: number): { textProgress: number; textRise
     case "rise": return { ...base, textProgress: p, textRise: 1.8 };
     case "type-on": return { ...base, reveal: p, revealMode: "char" };
     case "word-cascade": return { ...base, reveal: p, revealMode: "word" };
-    case "type-on-red": return { ...base, reveal: p, revealMode: "char", highlight: true };
+    case "type-on-blue": case "type-on-red": return { ...base, reveal: p, revealMode: "char", highlight: true };
     default: return base;
   }
 }

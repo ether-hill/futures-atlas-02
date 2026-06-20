@@ -301,23 +301,18 @@ export function StudioApp({ source }: { source: ComposerSource }) {
    * the live preview, the real-time MP4/WebM export, and the GIF export. */
   const videoSyncMode = useRef<"realtime" | "seek">("realtime");
 
-  // Real-time path (preview + MP4/WebM): let the muted element play and correct
-  // it only on the slide-loop wrap or large drift, so playback stays smooth.
+  // Real-time path (preview + MP4/WebM): let the muted element PLAY naturally and
+  // never seek per-frame — repeatedly setting currentTime on a playing video makes
+  // it flicker between decoded frames, especially across a crossfade. The only
+  // correction is a single reset at the slide-duration boundary, so an 8s clip on
+  // a 5s slide loops at 5s. Exact frame positioning is the GIF path's job (seek).
   const syncVideoRealtime = useCallback((f: ComposerFrame, localT: number) => {
     if (f.kind !== "video" || videoSyncMode.current !== "realtime") return;
+    void localT;
     const v = getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl);
-    if (!v || v.readyState < 1) return; // no metadata yet → can't play/seek
-    const dur = durFor(f);
-    // Not yet active (fading in): hold the very first frame, paused.
-    if (localT <= 0) { if (!v.paused) v.pause(); if (v.currentTime > 0.05) { try { v.currentTime = 0; } catch { /* */ } } return; }
+    if (!v) return;
     if (v.paused) v.play().catch(() => { /* */ });
-    const target = videoTargetTime(v, localT, dur);
-    const drift = target - v.currentTime;
-    // Correct on the loop wrap (big negative drift) or if it has run past the
-    // slide's window — so an 8s clip on a 5s slide never shows past 5s.
-    if (drift < -0.3 || drift > 0.6 || v.currentTime > dur + 0.1) {
-      try { v.currentTime = target; } catch { /* */ }
-    }
+    if (v.currentTime > durFor(f) + 0.1) { try { v.currentTime = 0; } catch { /* */ } }
   }, [getVideo, durFor]);
 
   // Seek path (GIF, frame-stepped): position the clip exactly and wait for it.
