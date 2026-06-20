@@ -24,7 +24,7 @@ export default function ProjectsPage() {
           </span>
         </div>
         <h1 className="mb-[clamp(26px,4vw,46px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
-          Every world in the atlas.
+          Every world in the atlas
         </h1>
 
         {/* category filters */}

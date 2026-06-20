@@ -13,20 +13,10 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
     <>
       {/* plate */}
       <div
-        className={`group/plate relative flex aspect-[3/2] items-end overflow-hidden ${project.image || project.video ? "" : "fa-hatch"}`}
+        className={`group/plate relative flex aspect-[3/2] items-end overflow-hidden ${project.image ? "" : "fa-hatch"}`}
         style={{ borderBottom: "var(--border-hairline) solid var(--hairline)", padding: "var(--space-5)" }}
       >
-        {project.video ? (
-          <video
-            src={project.video}
-            poster={project.image}
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
-          />
-        ) : project.image ? (
+        {project.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={project.image}

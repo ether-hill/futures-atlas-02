@@ -13,7 +13,7 @@ export default function Home() {
           <Reveal>
             <p className="eyebrow tick mb-6">A catalogue of possible worlds</p>
             <h1 className="max-w-[16ch] text-[clamp(40px,8vw,120px)] font-extrabold leading-[0.92] tracking-[-0.03em] text-ink text-balance">
-              Futures Atlas.
+              Futures Atlas
             </h1>
             <p className="mt-7 max-w-[620px] font-mono text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-ink-70">
               A growing collection of speculative-design projects. Each one takes
@@ -44,7 +44,7 @@ export default function Home() {
         <Container>
           <Reveal>
             <h2 className="mb-[clamp(30px,5vw,56px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
-              Latest.
+              Latest
             </h2>
           </Reveal>
 

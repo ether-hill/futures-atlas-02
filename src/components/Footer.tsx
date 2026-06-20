@@ -23,7 +23,7 @@ export function Footer() {
         {home && (
           <>
             <p className="max-w-[18ch] text-[clamp(34px,6vw,96px)] font-extrabold leading-[0.96] tracking-[-0.028em] text-paper text-balance">
-              The future is plural.
+              The future is plural
             </p>
             <p className="mt-[22px] max-w-[620px] font-mono text-[14px] leading-[1.7] text-paper/78">
               Futures Atlas collects speculative-design projects that each draw

@@ -107,7 +107,7 @@
       foot.className = "fa-foot";
       foot.innerHTML =
         '<div class="fa-foot__inner">' +
-        '<p class="fa-foot__lede">The future is plural.</p>' +
+        '<p class="fa-foot__lede">The future is plural</p>' +
         '<p class="fa-foot__blurb">Futures Atlas collects speculative-design projects that each draw one possible world in full — grounded, specific, and built to be argued with.</p>' +
         '<div class="fa-foot__row">' +
         '<span class="fa-foot__brand">FUTURES ATLAS</span>' +

@@ -5,7 +5,7 @@ export function Footer() {
   return (
     <footer className="fa-foot">
       <div className="fa-foot__inner">
-        <p className="fa-foot__lede">The future is plural.</p>
+        <p className="fa-foot__lede">The future is plural</p>
         <p className="fa-foot__blurb">
           Futures Atlas collects speculative-design projects that each draw one possible world in
           full — grounded, specific, and built to be argued with.
