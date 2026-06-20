@@ -1,0 +1,210 @@
+/*
+  futures-atlas-core — nav.css
+  Standalone navbar styles (no base resets), so project zones can use the
+  Navbar without pulling kit.css's global element styles. Pair with tokens.css.
+*/
+
+/* ---------- navbar (AtlasBar + ProjectNav) ---------- */
+/* flat, sentence case, two weights (400/500), token-driven, dark-mode aware */
+
+.fa-navbar {
+  background: var(--bg);
+  border-bottom: var(--border-hairline) solid var(--hairline);
+}
+.fa-navbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 52px;
+  padding-block: var(--space-2);
+}
+.fa-navbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+.fa-navbar__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex: 0 0 auto;
+}
+
+/* --- the Futures Atlas anchor --- */
+.fa-atlas {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  /* padded hit area without shifting layout */
+  margin: calc(var(--space-1) * -1) calc(var(--space-2) * -1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-menu);
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+  transition: background 0.15s var(--ease);
+}
+.fa-atlas:hover,
+.fa-atlas:focus-visible {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+  outline: none;
+}
+.fa-atlas:focus-visible { outline: var(--focus-ring) solid var(--accent); outline-offset: 2px; }
+.fa-atlas__mark { display: inline-flex; flex: 0 0 auto; color: var(--accent); }
+.fa-atlas__word {
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: var(--text-body-size);
+  letter-spacing: -0.005em;
+  white-space: nowrap;
+  text-underline-offset: 3px;
+}
+.fa-atlas:hover .fa-atlas__word,
+.fa-atlas:focus-visible .fa-atlas__word { text-decoration: underline; }
+.fa-atlas__home {
+  display: inline-flex;
+  flex: 0 0 auto;
+  color: var(--muted);
+  opacity: 0;
+  transform: translateX(-3px);
+  transition: opacity 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.fa-atlas:hover .fa-atlas__home,
+.fa-atlas:focus-visible .fa-atlas__home { opacity: 1; transform: none; }
+.fa-atlas__tip {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: var(--space-2);
+  z-index: 40;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: var(--text-micro);
+  color: var(--muted);
+  background: var(--panel);
+  border: var(--border-hairline) solid var(--hairline);
+  border-radius: var(--radius);
+  padding: 4px 8px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 0.15s var(--ease), transform 0.15s var(--ease);
+}
+.fa-atlas:hover .fa-atlas__tip,
+.fa-atlas:focus-visible .fa-atlas__tip { opacity: 1; transform: none; }
+
+/* --- breadcrumb separator --- */
+.fa-sep {
+  flex: 0 0 auto;
+  color: var(--muted);
+  opacity: 0.55;
+  font-family: var(--font-heading);
+  font-weight: 400;
+  user-select: none;
+}
+
+/* --- project switcher --- */
+.fa-switch-wrap { position: relative; min-width: 0; }
+.fa-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  max-width: 46vw;
+  margin-left: calc(var(--space-2) * -1);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  border-radius: var(--radius-menu);
+  background: none;
+  cursor: pointer;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: var(--text-body-size);
+  transition: background 0.15s var(--ease);
+}
+.fa-switch:hover { background: color-mix(in srgb, var(--text) 7%, transparent); }
+.fa-switch:focus-visible { outline: var(--focus-ring) solid var(--accent); outline-offset: 2px; }
+.fa-switch__name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fa-switch__chev { flex: 0 0 auto; color: var(--muted); transition: transform 0.15s var(--ease); }
+.fa-switch[aria-expanded="true"] .fa-switch__chev { transform: rotate(180deg); }
+
+/* --- dropdown / mobile menu --- */
+.fa-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  z-index: 40;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--space-1);
+  background: var(--panel);
+  border: var(--border-hairline) solid var(--hairline);
+  border-radius: var(--radius-menu);
+}
+.fa-menu--left { left: 0; }
+.fa-menu--right { right: 0; }
+.fa-menu__item {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: var(--text-body-size);
+  white-space: nowrap;
+}
+.fa-menu__item:hover,
+.fa-menu__item:focus-visible { background: color-mix(in srgb, var(--text) 7%, transparent); outline: none; }
+.fa-menu__item[aria-current] { font-weight: 500; }
+.fa-menu__item--muted { color: var(--muted); }
+.fa-menu__item--accent { color: var(--accent-deep); }
+.fa-menu__sep { height: var(--border-hairline); margin: var(--space-1) 0; background: var(--hairline); }
+
+/* --- project page links (right) --- */
+.fa-pnav { display: flex; align-items: center; gap: var(--space-4); }
+.fa-pnav__link {
+  padding-block: var(--space-1);
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: var(--text-body-size);
+  color: var(--muted);
+  text-decoration: none;
+  text-underline-offset: 5px;
+  white-space: nowrap;
+}
+.fa-pnav__link:hover { color: var(--text); }
+.fa-pnav__link--active {
+  color: var(--text);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+}
+
+/* --- hamburger (mobile only) --- */
+.fa-burger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: var(--border-hairline) solid color-mix(in srgb, var(--text) 25%, transparent);
+  border-radius: var(--radius-input);
+  cursor: pointer;
+}
+.fa-burger span { display: block; width: 18px; height: 1.5px; background: var(--text); }
+
+@media (max-width: 720px) {
+  .fa-pnav { display: none; }
+  .fa-burger { display: inline-flex; }
+}
+@media (min-width: 721px) {
+  .fa-burger { display: none; }
+}

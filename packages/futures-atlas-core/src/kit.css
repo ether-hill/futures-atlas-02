@@ -1,0 +1,189 @@
+/*
+  futures-atlas-core — kit.css
+  Base element styles + component classes. Every value here references a SEMANTIC
+  token from tokens.css. No raw hex/px/font literals (except the decorative
+  plan-grid/hatch textures, which are documented texture, not themeable roles).
+*/
+
+* {
+  box-sizing: border-box;
+  border-color: var(--hairline);
+}
+
+html {
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text-body);
+  font-family: var(--font-mono);
+  font-size: var(--text-body-size);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-display);
+  color: var(--text);
+}
+
+:focus-visible {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--radius);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  [data-reveal] { opacity: 1 !important; transform: none !important; }
+}
+
+/* ---------- layout ---------- */
+
+.fa-container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.fa-section {
+  padding-block: var(--space-section);
+}
+.fa-section--header { padding-block: var(--space-header); }
+.fa-section--band {
+  background: var(--band);
+  color: var(--paper);
+}
+
+/* ---------- type registers ---------- */
+
+.fa-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label-wide);
+  color: var(--muted);
+}
+.fa-voice {
+  font-family: var(--font-serif);
+  font-weight: var(--weight-medium);
+  font-style: italic;
+  color: var(--text);
+}
+.fa-year {
+  font-family: var(--font-year);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+/* type-scale demo helpers (used by the style guide) */
+.fa-t-display-xl { font-family: var(--font-heading); font-weight: var(--weight-black); font-size: var(--text-display-xl); line-height: var(--lh-display); letter-spacing: var(--track-display); color: var(--text); }
+.fa-t-display-l { font-family: var(--font-heading); font-weight: var(--weight-strong); font-size: var(--text-display-l); line-height: var(--lh-display); letter-spacing: var(--track-display); color: var(--text); }
+.fa-t-display-m { font-family: var(--font-heading); font-weight: var(--weight-strong); font-size: var(--text-display-m); line-height: var(--lh-tight); letter-spacing: var(--track-display); color: var(--text); }
+.fa-t-display-s { font-family: var(--font-heading); font-weight: var(--weight-strong); font-size: var(--text-display-s); line-height: var(--lh-tight); letter-spacing: var(--track-tight); color: var(--text); }
+.fa-t-title { font-family: var(--font-heading); font-weight: var(--weight-strong); font-size: var(--text-title); line-height: var(--lh-tight); color: var(--text); }
+.fa-t-title-s { font-family: var(--font-heading); font-weight: var(--weight-strong); font-size: var(--text-title-s); line-height: var(--lh-snug); color: var(--text); }
+.fa-t-lead { font-size: var(--text-lead); line-height: var(--lh-snug); color: var(--text); }
+.fa-t-body { font-size: var(--text-body-size); line-height: var(--lh-body); color: var(--text-body); }
+.fa-t-stat { font-family: var(--font-heading); font-weight: var(--weight-black); font-size: var(--text-stat); line-height: 0.82; letter-spacing: var(--track-display); color: var(--text); }
+.fa-t-label { font-family: var(--font-mono); font-size: var(--text-label); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--muted); }
+
+/* ---------- buttons ---------- */
+
+.fa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  padding: 14px 22px;
+  border-radius: var(--radius);
+  text-decoration: none;
+  cursor: pointer;
+  border: var(--border-hairline) solid transparent;
+  transition: background 0.18s var(--ease), border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+.fa-btn--primary {
+  background: var(--accent);
+  color: var(--paper);
+  box-shadow: var(--shadow-button);
+}
+.fa-btn--primary:hover { background: var(--accent-deep); }
+.fa-btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--text) 30%, transparent);
+}
+.fa-btn--ghost:hover { border-color: var(--text); }
+
+/* ---------- card ---------- */
+
+.fa-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: var(--border-hairline) solid var(--text);
+  transition: border-color 0.18s var(--ease);
+}
+.fa-card--link { text-decoration: none; }
+.fa-card--link:hover { border-color: var(--accent); }
+.fa-card__body { display: flex; flex-direction: column; flex: 1; padding: var(--space-card); }
+.fa-card__title { font-family: var(--font-heading); font-weight: var(--weight-strong); font-size: var(--text-title); line-height: var(--lh-tight); letter-spacing: var(--track-tight); color: var(--text); }
+.fa-card__meta { font-family: var(--font-mono); font-size: var(--text-label); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--accent-deep); }
+
+/* ---------- form fields ---------- */
+
+.fa-field {
+  width: 100%;
+  background: var(--bg);
+  border: var(--border-hairline) solid color-mix(in srgb, var(--text) 25%, transparent);
+  border-radius: var(--radius-input);
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+  font-size: var(--text-body-size);
+  color: var(--text);
+}
+.fa-field::placeholder { color: var(--faint); }
+.fa-field:focus { outline: none; border-color: var(--accent); }
+.fa-label { font-family: var(--font-mono); font-size: var(--text-label); text-transform: uppercase; letter-spacing: var(--track-label); color: var(--muted); }
+
+/* ---------- textures (decorative — documented exceptions to the no-literal rule) ---------- */
+
+.fa-plan-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--text) 4%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--text) 4%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.fa-hatch {
+  background-color: color-mix(in srgb, var(--text) 18%, var(--haze));
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--text) 6%, transparent) 0 1px, transparent 1px 12px);
+}
+
+/* ---------- motion ---------- */
+
+@keyframes fa-rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+[data-reveal] { opacity: 0; }
+[data-reveal].fa-in { animation: fa-rise var(--reveal-dur) var(--ease) both; }
