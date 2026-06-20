@@ -8,6 +8,10 @@
       name="description"
       content="A prototyping dashboard for quantum-computing generative systems. Magnitude becomes density, phase becomes hue."
     />
+    <script>
+      // default the global nav to dark, before first paint (no flash)
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
   </head>
   <body>
     <div id="app"></div>

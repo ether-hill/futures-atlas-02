@@ -8,7 +8,7 @@
 */
 (function () {
   // dark by default on the project pages (matches their dark content)
-  try { if (localStorage.getItem("theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {}
+  try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {}
 
   var FA_PROJECTS = [
     { name: "Social Composer", path: "/social-composer" },
@@ -94,11 +94,11 @@
 
     var toggle = h.querySelector(".fa-shell__toggle"), root = document.documentElement;
     function paint() { toggle.innerHTML = root.classList.contains("dark") ? SUN : MOON; }
-    try { if (localStorage.getItem("theme") === "dark") root.classList.add("dark"); } catch (e) {}
+    try { if (localStorage.getItem("fa-theme") === "dark") root.classList.add("dark"); } catch (e) {}
     paint();
     toggle.addEventListener("click", function () {
       var d = root.classList.toggle("dark");
-      try { localStorage.setItem("theme", d ? "dark" : "light"); } catch (e) {}
+      try { localStorage.setItem("fa-theme", d ? "dark" : "light"); } catch (e) {}
       paint();
     });
   }

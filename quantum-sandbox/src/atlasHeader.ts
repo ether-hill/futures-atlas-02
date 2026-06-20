@@ -121,7 +121,7 @@ export function mountAtlasHeader(current: FaProject): void {
   const root = document.documentElement;
   const paint = () => (toggle.innerHTML = root.classList.contains("dark") ? SUN : MOON);
   try {
-    if (localStorage.getItem("theme") !== "light") root.classList.add("dark");
+    if (localStorage.getItem("fa-theme") !== "light") root.classList.add("dark");
   } catch {
     /* ignore */
   }
@@ -129,7 +129,7 @@ export function mountAtlasHeader(current: FaProject): void {
   toggle.addEventListener("click", () => {
     const dark = root.classList.toggle("dark");
     try {
-      localStorage.setItem("theme", dark ? "dark" : "light");
+      localStorage.setItem("fa-theme", dark ? "dark" : "light");
     } catch {
       /* ignore */
     }

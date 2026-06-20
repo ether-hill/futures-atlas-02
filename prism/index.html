@@ -8,6 +8,10 @@
       name="description"
       content="A smorgasbord of animated, embeddable generative visuals — the visual language of a quantum-computing futures project."
     />
+    <script>
+      // default the global nav to dark, before first paint (no flash)
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
   </head>
   <body>
     <div id="app"></div>

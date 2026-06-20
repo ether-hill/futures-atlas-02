@@ -52,7 +52,7 @@ export function FaShell() {
     const next = !dark;
     setDark(next);
     document.documentElement.classList.toggle("dark", next);
-    try { localStorage.setItem("theme", next ? "dark" : "light"); } catch {}
+    try { localStorage.setItem("fa-theme", next ? "dark" : "light"); } catch {}
   };
 
   return (
