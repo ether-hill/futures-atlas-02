@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { FaLogoMark } from "./FaLogoMark";
 
 export interface AtlasProject {
   name: string;
@@ -43,7 +44,7 @@ export function AtlasBar({
     <div className="fa-navbar__left">
       <a className="fa-atlas" href={homeHref} aria-label="Go to Futures Atlas home">
         <span className="fa-atlas__mark" aria-hidden="true">
-          <FMark />
+          <FaLogoMark size={18} />
         </span>
         <span className="fa-atlas__word">Futures Atlas</span>
         <span className="fa-atlas__home" aria-hidden="true">
@@ -104,13 +105,6 @@ export function AtlasBar({
   );
 }
 
-function FMark() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 64 64" fill="currentColor" aria-hidden="true">
-      <path d="M15 13H51V24H27V29H47V40H27V51H15Z" />
-    </svg>
-  );
-}
 function HomeIcon() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

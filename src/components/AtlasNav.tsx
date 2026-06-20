@@ -26,6 +26,7 @@ export function AtlasNav() {
       activeHref={pathname}
       homeHref="/"
       trailing={<ThemeToggle />}
+      fullBleed
     />
   );
 }

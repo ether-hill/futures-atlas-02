@@ -16,6 +16,7 @@ export function Navbar({
   activeHref,
   homeHref = "/",
   trailing,
+  fullBleed = false,
 }: {
   currentProject?: { name: string; slug: string };
   projects?: AtlasProject[];
@@ -23,12 +24,19 @@ export function Navbar({
   activeHref?: string;
   homeHref?: string;
   trailing?: ReactNode;
+  /** span the full viewport width (no centred max-width container) */
+  fullBleed?: boolean;
 }) {
   return (
     <header className="fa-navbar">
       <div
         className="fa-navbar__inner"
-        style={{ maxWidth: "var(--container-max)", marginInline: "auto", paddingInline: "var(--gutter)", width: "100%" }}
+        style={{
+          maxWidth: fullBleed ? "none" : "var(--container-max)",
+          marginInline: "auto",
+          paddingInline: "var(--gutter)",
+          width: "100%",
+        }}
       >
         <AtlasBar currentProject={currentProject} projects={projects} homeHref={homeHref} />
         <div className="fa-navbar__right">
