@@ -15,5 +15,5 @@ const LINKS: NavLink[] = [
 
 export function AtlasNav() {
   const pathname = usePathname();
-  return <GlobalNav links={LINKS} activeHref={pathname} homeHref="/" trailing={<ThemeToggle overlay />} />;
+  return <GlobalNav links={LINKS} activeHref={pathname} homeHref="/" trailing={<ThemeToggle />} />;
 }

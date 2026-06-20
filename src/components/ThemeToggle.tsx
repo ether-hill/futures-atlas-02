@@ -35,7 +35,7 @@ export function ThemeToggle({ overlay = false }: { overlay?: boolean }) {
       onClick={toggle}
       aria-label={mounted ? `Switch to ${dark ? "light" : "dark"} mode` : "Toggle theme"}
       title={mounted ? `Switch to ${dark ? "light" : "dark"} mode` : "Toggle theme"}
-      className={`flex h-9 w-9 items-center justify-center rounded-[3px] border transition-colors ${ring}`}
+      className={`flex h-[38px] w-[38px] items-center justify-center rounded-full border transition-colors ${ring}`}
     >
       {/* sun when dark (click → light), moon when light (click → dark) */}
       <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden suppressHydrationWarning>
