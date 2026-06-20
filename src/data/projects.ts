@@ -86,6 +86,15 @@ export const projects: Project[] = [
     status: "live",
     path: "/social-composer", // self-contained Next static export served within this site
   },
+  {
+    id: "hi-mike",
+    title: "Hi Mike",
+    tagline: "Placeholder — copy to come.", // owner will flesh this out
+    year: "2026",
+    field: "Untitled",
+    status: "live",
+    path: "/hi-mike", // Next.js route inside this app
+  },
 ];
 
 export const statusLabel: Record<ProjectStatus, string> = {

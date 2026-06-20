@@ -47,8 +47,19 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|oklch\(' src/components src/app --include='*.tsx'
 
 ## Deploy
 
-Built locally and shipped prebuilt so Vercel needn't clone the private core repo:
+**This project is git-connected on Vercel and SHARED — push to `main` and Vercel
+auto-builds & deploys.** More than one person (mnoesthedens, laubaumau) pushes to
+it. Vercel can build the private `futures-atlas-core` dependency itself, so there
+is no reason to deploy prebuilt from a local tree.
+
+**Always deploy via git, and only when in sync with origin:**
 ```sh
-vercel build --scope frond-studio
-vercel deploy --prebuilt --prod --scope frond-studio
+./scripts/safe-deploy.sh   # fetches, refuses if behind origin/main, then pushes
 ```
+
+**NEVER run `vercel deploy --prebuilt --prod` for this project.** A prebuilt CLI
+deploy from a local tree that is behind `origin/main` overwrites production with a
+stale snapshot and wipes teammates' work. (This happened once: a deploy from a
+tree 34 commits behind wiped three projects mnoesthedens had added. Recovered by
+`vercel promote`-ing the last good deployment.) Before any work, run
+`git fetch && git status` and make sure you are not behind `origin/main`.
