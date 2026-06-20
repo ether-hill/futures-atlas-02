@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
-import { projects } from "@/data/projects";
+import { projects, projectsByDate } from "@/data/projects";
 
 export default function Home() {
   const live = projects.filter((p) => p.status === "live").length;
@@ -60,7 +60,15 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <ProjectGrid />
+            <ProjectGrid items={projectsByDate.slice(0, 6)} />
+            <div className="mt-[clamp(32px,5vw,56px)] flex justify-center">
+              <Link
+                href="/projects"
+                className="inline-flex items-center gap-2.5 rounded-[2px] border-[1.5px] border-ink/25 px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-ink transition-colors hover:border-ink"
+              >
+                View all projects <span className="text-[14px]">→</span>
+              </Link>
+            </div>
           </Reveal>
         </Container>
       </section>

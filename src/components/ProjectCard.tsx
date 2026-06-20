@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { projects, statusLabel, type Project } from "@/data/projects";
+import { projects, statusLabel, formatProjectDate, type Project } from "@/data/projects";
 
 // Fully token-driven (futures-atlas-core): every size/space/colour/font references
 // a semantic token, so the style-guide panel drives every dimension. Structural
@@ -14,7 +14,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
       {/* plate */}
       <div
         className={`group/plate relative flex aspect-[3/2] items-end overflow-hidden ${project.image ? "" : "fa-hatch"}`}
-        style={{ borderBottom: "var(--border-hairline) solid var(--text)", padding: "var(--space-5)" }}
+        style={{ borderBottom: "var(--border-hairline) solid var(--hairline)", padding: "var(--space-5)" }}
       >
         {project.image ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -57,7 +57,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
           <span
             style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-label)", textTransform: "uppercase", letterSpacing: "var(--track-label)", color: "var(--muted)" }}
           >
-            {project.year}
+            {formatProjectDate(project.date)}
           </span>
         </div>
         <h3 className="fa-card__title">{project.title}</h3>
@@ -110,10 +110,10 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   );
 }
 
-export function ProjectGrid() {
+export function ProjectGrid({ items = projects }: { items?: Project[] }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2" style={{ gap: "var(--space-5)" }}>
-      {projects.map((p, i) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: "var(--space-5)" }}>
+      {items.map((p, i) => (
         <ProjectCard key={p.id} project={p} index={i} />
       ))}
     </div>

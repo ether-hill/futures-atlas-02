@@ -11,7 +11,7 @@ import { FA_HOME, FA_PROJECTS, FA_CURRENT_PATH, FA_CURRENT_NAME } from "./fa-pro
 
 const LINKS = [
   { name: "Home", path: "/" },
-  { name: "Projects", path: "/#projects" },
+  { name: "Projects", path: "/projects" },
   { name: "About", path: "/about" },
   { name: "Contact", path: "/contact" },
 ];

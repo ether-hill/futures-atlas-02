@@ -8,7 +8,7 @@ import { ThemeToggle } from "./ThemeToggle";
 // project, so no breadcrumb — just the primary links + theme toggle.
 const LINKS: NavLink[] = [
   { label: "Home", href: "/" },
-  { label: "Projects", href: "/#projects" },
+  { label: "Projects", href: "/projects" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];

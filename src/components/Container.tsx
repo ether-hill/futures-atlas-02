@@ -14,7 +14,7 @@ export function Container({
   className?: string;
 }) {
   return (
-    <div className={`mx-auto w-full max-w-[1500px] px-[clamp(20px,5vw,56px)] ${className}`}>
+    <div className={`mx-auto w-full px-4 min-[680px]:px-7 ${className}`}>
       {children}
     </div>
   );
