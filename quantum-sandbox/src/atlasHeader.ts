@@ -35,7 +35,7 @@ const SUN = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle
 /** Mount the standard global nav for the current project (name + its /path). */
 export function mountAtlasHeader(current: FaProject): void {
   const base = import.meta.env.BASE_URL || "/";
-  const mark = `<img src="${base}fa.svg" alt="" aria-hidden="true" style="display:block;height:1.05em;width:auto;filter:invert(1)" />`;
+  const mark = `<img src="${base}fa.svg" alt="" aria-hidden="true" style="display:block;height:20px;width:auto" />`;
 
   const items = FA_PROJECTS.map((p) => {
     const isCurrent = p.path === current.path;

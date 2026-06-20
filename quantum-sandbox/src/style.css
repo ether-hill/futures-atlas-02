@@ -27,50 +27,47 @@ body {
 #app {
   display: grid;
   grid-template-columns: 300px 1fr;
-  height: calc(100vh - 52px);
+  height: calc(100vh - 64px);
   overflow: hidden;
 }
 
 /*
-  The one standard global nav — a black bar shared by the Atlas home and every
-  project. Self-contained (literal colours, no token deps) so it renders
-  identically across the host app, React project apps, and vanilla project apps.
-  Left: white brand mark + "Futures Atlas" (+ project breadcrumb dropdown on a
-  project page). Right: Home · Projects · About · Contact + the theme toggle.
+  The one standard global nav — modelled on frond-studio.vercel.app: a light,
+  editorial bar with a dark wordmark on the left and uppercase, letter-spaced
+  links + a circular theme toggle on the right. Full-bleed. On a project page a
+  breadcrumb project-switcher dropdown sits after the wordmark. Self-contained
+  (literal colours) so it renders identically across host, React and vanilla
+  project apps.
 */
 .fa-shell {
   position: relative;
   z-index: 60;
   flex: 0 0 auto;
-  height: 52px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  padding: 0 18px;
-  background: #000;
-  color: #fff;
+  gap: 16px;
+  padding: 0 28px;
+  background: #f3f1ec;
+  color: #171410;
+  border-bottom: 1px solid rgba(23, 20, 16, 0.1);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 13px;
-  letter-spacing: 0.01em;
 }
-.fa-shell__left { display: flex; align-items: center; gap: 4px; min-width: 0; }
-.fa-shell__right { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; }
+.fa-shell__left { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.fa-shell__right { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
 
 .fa-shell__home {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  padding: 6px 8px;
-  border-radius: 4px;
-  color: #fff;
+  gap: 10px;
+  color: #171410;
   text-decoration: none;
 }
-.fa-shell__home:hover { background: rgba(255, 255, 255, 0.1); }
 .fa-shell__mark { display: inline-flex; }
-.fa-shell__word { font-weight: 600; letter-spacing: 0.01em; }
+.fa-shell__word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; }
 
-.fa-shell__sep { color: rgba(255, 255, 255, 0.32); padding: 0 2px; }
+.fa-shell__sep { color: rgba(23, 20, 16, 0.3); padding: 0 4px; font-size: 18px; }
 
 /* project breadcrumb + switcher (project pages only) */
 .fa-shell__crumb { position: relative; min-width: 0; }
@@ -81,75 +78,82 @@ body {
   max-width: 46vw;
   padding: 6px 8px;
   border: 0;
-  border-radius: 4px;
+  border-radius: 5px;
   background: transparent;
-  color: #fff;
+  color: #171410;
   font: inherit;
+  font-size: 16px;
   cursor: pointer;
 }
 .fa-shell__current > span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fa-shell__current:hover { background: rgba(255, 255, 255, 0.1); }
-.fa-shell__chev { display: inline-flex; opacity: 0.7; }
+.fa-shell__current:hover { background: rgba(23, 20, 16, 0.06); }
+.fa-shell__chev { display: inline-flex; opacity: 0.55; }
 .fa-shell__menu {
   position: absolute;
-  top: calc(100% + 6px);
+  top: calc(100% + 8px);
   left: 0;
   min-width: 240px;
   padding: 6px;
-  background: #0b0b0b;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+  background: #fff;
+  border: 1px solid rgba(23, 20, 16, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 14px 40px rgba(23, 20, 16, 0.16);
   display: flex;
   flex-direction: column;
 }
 .fa-shell__menu[hidden] { display: none; }
 .fa-shell__item {
   display: block;
-  padding: 8px 10px;
-  border-radius: 5px;
-  color: #fff;
+  padding: 9px 11px;
+  border-radius: 6px;
+  color: #171410;
   text-decoration: none;
-  font-size: 13px;
+  font-size: 14px;
   white-space: nowrap;
 }
-.fa-shell__item:hover { background: rgba(255, 255, 255, 0.1); }
-.fa-shell__item.is-current { color: rgba(255, 255, 255, 0.5); cursor: default; }
-.fa-shell__item--accent { color: #6db2f0; }
-.fa-shell__menusep { height: 1px; margin: 6px 4px; background: rgba(255, 255, 255, 0.14); }
+.fa-shell__item:hover { background: rgba(23, 20, 16, 0.06); }
+.fa-shell__item.is-current { color: rgba(23, 20, 16, 0.45); cursor: default; }
+.fa-shell__item--accent { color: #b4541e; }
+.fa-shell__menusep { height: 1px; margin: 6px 4px; background: rgba(23, 20, 16, 0.1); }
 
-/* primary nav links (right) */
-.fa-shell__nav { display: flex; align-items: center; gap: 2px; }
+/* primary nav links (right) — uppercase, letter-spaced */
+.fa-shell__nav { display: flex; align-items: center; gap: 8px; }
 .fa-shell__navlink {
-  padding: 6px 10px;
-  border-radius: 4px;
-  color: rgba(255, 255, 255, 0.78);
+  padding: 8px 12px;
+  border-radius: 5px;
+  color: rgba(23, 20, 16, 0.66);
   text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
   white-space: nowrap;
 }
-.fa-shell__navlink:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-.fa-shell__navlink.is-active { color: #fff; font-weight: 600; }
+.fa-shell__navlink:hover { color: #171410; }
+.fa-shell__navlink.is-active { color: #171410; }
 
-/* theme toggle */
+/* circular theme toggle */
 .fa-shell__toggle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  margin-left: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 4px;
+  width: 38px;
+  height: 38px;
+  margin-left: 8px;
+  border: 1px solid rgba(23, 20, 16, 0.28);
+  border-radius: 50%;
   background: transparent;
-  color: #fff;
+  color: #171410;
   cursor: pointer;
 }
-.fa-shell__toggle:hover { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.55); }
+.fa-shell__toggle:hover { background: rgba(23, 20, 16, 0.06); }
 
-@media (max-width: 640px) {
+@media (max-width: 680px) {
+  .fa-shell { padding: 0 16px; }
   .fa-shell__word { display: none; }
-  .fa-shell__navlink { padding: 6px 7px; }
+  .fa-shell__navlink { padding: 8px 7px; letter-spacing: 0.08em; }
 }
+
 
 
 /* ── sidebar ─────────────────────────────────────────────────────────────── */

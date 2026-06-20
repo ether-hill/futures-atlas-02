@@ -1,6 +1,6 @@
 1:"$Sreact.fragment"
-2:I[68278,["/social-composer/_next/static/chunks/13t1zm0s7moqj.js","/social-composer/_next/static/chunks/0j4odbbsd11v3.js","/social-composer/_next/static/chunks/0_4.s.~g~nra2.js"],"StudioApp"]
-3:I[65250,["/social-composer/_next/static/chunks/13t1zm0s7moqj.js","/social-composer/_next/static/chunks/0j4odbbsd11v3.js"],"OutletBoundary"]
+2:I[68278,["/social-composer/_next/static/chunks/0aaix-ff6ndmj.js","/social-composer/_next/static/chunks/0j4odbbsd11v3.js","/social-composer/_next/static/chunks/0_4.s.~g~nra2.js"],"StudioApp"]
+3:I[65250,["/social-composer/_next/static/chunks/0aaix-ff6ndmj.js","/social-composer/_next/static/chunks/0j4odbbsd11v3.js"],"OutletBoundary"]
 4:"$Sreact.suspense"
-0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"source":{"kind":"person","name":"Untitled","description":"","summary":"","url":"","frames":[{"id":"starter","kind":"cover","label":"Blank canvas","headline":"Your headline","sub":"","imageUrl":null}],"headlineOptions":[],"attribution":"","cards":[],"listLabel":"","hashtags":""}}],[["$","script","script-0",{"src":"/social-composer/_next/static/chunks/0_4.s.~g~nra2.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"L4Oz5ebIGJcbGgHoIh0Fk"}
+0:{"rsc":["$","$1","c",{"children":[["$","$L2",null,{"source":{"kind":"person","name":"Untitled","description":"","summary":"","url":"","frames":[{"id":"starter","kind":"cover","label":"Blank canvas","headline":"Your headline","sub":"","imageUrl":null}],"headlineOptions":[],"attribution":"","cards":[],"listLabel":"","hashtags":""}}],[["$","script","script-0",{"src":"/social-composer/_next/static/chunks/0_4.s.~g~nra2.js","async":true}]],["$","$L3",null,{"children":["$","$4",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"c57pl0obuA2v7xuAaW1oZ"}
 5:null

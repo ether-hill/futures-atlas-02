@@ -121,7 +121,7 @@ function FaMark() {
       src="/social-composer/fa.svg"
       alt=""
       aria-hidden="true"
-      style={{ display: "block", height: "1.05em", width: "auto", filter: "invert(1)" }}
+      style={{ display: "block", height: "20px", width: "auto" }}
     />
   );
 }
