@@ -69,12 +69,17 @@
     var foot = document.createElement("footer");
     foot.className = "fa-foot";
     foot.innerHTML =
+      '<div class="fa-foot__inner">' +
+      '<p class="fa-foot__lede">The future is plural.</p>' +
+      '<p class="fa-foot__blurb">Futures Atlas collects speculative-design projects that each draw one possible world in full — grounded, specific, and built to be argued with.</p>' +
+      '<div class="fa-foot__row">' +
       '<span class="fa-foot__brand">FUTURES ATLAS</span>' +
       '<nav class="fa-foot__nav">' +
       '<a class="fa-foot__link" href="/">Home</a>' +
       '<a class="fa-foot__link" href="/about">About</a>' +
       '<a class="fa-foot__link" href="/contact">Contact</a></nav>' +
-      '<span class="fa-foot__tag">A catalogue of possible worlds · MMXXVI</span>';
+      '<span class="fa-foot__tag">A catalogue of possible worlds · MMXXVI</span>' +
+      '</div></div>';
     document.body.appendChild(foot);
     var btn = h.querySelector(".fa-shell__current"),
       menu = h.querySelector(".fa-shell__menu"),
