@@ -135,9 +135,11 @@ function useImages(urls: string[]) {
   }, []);
 }
 
-/* Uploaded videos as autoplaying muted <video> elements drawn into the canvas.
- * The elements are attached to the DOM (hidden) so the browser reliably decodes
- * frames for canvas drawing/export. */
+/* Uploaded videos as muted <video> elements drawn into the canvas. The elements
+ * are attached to the DOM (hidden) so the browser reliably decodes frames for
+ * canvas drawing/export. Playback is driven by the render loop — NOT autoplay —
+ * so off-screen clips stay parked at frame 0 and don't drift; otherwise a clip
+ * fading in during a transition would appear at a random, moving position. */
 function useVideos(urls: string[]) {
   const cache = useRef<Map<string, HTMLVideoElement>>(new Map());
   const requested = useRef<Set<string>>(new Set());
@@ -152,17 +154,26 @@ function useVideos(urls: string[]) {
       const remote = /^https?:\/\//i.test(raw);
       if (remote) v.crossOrigin = "anonymous";
       v.src = remote ? `/api/social-composer/vid?u=${encodeURIComponent(raw)}` : raw;
-      v.muted = true; v.loop = true; v.playsInline = true; v.autoplay = true; v.preload = "auto";
+      v.muted = true; v.loop = true; v.playsInline = true; v.preload = "auto";
       v.setAttribute("muted", ""); v.setAttribute("playsinline", "");
       v.style.cssText = "position:fixed;left:-9999px;top:-9999px;width:2px;height:2px;opacity:0;pointer-events:none;";
-      const ready = () => { cache.current.set(raw, v); v.play().catch(() => { /* */ }); setTick((t) => t + 1); };
+      const ready = () => { cache.current.set(raw, v); setTick((t) => t + 1); };
       v.onloadeddata = ready;
       v.oncanplay = ready;
       document.body.appendChild(v);
       v.load();
     }
   }, [urls]);
-  return useCallback((url: string | null | undefined) => (url ? cache.current.get(url) ?? null : null), []);
+  const get = useCallback((url: string | null | undefined) => (url ? cache.current.get(url) ?? null : null), []);
+  // Park every clip that isn't on screen this frame at its first frame, paused.
+  const pauseInactive = useCallback((activeUrls: Set<string>) => {
+    for (const [url, v] of cache.current) {
+      if (activeUrls.has(url)) continue;
+      if (!v.paused) v.pause();
+      if (v.currentTime > 0.02) { try { v.currentTime = 0; } catch { /* */ } }
+    }
+  }, []);
+  return { get, pauseInactive };
 }
 
 // Target play-head (seconds) for a video on a slide of length `dur` at the
@@ -190,7 +201,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const allUrls = useMemo(() => frames.flatMap(frameImageUrls), [frames]);
   const getImg = useImages(allUrls);
   const videoUrls = useMemo(() => frames.filter((f) => f.kind === "video").map((f) => (f as Extract<ComposerFrame, { kind: "video" }>).videoUrl), [frames]);
-  const getVideo = useVideos(videoUrls);
+  const { get: getVideo, pauseInactive } = useVideos(videoUrls);
 
   const [selected, setSelected] = useState<string[]>(() => (frames[0] ? [frames[0].id] : []));
   const [previewIdx, setPreviewIdx] = useState(0);
@@ -308,11 +319,15 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   // a 5s slide loops at 5s. Exact frame positioning is the GIF path's job (seek).
   const syncVideoRealtime = useCallback((f: ComposerFrame, localT: number) => {
     if (f.kind !== "video" || videoSyncMode.current !== "realtime") return;
-    void localT;
     const v = getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl);
     if (!v) return;
     if (v.paused) v.play().catch(() => { /* */ });
-    if (v.currentTime > durFor(f) + 0.1) { try { v.currentTime = 0; } catch { /* */ } }
+    // Restart at the slide's loop point (localT wrapped back to ~0 while the clip
+    // is still mid-play) or if a long clip ran past the slide window — one clean
+    // reset, never a per-frame seek (which is what made it flicker).
+    if ((localT < 0.08 && v.currentTime > 0.25) || v.currentTime > durFor(f) + 0.15) {
+      try { v.currentTime = 0; } catch { /* */ }
+    }
   }, [getVideo, durFor]);
 
   // Seek path (GIF, frame-stepped): position the clip exactly and wait for it.
@@ -368,13 +383,19 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const renderFrameAt = useCallback((ctx: CanvasRenderingContext2D, t: number) => {
     const draws = segmentDraws(t);
     if (!draws.length) { ctx.fillStyle = "#08070A"; ctx.fillRect(0, 0, w, h); return; }
+    // Park any video not on screen this frame at frame 0 (realtime preview/MP4),
+    // so a clip fading in starts clean instead of at a drifted, moving position.
+    if (videoSyncMode.current === "realtime") {
+      const onScreen = new Set(draws.filter((d) => d.frame.kind === "video").map((d) => (d.frame as Extract<ComposerFrame, { kind: "video" }>).videoUrl));
+      pauseInactive(onScreen);
+    }
     for (const { frame, localT, alpha } of draws) {
       syncVideoRealtime(frame, localT);
       if (alpha < 1) { ctx.save(); ctx.globalAlpha = alpha; }
       drawFrame(ctx, w, h, frame, getImg, isCorp && frame.kind === "portrait", tFor(frame), styleFor(frame), composeMotion(bgFor(frame), taFor(frame), localT, durFor(frame)), getVideo);
       if (alpha < 1) ctx.restore();
     }
-  }, [segmentDraws, syncVideoRealtime, w, h, getImg, getVideo, isCorp, tFor, bgFor, taFor, durFor, styleFor]);
+  }, [segmentDraws, syncVideoRealtime, pauseInactive, w, h, getImg, getVideo, isCorp, tFor, bgFor, taFor, durFor, styleFor]);
 
   /* Draw just the selected slide in its finished state (text fully revealed,
    * motion settled) — what you see while paused so you can edit and judge it. */
