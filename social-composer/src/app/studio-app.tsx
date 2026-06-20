@@ -221,6 +221,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const [headlineIdx, setHeadlineIdx] = useState(0);
   const [drafts, setDrafts] = useState<Draft[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number | null>(null); // 0–100 while rendering
   const [dragOver, setDragOver] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [tmUrl, setTmUrl] = useState("");
@@ -606,17 +607,20 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   // animation, otherwise its own short video clip (MP4/WebM).
   const onDownloadPerSlide = useCallback(async () => {
     if (!selFrames.length) return;
-    setBusy("zip");
+    setBusy("zip"); setProgress(0);
+    const total = selFrames.length;
     try {
       const entries: Record<string, Uint8Array> = {};
       let n = 1;
       for (const f of selFrames) {
         const base = `airapture-${slugToken}-${String(n).padStart(2, "0")}-${f.kind}`;
+        const done = n - 1;
         if (slideIsStill(f)) {
           const d = renderStill(f); if (d) entries[`${base}.png`] = dataUrlToBytes(d);
+          setProgress(Math.round((done + 1) / total * 100));
         } else {
           const prep = async () => { const v = f.kind === "video" ? getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl) : null; if (v && isFinite(v.duration) && v.duration > 0) await seekVideoTo(v, 0); };
-          const res = await renderVideoBlob({ renderFrame: singleRenderer(f), prepareFrame: prep, w, h, fps, durationSec: durFor(f) });
+          const res = await renderVideoBlob({ renderFrame: singleRenderer(f), prepareFrame: prep, onProgress: (p) => setProgress(Math.round((done + p) / total * 100)), w, h, fps, durationSec: durFor(f) });
           if (res) entries[`${base}.${res.ext}`] = await blobToBytes(res.blob);
           else { const d = renderStill(f); if (d) entries[`${base}.png`] = dataUrlToBytes(d); }
         }
@@ -624,7 +628,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
       }
       zipDownload(entries, `airapture-${slugToken}-slides.zip`);
       showToast(`Downloaded ${selFrames.length}-slide ZIP`);
-    } catch { showToast("ZIP export failed"); } finally { setBusy(null); }
+    } catch { showToast("ZIP export failed"); } finally { setBusy(null); setProgress(null); }
   }, [selFrames, slideIsStill, slugToken, singleRenderer, w, h, fps, durFor, renderStill, showToast, getVideo, seekVideoTo]);
 
   const moveSlide = useCallback((id: string, dir: -1 | 1) => {
@@ -640,19 +644,19 @@ export function StudioApp({ source }: { source: ComposerSource }) {
 
   const onDownloadGIF = useCallback(async () => {
     if (!activeFrame) return;
-    setBusy("gif");
+    setBusy("gif"); setProgress(0);
     videoSyncMode.current = "seek"; // GIF is frame-stepped → seek videos exactly
-    try { await exportGIF({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}.gif` }); showToast("Downloaded GIF"); }
-    catch { showToast("GIF export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); }
+    try { await exportGIF({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, onProgress: (p) => setProgress(Math.round(p * 100)), w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}.gif` }); showToast("Downloaded GIF"); }
+    catch { showToast("GIF export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); setProgress(null); }
   }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast]);
 
   const onDownloadVideo = useCallback(async () => {
     if (!activeFrame) return;
-    setBusy("video");
+    setBusy("video"); setProgress(0);
     try {
-      const res = await exportVideo({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}` });
+      const res = await exportVideo({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, onProgress: (p) => setProgress(Math.round(p * 100)), w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}` });
       showToast(res.ok ? `Downloaded ${res.ext?.toUpperCase()}` : "Video not supported in this browser");
-    } catch { showToast("Video export failed"); } finally { setBusy(null); }
+    } catch { showToast("Video export failed"); } finally { setBusy(null); setProgress(null); }
   }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast]);
 
   const onBatchAll = useCallback(async () => {
@@ -919,24 +923,24 @@ export function StudioApp({ source }: { source: ComposerSource }) {
               <div className="flex flex-wrap items-center gap-3">
                 {isSequence ? (
                   <>
-                    <button type="button" onClick={onDownloadVideo} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] px-4 py-2.5 hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: "#3B93D5", color: "#211e18" }}>
-                      {busy === "video" ? "Rendering…" : "↓ Sequence video (one file)"}
+                    <button type="button" onClick={onDownloadVideo} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] px-4 py-2.5 hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: "#3B93D5", color: "#211e18", ...(busy === "video" ? { opacity: 1 } : {}) }}>
+                      {busy === "video" ? `Rendering… ${progress ?? 0}%` : "↓ Sequence video (one file)"}
                     </button>
-                    <button type="button" onClick={onDownloadPerSlide} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] text-ink border border-ink/28 hover:border-ink/72 px-4 py-2.5 disabled:opacity-40">
-                      {busy === "zip" ? "Zipping…" : `↓ Per-slide ZIP (${selFrames.length})`}
+                    <button type="button" onClick={onDownloadPerSlide} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] text-ink border border-ink/28 hover:border-ink/72 px-4 py-2.5 disabled:opacity-40" style={busy === "zip" ? { opacity: 1 } : undefined}>
+                      {busy === "zip" ? `Zipping… ${progress ?? 0}%` : `↓ Per-slide ZIP (${selFrames.length})`}
                     </button>
                   </>
                 ) : (
                   <>
-                    <button type="button" onClick={activeStill ? onDownloadPNG : onDownloadVideo} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] px-4 py-2.5 hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: "#3B93D5", color: "#211e18" }}>
-                      {busy === "video" ? "Recording…" : busy === "png" ? "Generating…" : activeStill ? "↓ Download PNG" : "↓ Download MP4/WebM"}
+                    <button type="button" onClick={activeStill ? onDownloadPNG : onDownloadVideo} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] px-4 py-2.5 hover:opacity-90 disabled:opacity-40" style={{ backgroundColor: "#3B93D5", color: "#211e18", ...(busy === "video" || busy === "png" ? { opacity: 1 } : {}) }}>
+                      {busy === "video" ? `Recording… ${progress ?? 0}%` : busy === "png" ? "Generating…" : activeStill ? "↓ Download PNG" : "↓ Download MP4/WebM"}
                     </button>
                     <button type="button" onClick={activeStill ? onDownloadVideo : onDownloadPNG} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] text-ink border border-ink/28 hover:border-ink/72 px-4 py-2.5 disabled:opacity-40">
                       {activeStill ? "↓ MP4/WebM" : "↓ PNG (still)"}
                     </button>
                   </>
                 )}
-                <button type="button" onClick={onDownloadGIF} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] text-ink border border-ink/28 hover:border-ink/72 px-4 py-2.5 disabled:opacity-40">{busy === "gif" ? "Encoding…" : "↓ GIF"}</button>
+                <button type="button" onClick={onDownloadGIF} disabled={!!busy || !activeFrame} className="font-docket text-[11px] uppercase tracking-[0.12em] text-ink border border-ink/28 hover:border-ink/72 px-4 py-2.5 disabled:opacity-40" style={busy === "gif" ? { opacity: 1 } : undefined}>{busy === "gif" ? `Encoding… ${progress ?? 0}%` : "↓ GIF"}</button>
                 <button type="button" onClick={onCopyCaption} className="font-docket text-[11px] uppercase tracking-[0.12em] text-ink border border-ink/28 hover:border-ink/72 px-4 py-2.5">Copy caption</button>
                 <button type="button" onClick={onSaveDraft} className="font-docket text-[11px] uppercase tracking-[0.12em] text-ink border border-ink/28 hover:border-ink/72 px-4 py-2.5">Save draft</button>
               </div>

@@ -44,6 +44,7 @@ type RenderFrame = (ctx: CanvasRenderingContext2D, t: number) => void;
 export async function exportGIF(opts: {
   renderFrame: RenderFrame; w: number; h: number; fps: number; durationSec: number; name: string;
   prepareFrame?: (t: number) => Promise<void>;
+  onProgress?: (p: number) => void;
 }) {
   const maxW = 540;
   const scale = Math.min(1, maxW / opts.w);
@@ -66,6 +67,9 @@ export async function exportGIF(opts: {
     const palette = quantize(data, 256);
     const index = applyPalette(data, palette);
     enc.writeFrame(index, gw, gh, { palette, delay });
+    opts.onProgress?.((i + 1) / total);
+    // Yield so React can repaint the % (the encode loop otherwise blocks the UI).
+    if (i % 2 === 0) await new Promise<void>((r) => setTimeout(r, 0));
   }
   enc.finish();
   const bytes = enc.bytes();
@@ -93,6 +97,7 @@ export function pickVideoMime(): { mime: string; ext: string } | null {
 export async function renderVideoBlob(opts: {
   renderFrame: RenderFrame; w: number; h: number; fps: number; durationSec: number;
   prepareFrame?: (t: number) => Promise<void>;
+  onProgress?: (p: number) => void;
 }): Promise<{ blob: Blob; ext: string } | null> {
   const picked = pickVideoMime();
   const canvas = document.createElement("canvas");
@@ -112,6 +117,7 @@ export async function renderVideoBlob(opts: {
     const tick = (now: number) => {
       const t = Math.min(1, (now - startT) / (opts.durationSec * 1000));
       opts.renderFrame(ctx, t);
+      opts.onProgress?.(t);
       if (t >= 1) { resolve(); return; }
       requestAnimationFrame(tick);
     };
@@ -127,6 +133,7 @@ export async function renderVideoBlob(opts: {
 export async function exportVideo(opts: {
   renderFrame: RenderFrame; w: number; h: number; fps: number; durationSec: number; name: string;
   prepareFrame?: (t: number) => Promise<void>;
+  onProgress?: (p: number) => void;
 }): Promise<{ ok: boolean; ext?: string }> {
   const res = await renderVideoBlob(opts);
   if (!res) return { ok: false };
