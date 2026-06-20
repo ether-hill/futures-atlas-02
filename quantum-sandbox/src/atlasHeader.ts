@@ -1,7 +1,8 @@
-// The global Futures Atlas master header — an exact vanilla port of the Social
-// Composer `FaShell` (same markup, classes, dropdown and links), so every Atlas
-// project renders the identical master nav. Styles live under `.fa-shell*` in
-// style.css (copied verbatim from the canonical header).
+// The one standard global nav (vanilla port of core's GlobalNav) so this
+// project renders the identical black bar: white brand mark + "Futures Atlas",
+// the project breadcrumb dropdown, the primary links (Home/Projects/About/
+// Contact) and the theme toggle. Styles live under `.fa-shell*` in style.css
+// (verbatim from core/shell.css).
 
 const FA_HOME = "/";
 
@@ -20,10 +21,18 @@ const FA_PROJECTS: FaProject[] = [
   { name: "The Hollow Villages", path: "/hollow-villages" },
 ];
 
-const BACK_ARROW = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>`;
-const CHEVRON = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+const LINKS: FaProject[] = [
+  { name: "Home", path: "/" },
+  { name: "Projects", path: "/#projects" },
+  { name: "About", path: "/about" },
+  { name: "Contact", path: "/contact" },
+];
 
-/** Mount the master header for the current project (name + its /path). */
+const CHEVRON = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>`;
+const MOON = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M16 11.2A6.2 6.2 0 1 1 8.8 4a4.8 4.8 0 0 0 7.2 7.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
+const SUN = `<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3.6" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.2v2M10 15.8v2M2.2 10h2M15.8 10h2M4.6 4.6l1.4 1.4M14 14l1.4 1.4M15.4 4.6L14 6M6 14l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>`;
+
+/** Mount the standard global nav for the current project (name + its /path). */
 export function mountAtlasHeader(current: FaProject): void {
   const base = import.meta.env.BASE_URL || "/";
   const mark = `<img src="${base}fa.svg" alt="" aria-hidden="true" style="display:block;height:1.05em;width:auto;filter:invert(1)" />`;
@@ -33,12 +42,13 @@ export function mountAtlasHeader(current: FaProject): void {
     return `<a role="menuitem" href="${p.path}" class="fa-shell__item${isCurrent ? " is-current" : ""}"${isCurrent ? ' aria-current="true"' : ""}>${p.name}</a>`;
   }).join("");
 
+  const navlinks = LINKS.map((l) => `<a class="fa-shell__navlink" href="${l.path}">${l.name}</a>`).join("");
+
   const header = document.createElement("header");
   header.className = "fa-shell";
   header.innerHTML = `
     <div class="fa-shell__left">
-      <a class="fa-shell__home" href="${FA_HOME}" aria-label="Back to Futures Atlas">
-        <span class="fa-shell__back" aria-hidden="true">${BACK_ARROW}</span>
+      <a class="fa-shell__home" href="${FA_HOME}" aria-label="Futures Atlas home">
         <span class="fa-shell__mark" aria-hidden="true">${mark}</span>
         <span class="fa-shell__word">Futures Atlas</span>
       </a>
@@ -55,14 +65,14 @@ export function mountAtlasHeader(current: FaProject): void {
         </div>
       </div>
     </div>
-    <nav class="fa-shell__right" aria-label="Project">
-      <a class="fa-shell__link" href="/about">About this project</a>
-      <a class="fa-shell__link" href="/contact?project=${encodeURIComponent(current.name)}">Contact</a>
+    <nav class="fa-shell__right" aria-label="Primary">
+      <div class="fa-shell__nav">${navlinks}</div>
+      <button type="button" class="fa-shell__toggle" aria-label="Toggle theme"></button>
     </nav>`;
 
   document.body.insertBefore(header, document.body.firstChild);
 
-  // dropdown behaviour (click toggle + outside-click + escape)
+  // breadcrumb dropdown
   const crumb = header.querySelector<HTMLDivElement>(".fa-shell__crumb")!;
   const btn = header.querySelector<HTMLButtonElement>(".fa-shell__current")!;
   const menu = header.querySelector<HTMLDivElement>(".fa-shell__menu")!;
@@ -79,5 +89,25 @@ export function mountAtlasHeader(current: FaProject): void {
   });
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") setOpen(false);
+  });
+
+  // theme toggle (dark-first tool; flips the `light` class + persists)
+  const toggle = header.querySelector<HTMLButtonElement>(".fa-shell__toggle")!;
+  const root = document.documentElement;
+  const paint = () => (toggle.innerHTML = root.classList.contains("light") ? MOON : SUN);
+  try {
+    if (localStorage.getItem("fa-theme") === "light") root.classList.add("light");
+  } catch {
+    /* ignore */
+  }
+  paint();
+  toggle.addEventListener("click", () => {
+    const light = root.classList.toggle("light");
+    try {
+      localStorage.setItem("fa-theme", light ? "light" : "dark");
+    } catch {
+      /* ignore */
+    }
+    paint();
   });
 }
