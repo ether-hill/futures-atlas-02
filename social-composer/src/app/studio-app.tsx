@@ -682,7 +682,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const isSequence = selFrames.length > 1;
 
   return (
-    <div className="h-screen flex flex-col bg-bone text-ink font-script">
+    <div className="h-full flex flex-col bg-bone text-ink font-script">
       {/* Header */}
       <header className="shrink-0 flex flex-wrap items-center justify-between gap-3 border-b border-ink/13 px-5 sm:px-7 py-3.5">
         <div className="flex items-center gap-3">

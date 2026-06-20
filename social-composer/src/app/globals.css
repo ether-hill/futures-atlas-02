@@ -49,3 +49,32 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+/* Global Futures Atlas master header — simple, black, anchored top-right; the
+   project interface begins below it. Shared look across every Atlas project. */
+.fa-shell {
+  flex: 0 0 auto;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 14px;
+  background: #000;
+  color: #fff;
+}
+.fa-shell__home {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 4px;
+  color: #fff;
+  text-decoration: none;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+.fa-shell__home:hover { background: rgba(255, 255, 255, 0.1); }
+.fa-shell__back { display: inline-flex; opacity: 0.85; }
+.fa-shell__mark { display: inline-flex; }
+.fa-shell__word { font-weight: 500; }
