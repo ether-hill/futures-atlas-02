@@ -63,6 +63,7 @@ export const projects: Project[] = [
     field: "Quantum & computation",
     status: "in-progress",
     path: "/quantum-sandbox", // self-contained Vite static bundle served within this site
+    image: "/projects/quantum-sandbox.jpg",
   },
   {
     id: "prism",
@@ -73,6 +74,7 @@ export const projects: Project[] = [
     field: "Generative visuals",
     status: "in-progress",
     path: "/prism", // self-contained Vite static bundle (dashboard + embed player)
+    image: "/projects/prism.jpg",
   },
   {
     id: "social-composer",
