@@ -342,10 +342,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     window.setTimeout(finish, 400); // never hang the export on a stubborn seek
   }), []);
 
-  /* Which slide(s) are on screen at sequence-progress `t`, each with its own
-   * continuous local clock + crossfade alpha. The incoming slide gets a slightly
-   * negative localT through the fade so its background motion is already moving
-   * as it appears — no static "pause" before the motion starts. */
+  /* Which slide is on screen at sequence-progress `t`, with its own local clock.
+   * Slides hard-cut (no crossfade) — exactly one slide is drawn at any moment. */
   const segmentDraws = useCallback((t: number): Array<{ frame: ComposerFrame; localT: number; alpha: number }> => {
     const list = selFrames.length ? selFrames : (activeFrame ? [activeFrame] : []);
     if (!list.length) return [];
@@ -355,17 +353,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     const tt = t * total;
     let acc = 0, idx = 0;
     for (let i = 0; i < list.length; i++) { if (tt < acc + durs[i] || i === list.length - 1) { idx = i; break; } acc += durs[i]; }
-    const dur = durs[idx];
-    const localT = Math.min(1, (tt - acc) / dur);
-    const out = [{ frame: list[idx], localT, alpha: 1 }];
-    const fadeFrac = Math.min(0.4, dur * 0.25) / dur;
-    if (idx < list.length - 1 && localT > 1 - fadeFrac) {
-      const nextDur = durs[idx + 1];
-      const nextLocalT = (tt - (acc + dur)) / nextDur; // negative through the fade → motion already underway
-      const alpha = (localT - (1 - fadeFrac)) / fadeFrac;
-      out.push({ frame: list[idx + 1], localT: nextLocalT, alpha });
-    }
-    return out;
+    const localT = Math.min(1, (tt - acc) / durs[idx]);
+    return [{ frame: list[idx], localT, alpha: 1 }];
   }, [selFrames, activeFrame, durFor]);
 
   // Seek every on-screen video to its clock position for sequence-progress `t`.
@@ -380,7 +369,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   }, [segmentDraws, getVideo, durFor, seekVideoTo]);
 
   /* The shared render closure (used by preview + every exporter). Sequences
-   * allocate each slide its own duration, with a quick cross-fade at joins. */
+   * allocate each slide its own duration and hard-cut between them. */
   const renderFrameAt = useCallback((ctx: CanvasRenderingContext2D, t: number) => {
     const draws = segmentDraws(t);
     if (!draws.length) { ctx.fillStyle = "#08070A"; ctx.fillRect(0, 0, w, h); return; }
