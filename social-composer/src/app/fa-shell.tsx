@@ -1,25 +1,31 @@
 "use client";
 
 /**
- * Global Futures Atlas master header — the persistent platform breadcrumb above
- * every project. Left: the FA mark + back arrow (→ Atlas home) and a project
- * breadcrumb dropdown (up to 10 recent projects + "View all projects"). Right:
- * the project's own About + Contact links. Simple, black. The project interface
- * begins directly below. All links are raw <a> so they ignore the basePath and
- * resolve against the Atlas root.
+ * The one standard global nav (black bar), shared with the Atlas home and every
+ * project. Left: white brand mark + "Futures Atlas" + the project breadcrumb
+ * dropdown. Right: Home / Projects / About / Contact + the theme toggle. All
+ * links are raw <a> so they ignore basePath and resolve against the Atlas root.
  */
 import { useEffect, useRef, useState } from "react";
 import { FA_HOME, FA_PROJECTS, FA_CURRENT_PATH, FA_CURRENT_NAME } from "./fa-projects";
 
-export function FaShell({
-  aboutHref = "/social-composer/about",
-  contactHref = `/contact?project=${encodeURIComponent(FA_CURRENT_NAME)}`,
-}: {
-  aboutHref?: string;
-  contactHref?: string;
-}) {
+const LINKS = [
+  { name: "Home", path: "/" },
+  { name: "Projects", path: "/#projects" },
+  { name: "About", path: "/about" },
+  { name: "Contact", path: "/contact" },
+];
+
+export function FaShell() {
   const [open, setOpen] = useState(false);
+  const [light, setLight] = useState(false);
   const wrap = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      setLight(document.documentElement.classList.contains("light"));
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -30,13 +36,17 @@ export function FaShell({
     return () => { document.removeEventListener("mousedown", onDoc); document.removeEventListener("keydown", onKey); };
   }, [open]);
 
+  const toggleTheme = () => {
+    const next = !light;
+    setLight(next);
+    document.documentElement.classList.toggle("light", next);
+    try { localStorage.setItem("fa-theme", next ? "light" : "dark"); } catch {}
+  };
+
   return (
     <header className="fa-shell">
       <div className="fa-shell__left">
-        <a className="fa-shell__home" href={FA_HOME} aria-label="Back to Futures Atlas">
-          <span className="fa-shell__back" aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
-          </span>
+        <a className="fa-shell__home" href={FA_HOME} aria-label="Futures Atlas home">
           <span className="fa-shell__mark" aria-hidden="true"><FaMark /></span>
           <span className="fa-shell__word">Futures Atlas</span>
         </a>
@@ -84,20 +94,26 @@ export function FaShell({
         </div>
       </div>
 
-      <nav className="fa-shell__right" aria-label="Project">
-        <a className="fa-shell__link" href={aboutHref}>About this project</a>
-        <a className="fa-shell__link" href={contactHref}>Contact</a>
+      <nav className="fa-shell__right" aria-label="Primary">
+        <div className="fa-shell__nav">
+          {LINKS.map((l) => (
+            <a key={l.path} className="fa-shell__navlink" href={l.path}>{l.name}</a>
+          ))}
+        </div>
+        <button type="button" className="fa-shell__toggle" aria-label="Toggle theme" onClick={toggleTheme}>
+          {light ? (
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M16 11.2A6.2 6.2 0 1 1 8.8 4a4.8 4.8 0 0 0 7.2 7.2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" /></svg>
+          ) : (
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3.6" stroke="currentColor" strokeWidth="1.5" /><path d="M10 2.2v2M10 15.8v2M2.2 10h2M15.8 10h2M4.6 4.6l1.4 1.4M14 14l1.4 1.4M15.4 4.6L14 6M6 14l-1.4 1.4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
+          )}
+        </button>
       </nav>
     </header>
   );
 }
 
-/**
- * Futures Atlas mark — the brand logo (public/fa.svg, served at
- * /social-composer/fa.svg). The artwork is the bare mark on a transparent field,
- * viewBox-cropped tight; `invert(1)` flips the black mark to white for the
- * shell's black header. Sized to ~1em so it stands as tall as the wordmark.
- */
+/** Futures Atlas brand mark (public/fa.svg). Black artwork on transparent;
+ *  invert(1) → white on the black bar. ~1em tall to match the wordmark. */
 function FaMark() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
