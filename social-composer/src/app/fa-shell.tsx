@@ -37,9 +37,7 @@ export function FaShell({
           <span className="fa-shell__back" aria-hidden="true">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M15 6l-6 6 6 6" /></svg>
           </span>
-          <span className="fa-shell__mark" aria-hidden="true">
-            <svg width="15" height="15" viewBox="0 0 64 64" fill="currentColor"><path d="M15 13H51V24H27V29H47V40H27V51H15Z" /></svg>
-          </span>
+          <span className="fa-shell__mark" aria-hidden="true"><FaMark /></span>
           <span className="fa-shell__word">Futures Atlas</span>
         </a>
 
@@ -91,5 +89,25 @@ export function FaShell({
         <a className="fa-shell__link" href={contactHref}>Contact</a>
       </nav>
     </header>
+  );
+}
+
+/**
+ * Futures Atlas mark — a faceted dome over a rising sun. Line art using
+ * `currentColor`, so it inverts black/white with the surrounding text colour.
+ */
+function FaMark() {
+  return (
+    <svg width="22" height="15" viewBox="6 10 88 56" fill="none" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">
+      <path d="M12 60 L16.4 39.3 L31 21.9 L50 16 L69 21.9 L83.6 39.3 L88 60 Z" />
+      <path d="M41.6 56.8 L21.5 49.2" />
+      <path d="M43.6 53.7 L27 37.5" />
+      <path d="M46.3 51.8 L35.9 29.1" />
+      <path d="M50 51 L50 25" />
+      <path d="M53.7 51.8 L64.1 29.1" />
+      <path d="M56.4 53.7 L73 37.5" />
+      <path d="M58.4 56.8 L78.5 49.2" />
+      <path d="M41 60 A9 9 0 0 1 59 60" />
+    </svg>
   );
 }
