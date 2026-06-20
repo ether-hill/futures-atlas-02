@@ -72,6 +72,18 @@ export function mountAtlasHeader(current: FaProject): void {
 
   document.body.insertBefore(header, document.body.firstChild);
 
+  // shared footer (dark band) at the bottom of the page
+  const foot = document.createElement("footer");
+  foot.className = "fa-foot";
+  foot.innerHTML =
+    `<span class="fa-foot__brand">FUTURES ATLAS</span>` +
+    `<nav class="fa-foot__nav">` +
+    `<a class="fa-foot__link" href="/">Home</a>` +
+    `<a class="fa-foot__link" href="/about">About</a>` +
+    `<a class="fa-foot__link" href="/contact">Contact</a></nav>` +
+    `<span class="fa-foot__tag">A catalogue of possible worlds · MMXXVI</span>`;
+  document.body.appendChild(foot);
+
   // hide on scroll-down, reveal on scroll-up (frond-style)
   let lastY = window.scrollY;
   window.addEventListener(
@@ -104,12 +116,12 @@ export function mountAtlasHeader(current: FaProject): void {
     if (e.key === "Escape") setOpen(false);
   });
 
-  // theme toggle — light by default; flips `html.dark` + persists "theme"
+  // theme toggle — DARK by default on the project tools; flips `html.dark` + persists "theme"
   const toggle = header.querySelector<HTMLButtonElement>(".fa-shell__toggle")!;
   const root = document.documentElement;
   const paint = () => (toggle.innerHTML = root.classList.contains("dark") ? SUN : MOON);
   try {
-    if (localStorage.getItem("theme") === "dark") root.classList.add("dark");
+    if (localStorage.getItem("theme") !== "light") root.classList.add("dark");
   } catch {
     /* ignore */
   }

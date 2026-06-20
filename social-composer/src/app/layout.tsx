@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bodoni_Moda, Archivo, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { FaShell } from "./fa-shell";
+import { Footer } from "./footer";
 
 // Futures Atlas type system: Archivo 800 display, Bodoni Moda serif voice,
 // IBM Plex Mono data/labels/body.
@@ -35,9 +36,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${script.variable} ${display.variable} ${plex.variable} h-full antialiased`}>
-      <body className="h-full flex flex-col overflow-hidden bg-bone text-ink font-docket">
+      <head>
+        {/* default the global nav (and page) to dark, no flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{if(localStorage.getItem('theme')!=='light')document.documentElement.classList.add('dark');}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="min-h-full bg-bone text-ink font-docket">
         <FaShell />
-        <div className="flex-1 min-h-0 flex flex-col">{children}</div>
+        {children}
+        <Footer />
       </body>
     </html>
   );
