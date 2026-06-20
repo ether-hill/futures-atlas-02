@@ -52,10 +52,20 @@ auto-builds & deploys.** More than one person (mnoesthedens, laubaumau) pushes t
 it. Vercel can build the private `futures-atlas-core` dependency itself, so there
 is no reason to deploy prebuilt from a local tree.
 
-**Always deploy via git, and only when in sync with origin:**
+**Branch model — work on `staging`, promote to `main`:**
+- `staging` → a Vercel **preview** at `https://futures-atlas-02-git-staging-frond-studio.vercel.app` (safe to ship freely; never touches the public site).
+- `main` → **production** (`https://futures-atlas-02.vercel.app`).
+
 ```sh
-./scripts/safe-deploy.sh   # fetches, refuses if behind origin/main, then pushes
+# day-to-day: on the staging branch
+git checkout staging
+git add -A && git commit -m "…"
+./scripts/safe-deploy.sh   # pushes the branch you're on; on staging → preview, on main → prod
+# happy with the staging preview? put it live:
+./scripts/promote.sh       # fast-forwards main to staging → production
 ```
+
+`safe-deploy.sh` is branch-aware and **refuses if you're behind origin** (so you can't overwrite a teammate). `promote.sh` only runs from `staging`. Both push via git — **never `vercel deploy --prebuilt`.**
 
 **Sub-apps build from source on every deploy.** The build command is
 `bash scripts/build-subapps.sh && next build` (package.json `build`), so the Vite

@@ -2,16 +2,17 @@
 #
 # safe-deploy.sh — the ONLY sanctioned way to ship futures-atlas-02.
 #
-# This project is git-connected on Vercel: pushing to `main` auto-builds and
-# deploys. Multiple people (mnoesthedens, laubaumau) push to it. A manual
-# `vercel deploy --prebuilt --prod` from a local tree that is BEHIND origin will
-# silently overwrite production with a stale snapshot and wipe teammates' work.
-# That happened once. This guard makes it impossible to do again by accident.
+# Branch-aware:
+#   • on `staging` → pushes the STAGING preview (safe to ship freely; does NOT
+#     touch the public site). Preview URL:
+#        https://futures-atlas-02-git-staging-frond-studio.vercel.app
+#   • on `main`    → deploys PRODUCTION (https://futures-atlas-02.vercel.app)
 #
-# Usage:  ./scripts/safe-deploy.sh
-#   Fetches origin, refuses unless your branch is exactly in sync with
-#   origin/main, then pushes — letting Vercel's git integration build & deploy.
-#   It deliberately does NOT run `vercel deploy --prebuilt`.
+# Either way it fetches origin and REFUSES if your branch is behind origin (you'd
+# overwrite a teammate) or if you have uncommitted changes, then pushes and lets
+# Vercel's git integration build & deploy. It deliberately NEVER runs
+# `vercel deploy --prebuilt` — that once shipped a stale local tree to prod and
+# wiped teammates' work. To put staging live, use ./scripts/promote.sh.
 
 set -euo pipefail
 
@@ -21,18 +22,24 @@ echo "→ Fetching origin…"
 git fetch origin --quiet
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
-if [ "$BRANCH" != "main" ]; then
-  echo "✘ You are on '$BRANCH', not main. Deploys go out from main." >&2
-  exit 1
-fi
+case "$BRANCH" in
+  staging) WHERE="STAGING preview → https://futures-atlas-02-git-staging-frond-studio.vercel.app" ;;
+  main)    WHERE="PRODUCTION → https://futures-atlas-02.vercel.app" ;;
+  *)
+    echo "✘ You are on '$BRANCH'. Deploy from 'staging' (preview) or 'main' (production)." >&2
+    echo "  Day-to-day work goes on staging:  git checkout staging" >&2
+    exit 1 ;;
+esac
 
-BEHIND=$(git rev-list --count HEAD..origin/main)
-if [ "$BEHIND" -gt 0 ]; then
-  echo "✘ Your branch is $BEHIND commit(s) BEHIND origin/main." >&2
-  echo "  Someone else has pushed work you don't have. Pull/rebase first:" >&2
-  echo "    git pull --rebase origin main" >&2
-  echo "  Deploying now would overwrite their work. Aborting." >&2
-  exit 1
+# Refuse if behind origin/<branch> (would overwrite a teammate's work).
+if git rev-parse --verify --quiet "origin/$BRANCH" >/dev/null; then
+  BEHIND=$(git rev-list --count "HEAD..origin/$BRANCH")
+  if [ "$BEHIND" -gt 0 ]; then
+    echo "✘ '$BRANCH' is $BEHIND commit(s) BEHIND origin/$BRANCH." >&2
+    echo "  Someone pushed work you don't have. Reconcile first:" >&2
+    echo "    git pull --rebase origin $BRANCH" >&2
+    exit 1
+  fi
 fi
 
 if [ -n "$(git status --porcelain)" ]; then
@@ -41,12 +48,14 @@ if [ -n "$(git status --porcelain)" ]; then
   exit 1
 fi
 
-AHEAD=$(git rev-list --count origin/main..HEAD)
-if [ "$AHEAD" -eq 0 ]; then
-  echo "✓ Nothing to deploy — main is already in sync with origin/main."
-  exit 0
+if git rev-parse --verify --quiet "origin/$BRANCH" >/dev/null; then
+  AHEAD=$(git rev-list --count "origin/$BRANCH..HEAD")
+  if [ "$AHEAD" -eq 0 ]; then
+    echo "✓ Nothing to deploy — $BRANCH is already in sync with origin/$BRANCH."
+    exit 0
+  fi
 fi
 
-echo "→ Pushing $AHEAD commit(s) to origin/main; Vercel will auto-build & deploy."
-git push origin main
+echo "→ Pushing '$BRANCH'  ·  $WHERE"
+git push origin "$BRANCH"
 echo "✓ Pushed. Watch the build: vercel list futures-atlas-02 --scope frond-studio"
