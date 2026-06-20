@@ -7,6 +7,9 @@
   Pair with /atlas-nav.css.
 */
 (function () {
+  // dark by default on the project pages (matches their dark content)
+  try { if (localStorage.getItem("theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {}
+
   var FA_PROJECTS = [
     { name: "Social Composer", path: "/social-composer" },
     { name: "Prism", path: "/prism" },
@@ -62,6 +65,17 @@
 
   function mount() {
     document.body.insertBefore(h, document.body.firstChild);
+
+    var foot = document.createElement("footer");
+    foot.className = "fa-foot";
+    foot.innerHTML =
+      '<span class="fa-foot__brand">FUTURES ATLAS</span>' +
+      '<nav class="fa-foot__nav">' +
+      '<a class="fa-foot__link" href="/">Home</a>' +
+      '<a class="fa-foot__link" href="/about">About</a>' +
+      '<a class="fa-foot__link" href="/contact">Contact</a></nav>' +
+      '<span class="fa-foot__tag">A catalogue of possible worlds · MMXXVI</span>';
+    document.body.appendChild(foot);
     var btn = h.querySelector(".fa-shell__current"),
       menu = h.querySelector(".fa-shell__menu"),
       crumb = h.querySelector(".fa-shell__crumb");
