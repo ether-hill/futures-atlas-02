@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { ContactForm } from "@/components/ContactForm";
+import { contactProjects } from "@/data/projects";
 
 export const metadata: Metadata = {
   title: "Contact — Futures Atlas",
@@ -8,7 +9,15 @@ export const metadata: Metadata = {
     "Get in touch with the Futures Atlas — pitches, questions, collaborations.",
 };
 
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ project?: string }>;
+}) {
+  // A project's "Contact" link passes ?project=<title>; preselect it when valid.
+  const { project } = await searchParams;
+  const defaultProject =
+    project && contactProjects.includes(project) ? project : "Futures Atlas";
   return (
     <section className="py-[clamp(44px,7vw,96px)]">
       <Container>
@@ -34,7 +43,7 @@ export default function ContactPage() {
         </header>
 
         <div className="mt-12 max-w-2xl">
-          <ContactForm defaultProject="Futures Atlas" />
+          <ContactForm defaultProject={defaultProject} />
         </div>
       </Container>
     </section>
