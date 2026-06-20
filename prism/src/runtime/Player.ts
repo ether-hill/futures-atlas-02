@@ -7,7 +7,7 @@ import { makeRng } from "../core/rng";
 import { makeNoise } from "../core/noise";
 import { getPalette } from "../core/color/theme";
 import { createSurface, sizeSurface, type RenderSurface } from "../core/surface";
-import { createPiece } from "./Registry";
+import { createPiece, getDescriptor } from "./Registry";
 
 export interface PlayerOpts {
   /** "fixed" → render at config.size; "fit" → fill the container (embed) */
@@ -34,7 +34,8 @@ export class Player {
     this.canvas = document.createElement("canvas");
     this.canvas.className = "prism-canvas";
     container.appendChild(this.canvas);
-    this.surface = createSurface(this.canvas);
+    const backend = getDescriptor(cfg.pieceId)?.backend ?? "canvas2d";
+    this.surface = createSurface(this.canvas, backend);
     this.mount();
   }
 

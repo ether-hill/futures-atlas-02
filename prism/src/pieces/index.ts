@@ -2,12 +2,20 @@
 
 import type { PieceFactory } from "../core/piece";
 import { createCurlFlow } from "./curlFlow";
+import { createDomainWarp } from "./domainWarp";
+import { createPlasma } from "./plasma";
+import { createVoronoiCells } from "./voronoiCells";
+import { createWaveInterference } from "./waveInterference";
+import { createPhaseField } from "./phaseField";
 
 export const PIECES: PieceFactory[] = [
+  createDomainWarp,
+  createPhaseField,
+  createWaveInterference,
+  createPlasma,
+  createVoronoiCells,
   createCurlFlow,
-  // M1: strangeAttractor, phyllotaxis, truchetWeave, differentialGrowth,
-  //     moireLattice, particleConstellation, superformula
-  // M2: domainWarp, reactionDiffusion, physarum, waveInterference, phaseField,
-  //     plasma, voronoiCells, cymatics
-  // M3: particleNebula, latticeWaves
+  // Canvas2D: strangeAttractor, phyllotaxis, moireLattice, particleConstellation, superformula, truchetWeave, differentialGrowth
+  // feedback: reactionDiffusion, physarum, cymatics
+  // three: particleNebula, latticeWaves
 ];

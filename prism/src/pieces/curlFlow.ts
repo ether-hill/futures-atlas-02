@@ -5,7 +5,6 @@
 // turbulence + speed. Pure (seed, params, size, time) → frame.
 
 import type { Piece, PieceContext, PieceFactory, Params, ParamSchema } from "../core/piece";
-import type { RenderSurface } from "../core/surface";
 import type { RNG } from "../core/rng";
 import type { NoiseKit } from "../core/noise";
 import type { Palette } from "../core/color/theme";
@@ -64,7 +63,8 @@ class CurlFlow implements Piece {
   private pLife = 170;
 
   init(ctx: PieceContext): void {
-    const s = ctx.surface as RenderSurface;
+    const s = ctx.surface;
+    if (s.kind !== "canvas2d") throw new Error("curlFlow: expected canvas2d surface");
     this.ctx = s.ctx;
     this.w = ctx.width;
     this.h = ctx.height;
