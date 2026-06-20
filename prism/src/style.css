@@ -171,10 +171,9 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 
 
 /* ── project page (frond /projects layout): title · summary + treatment · viewer + panel · about) ── */
+/* same width/grid as the global nav: full-bleed with the nav's 28px side padding */
 .wrap {
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 44px clamp(20px, 4vw, 64px) 110px;
+  padding: 44px 28px 110px;
 }
 
 /* head: big title + summary with the treatment (algo) dropdown */
@@ -385,4 +384,7 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
   .work { grid-template-columns: 1fr; }
   .controls { position: static; }
   .about-cols { grid-template-columns: 1fr; gap: 24px; }
+}
+@media (max-width: 680px) {
+  .wrap { padding-left: 16px; padding-right: 16px; } /* match the nav at this breakpoint */
 }
