@@ -93,21 +93,21 @@ export function FaShell({
 }
 
 /**
- * Futures Atlas mark — a faceted dome over a rising sun. Line art using
- * `currentColor`, so it inverts black/white with the surrounding text colour.
+ * Futures Atlas mark — the brand logo (public/fa.svg, served at
+ * /social-composer/fa.svg). The artwork is a black mark on a white field;
+ * `invert(1)` flips it to a white mark on a transparent-to-black field so it
+ * reads cleanly on the shell's black header.
  */
 function FaMark() {
   return (
-    <svg width="22" height="15" viewBox="6 10 88 56" fill="none" stroke="currentColor" strokeWidth="4" strokeLinejoin="round" strokeLinecap="round" aria-hidden="true">
-      <path d="M12 60 L16.4 39.3 L31 21.9 L50 16 L69 21.9 L83.6 39.3 L88 60 Z" />
-      <path d="M41.6 56.8 L21.5 49.2" />
-      <path d="M43.6 53.7 L27 37.5" />
-      <path d="M46.3 51.8 L35.9 29.1" />
-      <path d="M50 51 L50 25" />
-      <path d="M53.7 51.8 L64.1 29.1" />
-      <path d="M56.4 53.7 L73 37.5" />
-      <path d="M58.4 56.8 L78.5 49.2" />
-      <path d="M41 60 A9 9 0 0 1 59 60" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/social-composer/fa.svg"
+      width={20}
+      height={20}
+      alt=""
+      aria-hidden="true"
+      style={{ display: "block", filter: "invert(1)" }}
+    />
   );
 }
