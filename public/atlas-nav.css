@@ -200,4 +200,7 @@ html.dark .fa-foot__tag { color: rgba(243, 241, 236, 0.5); }
 .fa-subnav__link.is-active { opacity: 1; color: #b4541e; }
 html.dark .fa-subnav { background: rgba(18, 17, 15, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
 html.dark .fa-subnav__link.is-active { color: #7fb2e6; }
+/* On pages with a sub-nav, keep the master pinned (don't hide on scroll) so the
+   slim tab row never floats with a gap above it. */
+body:has(.fa-subnav) .fa-shell.is-hidden { transform: none !important; }
 
