@@ -6,20 +6,38 @@
   static zone bundles (Hollow Villages / Underground Intelligence / The Odds).
   It self-injects /atlas-nav.css, so one script tag is all any page needs.
 
-  Renders the sticky frosted bar: brand + (on a project page) a breadcrumb
-  switcher, the primary links, and a theme toggle; hides on scroll-down. On a
-  project page it also appends the shared footer. Theme is one class (html.dark)
-  + one key (localStorage "fa-theme"): dark by default on project pages, light
-  on the hub. Edit THIS file to change the nav anywhere.
+  Desktop: a sticky frosted bar — brand + (on a project page) a breadcrumb
+  switcher, the primary links, and a theme toggle; hides on scroll-down.
+  Tablet/mobile: the links collapse into an animated hamburger sheet that holds
+  the primary links, the current project's own pages (under its title), and the
+  theme toggle. Theme is one class (html.dark) + one key (localStorage
+  "fa-theme"): dark by default on project pages, light on the hub.
+  Edit THIS file to change the nav anywhere.
 */
 (function () {
+  // pages: a project's own internal tabs — shown in the mobile sheet under the
+  // project title (and as the slim desktop sub-nav, rendered by each zone).
   var FA_PROJECTS = [
     { name: "Social Composer", path: "/social-composer" },
     { name: "Prism", path: "/prism" },
     { name: "Quantum Sandbox", path: "/quantum-sandbox" },
-    { name: "The Odds", path: "/odds-of-surviving-ai" },
-    { name: "Underground Intelligence", path: "/underground-intelligence" },
-    { name: "The Hollow Villages", path: "/hollow-villages" },
+    { name: "The Odds", path: "/odds-of-surviving-ai", pages: [
+      { name: "The piece", path: "/odds-of-surviving-ai" },
+      { name: "Research", path: "/odds-of-surviving-ai/research" },
+      { name: "Contact", path: "/odds-of-surviving-ai/contact" },
+    ] },
+    { name: "Underground Intelligence", path: "/underground-intelligence", pages: [
+      { name: "Story", path: "/underground-intelligence/story" },
+      { name: "Dashboard", path: "/underground-intelligence/dashboard" },
+      { name: "Research", path: "/underground-intelligence/research" },
+      { name: "Contact", path: "/underground-intelligence/contact" },
+    ] },
+    { name: "The Hollow Villages", path: "/hollow-villages", pages: [
+      { name: "Home", path: "/hollow-villages" },
+      { name: "Oracle", path: "/hollow-villages/oracle" },
+      { name: "Research", path: "/hollow-villages/research" },
+      { name: "Contact", path: "/hollow-villages/contact" },
+    ] },
   ];
   var LINKS = [
     { name: "Home", path: "/" },
@@ -94,11 +112,76 @@
     "</div>" +
     '<nav class="fa-shell__right" aria-label="Primary">' +
       '<div class="fa-shell__nav">' + navlinks + "</div>" +
-      '<button type="button" class="fa-shell__toggle" aria-label="Toggle theme"></button></nav>';
+      '<button type="button" class="fa-shell__toggle" aria-label="Toggle theme"></button>' +
+      '<button type="button" class="fa-shell__burger" aria-label="Open menu" aria-expanded="false" aria-controls="fa-sheet"><span></span><span></span><span></span></button></nav>';
+
+  // build the mobile sheet contents (primary links + this project's pages + theme)
+  function buildSheet() {
+    var i = 0, out = ['<div class="fa-sheet__inner">'];
+    out.push('<nav class="fa-sheet__sec" aria-label="Primary">');
+    LINKS.forEach(function (l) {
+      out.push('<a class="fa-sheet__link' + (activeLink(l.path) ? " is-active" : "") + '" href="' + l.path + '" style="--i:' + (i++) + '">' + l.name + "</a>");
+    });
+    out.push("</nav>");
+    if (cur && cur.pages && cur.pages.length) {
+      out.push('<div class="fa-sheet__sec">');
+      out.push('<p class="fa-sheet__title" style="--i:' + (i++) + '">' + cur.name + "</p>");
+      cur.pages.forEach(function (pg) {
+        var act = p === pg.path || (pg.path !== cur.path && p.indexOf(pg.path) === 0);
+        out.push('<a class="fa-sheet__sublink' + (act ? " is-active" : "") + '" href="' + pg.path + '" style="--i:' + (i++) + '">' + pg.name + "</a>");
+      });
+      out.push("</div>");
+    }
+    out.push('<button type="button" class="fa-sheet__theme" style="--i:' + (i++) + '"><span class="fa-sheet__themelabel">Theme</span><span class="fa-sheet__themeicon" aria-hidden="true"></span></button>');
+    out.push("</div>");
+    return out.join("");
+  }
 
   function mount() {
     if (document.querySelector("header.fa-shell")) return; // guard against double-mount
     document.body.insertBefore(h, document.body.firstChild);
+
+    var sheet = document.createElement("div");
+    sheet.className = "fa-sheet";
+    sheet.id = "fa-sheet";
+    sheet.setAttribute("aria-hidden", "true");
+    sheet.innerHTML = buildSheet();
+    document.body.appendChild(sheet);
+
+    // shared theme control (drives both the bar toggle and the sheet toggle)
+    var barToggle = h.querySelector(".fa-shell__toggle");
+    var sheetIcon = sheet.querySelector(".fa-sheet__themeicon");
+    var sheetLabel = sheet.querySelector(".fa-sheet__themelabel");
+    function paintThemes() {
+      var d = root.classList.contains("dark");
+      barToggle.innerHTML = d ? SUN : MOON;
+      if (sheetIcon) sheetIcon.innerHTML = d ? SUN : MOON;
+      if (sheetLabel) sheetLabel.textContent = d ? "Light mode" : "Dark mode";
+    }
+    function toggleTheme() {
+      var d = root.classList.toggle("dark");
+      try { localStorage.setItem("fa-theme", d ? "dark" : "light"); } catch (e) {}
+      paintThemes();
+    }
+    paintThemes();
+    barToggle.addEventListener("click", toggleTheme);
+    sheet.querySelector(".fa-sheet__theme").addEventListener("click", toggleTheme);
+
+    // hamburger ⇄ sheet
+    var burger = h.querySelector(".fa-shell__burger");
+    function setMenu(open) {
+      burger.setAttribute("aria-expanded", open ? "true" : "false");
+      burger.classList.toggle("is-open", open);
+      sheet.classList.toggle("is-open", open);
+      sheet.setAttribute("aria-hidden", open ? "false" : "true");
+      root.classList.toggle("fa-menu-open", open);
+    }
+    burger.addEventListener("click", function () { setMenu(!sheet.classList.contains("is-open")); });
+    sheet.addEventListener("click", function (e) {
+      if (e.target === sheet || e.target.closest("a")) setMenu(false); // backdrop or link tap closes
+    });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
+    window.addEventListener("resize", function () { if (window.innerWidth > 900) setMenu(false); });
 
     // shared footer — only on project pages, unless the page brings its own
     // (hub + Social Composer set data-fa-no-footer on <html> and supply theirs)
@@ -138,16 +221,6 @@
       else h.classList.remove("is-hidden");
       lastY = y;
     }, { passive: true });
-
-    // theme toggle
-    var toggle = h.querySelector(".fa-shell__toggle");
-    function paint() { toggle.innerHTML = root.classList.contains("dark") ? SUN : MOON; }
-    paint();
-    toggle.addEventListener("click", function () {
-      var d = root.classList.toggle("dark");
-      try { localStorage.setItem("fa-theme", d ? "dark" : "light"); } catch (e) {}
-      paint();
-    });
   }
   if (document.body) mount();
   else document.addEventListener("DOMContentLoaded", mount);

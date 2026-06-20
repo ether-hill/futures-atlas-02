@@ -204,3 +204,148 @@ html.dark .fa-subnav__link.is-active { color: #7fb2e6; }
    slim tab row never floats with a gap above it. */
 body:has(.fa-subnav) .fa-shell.is-hidden { transform: none !important; }
 
+/* ── Hamburger + mobile sheet ───────────────────────────────────────────────
+   On tablet/mobile the primary links collapse into a hamburger that opens a
+   full sheet: primary links, the current project's own pages (under its title),
+   and the theme toggle — fading/staggering in. ── */
+.fa-shell__burger {
+  display: none;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  margin-left: 4px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.fa-shell__burger span {
+  position: absolute;
+  left: 9px;
+  right: 9px;
+  height: 1.6px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+.fa-shell__burger span:nth-child(1) { top: 14px; }
+.fa-shell__burger span:nth-child(2) { top: 19px; }
+.fa-shell__burger span:nth-child(3) { top: 24px; }
+.fa-shell__burger.is-open span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.fa-shell__burger.is-open span:nth-child(2) { opacity: 0; }
+.fa-shell__burger.is-open span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+.fa-sheet {
+  position: fixed;
+  inset: var(--fa-nav-h) 0 0 0;
+  z-index: 9990; /* above zone content incl. the Odds stage (z 9000) */
+  display: flex;
+  background: rgba(243, 241, 236, 0.97);
+  -webkit-backdrop-filter: blur(22px);
+  backdrop-filter: blur(22px);
+  color: #171410;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+  overflow-y: auto;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+.fa-sheet.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
+html.dark .fa-sheet { background: rgba(16, 15, 13, 0.975); color: #f3f1ec; }
+html.fa-menu-open { overflow: hidden; } /* lock scroll while the sheet is open */
+
+.fa-sheet__inner {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 5vw, 40px) clamp(22px, 7vw, 48px) 48px;
+}
+.fa-sheet__sec {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 0;
+}
+.fa-sheet__sec + .fa-sheet__sec { border-top: 1px solid color-mix(in srgb, currentColor 14%, transparent); }
+.fa-sheet__link {
+  padding: 9px 0;
+  color: inherit;
+  text-decoration: none;
+  font-size: clamp(26px, 7vw, 34px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  opacity: 0.62;
+}
+.fa-sheet__link.is-active { opacity: 1; }
+.fa-sheet__title {
+  margin: 8px 0 6px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  opacity: 0.5;
+}
+.fa-sheet__sublink {
+  padding: 8px 0;
+  color: inherit;
+  text-decoration: none;
+  font-size: clamp(18px, 5vw, 22px);
+  font-weight: 500;
+  opacity: 0.6;
+}
+.fa-sheet__sublink.is-active { opacity: 1; color: #b4541e; }
+html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
+.fa-sheet__theme {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  align-self: flex-start;
+  margin-top: 28px;
+  padding: 11px 18px 11px 14px;
+  border: 1px solid color-mix(in srgb, currentColor 28%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.fa-sheet__themeicon { display: inline-flex; }
+
+/* stagger: each item fades/rises in, delayed by its --i (reverses fast on close) */
+.fa-sheet__link,
+.fa-sheet__title,
+.fa-sheet__sublink,
+.fa-sheet__theme {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fa-sheet.is-open .fa-sheet__link,
+.fa-sheet.is-open .fa-sheet__title,
+.fa-sheet.is-open .fa-sheet__sublink,
+.fa-sheet.is-open .fa-sheet__theme {
+  opacity: 0.62;
+  transform: none;
+  transition-delay: calc(var(--i) * 55ms + 90ms);
+}
+.fa-sheet.is-open .fa-sheet__link.is-active,
+.fa-sheet.is-open .fa-sheet__sublink.is-active,
+.fa-sheet.is-open .fa-sheet__theme { opacity: 1; }
+.fa-sheet.is-open .fa-sheet__title { opacity: 0.5; }
+@media (prefers-reduced-motion: reduce) {
+  .fa-sheet, .fa-sheet__link, .fa-sheet__title, .fa-sheet__sublink, .fa-sheet__theme, .fa-shell__burger span { transition: none; }
+}
+
+/* the swap: links → hamburger at tablet width and below */
+@media (max-width: 900px) {
+  .fa-shell__nav,
+  .fa-shell__toggle { display: none; }
+  .fa-shell__burger { display: inline-flex; align-items: center; justify-content: center; }
+  .fa-subnav { display: none; } /* Villages tabs move into the sheet */
+}
+
