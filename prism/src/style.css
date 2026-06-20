@@ -1,11 +1,24 @@
 :root {
+  /* light theme (when the nav toggle removes html.dark) */
+  --bg: oklch(0.965 0.004 265);
+  --panel: oklch(0.995 0.002 265);
+  --line: oklch(0.86 0.012 265);
+  --ink: oklch(0.26 0.02 265);
+  --muted: oklch(0.48 0.02 265);
+  --accent: oklch(0.52 0.16 245);
+  --field: oklch(0.93 0.006 265);
+  --btn: oklch(0.91 0.008 265);
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+}
+html.dark {
   --bg: oklch(0.15 0.012 265);
   --panel: oklch(0.2 0.014 265);
   --line: oklch(0.31 0.016 265);
   --ink: oklch(0.93 0.01 265);
   --muted: oklch(0.66 0.013 265);
   --accent: oklch(0.74 0.15 200);
-  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --field: oklch(0.16 0.01 265);
+  --btn: oklch(0.26 0.012 265);
 }
 * {
   box-sizing: border-box;
@@ -238,7 +251,7 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 }
 .topbar .grow { flex: 1; }
 .topbar button {
-  background: oklch(0.26 0.012 265);
+  background: var(--btn);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 5px;
@@ -253,7 +266,9 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: repeating-conic-gradient(oklch(0.13 0.01 265) 0% 25%, oklch(0.16 0.01 265) 0% 50%) 50% / 22px 22px;
+  background-color: var(--field);
+  background-image: repeating-conic-gradient(rgba(128, 128, 128, 0.07) 0% 25%, transparent 0% 50%);
+  background-size: 22px 22px;
 }
 .prism-canvas {
   display: block;
@@ -284,7 +299,7 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 }
 .presets { display: flex; flex-wrap: wrap; gap: 5px; }
 .presets button {
-  background: oklch(0.25 0.012 265);
+  background: var(--btn);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -296,7 +311,7 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 .wh label { display: flex; align-items: center; gap: 5px; color: var(--muted); }
 .wh input {
   width: 72px;
-  background: oklch(0.16 0.01 265);
+  background: var(--field);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -313,7 +328,7 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 }
 .slider input[type="range"] { flex: 1; accent-color: var(--accent); }
 .slider select {
-  background: oklch(0.16 0.01 265);
+  background: var(--field);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -323,7 +338,7 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 .row2 { display: flex; gap: 8px; }
 .row2 button {
   flex: 1;
-  background: oklch(0.26 0.012 265);
+  background: var(--btn);
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 4px;
@@ -407,3 +422,27 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 .fa-foot__link:hover { color: #f3f1ec; }
 .fa-foot__tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.5); }
 @media (max-width: 680px) { .fa-foot { padding: 24px 16px 30px; } }
+
+/* tweakpane: light parameters panel when not in dark mode */
+html:not(.dark) .params {
+  --tp-base-background-color: oklch(0.93 0.006 265);
+  --tp-base-shadow-color: rgba(0, 0, 0, 0.1);
+  --tp-button-background-color: oklch(0.88 0.008 265);
+  --tp-button-background-color-active: oklch(0.8 0.01 265);
+  --tp-button-background-color-focus: oklch(0.84 0.01 265);
+  --tp-button-background-color-hover: oklch(0.86 0.01 265);
+  --tp-button-foreground-color: oklch(0.26 0.02 265);
+  --tp-container-background-color: oklch(0.9 0.006 265);
+  --tp-container-background-color-active: oklch(0.82 0.01 265);
+  --tp-container-background-color-focus: oklch(0.86 0.01 265);
+  --tp-container-background-color-hover: oklch(0.88 0.01 265);
+  --tp-container-foreground-color: oklch(0.38 0.02 265);
+  --tp-input-background-color: oklch(0.88 0.008 265);
+  --tp-input-background-color-active: oklch(0.8 0.01 265);
+  --tp-input-background-color-focus: oklch(0.84 0.01 265);
+  --tp-input-background-color-hover: oklch(0.86 0.01 265);
+  --tp-input-foreground-color: oklch(0.26 0.02 265);
+  --tp-label-foreground-color: oklch(0.45 0.02 265);
+  --tp-monitor-background-color: oklch(0.86 0.008 265);
+  --tp-monitor-foreground-color: oklch(0.4 0.02 265);
+}

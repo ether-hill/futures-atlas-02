@@ -211,3 +211,13 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 .fa-foot__link:hover { color: #f3f1ec; }
 .fa-foot__tag { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.5); }
 @media (max-width: 680px) { .fa-foot { padding: 24px 16px 30px; } }
+
+/* ── Light theme: when the nav toggle removes html.dark, flip the chrome tokens
+   (Tailwind v4 utilities resolve to these vars, so bg-bone/text-ink/etc. follow).
+   The composed-canvas colours are explicit hex in JS and are unaffected. ── */
+html:not(.dark) {
+  --color-ink: #211e18;   /* text → dark */
+  --color-bone: #f4efe6;  /* page → light */
+  --color-vellum: #ffffff;
+  --color-seal: #6b6357;  /* muted → darker for light bg */
+}

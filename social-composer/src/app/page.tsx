@@ -32,7 +32,7 @@ export default function Page() {
         </p>
       </header>
 
-      <section className="h-[min(82vh,880px)] overflow-hidden rounded-xl border border-ink/15 bg-vellum">
+      <section className="rounded-xl border border-ink/12">
         <StudioApp source={{ ...emptySource(), frames: [starter] }} />
       </section>
 

@@ -189,7 +189,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const isCorp = source.kind === "corporation";
   const slugKey = source.url;
 
-  const [mode, setMode] = useState<Mode>("single");
+  const [mode] = useState<Mode>("single"); // batch UI removed; always single
   const [postType, setPostType] = useState<PostTypeId>("single");
   const typeDef = POST_TYPES.find((p) => p.id === postType)!;
   const [aspect, setAspect] = useState<Aspect>("4:5");
@@ -709,40 +709,19 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const isSequence = selFrames.length > 1;
 
   return (
-    <div className="h-full flex flex-col bg-bone text-ink font-script">
-      {/* Header */}
-      <header className="shrink-0 flex flex-wrap items-center justify-between gap-3 border-b border-ink/13 px-5 sm:px-7 py-3.5">
-        <div className="flex items-center gap-3">
-          <span className="grid place-items-center w-9 h-9 bg-ink text-bone font-display text-[18px] leading-none">S</span>
-          <div>
-            <p className="font-display text-[18px] leading-none text-ink">Social Composer</p>
-            <p className="font-docket text-[9px] uppercase tracking-[0.18em] text-ink/52 mt-0.5">Studio</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
-          <div className="inline-flex border border-ink/17">
-            {(["single", "batch"] as Mode[]).map((mm) => (
-              <button key={mm} type="button" onClick={() => setMode(mm)}
-                className={`font-docket text-[10px] uppercase tracking-[0.1em] px-3 py-1.5 border-r border-ink/13 last:border-r-0 ${mode === mm ? "bg-ink text-bone" : "text-ink/72 hover:bg-ink/8"}`}>
-                {mm === "single" ? "Single composer" : "Batch create"}
-              </button>
-            ))}
-          </div>
-        </div>
-      </header>
-
+    <div className="flex flex-col bg-bone text-ink font-script">
       {mode === "batch" ? (
-        <div className="flex-1 min-h-0 overflow-y-auto px-5 sm:px-7 py-6">
+        <div className="px-5 sm:px-7 py-6">
           <BatchView frames={frames} aspect={aspect} getImg={getImg} getVideo={getVideo} isCorp={isCorp} tFor={tFor} onBatchAll={onBatchAll} busy={busy === "batch"} />
         </div>
       ) : (
-        <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(300px,400px)_1fr] overflow-y-auto lg:overflow-hidden">
-          {/* LEFT — library (independent scroll) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(300px,400px)_1fr]">
+          {/* LEFT — library (the only nested scroll; sticks while the page scrolls) */}
           <aside
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={(e) => { e.preventDefault(); setDragOver(false); onUpload(e.dataTransfer.files); }}
-            className={`lg:h-full lg:overflow-y-auto border-b lg:border-b-0 lg:border-r border-ink/13 p-4 sm:p-5 ${dragOver ? "bg-oxblood/6" : ""}`}>
+            className={`lg:sticky lg:top-[88px] lg:max-h-[calc(100vh-108px)] lg:overflow-y-auto self-start border-b lg:border-b-0 lg:border-r border-ink/13 p-4 sm:p-5 ${dragOver ? "bg-oxblood/6" : ""}`}>
             <div className="flex items-baseline justify-between gap-2 mb-1">
               <div className="flex items-baseline gap-2">
                 <span className="font-docket text-[12px] tracking-[0.14em] text-oxblood">02</span>
@@ -797,8 +776,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
             )}
           </aside>
 
-          {/* RIGHT — composer (independent scroll) */}
-          <section className="lg:h-full lg:overflow-y-auto px-4 sm:px-7 py-5">
+          {/* RIGHT — composer (flows with the page) */}
+          <section className="px-4 sm:px-7 py-5">
             {/* 01 post type */}
             <div className="flex items-baseline gap-2 mb-2">
               <span className="font-docket text-[12px] tracking-[0.14em] text-oxblood">01</span>
