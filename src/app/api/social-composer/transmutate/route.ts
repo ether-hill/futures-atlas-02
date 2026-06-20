@@ -70,7 +70,11 @@ export async function GET(request: Request) {
       redirect: "follow",
       signal: AbortSignal.timeout(15000),
     });
-    if (!res.ok) return NextResponse.json({ error: `The page returned ${res.status}.` }, { status: 502 });
+    if (!res.ok) {
+      if (res.status === 401 || res.status === 403)
+        return NextResponse.json({ error: "That page is private — it needs a login or is behind access protection (e.g. a Vercel preview URL), so it can't be imported. Try the public URL." }, { status: 502 });
+      return NextResponse.json({ error: `The page returned ${res.status}.` }, { status: 502 });
+    }
     const ct = res.headers.get("content-type") ?? "";
     if (!/text\/html|xml/.test(ct)) return NextResponse.json({ error: "That URL isn't an HTML page." }, { status: 415 });
     html = (await res.text()).slice(0, 4_000_000);
