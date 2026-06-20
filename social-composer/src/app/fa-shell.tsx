@@ -94,20 +94,18 @@ export function FaShell({
 
 /**
  * Futures Atlas mark — the brand logo (public/fa.svg, served at
- * /social-composer/fa.svg). The artwork is a black mark on a white field;
- * `invert(1)` flips it to a white mark on a transparent-to-black field so it
- * reads cleanly on the shell's black header.
+ * /social-composer/fa.svg). The artwork is the bare mark on a transparent field,
+ * viewBox-cropped tight; `invert(1)` flips the black mark to white for the
+ * shell's black header. Sized to ~1em so it stands as tall as the wordmark.
  */
 function FaMark() {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src="/social-composer/fa.svg"
-      width={20}
-      height={20}
       alt=""
       aria-hidden="true"
-      style={{ display: "block", filter: "invert(1)" }}
+      style={{ display: "block", height: "1.05em", width: "auto", filter: "invert(1)" }}
     />
   );
 }
