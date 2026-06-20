@@ -40,7 +40,17 @@ export interface WebGL2Surface {
   dpr: number;
 }
 
-export type RenderSurface = Canvas2DSurface | WebGL2Surface;
+/** A bare canvas for three.js to attach its own WebGLRenderer to. The system
+ *  owns the renderer/scene; the harness only sizes the canvas. */
+export interface ThreeSurface {
+  kind: "three";
+  canvas: HTMLCanvasElement;
+  width: number;
+  height: number;
+  dpr: number;
+}
+
+export type RenderSurface = Canvas2DSurface | WebGL2Surface | ThreeSurface;
 
 /** Device-pixel dimensions of a surface's backing store. */
 export const deviceSize = (s: RenderSurface): { w: number; h: number } => ({

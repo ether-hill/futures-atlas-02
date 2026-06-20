@@ -6,8 +6,11 @@
 import type { Backend, RenderSurface } from "./GenerativeSystem";
 
 export function createSurface(canvas: HTMLCanvasElement, backend: Backend): RenderSurface {
-  if (backend === "canvas2d" || backend === "three") {
-    // three sets up its own renderer later; for now treat as a 2d host stub
+  if (backend === "three") {
+    // hand the bare canvas to the system; it acquires its own WebGL renderer
+    return { kind: "three", canvas, width: 1, height: 1, dpr: 1 };
+  }
+  if (backend === "canvas2d") {
     const ctx = canvas.getContext("2d", { alpha: false });
     if (!ctx) throw new Error("surface: 2d context unavailable");
     return { kind: "canvas2d", canvas, ctx, width: 1, height: 1, dpr: 1 };
@@ -30,9 +33,10 @@ export function resizeSurface(s: RenderSurface, width: number, height: number, d
   if (s.kind === "canvas2d") {
     // draw in device pixels; systems use deviceSize() and putImageData directly
     s.ctx.setTransform(1, 0, 0, 1, 0, 0);
-  } else {
+  } else if (s.kind === "webgl2") {
     s.gl.viewport(0, 0, w, h);
   }
+  // three: the system's renderer handles its own viewport on resize
   return s;
 }
 

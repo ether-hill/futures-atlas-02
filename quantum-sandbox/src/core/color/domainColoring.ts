@@ -72,10 +72,39 @@ export function colorSample(re: number, im: number, opts: Partial<DomainColorOpt
   return oklchToRgb255(magToLightness(mag, o), o.chroma, phaseToHue(arg, o));
 }
 
+// ── colour LUT ────────────────────────────────────────────────────────────────
+// The gamut-safe OKLCH→sRGB conversion runs a per-sample chroma bisection, which
+// is far too slow to do per pixel every frame. Since chroma is held constant, we
+// precompute a [hue 0..359] × [lightness 0..255] → RGB table once per chroma and
+// index it per pixel. Memoised so animation frames reuse the same table.
+const HUE_BINS = 360;
+const L_BINS = 256;
+const lutCache = new Map<number, Uint8Array>();
+
+function getLUT(chroma: number): Uint8Array {
+  const key = Math.round(chroma * 1000);
+  const cached = lutCache.get(key);
+  if (cached) return cached;
+  const lut = new Uint8Array(HUE_BINS * L_BINS * 3);
+  for (let h = 0; h < HUE_BINS; h++) {
+    for (let li = 0; li < L_BINS; li++) {
+      const rgb = oklchToRgb255(li / (L_BINS - 1), chroma, h);
+      const p = (h * L_BINS + li) * 3;
+      lut[p] = rgb[0];
+      lut[p + 1] = rgb[1];
+      lut[p + 2] = rgb[2];
+    }
+  }
+  if (lutCache.size > 24) lutCache.clear();
+  lutCache.set(key, lut);
+  return lut;
+}
+
 /**
  * Render a complex field to a fresh RGBA buffer (row-major, length 4·field).
  * `maxMag` (default: field max) normalises magnitude so the ramp uses its full
  * range; pass a fixed value to keep brightness stable across animation frames.
+ * Uses the precomputed colour LUT — fast enough for per-frame GPU-less rendering.
  */
 export function colorFieldRGBA(
   field: ComplexField,
@@ -84,6 +113,7 @@ export function colorFieldRGBA(
 ): Uint8ClampedArray {
   const o = { ...DC_DEFAULTS, ...opts };
   const { re, im, length } = field;
+  const lut = getLUT(o.chroma);
 
   let norm = maxMag ?? 0;
   if (maxMag === undefined) {
@@ -94,20 +124,23 @@ export function colorFieldRGBA(
     norm = Math.sqrt(norm) || 1;
   }
   const inv = norm > 0 ? 1 / norm : 1;
+  const lScale = L_BINS - 1;
 
   const out = new Uint8ClampedArray(length * 4);
   for (let k = 0; k < length; k++) {
     const r = re[k];
     const i = im[k];
-    const rgb = oklchToRgb255(
-      magToLightness(Math.hypot(r, i) * inv, o),
-      o.chroma,
-      phaseToHue(Math.atan2(i, r), o),
-    );
+    const L = magToLightness(Math.hypot(r, i) * inv, o);
+    let li = (L * lScale + 0.5) | 0;
+    if (li < 0) li = 0;
+    else if (li >= L_BINS) li = L_BINS - 1;
+    let hb = (phaseToHue(Math.atan2(i, r), o) | 0) % HUE_BINS;
+    if (hb < 0) hb += HUE_BINS;
+    const s = (hb * L_BINS + li) * 3;
     const p = k * 4;
-    out[p] = rgb[0];
-    out[p + 1] = rgb[1];
-    out[p + 2] = rgb[2];
+    out[p] = lut[s];
+    out[p + 1] = lut[s + 1];
+    out[p + 2] = lut[s + 2];
     out[p + 3] = 255;
   }
   return out;
