@@ -9,10 +9,11 @@
 #   • prism            → Vite, outputs to public/prism
 #   • quantum-sandbox  → Vite, outputs to public/quantum-sandbox
 #   • social-composer  → Next static export → out/, copied to public/social-composer
+#   • hollow-villages  → Next static export → out/, copied to public/hollow-villages
 #
-# The three "zone" projects (hollow-villages / underground-intelligence /
-# odds-of-surviving-ai) are NOT built here — their source lives outside this
-# repo, so their bundles stay committed under public/<slug>/.
+# The two remaining "zone" projects (underground-intelligence / odds-of-surviving-ai)
+# are NOT built here — they are hand-authored static bundles with no build step,
+# so they stay committed under public/<slug>/.
 set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -31,5 +32,13 @@ rm -rf "$HERE/public/social-composer"
 mkdir -p "$HERE/public/social-composer"
 cp -R "$HERE/social-composer/out/." "$HERE/public/social-composer/"
 echo "✓ social-composer → public/social-composer"
+
+# Hollow Villages: Next static export → out/, then copy into public/.
+echo "→ building hollow-villages"
+( cd "$HERE/hollow-villages" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/hollow-villages"
+mkdir -p "$HERE/public/hollow-villages"
+cp -R "$HERE/hollow-villages/out/." "$HERE/public/hollow-villages/"
+echo "✓ hollow-villages → public/hollow-villages"
 
 echo "✓ all sub-apps built"
