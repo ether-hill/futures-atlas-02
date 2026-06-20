@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Bodoni_Moda, Archivo, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { FaShell } from "./fa-shell";
 import { Footer } from "./footer";
 
 // Futures Atlas type system: Archivo 800 display, Bodoni Moda serif voice,
@@ -35,7 +34,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${script.variable} ${display.variable} ${plex.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      data-fa-no-footer
+      className={`${script.variable} ${display.variable} ${plex.variable} h-full antialiased`}
+    >
       <head>
         {/* default the global nav (and page) to dark, no flash */}
         <script
@@ -43,9 +46,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             __html: `(function(){try{if(localStorage.getItem('fa-theme')!=='light')document.documentElement.classList.add('dark');}catch(e){}})();`,
           }}
         />
+        {/* the one shared global nav (+ its styles) */}
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css />
+        <script src="/atlas-nav.js" defer />
       </head>
       <body className="min-h-full bg-bone text-ink font-docket">
-        <FaShell />
         {children}
         <Footer />
       </body>

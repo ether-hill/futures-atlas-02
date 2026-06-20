@@ -9,8 +9,8 @@ export { Card, CardBody } from "./components/Card";
 export { ResearchTemplate, type ResearchItem } from "./components/ResearchTemplate";
 export { ContactTemplate } from "./components/ContactTemplate";
 
-// navbar
-export { GlobalNav, type NavLink, type SwitcherProject } from "./components/GlobalNav";
+// navbar — the global bar is now the one shared /atlas-nav.js component (host
+// public/); the old React GlobalNav was removed in the nav unification.
 export { FaLogoMark } from "./components/FaLogoMark";
 export { Navbar } from "./components/Navbar";
 export { AtlasBar, type AtlasProject } from "./components/AtlasBar";

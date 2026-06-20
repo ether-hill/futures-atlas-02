@@ -11,7 +11,7 @@ import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 const TAGS =
-  '<link rel="stylesheet" href="/atlas-nav.css"><script src="/atlas-nav.js" defer></script>';
+  '<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css><script src="/atlas-nav.js" defer></script>';
 
 const root = process.argv[2];
 if (!root) {

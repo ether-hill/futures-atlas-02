@@ -4,7 +4,6 @@ import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/
 import "futures-atlas-core/tokens.css";
 import "futures-atlas-core/kit.css";
 import "futures-atlas-core/nav.css";
-import "futures-atlas-core/shell.css";
 import "./globals.css";
 import { buildOverrideCss } from "futures-atlas-core";
 import { readOverrides } from "@/lib/store";
@@ -64,9 +63,11 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{if(localStorage.getItem('theme')==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{if(localStorage.getItem('fa-theme')==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`,
           }}
         />
+        {/* The one global nav, shared with every project bundle. Self-injects /atlas-nav.css. */}
+        <script src="/atlas-nav.js" defer />
         {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
       </head>
       <body
