@@ -1,261 +1,397 @@
-// physarum — slime-mould transport networks via the Jones (2010) agent model.
-// Each agent samples a shared chemoattractant trail at three points ahead
-// (front, front-left, front-right), rotates toward the strongest, steps forward
-// and deposits; the whole field is then diffused and decayed, carving the stable
-// channels Physarum polycephalum is famous for. Simulated on a downscaled grid
-// (≤ ~320px) and upscaled, so it stays CPU-cheap at any banner size. Ported from
-// the Frond "Algorithms" lab. complexity = agent count; chaos = turn jitter.
+// physarum — Jeff Jones' agent-based slime-mould model (Physarum polycephalum),
+// run on the GPU for high fidelity: hundreds of thousands of agents whose state
+// lives in a float texture. Each frame, per agent: sense the pheromone trail
+// ahead / left / right, rotate toward the strongest, step forward, deposit; then
+// the trail map is diffused and decayed. Emergent transport networks appear.
+// This mirrors the Frond studio's sma-config Physarum engine (4-pass WebGL2:
+// sense+move → additive deposit → diffuse+decay → display), recoloured through
+// the active palette. complexity = agent count (fidelity); chaos = turn agitation.
 
 import type { Piece, PieceContext, PieceFactory, ParamSchema } from "../core/piece";
-import type { RNG } from "../core/rng";
 import type { Palette } from "../core/color/theme";
 import { sample } from "../core/color/theme";
-import { count } from "../core/meta";
 
-const TAU = Math.PI * 2;
 const D2R = Math.PI / 180;
 
-interface Character {
-  sensorAngle: number; // deg
-  sensorDist: number; // grid px
-  turnSpeed: number; // deg
-  stepSize: number; // grid px
-  deposit: number;
-  diffuse: number; // 0..1
-}
+const FULLSCREEN_VERT = `#version 300 es
+out vec2 vUv;
+void main() {
+  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+  vUv = p;
+  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+}`;
 
-// Three Jones "characters" in the spirit of the studio's curated slime scenes.
-const PRESETS: Record<string, Character> = {
-  network: { sensorAngle: 24, sensorDist: 9, turnSpeed: 30, stepSize: 1.2, deposit: 0.08, diffuse: 0.25 },
-  filaments: { sensorAngle: 15, sensorDist: 19, turnSpeed: 17, stepSize: 1.5, deposit: 0.07, diffuse: 0.0 },
-  bloom: { sensorAngle: 31, sensorDist: 12, turnSpeed: 23, stepSize: 1.0, deposit: 0.1, diffuse: 0.5 },
-};
+const UPDATE_FRAG = `#version 300 es
+precision highp float;
+uniform sampler2D uAgents;
+uniform sampler2D uTrail;
+uniform vec2 uRes;
+uniform float uSensorAngle, uSensorDist, uTurnSpeed, uStepSize, uFrame;
+out vec4 outState;
+float senseAt(vec2 pos) { return texture(uTrail, fract(pos / uRes)).r; }
+float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
+void main() {
+  ivec2 coord = ivec2(gl_FragCoord.xy);
+  vec4 s = texelFetch(uAgents, coord, 0);
+  vec2 pos = s.xy;
+  float angle = s.z;
+  float f = senseAt(pos + vec2(cos(angle), sin(angle)) * uSensorDist);
+  float l = senseAt(pos + vec2(cos(angle + uSensorAngle), sin(angle + uSensorAngle)) * uSensorDist);
+  float r = senseAt(pos + vec2(cos(angle - uSensorAngle), sin(angle - uSensorAngle)) * uSensorDist);
+  float rnd = hash(pos + uFrame);
+  if (f > l && f > r) {
+    // keep heading
+  } else if (f < l && f < r) {
+    angle += (rnd < 0.5 ? -1.0 : 1.0) * uTurnSpeed;
+  } else if (r > l) {
+    angle -= uTurnSpeed;
+  } else if (l > r) {
+    angle += uTurnSpeed;
+  }
+  vec2 npos = mod(pos + vec2(cos(angle), sin(angle)) * uStepSize, uRes);
+  outState = vec4(npos, angle, s.w);
+}`;
+
+const DEPOSIT_VERT = `#version 300 es
+uniform sampler2D uAgents;
+uniform float uAgentTexW;
+uniform vec2 uRes;
+void main() {
+  int id = gl_VertexID;
+  int w = int(uAgentTexW);
+  ivec2 coord = ivec2(id % w, id / w);
+  vec2 pos = texelFetch(uAgents, coord, 0).xy;
+  vec2 clip = (pos / uRes) * 2.0 - 1.0;
+  gl_Position = vec4(clip, 0.0, 1.0);
+  gl_PointSize = 1.0;
+}`;
+
+const DEPOSIT_FRAG = `#version 300 es
+precision highp float;
+uniform float uDeposit;
+out vec4 outColor;
+void main() { outColor = vec4(uDeposit, 0.0, 0.0, 0.0); }`;
+
+const DECAY_FRAG = `#version 300 es
+precision highp float;
+uniform sampler2D uTrail;
+uniform vec2 uRes;
+uniform float uDecay, uDiffuse;
+out vec4 outColor;
+void main() {
+  ivec2 c = ivec2(gl_FragCoord.xy);
+  ivec2 sz = ivec2(uRes);
+  float sum = 0.0;
+  for (int dy = -1; dy <= 1; dy++)
+    for (int dx = -1; dx <= 1; dx++) {
+      ivec2 q = (c + ivec2(dx, dy) + sz) % sz;
+      sum += texelFetch(uTrail, q, 0).r;
+    }
+  float blur = sum / 9.0;
+  float orig = texelFetch(uTrail, c, 0).r;
+  float v = mix(orig, blur, uDiffuse) * uDecay;
+  outColor = vec4(v, 0.0, 0.0, 1.0);
+}`;
+
+const DISPLAY_FRAG = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTrail;
+uniform vec3 uBg, uLo, uHi;
+uniform float uIntensity, uGamma;
+out vec4 frag;
+void main() {
+  float t = texture(uTrail, vUv).r * uIntensity;
+  float v = pow(clamp(t, 0.0, 1.0), uGamma);
+  vec3 col = mix(uBg, uLo, smoothstep(0.0, 0.5, v));
+  col = mix(col, uHi, smoothstep(0.5, 1.0, v));
+  frag = vec4(col, 1.0);
+}`;
+
+function compile(gl: WebGL2RenderingContext, type: number, src: string): WebGLShader {
+  const sh = gl.createShader(type)!;
+  gl.shaderSource(sh, src);
+  gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(sh);
+    gl.deleteShader(sh);
+    throw new Error("physarum shader: " + log);
+  }
+  return sh;
+}
+function program(gl: WebGL2RenderingContext, vs: string, fs: string): WebGLProgram {
+  const p = gl.createProgram()!;
+  const v = compile(gl, gl.VERTEX_SHADER, vs);
+  const f = compile(gl, gl.FRAGMENT_SHADER, fs);
+  gl.attachShader(p, v);
+  gl.attachShader(p, f);
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error("physarum link: " + gl.getProgramInfoLog(p));
+  gl.deleteShader(v);
+  gl.deleteShader(f);
+  return p;
+}
+interface Tgt { tex: WebGLTexture; fbo: WebGLFramebuffer; w: number; h: number }
+function target(gl: WebGL2RenderingContext, w: number, h: number, ifmt: number, type: number, data: ArrayBufferView | null, filter: number): Tgt {
+  const tex = gl.createTexture()!;
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, ifmt, w, h, 0, gl.RGBA, type, data);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, filter);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+  const fbo = gl.createFramebuffer()!;
+  gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+  gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+  return { tex, fbo, w, h };
+}
 
 class Physarum implements Piece {
   id = "physarum";
-  title = "Physarum";
+  title = "Physarum - Jones Agent Model";
   tags = ["nature", "math", "flow"];
-  backend = "canvas2d" as const;
+  backend = "webgl2" as const;
   schema: ParamSchema = {
-    preset: { type: "select", options: ["network", "filaments", "bloom"], default: "network", label: "character" },
-    decay: { type: "number", min: 0.85, max: 0.99, step: 0.005, default: 0.92, label: "trail persistence" },
+    sensorDist: { type: "number", min: 2, max: 22, step: 0.5, default: 9, label: "sensor dist" },
+    sensorAngle: { type: "number", min: 5, max: 45, step: 1, default: 22, label: "sensor angle" },
+    turnSpeed: { type: "number", min: 5, max: 60, step: 1, default: 28, label: "turn speed" },
+    decay: { type: "number", min: 0.85, max: 0.99, step: 0.005, default: 0.93, label: "decay" },
+    diffuse: { type: "number", min: 0, max: 1, step: 0.01, default: 0.35, label: "diffuse" },
     intensity: { type: "number", min: 0.5, max: 4, step: 0.1, default: 1.6, label: "glow" },
-    steps: { type: "int", min: 1, max: 4, default: 2, label: "speed" },
+    speed: { type: "int", min: 1, max: 4, default: 1, label: "speed" },
   };
 
-  private ctx!: CanvasRenderingContext2D;
-  private off!: HTMLCanvasElement;
-  private octx!: CanvasRenderingContext2D;
-  private img!: ImageData;
-  private rng!: RNG;
-  private pal!: Palette;
-  private lut = new Uint8Array(256 * 3);
-
+  private gl!: WebGL2RenderingContext;
   private w = 1;
   private h = 1;
-  private gw = 2;
-  private gh = 2;
-  private trail = new Float32Array(4);
-  private tmp = new Float32Array(4);
+  private agentTexW = 512;
+  private vao!: WebGLVertexArrayObject;
+  private pUpdate!: WebGLProgram;
+  private pDeposit!: WebGLProgram;
+  private progDecay!: WebGLProgram;
+  private pDisplay!: WebGLProgram;
+  private agentsA!: Tgt;
+  private agentsB!: Tgt;
+  private trailA!: Tgt;
+  private trailB!: Tgt;
 
-  private N = 12000;
-  private ax = new Float32Array(0);
-  private ay = new Float32Array(0);
-  private ah = new Float32Array(0);
+  private rngNext!: () => number;
+  private bg: [number, number, number] = [0, 0, 0];
+  private lo: [number, number, number] = [0.3, 0.2, 0.6];
+  private hi: [number, number, number] = [1, 1, 1];
 
-  private ch: Character = PRESETS.network!;
-  private decay = 0.92;
-  private intensity = 1.6;
-  private steps = 2;
-  private chaos = 0.5;
+  private sizeScale = 1;
+  private frameN = 0;
+  private turnScale = 1; // chaos
+  private complexity = 0.5;
+
+  // params
+  private pSensorDist = 9;
+  private pSensorAngle = 22;
+  private pTurnSpeed = 28;
+  private pDecay = 0.93;
+  private pDiffuse = 0.35;
+  private pIntensity = 1.6;
+  private pSteps = 1;
 
   init(ctx: PieceContext): void {
-    if (ctx.surface.kind !== "canvas2d") throw new Error("physarum: expected canvas2d surface");
-    this.ctx = ctx.surface.ctx;
+    if (ctx.surface.kind !== "webgl2") throw new Error("physarum: expected webgl2 surface");
+    const gl = (this.gl = ctx.surface.gl);
+    if (!gl.getExtension("EXT_color_buffer_float")) throw new Error("physarum: EXT_color_buffer_float required");
     this.w = ctx.width;
     this.h = ctx.height;
-    this.rng = ctx.rng;
-    this.pal = ctx.palette;
-    this.ch = PRESETS[String(ctx.params.preset)] ?? PRESETS.network!;
-    this.decay = Number(ctx.params.decay);
-    this.intensity = Number(ctx.params.intensity);
-    this.steps = Number(ctx.params.steps);
-    this.N = count(ctx.meta.complexity, 3000, 40000);
-    this.chaos = ctx.meta.chaos;
-    this.buildLut();
-    this.allocGrid();
-    this.allocAgents();
-    this.seedAgents();
+    this.rngNext = () => ctx.rng.next();
+    this.readParams(ctx);
+    this.complexity = ctx.meta.complexity;
+    this.turnScale = 0.7 + ctx.meta.chaos * 0.8;
+    this.agentTexW = Math.round(256 + this.complexity * 768); // 256² … 1024² agents
+    this.sizeScale = Math.max(0.5, Math.min(this.w, this.h) / 520);
+    this.buildColors(ctx.palette);
+
+    this.vao = gl.createVertexArray()!;
+    this.pUpdate = program(gl, FULLSCREEN_VERT, UPDATE_FRAG);
+    this.pDeposit = program(gl, DEPOSIT_VERT, DEPOSIT_FRAG);
+    this.progDecay = program(gl, FULLSCREEN_VERT, DECAY_FRAG);
+    this.pDisplay = program(gl, FULLSCREEN_VERT, DISPLAY_FRAG);
+    this.allocTrails();
+    this.seed();
   }
 
-  applyMeta(_complexity: number, chaos: number): void {
-    // agent count change needs a remount; turn jitter applies live
-    this.chaos = chaos;
+  private readParams(ctx: PieceContext): void {
+    this.pSensorDist = Number(ctx.params.sensorDist);
+    this.pSensorAngle = Number(ctx.params.sensorAngle);
+    this.pTurnSpeed = Number(ctx.params.turnSpeed);
+    this.pDecay = Number(ctx.params.decay);
+    this.pDiffuse = Number(ctx.params.diffuse);
+    this.pIntensity = Number(ctx.params.intensity);
+    this.pSteps = Number(ctx.params.speed);
   }
 
-  private buildLut(): void {
-    for (let i = 0; i < 256; i++) {
-      const c = sample(this.pal, i / 255);
-      this.lut[i * 3] = c[0];
-      this.lut[i * 3 + 1] = c[1];
-      this.lut[i * 3 + 2] = c[2];
+  applyMeta(complexity: number, chaos: number): void {
+    // agent count change needs a remount; turn agitation is live
+    this.complexity = complexity;
+    this.turnScale = 0.7 + chaos * 0.8;
+  }
+
+  private buildColors(pal: Palette): void {
+    const rgb = (t: number): [number, number, number] => {
+      const c = sample(pal, t);
+      return [c[0] / 255, c[1] / 255, c[2] / 255];
+    };
+    this.bg = rgb(0.02);
+    this.lo = rgb(0.55);
+    this.hi = rgb(0.96);
+  }
+
+  private allocTrails(): void {
+    const gl = this.gl;
+    this.trailA = target(gl, this.w, this.h, gl.RGBA16F, gl.HALF_FLOAT, null, gl.LINEAR);
+    this.trailB = target(gl, this.w, this.h, gl.RGBA16F, gl.HALF_FLOAT, null, gl.LINEAR);
+    for (const t of [this.trailA, this.trailB]) {
+      gl.bindFramebuffer(gl.FRAMEBUFFER, t.fbo);
+      gl.viewport(0, 0, t.w, t.h);
+      gl.clearColor(0, 0, 0, 1);
+      gl.clear(gl.COLOR_BUFFER_BIT);
     }
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   }
 
-  private allocGrid(): void {
-    const scale = Math.min(1, 320 / Math.max(this.w, this.h));
-    this.gw = Math.max(2, Math.round(this.w * scale));
-    this.gh = Math.max(2, Math.round(this.h * scale));
-    this.trail = new Float32Array(this.gw * this.gh);
-    this.tmp = new Float32Array(this.gw * this.gh);
-    this.off = document.createElement("canvas");
-    this.off.width = this.gw;
-    this.off.height = this.gh;
-    this.octx = this.off.getContext("2d")!;
-    this.img = this.octx.createImageData(this.gw, this.gh);
-    const d = this.img.data;
-    for (let i = 3; i < d.length; i += 4) d[i] = 255; // opaque
-  }
-
-  private allocAgents(): void {
-    this.ax = new Float32Array(this.N);
-    this.ay = new Float32Array(this.N);
-    this.ah = new Float32Array(this.N);
-  }
-
-  private seedAgents(): void {
-    this.trail.fill(0);
-    // spawn in a centred disk so the network grows outward
-    const cx = this.gw / 2;
-    const cy = this.gh / 2;
-    const r0 = Math.min(this.gw, this.gh) * 0.35;
-    for (let i = 0; i < this.N; i++) {
-      const a = this.rng.range(0, TAU);
-      const r = Math.sqrt(this.rng.next()) * r0;
-      this.ax[i] = cx + Math.cos(a) * r;
-      this.ay[i] = cy + Math.sin(a) * r;
-      this.ah[i] = this.rng.range(0, TAU);
+  private seed(): void {
+    const gl = this.gl;
+    const w = this.agentTexW;
+    const n = w * w;
+    const data = new Float32Array(n * 4);
+    for (let i = 0; i < n; i++) {
+      data[i * 4] = this.rngNext() * this.w;
+      data[i * 4 + 1] = this.rngNext() * this.h;
+      data[i * 4 + 2] = this.rngNext() * Math.PI * 2;
+      data[i * 4 + 3] = 0;
     }
+    if (this.agentsA) {
+      gl.deleteTexture(this.agentsA.tex);
+      gl.deleteFramebuffer(this.agentsA.fbo);
+      gl.deleteTexture(this.agentsB.tex);
+      gl.deleteFramebuffer(this.agentsB.fbo);
+    }
+    this.agentsA = target(gl, w, w, gl.RGBA32F, gl.FLOAT, data, gl.NEAREST);
+    this.agentsB = target(gl, w, w, gl.RGBA32F, gl.FLOAT, null, gl.NEAREST);
   }
 
-  private sampleAt(x: number, y: number): number {
-    const gw = this.gw;
-    const gh = this.gh;
-    let ix = Math.floor(x) % gw;
-    let iy = Math.floor(y) % gh;
-    if (ix < 0) ix += gw;
-    if (iy < 0) iy += gh;
-    return this.trail[iy * gw + ix]!;
+  private u(p: WebGLProgram, n: string): WebGLUniformLocation | null {
+    return this.gl.getUniformLocation(p, n);
   }
 
   private step(): void {
-    const { gw, gh } = this;
-    const SA = this.ch.sensorAngle * D2R;
-    const SD = this.ch.sensorDist;
-    const TS = this.ch.turnSpeed * D2R;
-    const stepLen = this.ch.stepSize;
-    const dep = this.ch.deposit;
-    const jit = this.chaos * 0.35;
-    for (let i = 0; i < this.N; i++) {
-      const x = this.ax[i]!;
-      const y = this.ay[i]!;
-      let h = this.ah[i]!;
-      const f = this.sampleAt(x + Math.cos(h) * SD, y + Math.sin(h) * SD);
-      const l = this.sampleAt(x + Math.cos(h - SA) * SD, y + Math.sin(h - SA) * SD);
-      const r = this.sampleAt(x + Math.cos(h + SA) * SD, y + Math.sin(h + SA) * SD);
-      if (f > l && f > r) {
-        // straight ahead
-      } else if (f < l && f < r) {
-        h += this.rng.next() < 0.5 ? TS : -TS; // ambiguous → random turn
-      } else if (l < r) {
-        h += TS;
-      } else if (r < l) {
-        h -= TS;
-      }
-      if (jit > 0) h += (this.rng.next() - 0.5) * jit;
-      let nx = x + Math.cos(h) * stepLen;
-      let ny = y + Math.sin(h) * stepLen;
-      // toroidal wrap
-      if (nx < 0) nx += gw;
-      else if (nx >= gw) nx -= gw;
-      if (ny < 0) ny += gh;
-      else if (ny >= gh) ny -= gh;
-      this.ax[i] = nx;
-      this.ay[i] = ny;
-      this.ah[i] = h;
-      const ix = nx | 0;
-      const iy = ny | 0;
-      this.trail[iy * gw + ix]! += dep;
-    }
+    const gl = this.gl;
+    const w = this.agentTexW;
+    gl.bindVertexArray(this.vao);
+    this.frameN++;
+
+    // Pass 1 — sense & move (agentsA → agentsB)
+    gl.useProgram(this.pUpdate);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.agentsB.fbo);
+    gl.viewport(0, 0, w, w);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.agentsA.tex);
+    gl.uniform1i(this.u(this.pUpdate, "uAgents"), 0);
+    gl.activeTexture(gl.TEXTURE1);
+    gl.bindTexture(gl.TEXTURE_2D, this.trailA.tex);
+    gl.uniform1i(this.u(this.pUpdate, "uTrail"), 1);
+    gl.uniform2f(this.u(this.pUpdate, "uRes"), this.w, this.h);
+    gl.uniform1f(this.u(this.pUpdate, "uSensorAngle"), this.pSensorAngle * D2R);
+    gl.uniform1f(this.u(this.pUpdate, "uSensorDist"), this.pSensorDist * this.sizeScale);
+    gl.uniform1f(this.u(this.pUpdate, "uTurnSpeed"), this.pTurnSpeed * D2R * this.turnScale);
+    gl.uniform1f(this.u(this.pUpdate, "uStepSize"), this.sizeScale);
+    gl.uniform1f(this.u(this.pUpdate, "uFrame"), this.frameN);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // Pass 2 — deposit (agentsB → trailA, additive points)
+    gl.useProgram(this.pDeposit);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.trailA.fbo);
+    gl.viewport(0, 0, this.w, this.h);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.agentsB.tex);
+    gl.uniform1i(this.u(this.pDeposit, "uAgents"), 0);
+    gl.uniform1f(this.u(this.pDeposit, "uAgentTexW"), w);
+    gl.uniform2f(this.u(this.pDeposit, "uRes"), this.w, this.h);
+    gl.uniform1f(this.u(this.pDeposit, "uDeposit"), 0.2);
+    gl.drawArrays(gl.POINTS, 0, w * w);
+    gl.disable(gl.BLEND);
+
+    // Pass 3 — diffuse + decay (trailA → trailB)
+    gl.useProgram(this.progDecay);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.trailB.fbo);
+    gl.viewport(0, 0, this.w, this.h);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.trailA.tex);
+    gl.uniform1i(this.u(this.progDecay, "uTrail"), 0);
+    gl.uniform2f(this.u(this.progDecay, "uRes"), this.w, this.h);
+    gl.uniform1f(this.u(this.progDecay, "uDecay"), this.pDecay);
+    gl.uniform1f(this.u(this.progDecay, "uDiffuse"), this.pDiffuse);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+    // swap
+    const ta = this.agentsA;
+    this.agentsA = this.agentsB;
+    this.agentsB = ta;
+    const tt = this.trailA;
+    this.trailA = this.trailB;
+    this.trailB = tt;
   }
 
-  private diffuseDecay(): void {
-    const { gw, gh, decay } = this;
-    const diff = this.ch.diffuse;
-    const t = this.trail;
-    if (diff <= 0) {
-      for (let i = 0; i < t.length; i++) t[i]! *= decay;
-      return;
-    }
-    const tmp = this.tmp;
-    const keep = 1 - diff;
-    for (let y = 0; y < gh; y++) {
-      const yu = ((y - 1 + gh) % gh) * gw;
-      const yd = ((y + 1) % gh) * gw;
-      const yc = y * gw;
-      for (let x = 0; x < gw; x++) {
-        const xl = (x - 1 + gw) % gw;
-        const xr = (x + 1) % gw;
-        const sum =
-          t[yu + xl]! + t[yu + x]! + t[yu + xr]! +
-          t[yc + xl]! + t[yc + x]! + t[yc + xr]! +
-          t[yd + xl]! + t[yd + x]! + t[yd + xr]!;
-        const avg = sum / 9;
-        tmp[yc + x] = (keep * t[yc + x]! + diff * avg) * decay;
-      }
-    }
-    this.trail = tmp;
-    this.tmp = t;
-  }
-
-  update(_dt: number, _t: number): void {
-    for (let s = 0; s < this.steps; s++) this.step();
-    this.diffuseDecay();
+  update(): void {
+    for (let i = 0; i < this.pSteps; i++) this.step();
   }
 
   render(): void {
-    const d = this.img.data;
-    const t = this.trail;
-    const lut = this.lut;
-    const k = this.intensity;
-    for (let i = 0; i < t.length; i++) {
-      // tone curve maps unbounded trail → [0,1] without harsh clipping
-      const tone = 1 - Math.exp(-t[i]! * k);
-      const li = (tone * 255) | 0;
-      const o = i * 4;
-      const li3 = (li < 0 ? 0 : li > 255 ? 255 : li) * 3;
-      d[o] = lut[li3]!;
-      d[o + 1] = lut[li3 + 1]!;
-      d[o + 2] = lut[li3 + 2]!;
-    }
-    this.octx.putImageData(this.img, 0, 0);
-    this.ctx.imageSmoothingEnabled = true;
-    this.ctx.drawImage(this.off, 0, 0, this.w, this.h);
+    const gl = this.gl;
+    gl.bindVertexArray(this.vao);
+    gl.useProgram(this.pDisplay);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.viewport(0, 0, this.w, this.h);
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, this.trailA.tex);
+    gl.uniform1i(this.u(this.pDisplay, "uTrail"), 0);
+    gl.uniform3f(this.u(this.pDisplay, "uBg"), this.bg[0], this.bg[1], this.bg[2]);
+    gl.uniform3f(this.u(this.pDisplay, "uLo"), this.lo[0], this.lo[1], this.lo[2]);
+    gl.uniform3f(this.u(this.pDisplay, "uHi"), this.hi[0], this.hi[1], this.hi[2]);
+    gl.uniform1f(this.u(this.pDisplay, "uIntensity"), this.pIntensity);
+    gl.uniform1f(this.u(this.pDisplay, "uGamma"), 0.75);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
   resize(width: number, height: number): void {
     this.w = width;
     this.h = height;
-    this.allocGrid();
-    this.seedAgents();
+    this.sizeScale = Math.max(0.5, Math.min(this.w, this.h) / 520);
+    const gl = this.gl;
+    gl.deleteTexture(this.trailA.tex);
+    gl.deleteFramebuffer(this.trailA.fbo);
+    gl.deleteTexture(this.trailB.tex);
+    gl.deleteFramebuffer(this.trailB.fbo);
+    this.allocTrails();
+    this.seed();
+    this.frameN = 0;
   }
 
   reseed(): void {
-    this.seedAgents();
+    this.allocTrails();
+    this.seed();
+    this.frameN = 0;
   }
 
   dispose(): void {
-    /* offscreen canvas is GC'd */
+    const gl = this.gl;
+    for (const t of [this.agentsA, this.agentsB, this.trailA, this.trailB]) {
+      if (!t) continue;
+      gl.deleteTexture(t.tex);
+      gl.deleteFramebuffer(t.fbo);
+    }
+    for (const p of [this.pUpdate, this.pDeposit, this.progDecay, this.pDisplay]) if (p) gl.deleteProgram(p);
+    if (this.vao) gl.deleteVertexArray(this.vao);
   }
 }
 

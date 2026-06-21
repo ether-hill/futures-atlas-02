@@ -34,11 +34,11 @@ const cw = (name: string): Colors => COLORWAYS.find((c) => c.name === name)!.col
 // Hand-tuned presets for the four headline systems.
 const CURATED: Record<string, Preset[]> = {
   physarum: [
-    { label: "Reticulum", params: { preset: "network", decay: 0.9, intensity: 2.4, steps: 2 }, meta: { complexity: 0.7, chaos: 0.3 }, colors: cw("Cyan Circuitry") },
-    { label: "Filaments", params: { preset: "filaments", decay: 0.88, intensity: 2.9, steps: 3 }, meta: { complexity: 0.5, chaos: 0.45 }, colors: cw("Magma Veins") },
-    { label: "Soft Bloom", params: { preset: "bloom", decay: 0.94, intensity: 2.2, steps: 2 }, meta: { complexity: 0.6, chaos: 0.5 }, colors: cw("Ultraviolet") },
-    { label: "Gold Mesh", params: { preset: "network", decay: 0.92, intensity: 2.6, steps: 2 }, meta: { complexity: 0.85, chaos: 0.35 }, colors: cw("Gold Leaf") },
-    { label: "Monochrome Drift", params: { preset: "filaments", decay: 0.89, intensity: 3, steps: 3 }, meta: { complexity: 0.45, chaos: 0.4 }, colors: cw("Ink Wash") },
+    { label: "Reticulum", params: { sensorDist: 9, sensorAngle: 24, turnSpeed: 30, decay: 0.9, diffuse: 0.25, intensity: 1.8, speed: 1 }, meta: { complexity: 0.65, chaos: 0.35 }, colors: cw("Cyan Circuitry") },
+    { label: "Filaments", params: { sensorDist: 19, sensorAngle: 15, turnSpeed: 17, decay: 0.88, diffuse: 0, intensity: 2.4, speed: 1 }, meta: { complexity: 0.5, chaos: 0.4 }, colors: cw("Magma Veins") },
+    { label: "Soft Bloom", params: { sensorDist: 12, sensorAngle: 31, turnSpeed: 23, decay: 0.94, diffuse: 0.5, intensity: 1.6, speed: 1 }, meta: { complexity: 0.6, chaos: 0.5 }, colors: cw("Ultraviolet") },
+    { label: "Gold Mesh", params: { sensorDist: 7, sensorAngle: 28, turnSpeed: 34, decay: 0.92, diffuse: 0.3, intensity: 2, speed: 1 }, meta: { complexity: 0.85, chaos: 0.35 }, colors: cw("Gold Leaf") },
+    { label: "Monochrome Drift", params: { sensorDist: 14, sensorAngle: 20, turnSpeed: 32, decay: 0.89, diffuse: 0, intensity: 2.2, speed: 1 }, meta: { complexity: 0.5, chaos: 0.4 }, colors: cw("Ink Wash") },
   ],
   boids: [
     { label: "Murmuration", params: { count: 420, speed: 5.5, separation: 1.5, wander: 0.05, directionalPause: 0.1, trail: 0.03 }, meta: { complexity: 0.7, chaos: 0.4 }, colors: cw("Arctic Lattice") },
