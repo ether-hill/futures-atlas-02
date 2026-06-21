@@ -45,6 +45,6 @@ export function buildEmbedSnippet(c: Config): string {
   const { w, h } = c.size;
   return (
     `<iframe src="${embedUrl(c)}" width="${w}" height="${h}" ` +
-    `style="border:0;max-width:100%" loading="lazy" title="Prism — ${c.pieceId}"></iframe>`
+    `style="border:0;max-width:100%" loading="lazy" title="Generatives — ${c.pieceId}"></iframe>`
   );
 }

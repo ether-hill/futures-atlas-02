@@ -16,5 +16,5 @@ if (cfg) {
     t = window.setTimeout(() => player.refit(), 150) as unknown as number;
   });
 } else {
-  stage.textContent = "Prism: no config";
+  stage.textContent = "Generatives: no config";
 }

@@ -49,9 +49,9 @@ export class Dashboard {
     host.innerHTML = `
       <div class="wrap">
         <header class="head">
-          <h1 class="title">Prism</h1>
+          <h1 class="title">Generatives</h1>
           <div class="intro">
-            <p class="summary">A generative-visual lab — a smorgasbord of animated, embeddable treatments for the visual language of a quantum-computing futures project. Pick a treatment, shape it, size it to any banner, and copy a paste-ready embed.</p>
+            <p class="summary">A generative-visual lab — an array of animated, embeddable treatments for the visual language of a quantum-computing futures project. Pick a treatment, shape it, size it to any banner, and copy a paste-ready embed.</p>
             <label class="algo">
               <span class="algo-lbl">Treatment</span>
               <select class="algo-select"></select>

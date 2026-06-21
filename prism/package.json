@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Futures Atlas — Prism. A generative-visual lab: a smorgasbord of animated, embeddable treatments for the quantum-computing futures visual language.",
+  "description": "Futures Atlas — Generatives. A generative-visual lab: an array of animated, embeddable treatments for the quantum-computing futures visual language.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

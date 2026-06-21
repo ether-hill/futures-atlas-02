@@ -73,9 +73,9 @@ export const projects: Project[] = [
   },
   {
     id: "prism",
-    title: "Prism",
+    title: "Generatives",
     tagline:
-      "A generative-visual lab — a smorgasbord of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
+      "A generative-visual lab — an array of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
     year: "2026",
     date: "2026-06-19",
     field: "Generative visuals",
