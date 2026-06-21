@@ -41,10 +41,10 @@ const CURATED: Record<string, Preset[]> = {
     { label: "Monochrome Drift", params: { preset: "filaments", decay: 0.89, intensity: 3, steps: 3 }, meta: { complexity: 0.45, chaos: 0.4 }, colors: cw("Ink Wash") },
   ],
   boids: [
-    { label: "Murmuration", params: { speed: 5.5, separation: 1.5, wander: 0.05, trail: 0.03 }, meta: { complexity: 0.7, chaos: 0.4 }, colors: cw("Arctic Lattice") },
-    { label: "Loose Flock", params: { speed: 12, separation: 1.5, wander: 0.55, trail: 0.067 }, meta: { complexity: 0.45, chaos: 0.6 }, colors: cw("Deep Sea") },
-    { label: "Tight Swarm", params: { speed: 8, separation: 2.4, wander: 0.2, trail: 0.05 }, meta: { complexity: 0.85, chaos: 0.45 }, colors: cw("Cyan Circuitry") },
-    { label: "Restless", params: { speed: 15, separation: 1, wander: 0.9, trail: 0.04 }, meta: { complexity: 0.6, chaos: 0.8 }, colors: cw("Magma Veins") },
+    { label: "Murmuration", params: { count: 420, speed: 5.5, separation: 1.5, wander: 0.05, directionalPause: 0.1, trail: 0.03 }, meta: { complexity: 0.7, chaos: 0.4 }, colors: cw("Arctic Lattice") },
+    { label: "Loose Flock", params: { count: 320, speed: 12, separation: 1.5, wander: 0.55, directionalPause: 0.45, trail: 0.067 }, meta: { complexity: 0.45, chaos: 0.6 }, colors: cw("Deep Sea") },
+    { label: "Tight Swarm", params: { count: 620, speed: 8, separation: 2.4, wander: 0.2, directionalPause: 0.35, trail: 0.05 }, meta: { complexity: 0.85, chaos: 0.45 }, colors: cw("Cyan Circuitry") },
+    { label: "Restless", params: { count: 260, speed: 15, separation: 1, wander: 0.9, directionalPause: 0.8, trail: 0.04 }, meta: { complexity: 0.6, chaos: 0.8 }, colors: cw("Magma Veins") },
   ],
   "field-dynamics": [
     { label: "Twin Vortices", params: { singularities: 2, speed: 4, fade: 0.02, lineWidth: 1.4 }, meta: { complexity: 0.6, chaos: 0.4 }, colors: cw("Bioluminescence") },

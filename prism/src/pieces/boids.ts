@@ -1,23 +1,26 @@
 // boids — emergent flocking tuned for the restless unpredictability of a real
-// starling murmuration. On Reynolds' separation / alignment / cohesion sit three
-// things that keep it from settling: a wandering curl-noise flow that swings the
-// whole flock, a chaos→order→shatter phase loop, and intermittent "predator"
-// scares that tear the flock open and let it reform. Ported from the Frond
-// "Algorithms" lab. complexity = flock size; chaos = wander agitation.
+// starling murmuration. On Reynolds' separation / alignment / cohesion sit a
+// wandering curl-noise flow, a chaos→order→shatter phase loop, and intermittent
+// "predator" scares. Ported from the Frond "Algorithms" lab.
+//
+// Trails are drawn EXPLICITLY: each frame the canvas is cleared to black and each
+// boid's recent position history is re-stroked with an alpha that ramps to zero
+// along its tail. (A feedback "fade to black" can't actually reach black — 8-bit
+// blend rounding plateaus a few levels up and leaves a grey ghost — so we don't
+// use one.) `directional pause` breaks up the unified-stream phase; `nodes` sets
+// the flock size; `trail fade` sets how long each tail is.
 
 import type { Piece, PieceContext, PieceFactory, ParamSchema } from "../core/piece";
 import type { RNG } from "../core/rng";
 import type { NoiseKit } from "../core/noise";
 import type { Palette } from "../core/color/theme";
 import { sample } from "../core/color/theme";
-import { count, range } from "../core/meta";
+import { range } from "../core/meta";
 
 const TAU = Math.PI * 2;
-
-// Boids always runs on pure black: the additive trails read cleanest there, and a
-// black fade target lets old trails decay all the way to black instead of
-// plateauing on a tinted backdrop (which left a grey ghost). The palette still
-// drives the trail/boid colours; only the backdrop is fixed black.
+const LMAX = 110; // max trail length (frames of history kept per boid)
+const CB = 6; // colour buckets
+const AB = 12; // alpha buckets along the tail
 
 class Boids implements Piece {
   id = "boids";
@@ -25,9 +28,11 @@ class Boids implements Piece {
   tags = ["nature", "flow", "physics"];
   backend = "canvas2d" as const;
   schema: ParamSchema = {
+    count: { type: "int", min: 80, max: 900, default: 380, label: "nodes" },
     speed: { type: "number", min: 4, max: 20, step: 0.5, default: 12, label: "speed" },
     separation: { type: "number", min: 0.4, max: 3, step: 0.1, default: 1.5, label: "separation" },
     wander: { type: "number", min: 0, max: 1.5, step: 0.05, default: 0.55, label: "wander" },
+    directionalPause: { type: "number", min: 0, max: 1, step: 0.01, default: 0.45, label: "directional pause" },
     trail: { type: "number", min: 0.01, max: 0.14, step: 0.005, default: 0.067, label: "trail fade" },
   };
 
@@ -44,8 +49,10 @@ class Boids implements Piece {
   private py = new Float32Array(0);
   private vx = new Float32Array(0);
   private vy = new Float32Array(0);
-  private dpx = new Float32Array(0); // draw-from position (start of frame)
-  private dpy = new Float32Array(0);
+  private hx = new Float32Array(0); // position history ring (N × LMAX)
+  private hy = new Float32Array(0);
+  private hp = 0; // newest history slot
+  private written = 0; // frames of valid history (≤ LMAX)
 
   private maxS = 1;
   private minS = 0.5;
@@ -54,6 +61,7 @@ class Boids implements Piece {
   private big = false;
   private flowScale = 1;
   private flowT = 0;
+  private trailLen = 24;
 
   // murmuration phase machine + predator
   private phase = 0;
@@ -69,6 +77,7 @@ class Boids implements Piece {
   private pSpeed = 12;
   private pSep = 1.5;
   private pWander = 0.55;
+  private pDirPause = 0.45;
   private pTrail = 0.067;
   private chaos = 0.5;
 
@@ -80,12 +89,14 @@ class Boids implements Piece {
     this.rng = ctx.rng;
     this.noise = ctx.noise;
     this.pal = ctx.palette;
+    this.N = Number(ctx.params.count);
     this.pSpeed = Number(ctx.params.speed);
     this.pSep = Number(ctx.params.separation);
     this.pWander = Number(ctx.params.wander);
+    this.pDirPause = Number(ctx.params.directionalPause);
     this.pTrail = Number(ctx.params.trail);
-    this.N = count(ctx.meta.complexity, 120, 560);
     this.chaos = ctx.meta.chaos;
+    this.trailLen = Math.round(Math.min(LMAX, Math.max(6, 1.7 / (this.pTrail + 0.006))));
     this.buildPalette();
     this.alloc();
     this.spawnAll();
@@ -93,13 +104,13 @@ class Boids implements Piece {
   }
 
   applyMeta(_complexity: number, chaos: number): void {
-    // flock size change needs a remount; wander agitation applies live
+    // node count + trail live on the params; only chaos (wander agitation) is live here
     this.chaos = chaos;
   }
 
   private buildPalette(): void {
     this.cols = [];
-    for (let i = 0; i < 6; i++) this.cols.push(sample(this.pal, 0.35 + (i / 5) * 0.6));
+    for (let i = 0; i < CB; i++) this.cols.push(sample(this.pal, 0.35 + (i / (CB - 1)) * 0.6));
   }
 
   private alloc(): void {
@@ -108,8 +119,8 @@ class Boids implements Piece {
     this.py = new Float32Array(N);
     this.vx = new Float32Array(N);
     this.vy = new Float32Array(N);
-    this.dpx = new Float32Array(N);
-    this.dpy = new Float32Array(N);
+    this.hx = new Float32Array(N * LMAX);
+    this.hy = new Float32Array(N * LMAX);
   }
 
   private dims(): void {
@@ -131,16 +142,21 @@ class Boids implements Piece {
     for (let i = 0; i < this.N; i++) {
       const a = this.rng.range(0, TAU);
       const r = this.rng.range(0, r0);
-      this.px[i] = cx + Math.cos(a) * r;
-      this.py[i] = cy + Math.sin(a) * r;
-      // seed the draw-from positions to the spawn point so the first render (which
-      // Player runs before any update) draws zero-length lines, not a fan from 0,0
-      this.dpx[i] = this.px[i];
-      this.dpy[i] = this.py[i];
+      const x = cx + Math.cos(a) * r;
+      const y = cy + Math.sin(a) * r;
+      this.px[i] = x;
+      this.py[i] = y;
       const va = this.rng.range(0, TAU);
       this.vx[i] = Math.cos(va) * this.maxS;
       this.vy[i] = Math.sin(va) * this.maxS;
+      // seed the whole history ring at the spawn point → first frames draw blank
+      for (let k = 0; k < LMAX; k++) {
+        this.hx[i * LMAX + k] = x;
+        this.hy[i * LMAX + k] = y;
+      }
     }
+    this.hp = 0;
+    this.written = 1;
     this.flowT = this.rng.range(0, 1000);
     this.gdir = this.rng.range(0, TAU);
     this.DUR = [180 + this.rng.range(0, 200), 210 + this.rng.range(0, 130), 150 + this.rng.range(0, 140)];
@@ -161,6 +177,12 @@ class Boids implements Piece {
   private stepFlock(): void {
     const { N, maxS, R2 } = this;
     const wanderW = this.pWander * range(this.chaos, 0.6, 1.6);
+    const dp = this.pDirPause;
+    const align = 1 - dp; // directional pause weakens the unified-stream alignment
+    // and lengthens the disordered "pause" between streams, shortening ordered runs
+    const durChaos = this.DUR[0] * (1 + dp * 1.6);
+    const durConv = this.DUR[1] * (1 - dp * 0.5);
+    const durOrder = this.DUR[2] * (1 - dp * 0.7);
     this.flowT += 0.0019;
     this.frame++;
     this.pt++;
@@ -168,22 +190,22 @@ class Boids implements Piece {
     if (this.phase === 0) {
       this.kGlobal += (0 - this.kGlobal) * 0.05;
       this.curWander += (wanderW - this.curWander) * 0.04;
-      if (this.pt > this.DUR[0]) {
+      if (this.pt > durChaos) {
         this.phase = 1;
         this.pt = 0;
         this.gdir = this.rng.range(0, TAU);
       }
     } else if (this.phase === 1) {
-      this.kGlobal += (0.95 - this.kGlobal) * 0.03;
+      this.kGlobal += (0.95 * align - this.kGlobal) * 0.03;
       this.curWander += (0.08 - this.curWander) * 0.03;
-      if (this.pt > this.DUR[1]) {
+      if (this.pt > durConv) {
         this.phase = 2;
         this.pt = 0;
       }
     } else {
-      this.kGlobal += (1.15 - this.kGlobal) * 0.04;
-      this.curWander += (0.05 - this.curWander) * 0.04;
-      if (this.pt > this.DUR[2]) {
+      this.kGlobal += (1.15 * align - this.kGlobal) * 0.04;
+      this.curWander += (0.05 + dp * 0.4 * wanderW - this.curWander) * 0.04;
+      if (this.pt > durOrder) {
         this.phase = 0;
         this.pt = 0;
         this.nextScare = this.frame; // shatter
@@ -278,19 +300,23 @@ class Boids implements Piece {
   }
 
   update(_dt: number, _t: number): void {
-    for (let i = 0; i < this.N; i++) {
-      this.dpx[i] = this.px[i];
-      this.dpy[i] = this.py[i];
-    }
+    const w = this.w;
+    const h = this.h;
     for (let sub = 0; sub < 2; sub++) {
       this.stepFlock();
-      const w = this.w;
-      const h = this.h;
       for (let i = 0; i < this.N; i++) {
         this.px[i] = (this.px[i] + this.vx[i] + w) % w;
         this.py[i] = (this.py[i] + this.vy[i] + h) % h;
       }
     }
+    // record one history sample per frame
+    this.hp = (this.hp + 1) % LMAX;
+    const base = this.hp;
+    for (let i = 0; i < this.N; i++) {
+      this.hx[i * LMAX + base] = this.px[i];
+      this.hy[i * LMAX + base] = this.py[i];
+    }
+    if (this.written < LMAX) this.written++;
   }
 
   render(): void {
@@ -298,31 +324,53 @@ class Boids implements Piece {
     const w = this.w;
     const h = this.h;
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = `rgba(0,0,0,${this.pTrail})`;
-    ctx.fillRect(0, 0, w, h);
-
-    ctx.globalCompositeOperation = "lighter";
-    ctx.lineWidth = this.big ? 1.5 : 1.0;
-    ctx.lineCap = "round";
-    for (let i = 0; i < this.N; i++) {
-      const c = this.cols[i % this.cols.length]!;
-      const sp = Math.hypot(this.vx[i], this.vy[i]);
-      const a = ((60 + 90 * Math.min(1, sp / this.maxS)) / 255).toFixed(3);
-      // skip the seam when a boid wrapped this frame
-      if (Math.abs(this.px[i] - this.dpx[i]) < w * 0.5 && Math.abs(this.py[i] - this.dpy[i]) < h * 0.5) {
-        ctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${a})`;
-        ctx.beginPath();
-        ctx.moveTo(this.dpx[i], this.dpy[i]);
-        ctx.lineTo(this.px[i], this.py[i]);
-        ctx.stroke();
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, w, h); // hard clear → no ghost residue ever
+    const L = Math.min(this.trailLen, this.written);
+    if (L >= 2) {
+      ctx.globalCompositeOperation = "lighter";
+      ctx.lineWidth = this.big ? 1.5 : 1.0;
+      ctx.lineCap = "round";
+      const headA = 0.5;
+      const sx = w * 0.5;
+      const sy = h * 0.5;
+      const paths: Path2D[] = [];
+      for (let i = 0; i < CB * AB; i++) paths.push(new Path2D());
+      for (let i = 0; i < this.N; i++) {
+        const cbk = i % CB;
+        const baseI = i * LMAX;
+        for (let k = 0; k < L - 1; k++) {
+          const ia = (this.hp - k + LMAX * 2) % LMAX;
+          const ib = (this.hp - k - 1 + LMAX * 2) % LMAX;
+          const x1 = this.hx[baseI + ia]!;
+          const y1 = this.hy[baseI + ia]!;
+          const x2 = this.hx[baseI + ib]!;
+          const y2 = this.hy[baseI + ib]!;
+          if (Math.abs(x1 - x2) > sx || Math.abs(y1 - y2) > sy) continue; // toroidal seam
+          const tnorm = 1 - k / L; // 1 at the head, → 0 at the tail
+          let ab = (tnorm * AB) | 0;
+          if (ab >= AB) ab = AB - 1;
+          const p = paths[cbk * AB + ab]!;
+          p.moveTo(x1, y1);
+          p.lineTo(x2, y2);
+        }
       }
-    }
-    for (let i = 0; i < this.N; i++) {
-      const c = this.cols[i % this.cols.length]!;
-      ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},0.94)`;
-      ctx.beginPath();
-      ctx.arc(this.px[i], this.py[i], this.head * 0.5, 0, TAU);
-      ctx.fill();
+      for (let cbk = 0; cbk < CB; cbk++) {
+        const c = this.cols[cbk]!;
+        for (let ab = 0; ab < AB; ab++) {
+          const a = headA * Math.pow((ab + 0.5) / AB, 1.6);
+          ctx.strokeStyle = `rgba(${c[0]},${c[1]},${c[2]},${a.toFixed(3)})`;
+          ctx.stroke(paths[cbk * AB + ab]!);
+        }
+      }
+      // node heads
+      for (let i = 0; i < this.N; i++) {
+        const c = this.cols[i % CB]!;
+        ctx.fillStyle = `rgba(${c[0]},${c[1]},${c[2]},0.92)`;
+        ctx.beginPath();
+        ctx.arc(this.px[i], this.py[i], this.head * 0.5, 0, TAU);
+        ctx.fill();
+      }
     }
     ctx.globalCompositeOperation = "source-over";
   }
