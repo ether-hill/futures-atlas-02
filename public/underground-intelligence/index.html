@@ -73,7 +73,7 @@ html.dark {
   --border2: color-mix(in srgb, var(--text) 26%, transparent);
   --muted2: var(--faint);
 
-  --nav-h: 50px;
+  --nav-h: var(--fa-nav-h, 64px); /* the slim 2nd nav is gone — content sits directly below the master bar */
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-heading), 'Inter', sans-serif; font-size: 13px; overflow: hidden; }
@@ -112,12 +112,83 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ── TAB PANELS ──────────────────────────────────────────────────────────── */
 .tab-panel { display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; }
 .tab-panel.active { display: flex; }
-/* Dashboard stays rendered (visibility:hidden) so Leaflet can initialise in background */
-#tab-dashboard { display: flex !important; flex-direction: column; visibility: hidden; pointer-events: none; }
+/* Dashboard: two-column grid on desktop — map / slim timeline / feed stacked on
+   the left, a full-height control panel on the right. Stays display:grid even
+   when inactive (visibility:hidden) so Leaflet can initialise in the background. */
+#tab-dashboard {
+  display: grid !important;
+  grid-template-columns: 1fr 304px;
+  grid-template-rows: 45vh auto 1fr;
+  grid-template-areas: "map panel" "timeline panel" "feed panel";
+  visibility: hidden; pointer-events: none;
+}
 #tab-dashboard.active { visibility: visible; pointer-events: auto; }
+.dash-map-section   { grid-area: map; }
+.dash-timeline-bar  { grid-area: timeline; }
+.dash-feed-panel    { grid-area: feed; }
+.dash-control-panel { grid-area: panel; }
+
+/* Control panel — desktop right sidebar (becomes a fixed bottom bar on mobile) */
+.dash-control-panel {
+  display: flex; flex-direction: column;
+  background: var(--surface); border-left: 1px solid var(--border);
+  overflow-y: auto; z-index: 6;
+}
+.dcp-block { padding: 22px 20px; }
+.dcp-block + .dcp-block { border-top: 1px solid var(--border); }
+.dcp-time { margin-top: auto; }                 /* timeline transport sinks to the panel's bottom */
+.dcp-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted2); margin-bottom: 13px; }
+.dcp-link {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  width: 100%; padding: 13px 15px; margin-bottom: 9px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 9px;
+  color: var(--text); font-family: inherit; font-size: 14px; font-weight: 600;
+  text-align: left; cursor: pointer;
+  transition: border-color .15s, background .15s, transform .15s;
+}
+.dcp-link:last-child { margin-bottom: 0; }
+.dcp-link:hover { border-color: var(--ui-cyan); background: color-mix(in srgb, var(--ui-cyan) 9%, var(--surface2)); transform: translateX(3px); }
+.dcp-arrow { color: var(--ui-cyan); font-size: 15px; }
+.dcp-transport { display: flex; align-items: stretch; gap: 8px; margin-bottom: 14px; }
+.dcp-transport #tl-play-btn { flex: 1; padding: 10px 8px; letter-spacing: 0.12em; }
+.dcp-transport .tl-skip-btn { flex: 0 0 auto; padding: 6px 13px; font-size: 12px; }
+.dcp-time .tl-speed { justify-content: flex-start; }
+
+/* ── Floating contextual nav (replaces the retired slim 2nd nav) ──────────── */
+.story-skip, .zone-jump { position: fixed; top: calc(var(--nav-h) + 16px); right: 20px; z-index: 1200; }
+.story-skip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid var(--border2); color: var(--text);
+  font-family: inherit; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+  cursor: pointer; box-shadow: 0 6px 22px rgba(0,0,0,0.3);
+  transition: opacity .35s ease, transform .35s ease, border-color .15s, color .15s;
+}
+.story-skip:hover { border-color: var(--ui-cyan); color: var(--ui-cyan); }
+.story-skip__arrow { color: var(--ui-cyan); }
+.story-skip.hidden { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+
+.zone-jump { display: inline-flex; gap: 6px; }
+.zone-jump__link {
+  padding: 8px 14px; border-radius: 999px;
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid var(--border2); color: var(--text);
+  font-family: inherit; font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+  cursor: pointer; box-shadow: 0 6px 22px rgba(0,0,0,0.3); transition: border-color .15s, color .15s;
+}
+.zone-jump__link:hover { border-color: var(--ui-cyan); color: var(--ui-cyan); }
+@media (max-width: 768px) {
+  .story-skip { font-size: 11px; padding: 8px 13px; right: 12px; }
+  .story-skip__to { display: none; }   /* "Skip the story →" is enough on phones */
+  .zone-jump { right: 12px; }
+  .zone-jump__link { font-size: 11px; padding: 7px 11px; }
+}
 
 /* Map section */
-.dash-map-section { position: relative; height: 45vh; flex-shrink: 0; background: #14141c; }
+.dash-map-section { position: relative; height: 45vh; flex-shrink: 0; background: #14141c; overflow: hidden; }
 #map { position: absolute; inset: 0; }
 .leaflet-container { background: #131319 !important; }
 
@@ -788,7 +859,7 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 
 /* ── MOBILE (≤ 768px) ───────────────────────────────────────────────────── */
 @media (max-width: 768px) {
-  :root { --nav-h: 46px; }
+  :root { --nav-h: var(--fa-nav-h, 64px); }
   html, body { font-size: 13px; }
 
   /* Nav */
@@ -876,6 +947,33 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   .modal-article { font-size: 14px; line-height: 1.75; }
   .modal-article .pull-quote { font-size: 16px; padding: 18px 0; margin: 18px 0; }
   .modal-close { top: 10px; right: 12px; font-size: 24px; padding: 4px 8px; }
+
+  /* Dashboard: revert to the stacked scroll layout, and pin the control panel
+     as a fixed two-row bottom bar (nav row + timeline row) so nothing overflows. */
+  #tab-dashboard {
+    display: flex !important; flex-direction: column;
+    grid-template-columns: none; grid-template-rows: none; grid-template-areas: none;
+    padding-bottom: 112px;            /* clear the fixed bottom bar */
+  }
+  .dash-control-panel {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 1300;
+    flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: center;
+    gap: 8px; row-gap: 8px;
+    border-left: none; border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 92%, #000);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    padding: 9px 12px;
+  }
+  .dcp-block { padding: 0; flex: 1 1 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .dcp-block + .dcp-block { border-top: 1px solid var(--border); padding-top: 8px; }
+  .dcp-nav { gap: 8px; }
+  .dcp-time { margin-top: 0; gap: 12px; }
+  .dcp-label { display: none; }
+  .dcp-link { margin-bottom: 0; padding: 9px 16px; font-size: 12px; border-radius: 7px; white-space: nowrap; }
+  .dcp-link .dcp-arrow { display: none; }
+  .dcp-transport { margin-bottom: 0; gap: 6px; }
+  .dcp-transport #tl-play-btn { padding: 8px 16px; font-size: 10px; white-space: nowrap; }
+  .dcp-time .tl-speed { margin-left: 0; }
 }
 
 /* ── SMALL PHONES (≤ 480px) ─────────────────────────────────────────────── */
@@ -1140,8 +1238,10 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 /* The master /atlas-nav.js fa-shell is the one global bar. Demote this zone's
    own #nav to a slim tab row directly beneath it: hide the duplicate brand +
    project switcher, keep the page tabs, drop it below the master. */
-#nav{top:var(--fa-nav-h)!important}
-#nav .fa-atlas,#nav .fa-switch-wrap,#nav .fa-sep,#nav .fa-menu{display:none!important}
+/* The slim 2nd nav (#nav) is retired — its tab-switching is replaced by the
+   dashboard control panel (Story/Research), the story skip link, and the
+   research back-link. Hidden everywhere; tab state still flows through switchTab. */
+#nav{display:none!important}
 .fa-shell.is-hidden{transform:none!important}
 
 @media(max-width:900px){#nav{display:none!important}.od-subnav,.nav-tabs{display:none!important}}
@@ -1316,17 +1416,6 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
         <div class="tl-milestone event" data-year="2042" style="left:100%"><div class="tl-m-dot"></div><div class="tl-m-yr">'42</div></div>
       </div>
     </div>
-    <div class="tl-bar-controls">
-      <button id="tl-prev-btn" class="tl-skip-btn" disabled>&#9198; PREV</button>
-      <button id="tl-play-btn">&#9654; PLAY TIMELINE</button>
-      <button id="tl-next-btn" class="tl-skip-btn">NEXT &#9197;</button>
-      <div class="tl-speed">
-        <span class="tl-speed-lbl">SPEED</span>
-        <button class="speed-btn" data-speed="0.5">1/2x</button>
-        <button class="speed-btn active" data-speed="1">1x</button>
-        <button class="speed-btn" data-speed="2">2x</button>
-      </div>
-    </div>
   </div>
 
   <!-- Hero live feed panel -->
@@ -1348,10 +1437,40 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
       </div>
     </div>
   </div>
+
+  <!-- Control panel: right sidebar on desktop, fixed bottom bar on mobile. Holds
+       the tab nav (the slim 2nd nav was retired) + all timeline transport, so the
+       timeline bar itself can stay slim. -->
+  <aside class="dash-control-panel" aria-label="Dashboard controls">
+    <div class="dcp-block dcp-nav">
+      <div class="dcp-label">Explore</div>
+      <button type="button" class="dcp-link" onclick="switchTab('story')">The Story <span class="dcp-arrow" aria-hidden="true">&#8594;</span></button>
+      <button type="button" class="dcp-link" onclick="switchTab('research')">Research <span class="dcp-arrow" aria-hidden="true">&#8594;</span></button>
+    </div>
+    <div class="dcp-block dcp-time">
+      <div class="dcp-label">Timeline</div>
+      <div class="dcp-transport">
+        <button id="tl-prev-btn" class="tl-skip-btn" disabled aria-label="Previous milestone">&#9198;</button>
+        <button id="tl-play-btn">&#9654; PLAY TIMELINE</button>
+        <button id="tl-next-btn" class="tl-skip-btn" aria-label="Next milestone">&#9197;</button>
+      </div>
+      <div class="tl-speed">
+        <span class="tl-speed-lbl">Speed</span>
+        <button class="speed-btn" data-speed="0.5">&frac12;&times;</button>
+        <button class="speed-btn active" data-speed="1">1&times;</button>
+        <button class="speed-btn" data-speed="2">2&times;</button>
+      </div>
+    </div>
+  </aside>
 </div>
 
 <!-- ── STORY ───────────────────────────────────────────────────────────────── -->
 <div id="tab-story" class="tab-panel active">
+
+  <!-- Floating "skip the story" — replaces the slim nav; auto-hides on the final chapter -->
+  <button type="button" class="story-skip" id="story-skip" onclick="switchTab('dashboard')">
+    Skip the story <span class="story-skip__arrow" aria-hidden="true">&#8594;</span> <span class="story-skip__to">Dashboard</span>
+  </button>
 
   <section class="story-chapter" id="ch1">
     <div class="chapter-bg">
@@ -1429,6 +1548,11 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 
 <!-- ── RESEARCH ────────────────────────────────────────────────────────────── -->
 <div id="tab-research" class="tab-panel" style="flex-direction:column;overflow-y:auto">
+  <!-- Floating cross-nav (replaces the slim nav) -->
+  <div class="zone-jump" aria-label="Go to">
+    <button type="button" class="zone-jump__link" onclick="switchTab('story')"><span aria-hidden="true">&#8592;</span> Story</button>
+    <button type="button" class="zone-jump__link" onclick="switchTab('dashboard')">Dashboard</button>
+  </div>
   <div class="research-header">
     <div class="rh-eyebrow">Research &amp; Resources — The Evidence Base</div>
     <h1 class="rh-headline">Everything in the story is speculative. <em>Everything here is real.</em></h1>
@@ -1813,7 +1937,7 @@ function initMap() {
   // Don't let the user zoom out past the point where the whole map is visible —
   // there's nothing useful beyond the full world, just empty grey margins.
   function clampMinZoom() {
-    const z = map.getBoundsZoom(WORLD); // largest zoom at which the world still fits entirely
+    const z = map.getBoundsZoom(WORLD, true); // min zoom at which the world COVERS the view — no grey margins, nothing to zoom out into
     map.setMinZoom(z);
     if (map.getZoom() < z) map.setZoom(z);
   }
@@ -2634,6 +2758,17 @@ const _pathTab = ['story','dashboard','research'].find(t => _rel === t) || 'stor
 switchTab(_pathTab, false);
 // Replace initial state so back-button can return here
 history.replaceState({ tab: _pathTab }, '', BASE_PATH + '/' + _pathTab);
+
+// Story skip link: hide it once the final chapter is in view (nothing left to skip)
+(function () {
+  const skip = document.getElementById('story-skip');
+  const last = document.getElementById('ch5');
+  if (!skip || !last) return;
+  new IntersectionObserver(
+    es => skip.classList.toggle('hidden', es[0].isIntersecting),
+    { threshold: 0.4 }
+  ).observe(last);
+})();
 
 </script>
 <script id="fa-switch-script">
