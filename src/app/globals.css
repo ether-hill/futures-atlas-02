@@ -89,6 +89,20 @@ html {
   scroll-behavior: smooth;
 }
 
+/*
+  The one global nav (.fa-shell) self-injects via /atlas-nav.js AFTER first
+  paint. On these hub pages the server HTML has no bar, so a sticky bar would
+  pop in and shove all content down ~64px on every load — the "everything
+  jumps / pages mash together" flash you see arriving from a dark project zone.
+  Fix: reserve the bar's height up front (SSR) and pin the injected bar over
+  that gap, so it fades in without moving anything. --fa-nav-h mirrors
+  /atlas-nav.css; declared here too so the reservation holds before that
+  stylesheet loads.
+*/
+:root { --fa-nav-h: 64px; }
+body { padding-top: var(--fa-nav-h); }
+header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {

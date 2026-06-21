@@ -24,19 +24,16 @@
     { name: "The Odds", path: "/odds-of-surviving-ai", pages: [
       { name: "The piece", path: "/odds-of-surviving-ai" },
       { name: "Research", path: "/odds-of-surviving-ai/research" },
-      { name: "Contact", path: "/odds-of-surviving-ai/contact" },
     ] },
     { name: "Underground Intelligence", path: "/underground-intelligence", pages: [
       { name: "Story", path: "/underground-intelligence/story" },
       { name: "Dashboard", path: "/underground-intelligence/dashboard" },
       { name: "Research", path: "/underground-intelligence/research" },
-      { name: "Contact", path: "/underground-intelligence/contact" },
     ] },
     { name: "The Hollow Villages", path: "/hollow-villages", pages: [
       { name: "Home", path: "/hollow-villages" },
       { name: "Oracle", path: "/hollow-villages/oracle" },
       { name: "Research", path: "/hollow-villages/research" },
-      { name: "Contact", path: "/hollow-villages/contact" },
     ] },
   ];
   var LINKS = [

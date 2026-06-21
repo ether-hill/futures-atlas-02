@@ -11,7 +11,6 @@ const PAGES = [
   { label: "Home", href: BASE },
   { label: "Oracle", href: `${BASE}/oracle` },
   { label: "Research", href: `${BASE}/research` },
-  { label: "Contact", href: `${BASE}/contact` },
 ];
 
 export function SiteNav() {

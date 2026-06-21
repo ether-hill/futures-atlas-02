@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { Container } from "@/components/Container";
 import { LettersConsole } from "@/components/LettersConsole";
 
@@ -62,12 +61,12 @@ export default function OraclePage() {
                 placeholder="My village is in… The young are leaving because… What stands empty is…"
                 className="w-full resize-y rounded-[3px] border border-paper/30 bg-paper/[0.06] px-4 py-3.5 font-mono text-[13px] leading-[1.6] text-paper placeholder:text-paper/50 focus:border-accent"
               />
-              <Link
+              <a
                 href="/contact"
                 className="inline-flex items-center justify-center gap-2.5 rounded-[2px] bg-accent px-[22px] py-3.5 font-mono text-[12.5px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-surface hover:text-ink"
               >
                 Send to the oracle <span className="text-[14px]">→</span>
-              </Link>
+              </a>
             </div>
           </div>
         </Container>

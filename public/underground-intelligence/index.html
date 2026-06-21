@@ -1175,7 +1175,6 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
     <button class="nav-tab active" data-tab="story">Story</button>
     <button class="nav-tab" data-tab="dashboard">Dashboard</button>
     <button class="nav-tab" data-tab="research">Research</button>
-    <button class="nav-tab" data-tab="contact">Contact</button>
   </div>
 </nav>
 
@@ -1477,67 +1476,6 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   .contact-form { padding: 24px; }
 }
 </style>
-<div id="tab-contact" class="tab-panel" style="flex-direction:column;overflow-y:auto">
-  <div class="contact-wrap">
-    <div class="contact-eyebrow">Get in touch</div>
-    <h1 class="contact-headline">Contact.</h1>
-    <p class="contact-intro">
-      Underground Intelligence is a project of the Futures Atlas, by Frond Studio
-      in partnership with the Centre for Quantum &amp; Society, to make the
-      futures we might live in visible, tangible, and open to debate.
-    </p>
-    <p class="contact-intro">
-      Whether you&rsquo;d like to collaborate, commission work, or simply share a
-      thought or question, we&rsquo;d be glad to hear from you.
-    </p>
-
-    <form class="contact-form" id="contact-form">
-      <div>
-        <div class="cf-lead">Send a message</div>
-        <div class="cf-lead-sub">Fill in the form and we&rsquo;ll get back to you.</div>
-      </div>
-
-      <label class="cf-field">
-        <span class="cf-label">Project</span>
-        <select class="cf-select" name="project">
-          <option>Futures Atlas</option>
-          <option>The Hollow Villages</option>
-          <option selected>Underground Intelligence</option>
-          <option>Another project / general</option>
-        </select>
-      </label>
-
-      <label class="cf-field">
-        <span class="cf-label">Name</span>
-        <input class="cf-input" type="text" autocomplete="name">
-      </label>
-
-      <label class="cf-field">
-        <span class="cf-label">Email *</span>
-        <input class="cf-input" type="email" required autocomplete="email">
-      </label>
-
-      <label class="cf-field">
-        <span class="cf-label">Subject</span>
-        <input class="cf-input" type="text" placeholder="A pitch, a question, a collaboration…">
-      </label>
-
-      <label class="cf-field">
-        <span class="cf-label">Your message</span>
-        <textarea class="cf-textarea" required rows="5"></textarea>
-      </label>
-
-      <button class="cf-btn" type="submit">Send →</button>
-    </form>
-
-    <div class="cf-sent" id="contact-sent" style="display:none">
-      <h2>Thanks — your message is in.</h2>
-      <p>We read everything that comes in and reply when we can. If you pitched a
-        project or a collaboration, expect a slower, more considered answer.</p>
-    </div>
-  </div>
-</div>
-
 <!-- ── MODAL ──────────────────────────────────────────────────────────────── -->
 <div id="modal">
   <div class="modal-overlay" onclick="closeModal()"></div>
@@ -2642,22 +2580,11 @@ updateDiscoveries(2025);
 
 // Route to the correct tab based on URL path (base-path aware for the zone deployment)
 const _rel = window.location.pathname.replace(BASE_PATH, '').replace(/^\//, '');
-const _pathTab = ['story','dashboard','research','contact'].find(t => _rel === t) || 'story';
+const _pathTab = ['story','dashboard','research'].find(t => _rel === t) || 'story';
 switchTab(_pathTab, false);
 // Replace initial state so back-button can return here
 history.replaceState({ tab: _pathTab }, '', BASE_PATH + '/' + _pathTab);
 
-// Contact form: swap to the confirmation panel on submit
-(function () {
-  const form = document.getElementById('contact-form');
-  if (!form) return;
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    form.style.display = 'none';
-    const sent = document.getElementById('contact-sent');
-    if (sent) sent.style.display = 'block';
-  });
-})();
 </script>
 <script id="fa-switch-script">
 (function(){

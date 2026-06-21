@@ -17,15 +17,13 @@ const nextConfig: NextConfig = {
         { source: "/hollow-villages", destination: "/hollow-villages/index.html" },
         { source: "/hollow-villages/oracle", destination: "/hollow-villages/oracle/index.html" },
         { source: "/hollow-villages/research", destination: "/hollow-villages/research/index.html" },
-        { source: "/hollow-villages/contact", destination: "/hollow-villages/contact/index.html" },
         { source: "/underground-intelligence", destination: "/underground-intelligence/index.html" },
         {
-          source: "/underground-intelligence/:tab(story|dashboard|research|contact)",
+          source: "/underground-intelligence/:tab(story|dashboard|research)",
           destination: "/underground-intelligence/index.html",
         },
         { source: "/odds-of-surviving-ai", destination: "/odds-of-surviving-ai/index.html" },
         { source: "/odds-of-surviving-ai/research", destination: "/odds-of-surviving-ai/research.html" },
-        { source: "/odds-of-surviving-ai/contact", destination: "/odds-of-surviving-ai/contact.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
         // Prism — Vite static app; the dashboard + a separate embed.html player
