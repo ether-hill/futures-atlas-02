@@ -13,7 +13,8 @@ import { randomSeedString, makeRng } from "../core/rng";
 import { DEFAULT_COLORS, type Colors } from "../core/color/theme";
 import { presetsFor, randomPatch, type Preset } from "../runtime/presets";
 import { writeHashConfig, readHashConfig } from "../core/config";
-import { download, recordVideo } from "../core/export/capture";
+import { download } from "../core/export/capture";
+import { renderVideoMp4, isVideoExportSupported } from "../runtime/renderVideo";
 
 interface TpBinding {
   on(ev: "change", cb: () => void): TpBinding;
@@ -281,20 +282,24 @@ export class Dashboard {
 
   private async renderVideo(btn: TpButton): Promise<void> {
     if (!this.player) return;
+    if (!isVideoExportSupported()) {
+      this.flash("Video export needs a Chromium-based browser");
+      return;
+    }
     btn.disabled = true;
     const orig = btn.title;
     try {
-      const blob = await recordVideo(
-        this.player.canvas,
-        this.rec.width,
-        this.rec.height,
-        this.rec.fps,
-        this.rec.seconds,
-        (p) => (btn.title = `● ${Math.round(p * 100)}%`),
-      );
-      download(blob, `generatives-${this.player.config.pieceId}-${this.rec.width}x${this.rec.height}.webm`);
-      this.flash("Video exported");
-    } catch {
+      const blob = await renderVideoMp4(this.player.config, {
+        width: this.rec.width,
+        height: this.rec.height,
+        fps: this.rec.fps,
+        seconds: this.rec.seconds,
+        onProgress: (p) => (btn.title = `● ${Math.round(p * 100)}%`),
+      });
+      download(blob, `generatives-${this.player.config.pieceId}-${this.rec.width}x${this.rec.height}.mp4`);
+      this.flash("MP4 exported");
+    } catch (err) {
+      console.error(err);
       this.flash("Export failed");
     }
     btn.title = orig;
