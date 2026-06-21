@@ -135,6 +135,10 @@ class Boids implements Piece {
       const r = this.rng.range(0, r0);
       this.px[i] = cx + Math.cos(a) * r;
       this.py[i] = cy + Math.sin(a) * r;
+      // seed the draw-from positions to the spawn point so the first render (which
+      // Player runs before any update) draws zero-length lines, not a fan from 0,0
+      this.dpx[i] = this.px[i];
+      this.dpy[i] = this.py[i];
       const va = this.rng.range(0, TAU);
       this.vx[i] = Math.cos(va) * this.maxS;
       this.vy[i] = Math.sin(va) * this.maxS;
