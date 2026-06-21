@@ -1,17 +1,20 @@
-// physarum — Jeff Jones' agent-based slime-mould model (Physarum polycephalum),
-// run on the GPU for high fidelity: hundreds of thousands of agents whose state
-// lives in a float texture. Each frame, per agent: sense the pheromone trail
-// ahead / left / right, rotate toward the strongest, step forward, deposit; then
-// the trail map is diffused and decayed. Emergent transport networks appear.
-// This mirrors the Frond studio's sma-config Physarum engine (4-pass WebGL2:
-// sense+move → additive deposit → diffuse+decay → display), recoloured through
-// the active palette. complexity = agent count (fidelity); chaos = turn agitation.
+// physarum — Jeff Jones' agent-based slime-mould model (Physarum polycephalum)
+// on the GPU, mirroring the Frond sma-config engine. Agent state (x, y, heading,
+// species) lives in a float texture; each frame, per agent: sense the pheromone
+// trail ahead / left / right, rotate toward the strongest, step, deposit; the
+// trail map then diffuses and decays. Up to three species are encoded in the
+// R/G/B channels (with optional cross-species avoidance). 4-pass WebGL2:
+// sense+move → additive deposit → diffuse+decay → display. The simulation runs
+// super-sampled above the display for crisp networks.
+// complexity = agent count; chaos = turn agitation.
 
 import type { Piece, PieceContext, PieceFactory, ParamSchema } from "../core/piece";
 import type { Palette } from "../core/color/theme";
 import { sample } from "../core/color/theme";
+import { hexToRgb } from "../core/color/oklch";
 
 const D2R = Math.PI / 180;
+const SS = 1.6; // sim super-sample factor over the display (crisper lines)
 
 const FULLSCREEN_VERT = `#version 300 es
 out vec2 vUv;
@@ -21,23 +24,33 @@ void main() {
   gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
 }`;
 
+const SPECIES_MASK = `
+vec3 speciesMask(float s) {
+  return s < 0.5 ? vec3(1.0, 0.0, 0.0) : s < 1.5 ? vec3(0.0, 1.0, 0.0) : vec3(0.0, 0.0, 1.0);
+}`;
+
 const UPDATE_FRAG = `#version 300 es
 precision highp float;
 uniform sampler2D uAgents;
 uniform sampler2D uTrail;
 uniform vec2 uRes;
-uniform float uSensorAngle, uSensorDist, uTurnSpeed, uStepSize, uFrame;
+uniform float uSensorAngle, uSensorDist, uTurnSpeed, uStepSize, uFrame, uAvoid;
 out vec4 outState;
-float senseAt(vec2 pos) { return texture(uTrail, fract(pos / uRes)).r; }
+${SPECIES_MASK}
+float senseAt(vec2 pos, vec3 mask) {
+  vec3 t = texture(uTrail, fract(pos / uRes)).rgb;
+  return dot(t, mask) - uAvoid * dot(t, 1.0 - mask);
+}
 float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123); }
 void main() {
   ivec2 coord = ivec2(gl_FragCoord.xy);
   vec4 s = texelFetch(uAgents, coord, 0);
   vec2 pos = s.xy;
   float angle = s.z;
-  float f = senseAt(pos + vec2(cos(angle), sin(angle)) * uSensorDist);
-  float l = senseAt(pos + vec2(cos(angle + uSensorAngle), sin(angle + uSensorAngle)) * uSensorDist);
-  float r = senseAt(pos + vec2(cos(angle - uSensorAngle), sin(angle - uSensorAngle)) * uSensorDist);
+  vec3 mask = speciesMask(s.w);
+  float f = senseAt(pos + vec2(cos(angle), sin(angle)) * uSensorDist, mask);
+  float l = senseAt(pos + vec2(cos(angle + uSensorAngle), sin(angle + uSensorAngle)) * uSensorDist, mask);
+  float r = senseAt(pos + vec2(cos(angle - uSensorAngle), sin(angle - uSensorAngle)) * uSensorDist, mask);
   float rnd = hash(pos + uFrame);
   if (f > l && f > r) {
     // keep heading
@@ -56,21 +69,25 @@ const DEPOSIT_VERT = `#version 300 es
 uniform sampler2D uAgents;
 uniform float uAgentTexW;
 uniform vec2 uRes;
+flat out vec3 vMask;
+${SPECIES_MASK}
 void main() {
   int id = gl_VertexID;
   int w = int(uAgentTexW);
   ivec2 coord = ivec2(id % w, id / w);
-  vec2 pos = texelFetch(uAgents, coord, 0).xy;
-  vec2 clip = (pos / uRes) * 2.0 - 1.0;
+  vec4 st = texelFetch(uAgents, coord, 0);
+  vMask = speciesMask(st.w);
+  vec2 clip = (st.xy / uRes) * 2.0 - 1.0;
   gl_Position = vec4(clip, 0.0, 1.0);
   gl_PointSize = 1.0;
 }`;
 
 const DEPOSIT_FRAG = `#version 300 es
 precision highp float;
+flat in vec3 vMask;
 uniform float uDeposit;
 out vec4 outColor;
-void main() { outColor = vec4(uDeposit, 0.0, 0.0, 0.0); }`;
+void main() { outColor = vec4(vMask * uDeposit, 0.0); }`;
 
 const DECAY_FRAG = `#version 300 es
 precision highp float;
@@ -81,30 +98,37 @@ out vec4 outColor;
 void main() {
   ivec2 c = ivec2(gl_FragCoord.xy);
   ivec2 sz = ivec2(uRes);
-  float sum = 0.0;
+  vec3 sum = vec3(0.0);
   for (int dy = -1; dy <= 1; dy++)
     for (int dx = -1; dx <= 1; dx++) {
       ivec2 q = (c + ivec2(dx, dy) + sz) % sz;
-      sum += texelFetch(uTrail, q, 0).r;
+      sum += texelFetch(uTrail, q, 0).rgb;
     }
-  float blur = sum / 9.0;
-  float orig = texelFetch(uTrail, c, 0).r;
-  float v = mix(orig, blur, uDiffuse) * uDecay;
-  outColor = vec4(v, 0.0, 0.0, 1.0);
+  vec3 blur = sum / 9.0;
+  vec3 orig = texelFetch(uTrail, c, 0).rgb;
+  vec3 v = mix(orig, blur, uDiffuse) * uDecay;
+  outColor = vec4(v, 1.0);
 }`;
 
 const DISPLAY_FRAG = `#version 300 es
 precision highp float;
 in vec2 vUv;
 uniform sampler2D uTrail;
-uniform vec3 uBg, uLo, uHi;
+uniform int uMode;
+uniform vec3 uBg, uLo, uHi, uColR, uColG, uColB;
 uniform float uIntensity, uGamma;
 out vec4 frag;
 void main() {
-  float t = texture(uTrail, vUv).r * uIntensity;
-  float v = pow(clamp(t, 0.0, 1.0), uGamma);
-  vec3 col = mix(uBg, uLo, smoothstep(0.0, 0.5, v));
-  col = mix(col, uHi, smoothstep(0.5, 1.0, v));
+  vec3 t = texture(uTrail, vUv).rgb * uIntensity;
+  vec3 col;
+  if (uMode == 0) {
+    float v = pow(clamp(t.r, 0.0, 1.0), uGamma);
+    col = mix(uBg, uLo, smoothstep(0.0, 0.5, v));
+    col = mix(col, uHi, smoothstep(0.5, 1.0, v));
+  } else {
+    t = pow(clamp(t, 0.0, 1.0), vec3(uGamma));
+    col = uBg + t.r * uColR + t.g * uColG + t.b * uColB;
+  }
   frag = vec4(col, 1.0);
 }`;
 
@@ -146,6 +170,10 @@ function target(gl: WebGL2RenderingContext, w: number, h: number, ifmt: number, 
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   return { tex, fbo, w, h };
 }
+const rgb01 = (hex: string): [number, number, number] => {
+  const c = hexToRgb(hex);
+  return [c[0] / 255, c[1] / 255, c[2] / 255];
+};
 
 class Physarum implements Piece {
   id = "physarum";
@@ -153,24 +181,33 @@ class Physarum implements Piece {
   tags = ["nature", "math", "flow"];
   backend = "webgl2" as const;
   schema: ParamSchema = {
+    spawn: { type: "select", options: ["ring", "center", "random"], default: "ring", label: "spawn" },
+    species: { type: "int", min: 1, max: 3, default: 1, label: "species" },
+    displayMode: { type: "select", options: ["palette", "rgb"], default: "palette", label: "colour mode" },
     sensorDist: { type: "number", min: 2, max: 22, step: 0.5, default: 9, label: "sensor dist" },
     sensorAngle: { type: "number", min: 5, max: 45, step: 1, default: 22, label: "sensor angle" },
     turnSpeed: { type: "number", min: 5, max: 60, step: 1, default: 28, label: "turn speed" },
     decay: { type: "number", min: 0.85, max: 0.99, step: 0.005, default: 0.93, label: "decay" },
     diffuse: { type: "number", min: 0, max: 1, step: 0.01, default: 0.35, label: "diffuse" },
+    avoid: { type: "number", min: 0, max: 1, step: 0.01, default: 0, label: "avoid (species)" },
     intensity: { type: "number", min: 0.5, max: 4, step: 0.1, default: 1.6, label: "glow" },
     speed: { type: "int", min: 1, max: 4, default: 1, label: "speed" },
+    colR: { type: "color", default: "#ff2d6b", label: "species R" },
+    colG: { type: "color", default: "#22e0c8", label: "species G" },
+    colB: { type: "color", default: "#ffd23d", label: "species B" },
   };
 
   private gl!: WebGL2RenderingContext;
-  private w = 1;
+  private w = 1; // display px
   private h = 1;
+  private sw = 1; // sim px (super-sampled)
+  private sh = 1;
   private agentTexW = 512;
   private vao!: WebGLVertexArrayObject;
-  private pUpdate!: WebGLProgram;
-  private pDeposit!: WebGLProgram;
+  private progUpdate!: WebGLProgram;
+  private progDeposit!: WebGLProgram;
   private progDecay!: WebGLProgram;
-  private pDisplay!: WebGLProgram;
+  private progDisplay!: WebGLProgram;
   private agentsA!: Tgt;
   private agentsB!: Tgt;
   private trailA!: Tgt;
@@ -180,18 +217,24 @@ class Physarum implements Piece {
   private bg: [number, number, number] = [0, 0, 0];
   private lo: [number, number, number] = [0.3, 0.2, 0.6];
   private hi: [number, number, number] = [1, 1, 1];
+  private colR: [number, number, number] = [1, 0.2, 0.4];
+  private colG: [number, number, number] = [0.1, 0.9, 0.8];
+  private colB: [number, number, number] = [1, 0.8, 0.2];
 
   private sizeScale = 1;
   private frameN = 0;
-  private turnScale = 1; // chaos
+  private turnScale = 1;
   private complexity = 0.5;
 
-  // params
+  private pSpawn = "ring";
+  private pSpecies = 1;
+  private pMode = 0;
   private pSensorDist = 9;
   private pSensorAngle = 22;
   private pTurnSpeed = 28;
   private pDecay = 0.93;
   private pDiffuse = 0.35;
+  private pAvoid = 0;
   private pIntensity = 1.6;
   private pSteps = 1;
 
@@ -201,35 +244,47 @@ class Physarum implements Piece {
     if (!gl.getExtension("EXT_color_buffer_float")) throw new Error("physarum: EXT_color_buffer_float required");
     this.w = ctx.width;
     this.h = ctx.height;
+    this.sw = Math.round(this.w * SS);
+    this.sh = Math.round(this.h * SS);
     this.rngNext = () => ctx.rng.next();
     this.readParams(ctx);
     this.complexity = ctx.meta.complexity;
     this.turnScale = 0.7 + ctx.meta.chaos * 0.8;
-    this.agentTexW = Math.round(256 + this.complexity * 768); // 256² … 1024² agents
-    this.sizeScale = Math.max(0.5, Math.min(this.w, this.h) / 520);
+    this.agentTexW = Math.round(256 + this.complexity * 768);
+    this.sizeScale = Math.max(0.5, Math.min(this.sw, this.sh) / 520);
     this.buildColors(ctx.palette);
 
     this.vao = gl.createVertexArray()!;
-    this.pUpdate = program(gl, FULLSCREEN_VERT, UPDATE_FRAG);
-    this.pDeposit = program(gl, DEPOSIT_VERT, DEPOSIT_FRAG);
+    this.progUpdate = program(gl, FULLSCREEN_VERT, UPDATE_FRAG);
+    this.progDeposit = program(gl, DEPOSIT_VERT, DEPOSIT_FRAG);
     this.progDecay = program(gl, FULLSCREEN_VERT, DECAY_FRAG);
-    this.pDisplay = program(gl, FULLSCREEN_VERT, DISPLAY_FRAG);
+    this.progDisplay = program(gl, FULLSCREEN_VERT, DISPLAY_FRAG);
     this.allocTrails();
     this.seed();
+    // warm up a handful of steps so the FIRST displayed frame is an established
+    // seed (a clean ring/centre/scatter) rather than a blank flash or a 1-frame
+    // speckle of un-organised deposits — kills the start-up flicker.
+    for (let i = 0; i < 8; i++) this.step();
   }
 
   private readParams(ctx: PieceContext): void {
+    this.pSpawn = String(ctx.params.spawn);
+    this.pSpecies = Math.max(1, Math.min(3, Number(ctx.params.species)));
+    this.pMode = String(ctx.params.displayMode) === "rgb" ? 1 : 0;
     this.pSensorDist = Number(ctx.params.sensorDist);
     this.pSensorAngle = Number(ctx.params.sensorAngle);
     this.pTurnSpeed = Number(ctx.params.turnSpeed);
     this.pDecay = Number(ctx.params.decay);
     this.pDiffuse = Number(ctx.params.diffuse);
+    this.pAvoid = Number(ctx.params.avoid);
     this.pIntensity = Number(ctx.params.intensity);
     this.pSteps = Number(ctx.params.speed);
+    this.colR = rgb01(String(ctx.params.colR));
+    this.colG = rgb01(String(ctx.params.colG));
+    this.colB = rgb01(String(ctx.params.colB));
   }
 
   applyMeta(complexity: number, chaos: number): void {
-    // agent count change needs a remount; turn agitation is live
     this.complexity = complexity;
     this.turnScale = 0.7 + chaos * 0.8;
   }
@@ -246,8 +301,8 @@ class Physarum implements Piece {
 
   private allocTrails(): void {
     const gl = this.gl;
-    this.trailA = target(gl, this.w, this.h, gl.RGBA16F, gl.HALF_FLOAT, null, gl.LINEAR);
-    this.trailB = target(gl, this.w, this.h, gl.RGBA16F, gl.HALF_FLOAT, null, gl.LINEAR);
+    this.trailA = target(gl, this.sw, this.sh, gl.RGBA16F, gl.HALF_FLOAT, null, gl.LINEAR);
+    this.trailB = target(gl, this.sw, this.sh, gl.RGBA16F, gl.HALF_FLOAT, null, gl.LINEAR);
     for (const t of [this.trailA, this.trailB]) {
       gl.bindFramebuffer(gl.FRAMEBUFFER, t.fbo);
       gl.viewport(0, 0, t.w, t.h);
@@ -262,11 +317,34 @@ class Physarum implements Piece {
     const w = this.agentTexW;
     const n = w * w;
     const data = new Float32Array(n * 4);
+    const cx = this.sw / 2;
+    const cy = this.sh / 2;
+    const ring = Math.min(this.sw, this.sh) * 0.36;
+    const blob = Math.min(this.sw, this.sh) * 0.04;
+    const species = this.pSpecies;
     for (let i = 0; i < n; i++) {
-      data[i * 4] = this.rngNext() * this.w;
-      data[i * 4 + 1] = this.rngNext() * this.h;
-      data[i * 4 + 2] = this.rngNext() * Math.PI * 2;
-      data[i * 4 + 3] = 0;
+      let x: number, y: number, a: number;
+      if (this.pSpawn === "center") {
+        const rad = this.rngNext() * blob;
+        const t = this.rngNext() * Math.PI * 2;
+        x = cx + Math.cos(t) * rad;
+        y = cy + Math.sin(t) * rad;
+        a = this.rngNext() * Math.PI * 2;
+      } else if (this.pSpawn === "random") {
+        x = this.rngNext() * this.sw;
+        y = this.rngNext() * this.sh;
+        a = this.rngNext() * Math.PI * 2;
+      } else {
+        // ring
+        const t = this.rngNext() * Math.PI * 2;
+        x = cx + Math.cos(t) * ring;
+        y = cy + Math.sin(t) * ring;
+        a = t + Math.PI + (this.rngNext() - 0.5);
+      }
+      data[i * 4] = x;
+      data[i * 4 + 1] = y;
+      data[i * 4 + 2] = a;
+      data[i * 4 + 3] = i % species;
     }
     if (this.agentsA) {
       gl.deleteTexture(this.agentsA.tex);
@@ -276,6 +354,7 @@ class Physarum implements Piece {
     }
     this.agentsA = target(gl, w, w, gl.RGBA32F, gl.FLOAT, data, gl.NEAREST);
     this.agentsB = target(gl, w, w, gl.RGBA32F, gl.FLOAT, null, gl.NEAREST);
+    this.frameN = 0;
   }
 
   private u(p: WebGLProgram, n: string): WebGLUniformLocation | null {
@@ -288,52 +367,49 @@ class Physarum implements Piece {
     gl.bindVertexArray(this.vao);
     this.frameN++;
 
-    // Pass 1 — sense & move (agentsA → agentsB)
-    gl.useProgram(this.pUpdate);
+    gl.useProgram(this.progUpdate);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.agentsB.fbo);
     gl.viewport(0, 0, w, w);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.agentsA.tex);
-    gl.uniform1i(this.u(this.pUpdate, "uAgents"), 0);
+    gl.uniform1i(this.u(this.progUpdate, "uAgents"), 0);
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, this.trailA.tex);
-    gl.uniform1i(this.u(this.pUpdate, "uTrail"), 1);
-    gl.uniform2f(this.u(this.pUpdate, "uRes"), this.w, this.h);
-    gl.uniform1f(this.u(this.pUpdate, "uSensorAngle"), this.pSensorAngle * D2R);
-    gl.uniform1f(this.u(this.pUpdate, "uSensorDist"), this.pSensorDist * this.sizeScale);
-    gl.uniform1f(this.u(this.pUpdate, "uTurnSpeed"), this.pTurnSpeed * D2R * this.turnScale);
-    gl.uniform1f(this.u(this.pUpdate, "uStepSize"), this.sizeScale);
-    gl.uniform1f(this.u(this.pUpdate, "uFrame"), this.frameN);
+    gl.uniform1i(this.u(this.progUpdate, "uTrail"), 1);
+    gl.uniform2f(this.u(this.progUpdate, "uRes"), this.sw, this.sh);
+    gl.uniform1f(this.u(this.progUpdate, "uSensorAngle"), this.pSensorAngle * D2R);
+    gl.uniform1f(this.u(this.progUpdate, "uSensorDist"), this.pSensorDist * this.sizeScale);
+    gl.uniform1f(this.u(this.progUpdate, "uTurnSpeed"), this.pTurnSpeed * D2R * this.turnScale);
+    gl.uniform1f(this.u(this.progUpdate, "uStepSize"), this.sizeScale);
+    gl.uniform1f(this.u(this.progUpdate, "uFrame"), this.frameN);
+    gl.uniform1f(this.u(this.progUpdate, "uAvoid"), this.pAvoid);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // Pass 2 — deposit (agentsB → trailA, additive points)
-    gl.useProgram(this.pDeposit);
+    gl.useProgram(this.progDeposit);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.trailA.fbo);
-    gl.viewport(0, 0, this.w, this.h);
+    gl.viewport(0, 0, this.sw, this.sh);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.agentsB.tex);
-    gl.uniform1i(this.u(this.pDeposit, "uAgents"), 0);
-    gl.uniform1f(this.u(this.pDeposit, "uAgentTexW"), w);
-    gl.uniform2f(this.u(this.pDeposit, "uRes"), this.w, this.h);
-    gl.uniform1f(this.u(this.pDeposit, "uDeposit"), 0.2);
+    gl.uniform1i(this.u(this.progDeposit, "uAgents"), 0);
+    gl.uniform1f(this.u(this.progDeposit, "uAgentTexW"), w);
+    gl.uniform2f(this.u(this.progDeposit, "uRes"), this.sw, this.sh);
+    gl.uniform1f(this.u(this.progDeposit, "uDeposit"), 0.2);
     gl.drawArrays(gl.POINTS, 0, w * w);
     gl.disable(gl.BLEND);
 
-    // Pass 3 — diffuse + decay (trailA → trailB)
     gl.useProgram(this.progDecay);
     gl.bindFramebuffer(gl.FRAMEBUFFER, this.trailB.fbo);
-    gl.viewport(0, 0, this.w, this.h);
+    gl.viewport(0, 0, this.sw, this.sh);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.trailA.tex);
     gl.uniform1i(this.u(this.progDecay, "uTrail"), 0);
-    gl.uniform2f(this.u(this.progDecay, "uRes"), this.w, this.h);
+    gl.uniform2f(this.u(this.progDecay, "uRes"), this.sw, this.sh);
     gl.uniform1f(this.u(this.progDecay, "uDecay"), this.pDecay);
     gl.uniform1f(this.u(this.progDecay, "uDiffuse"), this.pDiffuse);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
 
-    // swap
     const ta = this.agentsA;
     this.agentsA = this.agentsB;
     this.agentsB = ta;
@@ -349,24 +425,30 @@ class Physarum implements Piece {
   render(): void {
     const gl = this.gl;
     gl.bindVertexArray(this.vao);
-    gl.useProgram(this.pDisplay);
+    gl.useProgram(this.progDisplay);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, this.w, this.h);
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, this.trailA.tex);
-    gl.uniform1i(this.u(this.pDisplay, "uTrail"), 0);
-    gl.uniform3f(this.u(this.pDisplay, "uBg"), this.bg[0], this.bg[1], this.bg[2]);
-    gl.uniform3f(this.u(this.pDisplay, "uLo"), this.lo[0], this.lo[1], this.lo[2]);
-    gl.uniform3f(this.u(this.pDisplay, "uHi"), this.hi[0], this.hi[1], this.hi[2]);
-    gl.uniform1f(this.u(this.pDisplay, "uIntensity"), this.pIntensity);
-    gl.uniform1f(this.u(this.pDisplay, "uGamma"), 0.75);
+    gl.uniform1i(this.u(this.progDisplay, "uTrail"), 0);
+    gl.uniform1i(this.u(this.progDisplay, "uMode"), this.pMode);
+    gl.uniform3f(this.u(this.progDisplay, "uBg"), this.bg[0], this.bg[1], this.bg[2]);
+    gl.uniform3f(this.u(this.progDisplay, "uLo"), this.lo[0], this.lo[1], this.lo[2]);
+    gl.uniform3f(this.u(this.progDisplay, "uHi"), this.hi[0], this.hi[1], this.hi[2]);
+    gl.uniform3f(this.u(this.progDisplay, "uColR"), this.colR[0], this.colR[1], this.colR[2]);
+    gl.uniform3f(this.u(this.progDisplay, "uColG"), this.colG[0], this.colG[1], this.colG[2]);
+    gl.uniform3f(this.u(this.progDisplay, "uColB"), this.colB[0], this.colB[1], this.colB[2]);
+    gl.uniform1f(this.u(this.progDisplay, "uIntensity"), this.pIntensity);
+    gl.uniform1f(this.u(this.progDisplay, "uGamma"), 0.75);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
   }
 
   resize(width: number, height: number): void {
     this.w = width;
     this.h = height;
-    this.sizeScale = Math.max(0.5, Math.min(this.w, this.h) / 520);
+    this.sw = Math.round(this.w * SS);
+    this.sh = Math.round(this.h * SS);
+    this.sizeScale = Math.max(0.5, Math.min(this.sw, this.sh) / 520);
     const gl = this.gl;
     gl.deleteTexture(this.trailA.tex);
     gl.deleteFramebuffer(this.trailA.fbo);
@@ -374,13 +456,13 @@ class Physarum implements Piece {
     gl.deleteFramebuffer(this.trailB.fbo);
     this.allocTrails();
     this.seed();
-    this.frameN = 0;
+    for (let i = 0; i < 8; i++) this.step();
   }
 
   reseed(): void {
     this.allocTrails();
     this.seed();
-    this.frameN = 0;
+    for (let i = 0; i < 8; i++) this.step();
   }
 
   dispose(): void {
@@ -390,7 +472,7 @@ class Physarum implements Piece {
       gl.deleteTexture(t.tex);
       gl.deleteFramebuffer(t.fbo);
     }
-    for (const p of [this.pUpdate, this.pDeposit, this.progDecay, this.pDisplay]) if (p) gl.deleteProgram(p);
+    for (const p of [this.progUpdate, this.progDeposit, this.progDecay, this.progDisplay]) if (p) gl.deleteProgram(p);
     if (this.vao) gl.deleteVertexArray(this.vao);
   }
 }

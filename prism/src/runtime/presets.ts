@@ -34,11 +34,11 @@ const cw = (name: string): Colors => COLORWAYS.find((c) => c.name === name)!.col
 // Hand-tuned presets for the four headline systems.
 const CURATED: Record<string, Preset[]> = {
   physarum: [
-    { label: "Reticulum", params: { sensorDist: 9, sensorAngle: 24, turnSpeed: 30, decay: 0.9, diffuse: 0.25, intensity: 1.8, speed: 1 }, meta: { complexity: 0.65, chaos: 0.35 }, colors: cw("Cyan Circuitry") },
-    { label: "Filaments", params: { sensorDist: 19, sensorAngle: 15, turnSpeed: 17, decay: 0.88, diffuse: 0, intensity: 2.4, speed: 1 }, meta: { complexity: 0.5, chaos: 0.4 }, colors: cw("Magma Veins") },
-    { label: "Soft Bloom", params: { sensorDist: 12, sensorAngle: 31, turnSpeed: 23, decay: 0.94, diffuse: 0.5, intensity: 1.6, speed: 1 }, meta: { complexity: 0.6, chaos: 0.5 }, colors: cw("Ultraviolet") },
-    { label: "Gold Mesh", params: { sensorDist: 7, sensorAngle: 28, turnSpeed: 34, decay: 0.92, diffuse: 0.3, intensity: 2, speed: 1 }, meta: { complexity: 0.85, chaos: 0.35 }, colors: cw("Gold Leaf") },
-    { label: "Monochrome Drift", params: { sensorDist: 14, sensorAngle: 20, turnSpeed: 32, decay: 0.89, diffuse: 0, intensity: 2.2, speed: 1 }, meta: { complexity: 0.5, chaos: 0.4 }, colors: cw("Ink Wash") },
+    { label: "Reticulum", params: { spawn: "ring", species: 1, displayMode: "palette", sensorDist: 9, sensorAngle: 24, turnSpeed: 30, decay: 0.9, diffuse: 0.25, avoid: 0, intensity: 1.8, speed: 1 }, meta: { complexity: 0.65, chaos: 0.35 }, colors: cw("Cyan Circuitry") },
+    { label: "Filaments", params: { spawn: "random", species: 1, displayMode: "palette", sensorDist: 19, sensorAngle: 15, turnSpeed: 17, decay: 0.88, diffuse: 0, avoid: 0, intensity: 2.4, speed: 1 }, meta: { complexity: 0.5, chaos: 0.4 }, colors: cw("Magma Veins") },
+    { label: "Soft Bloom", params: { spawn: "center", species: 1, displayMode: "palette", sensorDist: 12, sensorAngle: 31, turnSpeed: 23, decay: 0.94, diffuse: 0.5, avoid: 0, intensity: 1.6, speed: 1 }, meta: { complexity: 0.6, chaos: 0.5 }, colors: cw("Ultraviolet") },
+    { label: "Three Species", params: { spawn: "random", species: 3, displayMode: "rgb", sensorDist: 9, sensorAngle: 22, turnSpeed: 28, decay: 0.92, diffuse: 0.4, avoid: 0.5, intensity: 1.6, speed: 1, colR: "#ff2d6b", colG: "#22e0c8", colB: "#ffd23d" }, meta: { complexity: 0.7, chaos: 0.4 }, colors: cw("Ink Wash") },
+    { label: "Monochrome Drift", params: { spawn: "random", species: 1, displayMode: "palette", sensorDist: 14, sensorAngle: 20, turnSpeed: 32, decay: 0.89, diffuse: 0, avoid: 0, intensity: 2.2, speed: 1 }, meta: { complexity: 0.5, chaos: 0.4 }, colors: cw("Ink Wash") },
   ],
   boids: [
     { label: "Murmuration", params: { count: 420, speed: 5.5, separation: 1.5, wander: 0.05, directionalPause: 0.1, trail: 0.03 }, meta: { complexity: 0.7, chaos: 0.4 }, colors: cw("Arctic Lattice") },
@@ -70,6 +70,7 @@ function randomValue(spec: ParamSpec, rng: RNG): number | boolean | string {
   if (spec.type === "number") return snap(rng.range(spec.min, spec.max), spec.min, spec.step ?? 0.01);
   if (spec.type === "int") return rng.int(spec.min, spec.max);
   if (spec.type === "bool") return rng.next() < 0.5;
+  if (spec.type === "color") return "#" + rng.int(0, 0xffffff).toString(16).padStart(6, "0");
   return spec.options[rng.int(0, spec.options.length - 1)]!; // select
 }
 

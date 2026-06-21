@@ -11,7 +11,8 @@ export type ParamSpec =
   | { type: "number"; min: number; max: number; step?: number; default: number; label?: string }
   | { type: "int"; min: number; max: number; default: number; label?: string }
   | { type: "bool"; default: boolean; label?: string }
-  | { type: "select"; options: string[]; default: string; label?: string };
+  | { type: "select"; options: string[]; default: string; label?: string }
+  | { type: "color"; default: string; label?: string };
 
 export type ParamSchema = Record<string, ParamSpec>;
 export type ParamValue = number | boolean | string;
