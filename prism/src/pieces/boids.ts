@@ -14,10 +14,10 @@ import { count, range } from "../core/meta";
 
 const TAU = Math.PI * 2;
 
-function hexRgb(hex: string): [number, number, number] {
-  const s = hex.replace("#", "");
-  return [parseInt(s.slice(0, 2), 16), parseInt(s.slice(2, 4), 16), parseInt(s.slice(4, 6), 16)];
-}
+// Boids always runs on pure black: the additive trails read cleanest there, and a
+// black fade target lets old trails decay all the way to black instead of
+// plateauing on a tinted backdrop (which left a grey ghost). The palette still
+// drives the trail/boid colours; only the backdrop is fixed black.
 
 class Boids implements Piece {
   id = "boids";
@@ -37,7 +37,6 @@ class Boids implements Piece {
   private rng!: RNG;
   private noise!: NoiseKit;
   private pal!: Palette;
-  private bg: [number, number, number] = [5, 7, 13];
   private cols: [number, number, number][] = [];
 
   private N = 380;
@@ -81,7 +80,6 @@ class Boids implements Piece {
     this.rng = ctx.rng;
     this.noise = ctx.noise;
     this.pal = ctx.palette;
-    this.bg = hexRgb(ctx.palette.bg);
     this.pSpeed = Number(ctx.params.speed);
     this.pSep = Number(ctx.params.separation);
     this.pWander = Number(ctx.params.wander);
@@ -156,7 +154,7 @@ class Boids implements Piece {
   }
 
   private clear(): void {
-    this.ctx.fillStyle = `rgb(${this.bg[0]},${this.bg[1]},${this.bg[2]})`;
+    this.ctx.fillStyle = "#000";
     this.ctx.fillRect(0, 0, this.w, this.h);
   }
 
@@ -300,7 +298,7 @@ class Boids implements Piece {
     const w = this.w;
     const h = this.h;
     ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = `rgba(${this.bg[0]},${this.bg[1]},${this.bg[2]},${this.pTrail})`;
+    ctx.fillStyle = `rgba(0,0,0,${this.pTrail})`;
     ctx.fillRect(0, 0, w, h);
 
     ctx.globalCompositeOperation = "lighter";
