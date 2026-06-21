@@ -12,6 +12,7 @@ import type { Piece, PieceContext, PieceFactory, ParamSchema } from "../core/pie
 import type { Palette } from "../core/color/theme";
 import { sample } from "../core/color/theme";
 import { hexToRgb } from "../core/color/oklch";
+import { cachedProgram } from "../core/programCache";
 
 const D2R = Math.PI / 180;
 const SS = 1.6; // sim super-sample factor over the display (crisper lines)
@@ -255,16 +256,18 @@ class Physarum implements Piece {
     this.buildColors(ctx.palette);
 
     this.vao = gl.createVertexArray()!;
-    this.progUpdate = program(gl, FULLSCREEN_VERT, UPDATE_FRAG);
-    this.progDeposit = program(gl, DEPOSIT_VERT, DEPOSIT_FRAG);
-    this.progDecay = program(gl, FULLSCREEN_VERT, DECAY_FRAG);
-    this.progDisplay = program(gl, FULLSCREEN_VERT, DISPLAY_FRAG);
+    // cached on the GL context → no shader recompile on remount/randomise (the
+    // recompile+link is the main remount stutter; programs outlive the piece)
+    this.progUpdate = cachedProgram(gl, "phys-update", () => program(gl, FULLSCREEN_VERT, UPDATE_FRAG));
+    this.progDeposit = cachedProgram(gl, "phys-deposit", () => program(gl, DEPOSIT_VERT, DEPOSIT_FRAG));
+    this.progDecay = cachedProgram(gl, "phys-decay", () => program(gl, FULLSCREEN_VERT, DECAY_FRAG));
+    this.progDisplay = cachedProgram(gl, "phys-display", () => program(gl, FULLSCREEN_VERT, DISPLAY_FRAG));
     this.allocTrails();
     this.seed();
     // warm up a handful of steps so the FIRST displayed frame is an established
     // seed (a clean ring/centre/scatter) rather than a blank flash or a 1-frame
     // speckle of un-organised deposits — kills the start-up flicker.
-    for (let i = 0; i < 8; i++) this.step();
+    for (let i = 0; i < 5; i++) this.step();
   }
 
   private readParams(ctx: PieceContext): void {
@@ -456,13 +459,13 @@ class Physarum implements Piece {
     gl.deleteFramebuffer(this.trailB.fbo);
     this.allocTrails();
     this.seed();
-    for (let i = 0; i < 8; i++) this.step();
+    for (let i = 0; i < 5; i++) this.step();
   }
 
   reseed(): void {
     this.allocTrails();
     this.seed();
-    for (let i = 0; i < 8; i++) this.step();
+    for (let i = 0; i < 5; i++) this.step();
   }
 
   dispose(): void {
@@ -472,7 +475,7 @@ class Physarum implements Piece {
       gl.deleteTexture(t.tex);
       gl.deleteFramebuffer(t.fbo);
     }
-    for (const p of [this.progUpdate, this.progDeposit, this.progDecay, this.progDisplay]) if (p) gl.deleteProgram(p);
+    // programs are cached on the GL context (see programCache) — do NOT delete them
     if (this.vao) gl.deleteVertexArray(this.vao);
   }
 }
