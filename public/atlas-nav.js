@@ -2,7 +2,7 @@
   THE single Futures Atlas global nav — one component for every surface.
 
   Loaded as a plain <script src="/atlas-nav.js" defer> by the hub (Next), the
-  Vite tools (Prism, Quantum Sandbox), Social Composer (Next export) and the
+  Vite tools (Generatives, Quantum Sandbox), Social Composer (Next export) and the
   static zone bundles (Hollow Villages / Underground Intelligence / The Odds).
   It self-injects /atlas-nav.css, so one script tag is all any page needs.
 
@@ -19,7 +19,7 @@
   // project title (and as the slim desktop sub-nav, rendered by each zone).
   var FA_PROJECTS = [
     { name: "Social Composer", path: "/social-composer" },
-    { name: "Prism", path: "/prism" },
+    { name: "Generatives", path: "/generatives" },
     { name: "Quantum Sandbox", path: "/quantum-sandbox" },
     { name: "The Odds", path: "/odds-of-surviving-ai", pages: [
       { name: "The piece", path: "/odds-of-surviving-ai" },

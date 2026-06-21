@@ -1,12 +1,12 @@
 import { defineConfig } from "vite";
 
 // Served as a self-contained static bundle inside the Futures Atlas site at
-// /prism, mounted under ../public/prism. Two entries: the dashboard (index.html)
-// and the stripped embeddable player (embed.html) that iframes load.
+// /generatives, mounted under ../public/generatives. Two entries: the dashboard
+// (index.html) and the stripped embeddable player (embed.html) that iframes load.
 export default defineConfig({
-  base: "/prism/",
+  base: "/generatives/",
   build: {
-    outDir: "../public/prism",
+    outDir: "../public/generatives",
     emptyOutDir: true,
     rollupOptions: {
       input: {

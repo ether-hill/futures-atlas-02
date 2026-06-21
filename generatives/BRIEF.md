@@ -1,6 +1,6 @@
-# Claude Code Brief — Prism (Generative Visual Lab)
+# Claude Code Brief — Generatives (Generative Visual Lab)
 
-A dashboard for prototyping **generative, algorithmic, and quantum-flavoured visuals** — a smorgasbord of animated pieces built with p5.js, WebGL2/GLSL, three.js and the latest generative-art tooling. The objective is to develop the **visual language of an over-arching quantum-computing futures project**: each piece is a candidate treatment for banner backgrounds, hero sections, and web page visual treatments. Every piece is highly animated and shows the beauty of math, physics, and nature — and, crucially, can be **lifted out as a self-contained embed** and dropped into a real webpage. This brief is the full spec — apply it without further prompting. (Codename "Prism" is a placeholder — rename freely.)
+A dashboard for prototyping **generative, algorithmic, and quantum-flavoured visuals** — a smorgasbord of animated pieces built with p5.js, WebGL2/GLSL, three.js and the latest generative-art tooling. The objective is to develop the **visual language of an over-arching quantum-computing futures project**: each piece is a candidate treatment for banner backgrounds, hero sections, and web page visual treatments. Every piece is highly animated and shows the beauty of math, physics, and nature — and, crucially, can be **lifted out as a self-contained embed** and dropped into a real webpage. This brief is the full spec — apply it without further prompting. (Project name: **Generatives**, served at `/generatives`.)
 
 ---
 
@@ -31,7 +31,7 @@ Reuse Frond Studio harness conventions wherever they exist; the contract below s
 ## 2. Repo structure
 
 ```
-prism/
+generatives/
   index.html              # the dashboard
   embed.html              # the standalone embeddable player (iframe target)
   vite.config.ts          # two entries: dashboard + embed

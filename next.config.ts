@@ -26,13 +26,21 @@ const nextConfig: NextConfig = {
         { source: "/odds-of-surviving-ai/research", destination: "/odds-of-surviving-ai/research.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
-        // Prism — Vite static app; the dashboard + a separate embed.html player
-        { source: "/prism", destination: "/prism/index.html" },
+        // Generatives — Vite static app; the dashboard + a separate embed.html player
+        { source: "/generatives", destination: "/generatives/index.html" },
         // Social Composer — Next static export (basePath baked in, trailingSlash)
         { source: "/social-composer", destination: "/social-composer/index.html" },
         { source: "/social-composer/about", destination: "/social-composer/about/index.html" },
       ],
     };
+  },
+
+  // Generatives was formerly "Prism" at /prism — keep old links + embeds working.
+  async redirects() {
+    return [
+      { source: "/prism", destination: "/generatives", permanent: true },
+      { source: "/prism/:path*", destination: "/generatives/:path*", permanent: true },
+    ];
   },
 };
 

@@ -72,7 +72,7 @@ export const projects: Project[] = [
     image: "/projects/quantum-sandbox.jpg",
   },
   {
-    id: "prism",
+    id: "generatives",
     title: "Generatives",
     tagline:
       "A generative-visual lab — an array of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
@@ -80,8 +80,8 @@ export const projects: Project[] = [
     date: "2026-06-19",
     field: "Generative visuals",
     status: "in-progress",
-    path: "/prism", // self-contained Vite static bundle (dashboard + embed player)
-    image: "/projects/prism.jpg",
+    path: "/generatives", // self-contained Vite static bundle (dashboard + embed player)
+    image: "/projects/generatives.jpg",
   },
   {
     id: "social-composer",

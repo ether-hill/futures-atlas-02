@@ -22,15 +22,15 @@
 # remaining zone bundles under public/ (underground-intelligence,
 # odds-of-surviving-ai) are NOT ignored — they are hand-authored with no build
 # step, so they stay committed.
-/public/prism/
+/public/generatives/
 /public/quantum-sandbox/
 /public/social-composer/
 /public/hollow-villages/
-/prism/node_modules/
+/generatives/node_modules/
 /quantum-sandbox/node_modules/
 /social-composer/node_modules/
 /social-composer/out/
-/prism/dist/
+/generatives/dist/
 /quantum-sandbox/dist/
 /hollow-villages/node_modules/
 /hollow-villages/.next/

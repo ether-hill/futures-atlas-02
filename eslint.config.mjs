@@ -20,7 +20,7 @@ const eslintConfig = [
       "next-env.d.ts",
       // self-contained sub-apps with their own build, tsconfig & deps
       "quantum-sandbox/**",
-      "prism/**",
+      "generatives/**",
       "social-composer/**",
     ],
   },

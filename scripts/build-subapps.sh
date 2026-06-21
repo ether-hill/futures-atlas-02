@@ -6,7 +6,7 @@
 # `git push` rebuilds every sub-app from its committed SOURCE — no hand-built
 # bundle is committed, and two people can't clobber each other's bundles.
 #
-#   • prism            → Vite, outputs to public/prism
+#   • generatives      → Vite, outputs to public/generatives
 #   • quantum-sandbox  → Vite, outputs to public/quantum-sandbox
 #   • social-composer  → Next static export → out/, copied to public/social-composer
 #   • hollow-villages  → Next static export → out/, copied to public/hollow-villages
@@ -19,7 +19,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Vite apps build straight into public/<slug> via their vite.config outDir.
-for app in prism quantum-sandbox; do
+for app in generatives quantum-sandbox; do
   echo "→ building $app"
   ( cd "$HERE/$app" && npm install --include=dev --no-audit --no-fund && npm run build )
   echo "✓ $app → public/$app"

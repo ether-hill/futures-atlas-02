@@ -69,7 +69,7 @@ git add -A && git commit -m "…"
 
 **Sub-apps build from source on every deploy.** The build command is
 `bash scripts/build-subapps.sh && next build` (package.json `build`), so the Vite
-apps (`prism`, `quantum-sandbox`) and the Next export (`social-composer`) are
+apps (`generatives`, `quantum-sandbox`) and the Next export (`social-composer`) are
 rebuilt from their in-repo source into `public/` by Vercel — their bundles are
 **git-ignored, never committed** (so two people can't clobber each other's
 bundle). Just edit the source, commit, and deploy; no manual `sync-*.sh` step.
