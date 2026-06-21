@@ -451,9 +451,12 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 /* ── STORY TAB ───────────────────────────────────────────────────────────── */
 #tab-story {
   flex-direction: column; overflow-y: auto; overflow-x: hidden;
-  /* proximity (not mandatory) so the snap never traps/fights the scroll —
-     mandatory + heavy canvas repaints made Chrome feel stuck. */
-  scroll-snap-type: y proximity;
+  /* Firm chapter snap, every browser. It felt "stuck" before because the canvas
+     work was saturating the main thread (now fixed: no shadowBlur, capped DPR,
+     ~30fps) — with the thread free, mandatory snap is compositor-driven and
+     stays smooth. overscroll-behavior stops the scroll from chaining out. */
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 }
 #tab-story::-webkit-scrollbar { width: 4px; }
