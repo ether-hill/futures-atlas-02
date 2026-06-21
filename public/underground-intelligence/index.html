@@ -112,47 +112,19 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 /* ── TAB PANELS ──────────────────────────────────────────────────────────── */
 .tab-panel { display: none; position: fixed; top: var(--nav-h); left: 0; right: 0; bottom: 0; }
 .tab-panel.active { display: flex; }
-/* Dashboard: two-column grid on desktop — map / slim timeline / feed stacked on
-   the left, a full-height control panel on the right. Stays display:grid even
-   when inactive (visibility:hidden) so Leaflet can initialise in the background. */
-#tab-dashboard {
-  display: grid !important;
-  grid-template-columns: 1fr 304px;
-  grid-template-rows: 45vh auto 1fr;
-  grid-template-areas: "map panel" "timeline panel" "feed panel";
-  visibility: hidden; pointer-events: none;
-}
+/* Dashboard: a simple stacked column — map / slim timeline / feed. (The right
+   control panel was removed; nav floats top-left, the timeline transport lives
+   in the feed section.) Stays display:flex even when inactive (visibility:hidden)
+   so Leaflet can initialise in the background. */
+#tab-dashboard { display: flex !important; flex-direction: column; visibility: hidden; pointer-events: none; }
 #tab-dashboard.active { visibility: visible; pointer-events: auto; }
-.dash-map-section   { grid-area: map; }
-.dash-timeline-bar  { grid-area: timeline; }
-.dash-feed-panel    { grid-area: feed; }
-.dash-control-panel { grid-area: panel; }
 
-/* Control panel — desktop right sidebar (becomes a fixed bottom bar on mobile) */
-.dash-control-panel {
-  display: flex; flex-direction: column;
-  background: var(--surface); border-left: 1px solid var(--border);
-  overflow-y: auto; z-index: 6;
-}
-.dcp-block { padding: 22px 20px; }
-.dcp-block + .dcp-block { border-top: 1px solid var(--border); }
-.dcp-time { margin-top: auto; }                 /* timeline transport sinks to the panel's bottom */
-.dcp-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted2); margin-bottom: 13px; }
-.dcp-link {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  width: 100%; padding: 13px 15px; margin-bottom: 9px;
-  background: var(--surface2); border: 1px solid var(--border); border-radius: 9px;
-  color: var(--text); font-family: inherit; font-size: 14px; font-weight: 600;
-  text-align: left; cursor: pointer;
-  transition: border-color .15s, background .15s, transform .15s;
-}
-.dcp-link:last-child { margin-bottom: 0; }
-.dcp-link:hover { border-color: var(--ui-cyan); background: color-mix(in srgb, var(--ui-cyan) 9%, var(--surface2)); transform: translateX(3px); }
-.dcp-arrow { color: var(--ui-cyan); font-size: 15px; }
-.dcp-transport { display: flex; align-items: stretch; gap: 8px; margin-bottom: 14px; }
-.dcp-transport #tl-play-btn { flex: 1; padding: 10px 8px; letter-spacing: 0.12em; }
-.dcp-transport .tl-skip-btn { flex: 0 0 auto; padding: 6px 13px; font-size: 12px; }
-.dcp-time .tl-speed { justify-content: flex-start; }
+/* Floating cross-nav — top-left of the dashboard (uses .zone-jump__link styling) */
+.dash-jump { position: absolute; top: 16px; left: 16px; z-index: 1200; display: inline-flex; gap: 8px; }
+
+/* Timeline transport, now centred in the feed section */
+.feed-transport { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 13px; }
+.ft-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
 
 /* ── Floating contextual nav (replaces the retired slim 2nd nav) ──────────── */
 .story-skip, .zone-jump { position: fixed; top: calc(var(--nav-h) + 16px); right: 20px; z-index: 1200; }
@@ -188,7 +160,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 }
 
 /* Map section */
-.dash-map-section { position: relative; height: 45vh; flex-shrink: 0; background: #14141c; overflow: hidden; }
+.dash-map-section { position: relative; height: clamp(320px, 54vh, 620px); flex-shrink: 0; background: #0a0a10; overflow: hidden; }
 #map { position: absolute; inset: 0; }
 .leaflet-container { background: #131319 !important; }
 
@@ -297,7 +269,8 @@ input[type="range"].opacity-slider::-webkit-slider-thumb {
 
 /* ── TIMELINE BAR ────────────────────────────────────────────────────────── */
 .dash-timeline-bar {
-  flex-shrink: 0; background: var(--surface);
+  flex-shrink: 0; background: color-mix(in srgb, var(--surface) 52%, transparent);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
   padding: 10px 24px 12px;
 }
@@ -409,7 +382,7 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   color: var(--ui-cyan); margin-bottom: 16px;
   text-shadow: 0 0 12px rgba(0,212,255,0.4);
 }
-.fd-text { font-size: 13px; color: #888; line-height: 1.7; max-width: 580px; margin: 0 auto; }
+.fd-text { font-size: 17px; color: #aaa; line-height: 1.75; max-width: 660px; margin: 0 auto; }
 
 /* Article images */
 .ac-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 3px; margin-bottom: 2px; display: block; background: var(--surface2); }
@@ -920,7 +893,7 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   .fm-status { font-size: 9px; margin-bottom: 12px; letter-spacing: 0.2em; }
   .fd-title { font-size: 18px; letter-spacing: 0.06em; }
   .fd-location { font-size: 11px; margin-bottom: 12px; }
-  .fd-text { font-size: 12px; line-height: 1.65; }
+  .fd-text { font-size: 15px; line-height: 1.7; }
 
   /* Story chapters */
   .story-chapter { min-height: calc(100svh - var(--nav-h)); }
@@ -952,8 +925,6 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
      as a fixed two-row bottom bar (nav row + timeline row) so nothing overflows. */
   #tab-dashboard {
     display: flex !important; flex-direction: column;
-    grid-template-columns: none; grid-template-rows: none; grid-template-areas: none;
-    padding-bottom: 112px;            /* clear the fixed bottom bar */
   }
   .dash-control-panel {
     position: fixed; left: 0; right: 0; bottom: 0; z-index: 1300;
@@ -1286,6 +1257,12 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 <!-- ── DASHBOARD ──────────────────────────────────────────────────────────── -->
 <div id="tab-dashboard" class="tab-panel">
 
+  <!-- Floating cross-nav, top-left (replaces the retired slim nav + right panel) -->
+  <div class="dash-jump" aria-label="Go to">
+    <button type="button" class="zone-jump__link" onclick="switchTab('story')">The Story <span aria-hidden="true">&#8594;</span></button>
+    <button type="button" class="zone-jump__link" onclick="switchTab('research')">Research <span aria-hidden="true">&#8594;</span></button>
+  </div>
+
   <!-- Map section with floating sidebars -->
   <div class="dash-map-section">
     <div id="map"></div>
@@ -1353,40 +1330,6 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
       </div>
     </div>
     <button class="sf-toggle sf-toggle-left" id="sf-left-btn" onclick="toggleSF('left')">DATA LAYERS +</button>
-
-    <!-- Right floating sidebar: CLIMATE -->
-    <div class="float-sidebar float-sidebar-right collapsed" id="sf-right">
-      <div class="ms-header">
-        <div class="ms-title">MycoSense Network</div>
-        <div class="ms-sub">QSN · Active 2027–present<br>NV-centre quantum magnetometry · QuTech / TU Delft</div>
-      </div>
-      <div class="climate-section">
-        <div class="sb-title" style="margin-bottom:8px">Warming Scenario</div>
-        <div class="ssp-buttons">
-          <button class="ssp-btn active" data-ssp="0">SSP1-2.6</button>
-          <button class="ssp-btn" data-ssp="1">SSP2-4.5</button>
-          <button class="ssp-btn" data-ssp="2">SSP3-7.0</button>
-          <button class="ssp-btn" data-ssp="3">SSP5-8.5</button>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Hotspot Loss by 2050</span>
-          <span class="stat-val warn" id="stat-loss">49.8%</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">Carbon Sequestration</span>
-          <span class="stat-val" id="stat-carbon">-2.74 Gt/yr</span>
-        </div>
-        <div class="stat-row">
-          <span class="stat-label">MycoSense Coverage</span>
-          <span class="stat-val cyan" id="stat-coverage">0%</span>
-        </div>
-      </div>
-      <div class="discoveries-section">
-        <div class="sb-title" style="margin-bottom:10px">Key Discoveries</div>
-        <div id="discoveries-list"></div>
-      </div>
-    </div>
-    <button class="sf-toggle sf-toggle-right" id="sf-right-btn" onclick="toggleSF('right')">CLIMATE +</button>
   </div>
 
   <!-- Full-width timeline bar -->
@@ -1435,33 +1378,22 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
         <div class="fd-location" id="fd-location">Veluwe, Netherlands</div>
         <div class="fd-text" id="fd-text"></div>
       </div>
+      <!-- Timeline transport lives in the feed section now -->
+      <div class="feed-transport">
+        <div class="ft-controls">
+          <button id="tl-prev-btn" class="tl-skip-btn" disabled aria-label="Previous milestone">&#9198;</button>
+          <button id="tl-play-btn">&#9654; PLAY TIMELINE</button>
+          <button id="tl-next-btn" class="tl-skip-btn" aria-label="Next milestone">&#9197;</button>
+        </div>
+        <div class="tl-speed">
+          <span class="tl-speed-lbl">Speed</span>
+          <button class="speed-btn" data-speed="0.5">&frac12;&times;</button>
+          <button class="speed-btn active" data-speed="1">1&times;</button>
+          <button class="speed-btn" data-speed="2">2&times;</button>
+        </div>
+      </div>
     </div>
   </div>
-
-  <!-- Control panel: right sidebar on desktop, fixed bottom bar on mobile. Holds
-       the tab nav (the slim 2nd nav was retired) + all timeline transport, so the
-       timeline bar itself can stay slim. -->
-  <aside class="dash-control-panel" aria-label="Dashboard controls">
-    <div class="dcp-block dcp-nav">
-      <div class="dcp-label">Explore</div>
-      <button type="button" class="dcp-link" onclick="switchTab('story')">The Story <span class="dcp-arrow" aria-hidden="true">&#8594;</span></button>
-      <button type="button" class="dcp-link" onclick="switchTab('research')">Research <span class="dcp-arrow" aria-hidden="true">&#8594;</span></button>
-    </div>
-    <div class="dcp-block dcp-time">
-      <div class="dcp-label">Timeline</div>
-      <div class="dcp-transport">
-        <button id="tl-prev-btn" class="tl-skip-btn" disabled aria-label="Previous milestone">&#9198;</button>
-        <button id="tl-play-btn">&#9654; PLAY TIMELINE</button>
-        <button id="tl-next-btn" class="tl-skip-btn" aria-label="Next milestone">&#9197;</button>
-      </div>
-      <div class="tl-speed">
-        <span class="tl-speed-lbl">Speed</span>
-        <button class="speed-btn" data-speed="0.5">&frac12;&times;</button>
-        <button class="speed-btn active" data-speed="1">1&times;</button>
-        <button class="speed-btn" data-speed="2">2&times;</button>
-      </div>
-    </div>
-  </aside>
 </div>
 
 <!-- ── STORY ───────────────────────────────────────────────────────────────── -->
@@ -1930,19 +1862,18 @@ let storyMap2;
 let highlightGroup;
 
 function initMap() {
-  const WORLD = L.latLngBounds([[-85, -180], [85, 180]]);
-  map = L.map('map', { center: [20, 0], zoom: 2, zoomControl: true, noWrap: true,
+  // Trim the empty poles (no land/data) so the inhabited world fills a wide frame.
+  const WORLD = L.latLngBounds([[-58, -180], [82, 180]]);
+  map = L.map('map', { center: [12, 0], zoom: 2, zoomControl: true, noWrap: true,
     maxBounds: WORLD, maxBoundsViscosity: 1.0 });
   map.zoomControl.setPosition('topright');
-  // Don't let the user zoom out past the point where the whole map is visible —
-  // there's nothing useful beyond the full world, just empty grey margins.
-  function clampMinZoom() {
-    const z = map.getBoundsZoom(WORLD, true); // min zoom at which the world COVERS the view — no grey margins, nothing to zoom out into
-    map.setMinZoom(z);
-    if (map.getZoom() < z) map.setZoom(z);
+  // Frame the whole world and forbid zooming out past it (nothing but grey beyond).
+  function fitWorld() {
+    map.fitBounds(WORLD, { animate: false });
+    map.setMinZoom(map.getZoom());
   }
-  clampMinZoom();
-  map.on('resize', clampMinZoom);
+  fitWorld();
+  map.on('resize', fitWorld);
   nodeGroup = L.layerGroup().addTo(map);
   zoneGroup = L.layerGroup().addTo(map);
   highlightGroup = L.layerGroup().addTo(map);
@@ -2014,6 +1945,7 @@ function updateTimeline(year) {
 function updateDiscoveries(year) {
   const active = DISCOVERIES.filter(d => d.year <= year);
   const list = document.getElementById('discoveries-list');
+  if (!list) return; // CLIMATE panel removed — nothing to populate
   if (!active.length) {
     list.innerHTML = '<div class="discovery-text" style="color:var(--muted)">No discoveries recorded yet.</div>';
     return;
@@ -2081,9 +2013,11 @@ function updateClimate(idx) {
   const d = SSP_DATA[idx];
   document.querySelectorAll('.ssp-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
   const lossEl = document.getElementById('stat-loss');
+  if (!lossEl) return; // CLIMATE panel removed
   lossEl.textContent = d.loss + '%';
   lossEl.className = 'stat-val ' + (d.loss >= 60 ? 'warn' : 'moderate');
-  document.getElementById('stat-carbon').textContent = '−' + d.carbon + ' Gt/yr';
+  const carbonEl = document.getElementById('stat-carbon');
+  if (carbonEl) carbonEl.textContent = '−' + d.carbon + ' Gt/yr';
 }
 
 /* ── PLAY/PAUSE TIMELINE ────────────────────────────────────────────────── */
@@ -2146,7 +2080,7 @@ function fireEvent(idx, animate) {
     if (cov !== prevCov) animateTicker('stat-coverage', prevCov, cov, 1000, 1, '%');
   } else {
     nodesEl.textContent = count > 0 ? `${count} NODES ACTIVE` : 'NO NODES ACTIVE';
-    document.getElementById('stat-coverage').textContent = (COVERAGE[year] || 0).toFixed(1) + '%';
+    const _sc = document.getElementById('stat-coverage'); if (_sc) _sc.textContent = (COVERAGE[year] || 0).toFixed(1) + '%';
     const fmNodes = document.getElementById('fm-nodes-display');
     if (fmNodes) fmNodes.textContent = count || 0;
   }
