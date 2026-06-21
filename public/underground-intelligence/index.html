@@ -451,7 +451,9 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 /* ── STORY TAB ───────────────────────────────────────────────────────────── */
 #tab-story {
   flex-direction: column; overflow-y: auto; overflow-x: hidden;
-  scroll-snap-type: y mandatory;
+  /* proximity (not mandatory) so the snap never traps/fights the scroll —
+     mandatory + heavy canvas repaints made Chrome feel stuck. */
+  scroll-snap-type: y proximity;
   -webkit-overflow-scrolling: touch;
 }
 #tab-story::-webkit-scrollbar { width: 4px; }
@@ -2120,8 +2122,15 @@ function syncAnim(a) {
   const should = a.visible && _animTab === a.tabId;
   if (should && !a.running) {
     a.running = true;
-    const frame = () => { if (!a.running) return; a.tick(); a.raf = requestAnimationFrame(frame); };
-    frame();
+    a.last = 0;
+    // cap to ~30fps: these are ambient background canvases, and halving the
+    // frame count roughly halves the main-thread cost that was starving scroll.
+    const frame = (now) => {
+      if (!a.running) return;
+      if (now - a.last >= 32) { a.last = now; a.tick(); }
+      a.raf = requestAnimationFrame(frame);
+    };
+    a.raf = requestAnimationFrame(frame);
   } else if (!should && a.running) {
     a.running = false;
     cancelAnimationFrame(a.raf);
@@ -2202,7 +2211,7 @@ function setupStoryCanvas(id, onResize) {
   const canvas = document.getElementById(id);
   if (!canvas) return null;
   const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5); // cap: these are soft glow effects, retina backing store isn't worth the fill cost
   const st = { canvas, ctx, W: 0, H: 0 };
   function resize() {
     st.W = canvas.offsetWidth; st.H = canvas.offsetHeight;
@@ -2221,10 +2230,10 @@ function initMycelium() {
   const canvas = document.getElementById('mycelium-canvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.5); // cap retina backing store for the mycelium growth
   let W, H, CX, CY, token = 0;
   const active = [];
-  const MAX_ACTIVE = 2400;
+  const MAX_ACTIVE = 1500;
   function spawn(x, y, angle, thickness) {
     if (active.length >= MAX_ACTIVE) return;
     active.push({ x, y, angle, thickness: Math.max(0.1, thickness), len: 0,
@@ -2251,7 +2260,7 @@ function initMycelium() {
         ctx.beginPath(); ctx.moveTo(h.x, h.y); ctx.lineTo(nx, ny);
         ctx.strokeStyle = `hsla(${h.hue},85%,${h.bright + 8}%,0.65)`; ctx.lineWidth = h.thickness; ctx.lineCap = 'round'; ctx.stroke();
         ctx.beginPath(); ctx.arc(nx, ny, h.thickness * 0.65, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${h.hue + 5},90%,72%,0.7)`; ctx.shadowColor = `hsla(${h.hue},95%,55%,1)`; ctx.shadowBlur = 3; ctx.fill(); ctx.shadowBlur = 0;
+        ctx.fillStyle = `hsla(${h.hue + 5},90%,72%,0.7)`; ctx.fill(); // (dropped per-tip shadowBlur — up to ~1500 shadow fills/frame was the main Chrome scroll-killer)
         h.x = nx; h.y = ny; h.len += 1.15;
         if (h.len >= h.maxLen) {
           active.splice(i, 1);
@@ -2288,8 +2297,11 @@ function initCh3Signals() {
       s.ctx.strokeStyle = `rgba(0,212,255,${Math.sin(p * Math.PI) * 0.42})`; s.ctx.lineWidth = 1; s.ctx.stroke();
     }
     const pulse = 0.6 + 0.4 * Math.sin(t * 0.045);
+    const g3 = s.ctx.createRadialGradient(CX, CY, 0, CX, CY, 20);
+    g3.addColorStop(0, `rgba(0,212,255,${0.45 + pulse * 0.3})`); g3.addColorStop(1, 'rgba(0,212,255,0)');
+    s.ctx.fillStyle = g3; s.ctx.beginPath(); s.ctx.arc(CX, CY, 20, 0, Math.PI * 2); s.ctx.fill();
     s.ctx.beginPath(); s.ctx.arc(CX, CY, 5, 0, Math.PI * 2);
-    s.ctx.fillStyle = `rgba(0,212,255,${0.75 + pulse * 0.25})`; s.ctx.shadowColor = 'rgba(0,212,255,0.9)'; s.ctx.shadowBlur = 14; s.ctx.fill(); s.ctx.shadowBlur = 0;
+    s.ctx.fillStyle = `rgba(0,212,255,${0.75 + pulse * 0.25})`; s.ctx.fill();
     t++;
   }
   registerAnim(s.canvas, 'story', tick);
@@ -2311,8 +2323,11 @@ function initCh4Oak() {
       s.ctx.strokeStyle = `rgba(0,212,255,${Math.sin(p * Math.PI) * 0.4})`; s.ctx.lineWidth = 1.2; s.ctx.stroke();
     }
     const pulse = 0.6 + 0.4 * Math.sin(t * 0.045);
+    const g4 = s.ctx.createRadialGradient(bx, by, 0, bx, by, 26);
+    g4.addColorStop(0, `rgba(0,212,255,${0.5 + pulse * 0.3})`); g4.addColorStop(1, 'rgba(0,212,255,0)');
+    s.ctx.fillStyle = g4; s.ctx.beginPath(); s.ctx.arc(bx, by, 26, 0, Math.PI * 2); s.ctx.fill();
     s.ctx.beginPath(); s.ctx.arc(bx, by, 6, 0, Math.PI * 2);
-    s.ctx.fillStyle = `rgba(0,212,255,${0.8 + pulse * 0.2})`; s.ctx.shadowColor = 'rgba(0,212,255,1)'; s.ctx.shadowBlur = 18; s.ctx.fill(); s.ctx.shadowBlur = 0;
+    s.ctx.fillStyle = `rgba(0,212,255,${0.8 + pulse * 0.2})`; s.ctx.fill();
     t++;
   }
   registerAnim(s.canvas, 'story', tick);
@@ -2346,7 +2361,7 @@ function initCh5Signal() {
     chans.forEach(ch => {
       const N = ch.data.length;
       s.ctx.beginPath();
-      for (let x = 0; x <= s.W; x++) {
+      for (let x = 0; x <= s.W; x += 2) {
         const f = off + x;
         const i0 = ((Math.floor(f) % N) + N) % N, i1 = (i0 + 1) % N, fr = f - Math.floor(f);
         const y = ch.cy - (ch.data[i0] * (1 - fr) + ch.data[i1] * fr) * ch.amp;
@@ -2506,7 +2521,7 @@ function closeModal() {
 
 /* ── TAB SWITCHING ───────────────────────────────────────────────────────── */
 function switchTab(id, pushHistory = true) {
-  const valid = ['story','dashboard','research','contact'];
+  const valid = ['story','dashboard','research'];
   if (!valid.includes(id)) id = 'story';
   // Dashboard: stays display:flex always — toggle visibility
   const dash = document.getElementById('tab-dashboard');
@@ -2517,9 +2532,10 @@ function switchTab(id, pushHistory = true) {
   } else {
     dash.classList.remove('active');
   }
-  // Story + research + contact: standard display toggle
-  ['story','research','contact'].forEach(t => {
+  // Story + research: standard display toggle
+  ['story','research'].forEach(t => {
     const el = document.getElementById(`tab-${t}`);
+    if (!el) return;
     el.classList.toggle('active', t === id);
     el.style.display = t === id ? 'flex' : 'none';
   });
