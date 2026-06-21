@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-fa-no-footer>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -231,7 +231,7 @@ input[type="range"].opacity-slider::-webkit-slider-thumb {
   padding: 10px 24px 12px;
 }
 .tl-bar-top { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
-.tl-year { font-size: 22px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1; flex-shrink: 0; min-width: 52px; }
+.tl-year { font-size: 28px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1; flex-shrink: 0; min-width: 62px; }
 .tl-nodes { font-size: 9px; color: var(--ui-cyan); letter-spacing: 0.08em; flex: 1; }
 .tl-nodes.completion { color: var(--ui-accent); font-weight: 600; animation: tlpulse 1.2s ease-in-out 4; }
 @keyframes tlpulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
@@ -260,7 +260,7 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; flex-shrink: 0;
 }
 .tl-milestone.reached .tl-m-dot { background: var(--ui-cyan); border-color: var(--ui-cyan); box-shadow: 0 0 5px rgba(0,212,255,0.6); }
-.tl-m-yr { font-size: 7px; color: var(--muted2); font-weight: 600; transition: color 0.3s; white-space: nowrap; }
+.tl-m-yr { font-size: 11px; color: var(--muted2); font-weight: 600; transition: color 0.3s; white-space: nowrap; }
 .tl-milestone.reached .tl-m-yr { color: #777; }
 .tl-milestone.event .tl-m-dot { border-color: var(--muted); }
 .tl-milestone.event.reached .tl-m-dot { background: var(--ui-cyan); border-color: var(--ui-cyan); }
@@ -826,10 +826,10 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   /* Timeline bar */
   .dash-timeline-bar { padding: 10px 14px 12px; }
   .tl-bar-top { gap: 10px; margin-bottom: 6px; }
-  .tl-year { font-size: 18px; min-width: 40px; }
+  .tl-year { font-size: 22px; min-width: 48px; }
   .tl-nodes { font-size: 8px; line-height: 1.4; }
   .tl-milestones-wrap { height: 22px; margin-bottom: 8px; }
-  .tl-m-yr { font-size: 6px; }
+  .tl-m-yr { font-size: 9px; }
   /* Thin out milestones on small screens so labels don't collide */
   .tl-milestone[data-year="2026"],
   .tl-milestone[data-year="2028"],
@@ -1446,6 +1446,25 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
     <div class="research-filter rf-typebar" id="rf-typebar" role="tablist" aria-label="Filter research by type"></div>
   </div>
   <div class="research-sections" id="research-sections"></div>
+  <!-- Footer lives INSIDE the research scroll so it sits at the bottom of the
+       page. The tab panels are position:fixed, so the global atlas-nav.js footer
+       (appended to <body>) had nowhere correct to land and bled over the
+       content; data-fa-no-footer on <html> suppresses that one. -->
+  <footer class="fa-foot">
+    <div class="fa-foot__inner">
+      <p class="fa-foot__lede">The future is plural</p>
+      <p class="fa-foot__blurb">Futures Atlas collects speculative-design projects that each draw one possible world in full — grounded, specific, and built to be argued with.</p>
+      <div class="fa-foot__row">
+        <span class="fa-foot__brand">FUTURES ATLAS</span>
+        <nav class="fa-foot__nav">
+          <a class="fa-foot__link" href="/">Home</a>
+          <a class="fa-foot__link" href="/about">About</a>
+          <a class="fa-foot__link" href="/contact">Contact</a>
+        </nav>
+        <span class="fa-foot__tag">A catalogue of possible worlds · MMXXVI</span>
+      </div>
+    </div>
+  </footer>
 </div>
 
 <!-- ── CONTACT ────────────────────────────────────────────────────────────── -->
@@ -1787,8 +1806,19 @@ let storyMap2;
 let highlightGroup;
 
 function initMap() {
-  map = L.map('map', { center: [20, 0], zoom: 2, zoomControl: true, noWrap: true });
+  const WORLD = L.latLngBounds([[-85, -180], [85, 180]]);
+  map = L.map('map', { center: [20, 0], zoom: 2, zoomControl: true, noWrap: true,
+    maxBounds: WORLD, maxBoundsViscosity: 1.0 });
   map.zoomControl.setPosition('topright');
+  // Don't let the user zoom out past the point where the whole map is visible —
+  // there's nothing useful beyond the full world, just empty grey margins.
+  function clampMinZoom() {
+    const z = map.getBoundsZoom(WORLD); // largest zoom at which the world still fits entirely
+    map.setMinZoom(z);
+    if (map.getZoom() < z) map.setZoom(z);
+  }
+  clampMinZoom();
+  map.on('resize', clampMinZoom);
   nodeGroup = L.layerGroup().addTo(map);
   zoneGroup = L.layerGroup().addTo(map);
   highlightGroup = L.layerGroup().addTo(map);
@@ -2254,7 +2284,8 @@ function initMycelium() {
     for (let i = 0; i < 20; i++) spawn(CX, CY, (i / 20) * Math.PI * 2 + (Math.random() - 0.5) * 0.1, 2.2);
     function loop() {
       if (myToken !== token) return;
-      ctx.fillStyle = 'rgba(4,4,8,0.025)'; ctx.fillRect(0, 0, W, H);
+      // (no per-frame dark overlay — it faded the older filaments to black;
+      // the network now persists and stays visible against the dark bg)
       const toAdd = [];
       for (let i = active.length - 1; i >= 0; i--) {
         const h = active[i];
