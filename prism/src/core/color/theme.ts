@@ -1,7 +1,13 @@
 // Theme palettes — OKLCH control points sampled in OKLab so every piece can be
 // brand-matched to the futures project. A Palette maps t∈[0,1] → colour.
 
-import { oklchToOklab, oklabToRgb, rgbToCss, type Rgb } from "./oklch";
+import { oklchToOklab, oklabToRgb, rgbToCss, hexToOklch, type Rgb } from "./oklch";
+
+export interface Colors {
+  bg: string;
+  lo: string;
+  hi: string;
+}
 
 export interface Stop {
   L: number;
@@ -52,6 +58,27 @@ export const PALETTES: Record<string, Palette> = {
 
 export const PALETTE_IDS = Object.keys(PALETTES);
 export const getPalette = (id: string): Palette => PALETTES[id] ?? PALETTES["quantum-ink"]!;
+
+/** Default colours mirror the quantum-ink palette (the app's brand-blue look). */
+export const DEFAULT_COLORS: Colors = { bg: "#05070d", lo: "#2a3a8f", hi: "#9fe7ff" };
+
+/** Build a live palette from three picked colours: bg (dark) → lo → hi (bright).
+ *  Every piece samples this, so the colour pickers re-skin the whole gallery. */
+export function makePaletteFromColors(c: Colors): Palette {
+  const bg = hexToOklch(c.bg);
+  const lo = hexToOklch(c.lo);
+  const hi = hexToOklch(c.hi);
+  return {
+    id: "custom",
+    label: "Custom",
+    bg: c.bg,
+    stops: [
+      { L: bg.L, C: bg.C, h: bg.h },
+      { L: lo.L, C: lo.C, h: lo.h },
+      { L: hi.L, C: hi.C, h: hi.h },
+    ],
+  };
+}
 
 /** Sample a palette at t∈[0,1] → Rgb, interpolated in OKLab. */
 export function sample(palette: Palette, t: number): Rgb {

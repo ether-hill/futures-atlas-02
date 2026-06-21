@@ -5,10 +5,12 @@
   --line: oklch(0.86 0.012 265);
   --ink: oklch(0.26 0.02 265);
   --muted: oklch(0.48 0.02 265);
-  --accent: oklch(0.52 0.16 245);
+  --faint: oklch(0.6 0.02 265);
+  --accent: oklch(0.52 0.15 245); /* brand blue */
   --field: oklch(0.93 0.006 265);
   --btn: oklch(0.91 0.008 265);
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 html.dark {
   --bg: oklch(0.15 0.012 265);
@@ -16,7 +18,8 @@ html.dark {
   --line: oklch(0.31 0.016 265);
   --ink: oklch(0.93 0.01 265);
   --muted: oklch(0.66 0.013 265);
-  --accent: oklch(0.74 0.15 200);
+  --faint: oklch(0.52 0.015 265);
+  --accent: oklch(0.7 0.16 245); /* brand blue */
   --field: oklch(0.16 0.01 265);
   --btn: oklch(0.26 0.012 265);
 }
@@ -44,202 +47,169 @@ button {
 }
 
 :root { --fa-nav-h: 64px; }
-/* ── project page (frond /projects layout): title · summary + treatment · viewer + panel · about) ── */
-/* same width/grid as the global nav: full-bleed with the nav's 28px side padding */
-.wrap {
-  padding: 44px 28px 110px;
-}
 
-/* head: big title + summary with the treatment (algo) dropdown */
-.head { margin-bottom: 30px; }
-.title {
+/* ── studio layout — mirrors the Frond "Algorithms" page ── */
+.studio-root { font-family: var(--sans); }
+.studio-head { padding: 44px 28px clamp(24px, 4vw, 40px); }
+.studio-title {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--sans);
   font-weight: 600;
-  font-size: clamp(42px, 7.5vw, 96px);
-  line-height: 0.96;
-  letter-spacing: -0.025em;
+  font-size: clamp(44px, 7vw, 104px);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
   color: var(--ink);
 }
-.intro {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 32px;
-  flex-wrap: wrap;
-  margin-top: 22px;
-}
-.summary {
-  margin: 0;
-  max-width: 640px;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 16px;
-  line-height: 1.55;
+.studio-intro {
+  margin: clamp(18px, 2.5vh, 26px) 0 0;
+  max-width: 60ch;
+  font-size: clamp(14px, 1.6vw, 17px);
+  line-height: 1.6;
   color: var(--muted);
 }
-.algo { display: flex; flex-direction: column; gap: 7px; flex: 0 0 auto; }
-.algo-lbl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); }
-.algo-select {
-  min-width: 248px;
+
+.studio-wrap { padding: 0 28px 110px; }
+
+/* algorithm selector — below the summary, above the visual */
+.studio-selectbar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: clamp(16px, 2vw, 24px); }
+.studio-selectbar label { font: 700 10px var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
+.studio-selectbar select {
   background: var(--panel);
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 7px;
-  padding: 10px 12px;
-  font-family: var(--mono);
-  font-size: 13px;
+  border-radius: 999px;
+  padding: 11px 20px;
+  font: 500 14px var(--sans);
+  cursor: pointer;
+  min-width: min(460px, 84vw);
 }
+.studio-selectbar select:hover { border-color: var(--accent); }
 
-/* work: viewer + parameter panel */
-.work {
-  display: grid;
-  grid-template-columns: 1fr 324px;
-  gap: 24px;
-  align-items: start;
-}
-.viewer {
+/* layout grid — visual + sticky controls sidebar */
+.studio-grid { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: clamp(20px, 2.4vw, 36px); align-items: start; }
+
+/* the visual — large, dark, the sim fills it via object-fit:cover */
+.studio-visual {
+  position: relative;
+  width: 100%;
+  height: min(80vh, 960px);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  background: var(--panel);
+  background: #000;
 }
-.topbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border-bottom: 1px solid var(--line);
-}
-.topbar .grow { flex: 1; }
-.topbar button {
-  background: var(--btn);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 5px;
-  padding: 6px 11px;
-  font-size: 11px;
-}
-.topbar button:hover { border-color: var(--accent); }
-.fps { color: var(--muted); font-size: 10.5px; }
-.stage {
-  height: min(60vh, 580px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background-color: var(--field);
-  background-image: repeating-conic-gradient(rgba(128, 128, 128, 0.07) 0% 25%, transparent 0% 50%);
-  background-size: 22px 22px;
-}
-.prism-canvas {
+.studio-visual .stage { position: absolute; inset: 0; }
+.studio-visual .prism-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none;
+  max-height: none;
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  object-fit: cover;
+  object-position: center;
+  box-shadow: none;
+}
+.studio-visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 88% 88% at 50% 50%, transparent 60%, rgba(0, 0, 0, 0.42) 100%);
+  z-index: 1;
 }
 
-/* parameter panel (sticky beside the viewer) */
-.controls {
-  position: sticky;
-  top: calc(var(--fa-nav-h) + 16px);
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 16px 14px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--panel);
-}
-.grp .lbl,
-.about .lbl {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  margin-bottom: 8px;
-}
-.presets { display: flex; flex-wrap: wrap; gap: 5px; }
-.presets button {
-  background: var(--btn);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 5px 7px;
-  font-size: 10px;
-}
-.presets button:hover { border-color: var(--accent); }
-.wh { display: flex; gap: 8px; margin-top: 8px; }
-.wh label { display: flex; align-items: center; gap: 5px; color: var(--muted); }
-.wh input {
-  width: 72px;
-  background: var(--field);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 4px 6px;
-  font-family: var(--mono);
-}
-.slider {
+/* presets — over the visual, top-left */
+.studio-presetbar {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 11;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  color: var(--muted);
-  margin-bottom: 8px;
+  background: rgba(8, 8, 8, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 6px 12px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  max-width: calc(100% - 24px);
 }
-.slider input[type="range"] { flex: 1; accent-color: var(--accent); }
-.slider select {
-  background: var(--field);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 3px 5px;
-  font-family: var(--mono);
+.studio-presetbar label { color: rgba(255, 255, 255, 0.6); font: 700 9px var(--mono); letter-spacing: 0.16em; text-transform: uppercase; }
+.studio-presetbar select {
+  background: rgba(0, 0, 0, 0.45);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  padding: 4px 9px;
+  font: 11px var(--mono);
+  cursor: pointer;
+  max-width: 52vw;
 }
-.row2 { display: flex; gap: 8px; }
-.row2 button {
-  flex: 1;
-  background: var(--btn);
-  color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 7px;
-  font-size: 11px;
+.studio-presetbar select:hover { border-color: rgba(255, 255, 255, 0.6); }
+
+/* action buttons — over the visual, top-right (Restart / Randomise) */
+.studio-topctl { position: absolute; top: 12px; right: 12px; z-index: 13; display: flex; gap: 8px; }
+.studio-topctl button {
+  background: rgba(8, 8, 8, 0.6);
+  color: #ededed;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  padding: 8px 15px;
+  font: 600 10px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
-.row2 button:hover { border-color: var(--accent); }
+.studio-topctl button:hover { border-color: rgba(255, 255, 255, 0.6); background: rgba(8, 8, 8, 0.82); }
+.studio-topctl button.is-accent { border-color: color-mix(in oklch, var(--accent) 75%, white 25%); color: #fff; }
+.studio-topctl button.is-accent:hover { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+
+.studio-fps { position: absolute; left: 14px; bottom: 12px; z-index: 11; color: rgba(255, 255, 255, 0.55); font: 11px var(--mono); pointer-events: none; }
+
+/* controls sidebar — sticky tweakpane panel */
+.studio-side { position: sticky; top: calc(var(--fa-nav-h) + 16px); }
+.studio-controls { width: 100%; }
+.studio-controls .tp-dfwv { width: 100%; }
+/* always-dark panel, even on the light page theme */
+.studio-controls {
+  --tp-base-background-color: rgba(18, 20, 26, 0.96);
+  --tp-base-shadow-color: rgba(0, 0, 0, 0.35);
+  --tp-blade-value-width: 34%;
+  --tp-button-background-color: rgba(255, 255, 255, 0.12);
+  --tp-button-background-color-active: rgba(255, 255, 255, 0.22);
+  --tp-button-background-color-focus: rgba(255, 255, 255, 0.18);
+  --tp-button-background-color-hover: rgba(255, 255, 255, 0.16);
+  --tp-button-foreground-color: #e9e9ee;
+  --tp-container-background-color: rgba(255, 255, 255, 0.05);
+  --tp-container-background-color-active: rgba(255, 255, 255, 0.12);
+  --tp-container-background-color-focus: rgba(255, 255, 255, 0.1);
+  --tp-container-background-color-hover: rgba(255, 255, 255, 0.08);
+  --tp-container-foreground-color: #c7c7d0;
+  --tp-input-background-color: rgba(255, 255, 255, 0.08);
+  --tp-input-background-color-active: rgba(255, 255, 255, 0.16);
+  --tp-input-background-color-focus: rgba(255, 255, 255, 0.14);
+  --tp-input-background-color-hover: rgba(255, 255, 255, 0.12);
+  --tp-input-foreground-color: #e9e9ee;
+  --tp-label-foreground-color: #a7a7b2;
+  --tp-monitor-background-color: rgba(0, 0, 0, 0.3);
+  --tp-monitor-foreground-color: #b9b9c4;
+}
+.studio-controls .tp-rotv_b,
+.studio-controls .tp-fldv_b { border-radius: 8px; }
 
 /* about */
-.about {
-  margin-top: 44px;
-  padding-top: 28px;
-  border-top: 1px solid var(--line);
-}
-.about-cols {
-  display: grid;
-  grid-template-columns: 1.7fr 1fr;
-  gap: 44px;
-  margin-top: 14px;
-}
-.about-title {
-  margin: 0 0 12px;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 24px;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-.about-body {
-  margin: 0;
-  max-width: 62ch;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 14.5px;
-  line-height: 1.65;
-  color: var(--muted);
-}
-.about-meta { margin: 0; display: grid; gap: 14px; align-content: start; }
-.about-meta dt { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 3px; }
-.about-meta dd { margin: 0; font-size: 13px; color: var(--ink); }
+.studio-about { margin-top: clamp(40px, 5vw, 72px); border-top: 1px solid var(--line); padding-top: clamp(26px, 3vw, 40px); }
+.studio-about-title { margin: 0 0 clamp(14px, 2vw, 22px); font-family: var(--sans); font-weight: 600; font-size: clamp(22px, 2.6vw, 34px); line-height: 1.02; letter-spacing: -0.02em; color: var(--ink); }
+.studio-about-body { color: var(--muted); font-size: clamp(13px, 1vw, 15px); line-height: 1.65; max-width: 78ch; }
+.studio-about-body p { margin: 0; }
 
+/* toast */
 .toast {
   position: fixed;
   bottom: 18px;
@@ -253,39 +223,16 @@ button {
   opacity: 0;
   pointer-events: none;
   transition: all 0.2s ease;
+  z-index: 200;
 }
 .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 @media (max-width: 900px) {
-  .work { grid-template-columns: 1fr; }
-  .controls { position: static; }
-  .about-cols { grid-template-columns: 1fr; gap: 24px; }
+  .studio-grid { grid-template-columns: 1fr; gap: 16px; }
+  .studio-visual { height: min(64vh, 620px); }
+  .studio-side { position: static; top: auto; }
 }
 @media (max-width: 680px) {
-  .wrap { padding-left: 16px; padding-right: 16px; } /* match the nav at this breakpoint */
-}
-
-
-/* tweakpane: light parameters panel when not in dark mode */
-html:not(.dark) .params {
-  --tp-base-background-color: oklch(0.93 0.006 265);
-  --tp-base-shadow-color: rgba(0, 0, 0, 0.1);
-  --tp-button-background-color: oklch(0.88 0.008 265);
-  --tp-button-background-color-active: oklch(0.8 0.01 265);
-  --tp-button-background-color-focus: oklch(0.84 0.01 265);
-  --tp-button-background-color-hover: oklch(0.86 0.01 265);
-  --tp-button-foreground-color: oklch(0.26 0.02 265);
-  --tp-container-background-color: oklch(0.9 0.006 265);
-  --tp-container-background-color-active: oklch(0.82 0.01 265);
-  --tp-container-background-color-focus: oklch(0.86 0.01 265);
-  --tp-container-background-color-hover: oklch(0.88 0.01 265);
-  --tp-container-foreground-color: oklch(0.38 0.02 265);
-  --tp-input-background-color: oklch(0.88 0.008 265);
-  --tp-input-background-color-active: oklch(0.8 0.01 265);
-  --tp-input-background-color-focus: oklch(0.84 0.01 265);
-  --tp-input-background-color-hover: oklch(0.86 0.01 265);
-  --tp-input-foreground-color: oklch(0.26 0.02 265);
-  --tp-label-foreground-color: oklch(0.45 0.02 265);
-  --tp-monitor-background-color: oklch(0.86 0.008 265);
-  --tp-monitor-foreground-color: oklch(0.4 0.02 265);
+  .studio-head { padding-left: 16px; padding-right: 16px; }
+  .studio-wrap { padding-left: 16px; padding-right: 16px; }
 }

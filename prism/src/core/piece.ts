@@ -31,6 +31,8 @@ export interface Config {
   size: { w: number; h: number };
   meta: Meta;
   theme: string;
+  /** live colour overrides (bg / low / high); when present they build the palette */
+  colors?: { bg: string; lo: string; hi: string };
 }
 
 export interface PieceContext {

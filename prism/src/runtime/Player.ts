@@ -5,7 +5,7 @@
 import type { Config, Piece, ParamValue } from "../core/piece";
 import { makeRng } from "../core/rng";
 import { makeNoise } from "../core/noise";
-import { getPalette } from "../core/color/theme";
+import { getPalette, makePaletteFromColors } from "../core/color/theme";
 import { createSurface, sizeSurface, type RenderSurface } from "../core/surface";
 import { createPiece, getDescriptor } from "./Registry";
 
@@ -58,7 +58,7 @@ export class Player {
     sizeSurface(this.surface, w, h, 1);
     const rng = makeRng(this.cfg.seed);
     const noise = makeNoise(rng);
-    const palette = getPalette(this.cfg.theme);
+    const palette = this.cfg.colors ? makePaletteFromColors(this.cfg.colors) : getPalette(this.cfg.theme);
     const piece = createPiece(this.cfg.pieceId);
     if (!piece) return;
     piece.init({
@@ -127,6 +127,11 @@ export class Player {
   }
   setTheme(theme: string): void {
     this.cfg.theme = theme;
+    this.cfg.colors = undefined;
+    this.mount();
+  }
+  setColors(colors: { bg: string; lo: string; hi: string }): void {
+    this.cfg.colors = colors;
     this.mount();
   }
   setMeta(complexity: number, chaos: number): void {
