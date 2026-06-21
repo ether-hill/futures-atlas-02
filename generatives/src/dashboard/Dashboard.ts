@@ -123,7 +123,13 @@ export class Dashboard {
     host.querySelector('[data-act="restart"]')!.addEventListener("click", () => this.player?.restart());
     host.querySelector('[data-act="randomise"]')!.addEventListener("click", () => this.randomise());
 
-    window.addEventListener("resize", () => this.player?.refit());
+    // debounce: coalesce layout-settling resize bursts so we don't refit (which
+    // re-seeds most pieces) repeatedly right as a piece opens
+    let resizeTimer = 0;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(() => this.player?.refit(), 150) as unknown as number;
+    });
     window.addEventListener("keydown", (e) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
       if (e.key === " ") {
@@ -151,14 +157,18 @@ export class Dashboard {
     config.colors = config.colors ?? { ...DEFAULT_COLORS };
     this.metaState = { ...config.meta };
     this.colorState = { ...config.colors };
+    this.algoSelect.value = d.id;
+    // Build the (heavy, synchronous) tweakpane panel + presets + about BEFORE the
+    // animation starts. Building it after the Player begins its RAF loop blocks the
+    // main thread for a few frames, which is the opening "starts then skips" stutter.
+    this.buildPresets(d);
+    this.buildControls(d, config);
+    this.updateAbout(d);
+    // Start the player last → its first frames run with the main thread already free.
     this.player = new Player(this.stage, config, {
       sizing: "fit",
       onFrame: (fps) => (this.fpsEl.textContent = `${fps} fps · ${BACKEND_LABEL[d.backend] ?? d.backend}`),
     });
-    this.algoSelect.value = d.id;
-    this.buildPresets(d);
-    this.buildControls(d, config);
-    this.updateAbout(d);
     this.persist();
   }
 

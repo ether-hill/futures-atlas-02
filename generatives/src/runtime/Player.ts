@@ -80,7 +80,12 @@ export class Player {
 
   private tick = (now: number): void => {
     if (!this.playing || !this.piece) return;
-    const dt = this.last ? Math.min(0.05, (now - this.last) / 1000) : 1 / 60;
+    // A one-off long frame (first-paint, shader warm, GC, tab refocus) would, with
+    // a plain clamp, advance the sim by a big dt and visibly SKIP. Treat any gap
+    // over ~2 frames as a single 1/60 step instead — the animation keeps flowing
+    // smoothly through the hitch rather than jumping.
+    const raw = this.last ? (now - this.last) / 1000 : 1 / 60;
+    const dt = raw > 0.05 ? 1 / 60 : raw;
     this.last = now;
     this.elapsed += dt;
     const T = this.piece.loopSeconds;
