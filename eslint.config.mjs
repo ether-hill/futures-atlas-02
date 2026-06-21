@@ -21,6 +21,7 @@ const eslintConfig = [
       // self-contained sub-apps with their own build, tsconfig & deps
       "quantum-sandbox/**",
       "generatives/**",
+      "visualize/**",
       "social-composer/**",
     ],
   },

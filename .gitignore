@@ -23,14 +23,17 @@
 # odds-of-surviving-ai) are NOT ignored — they are hand-authored with no build
 # step, so they stay committed.
 /public/generatives/
+/public/visualize/
 /public/quantum-sandbox/
 /public/social-composer/
 /public/hollow-villages/
 /generatives/node_modules/
+/visualize/node_modules/
 /quantum-sandbox/node_modules/
 /social-composer/node_modules/
 /social-composer/out/
 /generatives/dist/
+/visualize/dist/
 /quantum-sandbox/dist/
 /hollow-villages/node_modules/
 /hollow-villages/.next/

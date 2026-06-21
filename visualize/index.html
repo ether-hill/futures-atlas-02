@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Visualize · Source Library Data · Futures Atlas</title>
+    <meta
+      name="description"
+      content="Form+Code-style data visualisations built from books in the Source Library — each one linking back to its source text."
+    />
+    <script>
+      // default the global nav to dark, before first paint (no flash)
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
+    <!-- the one shared global nav (+ its styles) -->
+    <link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css />
+    <script src="/atlas-nav.js" defer></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
