@@ -3,7 +3,7 @@
 // frequency as a typographic cloud + a ranked bar chart. Every view links back to
 // the source book on sourcelibrary.org.
 
-import { library, getBook, getText, type LibraryItem } from "./api";
+import { library, getBook, getText, ApiError, type LibraryItem } from "./api";
 import { wordFrequency, totalWords, type WordCount } from "./wordfreq";
 
 const SCAFFOLD = `
@@ -72,8 +72,12 @@ export async function boot(root: HTMLElement): Promise<void> {
       if (mine !== token) return; // a newer request superseded this one
       const freq = wordFrequency(raw, 140);
       render(stage, meta, raw, freq, n);
-    } catch {
-      if (mine === token) stage.innerHTML = `<div class="msg err">Could not load that book's text. Try another, or fewer pages.</div>`;
+    } catch (e) {
+      if (mine !== token) return;
+      const rateLimited = e instanceof ApiError && e.status === 429;
+      stage.innerHTML = rateLimited
+        ? `<div class="msg err">The Source Library API is rate-limiting requests right now. Give it a moment and try again.</div>`
+        : `<div class="msg err">Could not load that book's text. Try another book, or fewer pages.</div>`;
     }
   };
 

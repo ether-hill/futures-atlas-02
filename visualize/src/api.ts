@@ -33,10 +33,27 @@ export interface LibraryItem {
 
 const bookUrl = (id: string): string => `https://sourcelibrary.org/book/${id}`;
 
+export class ApiError extends Error {
+  constructor(public status: number, message: string) {
+    super(message);
+  }
+}
+
+/** fetch with one retry on 429 (rate limit), honouring Retry-After. */
+async function slFetch(path: string): Promise<Response> {
+  let res = await fetch(BASE + path);
+  if (res.status === 429) {
+    const ra = Number(res.headers.get("retry-after"));
+    await new Promise((r) => setTimeout(r, Math.min(4000, (ra > 0 ? ra : 1.3) * 1000)));
+    res = await fetch(BASE + path);
+  }
+  if (!res.ok) throw new ApiError(res.status, `HTTP ${res.status}`);
+  return res;
+}
+
 /** A page of the public catalogue, newest-translated first where the API allows. */
 export async function library(limit = 30): Promise<LibraryItem[]> {
-  const res = await fetch(`${BASE}/books/library?limit=${limit}`);
-  if (!res.ok) throw new Error(`library: ${res.status}`);
+  const res = await slFetch(`/books/library?limit=${limit}`);
   const json = (await res.json()) as { books?: Array<Record<string, unknown>> };
   return (json.books ?? []).map((b) => ({
     id: String(b.id ?? ""),
@@ -50,8 +67,7 @@ export async function library(limit = 30): Promise<LibraryItem[]> {
 }
 
 export async function getBook(id: string): Promise<BookMeta> {
-  const res = await fetch(`${BASE}/books/${id}`);
-  if (!res.ok) throw new Error(`book: ${res.status}`);
+  const res = await slFetch(`/books/${id}`);
   const b = (await res.json()) as Record<string, unknown>;
   return {
     id: String(b.id ?? id),
@@ -76,8 +92,7 @@ export async function getText(
   const content = opts.content ?? "translation";
   const from = opts.from ?? 1;
   const to = opts.to ?? 40;
-  const res = await fetch(`${BASE}/books/${id}/text?content=${content}&from=${from}&to=${to}&format=plain`);
-  if (!res.ok) throw new Error(`text: ${res.status}`);
+  const res = await slFetch(`/books/${id}/text?content=${content}&from=${from}&to=${to}&format=plain`);
   return res.text();
 }
 
