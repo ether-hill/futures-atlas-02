@@ -18,6 +18,7 @@ import { createPhysarum } from "./physarum";
 import { createBoids } from "./boids";
 import { createFieldDynamics } from "./fieldDynamics";
 import { createOrganicTurbulence } from "./organicTurbulence";
+import { createReactionDiffusion } from "./reactionDiffusion";
 
 export const PIECES: PieceFactory[] = [
   // GPU shader fields (banner sweet spot — ~zero CPU)
@@ -33,6 +34,7 @@ export const PIECES: PieceFactory[] = [
   createBoids,
   createFieldDynamics,
   createOrganicTurbulence,
+  createReactionDiffusion,
   // Canvas2D
   createPhyllotaxis,
   createSuperformula,

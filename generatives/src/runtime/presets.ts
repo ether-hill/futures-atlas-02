@@ -52,6 +52,13 @@ const CURATED: Record<string, Preset[]> = {
     { label: "Slow Drift", params: { singularities: 3, speed: 2, fade: 0.04, lineWidth: 1.8 }, meta: { complexity: 0.5, chaos: 0.3 }, colors: cw("Deep Sea") },
     { label: "Storm", params: { singularities: 8, speed: 7, fade: 0.01, lineWidth: 1 }, meta: { complexity: 0.9, chaos: 0.7 }, colors: cw("Ultraviolet") },
   ],
+  "reaction-diffusion": [
+    { label: "Coral", params: { feed: 0.0545, kill: 0.062, speed: 12 }, meta: { complexity: 0.6, chaos: 0.4 }, colors: cw("Ember Filigree") },
+    { label: "Mitosis", params: { feed: 0.0367, kill: 0.0649, speed: 10 }, meta: { complexity: 0.65, chaos: 0.4 }, colors: cw("Bioluminescence") },
+    { label: "Maze", params: { feed: 0.029, kill: 0.057, speed: 12 }, meta: { complexity: 0.7, chaos: 0.35 }, colors: cw("Cyan Circuitry") },
+    { label: "Spots", params: { feed: 0.025, kill: 0.06, speed: 10 }, meta: { complexity: 0.6, chaos: 0.4 }, colors: cw("Ultraviolet") },
+    { label: "Worms", params: { feed: 0.058, kill: 0.065, speed: 12 }, meta: { complexity: 0.7, chaos: 0.4 }, colors: cw("Magma Veins") },
+  ],
   "organic-turbulence": [
     { label: "Smoke", params: { speed: 1, fieldScale: 1, evolve: 0.4, trail: 0.06, lineWidth: 1.2 }, meta: { complexity: 0.55, chaos: 0.5 }, colors: cw("Ink Wash") },
     { label: "Currents", params: { speed: 1.6, fieldScale: 0.7, evolve: 0.6, trail: 0.04, lineWidth: 1.4 }, meta: { complexity: 0.7, chaos: 0.6 }, colors: cw("Deep Sea") },
