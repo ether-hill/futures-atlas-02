@@ -201,6 +201,58 @@
       document.body.appendChild(foot);
     }
 
+    // ── global Share tool — fixed bottom-left on every page, expands on click ──
+    // Standard share options plus "Open in Social Composer", which deep-links the
+    // composer to transmutate THIS page (pull its pieces onto the canvas).
+    if (!document.querySelector(".fa-share")) {
+      var enc = encodeURIComponent;
+      var shareIcon =
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>';
+      var sh = document.createElement("div");
+      sh.className = "fa-share";
+      sh.innerHTML =
+        '<div class="fa-share__panel" role="menu">' +
+          '<a class="fa-share__opt fa-share__opt--accent" data-act="composer" href="#">⚗ Open in Social Composer</a>' +
+          '<button class="fa-share__opt" data-act="copy" type="button">Copy link</button>' +
+          (navigator.share ? '<button class="fa-share__opt" data-act="native" type="button">Share…</button>' : "") +
+          '<a class="fa-share__opt" data-act="x" target="_blank" rel="noopener" href="#">Post to X</a>' +
+          '<a class="fa-share__opt" data-act="li" target="_blank" rel="noopener" href="#">Share to LinkedIn</a>' +
+          '<a class="fa-share__opt" data-act="email" href="#">Email a link</a>' +
+        "</div>" +
+        '<button class="fa-share__btn" type="button" aria-label="Share this page" aria-haspopup="menu" aria-expanded="false">' + shareIcon + "</button>";
+      document.body.appendChild(sh);
+      var sBtn = sh.querySelector(".fa-share__btn");
+      var sPanel = sh.querySelector(".fa-share__panel");
+      var sCopy = sh.querySelector('[data-act="copy"]');
+      var refreshShare = function () {
+        var u = location.href, t = document.title || "Futures Atlas";
+        sh.querySelector('[data-act="composer"]').href = "/social-composer?transmutate=" + enc(u);
+        sh.querySelector('[data-act="x"]').href = "https://twitter.com/intent/tweet?url=" + enc(u) + "&text=" + enc(t);
+        sh.querySelector('[data-act="li"]').href = "https://www.linkedin.com/sharing/share-offsite/?url=" + enc(u);
+        sh.querySelector('[data-act="email"]').href = "mailto:?subject=" + enc(t) + "&body=" + enc(u);
+      };
+      var setShare = function (o) {
+        if (o) refreshShare();
+        sBtn.setAttribute("aria-expanded", o);
+        sh.classList.toggle("is-open", o);
+      };
+      sBtn.addEventListener("click", function (e) { e.stopPropagation(); setShare(!sh.classList.contains("is-open")); });
+      sCopy.addEventListener("click", function () {
+        if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(function () {
+          sCopy.textContent = "Copied ✓";
+          setTimeout(function () { sCopy.textContent = "Copy link"; setShare(false); }, 900);
+        });
+      });
+      var sNative = sh.querySelector('[data-act="native"]');
+      if (sNative) sNative.addEventListener("click", function () {
+        navigator.share({ title: document.title || "Futures Atlas", url: location.href }).catch(function () {});
+        setShare(false);
+      });
+      sPanel.addEventListener("click", function (e) { if (e.target.closest("a")) setShare(false); });
+      document.addEventListener("click", function (e) { if (!sh.contains(e.target)) setShare(false); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") setShare(false); });
+    }
+
     // breadcrumb dropdown (project pages only)
     var btn = h.querySelector(".fa-shell__current");
     if (btn) {

@@ -361,5 +361,39 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
   .fa-subnav { display: none; } /* Villages tabs move into the sheet */
 }
 
+/* ── global Share tool — fixed bottom-left on every page, expands on click ── */
+.fa-share { position: fixed; left: 18px; bottom: 18px; z-index: 60; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.fa-share__btn {
+  width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(243, 241, 236, 0.92); color: #171410; border: 1px solid rgba(23, 20, 16, 0.14);
+  cursor: pointer; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  transition: transform 0.2s ease, background-color 0.3s, color 0.3s, border-color 0.3s;
+}
+.fa-share__btn:hover { transform: translateY(-2px); }
+.fa-share.is-open .fa-share__btn { background: #171410; color: #f3f1ec; }
+.fa-share__panel {
+  display: flex; flex-direction: column; gap: 2px; min-width: 220px; padding: 6px;
+  border-radius: 14px; background: rgba(243, 241, 236, 0.96); border: 1px solid rgba(23, 20, 16, 0.12);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.22);
+  -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px);
+  opacity: 0; visibility: hidden; transform: translateY(10px) scale(0.97); transform-origin: bottom left;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+}
+.fa-share.is-open .fa-share__panel { opacity: 1; visibility: visible; transform: none; }
+.fa-share__opt {
+  display: block; text-align: left; width: 100%; padding: 10px 13px; border: 0; background: transparent;
+  border-radius: 9px; color: #171410; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; white-space: nowrap;
+}
+.fa-share__opt:hover { background: rgba(23, 20, 16, 0.07); }
+.fa-share__opt--accent { color: #b4541e; font-weight: 600; }
+html.dark .fa-share__btn { background: rgba(18, 17, 15, 0.92); color: #f3f1ec; border-color: rgba(255, 255, 255, 0.16); }
+html.dark .fa-share.is-open .fa-share__btn { background: #f3f1ec; color: #16140f; }
+html.dark .fa-share__panel { background: rgba(18, 17, 15, 0.96); border-color: rgba(255, 255, 255, 0.12); }
+html.dark .fa-share__opt { color: #f3f1ec; }
+html.dark .fa-share__opt:hover { background: rgba(255, 255, 255, 0.08); }
+html.dark .fa-share__opt--accent { color: #7fb2e6; }
+@media (max-width: 680px) { .fa-share { left: 12px; bottom: 12px; } }
+
 
 

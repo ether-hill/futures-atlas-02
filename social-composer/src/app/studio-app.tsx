@@ -515,8 +515,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   }, [bin, persistBin]);
 
   // Transmutate a URL — scan a page and pull its key elements into the library.
-  const onTransmutate = useCallback(async () => {
-    const url = tmUrl.trim();
+  const runTransmutate = useCallback(async (raw: string) => {
+    const url = raw.trim();
     if (!url || busy) return;
     setBusy("transmutate");
     try {
@@ -539,7 +539,20 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     } finally {
       setBusy(null);
     }
-  }, [tmUrl, busy, slugKey, showToast]);
+  }, [busy, slugKey, showToast]);
+  const onTransmutate = useCallback(() => runTransmutate(tmUrl), [runTransmutate, tmUrl]);
+
+  // Deep-link: the global Share tool opens the composer at ?transmutate=<url> to
+  // pull that page in automatically. Run once on mount.
+  const tmRef = useRef(runTransmutate);
+  tmRef.current = runTransmutate;
+  useEffect(() => {
+    const u = new URLSearchParams(window.location.search).get("transmutate");
+    if (u) {
+      setTmUrl(u);
+      void tmRef.current(u);
+    }
+  }, []);
 
   const setActiveText = useCallback((patch: Override) => { if (activeId) setOverrides((p) => ({ ...p, [activeId]: { ...p[activeId], ...patch } })); }, [activeId]);
   const onRandomise = useCallback(() => {
