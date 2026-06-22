@@ -49,9 +49,9 @@ export const metadata: Metadata = {
     siteName: "Futures Atlas",
     title: "Futures Atlas — a catalogue of possible worlds",
     description: SITE_DESC,
-    images: ["/projects/generatives.jpg"],
+    images: ["/projects/og-default.jpg"],
   },
-  twitter: { card: "summary_large_image", images: ["/projects/generatives.jpg"] },
+  twitter: { card: "summary_large_image", images: ["/projects/og-default.jpg"] },
 };
 
 // Render per-request so the SSR-injected token overrides always reflect the

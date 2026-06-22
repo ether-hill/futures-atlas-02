@@ -27,9 +27,20 @@ const plex = IBM_Plex_Mono({
   display: "swap",
 });
 
+const SC_DESC = "A standalone social-post composer — post types, layouts, motion, and PNG / ZIP / GIF / video export, with a URL transmutate importer.";
+const SC_IMG = "https://futures-atlas-02.vercel.app/projects/social-composer.jpg";
+
 export const metadata: Metadata = {
   title: "Social Composer",
-  description: "A standalone social-post composer — post types, layouts, motion, and PNG / ZIP / GIF / video export.",
+  description: SC_DESC,
+  openGraph: {
+    type: "website",
+    siteName: "Futures Atlas",
+    title: "Social Composer — Futures Atlas",
+    description: SC_DESC,
+    images: [SC_IMG],
+  },
+  twitter: { card: "summary_large_image", images: [SC_IMG] },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

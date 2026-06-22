@@ -40,10 +40,21 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+const HV_DESC =
+  "A speculative-design oracle that forecasts how depopulating rural villages could be revived. Write a letter; it answers at every scale and shows you the place in 2050. Everything it reads is real.";
+const HV_IMG = "https://futures-atlas-02.vercel.app/projects/hollow-villages.jpg";
+
 export const metadata: Metadata = {
   title: "The Hollow Villages — a forecast instrument for emptying villages",
-  description:
-    "A speculative-design oracle that forecasts how depopulating rural villages could be revived. Write a letter; it answers at every scale and shows you the place in 2050. Everything it reads is real.",
+  description: HV_DESC,
+  openGraph: {
+    type: "website",
+    siteName: "Futures Atlas",
+    title: "The Hollow Villages — Futures Atlas",
+    description: HV_DESC,
+    images: [HV_IMG],
+  },
+  twitter: { card: "summary_large_image", images: [HV_IMG] },
 };
 
 export default function RootLayout({
