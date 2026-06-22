@@ -389,6 +389,13 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
 .fa-share__opt--accent { color: #b4541e; font-weight: 600; }
 .fa-share__sep { height: 1px; margin: 5px 8px; background: rgba(23, 20, 16, 0.1); }
 html.dark .fa-share__sep { background: rgba(255, 255, 255, 0.1); }
+.fa-share__ig { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 13px 8px; }
+.fa-share__iglbl { color: #b4541e; font-weight: 600; font-size: 13px; margin-right: 2px; }
+.fa-share__chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(23, 20, 16, 0.18); color: #171410; text-decoration: none; }
+.fa-share__chip:hover { border-color: #b4541e; color: #b4541e; }
+html.dark .fa-share__iglbl { color: #7fb2e6; }
+html.dark .fa-share__chip { border-color: rgba(255, 255, 255, 0.18); color: #f3f1ec; }
+html.dark .fa-share__chip:hover { border-color: #7fb2e6; color: #7fb2e6; }
 html.dark .fa-share__btn { background: rgba(18, 17, 15, 0.92); color: #f3f1ec; border-color: rgba(255, 255, 255, 0.16); }
 html.dark .fa-share.is-open .fa-share__btn { background: #f3f1ec; color: #16140f; }
 html.dark .fa-share__panel { background: rgba(18, 17, 15, 0.96); border-color: rgba(255, 255, 255, 0.12); }

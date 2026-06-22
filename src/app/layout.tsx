@@ -71,8 +71,8 @@ export default async function RootLayout({
             self-inject) so the bar + mobile sheet are fully styled at first
             paint — otherwise the unstyled sheet/burger flash on every load.
             atlas-nav.js sees this data-fa-nav-css link and skips re-injecting. */}
-        <link rel="stylesheet" href="/atlas-nav.css?v=4" data-fa-nav-css />
-        <script src="/atlas-nav.js?v=4" defer />
+        <link rel="stylesheet" href="/atlas-nav.css?v=5" data-fa-nav-css />
+        <script src="/atlas-nav.js?v=5" defer />
         {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
       </head>
       <body

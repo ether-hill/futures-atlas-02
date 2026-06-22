@@ -213,7 +213,12 @@
       sh.innerHTML =
         '<div class="fa-share__panel" role="menu">' +
           '<a class="fa-share__opt fa-share__opt--accent" data-act="composer" href="#">⚗ Open in Social Composer</a>' +
-          '<a class="fa-share__opt fa-share__opt--accent" data-act="ig" href="#">⌗ Make an Instagram post</a>' +
+          '<div class="fa-share__ig">' +
+            '<span class="fa-share__iglbl">⌗ Instagram</span>' +
+            '<a class="fa-share__chip" data-igf="story" href="#">Story</a>' +
+            '<a class="fa-share__chip" data-igf="square" href="#">Square</a>' +
+            '<a class="fa-share__chip" data-igf="reel" href="#">Reel</a>' +
+          "</div>" +
           '<span class="fa-share__sep"></span>' +
           '<button class="fa-share__opt" data-act="copy" type="button">Copy link</button>' +
           (navigator.share ? '<button class="fa-share__opt" data-act="native" type="button">Share…</button>' : "") +
@@ -230,7 +235,9 @@
       var refreshShare = function () {
         var u = location.href, t = document.title || "Futures Atlas";
         sh.querySelector('[data-act="composer"]').href = "/social-composer?transmutate=" + enc(u);
-        sh.querySelector('[data-act="ig"]').href = "/social-composer?transmutate=" + enc(u) + "&format=story";
+        sh.querySelectorAll("[data-igf]").forEach(function (a) {
+          a.href = "/social-composer?transmutate=" + enc(u) + "&format=" + a.getAttribute("data-igf");
+        });
         sh.querySelector('[data-act="wa"]').href = "https://wa.me/?text=" + enc(t + " " + u);
         sh.querySelector('[data-act="x"]').href = "https://twitter.com/intent/tweet?url=" + enc(u) + "&text=" + enc(t);
         sh.querySelector('[data-act="li"]').href = "https://www.linkedin.com/sharing/share-offsite/?url=" + enc(u);
