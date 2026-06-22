@@ -37,6 +37,18 @@ const nextConfig: NextConfig = {
     };
   },
 
+  // The shared nav/footer/share bundle is referenced by a fixed path on every
+  // page (host + sub-apps), so it must always revalidate — otherwise a browser
+  // keeps a stale atlas-nav.js and misses updates (e.g. the global Share tool).
+  async headers() {
+    return [
+      {
+        source: "/atlas-nav.:ext(js|css)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
+      },
+    ];
+  },
+
   // Generatives was formerly "Prism" at /prism — keep old links + embeds working.
   async redirects() {
     return [
