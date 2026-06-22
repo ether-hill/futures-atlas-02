@@ -213,8 +213,11 @@
       sh.innerHTML =
         '<div class="fa-share__panel" role="menu">' +
           '<a class="fa-share__opt fa-share__opt--accent" data-act="composer" href="#">⚗ Open in Social Composer</a>' +
+          '<a class="fa-share__opt fa-share__opt--accent" data-act="ig" href="#">⌗ Make an Instagram post</a>' +
+          '<span class="fa-share__sep"></span>' +
           '<button class="fa-share__opt" data-act="copy" type="button">Copy link</button>' +
           (navigator.share ? '<button class="fa-share__opt" data-act="native" type="button">Share…</button>' : "") +
+          '<a class="fa-share__opt" data-act="wa" target="_blank" rel="noopener" href="#">WhatsApp</a>' +
           '<a class="fa-share__opt" data-act="x" target="_blank" rel="noopener" href="#">Post to X</a>' +
           '<a class="fa-share__opt" data-act="li" target="_blank" rel="noopener" href="#">Share to LinkedIn</a>' +
           '<a class="fa-share__opt" data-act="email" href="#">Email a link</a>' +
@@ -227,6 +230,8 @@
       var refreshShare = function () {
         var u = location.href, t = document.title || "Futures Atlas";
         sh.querySelector('[data-act="composer"]').href = "/social-composer?transmutate=" + enc(u);
+        sh.querySelector('[data-act="ig"]').href = "/social-composer?transmutate=" + enc(u) + "&format=story";
+        sh.querySelector('[data-act="wa"]').href = "https://wa.me/?text=" + enc(t + " " + u);
         sh.querySelector('[data-act="x"]').href = "https://twitter.com/intent/tweet?url=" + enc(u) + "&text=" + enc(t);
         sh.querySelector('[data-act="li"]').href = "https://www.linkedin.com/sharing/share-offsite/?url=" + enc(u);
         sh.querySelector('[data-act="email"]').href = "mailto:?subject=" + enc(t) + "&body=" + enc(u);

@@ -547,11 +547,18 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const tmRef = useRef(runTransmutate);
   tmRef.current = runTransmutate;
   useEffect(() => {
-    const u = new URLSearchParams(window.location.search).get("transmutate");
+    const sp = new URLSearchParams(window.location.search);
+    const u = sp.get("transmutate");
     if (u) {
       setTmUrl(u);
       void tmRef.current(u);
     }
+    // optional starting format from the Share tool (e.g. Instagram → Story)
+    const fmt = sp.get("format");
+    if (fmt === "story") { setPostType("story"); setAspect("9:16"); }
+    else if (fmt === "reel") { setPostType("reel"); setAspect("9:16"); }
+    else if (fmt === "square") { setPostType("single"); setAspect("1:1"); }
+    else if (fmt === "portrait") { setPostType("single"); setAspect("4:5"); }
   }, []);
 
   const setActiveText = useCallback((patch: Override) => { if (activeId) setOverrides((p) => ({ ...p, [activeId]: { ...p[activeId], ...patch } })); }, [activeId]);
