@@ -35,10 +35,23 @@ const plexMono = IBM_Plex_Mono({
   display: "swap",
 });
 
+const SITE_DESC =
+  "An atlas of speculative-design and futures projects: each one a grounded forecast of how things could be otherwise.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://futures-atlas-02.vercel.app"),
   title: "Futures Atlas — a catalogue of possible worlds",
-  description:
-    "An atlas of speculative-design and futures projects: each one a grounded forecast of how things could be otherwise.",
+  description: SITE_DESC,
+  // Default Open Graph so any page (and the Share → Social Composer transmutate)
+  // has a go-to image + summary; individual pages/projects override these.
+  openGraph: {
+    type: "website",
+    siteName: "Futures Atlas",
+    title: "Futures Atlas — a catalogue of possible worlds",
+    description: SITE_DESC,
+    images: ["/projects/generatives.jpg"],
+  },
+  twitter: { card: "summary_large_image", images: ["/projects/generatives.jpg"] },
 };
 
 // Render per-request so the SSR-injected token overrides always reflect the
