@@ -1,11 +1,11 @@
 import { defineConfig } from "vite";
 
 // Served as a self-contained static bundle inside the Futures Atlas site at
-// /visualize, mounted under ../public/visualize.
+// /literal-frequency, mounted under ../public/literal-frequency.
 export default defineConfig({
-  base: "/visualize/",
+  base: "/literal-frequency/",
   build: {
-    outDir: "../public/visualize",
+    outDir: "../public/literal-frequency",
     emptyOutDir: true,
   },
   // Local dev/preview: proxy the same-origin /api/sl path to the real API (in

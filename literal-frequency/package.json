@@ -1,9 +1,9 @@
 {
-  "name": "visualize",
+  "name": "literal-frequency",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Futures Atlas — Visualize. Form+Code-style data visualisations built from books in the Source Library (sourcelibrary.org), each linking back to its source.",
+  "description": "Futures Atlas — Literal Frequency. Word-frequency visualisations built from books in the Source Library (sourcelibrary.org), each linking back to its source.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

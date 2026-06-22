@@ -84,16 +84,16 @@ export const projects: Project[] = [
     image: "/projects/generatives.jpg",
   },
   {
-    id: "visualize",
-    title: "Visualize",
+    id: "literal-frequency",
+    title: "Literal Frequency",
     tagline:
-      "Data visualisations built live from the Source Library — the open-access archive of digitised, translated books. Loads a book over the API and draws its word frequency, after Form+Code, each view linking back to its source.",
+      "Word-frequency visualisations built live from the Source Library — the open-access archive of digitised, translated books. Loads a book over the API and reads its vocabulary as a cloud, a word nebula, a bubble field, or bars, each view linking back to its source.",
     year: "2026",
     date: "2026-06-22",
     field: "Data visualisation",
     status: "in-progress",
-    path: "/visualize", // self-contained Vite static bundle served within this site
-    image: "/projects/visualize.jpg",
+    path: "/literal-frequency", // self-contained Vite static bundle served within this site
+    image: "/projects/literal-frequency.jpg",
   },
   {
     id: "social-composer",

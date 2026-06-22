@@ -20,7 +20,7 @@
   var FA_PROJECTS = [
     { name: "Social Composer", path: "/social-composer" },
     { name: "Generatives", path: "/generatives" },
-    { name: "Visualize", path: "/visualize" },
+    { name: "Literal Frequency", path: "/literal-frequency" },
     { name: "Quantum Sandbox", path: "/quantum-sandbox" },
     { name: "The Odds", path: "/odds-of-surviving-ai", pages: [
       { name: "The piece", path: "/odds-of-surviving-ai" },
