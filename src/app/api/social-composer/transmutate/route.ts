@@ -59,14 +59,28 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Only http(s) URLs are supported." }, { status: 400 });
   }
 
+  // When transmutating a page on THIS same deployment (e.g. another Atlas page on
+  // a Vercel preview), the target sits behind preview auth. The viewer is already
+  // authenticated, so forward their cookies — and the Vercel protection-bypass
+  // secret if configured — so the protected page can be read.
+  const reqHost = request.headers.get("host") || new URL(request.url).host;
+  const sameDeploy = target.host === reqHost;
+  const fetchHeaders: Record<string, string> = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+    "Accept": "text/html,application/xhtml+xml",
+    "Accept-Language": "en;q=0.9",
+  };
+  if (sameDeploy) {
+    const cookie = request.headers.get("cookie");
+    if (cookie) fetchHeaders["cookie"] = cookie;
+    const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+    if (bypass) fetchHeaders["x-vercel-protection-bypass"] = bypass;
+  }
+
   let html: string;
   try {
     const res = await fetch(target.toString(), {
-      headers: {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
-        "Accept": "text/html,application/xhtml+xml",
-        "Accept-Language": "en;q=0.9",
-      },
+      headers: fetchHeaders,
       redirect: "follow",
       signal: AbortSignal.timeout(15000),
     });
