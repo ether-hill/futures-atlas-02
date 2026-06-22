@@ -27,6 +27,9 @@
 /public/quantum-sandbox/
 /public/social-composer/
 /public/hollow-villages/
+/generatives/.next/
+/literal-frequency/.next/
+/quantum-sandbox/.next/
 /generatives/node_modules/
 /literal-frequency/node_modules/
 /quantum-sandbox/node_modules/
