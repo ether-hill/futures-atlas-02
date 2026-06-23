@@ -54,4 +54,13 @@ cp -R "$HERE/swipe-the-future/out/." "$HERE/public/swipe-the-future/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-the-future"
 echo "✓ swipe-the-future → public/swipe-the-future (with atlas-nav)"
 
+# Woodchipper Futures: Next static export → out/, then copy into public/.
+echo "→ building woodchipper"
+( cd "$HERE/woodchipper" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/woodchipper"
+mkdir -p "$HERE/public/woodchipper"
+cp -R "$HERE/woodchipper/out/." "$HERE/public/woodchipper/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/woodchipper"
+echo "✓ woodchipper → public/woodchipper (with atlas-nav)"
+
 echo "✓ all sub-apps built"

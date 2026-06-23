@@ -31,6 +31,10 @@
 /swipe-the-future/.next/
 /swipe-the-future/node_modules/
 /swipe-the-future/out/
+/public/woodchipper/
+/woodchipper/.next/
+/woodchipper/node_modules/
+/woodchipper/out/
 /generatives/.next/
 /literal-frequency/.next/
 /quantum-sandbox/.next/

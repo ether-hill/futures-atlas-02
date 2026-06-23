@@ -24,6 +24,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "woodchipper",
+    title: "Woodchipper Futures",
+    tagline:
+      "An interactive futures engine on the 2025 USAID cuts: take the January-2025 chair — abolish, freeze, audit or reform — and watch a fact-checked, source-cited constellation of outcomes branch out. Every figure links to its study.",
+    year: "2026",
+    date: "2026-06-23",
+    field: "AI & risk",
+    status: "live",
+    path: "/woodchipper",
+    image: "/projects/woodchipper.jpg",
+  },
+  {
     id: "swipe-the-future",
     title: "Swipe the Future",
     tagline:

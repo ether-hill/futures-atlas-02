@@ -42,6 +42,8 @@ const nextConfig: NextConfig = {
         { source: "/social-composer/about", destination: "/social-composer/about/index.html" },
         // Swipe the Future — Next static export (basePath baked in, trailingSlash)
         { source: "/swipe-the-future", destination: "/swipe-the-future/index.html" },
+        // Woodchipper Futures — Next static export (USAID cuts scenario engine)
+        { source: "/woodchipper", destination: "/woodchipper/index.html" },
       ],
     };
   },
