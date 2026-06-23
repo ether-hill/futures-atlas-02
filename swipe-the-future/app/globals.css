@@ -75,10 +75,11 @@ a { color: var(--accent); }
 .tcard.b2 { transform: scale(.89) translateY(31px); filter: brightness(.93); pointer-events: none; }
 .tcard-tag { font-family: var(--ff-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--paper-muted); }
 .tcard .claim { margin-top: auto; font-weight: 600; font-size: clamp(25px, 5.4vw, 34px); line-height: 1.1; letter-spacing: -.02em; color: #19140e; }
-.tcard-foot { margin-top: 20px; display: flex; justify-content: space-between; font-family: var(--ff-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.tcard-foot { margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-size: 22px; line-height: 1; }
+.tcard-foot .l, .tcard-foot .r { width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; border: 1.5px solid currentColor; }
 .tcard-foot .l { color: var(--oxblood); }
 .tcard-foot .r { color: var(--accent); }
-.stamp { position: absolute; top: 26px; font-family: var(--ff-sans); font-weight: 800; font-size: 19px; letter-spacing: .06em; text-transform: uppercase; border: 3px solid; border-radius: 10px; padding: 5px 12px; opacity: 0; transition: opacity .1s; }
+.stamp { position: absolute; top: 24px; font-weight: 800; font-size: 38px; line-height: 1; border: 3px solid; border-radius: 12px; padding: 4px 14px; opacity: 0; transition: opacity .1s; }
 .stamp.yes { left: 24px; color: oklch(0.5 0.15 245); border-color: oklch(0.5 0.15 245); transform: rotate(-13deg); }
 .stamp.no { right: 24px; color: var(--oxblood); border-color: var(--oxblood); transform: rotate(13deg); }
 

@@ -249,8 +249,8 @@ export default function Calibration() {
               <div key={c.id} ref={active ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}`} style={flungStyle}>
                 <span className="tcard-tag">Claim {pad(i + d + 1)} · swipe to judge</span>
                 <h3 className="claim">{c.claim}</h3>
-                <div className="tcard-foot"><span className="l">← Doubt</span><span className="r">Believe →</span></div>
-                {active && <><span className="stamp no">Doubt</span><span className="stamp yes">Believe</span></>}
+                <div className="tcard-foot"><span className="l" aria-label="Doubt">✕</span><span className="r" aria-label="Believe">✓</span></div>
+                {active && <><span className="stamp no" aria-hidden="true">✕</span><span className="stamp yes" aria-hidden="true">✓</span></>}
               </div>
             );
           })
