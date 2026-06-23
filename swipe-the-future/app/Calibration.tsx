@@ -54,12 +54,15 @@ export default function Calibration() {
     else { setPos(pos + 1); setPhase("swipe"); }
   }, [pos, deck.length]);
 
+  // While the verdict shows: count seconds for the label, and let the ring's own
+  // animationEnd drive the advance (so the loop always completes). A timeout is a
+  // safety net (and the only timer when motion is reduced / animation disabled).
   useEffect(() => {
     if (phase !== "result") return;
-    if (reduce.current) { const t = setTimeout(advance, 1500); return () => clearTimeout(t); }
     setSecs(5);
-    const iv = setInterval(() => setSecs((s) => { if (s <= 1) { clearInterval(iv); advance(); return 0; } return s - 1; }), 1000);
-    return () => clearInterval(iv);
+    const iv = setInterval(() => setSecs((s) => Math.max(0, s - 1)), 1000);
+    const fb = setTimeout(advance, reduce.current ? 1500 : 5800);
+    return () => { clearInterval(iv); clearTimeout(fb); };
   }, [phase, pos, advance]);
 
   // drag the active card (swipe phase only)
@@ -114,13 +117,6 @@ export default function Calibration() {
   const unders = answers.filter((a) => a.card.verdict === "already" && !a.believe).length;
   const prof = profileFor(matched, scored.length, overs, unders);
 
-  const NextRing = () => (
-    <button className="nextring" onClick={advance} aria-label="Next claim">
-      <svg viewBox="0 0 72 72" aria-hidden="true"><circle className="ring-bg" cx="36" cy="36" r="32" /><circle className="ring-fg" cx="36" cy="36" r="32" /></svg>
-      <span className="nr-label">Next</span>
-    </button>
-  );
-
   const behind = deck.length - 1 - pos;
   const depths: number[] = [];
   for (let d = Math.min(2, behind); d >= 0; d--) depths.push(d);
@@ -171,7 +167,13 @@ export default function Calibration() {
                     <div className="vo-label">Evidence: {VLABEL[lastAns!.card.verdict]}</div>
                     <p className="vo-insight">{lastAns!.card.note}</p>
                     <div className="vo-src">{lastAns!.card.source.url ? <a href={lastAns!.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns!.card.source.label} ↗</a> : lastAns!.card.source.label}</div>
-                    <NextRing />
+                    <button className="nextring" onClick={advance} aria-label="Next claim">
+                      <svg viewBox="0 0 72 72" aria-hidden="true">
+                        <circle className="ring-bg" cx="36" cy="36" r="32" pathLength={100} />
+                        <circle className="ring-fg" cx="36" cy="36" r="32" pathLength={100} onAnimationEnd={advance} />
+                      </svg>
+                      <span className="nr-label">Next</span>
+                    </button>
                   </>
                 ) : (
                   <>

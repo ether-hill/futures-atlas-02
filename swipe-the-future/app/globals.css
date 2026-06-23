@@ -87,11 +87,11 @@ a { color: var(--accent); }
 .nextring { position: relative; width: 78px; height: 78px; margin-top: 24px; background: none; border: 0; cursor: pointer; display: grid; place-items: center; }
 .nextring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .nextring .ring-bg { fill: none; stroke: #ded2bb; stroke-width: 4; }
-.nextring .ring-fg { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 201; stroke-dashoffset: 201; animation: nr-fill 5s linear forwards; }
+.nextring .ring-fg { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: nr-fill 5s linear forwards; }
 .nextring .nr-label { font-family: var(--ff-mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #19140e; }
 .nextring:hover .nr-label { color: var(--accent); }
 .nextring:hover .ring-bg { stroke: #d3c6ad; }
-@keyframes nr-fill { from { stroke-dashoffset: 201; } to { stroke-dashoffset: 0; } }
+@keyframes nr-fill { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 
 /* ── final calibration, on the card ─────────────────────────────────────── */
 .tcard.final { align-items: center; justify-content: center; text-align: center; }
