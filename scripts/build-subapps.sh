@@ -45,4 +45,13 @@ cp -R "$HERE/hollow-villages/out/." "$HERE/public/hollow-villages/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/hollow-villages"
 echo "✓ hollow-villages → public/hollow-villages (with atlas-nav)"
 
+# Swipe the Future: Next static export → out/, then copy into public/.
+echo "→ building swipe-the-future"
+( cd "$HERE/swipe-the-future" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/swipe-the-future"
+mkdir -p "$HERE/public/swipe-the-future"
+cp -R "$HERE/swipe-the-future/out/." "$HERE/public/swipe-the-future/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-the-future"
+echo "✓ swipe-the-future → public/swipe-the-future (with atlas-nav)"
+
 echo "✓ all sub-apps built"

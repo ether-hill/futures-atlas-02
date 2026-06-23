@@ -24,6 +24,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "swipe-the-future",
+    title: "Swipe the Future",
+    tagline:
+      "A calibration game: pick your line of work, swipe Believe or Doubt on six source-checked claims about AI and quantum, then see how far your gut sat from where the evidence actually lands.",
+    year: "2026",
+    date: "2026-06-23",
+    field: "Calibration",
+    status: "live",
+    path: "/swipe-the-future",
+    image: "/projects/swipe-the-future.jpg",
+  },
+  {
     id: "hollow-villages",
     title: "The Hollow Villages",
     tagline:

@@ -27,6 +27,10 @@
 /public/quantum-sandbox/
 /public/social-composer/
 /public/hollow-villages/
+/public/swipe-the-future/
+/swipe-the-future/.next/
+/swipe-the-future/node_modules/
+/swipe-the-future/out/
 /generatives/.next/
 /literal-frequency/.next/
 /quantum-sandbox/.next/

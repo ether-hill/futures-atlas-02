@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Swipe the Future — Calibration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0E1B19;          /* deep petrol base */
+    --ink-2:#152724;        /* raised panel */
+    --paper:#F1EBDE;        /* card paper */
+    --paper-edge:#E2D9C6;
+    --text:#1B1610;         /* ink on paper */
+    --muted:#6E6B5E;        /* utility text */
+    --paper-muted:#8C8576;
+    --verdigris:#2F8F7F;    /* likely / believe signal */
+    --oxblood:#A23E2C;      /* unlikely / doubt signal */
+    --brass:#C9A227;        /* already-real signal */
+    --slate:#7C8B86;        /* contested */
+    --line:rgba(241,235,222,.16);
+    --shadow:0 24px 60px -24px rgba(0,0,0,.7);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:
+      radial-gradient(120% 90% at 50% -10%, #16332e 0%, var(--ink) 55%, #0a1413 100%);
+    color:var(--paper);
+    font-family:"Hanken Grotesk",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100dvh;
+    display:flex;justify-content:center;
+    padding:env(safe-area-inset-top) 0 0;
+  }
+  .app{width:100%;max-width:480px;min-height:100dvh;display:flex;flex-direction:column;position:relative}
+  .screen{flex:1;display:none;flex-direction:column;padding:26px 22px 30px}
+  .screen.active{display:flex}
+
+  /* ---- shared bits ---- */
+  .eyebrow{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--paper-muted)}
+  .rule{height:1px;background:var(--line);margin:18px 0}
+  .foot{font-family:"Space Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-muted);text-align:center;padding-top:18px}
+
+  /* ---- intro ---- */
+  .brand{display:flex;align-items:baseline;justify-content:space-between}
+  .brand .mark{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--paper-muted)}
+  .lede{margin-top:auto;padding-top:30px}
+  .lede h1{font-family:"Instrument Serif",serif;font-weight:400;font-size:clamp(40px,12vw,58px);line-height:.98;letter-spacing:-.01em}
+  .lede h1 em{font-style:italic;color:var(--verdigris)}
+  .lede p{margin-top:16px;font-size:15.5px;line-height:1.5;color:#D8D2C4;max-width:34ch}
+  .pick-h{margin-top:34px}
+  .pick-h .eyebrow{display:block;margin-bottom:6px}
+  .pick-h h2{font-family:"Instrument Serif",serif;font-weight:400;font-size:25px;letter-spacing:-.01em}
+  .roles{margin-top:14px;display:flex;flex-direction:column;gap:1px;background:var(--line);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .role{
+    appearance:none;border:0;background:transparent;color:var(--paper);
+    text-align:left;cursor:pointer;width:100%;
+    display:flex;align-items:center;gap:14px;padding:16px 6px;
+    transition:background .18s ease,padding .18s ease;
+  }
+  .role:hover,.role:focus-visible{background:rgba(47,143,127,.12);padding-left:14px;outline:none}
+  .role .idx{font-family:"Space Mono",monospace;font-size:12px;color:var(--verdigris);width:24px;flex:none}
+  .role .meta{flex:1}
+  .role .name{font-size:17px;font-weight:600;letter-spacing:.005em}
+  .role .blurb{font-size:12.5px;color:var(--paper-muted);margin-top:2px}
+  .role .go{font-family:"Space Mono",monospace;color:var(--paper-muted);transition:transform .18s ease,color .18s}
+  .role:hover .go,.role:focus-visible .go{transform:translateX(4px);color:var(--verdigris)}
+
+  /* ---- deck ---- */
+  .deck-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .deck-top .lens{font-size:13px;font-weight:600}
+  .deck-top .count{font-family:"Space Mono",monospace;font-size:12px;color:var(--paper-muted)}
+  .progress{height:2px;background:var(--line);margin-top:14px;border-radius:2px;overflow:hidden}
+  .progress > i{display:block;height:100%;width:0;background:var(--verdigris);transition:width .35s cubic-bezier(.2,.8,.2,1)}
+
+  .stage{flex:1;position:relative;margin:20px 0 8px;min-height:380px}
+  .card{
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,var(--paper),var(--paper-edge));
+    color:var(--text);border-radius:18px;box-shadow:var(--shadow);
+    display:flex;flex-direction:column;overflow:hidden;
+    will-change:transform;touch-action:pan-y;
+    transform-origin:50% 120%;
+  }
+  .card.behind-1{transform:scale(.945) translateY(14px);filter:brightness(.97)}
+  .card.behind-2{transform:scale(.89) translateY(28px);filter:brightness(.94)}
+  .card .face{flex:1;display:flex;flex-direction:column;padding:24px 22px}
+  .card .tag{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-muted)}
+  .card .claim{font-family:"Instrument Serif",serif;font-weight:400;font-size:clamp(27px,7.6vw,34px);line-height:1.08;letter-spacing:-.01em;margin-top:auto;color:#19140E}
+  .card .hint{margin-top:18px;font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-muted);display:flex;justify-content:space-between}
+  .card .hint .l{color:var(--oxblood)}
+  .card .hint .r{color:var(--verdigris)}
+
+  /* swipe stamps */
+  .stamp{position:absolute;top:22px;font-family:"Space Mono",monospace;font-size:14px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;border:2.5px solid;border-radius:8px;padding:6px 12px;opacity:0;transition:opacity .12s}
+  .stamp.yes{right:20px;color:var(--verdigris);border-color:var(--verdigris);transform:rotate(8deg)}
+  .stamp.no{left:20px;color:var(--oxblood);border-color:var(--oxblood);transform:rotate(-8deg)}
+
+  /* reveal face (verdict) */
+  .reveal{position:absolute;inset:0;background:linear-gradient(180deg,var(--paper),var(--paper-edge));padding:22px;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .4s ease}
+  .reveal.show{opacity:1;pointer-events:auto}
+  .reveal .verdict-k{font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase}
+  .reveal .verdict-v{font-family:"Instrument Serif",serif;font-size:30px;line-height:1;margin-top:3px;letter-spacing:-.01em}
+  .meter{margin-top:18px}
+  .meter .track{position:relative;height:3px;background:#D8CFBC;border-radius:3px}
+  .meter .track > b{position:absolute;top:0;bottom:0;width:0;border-radius:3px;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+  .meter .mk{position:absolute;top:50%;width:13px;height:13px;border-radius:50%;transform:translate(-50%,-50%) scale(0);transition:left .7s cubic-bezier(.2,.8,.2,1),transform .3s ease}
+  .meter .mk.show{transform:translate(-50%,-50%) scale(1)}
+  .meter .mk.ev{background:#19140E;box-shadow:0 0 0 4px var(--paper)}
+  .meter .mk.you{width:13px;height:13px;background:transparent;border:2px solid var(--muted);box-shadow:0 0 0 3px var(--paper)}
+  .meter .ends{display:flex;justify-content:space-between;margin-top:9px;font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--paper-muted)}
+  .legend{display:flex;gap:14px;margin-top:11px;font-size:11px;color:var(--muted)}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:middle}
+  .legend .ev i{background:#19140E}
+  .legend .you i{border:2px solid var(--muted);width:7px;height:7px}
+  .reveal .note{margin-top:16px;font-size:14.5px;line-height:1.5;color:#2A241C}
+  .reveal .src{margin-top:auto;font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--paper-muted);padding-top:14px;border-top:1px solid #DCD3C1}
+  .reveal .verdict-tick{font-size:12.5px;font-weight:600;margin-top:13px;display:flex;align-items:center;gap:7px}
+  .reveal .verdict-tick .dot{width:8px;height:8px;border-radius:50%}
+
+  .controls{display:flex;gap:12px;padding-top:6px}
+  .btn{
+    flex:1;appearance:none;cursor:pointer;border-radius:13px;padding:15px 10px;
+    font-family:"Hanken Grotesk";font-size:15px;font-weight:600;letter-spacing:.01em;
+    background:transparent;color:var(--paper);border:1.5px solid var(--line);
+    transition:transform .12s ease,background .15s,border-color .15s;
+  }
+  .btn:active{transform:scale(.97)}
+  .btn.no{border-color:rgba(162,62,44,.5)}
+  .btn.no:hover,.btn.no:focus-visible{background:rgba(162,62,44,.16);border-color:var(--oxblood);outline:none}
+  .btn.yes{border-color:rgba(47,143,127,.5)}
+  .btn.yes:hover,.btn.yes:focus-visible{background:rgba(47,143,127,.16);border-color:var(--verdigris);outline:none}
+  .btn .sub{display:block;font-family:"Space Mono",monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--paper-muted);margin-top:3px}
+  .btn.next{border-color:rgba(47,143,127,.55);background:rgba(47,143,127,.12)}
+  .btn.next:hover{background:rgba(47,143,127,.2)}
+
+  /* ---- result ---- */
+  .res-h .eyebrow{display:block}
+  .res-h h2{font-family:"Instrument Serif",serif;font-weight:400;font-size:30px;margin-top:6px;line-height:1.02}
+  .score{display:flex;align-items:baseline;gap:10px;margin-top:22px}
+  .score .big{font-family:"Instrument Serif",serif;font-size:64px;line-height:.8;color:var(--verdigris)}
+  .score .of{font-family:"Space Mono",monospace;font-size:14px;color:var(--paper-muted)}
+  .score .lbl{font-size:13px;color:#D8D2C4;max-width:18ch;margin-left:auto;text-align:right}
+  .profile{margin-top:22px;background:var(--ink-2);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .profile .pk{font-family:"Space Mono",monospace;font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--paper-muted)}
+  .profile .pv{font-family:"Instrument Serif",serif;font-size:26px;margin-top:4px;color:var(--brass)}
+  .profile .pd{font-size:14px;line-height:1.5;color:#D8D2C4;margin-top:8px}
+  .misjudged{margin-top:22px}
+  .misjudged > .eyebrow{display:block;margin-bottom:10px}
+  .mj{display:flex;gap:12px;padding:12px 0;border-top:1px solid var(--line);font-size:13.5px;line-height:1.4}
+  .mj .badge{font-family:"Space Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:5px;height:max-content;white-space:nowrap;flex:none}
+  .mj .badge.under{background:rgba(201,162,39,.18);color:var(--brass)}
+  .mj .badge.over{background:rgba(162,62,44,.2);color:#E08066}
+  .mj .txt b{font-weight:600}
+  .mj .txt span{color:var(--paper-muted)}
+  .res-actions{margin-top:26px;display:flex;flex-direction:column;gap:10px}
+  .res-actions .btn.next{padding:16px}
+  .res-actions .btn.ghost{border-color:var(--line)}
+  .res-actions .btn.ghost:hover{background:rgba(241,235,222,.06)}
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- INTRO -->
+  <section class="screen active" id="s-intro">
+    <div class="brand">
+      <span class="mark">Futures Atlas</span>
+      <span class="mark">№ 01 · Calibration</span>
+    </div>
+    <div class="lede">
+      <h1>Swipe the<br><em>future.</em></h1>
+      <p>Six claims about where AI and quantum take your line of work. Swipe on each, then see how far your gut sat from the evidence.</p>
+    </div>
+    <div class="pick-h">
+      <span class="eyebrow">Choose your vantage point</span>
+      <h2>What's your world?</h2>
+    </div>
+    <div class="roles" id="roles"></div>
+    <div class="foot">Imagine freely · Cite everything · MMXXVI</div>
+  </section>
+
+  <!-- DECK -->
+  <section class="screen" id="s-deck">
+    <div class="deck-top">
+      <span class="lens" id="lens-name">—</span>
+      <span class="count" id="count">01 / 06</span>
+    </div>
+    <div class="progress"><i id="bar"></i></div>
+    <div class="stage" id="stage"></div>
+    <div class="controls" id="controls">
+      <button class="btn no" id="b-no">Doubt<span class="sub">won't / not true</span></button>
+      <button class="btn yes" id="b-yes">Believe<span class="sub">likely / true</span></button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="s-res">
+    <div class="res-h">
+      <span class="eyebrow">Your calibration</span>
+      <h2 id="res-lens">—</h2>
+    </div>
+    <div class="score">
+      <span class="big" id="res-score">0</span>
+      <span class="of" id="res-of">/ 0 calls</span>
+      <span class="lbl" id="res-lbl">matched the evidence</span>
+    </div>
+    <div class="profile">
+      <div class="pk">Your futures profile</div>
+      <div class="pv" id="res-profile">—</div>
+      <div class="pd" id="res-profile-d">—</div>
+    </div>
+    <div class="misjudged" id="misjudged-wrap">
+      <span class="eyebrow">Where you and the evidence parted ways</span>
+      <div id="misjudged"></div>
+    </div>
+    <div class="res-actions">
+      <button class="btn next" id="again">Try another world →</button>
+      <button class="btn ghost" id="replay">Re-run this one</button>
+    </div>
+    <div class="foot">Each card links back to a real source · Futures Atlas</div>
+  </section>
+
+</div>
+
+<script>
+/* ----------------------------------------------------------
+   DATA — every claim is grounded in a real source.
+   verdict: 'unlikely' | 'contested' | 'likely' | 'already'
+---------------------------------------------------------- */
+const POS = { unlikely:0.12, contested:0.45, likely:0.74, already:0.95 };
+const VLABEL = { unlikely:"Unlikely", contested:"Contested", likely:"Likely", already:"Already real" };
+const VCOLOR = { unlikely:"var(--oxblood)", contested:"var(--slate)", likely:"var(--verdigris)", already:"var(--brass)" };
+
+const ROLES = [
+  { id:"programmer", name:"Programmer", blurb:"Code · crypto-migration · automation",
+    cards:[
+      {claim:"Within a few years, AI writes the majority of new production code.", verdict:"contested",
+       note:"The AI 2027 forecast projected near-total coding automation by early 2027 — but its own authors have since pushed that toward the early 2030s.", src:"AI Futures Project — AI 2027"},
+      {claim:"You'll spend years rewriting working code just to defend it against quantum computers.", verdict:"likely",
+       note:"NIST finalized post-quantum encryption standards in 2024; US federal systems must migrate by 2035. Anything touching encryption is in scope.", src:"NIST PQC · NIST IR 8547"},
+      {claim:"A quantum computer can already break the encryption your apps use today.", verdict:"unlikely",
+       note:"The most powerful machines run ~1,500 qubits. Breaking the elliptic-curve crypto most apps rely on is estimated to need 500,000+ physical qubits.", src:"Google Quantum AI, 2026"},
+      {claim:"Quantum-proof encryption standards already exist and are ready to deploy.", verdict:"already",
+       note:"NIST published the first finalized standards — FIPS 203, 204, 205 — in August 2024. The tools are here; the migration isn't.", src:"NIST"},
+      {claim:"An 'intelligence explosion' — AI rapidly improving AI — happens this decade.", verdict:"contested",
+       note:"It's the engine of the AI 2027 scenario and the claim safety researchers fight over — plausible to some, science fiction to critics.", src:"AI 2027 · expert debate"},
+      {claim:"Encrypted data stolen from your systems today could be cracked open years from now.", verdict:"already",
+       note:"This is the live 'harvest now, decrypt later' threat: long-lived secrets taken today are already exposed to a future quantum machine.", src:"NIST · NSA"}
+    ]},
+  { id:"designer", name:"Designer", blurb:"Generative tools · craft · displacement",
+    cards:[
+      {claim:"Within a decade, AI handles most production-level design work.", verdict:"likely",
+       note:"Goldman Sachs estimates ~26% of design tasks are automatable; the World Economic Forum lists graphic design among its fastest-declining jobs.", src:"Goldman Sachs · WEF 2025"},
+      {claim:"Generative AI has already collapsed designers' wages.", verdict:"unlikely",
+       note:"Despite the fear, large workforce datasets through 2024 show little measurable wage decline for AI-exposed creative roles — so far.", src:"Gallup · J. of Cultural Economics, 2026"},
+      {claim:"Freelance design postings are already falling as businesses switch to AI.", verdict:"already",
+       note:"Freelance graphic-design job postings have dropped roughly 21% as routine work shifts to AI tools.", src:"Industry labor data, 2026"},
+      {claim:"AI tools have already generated tens of billions of images.", verdict:"already",
+       note:"Adobe reports 22 billion+ assets created with Firefly since launch — now baked into Creative Cloud.", src:"Adobe"},
+      {claim:"What survives is taste, judgment and direction — not production.", verdict:"likely",
+       note:"The recurring finding: routine production gets automated while hybrid roles built on concept, context and AI fluency grow.", src:"Creative-industry studies, 2025–26"},
+      {claim:"Over 200,000 entertainment-industry jobs could be disrupted by AI within a few years.", verdict:"likely",
+       note:"A 2024 industry study projected 200,000+ US entertainment jobs materially disrupted by generative AI within three years.", src:"CVL Economics, 2024"}
+    ]},
+  { id:"lawyer", name:"Lawyer", blurb:"Hallucinations · research · privilege",
+    cards:[
+      {claim:"Lawyers are already being fined by courts for AI 'hallucinated' citations.", verdict:"already",
+       note:"Bloomberg Law counted 280+ filings with fabricated AI citations since 2023 — up sevenfold in 2025 — with sanctions from $1,000 to $30,000+.", src:"Bloomberg Law · court records"},
+      {claim:"Within a decade, AI handles most entry-level legal research.", verdict:"contested",
+       note:"AI already does research and contract review, but courts insist on human verification and the field is split on how far junior work shrinks.", src:"National Law Review, 2026"},
+      {claim:"Courts will create a brand-new rule built specifically for AI-fabricated filings.", verdict:"likely",
+       note:"Legal observers expect the Advisory Committee on Civil Rules to propose a separate rule for AI-hallucination sanctions.", src:"National Law Review, 2026"},
+      {claim:"AI can be named as the inventor on a patent or the author of a copyright.", verdict:"unlikely",
+       note:"Across major jurisdictions, courts have ruled AI cannot be an inventor or author under current intellectual-property law.", src:"2025–26 rulings"},
+      {claim:"Hundreds of AI fake-citation cases already span dozens of countries.", verdict:"already",
+       note:"Trackers logged roughly 800 documented AI citation-error cases across 25+ jurisdictions by late 2025.", src:"AI Hallucination Cases Database"},
+      {claim:"Your firm's privileged files could be decrypted retroactively once quantum matures.", verdict:"likely",
+       note:"'Harvest now, decrypt later' applies to any long-confidential record — legal files are a prime target.", src:"NIST · NSA"}
+    ]},
+  { id:"crypto", name:"Crypto trader", blurb:"Q-Day · wallets · ECDSA",
+    cards:[
+      {claim:"A quantum computer could one day lift Bitcoin straight out of vulnerable wallets.", verdict:"likely",
+       note:"Around 25% of all BTC — roughly 4 million coins — sit in addresses with exposed public keys, the part a quantum attacker could target.", src:"Deloitte on-chain study"},
+      {claim:"Breaking Bitcoin's keys needs far more qubits than any machine has today.", verdict:"already",
+       note:"Estimates run from hundreds of thousands to millions of qubits; today's best machines manage ~1,500. True — for now.", src:"Webber et al. · Google, 2026"},
+      {claim:"2026 research made breaking Bitcoin's encryption look closer than expected.", verdict:"already",
+       note:"A March 2026 Google paper cut the estimate roughly 20-fold — from ~20 million qubits to under 500,000 — compressing the timeline.", src:"Google Quantum AI"},
+      {claim:"There's a real chance a quantum computer cracks an exposed Bitcoin key by ~2032.", verdict:"contested",
+       note:"Bitcoin researcher Justin Drake put it at 10%+ by 2032; others call it far off. Genuinely contested.", src:"J. Drake · expert estimates"},
+      {claim:"Even if Bitcoin upgrades, moving every coin to safety could take months of gridlock.", verdict:"likely",
+       note:"Migrating all vulnerable coins is estimated at ~76 days of dedicated blockspace — and ~2 years at realistic network usage.", src:"University of Kent, 2024"},
+      {claim:"Moving your coins to a fresh address already lowers your quantum exposure.", verdict:"already",
+       note:"Reused and legacy addresses expose the public key; a fresh, unspent address keeps it hidden. Good practice today.", src:"2026 community consensus"}
+    ]},
+  { id:"energy", name:"Energy sector", blurb:"Data-center demand · grid · materials",
+    cards:[
+      {claim:"AI data centers drive a massive jump in electricity demand this decade.", verdict:"already",
+       note:"Goldman Sachs projects ~165% growth in data-center power demand by 2030; the IEA sees data-center electricity roughly doubling to ~945 TWh.", src:"Goldman Sachs · IEA"},
+      {claim:"By 2030, AI data centers could consume as much power as a mid-sized country.", verdict:"likely",
+       note:"Estimates add ~200 TWh of annual demand globally — comparable to the entire electricity use of Poland or Vietnam.", src:"Goldman Sachs · IEA"},
+      {claim:"The grid can be expanded fast enough to keep pace with AI's demand.", verdict:"unlikely",
+       note:"Roughly $720B of grid investment is needed by 2030, and interconnection queues already run past five years. The bottleneck is real.", src:"Goldman Sachs · grid analyses"},
+      {claim:"Quantum computers could help design better batteries and clean-energy materials.", verdict:"likely",
+       note:"Materials and chemistry simulation is one of the most credible near-term uses of quantum computing.", src:"Quantum industry roadmaps"},
+      {claim:"AI data-center demand is already colliding with the limits of the grid.", verdict:"already",
+       note:"In the largest US grid (PJM), forecast data-center load is closing in on nearly all the new generation expected by 2030.", src:"BloombergNEF, 2025"},
+      {claim:"AI's electricity appetite reshapes national energy policy this decade.", verdict:"likely",
+       note:"Demand from data centers is already pushing utilities, regulators and governments to rethink generation and transmission.", src:"BNEF · IEA"}
+    ]}
+];
+
+/* ---------- state ---------- */
+let role=null, i=0, answers=[];
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2,"0");
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$("#"+id).classList.add("active");}
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- build role list ---------- */
+const rolesEl = $("#roles");
+ROLES.forEach((r,n)=>{
+  const b=document.createElement("button");
+  b.className="role";
+  b.innerHTML=`<span class="idx">${pad(n+1)}</span>
+    <span class="meta"><span class="name">${r.name}</span><span class="blurb">${r.blurb}</span></span>
+    <span class="go">→</span>`;
+  b.addEventListener("click",()=>startRole(r));
+  rolesEl.appendChild(b);
+});
+
+function startRole(r){
+  role=r;i=0;answers=[];
+  $("#lens-name").textContent=r.name;
+  show("s-deck");
+  renderStage();
+}
+
+/* ---------- deck rendering ---------- */
+const stage = $("#stage");
+let activeCard=null, locked=false;
+
+function renderStage(){
+  stage.innerHTML="";
+  // render up to 3 stacked cards (current + 2 behind)
+  for(let d=Math.min(2, role.cards.length-1-i); d>=0; d--){
+    const idx=i+d;
+    const c=role.cards[idx];
+    const el=document.createElement("div");
+    el.className="card"+(d===1?" behind-1":d===2?" behind-2":"");
+    el.innerHTML=cardHTML(c);
+    stage.appendChild(el);
+    if(d===0){ activeCard=el; attachDrag(el,c); }
+  }
+  updateTop();
+  $("#controls").style.display="flex";
+  $("#b-no").onclick=()=>decide(true,false);   // false = doubt
+  $("#b-yes").onclick=()=>decide(true,true);    // true = believe
+  locked=false;
+}
+
+function cardHTML(c){
+  return `
+    <div class="face">
+      <span class="tag">Claim · swipe to judge</span>
+      <h3 class="claim">${c.claim}</h3>
+      <div class="hint"><span class="l">← Doubt</span><span class="r">Believe →</span></div>
+    </div>
+    <span class="stamp no">Doubt</span>
+    <span class="stamp yes">Believe</span>
+    <div class="reveal">
+      <span class="verdict-k">The evidence says</span>
+      <span class="verdict-v" data-v></span>
+      <div class="meter">
+        <div class="track"><b data-fill></b>
+          <span class="mk ev" data-ev></span>
+          <span class="mk you" data-you></span>
+        </div>
+        <div class="ends"><span>Unlikely</span><span>Already real</span></div>
+        <div class="legend"><span class="ev"><i></i>Evidence</span><span class="you"><i></i>Your call</span></div>
+      </div>
+      <div class="verdict-tick" data-tick></div>
+      <p class="note" data-note></p>
+      <div class="src" data-src></div>
+    </div>`;
+}
+
+function updateTop(){
+  $("#count").textContent=`${pad(i+1)} / ${pad(role.cards.length)}`;
+  $("#bar").style.width=((i)/role.cards.length*100)+"%";
+}
+
+/* ---------- drag ---------- */
+function attachDrag(el,c){
+  let sx=0,sy=0,dx=0,dy=0,drag=false;
+  const yes=el.querySelector(".stamp.yes"), no=el.querySelector(".stamp.no");
+  const onDown=e=>{
+    if(locked)return;
+    drag=true; const p=point(e); sx=p.x; sy=p.y;
+    el.style.transition="none";
+  };
+  const onMove=e=>{
+    if(!drag||locked)return;
+    const p=point(e); dx=p.x-sx; dy=p.y-sy;
+    if(Math.abs(dx)>6) e.preventDefault?.();
+    const rot=dx/18;
+    el.style.transform=`translate(${dx}px,${dy*0.25}px) rotate(${rot}deg)`;
+    const t=Math.min(Math.abs(dx)/90,1);
+    yes.style.opacity = dx>0? t:0;
+    no.style.opacity = dx<0? t:0;
+  };
+  const onUp=()=>{
+    if(!drag||locked)return; drag=false;
+    el.style.transition="";
+    if(Math.abs(dx)>95){ decide(false, dx>0, el); }
+    else { el.style.transform=""; yes.style.opacity=0; no.style.opacity=0; }
+    dx=0;dy=0;
+  };
+  el.addEventListener("pointerdown",onDown);
+  window.addEventListener("pointermove",onMove,{passive:false});
+  window.addEventListener("pointerup",onUp);
+  el._cleanup=()=>{window.removeEventListener("pointermove",onMove);window.removeEventListener("pointerup",onUp);};
+}
+function point(e){return {x:e.clientX ?? 0, y:e.clientY ?? 0};}
+
+/* ---------- decide ---------- */
+function decide(animateOut, believe, el){
+  if(locked)return; locked=true;
+  el = el || activeCard;
+  const c = role.cards[i];
+  answers.push({card:c, believe});
+  // fling the card visually if button used
+  if(animateOut){
+    const dir = believe?1:-1;
+    el.querySelector(believe?".stamp.yes":".stamp.no").style.opacity=1;
+  }
+  // hide controls while revealing
+  $("#controls").style.display="none";
+  // animate card off, then reveal verdict on a fresh full card
+  const dir = believe?1:-1;
+  if(!reduceMotion){
+    el.style.transform=`translate(${dir*120}%, -6%) rotate(${dir*14}deg)`;
+    el.style.opacity="0.0";
+  }
+  setTimeout(()=>{ openReveal(c, believe); }, reduceMotion?0:240);
+}
+
+function openReveal(c, believe){
+  // build a single reveal card on top
+  stage.innerHTML="";
+  const el=document.createElement("div");
+  el.className="card";
+  el.innerHTML=cardHTML(c);
+  stage.appendChild(el);
+  const rev=el.querySelector(".reveal");
+  rev.querySelector("[data-v]").textContent=VLABEL[c.verdict];
+  rev.querySelector("[data-v]").style.color=VCOLOR[c.verdict];
+  rev.querySelector("[data-note]").textContent=c.note;
+  rev.querySelector("[data-src]").textContent="Source · "+c.src;
+
+  const aligned = isAligned(c.verdict, believe);
+  const tick=rev.querySelector("[data-tick]");
+  const contested = c.verdict==="contested";
+  tick.innerHTML = contested
+    ? `<span class="dot" style="background:var(--slate)"></span>Judgment call — the evidence is genuinely split here.`
+    : aligned
+      ? `<span class="dot" style="background:var(--verdigris)"></span>Your gut tracked the evidence.`
+      : `<span class="dot" style="background:var(--oxblood)"></span>Your gut and the evidence diverged.`;
+
+  rev.classList.add("show");
+  // animate meter
+  const evPos=POS[c.verdict];
+  const youPos= believe?0.85:0.15;
+  const fill=rev.querySelector("[data-fill]");
+  const ev=rev.querySelector("[data-ev]");
+  const you=rev.querySelector("[data-you]");
+  fill.style.background=VCOLOR[c.verdict];
+  requestAnimationFrame(()=>{
+    setTimeout(()=>{
+      fill.style.width=(evPos*100)+"%";
+      ev.style.left=(evPos*100)+"%"; ev.classList.add("show");
+      you.style.left=(youPos*100)+"%"; you.classList.add("show");
+    }, reduceMotion?0:60);
+  });
+
+  // swap controls to "next"
+  const ctr=$("#controls");
+  ctr.style.display="flex";
+  ctr.innerHTML=`<button class="btn next" id="b-next">${i+1<role.cards.length?"Next claim →":"See your calibration →"}</button>`;
+  $("#bar").style.width=((i+1)/role.cards.length*100)+"%";
+  $("#b-next").onclick=()=>{
+    i++;
+    if(i<role.cards.length){ renderStage(); }
+    else { finish(); }
+  };
+}
+
+function isAligned(verdict, believe){
+  if(verdict==="contested") return true;          // never penalised
+  if(verdict==="unlikely") return believe===false;
+  return believe===true;                            // likely / already
+}
+
+/* ---------- result ---------- */
+function finish(){
+  show("s-res");
+  $("#res-lens").textContent=role.name+" · "+VLABEL ? role.name : role.name;
+  $("#res-lens").textContent="Seen as a "+role.name.toLowerCase();
+
+  const scored = answers.filter(a=>a.card.verdict!=="contested");
+  const matched = scored.filter(a=>isAligned(a.card.verdict,a.believe)).length;
+  $("#res-score").textContent=matched;
+  $("#res-of").textContent="/ "+scored.length+" calls";
+
+  // misjudged
+  const overs = answers.filter(a=>a.card.verdict==="unlikely" && a.believe===true);     // believed the hype
+  const unders = answers.filter(a=>a.card.verdict==="already" && a.believe===false);     // missed the present
+  const mjWrap=$("#misjudged"); mjWrap.innerHTML="";
+  const items=[];
+  unders.forEach(a=>items.push({type:"under", claim:a.card.claim}));
+  overs.forEach(a=>items.push({type:"over", claim:a.card.claim}));
+  if(items.length===0){
+    $("#misjudged-wrap").style.display="none";
+  } else {
+    $("#misjudged-wrap").style.display="block";
+    items.forEach(it=>{
+      const d=document.createElement("div");
+      d.className="mj";
+      d.innerHTML=`<span class="badge ${it.type}">${it.type==="under"?"Already real":"Ahead of evidence"}</span>
+        <span class="txt"><b>${it.claim}</b> <span>${it.type==="under"?"— you doubted something that's already happening.":"— you backed a claim the evidence doesn't yet support."}</span></span>`;
+      mjWrap.appendChild(d);
+    });
+  }
+
+  // profile
+  const {name,desc,lblNote} = profileFor(matched, scored.length, overs.length, unders.length);
+  $("#res-profile").textContent=name;
+  $("#res-profile-d").textContent=desc;
+  $("#res-lbl").textContent=lblNote;
+}
+
+function profileFor(matched, total, over, under){
+  const rate = total? matched/total : 0;
+  if(under>=2 && under>over)
+    return {name:"Caught Flat-Footed", desc:"The future you think you're waiting for is partly here already. You under-read how much has shipped.", lblNote:"but the present outran you"};
+  if(over>=2 && over>under)
+    return {name:"The Accelerationist", desc:"You lean ahead of the evidence — quick to believe the bold claim before it's earned. Useful instinct, but check the qubit count.", lblNote:"running ahead of the proof"};
+  if(rate>=0.8)
+    return {name:"Well Calibrated", desc:"Your gut tracks where the evidence actually sits — neither hyped nor in denial. Rare.", lblNote:"and your instincts held"};
+  if(rate>=0.5)
+    return {name:"Roughly Tuned", desc:"You're in the right neighbourhood but a few cards slipped — usually the ones that are further along than they feel.", lblNote:"with a few blind spots"};
+  return {name:"The Skeptic", desc:"You resist the narrative hard — sometimes past the point where the evidence has caught up. Doubt is cheap; calibration isn't.", lblNote:"but doubt overshot the data"};
+}
+
+$("#again").onclick=()=>{ show("s-intro"); };
+$("#replay").onclick=()=>{ startRole(role); };
+
+/* keyboard */
+window.addEventListener("keydown",e=>{
+  if($("#s-deck").classList.contains("active") && !locked){
+    if(e.key==="ArrowLeft") decide(true,false);
+    if(e.key==="ArrowRight") decide(true,true);
+  }
+  if($("#s-deck").classList.contains("active") && locked){
+    const nx=$("#b-next"); if((e.key==="ArrowRight"||e.key===" "||e.key==="Enter")&&nx){e.preventDefault();nx.click();}
+  }
+});
+</script>
+</body>
+</html>
