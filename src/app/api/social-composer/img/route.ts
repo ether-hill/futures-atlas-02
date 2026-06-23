@@ -29,9 +29,22 @@ export async function GET(request: Request) {
     return new NextResponse("bad protocol", { status: 400 });
   }
 
+  // Same-deployment images (e.g. /projects/*.jpg on a Vercel preview) sit behind
+  // preview auth. The viewer is authenticated, so forward their cookies (and the
+  // protection-bypass secret if set) when proxying an image on our own host.
+  const reqHost = request.headers.get("host") || new URL(request.url).host;
+  const sameDeploy = target.host === reqHost;
+  const imgHeaders: Record<string, string> = { "User-Agent": "Mozilla/5.0 (AIRapture Studio image proxy)" };
+  if (sameDeploy) {
+    const cookie = request.headers.get("cookie");
+    if (cookie) imgHeaders["cookie"] = cookie;
+    const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+    if (bypass) imgHeaders["x-vercel-protection-bypass"] = bypass;
+  }
+
   try {
     const upstream = await fetch(target.toString(), {
-      headers: { "User-Agent": "Mozilla/5.0 (AIRapture Studio image proxy)" },
+      headers: imgHeaders,
       redirect: "follow",
     });
     if (!upstream.ok) return new NextResponse("upstream error", { status: 502 });
