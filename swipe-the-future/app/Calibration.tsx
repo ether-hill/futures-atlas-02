@@ -115,21 +115,27 @@ export default function Calibration() {
     return (
       <section className="screen active">
         <div className="brand"><span className="mark">Futures Atlas</span><span className="mark">№ 01 · Calibration</span></div>
-        <div className="lede">
-          <h1>Swipe the<br /><em>future.</em></h1>
-          <p>Six claims about where AI and quantum take your line of work. Swipe on each, then see how far your gut sat from the evidence.</p>
+        <div className="cols">
+          <div className="s-l">
+            <div className="lede">
+              <h1>Swipe the<br /><em>future.</em></h1>
+              <p>Six claims about where AI and quantum take your line of work. Swipe on each, then see how far your gut sat from the evidence.</p>
+            </div>
+            <div className="foot">Imagine freely · Cite everything · MMXXVI</div>
+          </div>
+          <div className="s-r">
+            <div className="pick-h"><span className="eyebrow">Choose your vantage point</span><h2>What&apos;s your world?</h2></div>
+            <div className="roles">
+              {ROLES.map((r, n) => (
+                <button key={r.id} className="role" onClick={() => startRole(r)}>
+                  <span className="idx">{pad(n + 1)}</span>
+                  <span className="meta"><span className="name">{r.name}</span><span className="blurb">{r.blurb}</span></span>
+                  <span className="go">→</span>
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="pick-h"><span className="eyebrow">Choose your vantage point</span><h2>What&apos;s your world?</h2></div>
-        <div className="roles">
-          {ROLES.map((r, n) => (
-            <button key={r.id} className="role" onClick={() => startRole(r)}>
-              <span className="idx">{pad(n + 1)}</span>
-              <span className="meta"><span className="name">{r.name}</span><span className="blurb">{r.blurb}</span></span>
-              <span className="go">→</span>
-            </button>
-          ))}
-        </div>
-        <div className="foot">Imagine freely · Cite everything · MMXXVI</div>
       </section>
     );
   }
@@ -147,35 +153,43 @@ export default function Calibration() {
     return (
       <section className="screen active">
         <div className="res-h"><span className="eyebrow">Your calibration</span><h2>Seen as a {role.name.toLowerCase()}</h2></div>
-        <div className="score">
-          <span className="big">{matched}</span>
-          <span className="of">/ {scored.length} calls</span>
-          <span className="lbl">matched the evidence {prof.lblNote}</span>
-        </div>
-        <div className="profile">
-          <div className="pk">Your futures profile</div>
-          <div className="pv">{prof.name}</div>
-          <div className="pd">{prof.desc}</div>
-        </div>
-        {items.length > 0 && (
-          <div className="misjudged">
-            <span className="eyebrow">Where you and the evidence parted ways</span>
-            <div>
-              {items.map((it, k) => (
-                <div className="mj" key={k}>
-                  <span className={`badge ${it.type}`}>{it.type === "under" ? "Already real" : "Ahead of evidence"}</span>
-                  <span className="txt"><b>{it.claim}</b> <span>{it.type === "under" ? "— you doubted something that's already happening." : "— you backed a claim the evidence doesn't yet support."}</span></span>
-                </div>
-              ))}
+        <div className="cols">
+          <div className="s-l">
+            <div className="score">
+              <span className="big">{matched}</span>
+              <span className="of">/ {scored.length} calls</span>
+              <span className="lbl">matched the evidence {prof.lblNote}</span>
+            </div>
+            <div className="profile">
+              <div className="pk">Your futures profile</div>
+              <div className="pv">{prof.name}</div>
+              <div className="pd">{prof.desc}</div>
+            </div>
+            <div className="res-actions">
+              <button className="btn next" onClick={() => setView("intro")}>Try another world →</button>
+              <button className="btn ghost" onClick={() => startRole(role)}>Re-run this one</button>
+              <a className="btn ghost" href="/social-composer?transmutate=https://futures-atlas-02.vercel.app/swipe-the-future">Make a shareable post →</a>
             </div>
           </div>
-        )}
-        <div className="res-actions">
-          <button className="btn next" onClick={() => setView("intro")}>Try another world →</button>
-          <button className="btn ghost" onClick={() => startRole(role)}>Re-run this one</button>
-          <a className="btn ghost" href="/social-composer?transmutate=https://futures-atlas-02.vercel.app/swipe-the-future">Make a shareable post →</a>
+          <div className="s-r">
+            {items.length > 0 ? (
+              <div className="misjudged">
+                <span className="eyebrow">Where you and the evidence parted ways</span>
+                <div>
+                  {items.map((it, k) => (
+                    <div className="mj" key={k}>
+                      <span className={`badge ${it.type}`}>{it.type === "under" ? "Already real" : "Ahead of evidence"}</span>
+                      <span className="txt"><b>{it.claim}</b> <span>{it.type === "under" ? "— you doubted something that's already happening." : "— you backed a claim the evidence doesn't yet support."}</span></span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="misjudged"><span className="eyebrow">Where you and the evidence parted ways</span><p className="mj-none">Nothing major — your calls tracked the evidence across the board.</p></div>
+            )}
+            <div className="foot">Each card links back to a real source · Futures Atlas</div>
+          </div>
         </div>
-        <div className="foot">Each card links back to a real source · Futures Atlas</div>
       </section>
     );
   }
@@ -195,9 +209,13 @@ export default function Calibration() {
 
   return (
     <section className="screen active">
-      <div className="deck-top"><span className="lens">{role.name}</span><span className="count">{pad(i + 1)} / {pad(role.cards.length)}</span></div>
-      <div className="progress"><i style={{ width: `${progressPct}%` }} /></div>
-
+      <div className="cols deck-cols">
+        <div className="s-l">
+          <div className="deck-top"><span className="lens">{role.name}</span><span className="count">{pad(i + 1)} / {pad(role.cards.length)}</span></div>
+          <div className="progress"><i style={{ width: `${progressPct}%` }} /></div>
+          <p className="deckhint">Drag the card, tap a button, or use ← / →. On the reveal, the gap between the two markers is the whole point.</p>
+        </div>
+        <div className="s-r">
       <div className="stage">
         {phase === "reveal" ? (
           <div className="card">
@@ -253,6 +271,8 @@ export default function Calibration() {
               <button className="btn no" onClick={() => decide(false)}>Doubt<span className="sub">won&apos;t / not true</span></button>
               <button className="btn yes" onClick={() => decide(true)}>Believe<span className="sub">likely / true</span></button>
             </>}
+      </div>
+        </div>
       </div>
     </section>
   );
