@@ -2,13 +2,19 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ROLES, VLABEL, isAligned, profileFor, type Card } from "../data/roles";
+import Stats from "./Stats";
 
 const ROUND = 10;
 const pad = (n: number) => String(n).padStart(2, "0");
 
 type Item = { card: Card; role: string };
 type Ans = { card: Card; role: string; believe: boolean };
-type Phase = "swipe" | "result" | "final";
+type Phase = "swipe" | "flinging" | "result" | "final";
+
+// fire-and-forget metrics
+function track(body: Record<string, unknown>) {
+  try { fetch("/api/swipe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {}); } catch { /* */ }
+}
 
 function shuffle<T>(a: T[]): T[] {
   const r = [...a];
@@ -29,6 +35,8 @@ export default function Calibration() {
   const [phase, setPhase] = useState<Phase>("swipe");
   const [secs, setSecs] = useState(5);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [fling, setFling] = useState<0 | 1 | -1>(0);
+  const [statsOpen, setStatsOpen] = useState(false);
 
   const reduce = useRef(false);
   const cardEl = useRef<HTMLDivElement | null>(null);
@@ -46,14 +54,32 @@ export default function Calibration() {
     if (locked.current || phase !== "swipe" || !item) return;
     locked.current = true;
     setAnswers((a) => [...a, { card: item.card, role: item.role, believe }]);
-    setPhase("result"); setSecs(5);
+    track({ cardId: item.card.id, category: item.role, verdict: item.card.verdict, believe });
+    setFling(believe ? 1 : -1);
+    setPhase(reduce.current ? "result" : "flinging"); // the card swipes/fades off, then the result
+    if (reduce.current) setSecs(5);
   }, [phase, item]);
 
+  // the card flings off + fades, then the verdict fades in
+  useEffect(() => {
+    if (phase !== "flinging") return;
+    const t = setTimeout(() => { setPhase("result"); setSecs(5); }, 320);
+    return () => clearTimeout(t);
+  }, [phase]);
+
   const advance = useCallback(() => {
-    locked.current = false;
-    if (pos + 1 >= deck.length) setPhase("final");
+    locked.current = false; setFling(0);
+    if (pos + 1 >= deck.length) { setPhase("final"); track({ round: true }); }
     else { setPos(pos + 1); setPhase("swipe"); }
   }, [pos, deck.length]);
+
+  // hidden stats dashboard — type "qwerty"
+  useEffect(() => {
+    let buf = "";
+    const onKey = (e: KeyboardEvent) => { if (e.key.length === 1) { buf = (buf + e.key.toLowerCase()).slice(-6); if (buf === "qwerty") setStatsOpen(true); } };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   // While the verdict shows: count seconds for the label, and let the ring's own
   // animationEnd drive the advance (so the loop always completes). A timeout is a
@@ -84,8 +110,9 @@ export default function Calibration() {
     const up = () => {
       if (!dragging || locked.current) return; dragging = false; el.style.transition = "";
       const commit = Math.abs(dx) > 95, believe = dx > 0;
-      el.style.transform = ""; if (yes) yes.style.opacity = "0"; if (no) no.style.opacity = "0"; dx = 0;
-      if (commit) decide(believe);
+      if (commit) { decide(believe); } // leave transform — React applies the fling-off style
+      else { el.style.transform = ""; if (yes) yes.style.opacity = "0"; if (no) no.style.opacity = "0"; }
+      dx = 0;
     };
     el.addEventListener("pointerdown", down);
     window.addEventListener("pointermove", move, { passive: false });
@@ -154,37 +181,38 @@ export default function Calibration() {
           </div>
         ) : (
           depths.map((d) => {
-            const it = deck[pos + d]!;
             const active = d === 0;
-            const showResult = active && phase === "result" && !!lastAns;
+            if (active && phase === "result" && lastAns) {
+              return (
+                <div key={`res-${pos}`} className="tcard is-result">
+                  <div className={`vo-big ${voClass}`}>{voBig}</div>
+                  <div className="vo-label">Evidence: {VLABEL[lastAns.card.verdict]}</div>
+                  <p className="vo-insight">{lastAns.card.note}</p>
+                  <div className="vo-src">{lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}</div>
+                  <button className="nextring" onClick={advance} aria-label="Next claim">
+                    <svg viewBox="0 0 72 72" aria-hidden="true">
+                      <circle className="ring-bg" cx="36" cy="36" r="32" pathLength={100} />
+                      <circle className="ring-fg" cx="36" cy="36" r="32" pathLength={100} onAnimationEnd={advance} />
+                    </svg>
+                    <span className="nr-label">Next</span>
+                  </button>
+                </div>
+              );
+            }
+            const it = deck[pos + d]!;
+            const flung = active && phase === "flinging";
+            const flingStyle = flung ? { transform: `translateX(${fling * 130}%) rotate(${fling * 18}deg)`, opacity: 0 } : undefined;
             return (
-              <div key={`${pos + d}-${it.card.id}`} ref={active && phase === "swipe" ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}${showResult ? " is-result" : ""}`}>
-                {showResult ? (
-                  <>
-                    <div className={`vo-big ${voClass}`}>{voBig}</div>
-                    <div className="vo-label">Evidence: {VLABEL[lastAns!.card.verdict]}</div>
-                    <p className="vo-insight">{lastAns!.card.note}</p>
-                    <div className="vo-src">{lastAns!.card.source.url ? <a href={lastAns!.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns!.card.source.label} ↗</a> : lastAns!.card.source.label}</div>
-                    <button className="nextring" onClick={advance} aria-label="Next claim">
-                      <svg viewBox="0 0 72 72" aria-hidden="true">
-                        <circle className="ring-bg" cx="36" cy="36" r="32" pathLength={100} />
-                        <circle className="ring-fg" cx="36" cy="36" r="32" pathLength={100} onAnimationEnd={advance} />
-                      </svg>
-                      <span className="nr-label">Next</span>
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="claim">{it.card.claim}</h3>
-                    {active && (
-                      <div className="card-actions">
-                        <span className="ca"><button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="Doubt — won't happen / not true">✕</button><span className="ca-lbl">Doubt</span></span>
-                        <span className="ca"><button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="Believe — likely / true">✓</button><span className="ca-lbl">Believe</span></span>
-                      </div>
-                    )}
-                    {active && <><span className="stamp no" aria-hidden="true">✕</span><span className="stamp yes" aria-hidden="true">✓</span></>}
-                  </>
+              <div key={`claim-${pos + d}-${it.card.id}`} ref={active && phase === "swipe" ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}${it.card.attribution ? " quote" : ""}`} style={flingStyle}>
+                {it.card.attribution && <span className="quote-mark" aria-hidden="true">&ldquo;</span>}
+                <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">— {it.card.attribution}</span></> : it.card.claim}</h3>
+                {active && phase === "swipe" && (
+                  <div className="card-actions">
+                    <span className="ca"><button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="Doubt — won't happen / not true">✕</button><span className="ca-lbl">Doubt</span></span>
+                    <span className="ca"><button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="Believe — likely / true">✓</button><span className="ca-lbl">Believe</span></span>
+                  </div>
                 )}
+                {active && (phase === "swipe" || flung) && <><span className="stamp no" aria-hidden="true" style={flung && fling < 0 ? { opacity: 1 } : undefined}>✕</span><span className="stamp yes" aria-hidden="true" style={flung && fling > 0 ? { opacity: 1 } : undefined}>✓</span></>}
               </div>
             );
           })
@@ -207,6 +235,7 @@ export default function Calibration() {
       <p className="deckhint">{phase === "result" ? `Auto-advancing in ${secs}s` : phase === "final" ? "Pick up where you left off, or zoom in on one world" : "Swipe the card · tap ✕ / ✓ · or use ← / →"}</p>
         </div>
       </div>
+      {statsOpen && <Stats onClose={() => setStatsOpen(false)} />}
     </section>
   );
 }

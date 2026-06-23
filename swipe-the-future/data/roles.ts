@@ -11,6 +11,7 @@ export interface Card {
   verdict: Verdict;
   note: string; // grounded reveal, ≤ ~30 words
   source: { label: string; url?: string };
+  attribution?: string; // present on "quote" cards — who said it (renders as a quote)
 }
 
 export interface Role {
