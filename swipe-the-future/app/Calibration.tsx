@@ -126,12 +126,16 @@ export default function Calibration() {
   for (let d = Math.min(2, behind); d >= 0; d--) depths.push(d);
 
   return (
-    <section className="screen active deck">
-      <div className="stf-head">
-        <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
-        <h1>Swipe the <em>future.</em></h1>
-        <p className="lede">Ten grounded claims about where AI and quantum take different lines of work. Swipe Believe or Doubt on each — then see how far your gut sat from where the evidence actually lands.</p>
-      </div>
+    <section className="stf-banner">
+      <div className="banner-inner">
+        <div className="bcol-l">
+          <div className="stf-head">
+            <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
+            <h1>Swipe the <em>future.</em></h1>
+            <p className="lede">Ten grounded claims about where AI and quantum take different lines of work. Swipe Believe or Doubt on each — then see how far your gut sat from where the evidence actually lands.</p>
+          </div>
+        </div>
+        <div className="bcol-r">
 
       <div className="deck-head">
         <div className="dots">{deck.map((_, k) => <span key={k} className={`dot${k < pos ? " done" : k === pos ? " cur" : ""}`} />)}</div>
@@ -188,6 +192,8 @@ export default function Calibration() {
       </div>
 
       <p className="deckhint">{phase === "result" ? `Auto-advancing in ${secs}s` : phase === "final" ? "Pick up where you left off, or zoom in on one world" : "Swipe the card · tap ✕ / ✓ · or use ← / →"}</p>
+        </div>
+      </div>
     </section>
   );
 }
