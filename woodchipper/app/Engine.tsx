@@ -16,8 +16,13 @@ const STAGE_PROMPT: Record<StageId, string> = {
 };
 const optionsFor = (s: StageId): Choice[] => (s === "approach" ? APPROACHES : s === "protect" ? PROTECTS : s === "backfill" ? BACKFILLS : HORIZONS);
 
-// tone → glow colour
-const TONE = { destroy: [192, 83, 58], reform: [47, 143, 127], mixed: [201, 162, 39], node: [120, 200, 255], dim: [90, 120, 170] } as const;
+// Brand: a single blue accent (≈ core --accent oklch(0.64 0.13 245)) on warm ink,
+// with paper highlights. No rainbow — the constellation is monochrome-accent; the
+// outcome number carries the weight. (Canvas needs literal rgb; these mirror tokens.)
+const ACCENT = [99, 142, 214] as const; // --accent (dark)
+const PAPER = [244, 239, 228] as const; // --paper
+const BAND = "#17140f"; // --band (dark)
+const TONE = { destroy: ACCENT, reform: ACCENT, mixed: ACCENT, node: ACCENT, dim: [140, 132, 118] } as const;
 
 export default function Engine() {
   const [choices, setChoices] = useState<Choices>({});
@@ -79,15 +84,15 @@ export default function Engine() {
       if (!t0) t0 = now; const time = (now - t0) / 1000;
       const st = stateRef.current;
       ctx.clearRect(0, 0, W, H);
-      ctx.fillStyle = "#05070d"; ctx.fillRect(0, 0, W, H);
-      // nebula
+      ctx.fillStyle = BAND; ctx.fillRect(0, 0, W, H);
+      // nebula — faint accent dust
       ctx.globalCompositeOperation = "lighter";
       for (const s of stars) {
         const x = ((s.x + time * 0.004 * s.sp) % 1) * W;
         const y = s.y * H + Math.sin(time * 0.3 + s.ph) * 6;
-        const a = 0.05 + 0.05 * (0.5 + 0.5 * Math.sin(time + s.ph));
+        const a = 0.04 + 0.04 * (0.5 + 0.5 * Math.sin(time + s.ph));
         const g = ctx.createRadialGradient(x, y, 0, x, y, s.r * 9);
-        g.addColorStop(0, `rgba(120,180,255,${a})`); g.addColorStop(1, "rgba(120,180,255,0)");
+        g.addColorStop(0, `rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},${a})`); g.addColorStop(1, `rgba(${ACCENT[0]},${ACCENT[1]},${ACCENT[2]},0)`);
         ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, s.r * 9, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalCompositeOperation = "source-over";
@@ -166,10 +171,10 @@ export default function Engine() {
         ctx.globalCompositeOperation = "source-over";
         ctx.beginPath(); ctx.arc(nd.x, nd.y, nd.r, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${nd.tone[0]},${nd.tone[1]},${nd.tone[2]},${0.9 * nd.bright})`; ctx.fill();
-        ctx.lineWidth = 1.5; ctx.strokeStyle = `rgba(240,246,255,${0.7 * nd.bright})`; ctx.stroke();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = `rgba(${PAPER[0]},${PAPER[1]},${PAPER[2]},${0.7 * nd.bright})`; ctx.stroke();
         // label
         ctx.font = "600 12px ui-sans-serif, system-ui, sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "top";
-        ctx.fillStyle = `rgba(232,240,255,${0.55 + 0.4 * nd.bright})`;
+        ctx.fillStyle = `rgba(${PAPER[0]},${PAPER[1]},${PAPER[2]},${0.55 + 0.4 * nd.bright})`;
         ctx.fillText(nd.label, nd.x, nd.y + nd.r + 6);
       };
       [...nodes, ...frontierNodes].forEach(drawNode);
