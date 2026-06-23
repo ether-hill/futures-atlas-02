@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, Hanken_Grotesk, Space_Mono } from "next/font/google";
 import "./globals.css";
 
-// Semantic type split (kept from the prototype): Instrument Serif = the human
-// claims, Hanken Grotesk = UI/body, Space Mono = the machine measurements.
-const serif = Instrument_Serif({ variable: "--ff-serif", subsets: ["latin"], weight: ["400"], style: ["normal", "italic"], display: "swap" });
-const sans = Hanken_Grotesk({ variable: "--ff-sans", subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap" });
-const mono = Space_Mono({ variable: "--ff-mono", subsets: ["latin"], weight: ["400", "700"], display: "swap" });
+// Type system matches the Atlas tool pages: system-ui sans + ui-monospace
+// (set in globals.css). No web fonts.
 
 const DESC = "Pick your line of work, swipe Believe or Doubt on six grounded claims about how AI and quantum reshape it, then see how far your gut sat from where the evidence actually lands. Every card cites a real source.";
 const IMG = "https://futures-atlas-02.vercel.app/projects/swipe-the-future.jpg";
@@ -26,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
+    <html lang="en">
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{if(localStorage.getItem('fa-theme')!=='light')document.documentElement.classList.add('dark');}catch(e){}})();` }} />

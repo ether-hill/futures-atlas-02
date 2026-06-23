@@ -19,9 +19,9 @@ const optionsFor = (s: StageId): Choice[] => (s === "approach" ? APPROACHES : s 
 // Brand: a single blue accent (≈ core --accent oklch(0.64 0.13 245)) on warm ink,
 // with paper highlights. No rainbow — the constellation is monochrome-accent; the
 // outcome number carries the weight. (Canvas needs literal rgb; these mirror tokens.)
-const ACCENT = [99, 142, 214] as const; // --accent (dark)
-const PAPER = [244, 239, 228] as const; // --paper
-const BAND = "#17140f"; // --band (dark)
+const ACCENT = [120, 170, 250] as const; // --accent (≈ oklch(0.7 0.16 245))
+const PAPER = [228, 234, 244] as const; // cool white label/stroke
+const BAND = "#05060c"; // canvas field, matches the other tool pages
 const TONE = { destroy: ACCENT, reform: ACCENT, mixed: ACCENT, node: ACCENT, dim: [140, 132, 118] } as const;
 
 export default function Engine() {

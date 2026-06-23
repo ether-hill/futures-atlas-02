@@ -1,29 +1,36 @@
 :root {
-  --ink: #0E1B19;          /* deep petrol base */
-  --ink-2: #152724;        /* raised panel */
-  --paper: #F1EBDE;        /* card paper */
-  --paper-edge: #E2D9C6;
-  --text: #1B1610;         /* ink on paper */
+  /* Aligned with the Atlas tool pages: cool neutral field, single blue accent,
+     system-ui sans + ui-monospace (no web fonts). The deck keeps its paper-card
+     identity; signal colours (doubt/already/contested) stay as functional data. */
+  --ff-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --ff-serif: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --accent: oklch(0.7 0.16 245);
+
+  --ink: oklch(0.15 0.012 265);  /* page field (neutral dark, was petrol) */
+  --ink-2: oklch(0.2 0.014 265); /* raised panel */
+  --paper: #F1EBDE;              /* card paper — the deck stays paper */
+  --paper-edge: #E6DFCE;
+  --text: #1B1610;               /* ink on paper */
   --muted: #6E6B5E;
   --paper-muted: #8C8576;
-  --verdigris: #2F8F7F;    /* likely / believe */
-  --oxblood: #A23E2C;      /* unlikely / doubt */
-  --brass: #C9A227;        /* already-real */
-  --slate: #7C8B86;        /* contested */
-  --line: rgba(241, 235, 222, .16);
+  --verdigris: var(--accent);    /* likely / believe → the brand accent */
+  --oxblood: #A23E2C;            /* unlikely / doubt (functional signal) */
+  --brass: #C9A227;              /* already-real (functional signal) */
+  --slate: #7C8B86;              /* contested */
+  --line: oklch(0.31 0.016 265 / 0.85);
   --shadow: 0 24px 60px -24px rgba(0, 0, 0, .7);
   --fa-nav-h: 64px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { min-height: 100%; }
 body {
-  background: radial-gradient(120% 70% at 50% -5%, #16332e 0%, var(--ink) 48%, #0a1413 100%);
-  background-attachment: fixed;
-  color: var(--paper);
-  font-family: var(--ff-sans), "Hanken Grotesk", system-ui, sans-serif;
+  background: var(--ink);
+  color: #e8eaf0;
+  font-family: var(--ff-sans);
   -webkit-font-smoothing: antialiased;
 }
-a { color: var(--verdigris); }
+a { color: var(--accent); }
 
 /* ── tool column ─────────────────────────────────────────────────────────── */
 .stf-tool { width: 100%; display: flex; justify-content: center; padding: calc(var(--fa-nav-h) + 18px) 0 16px; }
