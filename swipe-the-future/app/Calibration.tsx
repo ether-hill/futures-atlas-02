@@ -28,6 +28,7 @@ export default function Calibration() {
   const [answers, setAnswers] = useState<Ans[]>([]);
   const [phase, setPhase] = useState<Phase>("swipe");
   const [secs, setSecs] = useState(5);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const reduce = useRef(false);
   const cardEl = useRef<HTMLDivElement | null>(null);
@@ -39,7 +40,7 @@ export default function Calibration() {
   const item = deck[pos];
   const lastAns = answers[answers.length - 1];
 
-  const startDeck = (roleId?: string) => { setDeck(buildDeck(roleId)); setPos(0); setAnswers([]); setPhase("swipe"); locked.current = false; };
+  const startDeck = (roleId?: string) => { setDeck(buildDeck(roleId)); setPos(0); setAnswers([]); setPhase("swipe"); setMenuOpen(false); locked.current = false; };
 
   const decide = useCallback((believe: boolean) => {
     if (locked.current || phase !== "swipe" || !item) return;
@@ -128,7 +129,7 @@ export default function Calibration() {
           <div className="stf-head">
             <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
             <h1>Swipe the <em>future.</em></h1>
-            <p className="lede">Ten grounded claims about where AI and quantum take different lines of work. Swipe Believe or Doubt on each — then see how far your gut sat from where the evidence actually lands.</p>
+            <p className="lede">It&apos;s 2026, and AI and quantum computing are rewriting what work looks like — fast, and unevenly. Every card here is a real claim about where things <em>actually</em> stand for a given line of work: each one fact-checked and linked to its source — no hype, no doom. Swipe Believe or Doubt on ten of them, then see how far your gut sat from the evidence, and which categories you read best.</p>
           </div>
         </div>
         <div className="bcol-r">
@@ -148,10 +149,7 @@ export default function Calibration() {
             <p className="pdesc">{prof.desc}</p>
             <div className="final-actions">
               <button className="card-cta" onClick={() => startDeck()}>Keep going — 10 more →</button>
-              <select className="vantage-sel" defaultValue="" onChange={(e) => { if (e.target.value) startDeck(e.target.value); }} aria-label="Focus a vantage point">
-                <option value="" disabled>Focus a vantage point…</option>
-                {ROLES.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
-              </select>
+              <button className="card-cta ghost" onClick={() => setMenuOpen(true)}>Explore a category →</button>
             </div>
           </div>
         ) : (
@@ -180,8 +178,8 @@ export default function Calibration() {
                     <h3 className="claim">{it.card.claim}</h3>
                     {active && (
                       <div className="card-actions">
-                        <button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="Doubt — won't happen / not true">✕</button>
-                        <button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="Believe — likely / true">✓</button>
+                        <span className="ca"><button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="Doubt — won't happen / not true">✕</button><span className="ca-lbl">Doubt</span></span>
+                        <span className="ca"><button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="Believe — likely / true">✓</button><span className="ca-lbl">Believe</span></span>
                       </div>
                     )}
                     {active && <><span className="stamp no" aria-hidden="true">✕</span><span className="stamp yes" aria-hidden="true">✓</span></>}
@@ -190,6 +188,19 @@ export default function Calibration() {
               </div>
             );
           })
+        )}
+        {phase === "final" && menuOpen && (
+          <div className="cat-menu">
+            <div className="cat-menu-head"><span>Explore a category</span><button className="cat-close" onClick={() => setMenuOpen(false)} aria-label="Close">✕</button></div>
+            <div className="cat-list">
+              {ROLES.map((r) => (
+                <button key={r.id} className="cat-item" onClick={() => startDeck(r.id)}>
+                  <span className="cat-name">{r.name}</span>
+                  <span className="cat-blurb">{r.blurb}</span>
+                </button>
+              ))}
+            </div>
+          </div>
         )}
       </div>
 
