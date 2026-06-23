@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <base href="/underground-intelligence/">
 <title>Underground Intelligence</title>
-<meta name="description" content="An investigation into the unseen systems beneath everyday life, built on a traceable evidence base where every claim links back to its source." />
+<meta name="description" content="Two 2025 discoveries, fungal mapping and quantum sensing, converge into a near future where the largest living network on Earth becomes legible." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Futures Atlas" />
-<meta property="og:title" content="Underground Intelligence — Futures Atlas" />
+<meta property="og:title" content="What if the underground began to speak?" />
 <meta property="og:description" content="An investigation into the unseen systems beneath everyday life, built on a traceable evidence base where every claim links back to its source." />
 <meta property="og:image" content="/projects/underground-intelligence.jpg" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -1211,6 +1211,97 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 #nav .nav-logo{display:none}
 #fa-switch-menu{display:none}
 #fa-switch-menu.fa-open{display:flex}
+
+/* ── HOME · front door (convergence) ──────────────────────────────────────── */
+#tab-home { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+.home-wrap {
+  width: 100%; max-width: 880px; margin: 0 auto; min-height: 100%;
+  display: flex; flex-direction: column; position: relative; z-index: 1;
+  padding: clamp(22px, 4vh, 52px) clamp(20px, 5vw, 40px) clamp(18px, 3vh, 34px);
+}
+/* radial-glow background — placeholder for the signature canvas (green = SPUN,
+   cyan = quantum); the two threads sit at opposite corners and bleed inward */
+.home-glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.home-glow::before, .home-glow::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.45; }
+.home-glow::before { width: 62vmax; height: 62vmax; left: -22vmax; bottom: -26vmax;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ui-accent) 24%, transparent), transparent 70%); }
+.home-glow::after { width: 56vmax; height: 56vmax; right: -20vmax; top: -24vmax;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ui-cyan) 22%, transparent), transparent 70%); }
+
+.home-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  padding-bottom: clamp(22px, 5vh, 50px); }
+.home-top__brand { color: var(--ui-accent); }
+.home-top__aff { color: var(--muted); }
+
+.home-center { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.home-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(14px, 3vw, 28px);
+  max-width: 760px; width: 100%; margin: 0 auto; }
+.home-pillar { display: flex; flex-direction: column; }
+.home-pillar__thumb { position: relative; aspect-ratio: 4 / 3; border-radius: 6px 6px 0 0;
+  overflow: hidden; border: 1px solid var(--border2); border-bottom: none; background: var(--surface); }
+.home-pillar__thumb img { position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block; color: transparent; font-size: 9px; }
+.home-pillar__cap { border: 1px solid var(--border2); border-top: none; border-radius: 0 0 6px 6px;
+  padding: 13px 15px 14px; background: color-mix(in srgb, var(--surface) 70%, transparent); }
+.home-pillar__year { font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.14em; margin-bottom: 6px; }
+.home-pillar__text { font-family: var(--font-serif); font-size: clamp(14px, 1.7vw, 15px);
+  line-height: 1.45; color: var(--text-body); margin: 0; }
+.home-pillar__credit { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--faint); margin-top: 9px; }
+.home-pillar--spun .home-pillar__year { color: var(--ui-accent); }
+.home-pillar--spun .home-pillar__thumb { border-color: color-mix(in srgb, var(--ui-accent) 38%, var(--border2)); }
+.home-pillar--quantum .home-pillar__year { color: var(--ui-cyan); }
+.home-pillar--quantum .home-pillar__thumb { border-color: color-mix(in srgb, var(--ui-cyan) 38%, var(--border2)); }
+
+.home-arrow { text-align: center; color: var(--muted); font-size: 24px; line-height: 1;
+  margin: clamp(16px, 3vh, 26px) 0; }
+
+.home-headline { font-family: var(--font-serif); font-weight: 500; text-align: center;
+  font-size: clamp(30px, 6vw, 46px); line-height: 1.08; letter-spacing: -0.01em;
+  color: var(--text); max-width: 15ch; margin: 0 auto; }
+.home-sub { font-family: var(--font-heading); text-align: center; color: var(--text-body);
+  font-size: clamp(14px, 2.4vw, 16px); line-height: 1.6; max-width: 520px; margin: 18px auto 0; }
+
+.home-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  margin: clamp(22px, 4vh, 34px) auto 0; }
+.home-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; padding: 13px 22px; min-height: 44px; border-radius: 4px;
+  cursor: pointer; text-decoration: none; transition: all 0.2s ease;
+  border: 1px solid var(--border2); background: none; color: var(--text); }
+.home-cta--primary { background: var(--ui-accent); border-color: var(--ui-accent); color: #0e1400; }
+.home-cta--primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
+.home-cta--ghost:hover { border-color: var(--ui-cyan); color: var(--ui-cyan); }
+.home-cta:focus-visible { outline: 2px solid var(--ui-cyan); outline-offset: 2px; }
+
+.home-foot { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--faint); padding-top: clamp(22px, 5vh, 46px); }
+
+/* calm entrance on load — pillars, arrow, headline resolve in sequence */
+.home-anim { opacity: 0; transform: translateY(14px); }
+#tab-home.active .home-anim { animation: homeRise 0.7s cubic-bezier(0.22,1,0.36,1) both; }
+#tab-home.active .home-anim.d1 { animation-delay: 0.06s; }
+#tab-home.active .home-anim.d2 { animation-delay: 0.12s; }
+#tab-home.active .home-anim.d3 { animation-delay: 0.20s; }
+#tab-home.active .home-anim.d4 { animation-delay: 0.28s; }
+#tab-home.active .home-anim.d5 { animation-delay: 0.36s; }
+@keyframes homeRise { to { opacity: 1; transform: none; } }
+
+@media (max-width: 600px) {
+  .home-pillars { grid-template-columns: 1fr; gap: 16px; }
+  .home-ctas { flex-direction: column; }
+  .home-cta { width: 100%; }
+  .home-top { flex-direction: column; gap: 4px; }
+  .home-foot { gap: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-anim { opacity: 1 !important; transform: none !important; animation: none !important; }
+}
+.zone-jump--left { left: 20px; right: auto; }
+@media (max-width: 720px) { .zone-jump--left { left: 12px; } }
 </style>
 <link rel="stylesheet" href="/atlas-nav.css">
 <style id="fa-nav-unify">
@@ -1262,11 +1353,65 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   </div>
 </nav>
 
+<!-- ── HOME · front door ───────────────────────────────────────────────────── -->
+<div id="tab-home" class="tab-panel active">
+  <div class="home-glow" aria-hidden="true"></div>
+  <div class="home-wrap">
+
+    <div class="home-top home-anim">
+      <span class="home-top__brand">Underground Intelligence</span>
+      <span class="home-top__aff">TU Delft &middot; CQS</span>
+    </div>
+
+    <div class="home-center">
+      <div class="home-pillars">
+        <div class="home-pillar home-pillar--spun home-anim d1">
+          <div class="home-pillar__thumb">
+            <img src="research/underground-atlas.jpg" alt="SPUN's Underground Atlas: a global map of mycorrhizal fungal richness" loading="eager">
+          </div>
+          <div class="home-pillar__cap">
+            <div class="home-pillar__year">2025</div>
+            <p class="home-pillar__text">SPUN mapped the mycorrhizal networks beneath the planet for the first time.</p>
+            <div class="home-pillar__credit">Image &middot; SPUN</div>
+          </div>
+        </div>
+        <div class="home-pillar home-pillar--quantum home-anim d2">
+          <div class="home-pillar__thumb">
+            <img src="research/q-qutech.jpg" alt="QuTech researchers in the lab with a 3D model of diamond spins, a quantum magnetic sensor" loading="eager">
+          </div>
+          <div class="home-pillar__cap">
+            <div class="home-pillar__year">2024&ndash;2025</div>
+            <p class="home-pillar__text">Quantum sensing matured from the lab to the field, precise enough to read the living earth.</p>
+            <div class="home-pillar__credit">Image &middot; Ernst de Groot / QuTech</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="home-arrow home-anim d3" aria-hidden="true">&#8595;</div>
+
+      <h1 class="home-headline home-anim d3">What if the underground began to speak?</h1>
+      <p class="home-sub home-anim d4">Two discoveries, one buried, one quantum, are about to converge. Underground Intelligence imagines the moment the largest living network on Earth becomes something we can finally listen to.</p>
+
+      <div class="home-ctas home-anim d4">
+        <button type="button" class="home-cta home-cta--primary" onclick="switchTab('story')">Enter the story <span aria-hidden="true">&#8594;</span></button>
+        <button type="button" class="home-cta home-cta--ghost" onclick="switchTab('dashboard')">Explore the map</button>
+      </div>
+    </div>
+
+    <div class="home-foot home-anim d5">
+      <span>SPUN Underground Atlas &middot; Nature 2025</span>
+      <span>MycoSense &middot; QSN &middot; Speculative</span>
+    </div>
+
+  </div>
+</div>
+
 <!-- ── DASHBOARD ──────────────────────────────────────────────────────────── -->
 <div id="tab-dashboard" class="tab-panel">
 
   <!-- Floating cross-nav, top-left (replaces the retired slim nav + right panel) -->
   <div class="dash-jump" aria-label="Go to">
+    <button type="button" class="zone-jump__link" onclick="switchTab('home')"><span aria-hidden="true">&#8592;</span> Home</button>
     <button type="button" class="zone-jump__link" onclick="switchTab('story')">The Story <span aria-hidden="true">&#8594;</span></button>
     <button type="button" class="zone-jump__link" onclick="switchTab('research')">Research <span aria-hidden="true">&#8594;</span></button>
   </div>
@@ -1405,7 +1550,12 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 </div>
 
 <!-- ── STORY ───────────────────────────────────────────────────────────────── -->
-<div id="tab-story" class="tab-panel active">
+<div id="tab-story" class="tab-panel">
+
+  <!-- Return to the front door -->
+  <div class="zone-jump zone-jump--left" aria-label="Go to">
+    <button type="button" class="zone-jump__link" onclick="switchTab('home')"><span aria-hidden="true">&#8592;</span> Home</button>
+  </div>
 
   <!-- Floating "skip the story" — replaces the slim nav; auto-hides on the final chapter -->
   <button type="button" class="story-skip" id="story-skip" onclick="switchTab('dashboard')">
@@ -1490,7 +1640,8 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 <div id="tab-research" class="tab-panel" style="flex-direction:column;overflow-y:auto">
   <!-- Floating cross-nav (replaces the slim nav) -->
   <div class="zone-jump" aria-label="Go to">
-    <button type="button" class="zone-jump__link" onclick="switchTab('story')"><span aria-hidden="true">&#8592;</span> Story</button>
+    <button type="button" class="zone-jump__link" onclick="switchTab('home')"><span aria-hidden="true">&#8592;</span> Home</button>
+    <button type="button" class="zone-jump__link" onclick="switchTab('story')">Story</button>
     <button type="button" class="zone-jump__link" onclick="switchTab('dashboard')">Dashboard</button>
   </div>
   <div class="research-header">
@@ -2621,8 +2772,8 @@ function closeModal() {
 
 /* ── TAB SWITCHING ───────────────────────────────────────────────────────── */
 function switchTab(id, pushHistory = true) {
-  const valid = ['story','dashboard','research'];
-  if (!valid.includes(id)) id = 'story';
+  const valid = ['home','story','dashboard','research'];
+  if (!valid.includes(id)) id = 'home';
   // Dashboard: stays display:flex always — toggle visibility
   const dash = document.getElementById('tab-dashboard');
   if (id === 'dashboard') {
@@ -2632,8 +2783,8 @@ function switchTab(id, pushHistory = true) {
   } else {
     dash.classList.remove('active');
   }
-  // Story + research: standard display toggle
-  ['story','research'].forEach(t => {
+  // Home + story + research: standard display toggle
+  ['home','story','research'].forEach(t => {
     const el = document.getElementById(`tab-${t}`);
     if (!el) return;
     el.classList.toggle('active', t === id);
@@ -2643,14 +2794,14 @@ function switchTab(id, pushHistory = true) {
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
   if (typeof setAnimTab === 'function') setAnimTab(id); // pause/resume canvas animations for this tab
   if (id === 'story' && !storyMap2) setTimeout(initStoryMaps, 100);
-  if (pushHistory) history.pushState({ tab: id }, '', BASE_PATH + '/' + id);
+  if (pushHistory) history.pushState({ tab: id }, '', id === 'home' ? BASE_PATH : BASE_PATH + '/' + id);
 }
 
 document.querySelectorAll('.nav-tab').forEach(b => {
   b.addEventListener('click', () => switchTab(b.dataset.tab));
 });
 window.addEventListener('popstate', e => {
-  switchTab(e.state?.tab || 'story', false);
+  switchTab(e.state?.tab || 'home', false);
 });
 
 let _resizeRaf;
@@ -2696,10 +2847,11 @@ updateDiscoveries(2025);
 
 // Route to the correct tab based on URL path (base-path aware for the zone deployment)
 const _rel = window.location.pathname.replace(BASE_PATH, '').replace(/^\//, '');
-const _pathTab = ['story','dashboard','research'].find(t => _rel === t) || 'story';
+// Base path → home (front door); known sub-path → that view; anything else → home
+const _pathTab = _rel === '' ? 'home' : (['story','dashboard','research'].find(t => _rel === t) || 'home');
 switchTab(_pathTab, false);
 // Replace initial state so back-button can return here
-history.replaceState({ tab: _pathTab }, '', BASE_PATH + '/' + _pathTab);
+history.replaceState({ tab: _pathTab }, '', _pathTab === 'home' ? BASE_PATH : BASE_PATH + '/' + _pathTab);
 
 // Story skip link: hide it once the final chapter is in view (nothing left to skip)
 (function () {
