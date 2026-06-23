@@ -28,6 +28,14 @@
   </head>
   <body>
     <div id="app"></div>
+    <!-- Server-rendered overview for crawlers + the Social Composer transmutate
+         importer (the app is client-rendered). Hidden from users. -->
+    <section hidden data-fa-seed>
+      <h2>Literal Frequency — reading books as data</h2>
+      <p>Literal Frequency builds data visualisations live from the Source Library, the open-access archive of digitised, translated books. It loads a book over the API and reads its word frequency.</p>
+      <p>The same vocabulary is shown four ways: a typographic word cloud, an animated glowing word nebula, a packed bubble field, and a ranked bar chart.</p>
+      <p>Every view links back to its source text on sourcelibrary.org. Switch books, choose the translation or the original OCR, and set how many pages to analyse to explore the collection.</p>
+    </section>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

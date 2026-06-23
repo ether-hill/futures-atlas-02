@@ -28,6 +28,16 @@
   </head>
   <body>
     <div id="app"></div>
+    <!-- Server-rendered project overview: the app (which replaces #app on boot)
+         is client-rendered, so this gives crawlers + the Social Composer's
+         transmutate importer real page content to pull. Hidden from users. -->
+    <section hidden data-fa-seed>
+      <h2>Generatives — a generative-visual lab</h2>
+      <p>Generatives is a live lab of animated, embeddable visual treatments for the visual language of a quantum-computing futures project. Flow fields, layered noise, wave interference, agent systems, slime-mould networks and reaction-diffusion all run in real time in the browser.</p>
+      <p>Every treatment is tunable: shape it with its own parameters plus the universal complexity and chaos knobs, recolour it with the background, low and high colour pickers, then reseed or randomise for endless variations.</p>
+      <p>Any treatment can be lifted out as a self-contained, copy-paste embed and dropped into a banner, hero section or web page, or exported as an MP4 at any size.</p>
+      <p>The gallery includes Domain Warp, Plasma Flow, Voronoi Cells, Wave Interference, Physarum (the Jones agent model), Boids, Field Dynamics, Organic Turbulence and Reaction Diffusion.</p>
+    </section>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

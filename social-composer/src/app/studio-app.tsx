@@ -98,13 +98,25 @@ function framesFromTransmute(d: TransmuteData, base: string): ComposerFrame[] {
   const seen = new Set<string>();
   const key = (s: string) => s.trim().toLowerCase();
 
-  if (d.title) { frames.push({ id: nid(), kind: "summary", label: "Headline", headline: d.title, sub: d.description || site, thumbUrls: thumbs }); seen.add(key(d.title)); }
+  // 1) Open Graph slide FIRST — the page's primary image (og:image leads the
+  //    images array) carrying the og title + description. Falls back to a text
+  //    headline card if the page has no image.
+  if (d.title) seen.add(key(d.title));
+  if (imgs.length) {
+    frames.push({ id: nid(), kind: "gallery", label: "Open Graph", headline: d.title || site, sub: d.description || site, imageUrl: imgs[0].src });
+  } else if (d.title) {
+    frames.push({ id: nid(), kind: "summary", label: "Headline", headline: d.title, sub: d.description || site, thumbUrls: thumbs });
+  }
+  // The og description as its own editable overview card (if it's substantial).
+  if (d.description && d.description.length > 40) { seen.add(key(d.description)); frames.push({ id: nid(), kind: "summary", label: "Summary", headline: cap(d.description, 600), sub: site, thumbUrls: thumbs }); }
+
+  // 2) Then the rest of the page's content — remaining images, videos, sections,
+  //    quotes and overviews.
   for (const v of vids.slice(0, 40)) { const t = v.title || d.title || site; seen.add(key(t)); frames.push({ id: nid(), kind: "video", label: "Video", headline: t, sub: site, videoUrl: v.src, posterUrl: v.poster || undefined }); }
-  for (const im of imgs.slice(0, 24)) { const t = im.title || d.title || site; seen.add(key(t)); frames.push({ id: nid(), kind: "gallery", label: "Image", headline: t, sub: im.alt || site, imageUrl: im.src }); }
-  // Page text: section/item headings the media didn't already cover → text cards.
-  for (const hd of (d.headings ?? []).slice(0, 16)) { if (seen.has(key(hd))) continue; seen.add(key(hd)); frames.push({ id: nid(), kind: "summary", label: "Section", headline: cap(hd, 280), sub: site, thumbUrls: [] }); }
-  for (const q of (d.quotes ?? []).slice(0, 8)) frames.push({ id: nid(), kind: "quote", label: "Quote", headline: cap(q, 480), sub: site, thumbUrls: imgs.slice(0, 4).map((x) => x.src) });
-  for (const para of (d.paragraphs ?? []).slice(0, 8)) frames.push({ id: nid(), kind: "summary", label: "Overview", headline: cap(para, 600), sub: site, thumbUrls: [] });
+  for (const im of imgs.slice(1, 30)) { const t = im.title || d.title || site; seen.add(key(t)); frames.push({ id: nid(), kind: "gallery", label: "Image", headline: t, sub: im.alt || site, imageUrl: im.src }); }
+  for (const hd of (d.headings ?? []).slice(0, 20)) { if (seen.has(key(hd))) continue; seen.add(key(hd)); frames.push({ id: nid(), kind: "summary", label: "Section", headline: cap(hd, 280), sub: site, thumbUrls: [] }); }
+  for (const q of (d.quotes ?? []).slice(0, 10)) frames.push({ id: nid(), kind: "quote", label: "Quote", headline: cap(q, 480), sub: site, thumbUrls: imgs.slice(0, 4).map((x) => x.src) });
+  for (const para of (d.paragraphs ?? []).slice(0, 12)) { if (seen.has(key(para))) continue; seen.add(key(para)); frames.push({ id: nid(), kind: "summary", label: "Overview", headline: cap(para, 600), sub: site, thumbUrls: [] }); }
   const refs = d.references ?? [];
   if (refs.length) frames.push({ id: nid(), kind: "summary", label: "References", headline: cap(refs.map((r) => r.text).join("  ·  "), 640), sub: `References · ${site}`, thumbUrls: [] });
   return frames;
