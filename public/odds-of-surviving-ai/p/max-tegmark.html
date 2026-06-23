@@ -62,6 +62,9 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 .od-roll{transition:transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, letter-spacing .22s ease, background .22s ease}
 .od-roll:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 16px 36px rgba(0,0,0,0.45), 0 0 0 4px rgba(251,239,255,0.16);letter-spacing:0.2em;background:#fff}
 .od-roll:active{transform:translateY(-1px) scale(0.99)}
+.od-charge-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#E0481B;z-index:0;pointer-events:none}
+.od-charge.is-charging{transform:translateY(-2px) scale(1.03);box-shadow:0 16px 38px rgba(224,72,27,0.5)}
+.od-charge.is-charging span{color:#fff!important}
 .od-pill{transition:transform .2s cubic-bezier(.2,.7,.2,1), border-color .25s ease}
 .od-pill:hover{transform:translateY(-2px);border-color:#E0481B}
 .od-pill:hover .od-caret{transform:translateY(2px)}
@@ -229,21 +232,21 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
     <button onClick="{{ toggleMute }}" class="od-anim od-link" style="animation-delay:.4s;position:absolute;top:18px;right:22px;border:none;background:transparent;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;color:rgba(251,239,255,0.5)">{{ muteLabel }}</button>
 
     <!-- MECHANIC STAGE -->
-    <div class="od-anim" style="animation-delay:.46s;position:relative;width:100%;height:clamp(360px,54vh,560px);display:flex;align-items:center;justify-content:center">
+    <div class="od-anim" style="animation-delay:.46s;position:relative;width:100%;height:clamp(440px,66vh,760px);display:flex;align-items:center;justify-content:center">
 
       <sc-if value="{{ isDie }}">
         <x-import component-from-global-scope="dario-die" from="./dario-die.js" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" style="width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
       </sc-if>
 
       <sc-if value="{{ isWheel }}">
-        <div class="od-pop" style="position:relative;width:312px;height:312px;display:flex;align-items:center;justify-content:center">
-          <div style="position:absolute;top:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:25px solid #FBEFFF;z-index:4;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.5))"></div>
-          <div style="position:absolute;inset:0;border-radius:50%;border:6px solid #11050f;box-shadow:0 16px 44px rgba(0,0,0,0.5);transform:rotate({{ wheelRot }}deg);background:{{ wheelGradient }}">
+        <div class="od-pop" style="position:relative;width:390px;height:390px;max-width:78vw;max-height:78vw;display:flex;align-items:center;justify-content:center">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:31px solid #FBEFFF;z-index:4;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.5))"></div>
+          <div style="position:absolute;inset:0;border-radius:50%;border:7px solid #11050f;box-shadow:0 16px 44px rgba(0,0,0,0.5);transform:rotate({{ wheelRot }}deg);background:{{ wheelGradient }}">
             <sc-for list="{{ wheelTicks }}" as="tk" hint-placeholder-count="5">
-              <div style="position:absolute;left:50%;top:50%;width:2px;height:152px;transform-origin:top center;transform:translate(-50%,0) rotate({{ tk.deg }}deg);background:rgba(255,255,255,0.45)"></div>
+              <div style="position:absolute;left:50%;top:50%;width:2px;height:190px;transform-origin:top center;transform:translate(-50%,0) rotate({{ tk.deg }}deg);background:rgba(255,255,255,0.45)"></div>
             </sc-for>
           </div>
-          <div style="position:absolute;left:50%;top:50%;width:132px;height:132px;border-radius:50%;transform:translate(-50%,-50%);overflow:hidden;z-index:3;box-shadow:{{ earthShadow }};filter:{{ earthFilter }}">
+          <div style="position:absolute;left:50%;top:50%;width:165px;height:165px;border-radius:50%;transform:translate(-50%,-50%);overflow:hidden;z-index:3;box-shadow:{{ earthShadow }};filter:{{ earthFilter }}">
             <div style="position:absolute;inset:0;background:{{ earthBg }}"></div>
             <div style="position:absolute;inset:0;background:radial-gradient(circle at 34% 30%,rgba(255,255,255,0.4),rgba(255,255,255,0) 42%)"></div>
             <sc-if value="{{ earthBurn }}">
@@ -261,14 +264,14 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
       </sc-if>
 
       <sc-if value="{{ isCards }}">
-        <div style="position:relative;width:100%;height:344px;display:flex;align-items:center;justify-content:center;perspective:1500px">
+        <div style="position:relative;width:100%;height:430px;display:flex;align-items:center;justify-content:center;perspective:1700px">
           <sc-if value="{{ showFan }}">
-            <div style="position:relative;width:100%;height:330px">
+            <div style="position:relative;width:100%;height:412px">
               <sc-for list="{{ fanCards }}" as="c" hint-placeholder-count="12">
-                <button onClick="{{ c.pick }}" class="od-fan" style="position:absolute;bottom:70px;left:50%;width:122px;height:178px;margin-left:-61px;transform-origin:50% 132%;--deg:{{ c.deg }}deg;transform:rotate({{ c.deg }}deg);animation:odFanIn .55s cubic-bezier(.2,.7,.2,1) both;animation-delay:{{ c.delay }}s;border:none;background:transparent;padding:0;z-index:{{ c.z }}">
-                  <div class="od-card-face" style="width:100%;height:100%;border-radius:11px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;box-shadow:0 8px 18px rgba(0,0,0,0.45)">
-                    <div style="position:absolute;inset:11px;border:1px solid rgba(255,210,63,0.7);border-radius:7px;display:flex;align-items:center;justify-content:center;opacity:0.7">
-                      <div style="width:25px;height:25px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
+                <button onClick="{{ c.pick }}" class="od-fan" style="position:absolute;bottom:88px;left:50%;width:152px;height:222px;margin-left:-76px;transform-origin:50% 132%;--deg:{{ c.deg }}deg;transform:rotate({{ c.deg }}deg);animation:odFanIn .55s cubic-bezier(.2,.7,.2,1) both;animation-delay:{{ c.delay }}s;border:none;background:transparent;padding:0;z-index:{{ c.z }}">
+                  <div class="od-card-face" style="width:100%;height:100%;border-radius:13px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;box-shadow:0 8px 18px rgba(0,0,0,0.45)">
+                    <div style="position:absolute;inset:14px;border:1px solid rgba(255,210,63,0.7);border-radius:8px;display:flex;align-items:center;justify-content:center;opacity:0.7">
+                      <div style="width:31px;height:31px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
                     </div>
                   </div>
                 </button>
@@ -276,19 +279,19 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
             </div>
           </sc-if>
           <sc-if value="{{ drawn }}">
-            <div style="position:absolute;top:50%;left:50%;width:224px;height:316px;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateY({{ cardFlip }}deg)">
-              <div style="position:absolute;inset:0;border-radius:15px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;backface-visibility:hidden;display:flex;align-items:center;justify-content:center">
-                <div style="width:38px;height:38px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
+            <div style="position:absolute;top:50%;left:50%;width:280px;height:395px;transform-style:preserve-3d;transform:translate(-50%,-50%) rotateY({{ cardFlip }}deg)">
+              <div style="position:absolute;inset:0;border-radius:18px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;backface-visibility:hidden;display:flex;align-items:center;justify-content:center">
+                <div style="width:47px;height:47px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
               </div>
-              <div style="position:absolute;inset:0;border-radius:15px;background:{{ cardFrontBg }};border:1px solid {{ cardFrontAccent }};backface-visibility:hidden;transform:rotateY(180deg);padding:18px 17px;display:flex;flex-direction:column;justify-content:space-between;text-align:left">
+              <div style="position:absolute;inset:0;border-radius:18px;background:{{ cardFrontBg }};border:1px solid {{ cardFrontAccent }};backface-visibility:hidden;transform:rotateY(180deg);padding:22px 21px;display:flex;flex-direction:column;justify-content:space-between;text-align:left">
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-                  <span style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.1em;color:rgba(255,255,255,0.5)">{{ drawnCard.num }} / 12</span>
-                  <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;color:{{ cardFrontAccent }};border:1px solid {{ cardFrontAccent }};border-radius:999px;padding:3px 10px;white-space:nowrap">{{ drawnCard.kindLabel }}</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:13px;letter-spacing:0.1em;color:rgba(255,255,255,0.5)">{{ drawnCard.num }} / 12</span>
+                  <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:{{ cardFrontAccent }};border:1px solid {{ cardFrontAccent }};border-radius:999px;padding:4px 12px;white-space:nowrap">{{ drawnCard.kindLabel }}</span>
                 </div>
                 <div style="flex:1;display:flex;align-items:center;justify-content:center">
-                  <div style="width:58px;height:58px;border:1.5px solid {{ cardFrontAccent }};transform:rotate(45deg);display:flex;align-items:center;justify-content:center"><div style="width:24px;height:24px;border:1.5px solid {{ cardFrontAccent }}"></div></div>
+                  <div style="width:72px;height:72px;border:1.5px solid {{ cardFrontAccent }};transform:rotate(45deg);display:flex;align-items:center;justify-content:center"><div style="width:30px;height:30px;border:1.5px solid {{ cardFrontAccent }}"></div></div>
                 </div>
-                <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:30px;line-height:1.02;color:#FBEFFF">{{ drawnCard.name }}</div>
+                <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:36px;line-height:1.02;color:#FBEFFF">{{ drawnCard.name }}</div>
               </div>
             </div>
           </sc-if>
@@ -325,7 +328,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
     <!-- ACTION / RESULT (fixed height — reserved so the result never bumps the stage) -->
     <div style="width:100%;height:178px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:13px;padding-top:4px">
       <sc-if value="{{ showRollButton }}">
-        <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll" style="animation-delay:.68s;padding:16px 58px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;letter-spacing:0.14em;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}">{{ actLabel }}</button>
+        <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll od-charge" style="animation-delay:.68s;position:relative;overflow:hidden;isolation:isolate;padding:16px 58px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;letter-spacing:0.14em;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ actLabel }}</span></button>
+        <div class="od-anim" style="animation-delay:.72s;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;color:rgba(251,239,255,0.5)">{{ chargeHint }}</div>
       </sc-if>
       <sc-if value="{{ showPickPrompt }}">
         <div class="od-anim" style="animation-delay:.68s;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px;padding:22px 18px;border:1px dashed rgba(255,255,255,0.16);border-radius:12px;background:rgba(0,0,0,0.14)">
@@ -505,6 +509,18 @@ class Component extends DCLogic {
     this.initRoute();
     this._onPop = (e) => this.onPopState(e);
     window.addEventListener('popstate', this._onPop);
+    // hold-to-charge (mouse + touch): pointerdown on the action button starts
+    // the charge; releasing anywhere fires the throw with the held power.
+    this._onPDown = (e) => {
+      const btn = e.target && e.target.closest && e.target.closest('.od-charge');
+      if (!btn || btn.disabled || this.state.phase === 'rolling') return;
+      e.preventDefault();
+      this.chargeStart(btn);
+    };
+    this._onPUp = () => { if (this._chargeT0) this.chargeRelease(); };
+    document.addEventListener('pointerdown', this._onPDown);
+    document.addEventListener('pointerup', this._onPUp);
+    document.addEventListener('pointercancel', this._onPUp);
   }
   componentDidUpdate() { this.applyPhotos(); }
   applyPhotos() {
@@ -517,7 +533,7 @@ class Component extends DCLogic {
       pcards.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); } });
     } catch (e) {}
   }
-  componentWillUnmount() { this.clearTimers(); if (this._onSettled) document.removeEventListener('die-settled', this._onSettled); if (this._onImpact) document.removeEventListener('die-impact', this._onImpact); if (this._onPop) window.removeEventListener('popstate', this._onPop); }
+  componentWillUnmount() { this.clearTimers(); if (this._onSettled) document.removeEventListener('die-settled', this._onSettled); if (this._onImpact) document.removeEventListener('die-impact', this._onImpact); if (this._onPop) window.removeEventListener('popstate', this._onPop); if (this._onPDown) { document.removeEventListener('pointerdown', this._onPDown); document.removeEventListener('pointerup', this._onPUp); document.removeEventListener('pointercancel', this._onPUp); } }
   clearTimers() {
     if (this.raf) cancelAnimationFrame(this.raf);
     if (this.safety) clearTimeout(this.safety);
@@ -653,16 +669,46 @@ class Component extends DCLogic {
     this.replaceRoute('play', { id: id }, this.players[id].slug);
   };
 
+  // click (keyboard / fallback) = a default-power throw. Mouse + touch go
+  // through hold-to-charge below, which suppresses the trailing click.
   act = () => {
+    if (this._suppressClick) { this._suppressClick = false; return; }
+    this.actWithPower(0.55);
+  };
+  actWithPower(power) {
     if (this.state.phase === 'rolling') return;
     const p = this.players[this.state.playerId];
     if (p.mechanic === 'cards') { this.resetMechanic(); return; }
     this.resetMechanic({ phase: 'rolling' });
-    if (p.mechanic === 'die') this.rollDie(p);
-    else if (p.mechanic === 'wheel') this.spinWheel(p);
-  };
+    if (p.mechanic === 'die') this.rollDie(p, power);
+    else if (p.mechanic === 'wheel') this.spinWheel(p, power);
+  }
 
-  rollDie(p) {
+  // ---- click-and-hold to power up the throw ----
+  // Wired via document-level pointer events (the runtime has no onPointer*),
+  // so it works for mouse + touch and survives re-renders. The power meter
+  // animates purely in CSS, so we never re-render mid-charge.
+  chargeStart(btn) {
+    if (this.state.phase === 'rolling') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic !== 'die' && p.mechanic !== 'wheel') return;
+    this._chargeBtn = btn; this._chargeT0 = performance.now();
+    const fill = btn.querySelector('.od-charge-fill');
+    if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; void fill.offsetWidth; fill.style.transition = 'width 1.15s linear'; fill.style.width = '100%'; }
+    btn.classList.add('is-charging');
+    this.click();
+  }
+  chargeRelease() {
+    if (!this._chargeT0) return;
+    const power = Math.min(1, (performance.now() - this._chargeT0) / 1150);
+    this._chargeT0 = 0;
+    const btn = this._chargeBtn; this._chargeBtn = null;
+    if (btn) { const fill = btn.querySelector('.od-charge-fill'); if (fill) { fill.style.transition = 'width .16s ease'; fill.style.width = '0%'; } btn.classList.remove('is-charging'); }
+    this._suppressClick = true;
+    this.actWithPower(power);
+  }
+
+  rollDie(p, power) {
     this.ensureAudio(); this.diceLaunch();
     // The physics die is the single source of truth: we just trigger the roll
     // and read whichever face it lands on. A fair d12 gives faces 10/11/12
@@ -671,6 +717,7 @@ class Component extends DCLogic {
     // the real physics), not a fixed timeline. Safety sits past the die's own
     // 8s hard cap so the die is always the authority on when it settled.
     this._pendingP = p;
+    this._diePower = (typeof power === 'number') ? power : 0.55;
     this.setState(s => ({ dieToken: s.dieToken + 1 }));
     this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._dieSettled(null); }, 8600);
   }
@@ -691,19 +738,21 @@ class Component extends DCLogic {
     this.resolve(isDoom, p, null);
   }
 
-  spinWheel(p) {
+  spinWheel(p, power) {
     this.ensureAudio();
+    const pw = (typeof power === 'number') ? power : 0.55;
     const isDoom = Math.random() < p.doom;
     const theta = isDoom ? (10 + Math.random() * 52) : (80 + Math.random() * 272);
-    const spins = 5 + Math.floor(Math.random() * 2);
+    const spins = 4 + Math.round(pw * 9);   // 4..13 full turns — even the lightest tap spins several times over
     const cur = this.state.wheelRot;
     const curMod = ((cur % 360) + 360) % 360;
     const targetMod = (360 - theta) % 360;
     const delta = ((targetMod - curMod) + 360) % 360 + 360 * spins;
     const target = cur + delta;
-    this.ticks(26, 3200);
+    const dur = 2700 + pw * 2300;
+    this.ticks(Math.round(spins * 4), dur);
     const ease = x => 1 - Math.pow(1 - x, 4);
-    this.tween(3300, (pr) => { this.setState({ wheelRot: cur + delta * ease(pr) }); }, () => {
+    this.tween(dur, (pr) => { this.setState({ wheelRot: cur + delta * ease(pr) }); }, () => {
       this.setState({ wheelRot: target });
       if (isDoom) setTimeout(() => this.setState({ earthBurn: true }), 120);
       this.resolve(isDoom, p, null);
@@ -861,7 +910,7 @@ class Component extends DCLogic {
       selectOnLanding: this.selectOnLanding, enterGame: this.enterGame,
 
       isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards',
-      reducedFlag: this.reduced ? '1' : '0', dieToken: String(s.dieToken), dieTarget: String(s.dieTarget),
+      reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
       wheelGradient, wheelTicks, wheelRot: s.wheelRot.toFixed(1),
       wheelGoodColor: this.wheelGood1, wheelDoomColor: this.wheelDoomCol,
       earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, embers,
@@ -874,6 +923,7 @@ class Component extends DCLogic {
       isResult: s.phase === 'result',
       actLabel: s.phase === 'rolling' ? (p.mechanic === 'wheel' ? 'SPINNING\u2026' : 'ROLLING\u2026') : (p.mechanic === 'wheel' ? 'SPIN' : 'ROLL'),
       actOpacity: s.phase === 'rolling' ? 0.6 : 1,
+      chargeHint: s.phase === 'rolling' ? ' ' : (p.mechanic === 'wheel' ? 'HOLD TO POWER UP THE SPIN' : 'HOLD TO POWER UP THE ROLL'),
       verdictHead, verdictSub, showVerdictHead,
       verdictTag: inGauntlet ? ('STEP ' + (s.gIndex + 1) + ' OF 3') : (isCardsResult ? (isDoomOut ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE') : 'THE RESULT'),
       verdictColor, verdictKicker, replayLabel, primaryAction: this.replay,

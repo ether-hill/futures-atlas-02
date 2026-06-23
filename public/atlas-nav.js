@@ -224,7 +224,7 @@
           '<a class="fa-share__opt" data-act="li" target="_blank" rel="noopener" href="#">Share to LinkedIn</a>' +
           '<a class="fa-share__opt" data-act="email" href="#">Email a link</a>' +
         "</div>" +
-        '<button class="fa-share__btn" type="button" aria-label="Share this page" aria-haspopup="menu" aria-expanded="false">' + shareIcon + "</button>";
+        '<button class="fa-share__btn" type="button" aria-label="Share this page" aria-haspopup="menu" aria-expanded="false">' + shareIcon + '<span class="fa-share__lbl">SHARE</span></button>';
       document.body.appendChild(sh);
       var sBtn = sh.querySelector(".fa-share__btn");
       var sPanel = sh.querySelector(".fa-share__panel");

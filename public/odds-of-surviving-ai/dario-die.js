@@ -31,7 +31,7 @@
     }
     attributeChangedCallback(name, oldV, newV) {
       if (!this._ready) return;
-      if (name === 'rolltoken') { if (newV && newV !== oldV) this._roll(); }
+      if (name === 'rolltoken') { if (newV && newV !== oldV) { const pw = parseFloat(String(newV).split(':')[1]); this._rollPower = isNaN(pw) ? 0.6 : Math.max(0, Math.min(1, pw)); this._roll(); } }
       else if (name !== 'reduced') this._applyTheme();
     }
 
@@ -76,10 +76,10 @@
         usedN[a] = usedN[anti] = true; faceNum[a] = next; faceNum[anti] = 13 - next; next++;
       }
       const inrad = Math.abs(dot(V[faces[0][0]], nUnit[0]));
-      const RADIUS = 0.92;          // larger die to suit the bigger mat
+      const RADIUS = 1.0;           // die size
       const SCALE = RADIUS / circ;
       const FLOOR_Y = 0;
-      const BOUND = 2.9;            // square play field (~50% bigger mat)
+      const BOUND = 4.2;            // square play field — as large as the panel allows
       this._inradWorld = inrad * SCALE; this._floorY = FLOOR_Y; this._bound = BOUND;
 
       // ---- three scene ----
@@ -93,7 +93,7 @@
       const scene = new THREE.Scene(); this._scene = scene;
       // reference framing, pulled in a touch for this panel (physics unchanged)
       const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
-      camera.position.set(0, 6.9, 6.7); camera.lookAt(0, 0.05, 0); this._camera = camera;
+      camera.position.set(0, 9.0, 8.7); camera.lookAt(0, 0.05, 0); this._camera = camera;
 
       try {
         const pmrem = new THREE.PMREMGenerator(renderer);
@@ -109,7 +109,7 @@
       const key = new THREE.DirectionalLight(0xffffff, 2.1);
       key.position.set(3.5, 8, 4); key.castShadow = true;
       key.shadow.mapSize.set(1024, 1024); key.shadow.camera.near = 1; key.shadow.camera.far = 25;
-      key.shadow.camera.left = -4; key.shadow.camera.right = 4; key.shadow.camera.top = 4; key.shadow.camera.bottom = -4;
+      key.shadow.camera.left = -5.5; key.shadow.camera.right = 5.5; key.shadow.camera.top = 5.5; key.shadow.camera.bottom = -5.5;
       key.shadow.bias = -0.0004; scene.add(key);
       const rim = new THREE.DirectionalLight(0x88a0ff, 0.6); rim.position.set(-4, 3, -4); scene.add(rim);
 
@@ -175,7 +175,7 @@
       ground.quaternion.setFromEuler(-Math.PI / 2, 0, 0); ground.position.set(0, FLOOR_Y, 0); world.addBody(ground);
       // exact reference: 4 solid box walls forming a square field at ±BOUND
       [[-BOUND, 0], [BOUND, 0], [0, -BOUND], [0, BOUND]].forEach(([wx, wz]) => {
-        const wb = new CANNON.Body({ mass: 0, shape: new CANNON.Box(new CANNON.Vec3(wx === 0 ? 4 : 0.5, 4, wz === 0 ? 4 : 0.5)) });
+        const wb = new CANNON.Body({ mass: 0, shape: new CANNON.Box(new CANNON.Vec3(wx === 0 ? BOUND + 0.6 : 0.5, 4, wz === 0 ? BOUND + 0.6 : 0.5)) });
         wb.position.set(wx, FLOOR_Y + 4, wz); world.addBody(wb);
       });
       const shape = new CANNON.ConvexPolyhedron({ vertices: V.map((v) => new CANNON.Vec3(v[0] * SCALE, v[1] * SCALE, v[2] * SCALE)), faces: faces.map((f) => f.slice()) });
@@ -299,16 +299,18 @@
       this._clearHi();
       if (this.getAttribute('reduced') === '1') { const f = 1 + Math.floor(Math.random() * 12); this._restToFaceUp(f, true); this._highlight(f); return; }
       b.wakeUp();
-      // Throw from where the die currently rests — a real hop, not a teleport
-      // from off-screen. Keep its current orientation/position for continuity;
-      // just lift it a touch and give it lateral drift + strong random spin.
-      // The chaotic tumble keeps it a fair d12; the walls keep it in frame.
-      const m = this._bound - this._inradWorld - 0.2;
-      const cx = Math.max(-m, Math.min(m, b.position.x));
-      const cz = Math.max(-m, Math.min(m, b.position.z));
-      b.position.set(cx, this._floorY + this._inradWorld + 0.06, cz);
-      b.velocity.set((Math.random() - 0.5) * 3.0, 5.4, (Math.random() - 0.5) * 3.0);
-      b.angularVelocity.set((Math.random() - 0.5) * 26, (Math.random() - 0.5) * 26, (Math.random() - 0.5) * 26);
+      // Always launch from the CENTRE of the mat so the die can never get trapped
+      // in a corner and "barely move". Power (0..1, from the charged release)
+      // scales the throw — even the lightest tap clears the mat and tumbles
+      // several times; a full hold sends it ricocheting off every wall. The
+      // chaotic tumble keeps it a fair d12; the walls keep it in frame.
+      const pw = (typeof this._rollPower === 'number') ? this._rollPower : 0.6;
+      b.position.set(0, this._floorY + this._inradWorld + 0.1, 0);
+      const dir = Math.random() * Math.PI * 2;
+      const speed = 7.5 + pw * 7.5;          // 7.5..15 horizontal — always crosses the field
+      b.velocity.set(Math.cos(dir) * speed, 5.2 + pw * 2.6, Math.sin(dir) * speed);
+      const spin = 24 + pw * 26;             // 24..50 angular
+      b.angularVelocity.set((Math.random() - 0.5) * spin, (Math.random() - 0.5) * spin, (Math.random() - 0.5) * spin);
       this._calm = 0;
       this._rolling = true; this._phase = 'tumble'; this._t0 = performance.now(); this._last = performance.now();
     }
