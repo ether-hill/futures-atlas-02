@@ -113,29 +113,26 @@ export default function Calibration() {
   // ── views ────────────────────────────────────────────────────────────────
   if (view === "intro") {
     return (
-      <section className="screen active">
-        <div className="brand"><span className="mark">Futures Atlas</span><span className="mark">№ 01 · Calibration</span></div>
-        <div className="cols">
-          <div className="s-l">
-            <div className="lede">
-              <h1>Swipe the<br /><em>future.</em></h1>
-              <p>Six claims about where AI and quantum take your line of work. Swipe on each, then see how far your gut sat from the evidence.</p>
-            </div>
-            <div className="foot">Imagine freely · Cite everything · MMXXVI</div>
-          </div>
-          <div className="s-r">
-            <div className="pick-h"><span className="eyebrow">Choose your vantage point</span><h2>What&apos;s your world?</h2></div>
-            <div className="roles">
-              {ROLES.map((r, n) => (
-                <button key={r.id} className="role" onClick={() => startRole(r)}>
-                  <span className="idx">{pad(n + 1)}</span>
-                  <span className="meta"><span className="name">{r.name}</span><span className="blurb">{r.blurb}</span></span>
-                  <span className="go">→</span>
-                </button>
-              ))}
-            </div>
+      <section className="screen active intro">
+        <div className="intro-hero">
+          <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
+          <h1>Swipe the <em>future.</em></h1>
+          <p className="lede">Six claims about where AI and quantum take your line of work. Swipe <strong>Believe</strong> or <strong>Doubt</strong> on each — then see how far your gut sat from where the evidence actually lands.</p>
+        </div>
+        <div className="pick">
+          <span className="pick-label eyebrow">Choose your vantage point</span>
+          <div className="role-grid">
+            {ROLES.map((r, n) => (
+              <button key={r.id} className="role" onClick={() => startRole(r)}>
+                <span className="idx">{pad(n + 1)}</span>
+                <span className="name">{r.name}</span>
+                <span className="blurb">{r.blurb}</span>
+                <span className="go">Swipe in →</span>
+              </button>
+            ))}
           </div>
         </div>
+        <div className="foot">Imagine freely · Cite everything · MMXXVI</div>
       </section>
     );
   }
@@ -197,7 +194,6 @@ export default function Calibration() {
   // deck
   if (!role) return null;
   const card = role.cards[i]!;
-  const progressPct = ((phase === "swipe" ? i : i + 1) / role.cards.length) * 100;
   const youPos = (answers[answers.length - 1]?.believe ?? false) ? 0.85 : 0.15;
   const evPos = POS[card.verdict];
   const aligned = isAligned(card.verdict, answers[answers.length - 1]?.believe ?? false);
@@ -208,18 +204,17 @@ export default function Calibration() {
   for (let d = Math.min(2, behind); d >= 0; d--) depths.push(d);
 
   return (
-    <section className="screen active">
-      <div className="cols deck-cols">
-        <div className="s-l">
-          <div className="deck-top"><span className="lens">{role.name}</span><span className="count">{pad(i + 1)} / {pad(role.cards.length)}</span></div>
-          <div className="progress"><i style={{ width: `${progressPct}%` }} /></div>
-          <p className="deckhint">Drag the card, tap a button, or use ← / →. On the reveal, the gap between the two markers is the whole point.</p>
-        </div>
-        <div className="s-r">
-      <div className="stage">
+    <section className="screen active deck">
+      <div className="deck-head">
+        <span className="lens">{role.name}</span>
+        <div className="dots">{role.cards.map((_, k) => <span key={k} className={`dot${k < i ? " done" : k === i ? " cur" : ""}`} />)}</div>
+        <span className="count">{pad(i + 1)} / {pad(role.cards.length)}</span>
+      </div>
+
+      <div className="tinder">
         {phase === "reveal" ? (
-          <div className="card">
-            <div className="reveal show">
+          <div className="tcard reveal-card">
+            <div className="reveal">
               <span className="verdict-k">The evidence says</span>
               <span className="verdict-v" style={{ color: VCOLOR[card.verdict] }}>{VLABEL[card.verdict]}</span>
               <div className="meter">
@@ -248,15 +243,13 @@ export default function Calibration() {
             const c = role.cards[i + d]!;
             const active = d === 0;
             const flungStyle = active && phase === "flinging" && !reduce.current
-              ? { transform: `translate(${fling * 120}%, -6%) rotate(${fling * 14}deg)`, opacity: 0 }
+              ? { transform: `translate(${fling * 130}%, ${fling * -4}%) rotate(${fling * 16}deg)`, opacity: 0 }
               : undefined;
             return (
-              <div key={c.id} ref={active ? cardEl : undefined} className={`card${d === 1 ? " behind-1" : d === 2 ? " behind-2" : ""}`} style={flungStyle}>
-                <div className="face">
-                  <span className="tag">Claim · swipe to judge</span>
-                  <h3 className="claim">{c.claim}</h3>
-                  <div className="hint"><span className="l">← Doubt</span><span className="r">Believe →</span></div>
-                </div>
+              <div key={c.id} ref={active ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}`} style={flungStyle}>
+                <span className="tcard-tag">Claim {pad(i + d + 1)} · swipe to judge</span>
+                <h3 className="claim">{c.claim}</h3>
+                <div className="tcard-foot"><span className="l">← Doubt</span><span className="r">Believe →</span></div>
                 {active && <><span className="stamp no">Doubt</span><span className="stamp yes">Believe</span></>}
               </div>
             );
@@ -264,16 +257,15 @@ export default function Calibration() {
         )}
       </div>
 
-      <div className="controls">
+      <div className="swipe-actions">
         {phase === "reveal"
           ? <button className="btn next" onClick={next}>{i + 1 < role.cards.length ? "Next claim →" : "See your calibration →"}</button>
           : <>
-              <button className="btn no" onClick={() => decide(false)}>Doubt<span className="sub">won&apos;t / not true</span></button>
-              <button className="btn yes" onClick={() => decide(true)}>Believe<span className="sub">likely / true</span></button>
+              <button className="round no" onClick={() => decide(false)} aria-label="Doubt — won't happen / not true">✕</button>
+              <button className="round yes" onClick={() => decide(true)} aria-label="Believe — likely / true">✓</button>
             </>}
       </div>
-        </div>
-      </div>
+      <p className="deckhint">{phase === "reveal" ? "The gap between the two markers is the point" : "Drag the card · tap a button · or use ← / →"}</p>
     </section>
   );
 }
