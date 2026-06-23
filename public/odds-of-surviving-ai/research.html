@@ -74,37 +74,12 @@ h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,6vw,62p
 </style>
 <link rel="stylesheet" href="/atlas-nav.css">
 <style id="fa-nav-unify">
-/* The master /atlas-nav.js fa-shell is the one global bar: fix it at the very
-   top, demote this zone's faq-nav to a slim tab row just beneath it, and drop
-   the stage below both. Brand + switcher hidden (the master owns them). */
+/* The master /atlas-nav.js fa-shell is the ONLY bar — no zone sub-nav. */
 .fa-shell{position:fixed!important;top:0;left:0;right:0;z-index:9001!important}
-.faq-nav{top:var(--fa-nav-h)!important;z-index:9000!important}
-.faq-brand,.faq-switch-wrap,.faq-sep,.faq-mark,.faq-word{display:none!important}
-body{padding-top:calc(var(--fa-nav-h) + 50px)!important}
-.od-stage{min-height:calc(100vh - var(--fa-nav-h) - 50px)!important;height:calc(100vh - var(--fa-nav-h) - 50px)!important}
 .fa-shell.is-hidden{transform:none!important}
-
-@media(max-width:900px){.faq-nav{display:none!important}body{padding-top:var(--fa-nav-h)!important}.od-stage{min-height:calc(100vh - var(--fa-nav-h))!important;height:calc(100vh - var(--fa-nav-h))!important}}
+body{padding-top:var(--fa-nav-h)!important}
 </style><script src="/atlas-nav.js" defer></script></head>
 <body>
-
-<nav class="faq-nav">
-  <a class="faq-brand" href="/" aria-label="Futures Atlas home"><span class="faq-mark">◆</span><span class="faq-word">Futures Atlas</span></a>
-  <span class="faq-sep">/</span>
-  <div class="faq-switch-wrap">
-    <button class="faq-switch" id="faqSwitch" aria-haspopup="true" aria-expanded="false">The Odds <span class="faq-chev">▾</span></button>
-    <div class="faq-menu" id="faqMenu" role="menu">
-      <a href="/hollow-villages">The Hollow Villages</a>
-      <a href="/underground-intelligence">Underground Intelligence</a>
-      <a href="/theodds">The Odds</a>
-      <a class="faq-allp" href="/">All projects →</a>
-    </div>
-  </div>
-  <div class="faq-pages">
-    <a href="/theodds">The piece</a>
-    <a href="/theodds/research" class="active">Research</a>
-  </div>
-</nav>
 
 <div class="wrap">
   <div class="eyebrow">The evidence base</div>
@@ -118,9 +93,6 @@ body{padding-top:calc(var(--fa-nav-h) + 50px)!important}
 </div>
 
 <script>
-(function(){var b=document.getElementById('faqSwitch'),m=document.getElementById('faqMenu');if(!b||!m)return;
-b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});
-document.addEventListener('click',function(e){if(!m.contains(e.target)&&e.target!==b)m.classList.remove('open');});})();
 
 const R=[
 {type:'news',title:'Amodei: “there’s a 25% chance that things go really, really badly”',source:'Axios',year:'2025',

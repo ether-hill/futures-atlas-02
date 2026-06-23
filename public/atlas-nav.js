@@ -22,10 +22,7 @@
     { name: "Generatives", path: "/generatives" },
     { name: "Literal Frequency", path: "/literal-frequency" },
     { name: "Quantum Sandbox", path: "/quantum-sandbox" },
-    { name: "The Odds", path: "/theodds", pages: [
-      { name: "The piece", path: "/theodds" },
-      { name: "Research", path: "/theodds/research" },
-    ] },
+    { name: "The Odds", path: "/theodds" },
     { name: "Underground Intelligence", path: "/underground-intelligence", pages: [
       { name: "Story", path: "/underground-intelligence/story" },
       { name: "Dashboard", path: "/underground-intelligence/dashboard" },

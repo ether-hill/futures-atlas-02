@@ -24,45 +24,16 @@
 <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
 <script src="./support.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@500;700;800&display=swap" rel="stylesheet">
-<style id="fa-odds-nav-css">
-/* Global Futures Atlas navbar — self-contained, styled to The Odds' dark palette */
-.faq-nav{position:fixed;top:0;left:0;right:0;height:50px;z-index:9000;display:flex;align-items:center;gap:10px;padding:0 18px;background:#0b0b0d;border-bottom:1px solid rgba(236,234,230,0.1);font-family:'Space Mono',monospace}
-.faq-brand{display:inline-flex;align-items:center;gap:7px;text-decoration:none;color:#ECEAE6;font-size:12px;letter-spacing:0.02em}
-.faq-mark{color:#E0481B;font-size:11px}
-.faq-brand:hover{text-decoration:underline}
-.faq-sep{color:rgba(236,234,230,0.4)}
-.faq-switch-wrap{position:relative}
-.faq-switch{background:none;border:none;color:#ECEAE6;cursor:pointer;font:inherit;font-size:12px;display:inline-flex;align-items:center;gap:5px;padding:5px 7px;border-radius:5px}
-.faq-switch:hover{background:rgba(236,234,230,0.07)}
-.faq-chev{color:rgba(236,234,230,0.6);font-size:10px}
-.faq-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:232px;display:none;flex-direction:column;background:#141416;border:1px solid rgba(236,234,230,0.14);border-radius:8px;padding:6px;z-index:50}
-.faq-menu.open{display:flex}
-.faq-menu a{text-decoration:none;color:rgba(236,234,230,0.85);font-size:12.5px;padding:8px 10px;border-radius:5px}
-.faq-menu a:hover{background:rgba(236,234,230,0.07);color:#ECEAE6}
-.faq-menu .faq-allp{color:#E0481B}
-.faq-pages{margin-left:auto;display:flex;gap:4px}
-.faq-pages a{text-decoration:none;color:rgba(236,234,230,0.6);font-size:11px;letter-spacing:0.05em;text-transform:uppercase;padding:7px 11px;border-radius:5px}
-.faq-pages a:hover{color:#ECEAE6;background:rgba(236,234,230,0.06)}
-.faq-pages a.active{color:#E0481B}
-@media(max-width:640px){.faq-brand .faq-word{display:none}.faq-pages a{padding:7px 8px;font-size:10px}}
-/* inset the full-bleed piece below the fixed nav */
-body{padding-top:50px !important}
-.od-stage{min-height:calc(100vh - 50px) !important}
-@media(min-width:860px){.od-stage{height:calc(100vh - 50px) !important}.od-photo{height:100% !important}.od-game{height:100% !important}}
-</style>
 <link rel="stylesheet" href="/atlas-nav.css">
 <style id="fa-nav-unify">
-/* The master /atlas-nav.js fa-shell is the one global bar: fix it at the very
-   top, demote this zone's faq-nav to a slim tab row just beneath it, and drop
-   the stage below both. Brand + switcher hidden (the master owns them). */
+/* The master /atlas-nav.js fa-shell is the ONLY bar — there is no zone sub-nav.
+   The piece (and the landing) sit directly below it and fill the rest of the
+   viewport. */
 .fa-shell{position:fixed!important;top:0;left:0;right:0;z-index:9001!important}
-.faq-nav{top:var(--fa-nav-h)!important;z-index:9000!important}
-.faq-brand,.faq-switch-wrap,.faq-sep,.faq-mark,.faq-word{display:none!important}
-body{padding-top:calc(var(--fa-nav-h) + 50px)!important}
-.od-stage{min-height:calc(100vh - var(--fa-nav-h) - 50px)!important;height:calc(100vh - var(--fa-nav-h) - 50px)!important}
 .fa-shell.is-hidden{transform:none!important}
-
-@media(max-width:900px){.faq-nav{display:none!important}body{padding-top:var(--fa-nav-h)!important}.od-stage{min-height:calc(100vh - var(--fa-nav-h))!important;height:calc(100vh - var(--fa-nav-h))!important}}
+body{padding-top:var(--fa-nav-h)!important}
+.od-stage{min-height:calc(100vh - var(--fa-nav-h))!important;height:calc(100vh - var(--fa-nav-h))!important}
+@media(min-width:860px){.od-photo{height:100%!important}.od-game{height:100%!important}}
 </style><script src="/atlas-nav.js" defer></script></head>
 <body>
 <x-dc>
@@ -126,42 +97,41 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
   .od-teg-grid{grid-template-columns:1fr 1fr 1fr;gap:5px 22px}
 }
 
-/* ============ LANDING ============ */
-.od-landing{min-height:calc(100dvh - var(--fa-nav-h, 56px) - 50px);display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse at 50% -14%, #2c0d10 0%, #160a0d 36%, #0a0a0c 68%, #08080a 100%);padding:clamp(26px,5.5vh,60px) clamp(20px,5vw,56px) 64px}
-.od-land-wrap{width:100%;max-width:1140px;display:flex;flex-direction:column}
+/* ============ LANDING (one full screen, no scroll) ============ */
+.od-landing{height:calc(100dvh - var(--fa-nav-h, 56px));overflow:hidden;display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse at 50% -16%, #2c0d10 0%, #160a0d 34%, #0a0a0c 66%, #08080a 100%);padding:clamp(16px,3vh,30px) clamp(20px,5vw,56px) clamp(18px,3.2vh,32px)}
+.od-land-wrap{width:100%;max-width:1160px;height:100%;display:flex;flex-direction:column}
 .od-land-head{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(236,234,230,0.62)}
 .od-land-head .od-mark{color:#E0481B}
-.od-eyebrow{margin-top:clamp(26px,5vh,52px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.26em;color:#E0481B}
-.od-headline{margin-top:16px;max-width:780px;font-family:'Playfair Display',Georgia,serif;font-weight:600;font-size:clamp(34px,6.4vw,58px);line-height:1.02;letter-spacing:-0.015em;color:#F4EFE4}
-.od-intro{margin-top:20px;max-width:600px;font-family:'Archivo',sans-serif;font-size:16px;line-height:1.62;color:rgba(236,234,230,0.74)}
-.od-choose{margin-top:clamp(30px,4.5vh,46px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.18em;color:rgba(236,234,230,0.6)}
+.od-eyebrow{margin-top:clamp(14px,3vh,28px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.26em;color:#E0481B}
+.od-headline{margin-top:12px;max-width:820px;font-family:'Playfair Display',Georgia,serif;font-weight:600;font-size:clamp(30px,calc(4vw + 1vh),52px);line-height:1.01;letter-spacing:-0.015em;color:#F4EFE4}
+.od-intro{margin-top:14px;max-width:600px;font-family:'Archivo',sans-serif;font-size:clamp(14px,1.6vh,16px);line-height:1.5;color:rgba(236,234,230,0.72)}
+.od-choose{margin-top:clamp(16px,2.6vh,26px);margin-bottom:12px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.18em;color:rgba(236,234,230,0.6)}
 .od-choose-sel{color:#E0481B}
-.od-pcards{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.od-pcard{position:relative;display:block;width:100%;border:0;padding:0;cursor:pointer;border-radius:15px;overflow:hidden;background:#15151a;aspect-ratio:3/4;transition:transform .24s cubic-bezier(.22,1,.36,1),box-shadow .3s ease,opacity .3s ease;animation:odUp .55s cubic-bezier(.22,1,.36,1) both}
-.od-pcard:hover{transform:translateY(-4px)}
-.od-pcard-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 15%;filter:grayscale(0.3) contrast(1.05);transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.od-pcards{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.od-pcard{position:relative;display:block;width:100%;height:100%;padding:0;cursor:pointer;border:2px solid #26262c;border-radius:14px;overflow:hidden;background:#15151a;transition:transform .26s cubic-bezier(.2,.7,.2,1),border-color .25s ease,box-shadow .3s ease;animation:odUp .55s cubic-bezier(.22,1,.36,1) both}
+.od-pcard:hover{transform:translateY(-8px);border-color:#ECEAE6!important;box-shadow:0 22px 50px rgba(0,0,0,0.5)}
+.od-pcard-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 15%;filter:grayscale(0.28) contrast(1.04);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
 .od-pcard:hover .od-pcard-img{transform:scale(1.05)}
-.od-pcard-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.10) 20%,rgba(8,8,10,0.72) 62%,rgba(8,8,10,0.97) 100%)}
-.od-pcard-mech{position:absolute;top:14px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;color:rgba(236,234,230,0.92);border:1px solid rgba(236,234,230,0.32);border-radius:999px;padding:5px 11px;background:rgba(8,8,10,0.42)}
-.od-pcard-sel{position:absolute;top:13px;left:13px;display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.16em;color:#fff;border-radius:999px;padding:5px 11px;background:#E0481B}
-.od-pcard-body{position:absolute;left:18px;right:18px;bottom:18px;display:flex;flex-direction:column;gap:6px;text-align:left}
-.od-pcard-odds{display:flex;align-items:baseline;gap:8px}
-.od-pcard-odds b{font-family:'Archivo',sans-serif;font-weight:800;font-size:36px;line-height:0.9;color:#E0481B}
-.od-pcard-odds i{font-family:'Space Mono',monospace;font-style:normal;font-size:8px;letter-spacing:0.1em;color:rgba(236,234,230,0.62)}
-.od-pcard-name{font-family:'Archivo',sans-serif;font-weight:800;font-size:22px;line-height:1.0;color:#ECEAE6}
-.od-pcard-role{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.04em;color:rgba(236,234,230,0.62)}
-.od-pcard-teaser{margin-top:3px;font-family:'Archivo',sans-serif;font-size:12.5px;line-height:1.38;color:rgba(236,234,230,0.78)}
-.od-land-cta{margin-top:30px;align-self:flex-start;padding:17px 44px;border:none;border-radius:999px;cursor:pointer;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.04em;background:#E0481B;color:#fff;box-shadow:0 10px 30px rgba(224,72,27,0.32);transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .22s ease,background .2s ease}
+.od-pcard-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.08) 18%,rgba(8,8,10,0.70) 60%,rgba(8,8,10,0.97) 100%)}
+.od-pcard-mech{position:absolute;top:14px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;color:rgba(236,234,230,0.92);border:1px solid rgba(236,234,230,0.3);border-radius:999px;padding:4px 10px;background:rgba(8,8,10,0.45)}
+.od-pcard-sel{position:absolute;top:14px;left:14px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.16em;color:#E0481B;border:1px solid rgba(224,72,27,0.6);border-radius:999px;padding:4px 9px;background:rgba(8,8,10,0.4)}
+.od-pcard-body{position:absolute;left:22px;right:22px;bottom:22px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.od-pcard-odds{display:flex;align-items:baseline;gap:9px}
+.od-pcard-odds b{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(28px,3.4vh,38px);line-height:0.9;color:#E0481B}
+.od-pcard-odds i{font-family:'Space Mono',monospace;font-style:normal;font-size:8px;letter-spacing:0.1em;color:rgba(236,234,230,0.6)}
+.od-pcard-name{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(19px,2.4vh,24px);line-height:1.0;color:#ECEAE6}
+.od-pcard-role{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.04em;color:rgba(236,234,230,0.6)}
+.od-pcard-teaser{margin-top:3px;font-family:'Archivo',sans-serif;font-size:12.5px;line-height:1.38;color:rgba(236,234,230,0.74)}
+.od-land-cta{margin-top:clamp(16px,2.6vh,26px);align-self:flex-start;padding:15px 42px;border:none;border-radius:999px;cursor:pointer;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.04em;background:#E0481B;color:#fff;box-shadow:0 10px 30px rgba(224,72,27,0.32);transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .22s ease,background .2s ease}
 .od-land-cta:hover{transform:translateY(-2px) scale(1.02);background:#f4541f;box-shadow:0 14px 36px rgba(224,72,27,0.45)}
-.od-smallprint{margin-top:22px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.03em;color:rgba(236,234,230,0.42)}
 @media(max-width:820px){
-  .od-pcards{grid-template-columns:1fr;gap:13px}
-  .od-pcard{aspect-ratio:auto;height:176px}
-  .od-pcard-img{object-position:50% 24%}
-  .od-pcard-body{left:16px;right:16px;bottom:15px}
-  .od-pcard-odds b{font-size:30px}
-  .od-pcard-name{font-size:20px}
-  .od-land-cta{align-self:stretch;text-align:center}
+  .od-landing{align-items:stretch}
+  .od-intro{display:none}
+  .od-pcards{grid-template-columns:1fr;grid-auto-rows:1fr;gap:10px}
+  .od-pcard-img{object-position:50% 26%}
+  .od-pcard-body{left:18px;right:18px;bottom:16px;gap:5px}
+  .od-pcard-teaser{font-size:12px}
+  .od-land-cta{align-self:stretch;text-align:center;margin-top:14px}
 }
 
 /* accessibility */
@@ -182,15 +152,15 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
     </div>
     <div class="od-eyebrow">AN INTERACTIVE · MMXXVI</div>
     <h1 class="od-headline">The people building AI think it might end us.</h1>
-    <p class="od-intro">Many of the leaders racing to build advanced AI put the odds of catastrophe, even outright annihilation, alarmingly high. Not fringe figures: the founders and researchers at the front of the field. And almost no one is slowing down. Pick whose view of the future to inhabit.</p>
+    <p class="od-intro">The people racing to build advanced AI put the odds of catastrophe alarmingly high. Pick whose view of the future to inhabit.</p>
     <div class="od-choose">CHOOSE YOUR PLAYER<span class="od-choose-sel">{{ selectedSuffix }}</span></div>
     <div class="od-pcards">
       <sc-for list="{{ landingRoster }}" as="r" hint-placeholder-count="3">
-        <button onClick="{{ r.select }}" class="od-pcard" aria-pressed="{{ r.pressed }}" style="opacity:{{ r.cardOpacity }};box-shadow:{{ r.cardShadow }};animation-delay:{{ r.delay }}">
+        <button onClick="{{ r.select }}" class="od-pcard" aria-pressed="{{ r.pressed }}" style="border-color:{{ r.cardBorder }};animation-delay:{{ r.delay }}">
           <img class="od-pcard-img" alt="" />
           <span class="od-pcard-grad"></span>
           <span class="od-pcard-mech">{{ r.mechTag }}</span>
-          <sc-if value="{{ r.active }}"><span class="od-pcard-sel">✓ SELECTED</span></sc-if>
+          <sc-if value="{{ r.active }}"><span class="od-pcard-sel">SELECTED</span></sc-if>
           <span class="od-pcard-body">
             <span class="od-pcard-odds"><b>{{ r.oddsBig }}</b><i>{{ r.oddsCap }}</i></span>
             <span class="od-pcard-name">{{ r.name }}</span>
@@ -201,7 +171,6 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
       </sc-for>
     </div>
     <button onClick="{{ enterGame }}" class="od-land-cta">{{ ctaLabel }}</button>
-    <p class="od-smallprint">Real, sourced public estimates. Nothing here is a prediction.</p>
   </div>
 </div>
 </sc-if>
@@ -491,7 +460,7 @@ class Component extends DCLogic {
       short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
       photo: '/odds-of-surviving-ai/research/max-tegmark.jpg',
       credit: 'Photo: Web Summit, CC BY 2.0',
-      teaser: 'Twelve possible futures. Some heaven, some not.',
+      teaser: 'In 3 of the 12 futures, humanity is gone.',
       oddsBig: '12', oddsCaption: 'FUTURES · NOT PROBABILITIES', oddsCap: 'FUTURES',
       doom: null,
       quote: 'The real risk with AGI isn\u2019t malice but competence. A superintelligent AI will be extremely good at accomplishing its goals, and if those goals aren\u2019t aligned with ours, we\u2019re in trouble.',
@@ -840,8 +809,7 @@ class Component extends DCLogic {
         name: pl.name, role: pl.role, teaser: pl.teaser, mechTag: pl.mechTag,
         oddsBig: pl.oddsBig, oddsCap: pl.oddsCap, active, pressed: active ? 'true' : 'false',
         select: () => this.selectOnLanding(id),
-        cardOpacity: active ? '1' : '0.6',
-        cardShadow: active ? '0 0 0 2px #E0481B inset, 0 16px 42px rgba(224,72,27,0.30)' : '0 6px 22px rgba(0,0,0,0.4)',
+        cardBorder: active ? '#E0481B' : '#26262c',
         delay: (0.1 + i * 0.08).toFixed(2) + 's',
       };
     });
@@ -917,28 +885,5 @@ class Component extends DCLogic {
 }
 </script>
 
-<!-- Global Futures Atlas navbar (fixed, sibling to the runtime root) -->
-<nav class="faq-nav">
-  <a class="faq-brand" href="/" aria-label="Futures Atlas home"><span class="faq-mark">◆</span><span class="faq-word">Futures Atlas</span></a>
-  <span class="faq-sep">/</span>
-  <div class="faq-switch-wrap">
-    <button class="faq-switch" id="faqSwitch" aria-haspopup="true" aria-expanded="false">The Odds <span class="faq-chev">▾</span></button>
-    <div class="faq-menu" id="faqMenu" role="menu">
-      <a href="/hollow-villages">The Hollow Villages</a>
-      <a href="/underground-intelligence">Underground Intelligence</a>
-      <a href="/theodds">The Odds</a>
-      <a class="faq-allp" href="/">All projects →</a>
-    </div>
-  </div>
-  <div class="faq-pages">
-    <a href="/theodds" class="active">The piece</a>
-    <a href="/theodds/research">Research</a>
-  </div>
-</nav>
-<script>
-(function(){var b=document.getElementById('faqSwitch'),m=document.getElementById('faqMenu');if(!b||!m)return;
-b.addEventListener('click',function(e){e.stopPropagation();var o=m.classList.toggle('open');b.setAttribute('aria-expanded',String(o));});
-document.addEventListener('click',function(e){if(!m.contains(e.target)&&e.target!==b)m.classList.remove('open');});})();
-</script>
 </body>
 </html>
