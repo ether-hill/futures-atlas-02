@@ -65,6 +65,7 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 .od-charge-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#E0481B;z-index:0;pointer-events:none}
 .od-charge.is-charging{transform:translateY(-2px) scale(1.03);box-shadow:0 16px 38px rgba(224,72,27,0.5)}
 .od-charge.is-charging span{color:#fff!important}
+.od-rollhint{font-family:'Space Mono',monospace;font-size:12.5px;font-weight:700;letter-spacing:0.16em;color:rgba(251,239,255,0.82);text-transform:uppercase}
 .od-pill{transition:transform .2s cubic-bezier(.2,.7,.2,1), border-color .25s ease}
 .od-pill:hover{transform:translateY(-2px);border-color:#E0481B}
 .od-pill:hover .od-caret{transform:translateY(2px)}
@@ -328,8 +329,8 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
     <!-- ACTION / RESULT (fixed height — reserved so the result never bumps the stage) -->
     <div style="width:100%;height:178px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:13px;padding-top:4px">
       <sc-if value="{{ showRollButton }}">
+        <div class="od-anim od-rollhint" style="animation-delay:.64s">{{ chargeHint }}</div>
         <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll od-charge" style="animation-delay:.68s;position:relative;overflow:hidden;isolation:isolate;padding:16px 58px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:17px;letter-spacing:0.14em;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ actLabel }}</span></button>
-        <div class="od-anim" style="animation-delay:.72s;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;color:rgba(251,239,255,0.5)">{{ chargeHint }}</div>
       </sc-if>
       <sc-if value="{{ showPickPrompt }}">
         <div class="od-anim" style="animation-delay:.68s;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px;padding:22px 18px;border:1px dashed rgba(255,255,255,0.16);border-radius:12px;background:rgba(0,0,0,0.14)">
@@ -345,7 +346,10 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
             <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(22px,4.5vw,28px);line-height:1.02;letter-spacing:-0.01em;color:{{ verdictColor }}">{{ verdictHead }}</div>
           </sc-if>
           <p style="font-size:13px;line-height:1.5;color:rgba(251,239,255,0.88)">{{ verdictSub }}</p>
-          <button onClick="{{ primaryAction }}" class="od-roll" style="margin-top:3px;padding:12px 28px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;letter-spacing:0.1em;background:#FBEFFF;color:#1A0B2E">{{ replayLabel }}</button>
+          <sc-if value="{{ replayCharge }}">
+            <div class="od-rollhint" style="margin-top:4px;font-size:11px">{{ chargeHint }}</div>
+          </sc-if>
+          <button onClick="{{ primaryAction }}" class="od-roll {{ replayClass }}" style="margin-top:3px;position:relative;overflow:hidden;isolation:isolate;padding:12px 28px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;letter-spacing:0.1em;background:#FBEFFF;color:#1A0B2E"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ replayLabel }}</span></button>
         </div>
       </sc-if>
     </div>
@@ -923,7 +927,9 @@ class Component extends DCLogic {
       isResult: s.phase === 'result',
       actLabel: s.phase === 'rolling' ? (p.mechanic === 'wheel' ? 'SPINNING\u2026' : 'ROLLING\u2026') : (p.mechanic === 'wheel' ? 'SPIN' : 'ROLL'),
       actOpacity: s.phase === 'rolling' ? 0.6 : 1,
-      chargeHint: s.phase === 'rolling' ? ' ' : (p.mechanic === 'wheel' ? 'HOLD TO POWER UP THE SPIN' : 'HOLD TO POWER UP THE ROLL'),
+      chargeHint: s.phase === 'rolling' ? ' ' : (p.mechanic === 'wheel' ? 'CLICK & HOLD TO SPIN' : 'CLICK & HOLD TO ROLL'),
+      replayCharge: (s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
+      replayClass: ((s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel')) ? 'od-charge' : '',
       verdictHead, verdictSub, showVerdictHead,
       verdictTag: inGauntlet ? ('STEP ' + (s.gIndex + 1) + ' OF 3') : (isCardsResult ? (isDoomOut ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE') : 'THE RESULT'),
       verdictColor, verdictKicker, replayLabel, primaryAction: this.replay,
