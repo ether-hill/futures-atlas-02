@@ -127,30 +127,45 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 }
 
 /* ============ LANDING ============ */
-.od-landing{min-height:calc(100dvh - var(--fa-nav-h, 56px) - 50px);display:flex;align-items:flex-start;justify-content:center;background:radial-gradient(ellipse at 50% -8%, #15151b 0%, #0b0b0f 52%, #08080a 100%);padding:clamp(26px,6vh,72px) 22px 64px}
-.od-land-wrap{width:100%;max-width:540px;display:flex;flex-direction:column}
-.od-land-head{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(236,234,230,0.6)}
-.od-eyebrow{margin-top:clamp(30px,6vh,58px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.24em;color:#4F86F7}
-.od-headline{margin-top:18px;font-family:'Playfair Display',Georgia,serif;font-weight:600;font-size:clamp(33px,6.6vw,52px);line-height:1.04;letter-spacing:-0.01em;color:#F4EFE4}
-.od-intro{margin-top:20px;font-family:'Archivo',sans-serif;font-size:16px;line-height:1.62;color:rgba(236,234,230,0.74)}
-.od-choose{margin-top:38px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.18em;color:rgba(236,234,230,0.55)}
-.od-rows{margin-top:15px;display:flex;flex-direction:column;gap:10px}
-.od-prow{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:16px 18px;border-radius:13px;cursor:pointer;transition:opacity .25s ease, border-color .25s ease, background .25s ease, transform .18s cubic-bezier(.22,1,.36,1);animation:odUp .5s cubic-bezier(.22,1,.36,1) both}
-.od-prow:hover{transform:translateY(-2px)}
-.od-prow-tile{flex:none;width:50px;height:50px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Archivo',sans-serif;font-weight:800;font-size:16px;letter-spacing:0.02em;transition:background .25s ease,color .25s ease}
-.od-prow-main{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
-.od-prow-name{font-family:'Archivo',sans-serif;font-weight:700;font-size:18px;color:#ECEAE6;line-height:1.12}
-.od-prow-aff{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:0.04em;color:rgba(236,234,230,0.55)}
-.od-prow-teaser{margin-top:4px;font-family:'Archivo',sans-serif;font-size:13px;line-height:1.4;color:rgba(236,234,230,0.72)}
-.od-prow-mech{flex:none;display:flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.14em}
-.od-prow-check{font-size:12px;font-weight:700}
-.od-land-cta{margin-top:28px;align-self:flex-start;padding:16px 40px;border:none;border-radius:999px;cursor:pointer;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.05em;background:#F4EFE4;color:#08080A;transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .22s ease}
-.od-land-cta:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 12px 28px rgba(0,0,0,0.45)}
-.od-smallprint{margin-top:24px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.03em;color:rgba(236,234,230,0.42)}
-@media(max-width:560px){.od-prow{padding:14px;gap:13px}.od-prow-tile{width:44px;height:44px}.od-prow-mech{font-size:9px}}
+.od-landing{min-height:calc(100dvh - var(--fa-nav-h, 56px) - 50px);display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse at 50% -14%, #2c0d10 0%, #160a0d 36%, #0a0a0c 68%, #08080a 100%);padding:clamp(26px,5.5vh,60px) clamp(20px,5vw,56px) 64px}
+.od-land-wrap{width:100%;max-width:1140px;display:flex;flex-direction:column}
+.od-land-head{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(236,234,230,0.62)}
+.od-land-head .od-mark{color:#E0481B}
+.od-eyebrow{margin-top:clamp(26px,5vh,52px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.26em;color:#E0481B}
+.od-headline{margin-top:16px;max-width:780px;font-family:'Playfair Display',Georgia,serif;font-weight:600;font-size:clamp(34px,6.4vw,58px);line-height:1.02;letter-spacing:-0.015em;color:#F4EFE4}
+.od-intro{margin-top:20px;max-width:600px;font-family:'Archivo',sans-serif;font-size:16px;line-height:1.62;color:rgba(236,234,230,0.74)}
+.od-choose{margin-top:clamp(30px,4.5vh,46px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.18em;color:rgba(236,234,230,0.6)}
+.od-choose-sel{color:#E0481B}
+.od-pcards{margin-top:16px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.od-pcard{position:relative;display:block;width:100%;border:0;padding:0;cursor:pointer;border-radius:15px;overflow:hidden;background:#15151a;aspect-ratio:3/4;transition:transform .24s cubic-bezier(.22,1,.36,1),box-shadow .3s ease,opacity .3s ease;animation:odUp .55s cubic-bezier(.22,1,.36,1) both}
+.od-pcard:hover{transform:translateY(-4px)}
+.od-pcard-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 15%;filter:grayscale(0.3) contrast(1.05);transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.od-pcard:hover .od-pcard-img{transform:scale(1.05)}
+.od-pcard-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.10) 20%,rgba(8,8,10,0.72) 62%,rgba(8,8,10,0.97) 100%)}
+.od-pcard-mech{position:absolute;top:14px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;color:rgba(236,234,230,0.92);border:1px solid rgba(236,234,230,0.32);border-radius:999px;padding:5px 11px;background:rgba(8,8,10,0.42)}
+.od-pcard-sel{position:absolute;top:13px;left:13px;display:flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.16em;color:#fff;border-radius:999px;padding:5px 11px;background:#E0481B}
+.od-pcard-body{position:absolute;left:18px;right:18px;bottom:18px;display:flex;flex-direction:column;gap:6px;text-align:left}
+.od-pcard-odds{display:flex;align-items:baseline;gap:8px}
+.od-pcard-odds b{font-family:'Archivo',sans-serif;font-weight:800;font-size:36px;line-height:0.9;color:#E0481B}
+.od-pcard-odds i{font-family:'Space Mono',monospace;font-style:normal;font-size:8px;letter-spacing:0.1em;color:rgba(236,234,230,0.62)}
+.od-pcard-name{font-family:'Archivo',sans-serif;font-weight:800;font-size:22px;line-height:1.0;color:#ECEAE6}
+.od-pcard-role{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.04em;color:rgba(236,234,230,0.62)}
+.od-pcard-teaser{margin-top:3px;font-family:'Archivo',sans-serif;font-size:12.5px;line-height:1.38;color:rgba(236,234,230,0.78)}
+.od-land-cta{margin-top:30px;align-self:flex-start;padding:17px 44px;border:none;border-radius:999px;cursor:pointer;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.04em;background:#E0481B;color:#fff;box-shadow:0 10px 30px rgba(224,72,27,0.32);transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .22s ease,background .2s ease}
+.od-land-cta:hover{transform:translateY(-2px) scale(1.02);background:#f4541f;box-shadow:0 14px 36px rgba(224,72,27,0.45)}
+.od-smallprint{margin-top:22px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.03em;color:rgba(236,234,230,0.42)}
+@media(max-width:820px){
+  .od-pcards{grid-template-columns:1fr;gap:13px}
+  .od-pcard{aspect-ratio:auto;height:176px}
+  .od-pcard-img{object-position:50% 24%}
+  .od-pcard-body{left:16px;right:16px;bottom:15px}
+  .od-pcard-odds b{font-size:30px}
+  .od-pcard-name{font-size:20px}
+  .od-land-cta{align-self:stretch;text-align:center}
+}
 
 /* accessibility */
-.od-prow:focus-visible,.od-land-cta:focus-visible,.od-roll:focus-visible,.od-tile:focus-visible,.od-pill:focus-visible{outline:2px solid #4F86F7;outline-offset:3px}
+.od-pcard:focus-visible,.od-land-cta:focus-visible,.od-roll:focus-visible,.od-tile:focus-visible,.od-pill:focus-visible{outline:2px solid #E0481B;outline-offset:3px}
 @media (prefers-reduced-motion: reduce){
   *{animation-duration:.001ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.001ms!important}
 }
@@ -162,25 +177,25 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 <div class="od-landing">
   <div class="od-land-wrap">
     <div class="od-land-head">
-      <span>THE ODDS</span>
+      <span><span class="od-mark">◆</span> THE ODDS</span>
       <span>FUTURES ATLAS</span>
     </div>
     <div class="od-eyebrow">AN INTERACTIVE · MMXXVI</div>
     <h1 class="od-headline">The people building AI think it might end us.</h1>
     <p class="od-intro">Many of the leaders racing to build advanced AI put the odds of catastrophe, even outright annihilation, alarmingly high. Not fringe figures: the founders and researchers at the front of the field. And almost no one is slowing down. Pick whose view of the future to inhabit.</p>
-    <div class="od-choose">CHOOSE YOUR PLAYER<span style="color:{{ selAccent }}">{{ selectedSuffix }}</span></div>
-    <div class="od-rows">
+    <div class="od-choose">CHOOSE YOUR PLAYER<span class="od-choose-sel">{{ selectedSuffix }}</span></div>
+    <div class="od-pcards">
       <sc-for list="{{ landingRoster }}" as="r" hint-placeholder-count="3">
-        <button onClick="{{ r.select }}" class="od-prow" aria-pressed="{{ r.pressed }}" style="border:{{ r.rowBorder }};background:{{ r.rowBg }};opacity:{{ r.rowOpacity }};animation-delay:{{ r.delay }}">
-          <span class="od-prow-tile" style="background:{{ r.tileBg }};color:{{ r.tileInk }}">{{ r.initials }}</span>
-          <span class="od-prow-main">
-            <span class="od-prow-name">{{ r.name }}</span>
-            <span class="od-prow-aff">{{ r.affiliation }}</span>
-            <span class="od-prow-teaser">{{ r.teaser }}</span>
-          </span>
-          <span class="od-prow-mech" style="color:{{ r.accent }}">
-            <sc-if value="{{ r.active }}"><span class="od-prow-check">✓</span></sc-if>
-            <span>{{ r.mechTag }}</span>
+        <button onClick="{{ r.select }}" class="od-pcard" aria-pressed="{{ r.pressed }}" style="opacity:{{ r.cardOpacity }};box-shadow:{{ r.cardShadow }};animation-delay:{{ r.delay }}">
+          <img class="od-pcard-img" alt="" />
+          <span class="od-pcard-grad"></span>
+          <span class="od-pcard-mech">{{ r.mechTag }}</span>
+          <sc-if value="{{ r.active }}"><span class="od-pcard-sel">✓ SELECTED</span></sc-if>
+          <span class="od-pcard-body">
+            <span class="od-pcard-odds"><b>{{ r.oddsBig }}</b><i>{{ r.oddsCap }}</i></span>
+            <span class="od-pcard-name">{{ r.name }}</span>
+            <span class="od-pcard-role">{{ r.role }}</span>
+            <span class="od-pcard-teaser">{{ r.teaser }}</span>
           </span>
         </button>
       </sc-for>
@@ -529,6 +544,8 @@ class Component extends DCLogic {
       if (hero) { const pl = this.players[this.state.playerId]; const url = pl.photo; hero.setAttribute('alt', pl.name + ' — ' + pl.role); if (hero.getAttribute('src') !== url) { hero.onload = () => { hero.classList.remove('od-blurin'); void hero.offsetWidth; hero.classList.add('od-blurin'); }; hero.setAttribute('src', url); } }
       const tiles = document.querySelectorAll('.od-tile-img');
       tiles.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); } });
+      const pcards = document.querySelectorAll('.od-pcard-img');
+      pcards.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); } });
     } catch (e) {}
   }
   componentWillUnmount() { this.clearTimers(); if (this._onSettled) document.removeEventListener('die-settled', this._onSettled); if (this._onImpact) document.removeEventListener('die-impact', this._onImpact); if (this._onPop) window.removeEventListener('popstate', this._onPop); }
@@ -820,19 +837,16 @@ class Component extends DCLogic {
       const pl = this.players[id];
       const active = id === s.playerId;
       return {
-        initials: pl.initials, name: pl.name, affiliation: pl.role, teaser: pl.teaser,
-        mechTag: pl.mechTag, accent: pl.accent, active, pressed: active ? 'true' : 'false',
+        name: pl.name, role: pl.role, teaser: pl.teaser, mechTag: pl.mechTag,
+        oddsBig: pl.oddsBig, oddsCap: pl.oddsCap, active, pressed: active ? 'true' : 'false',
         select: () => this.selectOnLanding(id),
-        rowBorder: active ? ('2px solid ' + pl.accent) : '1px solid rgba(236,234,230,0.16)',
-        rowBg: active ? pl.accentTint : 'transparent',
-        rowOpacity: active ? '1' : '0.55',
-        tileBg: active ? pl.accent : 'rgba(236,234,230,0.08)',
-        tileInk: active ? '#08080A' : '#ECEAE6',
+        cardOpacity: active ? '1' : '0.6',
+        cardShadow: active ? '0 0 0 2px #E0481B inset, 0 16px 42px rgba(224,72,27,0.30)' : '0 6px 22px rgba(0,0,0,0.4)',
         delay: (0.1 + i * 0.08).toFixed(2) + 's',
       };
     });
     const selectedSuffix = ' · ' + selPlayer.short.toUpperCase() + ' SELECTED';
-    const selAccent = selPlayer.accent;
+    const selAccent = '#E0481B';
     const ctaLabel = selPlayer.cta || 'Play the odds →';
 
     const gauntletNav = this.order.map((id, i) => {
