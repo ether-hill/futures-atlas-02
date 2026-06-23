@@ -56,7 +56,7 @@ export const projects: Project[] = [
     date: "2026-02-14",
     field: "AI & risk",
     status: "live",
-    path: "/odds-of-surviving-ai", // self-contained bundle served within this site
+    path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
     image: "/projects/odds-of-surviving-ai.jpg",
   },
   {

@@ -22,8 +22,15 @@ const nextConfig: NextConfig = {
           source: "/underground-intelligence/:tab(story|dashboard|research)",
           destination: "/underground-intelligence/index.html",
         },
-        { source: "/odds-of-surviving-ai", destination: "/odds-of-surviving-ai/index.html" },
-        { source: "/odds-of-surviving-ai/research", destination: "/odds-of-surviving-ai/research.html" },
+        // The Odds — canonical /theodds routes. The bundle physically lives at
+        // /odds-of-surviving-ai/ (keeping its <base href> so assets resolve); the
+        // per-player files give crawlers route-specific OG metadata.
+        { source: "/theodds", destination: "/odds-of-surviving-ai/index.html" },
+        { source: "/theodds/all", destination: "/odds-of-surviving-ai/index.html" },
+        { source: "/theodds/dario-amodei", destination: "/odds-of-surviving-ai/p/dario-amodei.html" },
+        { source: "/theodds/elon-musk", destination: "/odds-of-surviving-ai/p/elon-musk.html" },
+        { source: "/theodds/max-tegmark", destination: "/odds-of-surviving-ai/p/max-tegmark.html" },
+        { source: "/theodds/research", destination: "/odds-of-surviving-ai/research.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
         // Generatives — Vite static app; the dashboard + a separate embed.html player
@@ -56,6 +63,11 @@ const nextConfig: NextConfig = {
       { source: "/prism/:path*", destination: "/generatives/:path*", permanent: true },
       { source: "/visualize", destination: "/literal-frequency", permanent: true },
       { source: "/visualize/:path*", destination: "/literal-frequency/:path*", permanent: true },
+      // The Odds moved to /theodds — keep the old entry URLs working. (Only the
+      // two HTML entry points redirect; the bundle's own assets at
+      // /odds-of-surviving-ai/* are served directly and must NOT be matched.)
+      { source: "/odds-of-surviving-ai", destination: "/theodds", permanent: true },
+      { source: "/odds-of-surviving-ai/research", destination: "/theodds/research", permanent: true },
     ];
   },
 };
