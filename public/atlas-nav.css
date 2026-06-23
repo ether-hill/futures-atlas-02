@@ -362,8 +362,9 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
 }
 
 /* ── global Share tool — fixed bottom-left on every page, expands on click ── */
-.fa-share { position: fixed; right: 18px; top: calc(var(--fa-nav-h, 56px) + 14px); z-index: 60; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; }
+.fa-share { position: fixed; right: 18px; top: calc(var(--fa-nav-h, 56px) + 14px); z-index: 60; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; pointer-events: none; }
 .fa-share__btn {
+  pointer-events: auto;
   height: 40px; border-radius: 999px; display: inline-flex; align-items: center; gap: 8px; padding: 0 17px;
   font: 600 12px/1 system-ui, sans-serif; letter-spacing: 0.08em;
   background: rgba(243, 241, 236, 0.92); color: #171410; border: 1px solid rgba(23, 20, 16, 0.14);
@@ -382,7 +383,7 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
   opacity: 0; visibility: hidden; transform: translateY(-8px) scale(0.97); transform-origin: top right;
   transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
 }
-.fa-share.is-open .fa-share__panel { opacity: 1; visibility: visible; transform: none; }
+.fa-share.is-open .fa-share__panel { opacity: 1; visibility: visible; transform: none; pointer-events: auto; }
 .fa-share__opt {
   display: block; text-align: left; width: 100%; padding: 10px 13px; border: 0; background: transparent;
   border-radius: 9px; color: #171410; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; white-space: nowrap;

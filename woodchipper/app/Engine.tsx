@@ -64,6 +64,18 @@ export default function Engine() {
 
   // ── canvas: nebula + branching constellation ───────────────────────────────
   const cvRef = useRef<HTMLCanvasElement | null>(null);
+  const hitRef = useRef<{ id: string; x: number; y: number; r: number }[]>([]);
+
+  // canvas nodes are clickable too (the control buttons remain for a11y)
+  const hitId = (e: React.PointerEvent<HTMLCanvasElement>): string | null => {
+    const cv = cvRef.current; if (!cv) return null;
+    const b = cv.getBoundingClientRect();
+    const x = e.clientX - b.left, y = e.clientY - b.top;
+    for (const n of hitRef.current) { const dx = x - n.x, dy = y - n.y; if (dx * dx + dy * dy <= (n.r + 12) * (n.r + 12)) return n.id; }
+    return null;
+  };
+  const onCanvasClick = (e: React.PointerEvent<HTMLCanvasElement>) => { const id = hitId(e); if (id && frontier) select(frontier, id); };
+  const onCanvasMove = (e: React.PointerEvent<HTMLCanvasElement>) => { const id = hitId(e); setHover(id); if (cvRef.current) cvRef.current.style.cursor = id ? "pointer" : "default"; };
   const stateRef = useRef({ choices, sequence, frontierOptions, frontier, hover, done: !!result });
   stateRef.current = { choices, sequence, frontierOptions, frontier, hover, done: !!result };
 
@@ -128,6 +140,7 @@ export default function Engine() {
           frontierNodes.push({ x: fx, y, r: hovered ? 13 : 10, label: o.label, tone: [...tone], bright: hovered ? 1 : 0.62, id: o.id, stage: st.frontier! });
         });
       }
+      hitRef.current = frontierNodes.map((f) => ({ id: f.id as string, x: f.x, y: f.y, r: f.r }));
       // outcome node
       if (st.done) {
         const last = nodes[nodes.length - 1]!;
@@ -189,7 +202,7 @@ export default function Engine() {
 
   return (
     <div className="engine">
-      <canvas ref={cvRef} className="constellation" aria-hidden="true" />
+      <canvas ref={cvRef} className="constellation" aria-hidden="true" onClick={onCanvasClick} onPointerMove={onCanvasMove} onPointerLeave={() => setHover(null)} />
       <div className="controls">
         {result ? (
           <div className={`outcome tone-${result.verdict.tone}`} role="status" aria-live="polite">
