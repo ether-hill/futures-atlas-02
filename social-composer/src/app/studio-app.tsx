@@ -992,15 +992,15 @@ function FrameThumb({ frame, aspect, isLogo, text, getImg, getVideo, selected, o
   }, [frame, w, h, aspect, isLogo, text, getImg, getVideo]);
   return (
     <div className={`group relative overflow-hidden border bg-bone ${selected ? "border-oxblood ring-1 ring-oxblood" : "border-ink/15 hover:border-ink/45"}`} style={{ aspectRatio: `${w} / ${h}` }}>
-      <button type="button" onClick={onClick} title={`${frame.label} · ${text.headline}`} className="block w-full h-full">
-        <canvas ref={ref} style={{ width: "100%", height: "100%", display: "block" }} />
-      </button>
+      <canvas ref={ref} style={{ width: "100%", height: "100%", display: "block" }} />
+      {/* full-cover select target so the entire thumbnail is clickable */}
+      <button type="button" onClick={onClick} title={`${frame.label} · ${text.headline}`} aria-label={`Pick ${frame.label}`} className="absolute inset-0 w-full h-full cursor-pointer" />
       {frame.kind === "video" && <span className="absolute inset-0 grid place-items-center pointer-events-none"><span className="grid place-items-center w-6 h-6 rounded-full bg-oxblood/90 text-bone text-[10px]">▶</span></span>}
       <span className="absolute bottom-1 left-1 font-docket text-[8px] uppercase tracking-[0.08em] bg-ink/70 text-bone px-1.5 py-0.5 pointer-events-none">{frame.label}</span>
       {selected && multi && order >= 0 && <span className="absolute top-1 left-1 grid place-items-center w-5 h-5 bg-oxblood text-bone font-docket text-[10px] pointer-events-none">{order + 1}</span>}
       {onDelete && (
         <button type="button" onClick={(e) => { e.stopPropagation(); onDelete(); }} aria-label={`Delete ${frame.label} from library`} title="Delete from library"
-          className="absolute top-1 right-1 grid place-items-center w-5 h-5 rounded-full bg-ink/75 text-bone text-[12px] leading-none hover:bg-oxblood opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity">×</button>
+          className="absolute top-1 right-1 z-10 grid place-items-center w-5 h-5 rounded-full bg-ink/75 text-bone text-[12px] leading-none hover:bg-oxblood opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto focus:opacity-100 focus:pointer-events-auto transition-opacity">×</button>
       )}
     </div>
   );
