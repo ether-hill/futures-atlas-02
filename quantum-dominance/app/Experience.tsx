@@ -57,21 +57,24 @@ function MediaFrame({ sc }: { sc: Scenario }) {
   );
 }
 
+interface StackItem { sc: Scenario; mode: Lens; key: number; }
+
 export default function Experience() {
   const [mode, setMode] = useState<Lens>("dystopia");
-  const [current, setCurrent] = useState<Scenario | null>(null);
-  const [viewCount, setViewCount] = useState(0);
-  const [viewed, setViewed] = useState<Scenario[]>([]);
+  const [stack, setStack] = useState<StackItem[]>([]);
   const [composerOpen, setComposerOpen] = useState(false);
   const [heroImg, setHeroImg] = useState(false);
 
   const queues = useRef<Record<Lens, string[]>>({ dystopia: [], backfire: [] });
-  const scenarioRef = useRef<HTMLDivElement | null>(null);
+  const keyRef = useRef(0);
   const shareRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
+  const heroImgRef = useRef<HTMLImageElement | null>(null);
   const reduce = useRef(false);
   useEffect(() => { reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
+  // SSR/static export: the post image can finish loading before hydration, so onLoad never fires — catch it on mount
+  useEffect(() => { const im = heroImgRef.current; if (im && im.complete && im.naturalWidth > 0) setHeroImg(true); }, []);
 
   const drawNext = (m: Lens): Scenario => {
     if (!queues.current[m].length) queues.current[m] = shuffle(byDeck(m).map((s) => s.id));
@@ -79,27 +82,28 @@ export default function Experience() {
     return byDeck(m).find((s) => s.id === id)!;
   };
 
+  // append a fresh scenario panel; the scroll effect brings it into view
   const present = useCallback((m: Lens) => {
-    const sc = drawNext(m);
-    setCurrent(sc);
-    setViewCount((c) => c + 1);
-    setViewed((v) => (v.find((x) => x.id === sc.id) ? v : [...v, sc]));
+    setMode(m);
+    setStack((s) => [...s, { sc: drawNext(m), mode: m, key: keyRef.current++ }]);
   }, []);
 
-  const pickLens = (m: Lens) => {
-    setMode(m); present(m);
-    requestAnimationFrame(() => scenarioRef.current?.scrollIntoView({ behavior: reduce.current ? "auto" : "smooth" }));
-  };
-  const switchLens = () => { const nm: Lens = mode === "dystopia" ? "backfire" : "dystopia"; setMode(nm); present(nm); };
+  const switchLens = (from: Lens) => present(from === "dystopia" ? "backfire" : "dystopia");
 
-  // composer: focus the close button on open, Esc closes, return focus to trigger
+  // each new panel scrolls into view (stacking up the page)
+  useEffect(() => {
+    if (!stack.length) return;
+    const el = document.getElementById(`qd-panel-${stack.length - 1}`);
+    el?.scrollIntoView({ behavior: reduce.current ? "auto" : "smooth", block: "start" });
+  }, [stack.length]);
+
+  // composer: focus the close button on open, Esc closes, return focus to trigger, trap Tab
   useEffect(() => {
     if (!composerOpen) return;
     closeRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") { closeComposer(); return; }
       if (e.key !== "Tab") return;
-      // focus-trap: keep Tab within the dialog
       const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(
         'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
@@ -115,73 +119,92 @@ export default function Experience() {
   }, [composerOpen]);
   const closeComposer = () => { setComposerOpen(false); requestAnimationFrame(() => shareRef.current?.focus()); };
 
+  // composer stages every unique scenario seen, in order
+  const viewed = stack.reduce<Scenario[]>((acc, e) => (acc.find((x) => x.id === e.sc.id) ? acc : [...acc, e.sc]), []);
+  const viewCount = stack.length;
   const shareReady = viewCount >= SHARE_AFTER;
 
   return (
     <div className="qd-root" data-mode={mode}>
-      {/* ── HERO ── */}
+      {/* ── HERO · 50/50 ── */}
       <section className="hero" id="hero">
-        <div className="hero__kicker"><span className="dot" aria-hidden="true" /> Futures Atlas · Quantum Dominance · Ed. 2026</div>
-        <div className="phone" aria-label="A stylised social post from the Department of War CTO account: 'Are you enjoying the show? Refill your popcorn — you'll love this next part.' over a 'Quantum Dominance' graphic.">
-          <div className="phone__island" aria-hidden="true" />
-          <div className="phone__screen">
-            <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ic"><i /><i style={{ height: 9 }} /><i style={{ height: 5 }} /> ▮</span></div>
-            <div className="post">
-              <div className="post__head">
-                <div className="post__av" aria-hidden="true">Q</div>
-                <div className="post__who">
-                  <div className="post__name">Department of War CTO <span className="vf" aria-hidden="true">✔</span></div>
-                  <div className="post__handle">@DoWCTO · 6h</div>
+        <div className="hero__intro">
+          <div className="hero__kicker"><span className="dot" aria-hidden="true" /> Futures Atlas · Quantum Dominance · Ed. 2026</div>
+          <h1 className="hero__title"><span>Quantum</span><span>Dominance</span></h1>
+          <p className="hero__sub">One vision. Two futures.</p>
+          <p className="hero__summary">An official U.S. government account told the country to refill its popcorn. We took the bait — and mapped where the show goes next. Choose the lens you can stomach: the futures where the machine works <em>for</em> him, or the ones where it turns transparent the other way. <b>Speculative satire.</b></p>
+          <div className="scroll-cue" aria-hidden="true">Pick a lens — each one builds the feed below<span className="arr">↓</span></div>
+        </div>
+
+        <div className="hero__deck">
+          <div className="phone" aria-label="A facsimile of a post from the verified Department of War CTO account (@DoWCTO, Jun 22): 'Are you enjoying the show? Refill your popcorn — you'll love this next part,' captioned 'American (Q)uantum Dominance,' with the Quantum Dominance poster.">
+            <div className="phone__island" aria-hidden="true" />
+            <div className="phone__screen">
+              <div className="sbar" aria-hidden="true"><span>9:41</span><span className="ic"><i /><i style={{ height: 9 }} /><i style={{ height: 5 }} /> ▮</span></div>
+              <div className="post">
+                <div className="post__head">
+                  <div className="post__av" aria-hidden="true">▲</div>
+                  <div className="post__who">
+                    <div className="post__name">Department of War CTO <span className="vf" aria-hidden="true">✔</span></div>
+                    <div className="post__handle">@DoWCTO · Jun 22</div>
+                  </div>
                 </div>
+                <div className="post__text">Are you enjoying the show? Refill your popcorn… <span className="em">you&apos;ll love this next part.</span> 🍿</div>
+                <div className="post__subline">AMERICAN (Q)UANTUM DOMINANCE</div>
+                <div className="qd">
+                  <div className="qd__cap" aria-hidden="true">AMERICAN (Q)UANTUM DOMINANCE</div>
+                  <div className="qd__q" aria-hidden="true" />
+                  <div className="qd__fig" aria-hidden="true" />
+                  <div className="qd__title" aria-hidden="true"><b>QUANTUM</b><b>DOMINANCE</b></div>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img ref={heroImgRef} className="qd__img" alt="" src={`${MEDIA_BASE}hero-post.jpg`} onLoad={() => setHeroImg(true)} onError={() => setHeroImg(false)} style={{ display: heroImg ? "block" : "none" }} />
+                </div>
+                <div className="post__attr">White House OSTP 47 and The White House</div>
+                <div className="post__acts" aria-hidden="true"><span>↩ 2.8K</span><span>⇄ 10K</span><span>♡ 28K</span><span>▤ 2.4M</span></div>
               </div>
-              <div className="post__text">Are you enjoying the show? Refill your popcorn… <span className="em">you&apos;ll love this next part.</span> 🍿</div>
-              <div className="qd">
-                <div className="qd__cap">AMERICAN (Q)UANTUM DOMINANCE</div>
-                <div className="qd__q" aria-hidden="true" />
-                <div className="qd__fig" aria-hidden="true" />
-                <div className="qd__title"><b>QUANTUM</b><b>DOMINANCE</b></div>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="qd__img" alt="" src={`${MEDIA_BASE}hero-post.jpg`} onLoad={() => setHeroImg(true)} onError={() => setHeroImg(false)} style={{ display: heroImg ? "block" : "none" }} />
-              </div>
-              <div className="post__acts" aria-hidden="true"><span>↩ 4.2K</span><span>⇄ 18K</span><span>♡ 91K</span><span>▤ 582K</span></div>
             </div>
           </div>
-        </div>
-        <div className="hero__pitch">
-          <h1>One post. <span>Two futures.</span></h1>
-          <p>An official government account told the country to refill its popcorn. Here&apos;s where the show could go — pick the lens you can stomach. <b>Speculative satire.</b></p>
-        </div>
-        <div className="lenses">
-          <button className="lens lens--d" onClick={() => pickLens("dystopia")}>
-            <div className="lens__tag">▸ Lens 01</div>
-            <div className="lens__name">The Dystopia</div>
-            <div className="lens__desc">{LENS.dystopia.desc}</div>
-          </button>
-          <button className="lens lens--b" onClick={() => pickLens("backfire")}>
-            <div className="lens__tag">▸ Lens 02</div>
-            <div className="lens__name">The Backfire</div>
-            <div className="lens__desc">{LENS.backfire.desc}</div>
-          </button>
-        </div>
-        <div className="scroll-cue">Choose a lens to begin<span className="arr" aria-hidden="true">↓</span></div>
-      </section>
 
-      {/* ── SCENARIO ── */}
-      <section className="scenario" id="scenario" ref={scenarioRef}>
-        <div className={`scn-text${current ? " scn-fade" : ""}`} key={`${current?.id ?? "none"}-${viewCount}`}>
-          <div className="scn-kicker"><span>{LENS[mode].label}</span> <span className="bar" /> <span>{current ? `OUTCOME ${String(viewCount).padStart(2, "0")}` : "PICK A LENS"}</span></div>
-          <h2 className="scn-title">{current ? current.title : "Two futures, one machine."}</h2>
-          <p className="scn-summary">{current ? <Markup html={current.summary} /> : "Choose a lens above to begin. Each panel is a randomised future, anchored to something on the record — and labelled speculative satire."}</p>
-          {current && <div className="scn-seed">{current.seed}</div>}
-          <div className="scn-controls">
-            <button className="ctl ctl--primary" onClick={() => present(mode)}>↻ Show another</button>
-            <button className="ctl" onClick={switchLens}>⇄ Switch lens</button>
-            {shareReady && <button className="ctl ctl--share" ref={shareRef} onClick={() => setComposerOpen(true)}>⤴ Share these stories</button>}
-            <span className="scn-count">{viewCount} seen</span>
+          <div className="lenses">
+            <button className="lens lens--d" onClick={() => present("dystopia")}>
+              <div className="lens__tag">▸ Lens 01</div>
+              <div className="lens__name">The Dystopia</div>
+              <div className="lens__desc">{LENS.dystopia.desc}</div>
+            </button>
+            <button className="lens lens--b" onClick={() => present("backfire")}>
+              <div className="lens__tag">▸ Lens 02</div>
+              <div className="lens__name">The Backfire</div>
+              <div className="lens__desc">{LENS.backfire.desc}</div>
+            </button>
           </div>
         </div>
-        {current ? <MediaFrame sc={current} /> : <div className="scn-media"><div className="slot"><div className="slot__inner"><div className="slot__bar"><span>◬ Awaiting a lens</span><span className="ar">16:9</span></div><div className="slot__prompt">Pick <b>The Dystopia</b> or <b>The Backfire</b> above to draw your first future.</div></div></div><div className="scrim" aria-hidden="true" /></div>}
       </section>
+
+      {/* ── SCENARIO FEED · panels stack down the page ── */}
+      {stack.map((item, i) => {
+        const last = i === stack.length - 1;
+        return (
+          <section className="scenario" id={`qd-panel-${i}`} key={item.key} data-mode={item.mode}>
+            <div className="scn-text scn-fade">
+              <div className="scn-kicker"><span>{LENS[item.mode].label}</span> <span className="bar" /> <span>OUTCOME {String(i + 1).padStart(2, "0")}</span></div>
+              <h2 className="scn-title">{item.sc.title}</h2>
+              <p className="scn-summary"><Markup html={item.sc.summary} /></p>
+              <div className="scn-seed">{item.sc.seed}</div>
+              {last ? (
+                <div className="scn-controls">
+                  <button className="ctl ctl--primary" onClick={() => present(item.mode)}>↻ Show another</button>
+                  <button className="ctl" onClick={() => switchLens(item.mode)}>⇄ Switch lens</button>
+                  {shareReady && <button className="ctl ctl--share" ref={shareRef} onClick={() => setComposerOpen(true)}>⤴ Share these stories</button>}
+                  <span className="scn-count">{viewCount} seen</span>
+                </div>
+              ) : (
+                <div className="scn-controls scn-controls--done"><span className="scn-count">↓ kept exploring</span></div>
+              )}
+            </div>
+            <MediaFrame sc={item.sc} />
+          </section>
+        );
+      })}
 
       {/* ── COMPOSER ── */}
       {composerOpen && (
