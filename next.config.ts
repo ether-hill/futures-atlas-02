@@ -44,6 +44,8 @@ const nextConfig: NextConfig = {
         { source: "/swipe-the-future", destination: "/swipe-the-future/index.html" },
         // Woodchipper Futures — Next static export (USAID cuts scenario engine)
         { source: "/woodchipper", destination: "/woodchipper/index.html" },
+        // Quantum Dominance — Next static export (graphic-novel scenario explorer)
+        { source: "/quantum-dominance", destination: "/quantum-dominance/index.html" },
       ],
     };
   },

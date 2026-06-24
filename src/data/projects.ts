@@ -24,6 +24,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "quantum-dominance",
+    title: "Quantum Dominance",
+    tagline:
+      "Speculative satire: one official 'quantum dominance' post, two lenses. Pick The Dystopia or The Backfire and explore randomized futures — each anchored to something on the record, ready to push into the composer.",
+    year: "2026",
+    date: "2026-06-24",
+    field: "AI & risk",
+    status: "live",
+    path: "/quantum-dominance",
+    image: "/projects/quantum-dominance.jpg",
+  },
+  {
     id: "woodchipper",
     title: "Woodchipper Futures",
     tagline:

@@ -63,4 +63,13 @@ cp -R "$HERE/woodchipper/out/." "$HERE/public/woodchipper/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/woodchipper"
 echo "✓ woodchipper → public/woodchipper (with atlas-nav)"
 
+# Quantum Dominance: Next static export → out/, then copy into public/.
+echo "→ building quantum-dominance"
+( cd "$HERE/quantum-dominance" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/quantum-dominance"
+mkdir -p "$HERE/public/quantum-dominance"
+cp -R "$HERE/quantum-dominance/out/." "$HERE/public/quantum-dominance/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-dominance"
+echo "✓ quantum-dominance → public/quantum-dominance (with atlas-nav)"
+
 echo "✓ all sub-apps built"

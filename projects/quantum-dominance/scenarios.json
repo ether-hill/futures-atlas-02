@@ -1,0 +1,176 @@
+{
+  "meta": {
+    "project": "Quantum Dominance: Two Futures",
+    "shareAfter": 5,
+    "lenses": {
+      "dystopia": { "label": "DYSTOPIA", "signal": "#e23123", "seedWord": "A probable future under American Quantum Dominance." },
+      "backfire": { "label": "BACKFIRE", "signal": "#3fd39a", "seedWord": "A probable backfire of American Quantum Dominance." }
+    },
+    "mediaBase": "/media/",
+    "promptSuffix": "hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw",
+    "summaryMarkup": "Only <em> (accent) and <b> (white) tags are permitted in summary."
+  },
+  "scenarios": [
+    {
+      "id": "deportation-engine", "deck": "dystopia", "type": "image",
+      "title": "The Deportation Engine",
+      "hook": "ICE doesn't search anymore. It retrieves. The machine already knew where you'd be.",
+      "summary": "The Q-BID battlefield-targeting stack turns inward. ICE becomes <em>omniscient</em> — a quantum dragnet that predicts where you'll be before you do. Raids stop being searches and become <b>retrievals</b>.",
+      "seed": "SEED · Mass-deportation agenda + Q-BID targeting tech repurposed at home.",
+      "prompt": "Aerial night view of a quiet residential street with a glowing red predictive-targeting grid overlaid on the houses, ICE vehicles converging on one pre-lit home, drone swarm above, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "house-always-wins", "deck": "dystopia", "type": "image",
+      "title": "The House Always Wins",
+      "hook": "It never broke encryption. It only ever printed money for the family.",
+      "summary": "The machine never cures anything — but it reliably prints money for the right people. A quantum market-predictor lets the family <em>front-run every trade on Earth</em>. The whole program is a wealth-extraction vehicle wearing a flag.",
+      "seed": "SEED · $TRUMP memecoin, the CHIPS equity stakes, documented self-dealing.",
+      "prompt": "A gilded penthouse trading floor at night, red stock tickers wrapping marble columns, a family crest above the screens, a silhouetted figure watching the numbers, obscene wealth, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "forever-front", "deck": "dystopia", "type": "image",
+      "title": "The Forever Front",
+      "hook": "The war doesn't end. It optimizes. The next country is already queued.",
+      "summary": "The strikes never end — they optimize. A quantum solver generates and services targets faster than any human can object, logging the dead as <em>acceptable variance</em>. The war is permanent because the dominance narrative needs an enemy.",
+      "seed": "SEED · The 2026 Iran strikes + documented civilian-targeting concerns.",
+      "prompt": "A darkened military operations room, a wall map of a city where red targeting reticles bloom automatically across neighborhoods, no hand on the controls, exhausted analysts in screen-glow, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "every-citizen", "deck": "dystopia", "type": "image",
+      "title": "A Reality For Every Citizen",
+      "hook": "Everyone is perfectly informed. No two people share a single fact.",
+      "summary": "\"Flood the zone\" reaches its final form. Quantum-scale generation gives every person a bespoke reality, optimized not for truth but for <b>loyalty</b>. There's no shared world left to argue over.",
+      "seed": "SEED · The firehose-of-falsehood strategy, fully automated.",
+      "prompt": "A vast dark hall where thousands of people each stare into a personal floating screen showing a slightly different red-tinted headline, isolation in a crowd, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "loyalty-index", "deck": "dystopia", "type": "image",
+      "title": "The Loyalty Index",
+      "hook": "Dissent is now flagged before you've finished thinking it.",
+      "summary": "The enemies list becomes a live dashboard. A quantum system scores every official, soldier and citizen for loyalty in real time and flags dissent <em>before it forms</em>. The only civic virtue left is a high score.",
+      "seed": "SEED · Stated retribution agenda, loyalty tests, Schedule F.",
+      "prompt": "A cavernous government control room dominated by a floor-to-ceiling wall of citizen ID photos colour-graded from green to deep red by a loyalty score, technicians below, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "throughput", "deck": "dystopia", "type": "image",
+      "title": "Throughput",
+      "hook": "In the camps, cruelty isn't a side effect. It's a tracked KPI.",
+      "summary": "For-profit detention fused with quantum logistics. The camps are optimized for contractor margin and processing speed, people reduced to units in a supply chain. The cruelty is a <b>tracked KPI</b> — it generates the deterrent spectacle the contracts pay for.",
+      "seed": "SEED · Private-prison contractors + detention expansion as profit.",
+      "prompt": "High aerial view of an endless modular detention camp in a perfect optimization grid across a desert, contractor logos on the roofs, a glowing red logistics overlay routing figures between blocks, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "camera-tv", "deck": "dystopia", "type": "image",
+      "title": "Person. Woman. Man. Camera. TV.",
+      "hook": "He aces every cognitive test in real time. He's also no longer on set.",
+      "summary": "The cognitive-acuity obsession meets infinite compute. The machine manufactures endless proof of sharpness — and when that fails, it simply <em>renders him</em>: a deepfaked, ever-vigorous broadcast figure who aces every test while the man is nowhere on set.",
+      "seed": "SEED · The recurring \"I aced the test\" performances; deepfake fitness theater.",
+      "prompt": "A television studio where a too-perfect leader-figure addresses the camera as a silhouette on a glowing screen, while behind a pulled-back curtain a wall of rendering machines generates his image frame by frame, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "files-pending", "deck": "dystopia", "type": "image",
+      "title": "Files, Pending",
+      "hook": "The files were never hidden. The very idea of a verifiable file was deleted.",
+      "summary": "Not a confession — a <b>machine for never confessing</b>. The eternal promise to \"release everything,\" the flawless redaction, documents drowned in generated fakes until nothing can be authenticated. Transparency becomes a countdown that never reaches zero.",
+      "seed": "SEED · The theater around the file-release promises and walk-backs.",
+      "prompt": "A cathedral-scale archive vault stacked with endlessly redacted black-bar documents, a giant red RELEASE: PENDING counter frozen on the wall, papers dissolving into identical fakes, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "bloodline", "deck": "dystopia", "type": "image",
+      "title": "The Bloodline Protocol",
+      "hook": "The republic didn't fall. It got acquired by a family office.",
+      "summary": "The brand has to outlive the man, so the machine engineers continuity. Power passes not by election but by <em>franchise</em> — the name, the silhouette, the aesthetic preserved and reissued as perpetual leadership IP.",
+      "seed": "SEED · Dynastic-succession signaling; leadership-as-brand.",
+      "prompt": "A grand dynastic portrait hall where the same silhouetted leader-figure repeats down an endless gilded corridor, a red inheritance-line glowing between each frame, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "clemency", "deck": "dystopia", "type": "image",
+      "title": "Clemency.gov",
+      "hook": "Pardons clear in real time. Mercy is just inventory now.",
+      "summary": "Law becomes a marketplace with a quantum back-end. Pardons, prosecutions and \"probable cause\" get allocated by loyalty and payment, <b>priced and cleared in real time</b>. The gavel is an auction hammer.",
+      "seed": "SEED · Pardon-power controversies; loyalty-driven DOJ concerns.",
+      "prompt": "A marble courthouse interior retrofitted with a glowing red interface reading PARDON — PURCHASE, a gavel mounted like an auction hammer, queues of supplicants holding numbered tickets, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw"
+    },
+
+    {
+      "id": "ground-truth", "deck": "backfire", "type": "image",
+      "title": "Ground Truth",
+      "hook": "Every lie now prints its own correction on the wall behind him — live.",
+      "summary": "The verifier built to authenticate <em>his</em> reality gets pointed at the podium. Every statement is checked against the full record in real time, the correction appearing as it's spoken — a permanent footnote he can't outrun or flood.",
+      "seed": "FLIPS · A Reality For Every Citizen.",
+      "prompt": "A press-conference stage where a vast screen behind an empty podium displays live green-lit factual corrections scrolling faster than anyone can speak, a silhouetted figure dwarfed against the wall of truth, hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette with green signal-light, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "the-ledger", "deck": "backfire", "type": "image",
+      "title": "The Ledger",
+      "hook": "The grift needed darkness. The machine deleted darkness.",
+      "summary": "The same market-omniscience meant to enrich the family makes <b>every transaction legible to everyone</b>. Shell companies, kickbacks, the wallets — all rendered as a public, real-time flow chart. The house can't win when everyone sees the cards.",
+      "seed": "FLIPS · The House Always Wins.",
+      "prompt": "A towering transparent flow-diagram of money streams glowing over a city, every hidden account and shell suddenly visible as bright lines converging on a few gilded penthouses, crowds below looking up, green signal-light, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "peoples-verdict", "deck": "backfire", "type": "image",
+      "title": "The People's Verdict",
+      "hook": "The loyalty score got seized. Now it grades the powerful, in public, forever.",
+      "summary": "The loyalty-index dashboard gets inverted — now it scores <em>the powerful</em>, continuously, in full public view. Every official action weighed by the whole population in real time. The panopticon was always two-way.",
+      "seed": "FLIPS · The Loyalty Index.",
+      "prompt": "A monumental public square at dusk where a colossal civic scoreboard displays live accountability scores for named officials, an ocean of upturned faces, a courtroom blown up to city scale, cool signal-light, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "chain-of-custody", "deck": "backfire", "type": "image",
+      "title": "Chain Of Custody",
+      "hook": "You can't drown a file in fakes anymore. The machine can tell.",
+      "summary": "Quantum authentication makes <b>everything provable forever</b> — every document sealed beyond forgery, every deepfake instantly exposed, every real recording instantly verified. The cover-up engine runs in reverse.",
+      "seed": "FLIPS · Files, Pending + Authentication Zero.",
+      "prompt": "A vast archive where every document glows with an unbreakable verification seal, black-bar redactions burning away to reveal verified text, a frozen RELEASE: COMPLETE counter, light flooding a cathedral of records, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "the-unsealing", "deck": "backfire", "type": "image",
+      "title": "The Unsealing",
+      "hook": "The countdown that never hit zero just hit zero. No one's mercy required.",
+      "summary": "Asked one too many times to bury the same archive, the machine simply <em>finishes the job it was promised to do</em> — releases everything, verified, all at once, no redactions it can defend and no fakes it can hide behind.",
+      "seed": "FLIPS · Files, Pending — its direct mirror.",
+      "prompt": "A sealed vault door swinging open as a flood of verified white pages pours into a dark hall, a red PENDING sign flickering to green RELEASED, figures shielding their eyes from the light of disclosure, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "due-process", "deck": "backfire", "type": "image",
+      "title": "Due Process",
+      "hook": "The dragnet that hunted you now knows exactly what you're owed.",
+      "summary": "The predictive dragnet becomes a <b>rights-engine</b>: it finds everyone wrongly detained, surfaces every violation in real time, generates the airtight case, and routes a lawyer to every door before the raid. The same omniscience — aimed at protection.",
+      "seed": "FLIPS · The Deportation Engine.",
+      "prompt": "A detention facility at night where a glowing protective network of light connects each held person to an incoming legal-aid response, the targeting-grid aesthetic inverted into a rescue map, cold floodlight warming to gold, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "mirror-test", "deck": "backfire", "type": "image",
+      "title": "The Mirror Test",
+      "hook": "The deepfake machine became the proctor. It catches every staged performance — including his.",
+      "summary": "The deepfake apparatus becomes a universal authenticity detector — and flags <em>every</em> manufactured performance, including the ones it was built to make. The rendered vigor, the staged competence: all stamped FABRICATED in real time.",
+      "seed": "FLIPS · Person. Woman. Man. Camera. TV.",
+      "prompt": "A television studio where a too-perfect broadcast figure on screen is overlaid live with a stark red RENDERED — NOT LIVE verification stamp, the rendering machines behind the curtain now exposed and labelled, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "open-book", "deck": "backfire", "type": "image",
+      "title": "The Open Book",
+      "hook": "They built a world with no secrets and forgot they lived in it too.",
+      "summary": "\"Harvest now, decrypt later\" was their weapon — until the keys broke <b>symmetrically</b>. Now the powerful are as transparent as the powerless always were. Every backroom deal and deleted message, as readable as everyone else's.",
+      "seed": "FLIPS · Q-Day + The Last Key — the monopoly with no monopolist.",
+      "prompt": "A glass-walled seat of power where every wall, document and device has turned fully transparent, officials standing exposed inside as crowds outside read everything, the panopticon turned inside-out, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "the-receipt", "deck": "backfire", "type": "image",
+      "title": "The Receipt",
+      "hook": "Every pardon now comes with a public price tag and a buyer's name.",
+      "summary": "The pardon-marketplace gets audited by its own engine. Every pardon, dropped prosecution and quid-pro-quo is permanently <em>price-tagged and public</em> — corrupted justice rendered as an undeniable invoice.",
+      "seed": "FLIPS · Clemency.gov.",
+      "prompt": "A marble courthouse where a glowing public ledger lists every pardon with its true price and buyer scrolling up a wall, a gavel beside an itemized red invoice, supplicants now exposed rather than served, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    },
+    {
+      "id": "the-backfire", "deck": "backfire", "type": "image",
+      "title": "The Backfire",
+      "hook": "He built a machine that models all of reality — and a perfect model can't lie.",
+      "summary": "The truest one: a machine that can model all of reality perfectly <b>cannot lie</b>, because lying needs a gap between the model and the world, and the machine has closed the gap. He wins the race, and the prize is a world that can finally, permanently, tell.",
+      "seed": "FLIPS · The entire dominance premise — the dog catches the car.",
+      "prompt": "A lone silhouetted figure standing before an immense calm white light that is the fully-realized machine, his shadow thrown long and small, the spectacle stripped to a quiet unbearable clarity, hyperreal cinematic film still, anamorphic lens, volumetric fog, heavy 35mm grain, deeply unsettling --ar 16:9 --style raw"
+    }
+  ]
+}

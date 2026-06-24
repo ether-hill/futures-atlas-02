@@ -18,6 +18,7 @@
   // pages: a project's own internal tabs — shown in the mobile sheet under the
   // project title (and as the slim desktop sub-nav, rendered by each zone).
   var FA_PROJECTS = [
+    { name: "Quantum Dominance", path: "/quantum-dominance" },
     { name: "Woodchipper Futures", path: "/woodchipper" },
     { name: "Swipe the Future", path: "/swipe-the-future" },
     { name: "Social Composer", path: "/social-composer" },

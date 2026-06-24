@@ -35,6 +35,10 @@
 /woodchipper/.next/
 /woodchipper/node_modules/
 /woodchipper/out/
+/public/quantum-dominance/
+/quantum-dominance/.next/
+/quantum-dominance/node_modules/
+/quantum-dominance/out/
 /generatives/.next/
 /literal-frequency/.next/
 /quantum-sandbox/.next/

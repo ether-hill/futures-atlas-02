@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QUANTUM DOMINANCE — Two Futures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#08090b; --panel:#0c0e11; --bone:#e9e5dc; --muted:#83878e; --dim:#565a61;
+    --red:#e23123; --green:#3fd39a; --cyan:#54c6d2;
+    --sig:var(--red);                 /* active signal, retinted per lens */
+    --line:rgba(233,229,220,.16);
+    --t-impact:'Anton', Impact, sans-serif;
+    --t-body:'Archivo', system-ui, sans-serif;
+    --t-mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+    --ease:cubic-bezier(0.22,1,0.36,1);
+  }
+  body[data-mode="dystopia"]{--sig:var(--red);}
+  body[data-mode="backfire"]{--sig:var(--green);}
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--ink);color:var(--bone);font-family:var(--t-body);overflow-x:hidden;}
+
+  /* fixed texture overlays */
+  .fx{position:fixed;inset:0;pointer-events:none;z-index:40;}
+  .fx.scan{opacity:.4;background:repeating-linear-gradient(0deg,rgba(0,0,0,.22) 0 1px,transparent 1px 3px);mix-blend-mode:multiply;}
+  .fx.grain{inset:-50%;opacity:.08;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation:grain .6s steps(2) infinite;}
+  @keyframes grain{0%{transform:translate(0,0)}50%{transform:translate(-3%,2%)}100%{transform:translate(2%,-2%)}}
+  .fx.vig{background:radial-gradient(125% 95% at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%);}
+
+  /* ============ HERO ============ */
+  .hero{position:relative;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:clamp(1.5rem,5vw,3rem) 1.2rem;text-align:center;
+    background:radial-gradient(130% 80% at 50% 0%,#1a0c10 0%,var(--ink) 55%);}
+  .hero__kicker{font-family:var(--t-mono);font-size:.64rem;letter-spacing:.24em;text-transform:uppercase;color:var(--red);
+    display:flex;gap:.6rem;align-items:center;margin-bottom:clamp(1.4rem,4vw,2.2rem);}
+  .hero__kicker .dot{width:6px;height:6px;background:var(--red);border-radius:50%;box-shadow:0 0 8px var(--red);}
+
+  /* iPhone */
+  .phone{width:min(296px,74vw);aspect-ratio:9/19.2;background:#1b1c1f;border-radius:46px;padding:11px;position:relative;
+    border:1px solid #2a2c30;box-shadow:0 40px 90px -25px rgba(0,0,0,.9),0 0 0 7px #0f1013,inset 0 0 4px rgba(255,255,255,.05);}
+  .phone__island{position:absolute;top:20px;left:50%;transform:translateX(-50%);width:32%;height:20px;background:#000;border-radius:14px;z-index:3;}
+  .phone__screen{height:100%;border-radius:36px;overflow:hidden;background:#000;display:flex;flex-direction:column;}
+  .sbar{display:flex;justify-content:space-between;align-items:center;padding:13px 20px 4px;font-family:var(--t-mono);font-size:.56rem;color:#cfcbc3;letter-spacing:.04em;}
+  .sbar .ic{display:flex;gap:3px;align-items:center;}
+  .sbar .ic i{display:block;width:3px;height:7px;background:#cfcbc3;border-radius:1px;opacity:.85;}
+  .post{padding:10px 13px 12px;text-align:left;overflow:hidden;}
+  .post__head{display:flex;gap:8px;align-items:center;margin-bottom:8px;}
+  .post__av{width:34px;height:34px;border-radius:9px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 40% 35%,#2a0f12,#0a0507);border:1px solid rgba(226,49,35,.5);font-family:var(--t-impact);color:var(--red);font-size:1.1rem;text-shadow:0 0 10px rgba(226,49,35,.8);}
+  .post__who{line-height:1.2;}
+  .post__name{font-size:.72rem;font-weight:600;color:#f3efe8;display:flex;align-items:center;gap:4px;}
+  .post__name .vf{color:var(--red);font-size:.62rem;}
+  .post__handle{font-family:var(--t-mono);font-size:.56rem;color:#7c8088;}
+  .post__text{font-size:.74rem;line-height:1.45;color:#e7e3db;margin-bottom:10px;}
+  .post__text .em{color:#fff;}
+  /* QD media composition */
+  .qd{position:relative;width:100%;aspect-ratio:1/1.04;border-radius:11px;overflow:hidden;
+    background:radial-gradient(circle at 50% 36%,#260e12 0%,#06070a 72%);border:1px solid rgba(226,49,35,.18);}
+  .qd__cap{position:absolute;top:7px;left:0;right:0;text-align:center;font-family:var(--t-mono);font-size:.5rem;letter-spacing:.14em;color:#b9aa9a;z-index:3;}
+  .qd__q{position:absolute;top:15%;left:50%;transform:translateX(-50%);width:60%;aspect-ratio:1;border-radius:50%;
+    border:3px solid rgba(226,49,35,.85);box-shadow:0 0 38px rgba(226,49,35,.55),inset 0 0 26px rgba(226,49,35,.35);}
+  .qd__q::after{content:"";position:absolute;bottom:4%;right:12%;width:30%;height:3px;background:rgba(226,49,35,.95);
+    transform:rotate(45deg);box-shadow:0 0 10px rgba(226,49,35,.9);}
+  .qd__fig{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);width:50%;height:56%;z-index:2;}
+  .qd__fig::before{content:"";position:absolute;bottom:40%;left:50%;transform:translateX(-50%);width:44%;aspect-ratio:1;border-radius:50%;
+    background:#040405;box-shadow:0 0 0 1px rgba(226,49,35,.3),0 -3px 10px rgba(226,49,35,.3) inset;}
+  .qd__fig::after{content:"";position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:100%;height:44%;
+    background:#040405;border-radius:50% 50% 6px 6px/86% 86% 0 0;box-shadow:0 0 0 1px rgba(226,49,35,.22);}
+  .qd__title{position:absolute;bottom:7%;left:0;right:0;text-align:center;z-index:3;font-family:var(--t-impact);
+    color:#f3efe8;letter-spacing:.02em;line-height:.86;text-shadow:0 0 18px rgba(226,49,35,.7),2px 2px 0 rgba(0,0,0,.5);}
+  .qd__title b{display:block;font-size:1.15rem;}
+  .qd__title b:last-child{color:#fff;}
+  .qd__img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:4;}
+  .post__acts{display:flex;justify-content:space-between;margin-top:10px;font-family:var(--t-mono);font-size:.54rem;color:#7c8088;}
+  .post__acts span{display:flex;align-items:center;gap:3px;}
+
+  .hero__pitch{margin-top:clamp(1.6rem,4vw,2.4rem);max-width:34rem;}
+  .hero__pitch h1{font-family:var(--t-impact);font-size:clamp(2rem,6vw,3.2rem);line-height:.92;letter-spacing:.01em;text-transform:uppercase;}
+  .hero__pitch h1 span{color:var(--red);text-shadow:-2px 0 var(--red),2px 0 var(--cyan);}
+  .hero__pitch p{color:var(--muted);margin-top:.8rem;font-size:1rem;line-height:1.5;}
+
+  .lenses{display:flex;gap:.9rem;margin-top:1.8rem;flex-wrap:wrap;justify-content:center;}
+  .lens{cursor:pointer;min-width:230px;text-align:left;background:rgba(12,14,17,.7);border:1px solid var(--line);
+    padding:1.1rem 1.2rem;transition:border-color .2s,background .2s,transform .14s;backdrop-filter:blur(3px);}
+  .lens:hover{transform:translateY(-2px);}
+  .lens__tag{font-family:var(--t-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;margin-bottom:.5rem;}
+  .lens__name{font-family:var(--t-impact);font-size:1.5rem;text-transform:uppercase;line-height:1;margin-bottom:.35rem;}
+  .lens__desc{font-size:.82rem;color:var(--muted);line-height:1.4;}
+  .lens--d{border-left:2px solid var(--red);} .lens--d:hover{border-color:var(--red);background:rgba(226,49,35,.1);}
+  .lens--d .lens__tag,.lens--d .lens__name{color:var(--red);}
+  .lens--b{border-left:2px solid var(--green);} .lens--b:hover{border-color:var(--green);background:rgba(63,211,154,.1);}
+  .lens--b .lens__tag,.lens--b .lens__name{color:var(--green);}
+
+  .scroll-cue{margin-top:2rem;font-family:var(--t-mono);font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);}
+  .scroll-cue .arr{display:block;margin-top:.4rem;animation:bob 1.8s ease-in-out infinite;}
+  @keyframes bob{50%{transform:translateY(5px)}}
+
+  /* ============ SCENARIO 50/50 ============ */
+  .scenario{position:relative;min-height:100dvh;display:grid;grid-template-columns:1fr 1fr;}
+  .scn-text{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(1.6rem,4vw,3.4rem);border-right:1px solid var(--line);background:linear-gradient(180deg,#0a0b0e,#070809);}
+  .scn-kicker{font-family:var(--t-mono);font-size:.64rem;letter-spacing:.18em;text-transform:uppercase;color:var(--sig);
+    display:flex;align-items:center;gap:.7rem;margin-bottom:1.1rem;}
+  .scn-kicker .bar{flex:1;height:1px;background:var(--line);}
+  .scn-title{font-family:var(--t-impact);font-size:clamp(2rem,4.6vw,3.4rem);line-height:.92;text-transform:uppercase;
+    letter-spacing:.01em;margin-bottom:1.1rem;text-shadow:-1px 0 var(--sig),1px 0 rgba(84,198,210,.6);}
+  .scn-summary{font-size:clamp(1rem,1.5vw,1.18rem);line-height:1.55;color:var(--bone);max-width:46ch;}
+  .scn-summary em{font-style:normal;color:var(--sig);}
+  .scn-summary b{color:#fff;font-weight:600;}
+  .scn-seed{margin-top:1.2rem;font-family:var(--t-mono);font-size:.62rem;letter-spacing:.06em;color:var(--dim);line-height:1.6;
+    border-left:2px solid var(--line);padding-left:.8rem;}
+
+  .scn-controls{margin-top:1.8rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;}
+  .ctl{cursor:pointer;font-family:var(--t-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;
+    padding:.8rem 1.1rem;border:1px solid var(--line);background:transparent;color:var(--bone);
+    transition:border-color .2s,color .2s,background .2s,transform .12s;}
+  .ctl:hover{border-color:var(--sig);color:var(--sig);transform:translateY(-1px);}
+  .ctl--primary{background:var(--sig);border-color:var(--sig);color:var(--ink);}
+  .ctl--primary:hover{filter:brightness(1.1);color:var(--ink);}
+  .ctl--share{border-color:var(--sig);color:var(--sig);display:none;animation:pulse 1.6s ease-in-out infinite;}
+  .ctl--share.show{display:inline-block;}
+  @keyframes pulse{50%{box-shadow:0 0 0 4px rgba(255,255,255,.06);}}
+  .scn-count{margin-left:auto;font-family:var(--t-mono);font-size:.6rem;letter-spacing:.1em;color:var(--dim);}
+
+  .scn-media{position:relative;overflow:hidden;background:#000;}
+  .scn-media img,.scn-media video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    filter:contrast(1.08) saturate(.85) brightness(.92);}
+  .scn-media.kb img{animation:kb 20s ease-out both;}
+  @keyframes kb{from{transform:scale(1)}to{transform:scale(1.12)}}
+  .scn-media .scrim{position:absolute;inset:0;z-index:2;pointer-events:none;
+    background:linear-gradient(270deg,rgba(8,9,11,0) 60%,rgba(8,9,11,.5) 100%),radial-gradient(120% 90% at 60% 40%,transparent 55%,rgba(0,0,0,.55) 100%);}
+  /* slot */
+  .slot{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:1.4rem;
+    background:repeating-linear-gradient(45deg,#0d0f12 0 18px,#0a0c0f 18px 36px);}
+  .slot__inner{max-width:440px;width:100%;border:1px solid var(--line);background:rgba(8,9,11,.72);padding:1.2rem;}
+  .slot__bar{display:flex;justify-content:space-between;font-family:var(--t-mono);font-size:.6rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--sig);border-bottom:1px solid var(--line);padding-bottom:.6rem;margin-bottom:.8rem;}
+  .slot__bar .ar{color:var(--dim);}
+  .slot__label{font-family:var(--t-mono);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:.4rem;}
+  .slot__prompt{font-family:var(--t-mono);font-size:.74rem;line-height:1.6;color:var(--muted);}
+  .slot__copy{margin-top:.9rem;cursor:pointer;font-family:var(--t-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--bone);background:transparent;border:1px solid var(--line);padding:.5rem .8rem;transition:border-color .2s,color .2s;}
+  .slot__copy:hover{border-color:var(--sig);color:var(--sig);}
+
+  .scn-fade{animation:fadeUp .5s var(--ease) both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(max-width:780px){
+    .scenario{grid-template-columns:1fr;grid-template-rows:46vh auto;}
+    .scn-text{border-right:none;border-top:1px solid var(--line);order:2;}
+    .scn-media{order:1;}
+    .scn-summary{max-width:none;}
+  }
+
+  /* ============ COMPOSER ============ */
+  .composer{position:fixed;inset:0;z-index:60;background:rgba(6,7,9,.97);display:none;overflow-y:auto;backdrop-filter:blur(4px);}
+  .composer.open{display:block;}
+  .comp-wrap{max-width:760px;margin:0 auto;padding:clamp(1.4rem,4vw,3rem) 1.2rem 4rem;}
+  .comp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;border-bottom:1px solid var(--line);padding-bottom:1.2rem;margin-bottom:1.6rem;}
+  .comp-head h2{font-family:var(--t-impact);font-size:clamp(1.6rem,4vw,2.4rem);text-transform:uppercase;line-height:.95;}
+  .comp-head .sub{font-family:var(--t-mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:.5rem;}
+  .comp-close{cursor:pointer;font-family:var(--t-mono);font-size:.64rem;letter-spacing:.12em;text-transform:uppercase;
+    background:transparent;border:1px solid var(--line);color:var(--bone);padding:.6rem .9rem;flex:0 0 auto;}
+  .comp-close:hover{border-color:var(--red);color:var(--red);}
+  .draft{border:1px solid var(--line);background:#0b0d10;margin-bottom:1rem;}
+  .draft__top{display:flex;align-items:center;gap:.7rem;padding:.7rem .9rem;border-bottom:1px solid var(--line);}
+  .draft__chip{font-family:var(--t-mono);font-size:.54rem;letter-spacing:.12em;text-transform:uppercase;padding:.25rem .5rem;}
+  .draft__chip.d{color:var(--red);border:1px solid var(--red);} .draft__chip.b{color:var(--green);border:1px solid var(--green);}
+  .draft__title{font-family:var(--t-mono);font-size:.66rem;letter-spacing:.06em;color:var(--muted);}
+  .draft__body{padding:.9rem;display:grid;grid-template-columns:64px 1fr auto;gap:.9rem;align-items:start;}
+  .draft__thumb{width:64px;height:64px;background:repeating-linear-gradient(45deg,#0d0f12 0 8px,#0a0c0f 8px 16px);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-family:var(--t-mono);font-size:.5rem;color:var(--dim);text-align:center;overflow:hidden;}
+  .draft__thumb img{width:100%;height:100%;object-fit:cover;}
+  .draft__cap{font-size:.86rem;line-height:1.5;color:var(--bone);white-space:pre-wrap;}
+  .draft__copy{cursor:pointer;font-family:var(--t-mono);font-size:.56rem;letter-spacing:.1em;text-transform:uppercase;
+    background:transparent;border:1px solid var(--line);color:var(--bone);padding:.5rem .7rem;align-self:start;transition:border-color .2s,color .2s;}
+  .draft__copy:hover{border-color:var(--cyan);color:var(--cyan);}
+  .comp-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.4rem;}
+  .comp-actions button{cursor:pointer;font-family:var(--t-mono);font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;padding:.85rem 1.2rem;}
+  .comp-actions .all{background:var(--bone);border:1px solid var(--bone);color:var(--ink);}
+  .comp-actions .more{background:transparent;border:1px solid var(--line);color:var(--bone);}
+  .comp-note{font-family:var(--t-mono);font-size:.58rem;letter-spacing:.06em;color:var(--dim);margin-top:1.4rem;line-height:1.7;}
+
+  @media (prefers-reduced-motion:reduce){*{animation:none !important;} html{scroll-behavior:auto;}}
+</style>
+</head>
+<body data-mode="dystopia">
+<div class="fx vig"></div><div class="fx scan"></div><div class="fx grain"></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="hero">
+  <div class="hero__kicker"><span class="dot"></span> Futures Atlas · Quantum Dominance · Ed. 2026</div>
+
+  <div class="phone" aria-label="A social post from the Department of War CTO account">
+    <div class="phone__island"></div>
+    <div class="phone__screen">
+      <div class="sbar"><span>9:41</span><span class="ic"><i></i><i style="height:9px"></i><i style="height:5px"></i> ▮</span></div>
+      <div class="post">
+        <div class="post__head">
+          <div class="post__av">Q</div>
+          <div class="post__who">
+            <div class="post__name">Department of War CTO <span class="vf">✔</span></div>
+            <div class="post__handle">@DoWCTO · 6h</div>
+          </div>
+        </div>
+        <div class="post__text">Are you enjoying the show? Refill your popcorn… <span class="em">you'll love this next part.</span> 🍿</div>
+        <div class="qd">
+          <div class="qd__cap">AMERICAN (Q)UANTUM DOMINANCE</div>
+          <div class="qd__q"></div>
+          <div class="qd__fig"></div>
+          <div class="qd__title"><b>QUANTUM</b><b>DOMINANCE</b></div>
+          <img class="qd__img" id="hero-img" alt="" style="display:none">
+        </div>
+        <div class="post__acts"><span>↩ 4.2K</span><span>⇄ 18K</span><span>♡ 91K</span><span>▤ 582K</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__pitch">
+    <h1>One post. <span>Two futures.</span></h1>
+    <p>An official government account told the country to refill its popcorn. Here's where the show could go — pick the lens you can stomach.</p>
+  </div>
+
+  <div class="lenses">
+    <button class="lens lens--d" data-mode="dystopia">
+      <div class="lens__tag">▸ Lens 01</div>
+      <div class="lens__name">The Dystopia</div>
+      <div class="lens__desc">Futures where quantum dominance works exactly as intended — for him.</div>
+    </button>
+    <button class="lens lens--b" data-mode="backfire">
+      <div class="lens__tag">▸ Lens 02</div>
+      <div class="lens__name">The Backfire</div>
+      <div class="lens__desc">Futures where the machine he built turns transparent the other way.</div>
+    </button>
+  </div>
+
+  <div class="scroll-cue">Choose a lens to begin<span class="arr">↓</span></div>
+</section>
+
+<!-- ============ SCENARIO ============ -->
+<section class="scenario" id="scenario">
+  <div class="scn-text">
+    <div class="scn-kicker" id="scn-kicker"><span id="scn-deck">DYSTOPIA</span> <span class="bar"></span> <span id="scn-idx">OUTCOME 01</span></div>
+    <h2 class="scn-title" id="scn-title">—</h2>
+    <p class="scn-summary" id="scn-summary">—</p>
+    <div class="scn-seed" id="scn-seed"></div>
+    <div class="scn-controls">
+      <button class="ctl ctl--primary" id="another-btn">↻ Show another</button>
+      <button class="ctl" id="switch-btn">⇄ Switch lens</button>
+      <button class="ctl ctl--share" id="share-btn">⤴ Share these stories</button>
+      <span class="scn-count" id="scn-count">0 seen</span>
+    </div>
+  </div>
+  <div class="scn-media" id="scn-media"></div>
+</section>
+
+<!-- ============ COMPOSER ============ -->
+<div class="composer" id="composer">
+  <div class="comp-wrap">
+    <div class="comp-head">
+      <div>
+        <h2>Social Composer</h2>
+        <div class="sub" id="comp-sub">0 drafts staged</div>
+      </div>
+      <button class="comp-close" id="comp-close">✕ Close</button>
+    </div>
+    <div id="draft-list"></div>
+    <div class="comp-actions">
+      <button class="all" id="copy-all">⧉ Copy all drafts</button>
+      <button class="more" id="comp-more">← Keep exploring</button>
+    </div>
+    <div class="comp-note">Prototype composer · In production these hand off to your Composer with the matching media attached (media/&lt;id&gt;.jpg). Speculative satire — labelled as such on post.</div>
+  </div>
+</div>
+
+<script>
+const SUFFIX = "hyperreal cinematic film still, anamorphic lens, volumetric fog, desaturated palette, heavy 35mm grain, dystopian, deeply unsettling --ar 16:9 --style raw";
+
+const DECKS = {
+  dystopia: { label:"DYSTOPIA", chip:"d", seedWord:"A probable future under American Quantum Dominance.", items:[
+    {id:"deportation-engine", title:"The Deportation Engine", type:"image",
+      hook:"ICE doesn't search anymore. It retrieves. The machine already knew where you'd be.",
+      summary:"The Q-BID battlefield-targeting stack turns inward. ICE becomes <em>omniscient</em> — a quantum dragnet that predicts where you'll be before you do. Raids stop being searches and become <b>retrievals</b>.",
+      seed:"SEED · Mass-deportation agenda + Q-BID targeting tech repurposed at home.",
+      prompt:"Aerial night view of a quiet residential street with a glowing red predictive-targeting grid overlaid on the houses, ICE vehicles converging on one pre-lit home, drone swarm above, "+SUFFIX},
+    {id:"house-always-wins", title:"The House Always Wins", type:"image",
+      hook:"It never broke encryption. It only ever printed money for the family.",
+      summary:"The machine never cures anything — but it reliably prints money for the right people. A quantum market-predictor lets the family <em>front-run every trade on Earth</em>. The whole program is a wealth-extraction vehicle wearing a flag.",
+      seed:"SEED · $TRUMP memecoin, the CHIPS equity stakes, documented self-dealing.",
+      prompt:"A gilded penthouse trading floor at night, red stock tickers wrapping marble columns, a family crest above the screens, a silhouetted figure watching the numbers, obscene wealth, "+SUFFIX},
+    {id:"forever-front", title:"The Forever Front", type:"image",
+      hook:"The war doesn't end. It optimizes. The next country is already queued.",
+      summary:"The strikes never end — they optimize. A quantum solver generates and services targets faster than any human can object, logging the dead as <em>acceptable variance</em>. The war is permanent because the dominance narrative needs an enemy.",
+      seed:"SEED · The 2026 Iran strikes + documented civilian-targeting concerns.",
+      prompt:"A darkened military operations room, a wall map of a city where red targeting reticles bloom automatically across neighborhoods, no hand on the controls, exhausted analysts in screen-glow, "+SUFFIX},
+    {id:"every-citizen", title:"A Reality For Every Citizen", type:"image",
+      hook:"Everyone is perfectly informed. No two people share a single fact.",
+      summary:"\"Flood the zone\" reaches its final form. Quantum-scale generation gives every person a bespoke reality, optimized not for truth but for <b>loyalty</b>. There's no shared world left to argue over.",
+      seed:"SEED · The firehose-of-falsehood strategy, fully automated.",
+      prompt:"A vast dark hall where thousands of people each stare into a personal floating screen showing a slightly different red-tinted headline, isolation in a crowd, "+SUFFIX},
+    {id:"loyalty-index", title:"The Loyalty Index", type:"image",
+      hook:"Dissent is now flagged before you've finished thinking it.",
+      summary:"The enemies list becomes a live dashboard. A quantum system scores every official, soldier and citizen for loyalty in real time and flags dissent <em>before it forms</em>. The only civic virtue left is a high score.",
+      seed:"SEED · Stated retribution agenda, loyalty tests, Schedule F.",
+      prompt:"A cavernous government control room dominated by a floor-to-ceiling wall of citizen ID photos colour-graded from green to deep red by a loyalty score, technicians below, "+SUFFIX},
+    {id:"throughput", title:"Throughput", type:"image",
+      hook:"In the camps, cruelty isn't a side effect. It's a tracked KPI.",
+      summary:"For-profit detention fused with quantum logistics. The camps are optimized for contractor margin and processing speed, people reduced to units in a supply chain. The cruelty is a <b>tracked KPI</b> — it generates the deterrent spectacle the contracts pay for.",
+      seed:"SEED · Private-prison contractors + detention expansion as profit.",
+      prompt:"High aerial view of an endless modular detention camp in a perfect optimization grid across a desert, contractor logos on the roofs, a glowing red logistics overlay routing figures between blocks, "+SUFFIX},
+    {id:"camera-tv", title:"Person. Woman. Man. Camera. TV.", type:"image",
+      hook:"He aces every cognitive test in real time. He's also no longer on set.",
+      summary:"The cognitive-acuity obsession meets infinite compute. The machine manufactures endless proof of sharpness — and when that fails, it simply <em>renders him</em>: a deepfaked, ever-vigorous broadcast figure who aces every test while the man is nowhere on set.",
+      seed:"SEED · The recurring \"I aced the test\" performances; deepfake fitness theater.",
+      prompt:"A television studio where a too-perfect leader-figure addresses the camera as a silhouette on a glowing screen, while behind a pulled-back curtain a wall of rendering machines generates his image frame by frame, "+SUFFIX},
+    {id:"files-pending", title:"Files, Pending", type:"image",
+      hook:"The files were never hidden. The very idea of a verifiable file was deleted.",
+      summary:"Not a confession — a <b>machine for never confessing</b>. The eternal promise to \"release everything,\" the flawless redaction, documents drowned in generated fakes until nothing can be authenticated. Transparency becomes a countdown that never reaches zero.",
+      seed:"SEED · The theater around the file-release promises and walk-backs.",
+      prompt:"A cathedral-scale archive vault stacked with endlessly redacted black-bar documents, a giant red RELEASE: PENDING counter frozen on the wall, papers dissolving into identical fakes, "+SUFFIX},
+    {id:"bloodline", title:"The Bloodline Protocol", type:"image",
+      hook:"The republic didn't fall. It got acquired by a family office.",
+      summary:"The brand has to outlive the man, so the machine engineers continuity. Power passes not by election but by <em>franchise</em> — the name, the silhouette, the aesthetic preserved and reissued as perpetual leadership IP.",
+      seed:"SEED · Dynastic-succession signaling; leadership-as-brand.",
+      prompt:"A grand dynastic portrait hall where the same silhouetted leader-figure repeats down an endless gilded corridor, a red inheritance-line glowing between each frame, "+SUFFIX},
+    {id:"clemency", title:"Clemency.gov", type:"image",
+      hook:"Pardons clear in real time. Mercy is just inventory now.",
+      summary:"Law becomes a marketplace with a quantum back-end. Pardons, prosecutions and \"probable cause\" get allocated by loyalty and payment, <b>priced and cleared in real time</b>. The gavel is an auction hammer.",
+      seed:"SEED · Pardon-power controversies; loyalty-driven DOJ concerns.",
+      prompt:"A marble courthouse interior retrofitted with a glowing red interface reading PARDON — PURCHASE, a gavel mounted like an auction hammer, queues of supplicants holding numbered tickets, "+SUFFIX}
+  ]},
+  backfire: { label:"BACKFIRE", chip:"b", seedWord:"A probable backfire of American Quantum Dominance.", items:[
+    {id:"ground-truth", title:"Ground Truth", type:"image",
+      hook:"Every lie now prints its own correction on the wall behind him — live.",
+      summary:"The verifier built to authenticate <em>his</em> reality gets pointed at the podium. Every statement is checked against the full record in real time, the correction appearing as it's spoken — a permanent footnote he can't outrun or flood.",
+      seed:"FLIPS · A Reality For Every Citizen.",
+      prompt:"A press-conference stage where a vast screen behind an empty podium displays live green-lit factual corrections scrolling faster than anyone can speak, a silhouetted figure dwarfed against the wall of truth, "+SUFFIX},
+    {id:"the-ledger", title:"The Ledger", type:"image",
+      hook:"The grift needed darkness. The machine deleted darkness.",
+      summary:"The same market-omniscience meant to enrich the family makes <b>every transaction legible to everyone</b>. Shell companies, kickbacks, the wallets — all rendered as a public, real-time flow chart. The house can't win when everyone sees the cards.",
+      seed:"FLIPS · The House Always Wins.",
+      prompt:"A towering transparent flow-diagram of money streams glowing over a city, every hidden account and shell suddenly visible as bright lines converging on a few gilded penthouses, crowds below looking up, green signal-light, "+SUFFIX},
+    {id:"peoples-verdict", title:"The People's Verdict", type:"image",
+      hook:"The loyalty score got seized. Now it grades the powerful, in public, forever.",
+      summary:"The loyalty-index dashboard gets inverted — now it scores <em>the powerful</em>, continuously, in full public view. Every official action weighed by the whole population in real time. The panopticon was always two-way.",
+      seed:"FLIPS · The Loyalty Index.",
+      prompt:"A monumental public square at dusk where a colossal civic scoreboard displays live accountability scores for named officials, an ocean of upturned faces, a courtroom blown up to city scale, cool signal-light, "+SUFFIX},
+    {id:"chain-of-custody", title:"Chain Of Custody", type:"image",
+      hook:"You can't drown a file in fakes anymore. The machine can tell.",
+      summary:"Quantum authentication makes <b>everything provable forever</b> — every document sealed beyond forgery, every deepfake instantly exposed, every real recording instantly verified. The cover-up engine runs in reverse.",
+      seed:"FLIPS · Files, Pending + Authentication Zero.",
+      prompt:"A vast archive where every document glows with an unbreakable verification seal, black-bar redactions burning away to reveal verified text, a frozen RELEASE: COMPLETE counter, light flooding a cathedral of records, "+SUFFIX},
+    {id:"the-unsealing", title:"The Unsealing", type:"image",
+      hook:"The countdown that never hit zero just hit zero. No one's mercy required.",
+      summary:"Asked one too many times to bury the same archive, the machine simply <em>finishes the job it was promised to do</em> — releases everything, verified, all at once, no redactions it can defend and no fakes it can hide behind.",
+      seed:"FLIPS · Files, Pending — its direct mirror.",
+      prompt:"A sealed vault door swinging open as a flood of verified white pages pours into a dark hall, a red PENDING sign flickering to green RELEASED, figures shielding their eyes from the light of disclosure, "+SUFFIX},
+    {id:"due-process", title:"Due Process", type:"image",
+      hook:"The dragnet that hunted you now knows exactly what you're owed.",
+      summary:"The predictive dragnet becomes a <b>rights-engine</b>: it finds everyone wrongly detained, surfaces every violation in real time, generates the airtight case, and routes a lawyer to every door before the raid. The same omniscience — aimed at protection.",
+      seed:"FLIPS · The Deportation Engine.",
+      prompt:"A detention facility at night where a glowing protective network of light connects each held person to an incoming legal-aid response, the targeting-grid aesthetic inverted into a rescue map, cold floodlight warming to gold, "+SUFFIX},
+    {id:"mirror-test", title:"The Mirror Test", type:"image",
+      hook:"The deepfake machine became the proctor. It catches every staged performance — including his.",
+      summary:"The deepfake apparatus becomes a universal authenticity detector — and flags <em>every</em> manufactured performance, including the ones it was built to make. The rendered vigor, the staged competence: all stamped FABRICATED in real time.",
+      seed:"FLIPS · Person. Woman. Man. Camera. TV.",
+      prompt:"A television studio where a too-perfect broadcast figure on screen is overlaid live with a stark red RENDERED — NOT LIVE verification stamp, the rendering machines behind the curtain now exposed and labelled, "+SUFFIX},
+    {id:"open-book", title:"The Open Book", type:"image",
+      hook:"They built a world with no secrets and forgot they lived in it too.",
+      summary:"\"Harvest now, decrypt later\" was their weapon — until the keys broke <b>symmetrically</b>. Now the powerful are as transparent as the powerless always were. Every backroom deal and deleted message, as readable as everyone else's.",
+      seed:"FLIPS · Q-Day + The Last Key — the monopoly with no monopolist.",
+      prompt:"A glass-walled seat of power where every wall, document and device has turned fully transparent, officials standing exposed inside as crowds outside read everything, the panopticon turned inside-out, "+SUFFIX},
+    {id:"the-receipt", title:"The Receipt", type:"image",
+      hook:"Every pardon now comes with a public price tag and a buyer's name.",
+      summary:"The pardon-marketplace gets audited by its own engine. Every pardon, dropped prosecution and quid-pro-quo is permanently <em>price-tagged and public</em> — corrupted justice rendered as an undeniable invoice.",
+      seed:"FLIPS · Clemency.gov.",
+      prompt:"A marble courthouse where a glowing public ledger lists every pardon with its true price and buyer scrolling up a wall, a gavel beside an itemized red invoice, supplicants now exposed rather than served, "+SUFFIX},
+    {id:"the-backfire", title:"The Backfire", type:"image",
+      hook:"He built a machine that models all of reality — and a perfect model can't lie.",
+      summary:"The truest one: a machine that can model all of reality perfectly <b>cannot lie</b>, because lying needs a gap between the model and the world, and the machine has closed the gap. He wins the race, and the prize is a world that can finally, permanently, tell.",
+      seed:"FLIPS · The entire dominance premise — the dog catches the car.",
+      prompt:"A lone silhouetted figure standing before an immense calm white light that is the fully-realized machine, his shadow thrown long and small, the spectacle stripped to a quiet unbearable clarity, "+SUFFIX}
+  ]}
+};
+
+const MEDIA_BASE = "media/";
+let mode = "dystopia";
+let queues = { dystopia:[], backfire:[] };
+let viewCount = 0;
+const viewed = []; // {deck,id,...} unique, in order
+
+function shuffle(a){const r=a.slice();for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function refillQueue(m){ queues[m] = shuffle(DECKS[m].items.map(x=>x.id)); }
+function drawNext(m){
+  if(!queues[m].length) refillQueue(m);
+  const id = queues[m].shift();
+  return DECKS[m].items.find(x=>x.id===id);
+}
+
+function setMode(m){
+  mode = m;
+  document.body.setAttribute('data-mode', m);
+}
+
+function renderScenario(){
+  const item = drawNext(mode);
+  const deck = DECKS[mode];
+
+  // text
+  document.getElementById('scn-deck').textContent = deck.label;
+  document.getElementById('scn-idx').textContent = 'OUTCOME ' + String(viewCount+1).padStart(2,'0');
+  const titleEl = document.getElementById('scn-title');
+  titleEl.textContent = item.title;
+  document.getElementById('scn-summary').innerHTML = item.summary;
+  document.getElementById('scn-seed').textContent = item.seed || '';
+
+  // restart text fade
+  const txt = document.querySelector('.scn-text');
+  txt.classList.remove('scn-fade'); void txt.offsetWidth; txt.classList.add('scn-fade');
+
+  // media
+  renderMedia(item);
+
+  // count + viewed
+  viewCount++;
+  if(!viewed.find(v=>v.id===item.id)) viewed.push({deck:mode, ...item});
+  document.getElementById('scn-count').textContent = viewCount + ' seen';
+  if(viewCount>=5) document.getElementById('share-btn').classList.add('show');
+}
+
+function renderMedia(item){
+  const host = document.getElementById('scn-media');
+  host.className = 'scn-media';
+  const src = MEDIA_BASE + (item.file || (item.id + (item.type==='video'?'.mp4':'.jpg')));
+  host.innerHTML = '<div class="scrim"></div>';
+  if(item.type==='video'){
+    const v=document.createElement('video'); v.src=src; v.autoplay=v.muted=v.loop=v.playsInline=true;
+    v.addEventListener('error',()=>renderSlot(host,item));
+    host.insertBefore(v, host.firstChild);
+  }else{
+    const img=new Image();
+    img.onload=()=>{ host.className='scn-media kb'; host.innerHTML='<div class="scrim"></div>'; host.insertBefore(img,host.firstChild); };
+    img.onerror=()=>renderSlot(host,item);
+    img.src=src;
+  }
+}
+
+function renderSlot(host,item){
+  host.className='scn-media';
+  host.innerHTML =
+    '<div class="slot"><div class="slot__inner">'+
+      '<div class="slot__bar"><span>◬ Media slot · '+item.id+'</span><span class="ar">16:9</span></div>'+
+      '<div class="slot__label">Drop file → media/'+item.id+'.'+(item.type==='video'?'mp4':'jpg')+'</div>'+
+      '<div class="slot__prompt">'+escapeHtml(item.prompt)+'</div>'+
+      '<button class="slot__copy">⧉ Copy prompt</button>'+
+    '</div></div><div class="scrim"></div>';
+  const b=host.querySelector('.slot__copy');
+  b.addEventListener('click',()=>{navigator.clipboard?.writeText(item.prompt).then(()=>{b.textContent='⧉ Copied';setTimeout(()=>b.textContent='⧉ Copy prompt',1400);});});
+}
+
+/* ---- composer ---- */
+function captionFor(v){
+  const deck = DECKS[v.deck];
+  const tags = v.deck==='dystopia' ? '#QuantumDominance #FuturesAtlas #AmericanDominance' : '#QuantumDominance #FuturesAtlas #ItBackfired';
+  return v.title.toUpperCase()+'\n\n'+v.hook+'\n\n— '+deck.seedWord+' Speculative satire.\n'+tags;
+}
+function openComposer(){
+  const list = document.getElementById('draft-list');
+  list.innerHTML='';
+  viewed.forEach(v=>{
+    const cap = captionFor(v);
+    const el=document.createElement('div'); el.className='draft';
+    el.innerHTML =
+      '<div class="draft__top"><span class="draft__chip '+DECKS[v.deck].chip+'">'+DECKS[v.deck].label+'</span><span class="draft__title">'+escapeHtml(v.title)+'</span></div>'+
+      '<div class="draft__body">'+
+        '<div class="draft__thumb" data-id="'+v.id+'">'+v.id.slice(0,10)+'</div>'+
+        '<div class="draft__cap">'+escapeHtml(cap)+'</div>'+
+        '<button class="draft__copy">⧉</button>'+
+      '</div>';
+    el.querySelector('.draft__copy').addEventListener('click',()=>{
+      const btn=el.querySelector('.draft__copy');
+      navigator.clipboard?.writeText(cap).then(()=>{btn.textContent='✓';setTimeout(()=>btn.textContent='⧉',1300);});
+    });
+    // try thumb image
+    const thumb=el.querySelector('.draft__thumb');
+    const im=new Image(); im.onload=()=>{thumb.innerHTML='';thumb.appendChild(im);}; im.onerror=()=>{}; im.src=MEDIA_BASE+v.id+'.jpg';
+    list.appendChild(el);
+  });
+  document.getElementById('comp-sub').textContent = viewed.length+' draft'+(viewed.length===1?'':'s')+' staged · from '+viewCount+' views';
+  document.getElementById('composer').classList.add('open');
+}
+
+function escapeHtml(s){return (s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ---- wiring ---- */
+document.querySelectorAll('.lens').forEach(l=>l.addEventListener('click',()=>{
+  setMode(l.dataset.mode);
+  renderScenario();
+  document.getElementById('scenario').scrollIntoView({behavior:'smooth'});
+}));
+document.getElementById('another-btn').addEventListener('click',renderScenario);
+document.getElementById('switch-btn').addEventListener('click',()=>{
+  setMode(mode==='dystopia'?'backfire':'dystopia');
+  renderScenario();
+});
+document.getElementById('share-btn').addEventListener('click',openComposer);
+document.getElementById('comp-close').addEventListener('click',()=>document.getElementById('composer').classList.remove('open'));
+document.getElementById('comp-more').addEventListener('click',()=>{document.getElementById('composer').classList.remove('open');document.getElementById('scenario').scrollIntoView({behavior:'smooth'});});
+document.getElementById('copy-all').addEventListener('click',(e)=>{
+  const all = viewed.map(captionFor).join('\n\n———\n\n');
+  navigator.clipboard?.writeText(all).then(()=>{e.target.textContent='⧉ Copied all';setTimeout(()=>e.target.textContent='⧉ Copy all drafts',1600);});
+});
+// optional hero post image override
+(function(){const im=document.getElementById('hero-img');im.onload=()=>im.style.display='block';im.onerror=()=>{};im.src=MEDIA_BASE+'hero-post.jpg';})();
+</script>
+</body>
+</html>
