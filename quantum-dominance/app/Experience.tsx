@@ -69,6 +69,7 @@ export default function Experience() {
   const scenarioRef = useRef<HTMLDivElement | null>(null);
   const shareRef = useRef<HTMLButtonElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
   const reduce = useRef(false);
   useEffect(() => { reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
 
@@ -95,7 +96,19 @@ export default function Experience() {
   useEffect(() => {
     if (!composerOpen) return;
     closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") closeComposer(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") { closeComposer(); return; }
+      if (e.key !== "Tab") return;
+      // focus-trap: keep Tab within the dialog
+      const focusables = dialogRef.current?.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables || !focusables.length) return;
+      const first = focusables[0]!, last = focusables[focusables.length - 1]!;
+      const active = document.activeElement;
+      if (e.shiftKey && active === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && active === last) { e.preventDefault(); first.focus(); }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -172,7 +185,7 @@ export default function Experience() {
 
       {/* ── COMPOSER ── */}
       {composerOpen && (
-        <div className="composer" role="dialog" aria-modal="true" aria-label="Social composer — staged drafts">
+        <div className="composer" role="dialog" aria-modal="true" aria-label="Social composer — staged drafts" ref={dialogRef}>
           <div className="comp-wrap">
             <div className="comp-head">
               <div>
