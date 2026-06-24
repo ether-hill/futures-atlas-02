@@ -22,10 +22,16 @@ function shuffle<T>(a: T[]): T[] {
   return r;
 }
 function buildDeck(roleId?: string): Item[] {
-  const pool = roleId ? ROLES.filter((r) => r.id === roleId) : ROLES;
-  const flat = pool.flatMap((r) => r.cards.map((c) => ({ card: c, role: r.name })));
-  const shuffled = shuffle(flat);
-  return roleId ? shuffled : shuffled.slice(0, ROUND);
+  const all = ROLES.flatMap((r) => r.cards.map((c) => ({ card: c, role: r.name })));
+  if (!roleId) return shuffle(all).slice(0, ROUND);
+  // Category round: always ROUND cards — all of the category's cards, topped up
+  // with random cards from other categories if it has fewer than ROUND.
+  const role = ROLES.find((r) => r.id === roleId);
+  const own = shuffle((role?.cards ?? []).map((c) => ({ card: c, role: role!.name })));
+  if (own.length >= ROUND) return own.slice(0, ROUND);
+  const ownIds = new Set(own.map((i) => i.card.id));
+  const rest = shuffle(all.filter((i) => !ownIds.has(i.card.id)));
+  return shuffle([...own, ...rest.slice(0, ROUND - own.length)]);
 }
 
 export default function Calibration() {
@@ -139,11 +145,13 @@ export default function Calibration() {
   const voBig = contested ? "FAIR" : aligned ? "YES!" : "NOPE";
 
   // score (for the final card)
-  const scored = answers.filter((a) => a.card.verdict !== "contested");
-  const matched = scored.filter((a) => isAligned(a.card.verdict, a.believe)).length;
+  // Score out of the whole round. Contested cards are "fair" — they count as
+  // matched either way (never against you), so a perfect run can reach N/N.
+  const total = answers.length;
+  const matched = answers.filter((a) => isAligned(a.card.verdict, a.believe)).length;
   const overs = answers.filter((a) => a.card.verdict === "unlikely" && a.believe).length;
   const unders = answers.filter((a) => a.card.verdict === "already" && !a.believe).length;
-  const prof = profileFor(matched, scored.length, overs, unders);
+  const prof = profileFor(matched, total, overs, unders);
 
   const behind = deck.length - 1 - pos;
   const depths: number[] = [];
@@ -170,7 +178,7 @@ export default function Calibration() {
         {phase === "final" ? (
           <div className="tcard final">
             <span className="card-eyebrow">Phase 1 · your calibration</span>
-            <div className="score-big">{matched}<span className="sof">/ {scored.length}</span></div>
+            <div className="score-big">{matched}<span className="sof">/ {total}</span></div>
             <div className="score-sub">matched the evidence {prof.lblNote}</div>
             <div className="pname">{prof.name}</div>
             <p className="pdesc">{prof.desc}</p>

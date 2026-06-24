@@ -14,7 +14,7 @@ export interface Card {
   attribution?: string; // present on "quote" cards — who said it (renders as a quote)
 }
 
-export interface Role {
+export interface Role { // a "category" in the UI
   id: string;
   name: string;
   blurb: string;
