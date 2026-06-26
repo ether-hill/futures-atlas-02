@@ -20,7 +20,11 @@
       if (this._booted) return;
       this._booted = true;
       this.style.display = 'block';
-      this.style.position = 'relative';
+      // fill the host box (the inline style sets position:absolute;inset:0) — DON'T
+      // override to relative, or height:100% collapses to content height and the
+      // canvas no longer fills the stage area (breaks aspect + vertical centring).
+      this.style.position = 'absolute';
+      this.style.inset = '0';
       this._init().catch((e) => console.error('[dario-die] init failed:', e));
     }
     disconnectedCallback() {
@@ -79,8 +83,11 @@
       const RADIUS = 1.0;           // die size
       const SCALE = RADIUS / circ;
       const FLOOR_Y = 0;
-      const BOUND = 4.2;            // square play field — as large as the panel allows
-      this._inradWorld = inrad * SCALE; this._floorY = FLOOR_Y; this._bound = BOUND;
+      // Rectangular play field, WIDER than deep so it fills the (wide) desktop panel
+      // nearly edge-to-edge with only a little padding. BX = half-width, BZ = half-depth.
+      const BX = 5.8, BZ = 4.3;
+      this._inradWorld = inrad * SCALE; this._floorY = FLOOR_Y; this._bound = BZ;
+      this._bx = BX; this._bz = BZ;   // kept for the aspect-aware camera fit
 
       // ---- three scene ----
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -91,9 +98,13 @@
       renderer.domElement.style.cssText = 'width:100%;height:100%;display:block';
       this.appendChild(renderer.domElement); this._renderer = renderer;
       const scene = new THREE.Scene(); this._scene = scene;
-      // reference framing, pulled in a touch for this panel (physics unchanged)
-      const camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 100);
-      camera.position.set(0, 9.0, 8.7); camera.lookAt(0, 0.05, 0); this._camera = camera;
+      // Framing: dollied in + tighter lens so the mat fills ~2x more of the frame.
+      // Camera is high enough to keep the near (front) border off the bottom edge,
+      // and there's still headroom above for the (slightly tamed) bounce — see the
+      // reduced vertical launch in _roll() that keeps the die inside this frame.
+      const camera = new THREE.PerspectiveCamera(39, w / h, 0.1, 100);
+      camera.position.set(0, 9.8, 7.2); camera.lookAt(0, -0.6, 0); this._camera = camera;
+      this._fitCamera();   // dial the FOV to the panel's shape so the whole field fits, no crop
 
       try {
         const pmrem = new THREE.PMREMGenerator(renderer);
@@ -116,17 +127,21 @@
       const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.34 }));
       floor.rotation.x = -Math.PI / 2; floor.position.y = FLOOR_Y; floor.receiveShadow = true; scene.add(floor);
 
-      // visible boundary — marks exactly where the die is allowed to travel
-      const bPts = [[-BOUND, -BOUND], [BOUND, -BOUND], [BOUND, BOUND], [-BOUND, BOUND], [-BOUND, -BOUND]]
-        .map(([x, z]) => new THREE.Vector3(x, FLOOR_Y + 0.015, z));
-      const bLineMat = new THREE.LineBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0 });
+      // visible boundary — marks exactly where the die is allowed to travel.
+      // Lifted well off the floor so the near (front) edge doesn't graze the floor
+      // and z-fight the glow, and rendered depthTest-off so every edge reads evenly.
+      const bPts = [[-BX, -BZ], [BX, -BZ], [BX, BZ], [-BX, BZ], [-BX, -BZ]]
+        .map(([x, z]) => new THREE.Vector3(x, FLOOR_Y + 0.04, z));
+      const bLineMat = new THREE.LineBasicMaterial({ color: 0xFF7AB6, transparent: true, opacity: 0, depthWrite: false });
       const bLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bPts), bLineMat);
-      scene.add(bLine);
+      bLine.renderOrder = 6; scene.add(bLine);
+      // a soft glow just inside the boundary — a faint lighter wash that makes the
+      // field read as a mat without a hard line.
       const bGlowMat = new THREE.MeshBasicMaterial({ color: 0xFF5DA2, transparent: true, opacity: 0, side: THREE.DoubleSide });
-      const bGlow = new THREE.Mesh(new THREE.PlaneGeometry(BOUND * 2, BOUND * 2), bGlowMat);
+      const bGlow = new THREE.Mesh(new THREE.PlaneGeometry(BX * 2, BZ * 2), bGlowMat);
       bGlow.rotation.x = -Math.PI / 2; bGlow.position.y = FLOOR_Y + 0.008; scene.add(bGlow);
       // the mat fades in on load (paired with the die falling onto it)
-      this._matMats = [{ mat: bLineMat, target: 0.34 }, { mat: bGlowMat, target: 0.05 }];
+      this._matMats = [{ mat: bLineMat, target: 0.5 }, { mat: bGlowMat, target: 0.06 }];
       this._matFade = 0;
 
       // body mesh
@@ -173,9 +188,9 @@
       this._world = world;
       const ground = new CANNON.Body({ mass: 0, shape: new CANNON.Plane() });
       ground.quaternion.setFromEuler(-Math.PI / 2, 0, 0); ground.position.set(0, FLOOR_Y, 0); world.addBody(ground);
-      // exact reference: 4 solid box walls forming a square field at ±BOUND
-      [[-BOUND, 0], [BOUND, 0], [0, -BOUND], [0, BOUND]].forEach(([wx, wz]) => {
-        const wb = new CANNON.Body({ mass: 0, shape: new CANNON.Box(new CANNON.Vec3(wx === 0 ? BOUND + 0.6 : 0.5, 4, wz === 0 ? BOUND + 0.6 : 0.5)) });
+      // 4 solid box walls forming the rectangular field at ±BX (x) and ±BZ (z)
+      [[-BX, 0], [BX, 0], [0, -BZ], [0, BZ]].forEach(([wx, wz]) => {
+        const wb = new CANNON.Body({ mass: 0, shape: new CANNON.Box(new CANNON.Vec3(wx === 0 ? BX + 0.6 : 0.5, 4, wz === 0 ? BZ + 0.6 : 0.5)) });
         wb.position.set(wx, FLOOR_Y + 4, wz); world.addBody(wb);
       });
       const shape = new CANNON.ConvexPolyhedron({ vertices: V.map((v) => new CANNON.Vec3(v[0] * SCALE, v[1] * SCALE, v[2] * SCALE)), faces: faces.map((f) => f.slice()) });
@@ -249,7 +264,45 @@
     _resize() {
       if (!this._ready) return;
       const w = this.clientWidth || 360, h = this.clientHeight || 360;
-      this._renderer.setSize(w, h, false); this._camera.aspect = w / h; this._camera.updateProjectionMatrix();
+      this._renderer.setSize(w, h, false); this._camera.aspect = w / h;
+      this._fitCamera();
+    }
+
+    // Pick the vertical FOV so the entire play field (plus die height) fits the
+    // current panel shape with a little padding — fills a wide desktop panel
+    // edge-to-edge, and zooms out just enough on a narrow/portrait screen so the
+    // sides are never cropped. Camera position + angle stay fixed; only FOV flexes.
+    _fitCamera() {
+      const THREE = this.THREE, cam = this._camera;
+      if (!cam || !THREE) return;
+      cam.updateMatrixWorld(true);
+      const viewInv = cam.matrixWorld.clone().invert();
+      const BX = this._bx, BZ = this._bz, H = 2.8;   // H: die height (incl. bounce apex) to keep in frame
+      // Collect each point's vertical tangent (t = y/-z) and horizontal spread. We
+      // centre the FRAME on the mat floor (y=0) and size the FOV to fit everything
+      // (floor + die height) around that centre — so the mat sits vertically centred
+      // at ANY viewport size (resolution-independent), with bounce headroom above.
+      let maxH = 0, matTop = -1e9, matBot = 1e9;
+      const ts = [];
+      for (const x of [-BX, BX]) for (const z of [-BZ, BZ]) for (const y of [0, H]) {
+        const v = new THREE.Vector3(x, y, z).applyMatrix4(viewInv);
+        const d = -v.z; if (d <= 0.05) continue;
+        const t = v.y / d;
+        if (Math.abs(v.x) / d > maxH) maxH = Math.abs(v.x) / d;
+        ts.push(t);
+        if (y === 0) { if (t > matTop) matTop = t; if (t < matBot) matBot = t; }
+      }
+      const matCenter = (matTop + matBot) / 2;   // vertical centre of the mat floor
+      let reqHalfV = 0;
+      for (let i = 0; i < ts.length; i++) { const d = Math.abs(ts[i] - matCenter); if (d > reqHalfV) reqHalfV = d; }
+      const pad = 1.08, aspect = cam.aspect || 1;
+      const tanV = Math.max(reqHalfV * pad, (maxH * pad) / aspect);
+      cam.fov = 2 * Math.atan(tanV) * 180 / Math.PI;
+      cam.updateProjectionMatrix();
+      // vertical lens shift: drop the mat-floor centre onto the frame centre (NDC y=0).
+      // Stored + reapplied every frame in _loop so a stray updateProjectionMatrix can't undo it.
+      this._lensY = matCenter / tanV;
+      cam.projectionMatrix.elements[9] = this._lensY;
     }
     _emit(face) { this.dispatchEvent(new CustomEvent('die-settled', { detail: { face }, bubbles: true, composed: true })); }
 
@@ -284,9 +337,11 @@
     _introDrop() {
       const b = this._dieBody;
       b.wakeUp();
-      b.position.set(0, this._floorY + 2.7, 0);
-      b.velocity.set(0, -0.4, 0);
-      b.angularVelocity.set((Math.random() - 0.5) * 6, (Math.random() - 0.5) * 6, (Math.random() - 0.5) * 5);
+      // gentle landing on first load: a small drop with a little spin so it
+      // settles near the CENTRE of the mat (not a full energetic roll)
+      b.position.set(0, this._floorY + 1.5, 0);
+      b.velocity.set(0, -0.3, 0);
+      b.angularVelocity.set((Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2.2, (Math.random() - 0.5) * 2);
       b.quaternion.setFromEuler(Math.random() * 6.28, Math.random() * 6.28, Math.random() * 6.28);
       this._calm = 0;
       this._phase = 'intro'; this._rolling = false;
@@ -307,8 +362,10 @@
       const pw = (typeof this._rollPower === 'number') ? this._rollPower : 0.6;
       b.position.set(0, this._floorY + this._inradWorld + 0.1, 0);
       const dir = Math.random() * Math.PI * 2;
-      const speed = 7.5 + pw * 7.5;          // 7.5..15 horizontal — always crosses the field
-      b.velocity.set(Math.cos(dir) * speed, 5.2 + pw * 2.6, Math.sin(dir) * speed);
+      const speed = 7.5 + pw * 7.5;          // 7.5..15 horizontal — crosses the large field & ricochets
+      // a bit more vertical pop so it bounces higher; the camera fit reserves matching
+      // headroom (see H in _fitCamera) so the higher apex still stays in frame
+      b.velocity.set(Math.cos(dir) * speed, 3.9 + pw * 1.8, Math.sin(dir) * speed);
       const spin = 24 + pw * 26;             // 24..50 angular
       b.angularVelocity.set((Math.random() - 0.5) * spin, (Math.random() - 0.5) * spin, (Math.random() - 0.5) * spin);
       this._calm = 0;
@@ -355,6 +412,8 @@
           const dq = this._die.quaternion;
           this._numMeshes.forEach((nm) => { nm.mesh.visible = nm.localNormal.clone().applyQuaternion(dq).dot(camDir) > 0.1; });
         }
+        // keep the vertical lens shift (mat centring) applied every frame
+        if (this._lensY != null) this._camera.projectionMatrix.elements[9] = this._lensY;
         this._renderer.render(this._scene, this._camera);
       };
       step();
