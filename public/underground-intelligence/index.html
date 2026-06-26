@@ -582,7 +582,7 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 
 /* Story chapter canvases */
 .story-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-#mycelium-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.6; }
+#mycelium-canvas { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0.38; }
 #ch3-canvas { opacity: 0.85; }
 #ch4-canvas { opacity: 0.95; }
 #ch5-canvas { opacity: 0.6; }
@@ -1212,135 +1212,133 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 #fa-switch-menu{display:none}
 #fa-switch-menu.fa-open{display:flex}
 
-/* ── HOME · front door (convergence) ──────────────────────────────────────── */
-/* The front door fills exactly one screen — the panel is fixed between the nav
-   and the viewport bottom, and everything inside is sized with viewport-height
-   aware clamp()s so it never needs to scroll, on any device. */
+/* ── HOME · front door — editorial/cinematic hero, one screen, no scroll ─────── */
+/* The panel is fixed between the nav and the viewport bottom; everything inside
+   is sized with viewport-aware clamp()s so it never scrolls, on any device.
+   Background = the project's mycelium animation (z0) → vignette (z1) → hero (z2). */
 #tab-home { flex-direction: column; overflow: hidden; }
 .home-wrap {
-  flex: 1; min-height: 0; width: 100%; max-width: 1180px; margin: 0 auto;
-  display: flex; flex-direction: column; position: relative; z-index: 1;
-  padding: clamp(12px, 2.6vh, 30px) clamp(20px, 4.5vw, 62px) clamp(12px, 2.4vh, 28px);
+  flex: 1; min-height: 0; width: 100%; margin: 0;
+  display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 2;
+  padding: clamp(16px, 3vh, 40px) clamp(16px, 3vw, 28px);
 }
-/* radial-glow background — placeholder for the signature canvas (green = SPUN,
-   cyan = quantum); the two threads sit at opposite corners and bleed inward */
+
+/* ambient colour base, under the animation */
 .home-glow { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.home-glow::before, .home-glow::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.45; }
+.home-glow::before, .home-glow::after { content: ""; position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.35; }
 .home-glow::before { width: 62vmax; height: 62vmax; left: -22vmax; bottom: -26vmax;
-  background: radial-gradient(circle, color-mix(in srgb, var(--ui-accent) 24%, transparent), transparent 70%); }
+  background: radial-gradient(circle, color-mix(in srgb, var(--ui-accent) 22%, transparent), transparent 70%); }
 .home-glow::after { width: 56vmax; height: 56vmax; right: -20vmax; top: -24vmax;
-  background: radial-gradient(circle, color-mix(in srgb, var(--ui-cyan) 22%, transparent), transparent 70%); }
+  background: radial-gradient(circle, color-mix(in srgb, var(--ui-cyan) 20%, transparent), transparent 70%); }
 
-.home-top { flex: 0 0 auto; display: flex; justify-content: space-between; align-items: baseline;
-  gap: 16px; font-family: var(--font-mono); font-size: clamp(9px, 1.3vw, 11px);
-  letter-spacing: 0.18em; text-transform: uppercase; }
-.home-top__brand { color: var(--ui-accent); white-space: nowrap; }
-.home-top__aff { color: var(--muted); white-space: nowrap; }
+/* living background — the project's mycelium (default) / quantum nodes (?fx=) */
+.home-fx { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; display: none; pointer-events: none; }
+#tab-home[data-fx] .home-fx { display: block; }
+.home-fx--myc { opacity: 0.55; }
+.home-fx--q { opacity: 0.5; }
 
-/* hero: vertical convergence (pillars → ↓ → invite) on small screens,
-   horizontal (pillars → → invite) on wide / landscape ones */
+/* darken/vignette layer keeps the hero text legible over the animation */
+.home-vignette { position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--bg) 92%, transparent), color-mix(in srgb, var(--bg) 38%, transparent) 46%, transparent 78%),
+    radial-gradient(135% 130% at 58% 26%, transparent 44%, color-mix(in srgb, var(--bg) 62%, transparent)); }
+
+/* hero: single column (mobile) → text-left / cards-right grid (desktop) */
 .home-hero { flex: 1; min-height: 0; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: clamp(10px, 2.4vh, 24px); }
+  justify-content: center; gap: clamp(14px, 2.6vh, 24px); }
 
-.home-evidence { min-width: 0; display: flex; justify-content: center; }
-.home-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(10px, 1.8vw, 22px);
-  width: 100%; max-width: 600px; }
-.home-pillar { display: flex; flex-direction: column; min-width: 0; }
-.home-pillar__thumb { position: relative; height: clamp(60px, 18vh, 190px);
-  border-radius: 6px 6px 0 0; overflow: hidden; border: 1px solid var(--border2);
-  border-bottom: none; background: var(--surface); }
-.home-pillar__thumb img { position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; display: block; color: transparent; font-size: 9px; }
-.home-pillar__cap { border: 1px solid var(--border2); border-top: none; border-radius: 0 0 6px 6px;
-  padding: clamp(8px, 1.4vh, 13px) clamp(10px, 1.1vw, 15px);
-  background: color-mix(in srgb, var(--surface) 70%, transparent); }
-.home-pillar__year { font-family: var(--font-mono); font-size: clamp(10px, 1.2vw, 11px);
-  font-weight: 600; letter-spacing: 0.14em; margin-bottom: clamp(3px, 0.8vh, 6px); }
-.home-pillar__text { font-family: var(--font-serif); font-size: clamp(12.5px, 0.7vh + 0.7vw, 15px);
-  line-height: 1.38; color: var(--text-body); margin: 0; }
-.home-pillar__credit { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.08em;
-  text-transform: uppercase; color: var(--faint); margin-top: clamp(4px, 1vh, 9px); }
+.home-lede { display: flex; flex-direction: column; min-width: 0; }
+.home-eyebrow { font-family: var(--font-mono); font-size: clamp(10px, 1.2vw, 12px);
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--ui-accent);
+  margin: 0 0 clamp(10px, 1.6vh, 18px); }
+.home-headline { font-family: var(--font-serif); font-weight: 500; text-align: left;
+  font-size: clamp(30px, 3vh + 2.6vw, 64px); line-height: 1.04; letter-spacing: -0.01em;
+  color: var(--text); margin: 0; max-width: 16ch; }
+.home-sub { font-family: var(--font-heading); text-align: left; color: var(--text-body);
+  font-size: clamp(13px, 0.8vh + 0.8vw, 16px); line-height: 1.55; max-width: 48ch; margin: clamp(10px, 1.8vh, 18px) 0 0; }
+#tab-home[data-fx] .home-headline,
+#tab-home[data-fx] .home-sub { text-shadow: 0 2px 24px rgba(0,0,0,0.6); }
+
+/* cards — reuse the system card primitive: 5px radius, hairline border, translucent surface */
+.home-evidence { min-width: 0; }
+.home-pillars { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(12px, 2vw, 22px); width: 100%; }
+.home-pillar { display: flex; flex-direction: column; min-width: 0; border-radius: 5px;
+  overflow: hidden; border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  box-shadow: 0 6px 22px rgba(0,0,0,0.3); }
+.home-pillar__thumb { position: relative; height: clamp(104px, 24vh, 250px); overflow: hidden; background: var(--surface); }
+.home-pillar__thumb::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to bottom, transparent 60%, color-mix(in srgb, var(--surface) 55%, transparent)); }
+.home-pillar__thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; color: transparent; font-size: 9px; }
+.home-pillar__cap { padding: clamp(11px, 1.6vh, 16px) clamp(13px, 1.2vw, 18px) clamp(13px, 1.8vh, 18px); }
+.home-pillar__year { font-family: var(--font-mono); font-size: clamp(11px, 1.1vw, 12px); font-weight: 600; letter-spacing: 0.14em; margin-bottom: clamp(4px, 0.9vh, 7px); }
+.home-pillar__text { font-family: var(--font-serif); font-size: clamp(13px, 0.7vh + 0.7vw, 16px); line-height: 1.34; color: var(--text-body); margin: 0; }
+.home-pillar__credit { font-family: var(--font-mono); font-size: clamp(9px, 0.7vw, 9.5px); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); margin-top: clamp(5px, 1vh, 9px); }
 .home-pillar--spun .home-pillar__year { color: var(--ui-accent); }
-.home-pillar--spun .home-pillar__thumb { border-color: color-mix(in srgb, var(--ui-accent) 38%, var(--border2)); }
 .home-pillar--quantum .home-pillar__year { color: var(--ui-cyan); }
-.home-pillar--quantum .home-pillar__thumb { border-color: color-mix(in srgb, var(--ui-cyan) 38%, var(--border2)); }
 
-.home-converge { flex: 0 0 auto; color: var(--muted); line-height: 0; }
-.home-arrow { display: inline-block; font-size: clamp(18px, 3vh, 26px); }
+/* CTAs — reuse .cta-btn; fill the primary on the home view only (existing tokens) */
+.home-ctas { display: flex; gap: 12px; }
+#tab-home .home-ctas .cta-btn { min-height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+#tab-home .home-ctas .cta-btn.primary { background: var(--ui-accent); border-color: var(--ui-accent); color: var(--bg); }
+#tab-home .home-ctas .cta-btn.primary:hover { background: var(--ui-accent); filter: brightness(1.06); }
 
-.home-invite { display: flex; flex-direction: column; align-items: center; min-width: 0; }
-.home-headline { font-family: var(--font-serif); font-weight: 500; text-align: center;
-  font-size: clamp(25px, 2.1vh + 2.5vw, 52px); line-height: 1.05; letter-spacing: -0.01em;
-  color: var(--text); max-width: 16ch; margin: 0; }
-.home-sub { font-family: var(--font-heading); text-align: center; color: var(--text-body);
-  font-size: clamp(13px, 0.9vh + 0.9vw, 16px); line-height: 1.5; max-width: 500px;
-  margin: clamp(7px, 1.6vh, 16px) auto 0; }
-
-.home-ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
-  margin: clamp(11px, 2.4vh, 26px) 0 0; }
-.home-cta { display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  font-family: var(--font-mono); font-size: clamp(11px, 1.1vw, 12px); font-weight: 600;
-  letter-spacing: 0.1em; text-transform: uppercase; padding: 12px 22px; min-height: 44px;
-  border-radius: 4px; cursor: pointer; text-decoration: none; transition: all 0.2s ease;
-  border: 1px solid var(--border2); background: none; color: var(--text); white-space: nowrap; }
-.home-cta--primary { background: var(--ui-accent); border-color: var(--ui-accent); color: #0e1400; }
-.home-cta--primary:hover { filter: brightness(1.08); transform: translateY(-1px); }
-.home-cta--ghost:hover { border-color: var(--ui-cyan); color: var(--ui-cyan); }
-.home-cta:focus-visible { outline: 2px solid var(--ui-cyan); outline-offset: 2px; }
-
-.home-foot { flex: 0 0 auto; display: flex; justify-content: space-between; gap: 10px 16px;
-  flex-wrap: wrap; font-family: var(--font-mono); font-size: clamp(8.5px, 1vw, 10px);
-  letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
-
-/* ── Wide desktop + landscape: horizontal convergence, fills the width ──────── */
-@media (min-width: 920px), (min-aspect-ratio: 13/10) and (min-width: 560px) {
-  .home-hero { flex-direction: row; justify-content: center; gap: clamp(28px, 4.5vw, 76px); }
-  .home-evidence { flex: 1 1 0; justify-content: flex-end; }
-  .home-pillars { max-width: 480px; }
-  .home-arrow { transform: rotate(-90deg); } /* ↓ becomes → at the convergence */
-  .home-invite { flex: 1 1 0; align-items: flex-start; max-width: 520px; }
-  .home-headline { text-align: left; max-width: 13ch; font-size: clamp(30px, 3.6vw, 58px); }
-  .home-sub { text-align: left; margin-left: 0; }
-  .home-ctas { justify-content: flex-start; }
+/* ── Desktop / landscape: text pinned left, cards pulled inboard from the right ─ */
+@media (min-width: 860px) {
+  .home-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto;
+    align-content: center; column-gap: clamp(40px, 6vw, 110px); row-gap: clamp(18px, 3vh, 34px); }
+  .home-lede { grid-column: 1; grid-row: 1; max-width: 640px; }
+  .home-ctas { grid-column: 1; grid-row: 2; }
+  .home-evidence { grid-column: 2; grid-row: 1 / span 2; align-self: center; margin-right: clamp(0px, 6vw, 150px); }
+  .home-pillars { width: clamp(300px, 33vw, 520px); }
 }
 
-/* Narrow phones (≤360px): text wraps to more lines, so trim heights to compensate */
+/* Mobile: CTAs stacked full-width */
+@media (max-width: 859px) {
+  #tab-home .home-ctas { flex-direction: column; }
+  #tab-home .home-ctas .cta-btn { width: 100%; }
+}
+
+/* Phones (≤480px): the single-column + stacked-CTA layout is tall, so trim
+   type and media so it still fits one screen */
+@media (max-width: 480px) {
+  .home-headline { font-size: clamp(23px, 6.6vw, 33px); line-height: 1.08; }
+  .home-sub { font-size: clamp(12.5px, 3.4vw, 14px); line-height: 1.45; }
+  .home-pillar__thumb { height: clamp(88px, 17vh, 150px); }
+  .home-pillar__text { font-size: clamp(12px, 3.3vw, 13.5px); line-height: 1.3; }
+  .home-hero { gap: clamp(10px, 1.7vh, 16px); }
+}
 @media (max-width: 360px) {
-  .home-pillar__thumb { height: clamp(52px, 14vh, 130px); }
-  .home-pillar__text { font-size: 12px; line-height: 1.3; }
-  .home-hero { gap: clamp(8px, 1.6vh, 16px); }
-  .home-headline { font-size: clamp(22px, 7.2vw, 30px); line-height: 1.07; }
-  .home-sub { font-size: 12.5px; line-height: 1.44; }
+  .home-headline { font-size: clamp(20px, 6.2vw, 26px); }
+  .home-pillar__thumb { height: clamp(70px, 13vh, 100px); }
+  .home-sub { font-size: 12px; line-height: 1.4; }
+  .home-hero { gap: clamp(8px, 1.4vh, 12px); }
+  #tab-home .home-ctas .cta-btn { min-height: 40px; }
 }
 
-/* Very short viewports (landscape phones, small/old phones, short windows) */
+/* Very short viewports */
 @media (max-height: 540px) {
   .home-wrap { padding-top: clamp(6px, 1.4vh, 14px); padding-bottom: clamp(6px, 1.4vh, 14px); }
-  .home-hero { gap: clamp(6px, 1.6vh, 14px); }
-  .home-pillar__thumb { height: clamp(42px, 13vh, 92px); }
+  .home-hero { gap: clamp(8px, 1.6vh, 14px); }
+  .home-pillar__thumb { height: clamp(64px, 16vh, 120px); }
   .home-pillar__credit { display: none; }
-  .home-headline { font-size: clamp(20px, 5.4vh, 34px); }
-  .home-sub { font-size: clamp(12px, 3vh, 14px); margin-top: clamp(5px, 1.4vh, 10px); }
-  .home-ctas { margin-top: clamp(8px, 1.8vh, 16px); }
+  .home-headline { font-size: clamp(22px, 5vh, 38px); }
+  .home-sub { font-size: clamp(12px, 3vh, 14px); margin-top: clamp(6px, 1.4vh, 10px); }
 }
 
-/* Ultra-short strips (landscape phones): drop the supporting prose so the core
-   front door — pillars, arrow, headline, CTAs — still fits without scrolling */
+/* Ultra-short strips: drop the supporting prose to fit one screen */
 @media (max-height: 430px) {
   .home-pillar__text, .home-sub { display: none; }
-  .home-headline { font-size: clamp(18px, 4.4vh, 28px); }
+  .home-headline { font-size: clamp(18px, 4.6vh, 28px); }
   .home-hero { gap: clamp(5px, 1.2vh, 10px); }
-  .home-pillar__cap { padding-bottom: clamp(6px, 1.2vh, 10px); }
 }
 
-/* calm entrance on load — pillars, arrow, headline resolve in sequence */
+/* calm entrance on load */
 .home-anim { opacity: 0; transform: translateY(14px); }
 #tab-home.active .home-anim { animation: homeRise 0.7s cubic-bezier(0.22,1,0.36,1) both; }
-#tab-home.active .home-anim.d1 { animation-delay: 0.06s; }
-#tab-home.active .home-anim.d2 { animation-delay: 0.12s; }
-#tab-home.active .home-anim.d3 { animation-delay: 0.20s; }
-#tab-home.active .home-anim.d4 { animation-delay: 0.28s; }
-#tab-home.active .home-anim.d5 { animation-delay: 0.36s; }
+#tab-home.active .home-anim.d1 { animation-delay: 0.07s; }
+#tab-home.active .home-anim.d2 { animation-delay: 0.14s; }
+#tab-home.active .home-anim.d3 { animation-delay: 0.21s; }
 @keyframes homeRise { to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1402,17 +1400,22 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
 <!-- ── HOME · front door ───────────────────────────────────────────────────── -->
 <div id="tab-home" class="tab-panel active">
   <div class="home-glow" aria-hidden="true"></div>
+  <canvas id="home-fx-myc" class="home-fx home-fx--myc" aria-hidden="true"></canvas>
+  <canvas id="home-fx-q" class="home-fx home-fx--q" aria-hidden="true"></canvas>
+  <div class="home-vignette" aria-hidden="true"></div>
   <div class="home-wrap">
 
-    <header class="home-top home-anim">
-      <span class="home-top__brand">Underground Intelligence</span>
-      <span class="home-top__aff">TU Delft &middot; CQS</span>
-    </header>
-
     <div class="home-hero">
-      <div class="home-evidence">
+
+      <div class="home-lede">
+        <div class="home-eyebrow home-anim">Underground Intelligence</div>
+        <h1 class="home-headline home-anim d1">What if the underground began to speak?</h1>
+        <p class="home-sub home-anim d2">Two discoveries, one buried, one quantum, are about to converge. Underground Intelligence imagines the moment the largest living network on Earth becomes something we can finally listen to.</p>
+      </div>
+
+      <div class="home-evidence home-anim d3">
         <div class="home-pillars">
-          <div class="home-pillar home-pillar--spun home-anim d1">
+          <div class="home-pillar home-pillar--spun">
             <div class="home-pillar__thumb">
               <img src="research/underground-atlas.jpg" alt="SPUN's Underground Atlas: a global map of mycorrhizal fungal richness" loading="eager">
             </div>
@@ -1422,7 +1425,7 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
               <div class="home-pillar__credit">Image &middot; SPUN</div>
             </div>
           </div>
-          <div class="home-pillar home-pillar--quantum home-anim d2">
+          <div class="home-pillar home-pillar--quantum">
             <div class="home-pillar__thumb">
               <img src="research/q-qutech.jpg" alt="QuTech researchers in the lab with a 3D model of diamond spins, a quantum magnetic sensor" loading="eager">
             </div>
@@ -1435,22 +1438,12 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
         </div>
       </div>
 
-      <div class="home-converge home-anim d3" aria-hidden="true"><span class="home-arrow">&#8595;</span></div>
-
-      <div class="home-invite">
-        <h1 class="home-headline home-anim d3">What if the underground began to speak?</h1>
-        <p class="home-sub home-anim d4">Two discoveries, one buried, one quantum, are about to converge. Underground Intelligence imagines the moment the largest living network on Earth becomes something we can finally listen to.</p>
-        <div class="home-ctas home-anim d4">
-          <button type="button" class="home-cta home-cta--primary" onclick="switchTab('story')">Enter the story <span aria-hidden="true">&#8594;</span></button>
-          <button type="button" class="home-cta home-cta--ghost" onclick="switchTab('dashboard')">Explore the map</button>
-        </div>
+      <div class="home-ctas home-anim d2">
+        <button type="button" class="cta-btn primary" onclick="switchTab('story')">Enter the story <span aria-hidden="true">&#8594;</span></button>
+        <button type="button" class="cta-btn" onclick="switchTab('dashboard')">Explore the map</button>
       </div>
-    </div>
 
-    <footer class="home-foot home-anim d5">
-      <span>SPUN Underground Atlas &middot; Nature 2025</span>
-      <span>MycoSense &middot; QSN &middot; Speculative</span>
-    </footer>
+    </div>
 
   </div>
 </div>
@@ -2581,6 +2574,117 @@ function initMycelium() {
   window.addEventListener('resize', () => { cancelAnimationFrame(rraf); rraf = requestAnimationFrame(start); });
 }
 
+/* ── HOME living background — optional, ?fx=mycelium|quantum|both ─────────────
+   Reuses the chapter-1 mycelium growth and the chapter-3 quantum sonar/nodes as
+   a full-bleed layer behind the front door. Off unless the URL opts in. */
+function fxSize(canvas) {
+  const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
+  const W = canvas.offsetWidth, H = canvas.offsetHeight;
+  canvas.width = Math.max(1, W * dpr); canvas.height = Math.max(1, H * dpr);
+  const ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, W, H };
+}
+function homeFxRunning() {
+  const home = document.getElementById('tab-home');
+  return home && home.classList.contains('active') && !document.hidden;
+}
+function startHomeMycelium(canvas, both, reduce) {
+  if (!canvas) return;
+  let { ctx, W, H } = fxSize(canvas);
+  let CX = both ? W * 0.30 : W * 0.26, CY = both ? H * 0.62 : H * 0.52;
+  const AX = both ? 1 : 1.16, AY = both ? 1 : 0.9; // slight elliptical bias so it reads less perfectly circular
+  const active = [], MAX = 720;
+  const spawn = (x, y, a, t) => { if (active.length >= MAX) return;
+    active.push({ x, y, angle: a, thickness: Math.max(0.1, t), len: 0,
+      maxLen: 18 + Math.random() * 30, wobble: (Math.random() - 0.5) * 0.022,
+      hue: 178 + Math.random() * 22, bright: 32 + Math.random() * 26 }); };
+  function seed() { active.length = 0; ctx.clearRect(0, 0, W, H);
+    const n = both ? 12 : 20;
+    for (let i = 0; i < n; i++) {
+      const a = both ? (-0.9 + (i / n) * 1.8) : (i / n) * Math.PI * 2;
+      spawn(CX, CY, a + (Math.random() - 0.5) * 0.5, 2.1);
+    } }
+  seed();
+  function step() {
+    const toAdd = [];
+    for (let i = active.length - 1; i >= 0; i--) {
+      const h = active[i]; h.angle += h.wobble;
+      const nx = h.x + Math.cos(h.angle) * 1.15 * AX, ny = h.y + Math.sin(h.angle) * 1.15 * AY;
+      ctx.beginPath(); ctx.moveTo(h.x, h.y); ctx.lineTo(nx, ny);
+      ctx.strokeStyle = `hsla(${h.hue},85%,${h.bright + 8}%,0.6)`; ctx.lineWidth = h.thickness; ctx.lineCap = 'round'; ctx.stroke();
+      ctx.beginPath(); ctx.arc(nx, ny, h.thickness * 0.6, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${h.hue + 6},90%,72%,0.65)`; ctx.fill();
+      h.x = nx; h.y = ny; h.len += 1.15;
+      if (h.len >= h.maxLen) { active.splice(i, 1); const r = Math.random();
+        if (r < 0.45) toAdd.push([h.x, h.y, h.angle + (Math.random() - 0.5) * 0.1, h.thickness * 0.95]);
+        else if (r < 0.80) { toAdd.push([h.x, h.y, h.angle + (Math.random() - 0.5) * 0.08, h.thickness * 0.92]); toAdd.push([h.x, h.y, h.angle + (Math.random() < 0.5 ? 1 : -1) * (0.26 + Math.random() * 0.2), h.thickness * 0.72]); }
+        else if (r < 0.95) { toAdd.push([h.x, h.y, h.angle - 0.15 - Math.random() * 0.18, h.thickness * 0.82]); toAdd.push([h.x, h.y, h.angle + 0.15 + Math.random() * 0.18, h.thickness * 0.82]); }
+        else { toAdd.push([h.x, h.y, h.angle + (Math.random() - 0.5) * 0.06, h.thickness * 0.86]); toAdd.push([h.x, h.y, h.angle - 0.28, h.thickness * 0.7]); toAdd.push([h.x, h.y, h.angle + 0.28, h.thickness * 0.7]); }
+      }
+    }
+    toAdd.forEach(a => spawn(a[0], a[1], a[2], a[3]));
+  }
+  if (reduce) { for (let k = 0; k < 220 && active.length; k++) step(); return; }
+  let lastW = W, lastH = H, pendingResize = false, idle = 0;
+  function applySize() { const s = fxSize(canvas); ctx = s.ctx; W = s.W; H = s.H; lastW = W; lastH = H; CX = both ? W * 0.30 : W * 0.26; CY = both ? H * 0.62 : H * 0.52; seed(); }
+  function loop() {
+    requestAnimationFrame(loop);
+    if (!homeFxRunning()) return;                 // not in view → pause; the canvas keeps its last frame
+    if (pendingResize) { pendingResize = false;   // a resize fired while hidden — only re-fit if size truly changed
+      if (canvas.offsetWidth !== lastW || canvas.offsetHeight !== lastH) applySize(); }
+    if (active.length > 0) { step(); idle = 0; }
+    else if (++idle > 280) { seed(); idle = 0; }  // regrow, but the countdown only advances while in view
+  }
+  requestAnimationFrame(loop);
+  window.addEventListener('resize', () => {
+    if (canvas.offsetWidth === 0) { pendingResize = true; return; } // hidden → don't zero it; re-check on return
+    applySize();
+  });
+}
+function startHomeQuantum(canvas, both, reduce) {
+  if (!canvas) return;
+  let { ctx, W, H } = fxSize(canvas);
+  let CX = both ? W * 0.72 : W * 0.5, CY = both ? H * 0.4 : H * 0.5;
+  let t = 0; const RINGS = 8, PERIOD = 480;
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    const maxR = Math.max(W, H) * (both ? 0.52 : 0.72);
+    for (let i = 0; i < RINGS; i++) {
+      const p = ((t + i * (PERIOD / RINGS)) % PERIOD) / PERIOD;
+      ctx.beginPath(); ctx.arc(CX, CY, p * maxR, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(0,212,255,${Math.sin(p * Math.PI) * 0.4})`; ctx.lineWidth = 1; ctx.stroke();
+    }
+    const pulse = 0.6 + 0.4 * Math.sin(t * 0.045);
+    const g = ctx.createRadialGradient(CX, CY, 0, CX, CY, 22);
+    g.addColorStop(0, `rgba(0,212,255,${0.45 + pulse * 0.3})`); g.addColorStop(1, 'rgba(0,212,255,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(CX, CY, 22, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(CX, CY, 5, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(0,212,255,${0.75 + pulse * 0.25})`; ctx.fill();
+    for (let n = 0; n < 6; n++) {
+      const a = t * 0.01 + n * Math.PI / 3, rr = maxR * 0.42;
+      const x = CX + Math.cos(a) * rr, y = CY + Math.sin(a) * rr * 0.7;
+      ctx.beginPath(); ctx.arc(x, y, 2.4, 0, Math.PI * 2); ctx.fillStyle = 'rgba(0,212,255,0.5)'; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(CX, CY); ctx.lineTo(x, y);
+      ctx.strokeStyle = 'rgba(0,212,255,0.12)'; ctx.lineWidth = 0.7; ctx.stroke();
+    }
+    t++;
+  }
+  if (reduce) { draw(); return; }
+  function loop() { if (homeFxRunning()) draw(); requestAnimationFrame(loop); } // paused (and continues) with view
+  requestAnimationFrame(loop);
+  window.addEventListener('resize', () => { if (canvas.offsetWidth === 0) return; const s = fxSize(canvas); ctx = s.ctx; W = s.W; H = s.H; CX = both ? W * 0.72 : W * 0.5; CY = both ? H * 0.4 : H * 0.5; });
+}
+function initHomeFx() {
+  let fx = new URLSearchParams(location.search).get('fx') || 'mycelium'; // mycelium is the default background
+  if (fx === 'off' || fx === 'none') return;
+  if (!['mycelium', 'quantum', 'both'].includes(fx)) fx = 'mycelium';
+  const home = document.getElementById('tab-home'); if (!home) return;
+  home.setAttribute('data-fx', fx);
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (fx === 'mycelium' || fx === 'both') startHomeMycelium(document.getElementById('home-fx-myc'), fx === 'both', reduce);
+  if (fx === 'quantum'  || fx === 'both') startHomeQuantum(document.getElementById('home-fx-q'), fx === 'both', reduce);
+}
+
 /* ── CH03: QUANTUM SENSING — sonar rings + signal trace ──────────────────── */
 function initCh3Signals() {
   let CX, CY;
@@ -2590,18 +2694,18 @@ function initCh3Signals() {
   const RINGS = 8, PERIOD = 480;
   function tick() {
     s.ctx.fillStyle = 'rgba(4,4,8,0.07)'; s.ctx.fillRect(0, 0, s.W, s.H);
-    const maxR = Math.max(s.W, s.H) * 0.72;
+    const maxR = Math.max(s.W, s.H) * 0.55;
     for (let i = 0; i < RINGS; i++) {
       const p = ((t + i * (PERIOD / RINGS)) % PERIOD) / PERIOD;
       s.ctx.beginPath(); s.ctx.arc(CX, CY, p * maxR, 0, Math.PI * 2);
       s.ctx.strokeStyle = `rgba(0,212,255,${Math.sin(p * Math.PI) * 0.42})`; s.ctx.lineWidth = 1; s.ctx.stroke();
     }
     const pulse = 0.6 + 0.4 * Math.sin(t * 0.045);
-    const g3 = s.ctx.createRadialGradient(CX, CY, 0, CX, CY, 20);
-    g3.addColorStop(0, `rgba(0,212,255,${0.45 + pulse * 0.3})`); g3.addColorStop(1, 'rgba(0,212,255,0)');
-    s.ctx.fillStyle = g3; s.ctx.beginPath(); s.ctx.arc(CX, CY, 20, 0, Math.PI * 2); s.ctx.fill();
-    s.ctx.beginPath(); s.ctx.arc(CX, CY, 5, 0, Math.PI * 2);
-    s.ctx.fillStyle = `rgba(0,212,255,${0.75 + pulse * 0.25})`; s.ctx.fill();
+    const g3 = s.ctx.createRadialGradient(CX, CY, 0, CX, CY, 12);
+    g3.addColorStop(0, `rgba(0,140,190,${0.16 + pulse * 0.08})`); g3.addColorStop(1, 'rgba(0,140,190,0)');
+    s.ctx.fillStyle = g3; s.ctx.beginPath(); s.ctx.arc(CX, CY, 12, 0, Math.PI * 2); s.ctx.fill();
+    s.ctx.beginPath(); s.ctx.arc(CX, CY, 3, 0, Math.PI * 2);
+    s.ctx.fillStyle = `rgba(0,150,195,${0.4 + pulse * 0.12})`; s.ctx.fill();
     t++;
   }
   registerAnim(s.canvas, 'story', tick);
@@ -2843,6 +2947,13 @@ function switchTab(id, pushHistory = true) {
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === id));
   if (typeof setAnimTab === 'function') setAnimTab(id); // pause/resume canvas animations for this tab
   if (id === 'story' && !storyMap2) setTimeout(initStoryMaps, 100);
+  // The story canvases (ch1 mycelium + ch3/ch4/ch5 signal animations) initialise
+  // at zero size because the story tab starts hidden behind the home front door.
+  // Re-fire a resize the first time it's shown so they all pick up real dimensions.
+  if (id === 'story' && !window.__storyKicked) {
+    window.__storyKicked = true;
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 80);
+  }
   if (pushHistory) history.pushState({ tab: id }, '', id === 'home' ? BASE_PATH : BASE_PATH + '/' + id);
 }
 
@@ -2899,6 +3010,7 @@ const _rel = window.location.pathname.replace(BASE_PATH, '').replace(/^\//, '');
 // Base path → home (front door); known sub-path → that view; anything else → home
 const _pathTab = _rel === '' ? 'home' : (['story','dashboard','research'].find(t => _rel === t) || 'home');
 switchTab(_pathTab, false);
+initHomeFx();
 // Replace initial state so back-button can return here
 history.replaceState({ tab: _pathTab }, '', _pathTab === 'home' ? BASE_PATH : BASE_PATH + '/' + _pathTab);
 
