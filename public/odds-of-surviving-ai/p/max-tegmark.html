@@ -35,7 +35,7 @@ body{padding-top:var(--fa-nav-h)!important}
 .od-stage{min-height:calc(100vh - var(--fa-nav-h))!important;height:calc(100vh - var(--fa-nav-h))!important}
 @media(min-width:860px){.od-photo{height:100%!important}.od-game{height:100%!important}}
 /* tighter nav bar on tablet/mobile (the var also drives the content offset, so they stay in sync) */
-@media(max-width:859px){:root{--fa-nav-h:52px}}
+@media(max-width:859px){:root{--fa-nav-h:48px}}
 </style><script src="/atlas-nav.js" defer></script></head>
 <body>
 <x-dc>
@@ -84,6 +84,7 @@ body.od-menu-open .fa-share{display:none!important}
 body.od-menu-open .od-extinctions{display:none!important}
 .od-ext-counter{position:fixed;top:calc(var(--fa-nav-h,56px) + 20px);left:50%;transform:translateX(-50%);z-index:55;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:center;white-space:nowrap;pointer-events:none}
 @media(min-width:860px){.od-ext-counter{left:75%}}
+.od-ext-counter,.od-extinctions{display:none!important}   /* extinctions tally removed on all sizes */
 .od-pill{transition:transform .2s cubic-bezier(.2,.7,.2,1), border-color .25s ease}
 .od-pill:hover{transform:translateY(-2px)}
 .od-caret{transition:transform .25s ease}
@@ -143,51 +144,69 @@ body.od-menu-open .od-extinctions{display:none!important}
    Compact header band (small portrait top-left, copy top-right), then the
    game fills the rest so the whole play screen fits one viewport, no scroll. */
 @media(max-width:859px){
-  /* --- header band --- */
-  .od-photo{height:clamp(150px,22vh,182px)!important;flex:none!important;background:#0e0b16;overflow:hidden}
+  /* The play screen is split into three fixed bands of the viewport height:
+     portrait+info 26% · game 46% · results 28%. (Within .od-game the game is
+     62% and the results 38% — 62%·74≈46, 38%·74≈28.) Re-balance here. */
+
+  /* --- band 1: portrait + info (26%); portrait is flush to nav / left edge / game --- */
+  .od-photo{flex:0 0 26%!important;height:auto!important;min-height:0;
+    display:flex!important;flex-direction:row;align-items:stretch;gap:0;padding:0!important;background:#0e0b16;overflow:hidden}
   .od-photo-scrim{display:none!important}
-  .od-hero-img,.od-doom-vid{
-    inset:14px auto 14px 16px!important;height:calc(100% - 28px)!important;width:auto!important;
-    max-width:116px!important;aspect-ratio:3/4;border-radius:12px!important;object-position:50% 16%!important}
-  /* copy sits to the right of the portrait, vertically centred */
-  .od-photo-info{
-    inset:14px 16px 14px 144px!important;justify-content:center!important;gap:6px!important}
-  .od-odds-line{display:none!important}                 /* drop the big % + caption — quote is enough */
-  .od-photo-info .od-name{font-size:19px!important;line-height:1.04!important}
-  .od-photo-info .od-quote{font-size:13px!important;line-height:1.34!important;max-width:none!important;
-    display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
-  /* choose-player pill becomes a small badge on the portrait's lower-left */
-  .od-photo-top{inset:auto auto 13px 16px!important;left:16px!important;right:auto!important;top:auto!important}
-  .od-photo-top .od-pill{height:30px!important;font-size:10px!important;padding:0 11px!important}
+  .od-hero-img{position:relative!important;inset:auto!important;height:100%!important;width:auto!important;
+    aspect-ratio:3/4;max-width:46vw;flex:none!important;border-radius:0!important;object-position:50% 16%!important}
+  .od-photo-info{position:relative!important;inset:auto!important;flex:1 1 0!important;min-width:0;
+    justify-content:center!important;gap:4px!important;padding:0 14px!important}
+  .od-odds-line,.od-quote-ctx,.od-photo-src{display:none!important}   /* big %, eyebrow, attribution — gone */
+  .od-photo-info .od-quote{display:none!important}                    /* quote — gone on mobile */
+  .od-photo-info .od-name{font-size:clamp(18px,3vh,24px)!important;line-height:1.03!important}
+  .od-photo-top{inset:auto auto 10px 10px!important;left:10px!important;right:auto!important;top:auto!important}
+  .od-photo-top .od-pill{height:28px!important;font-size:9.5px!important;padding:0 10px!important}
 
-  /* --- game area: fill remaining height, centre the mechanic, no scroll --- */
-  .od-game{min-height:0!important;flex:1 1 auto!important;justify-content:center}
-  .od-stage-area{flex:1 1 auto!important;min-height:0!important;max-height:50vh}
-  .od-panel{flex:none!important;padding-top:6px}
+  /* --- band 2: game (62% of .od-game ≈ 46% screen) --- */
+  .od-game{min-height:0!important;flex:1 1 0!important}
+  .od-stage-area{flex:0 0 62%!important;min-height:0!important}
+  .od-die-mat{transform:scale(1.3)}                                   /* bigger die */
+  /* wheel: fit the band and stop the spokes poking past the rim */
+  .od-wheel-wrap{width:min(62vw,40vh)!important;height:min(62vw,40vh)!important;max-width:300px!important;max-height:300px!important}
+  .od-globe{width:min(60vw,38.5vh)!important;height:min(60vw,38.5vh)!important;max-width:288px!important}
+  .od-wheel-tick{height:47%!important}                                /* was a fixed 190px → poked out */
+  /* cards: bigger, filling the band; shrink the drawn card so it fits */
+  .od-cards-wrap{height:100%!important}
+  .od-fan-deck{height:100%!important}
+  .od-fan{width:152px!important;height:218px!important;margin-left:-76px!important;bottom:12px!important}
+  .od-drawn-wrap{transform:scale(0.72)}
 
-  /* die: stage area is no longer greedy, so the mat sits without the big gaps */
-  .od-die-mat{transform:scale(1.04)}
+  /* --- band 3: results panel (38% of .od-game ≈ 28% screen) — smaller type + button --- */
+  .od-panel{flex:0 0 38%!important;min-height:0;overflow-y:auto;padding:8px 18px 12px!important}
+  .od-center{gap:8px!important}
+  .od-key-labels{font-size:8.5px!important;gap:12px;letter-spacing:0.04em!important}
+  .od-key-labels span{flex:1 1 0;min-width:0}                         /* let the long "REALLY, REALLY BAD" wrap, not clip */
+  .od-key-labels span:last-child{text-align:right}
+  .od-rhead{font-size:clamp(17px,2.5vh,22px)!important}
+  .od-rhead-big{font-size:clamp(22px,4vh,32px)!important}
+  .od-rdesc{font-size:12px!important;line-height:1.5!important}
+  .od-rdesc-big{font-size:13.5px!important}
+  .od-roll,.od-cta{font-size:12px!important}
+  .od-ledger-btn{padding:11px 26px!important}
+  .od-rollhint{font-size:9px!important}
 
-  /* wheel was overflowing — bring it down to a comfortable size */
-  .od-wheel-wrap{width:58vw!important;height:58vw!important;max-width:300px!important;max-height:300px!important}
-  .od-globe{width:56vw!important;height:56vw!important;max-width:288px!important}
-
-  /* cards were tiny (vw-sized) and floated high — make them bigger and lower */
-  .od-fan-deck{height:300px!important}
-  .od-fan{width:130px!important;height:188px!important;margin-left:-65px!important;bottom:18px!important}
-
-  /* --- player chooser (landing + menu, identical): list rows like the play header
-         (portrait left, copy right) --- */
-  .od-pcards{grid-template-columns:1fr!important;grid-auto-rows:auto!important;gap:12px!important;
-    align-content:start;flex:none!important;height:auto!important;min-height:0;overflow-y:auto}
-  .od-pcards .od-pcard{height:auto!important;min-height:120px;display:flex!important;flex-direction:row;align-items:stretch}
-  .od-pcards .od-pcard-img{position:relative!important;inset:auto!important;width:36%!important;max-width:140px;
-    height:auto!important;min-height:120px;flex:none;object-position:50% 16%!important}
+  /* --- player chooser (landing + menu, identical): horizontal rows sized to ALL
+         fit one screen (no scroll, no cut-off card) — portrait left, copy right --- */
+  .od-choose{display:none!important}                       /* "CHOOSE YOUR PLAYER" label — redundant on mobile */
+  .od-pcards{display:flex!important;flex-direction:column;gap:10px!important;flex:1 1 auto!important;
+    height:auto!important;min-height:0;overflow:hidden}
+  .od-pcards .od-pcard{flex:1 1 0!important;min-height:0!important;height:auto!important;max-height:172px;
+    display:flex!important;flex-direction:row;align-items:stretch}
+  .od-pcards .od-pcard-img{position:relative!important;inset:auto!important;width:34%!important;max-width:130px;
+    height:auto!important;min-height:0!important;flex:none;object-position:50% 16%!important}
   .od-pcards .od-pcard-grad{display:none!important}        /* text no longer sits over the photo */
-  .od-pcards .od-pcard-mech{display:none!important}        /* the CTA already names the mechanic */
+  .od-pcards .od-pcard-mech{display:none!important}        /* CTA already names the mechanic */
+  .od-pcards .od-pcard-odds{display:none!important}        /* drop the big % + caption inside the card */
   .od-pcards .od-pcard-body{position:relative!important;inset:auto!important;left:auto!important;right:auto!important;
-    bottom:auto!important;flex:1;min-width:0;justify-content:center;padding:13px 15px;gap:4px!important}
-  .od-pcards .od-pcard-btn{margin-top:9px}
+    bottom:auto!important;flex:1;min-width:0;justify-content:center;padding:10px 14px;gap:3px!important}
+  .od-pcards .od-pcard-name{font-size:clamp(16px,2vh,21px)!important;line-height:1.05!important}
+  .od-pcards .od-pcard-btn{margin-top:8px;padding:9px 18px!important}
+  .od-teaser-num{color:#E0481B!important;font-weight:700}  /* highlight the odds number in the teaser */
 }
 
 /* ============ LANDING (one full screen, no scroll) ============ */
@@ -197,7 +216,7 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-land-head{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(236,234,230,0.62)}
 .od-land-head .od-mark{color:#E0481B}
 .od-eyebrow{margin-top:clamp(14px,3vh,28px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.26em;color:#E0481B}
-.od-headline{margin-top:12px;max-width:820px;font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:clamp(30px,calc(4vw + 1vh),52px);line-height:0.98;letter-spacing:-0.025em;color:#F4EFE4}
+.od-headline{margin-top:12px;max-width:820px;font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:clamp(26px,calc(3.4vw + 0.9vh),44px);line-height:0.98;letter-spacing:-0.025em;color:#F4EFE4}
 .od-intro{margin-top:14px;max-width:680px;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.1vh,22px);line-height:1.45;color:rgba(236,234,230,0.78)}
 .od-choose{margin-top:clamp(16px,2.6vh,26px);margin-bottom:12px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.18em;color:rgba(236,234,230,0.6)}
 .od-choose-sel{color:#E0481B}
@@ -264,7 +283,7 @@ body.od-menu-open .od-extinctions{display:none!important}
             <span class="od-pcard-odds"><b>{{ r.oddsBig }}</b><i>{{ r.oddsCap }}</i></span>
             <span class="od-pcard-name">{{ r.name }}</span>
             <span class="od-pcard-role">{{ r.role }}</span>
-            <span class="od-pcard-teaser">{{ r.teaser }}</span>
+            <span class="od-pcard-teaser">{{ r.teaserPre }}<span class="od-teaser-num">{{ r.teaserNum }}</span>{{ r.teaserPost }}</span>
             <span class="od-pcard-btn">{{ r.cta }} <svg class="od-cta-arrow" width="19" height="13" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h21M16 1.5l6.5 6.5-6.5 6.5"/></svg></span>
           </span>
         </button>
@@ -321,10 +340,10 @@ body.od-menu-open .od-extinctions{display:none!important}
         <div style="font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:0.06em;color:rgba(236,234,230,0.62)">{{ p.role }}</div>
       </div>
       <sc-if value="{{ p.quoteContext }}">
-        <div class="od-anim" style="animation-delay:.46s;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#E0481B">{{ p.quoteContext }}</div>
+        <div class="od-anim od-quote-ctx" style="animation-delay:.46s;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#E0481B">{{ p.quoteContext }}</div>
       </sc-if>
       <p class="od-anim od-quote" style="animation-delay:.5s;max-width:450px">“{{ p.quote }}”</p>
-      <div class="od-anim" style="animation-delay:.58s;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.05em;color:rgba(236,234,230,0.45)">{{ p.source }} · {{ p.credit }}</div>
+      <div class="od-anim od-photo-src" style="animation-delay:.58s;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.05em;color:rgba(236,234,230,0.45)">{{ p.source }} · {{ p.credit }}</div>
     </div>
   </div>
 
@@ -349,7 +368,7 @@ body.od-menu-open .od-extinctions{display:none!important}
           <div style="position:absolute;inset:0;transform:scale({{ wheelRingScale }});opacity:{{ wheelRingOpacity }};transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .8s ease">
             <div style="position:absolute;inset:0;border-radius:50%;border:7px solid #11050f;box-shadow:0 16px 44px rgba(0,0,0,0.5);transform:rotate({{ wheelRot }}deg);background:{{ wheelGradient }}">
               <sc-for list="{{ wheelTicks }}" as="tk" hint-placeholder-count="5">
-                <div style="position:absolute;left:50%;top:50%;width:2px;height:190px;transform-origin:top center;transform:translate(-50%,0) rotate({{ tk.deg }}deg);background:rgba(255,255,255,0.45)"></div>
+                <div class="od-wheel-tick" style="position:absolute;left:50%;top:50%;width:2px;height:190px;transform-origin:top center;transform:translate(-50%,0) rotate({{ tk.deg }}deg);background:rgba(255,255,255,0.45)"></div>
               </sc-for>
             </div>
           </div>
@@ -387,7 +406,7 @@ body.od-menu-open .od-extinctions{display:none!important}
             </div>
           </sc-if>
           <sc-if value="{{ drawn }}">
-            <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1700px">
+            <div class="od-drawn-wrap" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1700px">
             <div style="width:280px;height:395px;transform-style:preserve-3d;transform:rotateY({{ cardFlip }}deg)">
               <div style="position:absolute;inset:0;border-radius:18px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;backface-visibility:hidden;display:flex;align-items:center;justify-content:center">
                 <div style="width:47px;height:47px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
@@ -471,7 +490,7 @@ body.od-menu-open .od-extinctions{display:none!important}
                 <span class="od-pcard-odds"><b>{{ r.oddsBig }}</b><i>{{ r.oddsCap }}</i></span>
                 <span class="od-pcard-name">{{ r.name }}</span>
                 <span class="od-pcard-role">{{ r.role }}</span>
-                <span class="od-pcard-teaser">{{ r.teaser }}</span>
+                <span class="od-pcard-teaser">{{ r.teaserPre }}<span class="od-teaser-num">{{ r.teaserNum }}</span>{{ r.teaserPost }}</span>
                 <span class="od-pcard-btn">{{ r.cta }} <svg class="od-cta-arrow" width="19" height="13" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h21M16 1.5l6.5 6.5-6.5 6.5"/></svg></span>
               </span>
             </button>
@@ -532,7 +551,7 @@ class Component extends DCLogic {
       short: 'Dario', name: 'Dario Amodei', role: 'Co-founder & CEO, Anthropic',
       photo: '/odds-of-surviving-ai/research/dario-amodei.jpg',
       credit: 'Photo: TechCrunch, CC BY 2.0',
-      teaser: 'A 25% chance things go really, really badly.',
+      teaser: 'A 25% chance things go really, really badly.', teaserNum: '25%',
       oddsBig: '25%', oddsCaption: 'CHANCE IT GOES REALLY, REALLY BADLY', oddsCap: 'REALLY BADLY',
       doom: 0.25,
       quote: 'I think there\u2019s a 25% chance that things go really, really badly.',
@@ -545,7 +564,7 @@ class Component extends DCLogic {
       short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
       photo: '/odds-of-surviving-ai/research/elon-musk.jpg',
       credit: 'Photo: Gage Skidmore, CC BY-SA 2.0',
-      teaser: 'Only a 20% chance of annihilation.',
+      teaser: 'Only a 20% chance of annihilation.', teaserNum: '20%',
       oddsBig: '20%', oddsCaption: 'CHANCE EARTH BURNS', oddsCap: 'EARTH BURNS',
       doom: 0.20,
       quote: 'The probability of a good outcome is like 80%. Only a 20% chance of annihilation.',
@@ -558,7 +577,7 @@ class Component extends DCLogic {
       short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
       photo: '/odds-of-surviving-ai/research/max-tegmark.jpg',
       credit: 'Photo: Web Summit, CC BY 2.0',
-      teaser: 'In 3 of the 12 futures, humanity is gone.',
+      teaser: 'In 3 of the 12 futures, humanity is gone.', teaserNum: '3',
       oddsBig: '12', oddsCaption: 'FUTURES · NOT PROBABILITIES', oddsCap: 'FUTURES',
       doom: null,
       quote: 'The real risk with AGI isn\u2019t malice but competence. A superintelligent AI will be extremely good at accomplishing its goals, and if those goals aren\u2019t aligned with ours, we\u2019re in trouble.',
@@ -973,8 +992,14 @@ class Component extends DCLogic {
     const selPlayer = this.players[s.playerId];
     const landingRoster = this.order.map((id, i) => {
       const pl = this.players[id];
+      // split the teaser around its odds number so the number can render in red
+      const tNum = pl.teaserNum || '';
+      const tIdx = tNum ? pl.teaser.indexOf(tNum) : -1;
       return {
         name: pl.name, role: pl.role, teaser: pl.teaser, mechTag: pl.mechTag,
+        teaserPre: tIdx >= 0 ? pl.teaser.slice(0, tIdx) : pl.teaser,
+        teaserNum: tIdx >= 0 ? tNum : '',
+        teaserPost: tIdx >= 0 ? pl.teaser.slice(tIdx + tNum.length) : '',
         oddsBig: pl.oddsBig, oddsCap: pl.oddsCap, cta: pl.cta || 'Play',
         current: id === s.playerId,
         play: () => this.playPlayer(id),
