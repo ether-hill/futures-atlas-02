@@ -113,6 +113,7 @@ body { font-family: var(--sans); -webkit-font-smoothing: antialiased; }
 .tip b.bad { color: var(--bad); }
 
 /* game over */
+.over[hidden] { display: none; }
 .over { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: color-mix(in oklab, #05070c 55%, transparent); pointer-events: auto; }
 .overcard { border-radius: 18px; padding: 26px 28px; max-width: 440px; width: calc(100% - 36px); }
 .lbl { font: 700 10px var(--mono); letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }

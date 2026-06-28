@@ -54,6 +54,7 @@ export function boot(root: HTMLElement) {
   const world = new World(sceneEl);
   const canvas = world.renderer.domElement;
   let m: Metrics = game.metrics();
+  let stepTimer = 0;
 
   // ── speed control ──
   speedSeg.innerHTML = SPEEDS.map((s, i) => `<button class="seg-b${i === game.speed ? " on" : ""}" data-s="${i}">${s.label}</button>`).join("");
@@ -62,6 +63,7 @@ export function boot(root: HTMLElement) {
     if (!b) return;
     game.speed = Number(b.dataset.s);
     speedSeg.querySelectorAll(".seg-b").forEach((el, i) => el.classList.toggle("on", i === game.speed));
+    if (game.running) scheduleStep();
   });
 
   // ── palette ──
@@ -92,11 +94,17 @@ export function boot(root: HTMLElement) {
   });
 
   // ── transport ──
-  playBtn.addEventListener("click", () => { if (!game.over) game.running = !game.running; renderHud(); });
+  playBtn.addEventListener("click", () => {
+    if (game.over) return;
+    game.running = !game.running;
+    if (game.running) scheduleStep(); else clearTimeout(stepTimer);
+    renderHud();
+  });
   $("newrun").addEventListener("click", () => newRun(seedIn.value.trim() || randomSeed()));
   seedIn.addEventListener("keydown", (e) => { if ((e as KeyboardEvent).key === "Enter") newRun(seedIn.value.trim() || randomSeed()); });
 
   function newRun(seed: string) {
+    clearTimeout(stepTimer);
     // clear all 3D buildings
     for (let i = 0; i < game.grid.length; i++) if (world.has(i)) world.remove(i);
     game.reset(seed);
@@ -107,20 +115,21 @@ export function boot(root: HTMLElement) {
     renderPalette(); renderAll();
   }
 
-  // ── pointer: orbit vs click, ghost preview ──
-  let downX = 0, downY = 0, downT = 0, moved = false;
-  const ndc = (e: PointerEvent) => {
+  // ── pointer: distinguish a click from an orbit-drag, ghost preview ──
+  // Use the native `click` event (fires for mouse/touch/pen) gated by how far
+  // the pointer moved between down and up, so camera drags don't place tiles.
+  type XY = { clientX: number; clientY: number };
+  let downX = 0, downY = 0;
+  const ndc = (e: XY) => {
     const r = canvas.getBoundingClientRect();
     return [((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1] as const;
   };
-  canvas.addEventListener("pointerdown", (e) => { downX = e.clientX; downY = e.clientY; downT = performance.now(); moved = false; });
-  canvas.addEventListener("pointermove", (e) => {
-    if (e.buttons && (Math.abs(e.clientX - downX) > 4 || Math.abs(e.clientY - downY) > 4)) moved = true;
-    updateGhost(e);
-  });
+  canvas.addEventListener("pointerdown", (e) => { downX = e.clientX; downY = e.clientY; });
+  canvas.addEventListener("pointermove", updateGhost);
   canvas.addEventListener("pointerleave", () => world.clearGhost());
   canvas.addEventListener("pointerup", (e) => {
-    if (moved || performance.now() - downT > 400) return; // was an orbit drag
+    if (e.button !== 0) return;
+    if (Math.hypot(e.clientX - downX, e.clientY - downY) > 8) return; // was an orbit drag
     const [x, y] = ndc(e);
     const i = world.raycast(x, y);
     if (i == null || game.over) return;
@@ -132,7 +141,7 @@ export function boot(root: HTMLElement) {
     syncStates(); renderHud(); renderTip(); renderPalette(); updateGhost(e);
   });
 
-  function updateGhost(e: PointerEvent) {
+  function updateGhost(e: XY) {
     const [x, y] = ndc(e);
     const i = world.raycast(x, y);
     if (i == null || game.over) { world.clearGhost(); return; }
@@ -220,24 +229,27 @@ export function boot(root: HTMLElement) {
 
   function renderAll() { syncStates(); renderHud(); renderTip(); }
 
-  // ── main loop: animate every frame, step the sim on its own cadence ──
+  // ── sim stepping: a self-rescheduling timer, independent of the render loop
+  // (so the day advances reliably and the rate is decoupled from frame rate) ──
+  function step() {
+    game.step();
+    m = game.metrics();
+    syncStates(); renderHud(); renderTip(); renderPalette();
+  }
+  function scheduleStep() {
+    clearTimeout(stepTimer);
+    if (!game.running || game.over) return;
+    stepTimer = window.setTimeout(() => {
+      step();
+      scheduleStep();
+    }, SPEEDS[game.speed].ms);
+  }
+
+  // ── render loop: animate + draw every frame (fans, steam, camera) ──
   let last = performance.now();
-  let stepAcc = 0;
   function frame(now: number) {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (game.running && !game.over) {
-      stepAcc += dt * 1000;
-      const ms = SPEEDS[game.speed].ms;
-      let steps = 0;
-      while (stepAcc >= ms && steps < 4) {
-        stepAcc -= ms; steps++;
-        game.step();
-        m = game.metrics();
-        syncStates(); renderHud(); renderTip(); renderPalette();
-        if (game.over) break;
-      }
-    }
     world.update(dt, now / 1000);
     requestAnimationFrame(frame);
   }
