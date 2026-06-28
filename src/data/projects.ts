@@ -27,7 +27,7 @@ export const projects: Project[] = [
     id: "hyperscale",
     title: "Hyperscale",
     tagline:
-      "A data-center management sim about the physical reality behind the compute boom. Lay racks, substations and cooling on the floor, then keep power, heat, compute and cash in balance as demand climbs — underfeed power or fall behind on cooling and machines throttle, then fail. Seeded runs, replayable to the day.",
+      "A 3D data-center builder about the physical reality behind the compute boom. Drop server halls, GPU pods, cooling towers and substations on a terrain plot — orbit the camera while fans spin and towers steam — and keep power, heat, compute and cash in balance as demand climbs. Underfeed power or fall behind on cooling and machines throttle, glow red, then fail. Seeded runs, replayable to the day.",
     year: "2026",
     date: "2026-06-28",
     field: "Simulation",

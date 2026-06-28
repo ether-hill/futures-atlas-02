@@ -2,8 +2,8 @@
 // "day". Power is MW. Compute is "CU" (compute units). Heat is an abstract load
 // where one cooling unit's output offsets some number of rack heat units.
 
-export const GRID_COLS = 9;
-export const GRID_ROWS = 6;
+export const GRID_COLS = 12;
+export const GRID_ROWS = 8;
 
 export type Kind = "power" | "rack" | "cool" | "pod";
 
