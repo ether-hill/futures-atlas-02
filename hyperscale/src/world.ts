@@ -196,7 +196,6 @@ export class World {
     if (this.buildings.has(i)) return;
     const b = createBuilding(kind);
     b.group.position.copy(this.cellToPos(i));
-    b.group.rotation.y = ((i * 1.3) % 4) * (Math.PI / 2); // vary facing a little
     this.scene.add(b.group);
     this.buildings.set(i, b);
   }
