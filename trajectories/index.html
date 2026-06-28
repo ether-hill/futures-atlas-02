@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trajectories · Collective Filaments · Futures Atlas</title>
+    <meta
+      name="description"
+      content="Luminous filaments radiating from the centre of a sphere to its surface — brightness pulses flow outward and ripples spread at the shell. A non-commercial homage to Jeongho Park's 'Collective Trajectories' (CC BY-NC 4.0)."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Futures Atlas" />
+    <meta property="og:title" content="Trajectories — Futures Atlas" />
+    <meta
+      property="og:description"
+      content="A real-time sphere of luminous filaments: thousands of strands reach from the core to the shell, bending through noise, with pulses of brightness flowing outward and ripples blooming at the surface. After Jeongho Park's Collective Trajectories."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
+    <link rel="stylesheet" href="/atlas-nav.css?v=8" data-fa-nav-css />
+    <script src="/atlas-nav.js?v=8" defer></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <section hidden data-fa-seed>
+      <h2>Trajectories — collective filaments</h2>
+      <p>Trajectories is a real-time generative sphere built from thousands of luminous filaments. Each strand reaches from the centre of the sphere outward to its surface, bending through flowing noise that grows with radius, so the whole field shimmers like a living organism.</p>
+      <p>A U-shaped brightness envelope keeps every strand visible — brightest at the core and the surface tip, dimmer in transit — while pulses of light flow outward along the filaments. When a pulse reaches the shell, a ripple blooms and spreads across the surface. A small core orb boils at the centre.</p>
+      <p>This is a non-commercial homage to <strong>Jeongho Park</strong>'s artwork <em>Collective Trajectories</em>, reimplemented in WebGL/Three.js. The original (Three.js WebGPU + TSL) is licensed CC BY-NC 4.0 — see jeonghopark.de/collectivetrajectories.</p>
+    </section>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

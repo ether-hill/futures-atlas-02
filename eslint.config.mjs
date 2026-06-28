@@ -23,6 +23,7 @@ const eslintConfig = [
       "generatives/**",
       "literal-frequency/**",
       "hyperscale/**",
+      "trajectories/**",
       "social-composer/**",
     ],
   },

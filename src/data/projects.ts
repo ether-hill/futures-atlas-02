@@ -24,6 +24,17 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "trajectories",
+    title: "Trajectories",
+    tagline:
+      "A real-time sphere of luminous filaments: thousands of strands reach from a boiling core to the shell, bending through noise that grows with radius, while pulses of brightness flow outward and ripples bloom at the surface. A non-commercial reimplementation (WebGL) of Jeongho Park's “Collective Trajectories” (CC BY-NC 4.0).",
+    year: "2026",
+    date: "2026-06-28",
+    field: "Generative visuals",
+    status: "live",
+    path: "/trajectories",
+  },
+  {
     id: "hyperscale",
     title: "Hyperscale",
     tagline:

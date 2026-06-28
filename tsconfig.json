@@ -23,5 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "quantum-sandbox", "generatives", "literal-frequency", "hyperscale", "social-composer", "hollow-villages", "swipe-the-future", "woodchipper", "quantum-dominance"]
+  "exclude": ["node_modules", "quantum-sandbox", "generatives", "literal-frequency", "hyperscale", "trajectories", "social-composer", "hollow-villages", "swipe-the-future", "woodchipper", "quantum-dominance"]
 }
