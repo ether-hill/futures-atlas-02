@@ -37,6 +37,8 @@ const nextConfig: NextConfig = {
         { source: "/generatives", destination: "/generatives/index.html" },
         // Literal Frequency — Vite static app (Source Library word-frequency viz)
         { source: "/literal-frequency", destination: "/literal-frequency/index.html" },
+        // Hyperscale — Vite static app (data-center management sim)
+        { source: "/hyperscale", destination: "/hyperscale/index.html" },
         // Social Composer — Next static export (basePath baked in, trailingSlash)
         { source: "/social-composer", destination: "/social-composer/index.html" },
         { source: "/social-composer/about", destination: "/social-composer/about/index.html" },

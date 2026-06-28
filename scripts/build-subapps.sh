@@ -19,7 +19,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Vite apps build straight into public/<slug> via their vite.config outDir.
-for app in generatives quantum-sandbox literal-frequency; do
+for app in generatives quantum-sandbox literal-frequency hyperscale; do
   echo "→ building $app"
   ( cd "$HERE/$app" && npm install --include=dev --no-audit --no-fund && npm run build )
   echo "✓ $app → public/$app"

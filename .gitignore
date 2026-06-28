@@ -24,6 +24,7 @@
 # step, so they stay committed.
 /public/generatives/
 /public/literal-frequency/
+/public/hyperscale/
 /public/quantum-sandbox/
 /public/social-composer/
 /public/hollow-villages/
@@ -44,6 +45,7 @@
 /quantum-sandbox/.next/
 /generatives/node_modules/
 /literal-frequency/node_modules/
+/hyperscale/node_modules/
 /quantum-sandbox/node_modules/
 /social-composer/node_modules/
 /social-composer/out/

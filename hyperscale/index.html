@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hyperscale · Data-Center Sim · Futures Atlas</title>
+    <meta
+      name="description"
+      content="A data-center management sim: lay out racks, power and cooling on the floor, then balance power draw, heat, compute and cash as demand for AI compute explodes."
+    />
+    <!-- Open Graph: summary used by the Share tool's transmutate importer -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Futures Atlas" />
+    <meta property="og:title" content="Hyperscale — Futures Atlas" />
+    <meta
+      property="og:description"
+      content="Build and run an AI data center. Place racks, substations and cooling; keep power, heat and cash in balance while the compute boom keeps pushing demand higher."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      // default the global nav to dark, before first paint (no flash)
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
+    <!-- the one shared global nav (+ its styles) -->
+    <link rel="stylesheet" href="/atlas-nav.css?v=8" data-fa-nav-css />
+    <script src="/atlas-nav.js?v=8" defer></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- Server-rendered overview for crawlers + the Social Composer transmutate
+         importer (the app is client-rendered). Hidden from users. -->
+    <section hidden data-fa-seed>
+      <h2>Hyperscale — run an AI data center</h2>
+      <p>Hyperscale is a small management sim about the physical reality behind the compute boom. You lay out a data-center floor — server racks, substations, cooling units — and keep four things in balance: power, heat, compute and cash.</p>
+      <p>Every rack draws power and throws off heat; substations supply megawatts; cooling units pull the heat back out. Underfeed power or fall behind on cooling and racks throttle, then degrade, then fail. Meanwhile market demand for compute climbs day after day, so standing still means falling behind.</p>
+      <p>Runs are seeded, so the same seed plays out the same way. Heat waves, power-price spikes, grid outages and demand surges keep each run honest. Stay solvent, keep the floor cool, and serve as much compute as the market will take.</p>
+    </section>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

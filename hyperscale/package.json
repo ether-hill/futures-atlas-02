@@ -1,0 +1,17 @@
+{
+  "name": "hyperscale",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Futures Atlas — Hyperscale. A data-center management sim: place racks, power and cooling on the floor, then balance power, heat, compute and cash as demand for AI compute explodes.",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
+  }
+}
