@@ -26,7 +26,7 @@ export function boot(root: HTMLElement) {
       <div class="title"><b>Trajectories</b><span>Collective filaments</span></div>
 
       <div class="panel" id="panel">
-        <button class="gear" id="gear" title="Controls" aria-label="Controls">✦</button>
+        <button class="gear" id="gear" aria-label="Controls">✦ <span>Controls</span></button>
         <div class="ctrls" id="ctrls">
           <label>Strands <b id="vStrands"></b><input type="range" id="strands" min="${STRAND_RANGE.min}" max="${STRAND_RANGE.max}" step="50"></label>
           <label>Flow <b id="vFlow"></b><input type="range" id="flow" min="0" max="0.4" step="0.01"></label>
