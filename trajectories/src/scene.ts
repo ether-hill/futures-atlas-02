@@ -30,32 +30,31 @@ export class Stage {
     container.appendChild(this.renderer.domElement);
 
     this.scene.background = new THREE.Color(COLORS.bg);
-    this.scene.fog = new THREE.FogExp2(COLORS.bg, 0.012);
 
     this.camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 200);
-    this.camera.position.set(0, 4, 26);
+    this.camera.position.set(0, 3, 18);
 
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.06;
-    this.controls.minDistance = 11;
-    this.controls.maxDistance = 60;
+    this.controls.minDistance = 6;
+    this.controls.maxDistance = 50;
     this.controls.enablePan = false;
     this.controls.autoRotate = true;
     this.controls.autoRotateSpeed = 0.5;
 
     this.composer = new EffectComposer(this.renderer);
     this.composer.addPass(new RenderPass(this.scene, this.camera));
-    this.bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.7, 0.6, 0.1);
+    this.bloom = new UnrealBloomPass(new THREE.Vector2(w, h), 0.7, 0.4, 0.1);
     this.composer.addPass(this.bloom);
     this.composer.addPass(new OutputPass());
 
     window.addEventListener("resize", this.resize);
   }
 
-  setGlow(strength: number) {
-    this.bloom.strength = strength;
-  }
+  setGlow(strength: number) { this.bloom.strength = strength; }
+  setGlowSize(size: number) { this.bloom.radius = Math.min(1, size * 33); }
+  setAutoRotate(on: boolean) { this.controls.autoRotate = on; }
 
   render(dt: number) {
     this.controls.update();

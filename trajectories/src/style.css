@@ -25,32 +25,26 @@ body { font-family: var(--sans); -webkit-font-smoothing: antialiased; color: var
 .title b { display: block; font: 600 19px var(--sans); letter-spacing: -0.02em; }
 .title span { display: block; font: 700 8.5px var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-top: 3px; }
 
-/* controls panel — bottom-right, clear of the global SHARE button (top-right) */
-.panel { position: absolute; right: 16px; bottom: 16px; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px; }
-.gear {
-  display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 999px; cursor: pointer;
-  font: 600 11px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink);
-  background: var(--glass); border: 1px solid color-mix(in oklab, var(--line) 70%, transparent);
-  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); transition: border-color 0.15s, background 0.15s;
+/* lil-gui control panel — top-right, below the global SHARE button */
+.ui .gui-host { pointer-events: auto; position: absolute; top: 56px; right: 12px; max-height: calc(100% - 96px); overflow-y: auto; overflow-x: hidden; border-radius: 12px; }
+.gui-host::-webkit-scrollbar { width: 8px; }
+.gui-host::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--line) 80%, transparent); border-radius: 8px; }
+.gui-host .lil-gui {
+  --background-color: oklch(0.16 0.02 260);
+  --widget-color: oklch(0.28 0.02 260);
+  --text-color: oklch(0.92 0.01 260);
+  --title-background-color: oklch(0.21 0.025 260);
+  --title-text-color: oklch(0.96 0.01 260);
+  --focus-color: var(--accent);
+  --hover-color: oklch(0.34 0.04 260);
+  --number-color: var(--accent);
+  --string-color: var(--accent);
+  --font-family: var(--mono); --font-size: 11px; --widget-height: 24px; --spacing: 5px;
+  border: 1px solid color-mix(in oklab, var(--line) 70%, transparent); border-radius: 12px;
 }
-.gear:hover { border-color: var(--accent); }
-.panel.open .gear { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 18%, var(--glass)); }
-.ctrls {
-  display: none; flex-direction: column; gap: 13px; width: 230px; padding: 16px 16px 15px;
-  border-radius: 14px; background: var(--glass); border: 1px solid color-mix(in oklab, var(--line) 70%, transparent);
-  -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-}
-.panel.open .ctrls { display: flex; }
-.ctrls label { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 8px; font: 700 9.5px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
-.ctrls label b { font: 600 11px var(--mono); color: var(--ink); }
-.ctrls input[type="range"] { grid-column: 1 / -1; width: 100%; accent-color: var(--accent); height: 4px; }
-.row { display: flex; gap: 8px; margin-top: 2px; }
-.btn {
-  flex: 1; font: 600 10.5px var(--mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink);
-  background: color-mix(in oklab, var(--ink) 7%, transparent); border: 1px solid color-mix(in oklab, var(--line) 70%, transparent);
-  border-radius: 999px; padding: 9px 10px; cursor: pointer; transition: border-color 0.15s, background 0.15s;
-}
-.btn:hover { border-color: var(--accent); }
+/* lil-gui titles are sticky by default; inside our scroll host they pile up and
+   overlap, so pin them all to relative flow */
+.gui-host .lil-gui .title { position: relative; top: 0; letter-spacing: 0.06em; }
 
 /* attribution credit */
 .credit {

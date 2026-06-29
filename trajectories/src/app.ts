@@ -1,8 +1,10 @@
+import GUI from "lil-gui";
 import { Stage } from "./scene";
 import { StrandField } from "./strands";
+import { Shell } from "./shell";
 import { CoreOrb } from "./core";
 import { Rings } from "./rings";
-import { DEFAULTS, STRAND_RANGE, type Params } from "./config";
+import { DEFAULTS, RANGES, type Params } from "./config";
 
 function randSeed(): number {
   const b = new Uint32Array(1);
@@ -24,21 +26,7 @@ export function boot(root: HTMLElement) {
     <div class="scene" id="scene"></div>
     <div class="ui">
       <div class="title"><b>Trajectories</b><span>Collective filaments</span></div>
-
-      <div class="panel" id="panel">
-        <button class="gear" id="gear" aria-label="Controls">✦ <span>Controls</span></button>
-        <div class="ctrls" id="ctrls">
-          <label>Strands <b id="vStrands"></b><input type="range" id="strands" min="${STRAND_RANGE.min}" max="${STRAND_RANGE.max}" step="50"></label>
-          <label>Flow <b id="vFlow"></b><input type="range" id="flow" min="0" max="0.4" step="0.01"></label>
-          <label>Turbulence <b id="vAmp"></b><input type="range" id="amp" min="0" max="3.2" step="0.05"></label>
-          <label>Glow <b id="vGlow"></b><input type="range" id="glow" min="0" max="2" step="0.05"></label>
-          <div class="row">
-            <button class="btn" id="regen">Regenerate</button>
-            <button class="btn" id="pause">Pause</button>
-          </div>
-        </div>
-      </div>
-
+      <div class="gui-host" id="gui"></div>
       <div class="credit">
         After <a href="https://jeonghopark.de/collectivetrajectories/" target="_blank" rel="noopener">Jeongho Park — “Collective Trajectories”</a>
         · <a href="https://github.com/jeonghopark/Collective-Trajectories" target="_blank" rel="noopener">source</a>
@@ -47,63 +35,128 @@ export function boot(root: HTMLElement) {
       </div>
     </div>
   `;
-
   const $ = <T extends HTMLElement = HTMLElement>(id: string) => root.querySelector<T>(`#${id}`)!;
+
   const stage = new Stage($("scene"));
   const params: Params = { ...DEFAULTS };
   let seed = randSeed();
   let paused = false;
 
   const field = new StrandField(params, seed);
-  const orb = new CoreOrb();
+  const shell = new Shell(field.dirs, params);
+  const orb = new CoreOrb(params);
   const rings = new Rings();
-  stage.scene.add(field.group, orb.mesh, rings.group);
-  stage.setGlow(params.glow);
+  stage.scene.add(field.group, shell.points, orb.mesh, rings.group);
 
-  // ── controls ──
-  const sl = {
-    strands: $<HTMLInputElement>("strands"), flow: $<HTMLInputElement>("flow"),
-    amp: $<HTMLInputElement>("amp"), glow: $<HTMLInputElement>("glow"),
+  function applyLive() {
+    field.apply(params);
+    shell.apply(params);
+    orb.apply(params);
+    rings.setParams(params, params.radius);
+    stage.setGlow(params.glowStrength);
+    stage.setGlowSize(params.glowSize);
+    stage.setAutoRotate(params.autoRotate);
+  }
+  function rebuild() {
+    seed = (seed * 1) >>> 0;
+    field.build(params, seed);
+    shell.rebuild(field.dirs);
+    applyLive();
+  }
+  applyLive();
+
+  // ── GUI (lil-gui), grouped like the original ──
+  const gui = new GUI({ container: $("gui"), title: "Controls", width: 264 });
+  const add = (g: GUI, key: keyof Params, name: string, live = true) => {
+    const [mn, mx, st] = RANGES[key as string];
+    const c = g.add(params, key, mn, mx, st).name(name);
+    return live ? c.onChange(applyLive) : c.onFinishChange(rebuild);
   };
-  sl.strands.value = String(params.strands);
-  sl.flow.value = String(params.flow);
-  sl.amp.value = String(params.amp);
-  sl.glow.value = String(params.glow);
-  const labels = () => {
-    $("vStrands").textContent = String(params.strands);
-    $("vFlow").textContent = params.flow.toFixed(2);
-    $("vAmp").textContent = params.amp.toFixed(2);
-    $("vGlow").textContent = params.glow.toFixed(2);
+
+  add(gui, "strands", "Strand Count", false);
+  add(gui, "radius", "Radius");
+  add(gui, "curl", "Curl");
+  add(gui, "freq", "Noise Freq");
+  add(gui, "shimmer", "Shimmer Speed");
+  add(gui, "flow", "Flow Speed");
+  add(gui, "pulse", "Pulse Count");
+  add(gui, "tipPow", "Ends vs Middle");
+  add(gui, "lineBase", "Line Base");
+  add(gui, "opacity", "Line Opacity");
+  add(gui, "extendFrac", "Extend Fraction", false);
+  add(gui, "extendReach", "Extend Reach");
+  add(gui, "growDur", "Intro Grow Time");
+  add(gui, "growSpread", "Intro Random Delay");
+  add(gui, "glowStrength", "Glow Strength");
+  add(gui, "glowSize", "Glow Size");
+  add(gui, "shellStrength", "Shell Dots");
+  add(gui, "shellSize", "Shell Dot Size");
+  add(gui, "audioReact", "Audio → Shell");
+  gui.add(params, "autoRotate").name("Auto Rotate").onChange(applyLive);
+
+  const fCore = gui.addFolder("Core");
+  add(fCore, "coreStrength", "Strength (0=off)");
+  add(fCore, "coreRadius", "Radius");
+  add(fCore, "coreNoise", "Emanation");
+  add(fCore, "coreFreq", "Detail");
+  fCore.close();
+
+  const fFog = gui.addFolder("Fog");
+  add(fFog, "fogStrength", "Strength (0=off)");
+  add(fFog, "fogNear", "Near");
+  add(fFog, "fogFar", "Far");
+  fFog.close();
+
+  const fDof = gui.addFolder("Depth of Field");
+  add(fDof, "dofDim", "Dim (0=off)");
+  add(fDof, "focus", "Focus Dist");
+  add(fDof, "focusRange", "Focus Range");
+  fDof.close();
+
+  const fRip = gui.addFolder("Surface Ripple");
+  add(fRip, "rippleStrength", "Strength (0=off)");
+  add(fRip, "rippleSpan", "Spread");
+  add(fRip, "ringSpacing", "Ring Spacing");
+  add(fRip, "rippleFade", "Fade");
+  fRip.close();
+
+  const actions = {
+    "Replay intro": () => field.restartGrowth(),
+    Regenerate: () => { seed = randSeed(); field.build(params, seed); shell.rebuild(field.dirs); applyLive(); field.restartGrowth(); },
+    Pause: () => { paused = !paused; },
   };
-  labels();
-
-  sl.strands.addEventListener("input", () => { params.strands = Number(sl.strands.value); labels(); });
-  sl.strands.addEventListener("change", () => { field.build(params, seed); field.resetReveal(); });
-  sl.flow.addEventListener("input", () => { params.flow = Number(sl.flow.value); field.setParams(params); labels(); });
-  sl.amp.addEventListener("input", () => { params.amp = Number(sl.amp.value); field.setParams(params); labels(); });
-  sl.glow.addEventListener("input", () => { params.glow = Number(sl.glow.value); stage.setGlow(params.glow); labels(); });
-
-  $("gear").addEventListener("click", () => $("panel").classList.toggle("open"));
-  $("regen").addEventListener("click", () => { seed = randSeed(); field.build(params, seed); field.resetReveal(); });
-  const pauseBtn = $("pause");
-  pauseBtn.addEventListener("click", () => { paused = !paused; pauseBtn.textContent = paused ? "Resume" : "Pause"; });
+  gui.add(actions, "Replay intro");
+  gui.add(actions, "Regenerate");
+  gui.add(actions, "Pause");
 
   // ── loop ──
   const rng = mulberry32(0x9e3779b9);
   let spawnAcc = 0;
+  let time = 0;
   let last = performance.now();
   function frame(now: number) {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
     if (!paused) {
+      time += dt;
       field.update(dt);
       orb.update(dt);
       rings.update(dt);
-      // ripples bloom at the shell as pulses arrive — rate scales with the field
-      if (field.revealed > 0.4) {
-        const rate = Math.min(16, params.strands * (params.flow + 0.02) * 0.05);
+      // "Audio → Shell": with no audio source, breathe the outer radius gently
+      if (params.audioReact > 0) {
+        const m = 1 + params.audioReact * 0.045 * Math.sin(time * 2.4);
+        field.setRadius(params.radius * m);
+        shell.setRadius(params.radius * m);
+      }
+      // ripples bloom at the shell as pulses arrive
+      if (rings.enabled) {
+        const rate = Math.min(14, params.strands * (params.flow + 0.05) * 0.02);
         spawnAcc += dt * rate;
-        while (spawnAcc >= 1) { spawnAcc -= 1; rings.spawn(field.surfacePoint(rng())); }
+        while (spawnAcc >= 1) {
+          spawnAcc -= 1;
+          const d = field.dirs[Math.floor(rng() * field.dirs.length) % field.dirs.length];
+          rings.spawn(d.clone().multiplyScalar(params.radius));
+        }
       }
     }
     stage.render(dt);

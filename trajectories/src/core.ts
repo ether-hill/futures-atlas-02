@@ -54,15 +54,15 @@ const SNOISE = /* glsl */ `
 
 const VERT = /* glsl */ `
   ${SNOISE}
-  uniform float uTime;
+  uniform float uTime, uFreq, uNoise;
   varying float vH;
   varying vec3 vN;
   void main() {
-    float n = snoise(position * 1.4 + vec3(0.0, uTime * 0.35, 0.0));
-    float n2 = 0.5 * snoise(position * 3.0 - vec3(uTime * 0.25));
+    float n = snoise(position * uFreq + vec3(0.0, uTime * 0.35, 0.0));
+    float n2 = 0.5 * snoise(position * uFreq * 2.1 - vec3(uTime * 0.25));
     float disp = n + n2;
     vH = disp;
-    vec3 pos = position + normal * disp * 0.32;
+    vec3 pos = position + normal * disp * uNoise;
     vN = normalMatrix * normal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
   }
@@ -71,31 +71,49 @@ const VERT = /* glsl */ `
 const FRAG = /* glsl */ `
   precision highp float;
   uniform vec3 uColor;
+  uniform float uStrength;
   varying float vH;
   varying vec3 vN;
   void main() {
     float rim = pow(1.0 - abs(normalize(vN).z), 2.2);
     float b = 0.18 + 0.35 * smoothstep(-1.2, 1.2, vH) + rim * 0.6;
-    gl_FragColor = vec4(uColor * b, 1.0);
+    gl_FragColor = vec4(uColor * b * uStrength, 1.0);
   }
 `;
+
+import type { Params } from "./config";
 
 export class CoreOrb {
   mesh: THREE.Mesh;
   private mat: THREE.ShaderMaterial;
   private time = 0;
 
-  constructor(radius = 1.6) {
+  constructor(params: Params) {
     this.mat = new THREE.ShaderMaterial({
       vertexShader: VERT,
       fragmentShader: FRAG,
-      uniforms: { uTime: { value: 0 }, uColor: { value: new THREE.Color().fromArray(COLORS.orb) } },
+      uniforms: {
+        uTime: { value: 0 },
+        uColor: { value: new THREE.Color().fromArray(COLORS.orb) },
+        uStrength: { value: params.coreStrength },
+        uNoise: { value: params.coreNoise },
+        uFreq: { value: params.coreFreq },
+      },
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     });
-    this.mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(radius, 6), this.mat);
+    this.mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 6), this.mat);
+    this.mesh.scale.setScalar(params.coreRadius);
     this.mesh.frustumCulled = false;
+  }
+
+  apply(p: Params) {
+    this.mat.uniforms.uStrength.value = p.coreStrength;
+    this.mat.uniforms.uNoise.value = p.coreNoise;
+    this.mat.uniforms.uFreq.value = p.coreFreq;
+    this.mesh.scale.setScalar(p.coreRadius);
+    this.mesh.visible = p.coreStrength > 0.001;
   }
 
   update(dt: number) {
