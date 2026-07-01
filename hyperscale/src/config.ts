@@ -65,6 +65,32 @@ export const DEMAND_NOISE = 0.12; // ± fractional jitter each day
 export const IDLE_POWER = 0.34;
 export const IDLE_HEAT = 0.3;
 
+// Noise pollution -----------------------------------------------------------
+// Data centres are loud: banks of cooling fans and chillers make a constant
+// roar, transformers hum. As a site grows, the noise carried to the surrounding
+// community climbs dramatically. Per-tile "sound power" weights (chillers are
+// the dominant source), combined into a dB(A)-ish level at the fence line.
+export const NOISE_WEIGHT: Record<Kind, number> = {
+  cool: 4.4, // cooling fans / chillers — the loudest, most constant source
+  pod: 6.0,  // dense GPU halls, heavy cooling
+  rack: 2.0, // server-hall fans
+  power: 1.4, // transformer hum
+};
+export const NOISE_FLOOR = 38;   // dB(A) rural ambient
+export const NOISE_LOG = 10;     // logarithmic (source-summing) growth
+export const NOISE_LIN = 0.085;  // linear term — makes big sites dramatically louder
+export const NOISE_CAP = 98;     // dB(A) ceiling
+export const NOISE_IDLE_MUL = 0.4; // fraction of full noise while paused (idle)
+
+// Community sentiment -------------------------------------------------------
+// The neighbourhood's mood (0–100). Sustained noise erodes it; quiet lets it
+// recover. Low sentiment costs money (complaints, legal, PR) and softens demand
+// (permits, boycotts) — the social licence to operate.
+export const SENTIMENT_START = 90;
+export const SENTIMENT_EASE = 0.06;  // per day toward the noise-driven target
+export const SENT_A = 190;           // target = SENT_A − SENT_B × noise(dB)
+export const SENT_B = 2.05;
+
 // Reliability ---------------------------------------------------------------
 export const DAMAGE_RATE = 11; // integrity lost per day at full starvation
 export const REGEN_RATE = 3.5; // integrity regained per day when healthy

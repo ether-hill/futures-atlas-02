@@ -1,5 +1,6 @@
 import { Game, type Metrics } from "./game";
 import { World } from "./world";
+import { NoiseAudio } from "./audio";
 import { BUILDS, BUILD_ORDER, SPEEDS, type Kind } from "./config";
 import type { BStatus } from "./buildings";
 
@@ -36,6 +37,7 @@ export function boot(root: HTMLElement) {
         <div class="transport">
           <button class="btn play" id="play"></button>
           <div class="seg" id="speed"></div>
+          <button class="btn" id="sound" title="Hear the data-center noise">🔇 Sound</button>
           <label class="seedctl"><span>Seed</span><input id="seed" class="seedin" value="${game.seed}" spellcheck="false" /></label>
           <button class="btn" id="newrun">New run</button>
         </div>
@@ -53,8 +55,17 @@ export function boot(root: HTMLElement) {
 
   const world = new World(sceneEl);
   const canvas = world.renderer.domElement;
+  const audio = new NoiseAudio();
   let m: Metrics = game.metrics();
   let stepTimer = 0;
+
+  // fence-line noise (dB) → 0..1 intensity for audio + noise-wave visuals
+  const noiseIntensity = () => clamp01((m.noise - 42) / 52);
+  function applyNoise() {
+    world.setNoise(noiseIntensity());
+    world.setSentiment(clamp01(game.sentiment / 100));
+    audio.setIntensity(noiseIntensity());
+  }
 
   // ── speed control ──
   speedSeg.innerHTML = SPEEDS.map((s, i) => `<button class="seg-b${i === game.speed ? " on" : ""}" data-s="${i}">${s.label}</button>`).join("");
@@ -102,6 +113,14 @@ export function boot(root: HTMLElement) {
   });
   $("newrun").addEventListener("click", () => newRun(seedIn.value.trim() || randomSeed()));
   seedIn.addEventListener("keydown", (e) => { if ((e as KeyboardEvent).key === "Enter") newRun(seedIn.value.trim() || randomSeed()); });
+
+  const soundBtn = $<HTMLButtonElement>("sound");
+  soundBtn.addEventListener("click", () => {
+    const on = audio.toggle();
+    soundBtn.textContent = on ? "🔊 Sound" : "🔇 Sound";
+    soundBtn.classList.toggle("on", on);
+    applyNoise();
+  });
 
   function newRun(seed: string) {
     clearTimeout(stepTimer);
@@ -179,6 +198,7 @@ export function boot(root: HTMLElement) {
       }
       world.setState(i, status, load);
     }
+    applyNoise();
   }
 
   // ── HUD render ──
@@ -195,6 +215,8 @@ export function boot(root: HTMLElement) {
       card("Heat", m.heatGen.toFixed(0), `cooling ${m.coolCap.toFixed(0)}`, m.heatRatio < 0.999 ? "bad" : m.heatGen / Math.max(m.coolCap, 1) > 0.85 ? "warn" : "good", m.coolCap > 0 ? m.heatGen / m.coolCap : (m.heatGen > 0 ? 1 : 0)),
       card("Compute", m.delivered.toFixed(0), `${m.healthyCompute.toFixed(0)} CU online`, "accent", m.totalCompute > 0 ? m.delivered / Math.max(m.demand, m.totalCompute) : 0),
       card("Demand", m.demand.toFixed(0), `CU wanted`, "neutral", m.healthyCompute > 0 ? Math.min(1, m.demand / m.healthyCompute) : 1),
+      card("Noise", m.noise.toFixed(0), `dB · ${noiseWord(m.noise)}`, m.noise < 50 ? "good" : m.noise < 68 ? "warn" : "bad", clamp01((m.noise - 35) / 63)),
+      card("Community", `${Math.round(game.sentiment)}`, `${moodFace(game.sentiment)} ${moodWord(game.sentiment)}`, game.sentiment > 60 ? "good" : game.sentiment >= 35 ? "warn" : "bad", clamp01(game.sentiment / 100)),
       card("Day", `${game.day}`, `${fmtK(game.served)} CU served`, "neutral", 0, true),
     ].join("");
 
@@ -221,6 +243,7 @@ export function boot(root: HTMLElement) {
       <div class="ostats">
         ${ostat("Days run", String(game.day))}${ostat("Compute served", `${fmtK(game.served)} CU`)}
         ${ostat("Peak online", `${game.peakCompute.toFixed(0)} CU`)}${ostat("Peak load", `${game.peakMW.toFixed(1)} MW`)}
+        ${ostat("Peak noise", `${game.peakNoise.toFixed(0)} dB`)}${ostat("Final sentiment", `${Math.round(game.sentiment)}%`)}
         ${ostat("Peak cash", `$${fmtK(game.peakCash)}k`)}
       </div>
       <button class="btn on" id="again">New run →</button></div>`;
@@ -265,6 +288,9 @@ function card(label: string, value: string, sub: string, tone: string, fill: num
   return `<div class="kc t-${tone}"><div class="kl">${label}</div><div class="kv">${value}</div><div class="ksub">${sub}</div>${bar}</div>`;
 }
 function ostat(l: string, v: string) { return `<div class="os"><span>${l}</span><b>${v}</b></div>`; }
+function noiseWord(db: number) { return db < 48 ? "quiet" : db < 62 ? "audible" : db < 75 ? "loud" : "severe"; }
+function moodWord(s: number) { return s > 60 ? "content" : s >= 35 ? "uneasy" : "angry"; }
+function moodFace(s: number) { return s > 60 ? "🙂" : s >= 35 ? "😐" : "😠"; }
 
 function readSeedFromUrl(): string | null { try { return new URLSearchParams(location.search).get("seed"); } catch { return null; } }
 function randomSeed(): string {

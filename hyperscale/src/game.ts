@@ -3,6 +3,8 @@ import {
   MAINT_PER_TILE, STAFF_BASE, STAFF_PER_8_TILES, DEMAND_BASE, DEMAND_GROWTH,
   DEMAND_NOISE, IDLE_POWER, IDLE_HEAT, DAMAGE_RATE, REGEN_RATE, REPAIR_COST,
   DELIVER_OK, RED_LIMIT, BANKRUPT_FLOOR, EVENTS, EVENT_GRACE_DAYS, EVENT_GAP,
+  NOISE_WEIGHT, NOISE_FLOOR, NOISE_LOG, NOISE_LIN, NOISE_CAP, NOISE_IDLE_MUL,
+  SENTIMENT_START, SENTIMENT_EASE, SENT_A, SENT_B,
   type Kind, type EventDef,
 } from "./config";
 import { Rng } from "./rng";
@@ -45,6 +47,8 @@ export interface Metrics {
   coolMult: number;
   powerCapMult: number;
   powerPriceMult: number;
+  noise: number;      // dB(A) carried to the community
+  commFactor: number; // 0..1 demand multiplier from community sentiment
 }
 
 export class Game {
@@ -64,11 +68,17 @@ export class Game {
   eventTimer = 0;
   log: LogEntry[] = [];
 
+  // noise pollution + community
+  sentiment = SENTIMENT_START; // 0..100 neighbourhood mood
+  noise = NOISE_FLOOR;         // last computed dB(A)
+  private sentBand = 2;        // 0 angry / 1 uneasy / 2 content
+
   // lifetime stats
   served = 0;     // cumulative CU·days delivered
   peakMW = 0;
   peakCompute = 0;
   peakCash = START_CASH;
+  peakNoise = NOISE_FLOOR;
 
   constructor(seed: string) {
     this.reset(seed);
@@ -90,10 +100,14 @@ export class Game {
     this.events = [];
     this.eventTimer = EVENT_GRACE_DAYS;
     this.log = [];
+    this.sentiment = SENTIMENT_START;
+    this.noise = NOISE_FLOOR;
+    this.sentBand = 2;
     this.served = 0;
     this.peakMW = 0;
     this.peakCompute = 0;
     this.peakCash = START_CASH;
+    this.peakNoise = NOISE_FLOOR;
     this.note("Floor leased. Lay down power, racks and cooling — then press play.", "info");
   }
 
@@ -135,7 +149,13 @@ export class Game {
     }
     capacity *= powerCapMult;
 
-    const util = healthyCompute > 0 ? Math.min(1, this.demand / healthyCompute) : 0;
+    // community sentiment softens the demand the market will actually place
+    // (permits, boycotts, reputation) — the social licence to operate
+    const s = Math.max(0, Math.min(100, this.sentiment));
+    const commFactor = s >= 55 ? 1 : 0.55 + 0.45 * (s / 55);
+    const effDemand = this.demand * commFactor;
+
+    const util = healthyCompute > 0 ? Math.min(1, effDemand / healthyCompute) : 0;
 
     // power draw: compute machines scale with utilisation, cooling runs flat
     let draw = 0;
@@ -163,17 +183,33 @@ export class Game {
     const heatRatio = heatGen > 0.0001 ? Math.min(1, coolCap / heatGen) : 1;
 
     const deliverFactor = powerRatio * heatRatio;
-    const delivered = Math.min(this.demand, healthyCompute) * deliverFactor;
+    const delivered = Math.min(effDemand, healthyCompute) * deliverFactor;
+
+    // noise carried to the fence line — chillers dominate; grows with the site
+    let noisePow = 0;
+    for (const c of this.grid) {
+      if (!c.kind) continue;
+      const w = NOISE_WEIGHT[c.kind];
+      let act: number;
+      if (c.kind === "cool") act = 0.5 + 0.5 * (coolCap > 0 ? Math.min(1, heatGen / coolCap) : 0.6);
+      else if (c.kind === "power") act = 0.65;
+      else act = c.integrity > 0 ? 0.35 + 0.65 * util : 0.05;
+      noisePow += w * act;
+    }
+    noisePow *= this.running ? 1 : NOISE_IDLE_MUL;
+    const noise = noisePow <= 0 ? NOISE_FLOOR
+      : Math.min(NOISE_CAP, NOISE_FLOOR + NOISE_LOG * Math.log10(1 + noisePow) + NOISE_LIN * noisePow);
 
     const revenue = delivered * PRICE_PER_CU;
     const staff = STAFF_BASE + Math.floor(tiles / 8) * STAFF_PER_8_TILES;
-    const costs = draw * POWER_COST * powerPriceMult + tiles * MAINT_PER_TILE + staff;
+    const commCost = s < 40 ? (40 - s) * 0.05 : 0; // complaints / legal / PR
+    const costs = draw * POWER_COST * powerPriceMult + tiles * MAINT_PER_TILE + staff + commCost;
 
     return {
       tiles, capacity, draw, powerRatio, heatGen, coolCap, heatRatio,
       deliverFactor, totalCompute, healthyCompute, util, delivered,
       demand: this.demand, revenue, costs, profit: revenue - costs, failed,
-      coolMult, powerCapMult, powerPriceMult,
+      coolMult, powerCapMult, powerPriceMult, noise, commFactor,
     };
   }
 
@@ -239,6 +275,13 @@ export class Game {
     this.peakCompute = Math.max(this.peakCompute, m.healthyCompute);
     this.peakCash = Math.max(this.peakCash, this.cash);
 
+    // noise pollution erodes (or, when quiet, restores) community sentiment
+    this.noise = m.noise;
+    this.peakNoise = Math.max(this.peakNoise, m.noise);
+    const target = Math.max(3, Math.min(96, SENT_A - SENT_B * m.noise));
+    this.sentiment += (target - this.sentiment) * SENTIMENT_EASE;
+    this.updateSentimentBand();
+
     // reliability: starvation damages machines, health regenerates them
     for (const c of this.grid) {
       if (c.kind !== "rack" && c.kind !== "pod") continue;
@@ -294,6 +337,20 @@ export class Game {
     }
     this.events.push({ def, daysLeft: def.days });
     this.note(`${def.glyph} ${def.label} — ${def.blurb}`, def.tone === "good" ? "good" : def.tone === "warn" ? "warn" : "bad");
+  }
+
+  private updateSentimentBand() {
+    const band = this.sentiment >= 60 ? 2 : this.sentiment >= 35 ? 1 : 0;
+    if (band === this.sentBand) return;
+    if (band < this.sentBand) {
+      if (band === 1) this.note("🔊 Neighbours are filing noise complaints about the data center.", "warn");
+      else this.note("🔊 Community backlash — residents are protesting the noise pollution.", "bad");
+    } else if (band === 2) {
+      this.note("The neighbourhood has settled — noise is down and sentiment is recovering.", "good");
+    } else {
+      this.note("Tempers are cooling a little as the noise eases.", "info");
+    }
+    this.sentBand = band;
   }
 
   private gameOver(reason: string) {
