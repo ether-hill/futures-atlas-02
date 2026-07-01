@@ -20,6 +20,7 @@
   var FA_PROJECTS = [
     { name: "Trajectories", path: "/trajectories" },
     { name: "Hyperscale", path: "/hyperscale" },
+    { name: "Gigawatt", path: "/gigawatt" },
     { name: "Quantum Dominance", path: "/quantum-dominance" },
     { name: "Woodchipper Futures", path: "/woodchipper" },
     { name: "Swipe the Future", path: "/swipe-the-future" },

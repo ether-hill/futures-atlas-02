@@ -35,6 +35,17 @@ export const projects: Project[] = [
     path: "/trajectories",
   },
   {
+    id: "gigawatt",
+    title: "Gigawatt",
+    tagline:
+      "A second take on the compute-boom builder, this time in the high desert: mix grid, solar and battery power, keep GPU halls cool through heat waves and dust storms, watch a finite aquifer, and chase training contracts as spot compute prices climb. Full day–night cycle, seeded weather and markets. Built from scratch by Claude Fable 5 as a model-comparison companion to Hyperscale.",
+    year: "2026",
+    date: "2026-07-01",
+    field: "Simulation",
+    status: "live",
+    path: "/gigawatt",
+  },
+  {
     id: "hyperscale",
     title: "Hyperscale",
     tagline:

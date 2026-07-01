@@ -39,6 +39,8 @@ const nextConfig: NextConfig = {
         { source: "/literal-frequency", destination: "/literal-frequency/index.html" },
         // Hyperscale — Vite static app (data-center management sim)
         { source: "/hyperscale", destination: "/hyperscale/index.html" },
+        // Gigawatt — Vite static app (desert compute-campus sim, Fable 5 rebuild)
+        { source: "/gigawatt", destination: "/gigawatt/index.html" },
         // Trajectories — Vite static app (generative filament sphere)
         { source: "/trajectories", destination: "/trajectories/index.html" },
         // Social Composer — Next static export (basePath baked in, trailingSlash)

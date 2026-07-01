@@ -25,6 +25,7 @@
 /public/generatives/
 /public/literal-frequency/
 /public/hyperscale/
+/public/gigawatt/
 /public/trajectories/
 /public/quantum-sandbox/
 /public/social-composer/
@@ -47,6 +48,7 @@
 /generatives/node_modules/
 /literal-frequency/node_modules/
 /hyperscale/node_modules/
+/gigawatt/node_modules/
 /trajectories/node_modules/
 /quantum-sandbox/node_modules/
 /social-composer/node_modules/
