@@ -1,7 +1,7 @@
 import { Game, type Metrics } from "./game";
 import { World } from "./world";
 import { NoiseAudio } from "./audio";
-import { BUILDS, BUILD_ORDER, SPEEDS, type Kind } from "./config";
+import { BUILDS, BUILD_ORDER, SPEEDS, METHANE_SMOG_CAP, type Kind } from "./config";
 import type { BStatus } from "./buildings";
 
 type Tool = Kind | "demolish" | null;
@@ -64,6 +64,7 @@ export function boot(root: HTMLElement) {
   function applyNoise() {
     world.setNoise(noiseIntensity());
     world.setSentiment(clamp01(game.sentiment / 100));
+    world.setMethane(clamp01(m.methane / METHANE_SMOG_CAP));
     audio.setIntensity(noiseIntensity());
   }
 
@@ -216,6 +217,7 @@ export function boot(root: HTMLElement) {
       card("Compute", m.delivered.toFixed(0), `${m.healthyCompute.toFixed(0)} CU online`, "accent", m.totalCompute > 0 ? m.delivered / Math.max(m.demand, m.totalCompute) : 0),
       card("Demand", m.demand.toFixed(0), `CU wanted`, "neutral", m.healthyCompute > 0 ? Math.min(1, m.demand / m.healthyCompute) : 1),
       card("Noise", m.noise.toFixed(0), `dB · ${noiseWord(m.noise)}`, m.noise < 50 ? "good" : m.noise < 68 ? "warn" : "bad", clamp01((m.noise - 35) / 63)),
+      card("Methane", m.methane.toFixed(0), `t CO₂e·d · ${emissionWord(m.methane)}`, m.methane < 30 ? "good" : m.methane < 75 ? "warn" : "bad", clamp01(m.methane / METHANE_SMOG_CAP)),
       card("Community", `${Math.round(game.sentiment)}`, `${moodFace(game.sentiment)} ${moodWord(game.sentiment)}`, game.sentiment > 60 ? "good" : game.sentiment >= 35 ? "warn" : "bad", clamp01(game.sentiment / 100)),
       card("Day", `${game.day}`, `${fmtK(game.served)} CU served`, "neutral", 0, true),
     ].join("");
@@ -243,7 +245,8 @@ export function boot(root: HTMLElement) {
       <div class="ostats">
         ${ostat("Days run", String(game.day))}${ostat("Compute served", `${fmtK(game.served)} CU`)}
         ${ostat("Peak online", `${game.peakCompute.toFixed(0)} CU`)}${ostat("Peak load", `${game.peakMW.toFixed(1)} MW`)}
-        ${ostat("Peak noise", `${game.peakNoise.toFixed(0)} dB`)}${ostat("Final sentiment", `${Math.round(game.sentiment)}%`)}
+        ${ostat("Peak noise", `${game.peakNoise.toFixed(0)} dB`)}${ostat("Peak emissions", `${game.peakMethane.toFixed(0)} t/d`)}
+        ${ostat("Final sentiment", `${Math.round(game.sentiment)}%`)}
         ${ostat("Peak cash", `$${fmtK(game.peakCash)}k`)}
       </div>
       <button class="btn on" id="again">New run →</button></div>`;
@@ -289,6 +292,7 @@ function card(label: string, value: string, sub: string, tone: string, fill: num
 }
 function ostat(l: string, v: string) { return `<div class="os"><span>${l}</span><b>${v}</b></div>`; }
 function noiseWord(db: number) { return db < 48 ? "quiet" : db < 62 ? "audible" : db < 75 ? "loud" : "severe"; }
+function emissionWord(t: number) { return t < 25 ? "low" : t < 65 ? "high" : t < 100 ? "heavy" : "severe"; }
 function moodWord(s: number) { return s > 60 ? "content" : s >= 35 ? "uneasy" : "angry"; }
 function moodFace(s: number) { return s > 60 ? "🙂" : s >= 35 ? "😐" : "😠"; }
 

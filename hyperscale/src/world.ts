@@ -46,7 +46,14 @@ export class World {
   private noiseRings: { loop: THREE.LineLoop; mat: THREE.LineBasicMaterial; age: number; active: boolean; inten: number }[] = [];
   private noiseI = 0;
   private noiseAcc = 0;
-  private turbines: THREE.Group[] = [];
+  private plume: { s: THREE.Sprite; phase: number; speed: number; ox: number; oy: number; oz: number; drift: number }[] = [];
+  // methane emissions → smog that lingers over the town
+  private methaneI = 0;
+  private smogGroup = new THREE.Group();
+  private smog: { s: THREE.Sprite; x0: number; z0: number; phase: number; speed: number; spread: number }[] = [];
+  private smogLevel = 0;
+  private smogTarget = 0;
+  private smogTime = 0;
 
   constructor(container: HTMLElement) {
     this.container = container;
@@ -98,7 +105,8 @@ export class World {
     this.buildNeighborhood();
     this.buildCampus();
     this.initNoiseWaves();
-    this.scene.add(this.community, this.noiseGroup);
+    this.buildSmog();
+    this.scene.add(this.community, this.noiseGroup, this.smogGroup);
 
     // ghost preview (translucent footprint box + tile) and hover tile
     this.ghostBox = new THREE.Mesh(
@@ -345,13 +353,142 @@ export class World {
   // ── the wider campus: fence, turbines, sports field, parking, water ──
   private buildCampus() {
     this.addFence();
-    // wind turbines on the far side (clean-power backdrop)
-    this.addTurbine(-9, -13, 7.5);
-    this.addTurbine(-2.5, -15, 8.6);
-    this.addTurbine(5.5, -14, 7.0);
-    this.addSportsField(13.5, 4);
-    this.addParking(-2, -8.5);
-    this.addPond(15, -8);
+    // the hero: a large glazed data hall with a stack array + office annex
+    this.addDataHall(0, -10.5);
+    // the site is powered by natural-gas turbines — halls with exhaust stacks
+    this.addGasPlant(-13, -17);
+    this.addGasPlant(12, -16);
+    this.addSportsField(15, 5);
+    this.addParking(-9.5, 2);
+    this.addPond(17, -9);
+  }
+
+  private addGasPlant(cx: number, cz: number) {
+    const g = new THREE.Group();
+    g.position.set(cx, PROP_Y, cz);
+    const hall = new THREE.MeshStandardMaterial({ color: 0xc0c6ce, roughness: 0.5, metalness: 0.45 });
+    const metalM = new THREE.MeshStandardMaterial({ color: 0xd0d5db, roughness: 0.4, metalness: 0.6 });
+    const trim = new THREE.MeshStandardMaterial({ color: 0x3a4150, roughness: 0.45, metalness: 0.5 });
+    g.add(mesh(new THREE.BoxGeometry(4.6, 1.7, 2.8), hall, 0, 0.85, 0, true));      // turbine hall
+    g.add(mesh(new THREE.BoxGeometry(4.7, 0.12, 2.9), trim, 0, 1.7, 0));            // roof trim
+    for (let i = 0; i < 4; i++) g.add(mesh(new THREE.CylinderGeometry(0.13, 0.18, 3.2, 14), metalM, -1.5 + i * 0.95, 1.6, -1.7, true)); // stacks
+    g.add(mesh(new THREE.BoxGeometry(0.9, 0.8, 0.9), trim, 2.9, 0.4, 0.7, true));   // transformer/switchgear
+    g.add(mesh(new THREE.CylinderGeometry(0.45, 0.45, 1.1, 16), metalM, -2.6, 0.55, 1.3, true)); // gas tank
+    this.addPlume(cx - 0.6, PROP_Y + 3.3, cz - 1.7);
+    this.community.add(g);
+  }
+
+  private addDataHall(cx: number, cz: number) {
+    const g = new THREE.Group();
+    g.position.set(cx, PROP_Y, cz);
+    const clad = new THREE.MeshStandardMaterial({ color: 0xe6e8ec, roughness: 0.48, metalness: 0.35 });
+    const blue = new THREE.MeshStandardMaterial({ color: 0x2b4a72, roughness: 0.4, metalness: 0.5 });
+    const glass = new THREE.MeshStandardMaterial({ color: 0xbcd6ec, roughness: 0.05, metalness: 0.2, envMapIntensity: 2.0 });
+    const metal = new THREE.MeshStandardMaterial({ color: 0xd0d5db, roughness: 0.4, metalness: 0.6 });
+    const HW = 6.8, HD = 4.2, HH = 1.8;
+    g.add(mesh(new THREE.BoxGeometry(HW + 0.12, 0.2, HD + 0.12), blue, 0, 0.1, 0, true));   // plinth
+    g.add(mesh(new THREE.BoxGeometry(HW, HH, HD), clad, 0, 0.2 + HH / 2, 0, true));           // main hall
+    const top = 0.2 + HH;
+    g.add(mesh(new THREE.BoxGeometry(HW + 0.06, 0.06, HD + 0.06), metal, 0, top + 0.03, 0));  // roof deck
+    // glazed skylight grid (the defining roof)
+    const cols = 8, rows = 5;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const pw = (HW / cols) * 0.82, pd = (HD / rows) * 0.72;
+      const px = -HW / 2 + (c + 0.5) * (HW / cols);
+      const pz = -HD / 2 + (r + 0.5) * (HD / rows);
+      g.add(mesh(new THREE.BoxGeometry(pw, 0.05, pd), glass, px, top + 0.09, pz, true));
+    }
+    // facade mullions + a glazed clerestory on the front
+    for (let i = 0; i <= 16; i++) g.add(mesh(new THREE.BoxGeometry(0.03, HH, 0.02), blue, -HW / 2 + i * (HW / 16), 0.2 + HH / 2, HD / 2 + 0.01));
+    g.add(mesh(new THREE.BoxGeometry(HW * 0.94, 0.3, 0.012), glass, 0, top - 0.28, HD / 2 + 0.012));
+    // loading doors along the front
+    for (const dx of [-2.2, -1.1, 0, 1.1, 2.2]) g.add(mesh(new THREE.BoxGeometry(0.7, 0.8, 0.03), metal, dx, 0.2 + 0.4, HD / 2 + 0.02));
+
+    // office annex (blue/white, glazed) at the front-left corner
+    const office = new THREE.Group();
+    office.position.set(-HW / 2 + 1.3, 0, HD / 2 + 1.0);
+    office.add(mesh(new THREE.BoxGeometry(2.6, 1.05, 1.7), blue, 0, 0.52, 0, true));
+    office.add(mesh(new THREE.BoxGeometry(2.64, 0.5, 1.74), clad, 0, 1.3, 0, true));
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 6; c++) {
+      const wm = new THREE.MeshStandardMaterial({ color: 0xcfe6f6, emissive: 0x6fb0d8, emissiveIntensity: 0.35, roughness: 0.25, metalness: 0.1 });
+      office.add(mesh(new THREE.BoxGeometry(0.28, 0.3, 0.02), wm, -1.05 + c * 0.42, 0.42 + r * 0.5, 0.86));
+    }
+    g.add(office);
+
+    // exhaust-stack array with an animated steam plume (the signature silhouette)
+    const stacks = new THREE.Group();
+    stacks.position.set(-HW / 2 - 1.0, 0, -0.4);
+    stacks.add(mesh(new THREE.BoxGeometry(1.6, 0.35, 2.8), metal, 0, 0.17, 0, true));
+    for (let i = 0; i < 6; i++) {
+      stacks.add(mesh(new THREE.CylinderGeometry(0.09, 0.12, 2.1, 14), clad, -0.5 + (i % 3) * 0.5, 1.4, -0.8 + Math.floor(i / 3) * 1.3, true));
+    }
+    // chiller cans in front of the stacks
+    for (const cxp of [-0.4, 0.2, 0.8]) stacks.add(mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.5, 12), metal, cxp, 0.6, 1.1, true));
+    g.add(stacks);
+    this.addPlume(cx - HW / 2 - 1.0, PROP_Y + 2.5, cz - 0.4);
+
+    this.community.add(g);
+  }
+
+  private addPlume(x: number, y: number, z: number) {
+    const tex = makePuffTex();
+    for (let i = 0; i < 12; i++) {
+      const mat = new THREE.SpriteMaterial({ map: tex, color: 0xe4ebf0, transparent: true, opacity: 0, depthWrite: false });
+      const s = new THREE.Sprite(mat);
+      s.frustumCulled = false;
+      this.community.add(s);
+      this.plume.push({ s, phase: i / 12, speed: 0.14 + Math.random() * 0.08, ox: x, oy: y, oz: z, drift: 1.6 + Math.random() * 0.8 });
+    }
+  }
+
+  private updatePlume(dt: number) {
+    for (const p of this.plume) {
+      p.phase += dt * p.speed;
+      if (p.phase >= 1) p.phase -= 1;
+      const k = p.phase;
+      p.s.position.set(p.ox + p.drift * k, p.oy + k * 3.4, p.oz + k * 0.5);
+      const sc = 0.6 + k * 2.0;
+      p.s.scale.set(sc, sc, 1);
+      (p.s.material as THREE.SpriteMaterial).opacity = Math.sin(k * Math.PI) * 0.5 * (0.2 + 0.8 * this.methaneI);
+    }
+  }
+
+  // ── methane → smog that accumulates and lingers over the town ──
+  private buildSmog() {
+    const tex = makePuffTex();
+    for (let i = 0; i < 18; i++) {
+      const m = new THREE.SpriteMaterial({ map: tex, color: 0xc9cdd2, transparent: true, opacity: 0, depthWrite: false });
+      const s = new THREE.Sprite(m);
+      s.frustumCulled = false;
+      const x0 = -12 + Math.random() * 16;
+      const z0 = 1 + Math.random() * 11;
+      const y = 1.4 + Math.random() * 1.8;
+      const sc = 3.6 + Math.random() * 2.8;
+      s.scale.set(sc, sc * 0.62, 1);
+      s.position.set(x0, y, z0);
+      this.smogGroup.add(s);
+      this.smog.push({ s, x0, z0, phase: Math.random() * 6.28, speed: 0.05 + Math.random() * 0.05, spread: 1.4 + Math.random() * 1.6 });
+    }
+  }
+
+  /** methane output 0..1 → drives exhaust plumes + the smog target */
+  setMethane(intensity: number) {
+    this.methaneI = Math.max(0, Math.min(1, intensity));
+    this.smogTarget = this.methaneI;
+  }
+
+  private updateSmog(dt: number) {
+    this.smogTime += dt;
+    // smog builds while emissions are high and clears only slowly — it lingers
+    const rate = this.smogTarget > this.smogLevel ? 0.28 : 0.05;
+    this.smogLevel += (this.smogTarget - this.smogLevel) * Math.min(1, dt * rate);
+    const col = new THREE.Color(0xcbcfd4).lerp(new THREE.Color(0x7c6f58), this.smogLevel);
+    for (const c of this.smog) {
+      c.s.position.x = c.x0 + Math.sin(this.smogTime * c.speed + c.phase) * c.spread;
+      const m = c.s.material as THREE.SpriteMaterial;
+      m.opacity = this.smogLevel * 0.72;
+      m.color.copy(col);
+    }
   }
 
   private addFence() {
@@ -377,29 +514,6 @@ export class World {
     run(-hw, -hd, -hw, hd); run(hw, -hd, hw, hd);
   }
 
-  private addTurbine(x: number, z: number, height: number) {
-    const g = new THREE.Group();
-    g.position.set(x, PROP_Y, z);
-    const tower = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.22, height, 12), new THREE.MeshStandardMaterial({ color: 0xf2f4f7, roughness: 0.6 }));
-    tower.position.y = height / 2; tower.castShadow = true;
-    const nacelle = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.28, 0.28), new THREE.MeshStandardMaterial({ color: 0xe8ebef, roughness: 0.5 }));
-    nacelle.position.set(0, height, 0.1);
-    const hub = new THREE.Group();
-    hub.position.set(0, height, 0.28);
-    const bladeMat = new THREE.MeshStandardMaterial({ color: 0xf6f8fa, roughness: 0.5 });
-    for (let i = 0; i < 3; i++) {
-      const blade = new THREE.Mesh(new THREE.BoxGeometry(0.12, 2.6, 0.04), bladeMat);
-      blade.position.y = 1.3;
-      const holder = new THREE.Group();
-      holder.rotation.z = (i * Math.PI * 2) / 3;
-      holder.add(blade);
-      hub.add(holder);
-    }
-    hub.castShadow = true;
-    g.add(tower, nacelle, hub);
-    this.community.add(g);
-    this.turbines.push(hub);
-  }
 
   private addSportsField(x: number, z: number) {
     const g = new THREE.Group();
@@ -582,8 +696,9 @@ export class World {
   update(dt: number, t: number) {
     this.controls.update();
     for (const b of this.buildings.values()) b.update(dt, t);
-    for (const hub of this.turbines) hub.rotation.z += dt * 0.5;
     this.updateNoiseWaves(dt);
+    this.updatePlume(dt);
+    this.updateSmog(dt);
     this.sun.target.position.set(0, 0, 0);
     this.composer.render();
   }
@@ -604,6 +719,29 @@ export class World {
 }
 
 // ── helpers ───────────────────────────────────────────────────────
+function mesh(geo: THREE.BufferGeometry, material: THREE.Material, x: number, y: number, z: number, shadow = false): THREE.Mesh {
+  const m = new THREE.Mesh(geo, material);
+  m.position.set(x, y, z);
+  if (shadow) { m.castShadow = true; m.receiveShadow = true; }
+  return m;
+}
+
+let puffTex: THREE.Texture | null = null;
+function makePuffTex(): THREE.Texture {
+  if (puffTex) return puffTex;
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const g = c.getContext("2d")!;
+  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.5, "rgba(255,255,255,0.5)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 64, 64);
+  puffTex = new THREE.CanvasTexture(c);
+  return puffTex;
+}
+
 function makeTile(color: number): THREE.Mesh {
   const t = new THREE.Mesh(
     new THREE.PlaneGeometry(0.94, 0.94),

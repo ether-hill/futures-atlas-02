@@ -4,7 +4,7 @@ import {
   DEMAND_NOISE, IDLE_POWER, IDLE_HEAT, DAMAGE_RATE, REGEN_RATE, REPAIR_COST,
   DELIVER_OK, RED_LIMIT, BANKRUPT_FLOOR, EVENTS, EVENT_GRACE_DAYS, EVENT_GAP,
   NOISE_WEIGHT, NOISE_FLOOR, NOISE_LOG, NOISE_LIN, NOISE_CAP, NOISE_IDLE_MUL,
-  SENTIMENT_START, SENTIMENT_EASE, SENT_A, SENT_B,
+  SENTIMENT_START, SENTIMENT_EASE, SENT_A, SENT_B, SENT_METHANE, METHANE_PER_MW,
   type Kind, type EventDef,
 } from "./config";
 import { Rng } from "./rng";
@@ -49,6 +49,7 @@ export interface Metrics {
   powerPriceMult: number;
   noise: number;      // dB(A) carried to the community
   commFactor: number; // 0..1 demand multiplier from community sentiment
+  methane: number;    // t CO₂e/day emitted by the gas turbines
 }
 
 export class Game {
@@ -71,6 +72,7 @@ export class Game {
   // noise pollution + community
   sentiment = SENTIMENT_START; // 0..100 neighbourhood mood
   noise = NOISE_FLOOR;         // last computed dB(A)
+  methane = 0;                 // last computed t CO₂e/day
   private sentBand = 2;        // 0 angry / 1 uneasy / 2 content
 
   // lifetime stats
@@ -79,6 +81,7 @@ export class Game {
   peakCompute = 0;
   peakCash = START_CASH;
   peakNoise = NOISE_FLOOR;
+  peakMethane = 0;
 
   constructor(seed: string) {
     this.reset(seed);
@@ -102,12 +105,14 @@ export class Game {
     this.log = [];
     this.sentiment = SENTIMENT_START;
     this.noise = NOISE_FLOOR;
+    this.methane = 0;
     this.sentBand = 2;
     this.served = 0;
     this.peakMW = 0;
     this.peakCompute = 0;
     this.peakCash = START_CASH;
     this.peakNoise = NOISE_FLOOR;
+    this.peakMethane = 0;
     this.note("Floor leased. Lay down power, racks and cooling — then press play.", "info");
   }
 
@@ -200,6 +205,9 @@ export class Game {
     const noise = noisePow <= 0 ? NOISE_FLOOR
       : Math.min(NOISE_CAP, NOISE_FLOOR + NOISE_LOG * Math.log10(1 + noisePow) + NOISE_LIN * noisePow);
 
+    // methane / CO₂e from the gas turbines — proportional to power actually drawn
+    const methane = draw * METHANE_PER_MW;
+
     const revenue = delivered * PRICE_PER_CU;
     const staff = STAFF_BASE + Math.floor(tiles / 8) * STAFF_PER_8_TILES;
     const commCost = s < 40 ? (40 - s) * 0.05 : 0; // complaints / legal / PR
@@ -209,7 +217,7 @@ export class Game {
       tiles, capacity, draw, powerRatio, heatGen, coolCap, heatRatio,
       deliverFactor, totalCompute, healthyCompute, util, delivered,
       demand: this.demand, revenue, costs, profit: revenue - costs, failed,
-      coolMult, powerCapMult, powerPriceMult, noise, commFactor,
+      coolMult, powerCapMult, powerPriceMult, noise, commFactor, methane,
     };
   }
 
@@ -275,10 +283,12 @@ export class Game {
     this.peakCompute = Math.max(this.peakCompute, m.healthyCompute);
     this.peakCash = Math.max(this.peakCash, this.cash);
 
-    // noise pollution erodes (or, when quiet, restores) community sentiment
+    // noise + emissions erode (or, when clean/quiet, restore) community sentiment
     this.noise = m.noise;
+    this.methane = m.methane;
     this.peakNoise = Math.max(this.peakNoise, m.noise);
-    const target = Math.max(3, Math.min(96, SENT_A - SENT_B * m.noise));
+    this.peakMethane = Math.max(this.peakMethane, m.methane);
+    const target = Math.max(3, Math.min(96, SENT_A - SENT_B * m.noise - SENT_METHANE * m.methane));
     this.sentiment += (target - this.sentiment) * SENTIMENT_EASE;
     this.updateSentimentBand();
 

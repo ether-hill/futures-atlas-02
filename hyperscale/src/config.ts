@@ -88,8 +88,15 @@ export const NOISE_IDLE_MUL = 0.4; // fraction of full noise while paused (idle)
 // (permits, boycotts) — the social licence to operate.
 export const SENTIMENT_START = 90;
 export const SENTIMENT_EASE = 0.06;  // per day toward the noise-driven target
-export const SENT_A = 190;           // target = SENT_A − SENT_B × noise(dB)
+export const SENT_A = 190;           // target = SENT_A − SENT_B×noise − SENT_METHANE×methane
 export const SENT_B = 2.05;
+export const SENT_METHANE = 0.14;    // emissions pollution also erodes sentiment
+
+// Methane / emissions -------------------------------------------------------
+// The site is powered by natural-gas turbines. Burning gas for every megawatt
+// drawn emits methane / CO₂-equivalent, which drifts over the town as smog.
+export const METHANE_PER_MW = 1.15;  // t CO₂e/day per MW of power drawn
+export const METHANE_SMOG_CAP = 120; // t/day at which the smog haze saturates
 
 // Reliability ---------------------------------------------------------------
 export const DAMAGE_RATE = 11; // integrity lost per day at full starvation
