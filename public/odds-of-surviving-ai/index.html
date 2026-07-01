@@ -36,7 +36,19 @@ body{padding-top:var(--fa-nav-h)!important}
 @media(min-width:860px){.od-photo{height:100%!important}.od-game{height:100%!important}}
 /* tighter nav bar on tablet/mobile (the var also drives the content offset, so they stay in sync) */
 @media(max-width:859px){:root{--fa-nav-h:48px}}
-</style><script src="/atlas-nav.js" defer></script></head>
+</style><script src="/atlas-nav.js" defer></script>
+<!-- The Odds is a dark immersive piece: force the dark theme so the shared nav matches,
+     even if the visitor toggled the hub to light. The inline add is anti-flash; the
+     event re-asserts run AFTER atlas-nav's deferred applyDefault (inline `defer` is
+     ignored, so we must use DOMContentLoaded/load). The nav toggle still works after. -->
+<script>
+  document.documentElement.classList.add('dark');
+  (function () {
+    function faForceDark() { document.documentElement.classList.add('dark'); }
+    addEventListener('DOMContentLoaded', faForceDark);
+    addEventListener('load', faForceDark);
+  })();
+</script></head>
 <body>
 <x-dc>
 <helmet>
@@ -62,12 +74,14 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 @keyframes odBlurInFlip{from{opacity:0;filter:grayscale(0.15) contrast(1.05) blur(18px);transform:scaleX(-1) scale(1.06)}to{opacity:1;filter:grayscale(0.15) contrast(1.05) blur(0);transform:scaleX(-1) scale(1)}}
 .od-blurin-flip{animation:odBlurInFlip 1.1s cubic-bezier(.2,.7,.2,1) both}
 .od-hero-img.od-flip{transform:scaleX(-1)}
+.od-doom-vid.od-flip{transform:scaleX(-1)}
 .od-pcard-img.od-flip,.od-tile-img.od-flip{transform:scaleX(-1)}
 .od-pcard:hover .od-pcard-img.od-flip{transform:scaleX(-1) scale(1.05)}
 .od-tile:hover .od-tile-img.od-flip{transform:scaleX(-1) scale(1.05)}
 @keyframes odFanIn{from{transform:rotate(0deg) translateY(42px) scale(0.92);opacity:0}to{transform:rotate(var(--deg)) translateY(0) scale(1);opacity:1}}
 @keyframes odFanFade{from{opacity:0}to{opacity:1}}
 @keyframes odEmber{0%{transform:translateY(0) scale(1);opacity:0}15%{opacity:1}100%{transform:translateY(-46px) scale(0.2);opacity:0}}
+/* Dario doom: the glass museum vitrine is built inside the die's Three.js scene (see dario-die.js), not in CSS */
 .od-anim{opacity:0;animation:odUp .6s cubic-bezier(.2,.7,.2,1) both}
 .od-roll{transition:transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, letter-spacing .22s ease, background .22s ease}
 .od-roll:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 16px 36px rgba(0,0,0,0.45), 0 0 0 4px rgba(251,239,255,0.16);letter-spacing:0.2em;background:#fff}
@@ -80,6 +94,11 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 body.od-menu-open .fa-share{display:none!important}
 /* persistent extinctions tally — sits below the global SHARE button, right-aligned to match */
 .od-extinctions{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 66px);z-index:59;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:right;pointer-events:none}
+/* TEST-ONLY force-outcome buttons (sit just under the global SHARE button) */
+.od-forcetest{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 92px);z-index:60;display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em}
+.od-forcetest>span{color:rgba(251,239,255,0.32)}
+.od-forcebtn{border:1px solid rgba(255,255,255,0.22);background:rgba(18,17,15,0.72);color:rgba(251,239,255,0.62);border-radius:5px;padding:3px 8px;cursor:pointer;font:inherit;letter-spacing:0.12em}
+.od-forcebtn.is-on{background:#E0481B;border-color:#E0481B;color:#fff}
 @media (max-width:680px){.od-extinctions{right:12px;top:calc(var(--fa-nav-h,56px) + 60px)}}
 body.od-menu-open .od-extinctions{display:none!important}
 .od-ext-counter{position:fixed;top:calc(var(--fa-nav-h,56px) + 20px);left:50%;transform:translateX(-50%);z-index:55;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:center;white-space:nowrap;pointer-events:none}
@@ -109,23 +128,27 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-photo{position:relative;overflow:hidden;background:#08080A;height:320px;flex:none}
 .od-game{position:relative;flex:1;min-height:560px;display:flex;flex-direction:column;background:radial-gradient(circle at 24% 16%, rgba(255,93,162,0.2), transparent 46%), radial-gradient(circle at 82% 84%, rgba(52,229,196,0.16), transparent 48%), #1A0B2E}
 .od-stage-area{position:relative;flex:2;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;overflow:visible}
+/* annihilation: wheel gone, globe canvas expands to fill the stage so the dead planet
+   floats in clean open space — no circular clip, no disc, no glow ring behind it */
+.od-wheel-wrap.is-dead{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important}
+.od-globe.is-dead{width:100%!important;height:100%!important;max-width:none!important;border-radius:0!important;overflow:visible!important;box-shadow:none!important;background:transparent!important;transform:none!important;transition:transform .9s cubic-bezier(.2,.7,.2,1)!important}
 /* ===== results panel — "editorial ledger" (key bar pinned top, result+button centered) ===== */
 .od-panel{position:relative;flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(16px,3vh,24px) clamp(20px,4vw,34px) clamp(18px,3.2vh,30px);background:linear-gradient(180deg,rgba(8,8,10,0) 0%,rgba(8,8,10,0.5) 100%)}
 .od-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,239,255,0.16),transparent)}
-.od-key{flex:none;width:100%;max-width:520px;display:flex;flex-direction:column;gap:9px}
+.od-key{flex:none;width:100%;max-width:520px;display:flex;flex-direction:column;gap:9px;margin-bottom:clamp(8px,1.6vh,16px)}
 .od-key-labels{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(251,239,255,0.62)}
 .od-key-bar{display:flex;gap:3px;height:6px}
 .od-key-bar span{border-radius:3px}
-.od-center{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(12px,2.2vh,18px)}
-.od-result{display:flex;flex-direction:column;align-items:center;gap:clamp(4px,0.9vh,8px);max-width:560px;animation:odRise .42s ease both}
+.od-center{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(16px,3vh,26px)}
+.od-result{display:flex;flex-direction:column;align-items:center;gap:clamp(9px,1.7vh,15px);max-width:560px;animation:odRise .42s ease both}
 .od-rhead{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(22px,3.3vh,34px);line-height:1.04;letter-spacing:-0.015em}
-.od-rdesc{font-family:'Space Mono',monospace;font-weight:400;font-size:clamp(13px,1.95vh,16.5px);letter-spacing:0.015em;line-height:1.62;color:rgba(251,239,255,0.84);max-width:500px}
-.od-rdesc-big{font-size:clamp(15px,2.4vh,19px);line-height:1.5;color:rgba(251,239,255,0.82);max-width:520px}
+.od-rdesc{font-family:'Space Mono',monospace;font-weight:400;font-size:clamp(12px,1.72vh,14.5px);letter-spacing:0.015em;line-height:1.5;color:rgba(251,239,255,0.84);max-width:500px}
+.od-rdesc-big{font-size:clamp(14px,2.15vh,17px);line-height:1.5;color:rgba(251,239,255,0.82);max-width:520px}
 .od-rhead-big{font-size:clamp(30px,4.8vh,50px);line-height:1.02}
-.od-game-doom{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.1s ease;background:radial-gradient(ellipse 85% 70% at 50% 32%, rgba(122,22,26,0.30) 0%, rgba(34,8,11,0.88) 46%, #08080a 78%), #08080a}
+.od-game-doom{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 4.8s ease;background:radial-gradient(ellipse 90% 74% at 50% 36%, rgba(44,120,132,0.34) 0%, rgba(12,34,44,0.92) 46%, #060b0e 78%), #060b0e}
 .od-btnblock{display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.4vh,11px)}
 .od-redo{display:inline-block;line-height:0;margin-left:1px}
-.od-ledger-btn{display:inline-flex;align-items:center;gap:9px;padding:14px 40px}
+.od-ledger-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 17px}
 .od-name{font-family:'Archivo',sans-serif;font-weight:800;font-size:30px;line-height:0.98;letter-spacing:-0.01em;color:#ECEAE6}
 .od-quote{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;line-height:1.4;color:rgba(236,234,230,0.94)}
 @media(min-width:860px){
@@ -138,57 +161,67 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-name{font-size:38px}
   .od-quote{font-size:31px}
   .od-teg-grid{grid-template-columns:1fr 1fr 1fr;gap:5px 22px}
+  /* desktop: give the results copy ~25% more width to read on */
+  .od-result{max-width:700px}
+  .od-rdesc{max-width:625px}
+  .od-rdesc-big{max-width:650px}
 }
 
 /* ============ TABLET / MOBILE PLAY SCREEN (< 860px) ============
    Compact header band (small portrait top-left, copy top-right), then the
    game fills the rest so the whole play screen fits one viewport, no scroll. */
 @media(max-width:859px){
-  /* The play screen is split into three fixed bands of the viewport height:
-     portrait+info 26% · game 46% · results 28%. (Within .od-game the game is
-     62% and the results 38% — 62%·74≈46, 38%·74≈28.) Re-balance here. */
+  /* The play screen splits into three fixed bands of the *dynamic* viewport
+     (100dvh — so the mobile address bar can't push content off-screen → no scroll):
+     portrait+info 32% · game 42% · results 26%. Re-balance the % values here. */
+  .od-stage{height:calc(100dvh - var(--fa-nav-h))!important;min-height:0!important;overflow:hidden!important}
 
-  /* --- band 1: portrait + info (26%); portrait is flush to nav / left edge / game --- */
-  .od-photo{flex:0 0 26%!important;height:auto!important;min-height:0;
+  /* --- band 1: portrait + info (32%); portrait flush to nav / left edge / game --- */
+  .od-photo{flex:0 0 32%!important;height:auto!important;min-height:0;
     display:flex!important;flex-direction:row;align-items:stretch;gap:0;padding:0!important;background:#0e0b16;overflow:hidden}
   .od-photo-scrim{display:none!important}
   .od-hero-img{position:relative!important;inset:auto!important;height:100%!important;width:auto!important;
-    aspect-ratio:3/4;max-width:46vw;flex:none!important;border-radius:0!important;object-position:50% 16%!important}
+    aspect-ratio:3/4;max-width:40vw;flex:none!important;border-radius:0!important;object-position:50% 16%!important}
   .od-photo-info{position:relative!important;inset:auto!important;flex:1 1 0!important;min-width:0;
-    justify-content:center!important;gap:4px!important;padding:0 14px!important}
-  .od-odds-line,.od-quote-ctx,.od-photo-src{display:none!important}   /* big %, eyebrow, attribution — gone */
-  .od-photo-info .od-quote{display:none!important}                    /* quote — gone on mobile */
-  .od-photo-info .od-name{font-size:clamp(18px,3vh,24px)!important;line-height:1.03!important}
-  .od-photo-top{inset:auto auto 10px 10px!important;left:10px!important;right:auto!important;top:auto!important}
-  .od-photo-top .od-pill{height:28px!important;font-size:9.5px!important;padding:0 10px!important}
+    justify-content:center!important;gap:3px!important;padding:0 13px!important}
+  .od-odds-line,.od-quote-ctx,.od-photo-src,.od-photo-top{display:none!important}  /* big %, eyebrow, attribution, on-photo pill — gone */
+  .od-photo-info .od-name{font-size:clamp(17px,2.7vh,22px)!important;line-height:1.04!important}
+  .od-photo-info .od-quote{display:-webkit-box!important;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
+    font-size:11px!important;line-height:1.34!important;max-width:none!important;margin:2px 0 0!important}
 
-  /* --- band 2: game (62% of .od-game ≈ 46% screen) --- */
+  /* --- controls: Choose Player + Sound stacked at the top-left of the game band --- */
+  .od-game-choose{display:inline-flex!important}
+  .od-sound{top:46px!important;left:14px!important;font-size:9px!important}
+
+  /* --- band 2: game (62% of .od-game ≈ 42% screen) --- */
   .od-game{min-height:0!important;flex:1 1 0!important}
   .od-stage-area{flex:0 0 62%!important;min-height:0!important}
-  .od-die-mat{transform:scale(1.3)}                                   /* bigger die */
-  /* wheel: fit the band and stop the spokes poking past the rim */
-  .od-wheel-wrap{width:min(62vw,40vh)!important;height:min(62vw,40vh)!important;max-width:300px!important;max-height:300px!important}
-  .od-globe{width:min(60vw,38.5vh)!important;height:min(60vw,38.5vh)!important;max-width:288px!important}
-  .od-wheel-tick{height:47%!important}                                /* was a fixed 190px → poked out */
-  /* cards: bigger, filling the band; shrink the drawn card so it fits */
+  .od-die-mat{transform:translateY(-7%) scale(1.32)}                  /* bigger die, nudged up */
+  /* wheel: fit the band; spokes stay inside the rim */
+  .od-wheel-wrap{width:min(58vw,37vh)!important;height:min(58vw,37vh)!important;max-width:290px!important;max-height:290px!important}
+  .od-globe{width:min(56vw,35.5vh)!important;height:min(56vw,35.5vh)!important;max-width:278px!important}
+  .od-wheel-tick{height:47%!important}
+  /* cards: smaller, filling the band; shrink the drawn card to fit */
   .od-cards-wrap{height:100%!important}
   .od-fan-deck{height:100%!important}
-  .od-fan{width:152px!important;height:218px!important;margin-left:-76px!important;bottom:12px!important}
-  .od-drawn-wrap{transform:scale(0.72)}
+  .od-fan{width:116px!important;height:166px!important;margin-left:-58px!important;bottom:8px!important}
+  .od-drawn-wrap{transform:scale(0.58)}
 
-  /* --- band 3: results panel (38% of .od-game ≈ 28% screen) — smaller type + button --- */
-  .od-panel{flex:0 0 38%!important;min-height:0;overflow-y:auto;padding:8px 18px 12px!important}
-  .od-center{gap:8px!important}
+  /* --- band 3: results panel (38% of .od-game ≈ 26% screen) — small type + button --- */
+  .od-panel{flex:0 0 38%!important;min-height:0;overflow:hidden;padding:6px 16px 10px!important}
+  .od-center{gap:9px!important}
+  .od-result{gap:4px!important}
+  .od-key{margin-bottom:5px!important}
   .od-key-labels{font-size:8.5px!important;gap:12px;letter-spacing:0.04em!important}
   .od-key-labels span{flex:1 1 0;min-width:0}                         /* let the long "REALLY, REALLY BAD" wrap, not clip */
   .od-key-labels span:last-child{text-align:right}
-  .od-rhead{font-size:clamp(17px,2.5vh,22px)!important}
-  .od-rhead-big{font-size:clamp(22px,4vh,32px)!important}
-  .od-rdesc{font-size:12px!important;line-height:1.5!important}
-  .od-rdesc-big{font-size:13.5px!important}
-  .od-roll,.od-cta{font-size:12px!important}
-  .od-ledger-btn{padding:11px 26px!important}
-  .od-rollhint{font-size:9px!important}
+  .od-rhead{font-size:clamp(15px,2.2vh,19px)!important}
+  .od-rhead-big{font-size:clamp(19px,3.4vh,26px)!important}
+  .od-rdesc{font-size:10.5px!important;line-height:1.42!important}
+  .od-rdesc-big{font-size:11.5px!important}
+  .od-roll,.od-cta{font-size:10.5px!important;letter-spacing:0.07em!important}
+  .od-ledger-btn{padding:8px 18px!important;gap:6px!important}
+  .od-rollhint{font-size:8.5px!important}
 
   /* --- player chooser (landing + menu, identical): horizontal rows sized to ALL
          fit one screen (no scroll, no cut-off card) — portrait left, copy right --- */
@@ -289,9 +322,6 @@ body.od-menu-open .od-extinctions{display:none!important}
         </button>
       </sc-for>
     </div>
-    <div class="od-faceall-row">
-      <button onClick="{{ startGauntlet }}" class="od-ghost od-faceall">OR FACE THEM ALL →</button>
-    </div>
   </div>
 </div>
 </sc-if>
@@ -302,9 +332,15 @@ body.od-menu-open .od-extinctions{display:none!important}
 
   <!-- ============ PHOTO SIDE ============ -->
   <div class="od-photo">
-    <img class="od-hero-img od-blurin" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:grayscale(0.15) contrast(1.05)" />
-    <sc-if value="{{ doomVideo }}">
-      <video class="od-doom-vid" src="/odds-of-surviving-ai/media/dario-doom.mp4" autoplay playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000;transform:scaleX(-1);animation:odFade .35s ease both"></video>
+    <sc-if value="{{ noPortraitVid }}">
+      <img class="od-hero-img od-blurin" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:grayscale(0.15) contrast(1.05)" />
+    </sc-if>
+    <sc-if value="{{ hasPortraitVid }}">
+      <!-- the portrait IS the video, shown paused on its first frame; it plays only when doom is rolled -->
+      <video class="od-portrait-vid" src="{{ portraitVid }}" muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ portraitPos }};background:#08080A"></video>
+    </sc-if>
+    <sc-if value="{{ showDoomVid }}">
+      <video class="od-doom-vid {{ doomVidFlipCls }}" src="{{ doomVid }}" autoplay muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ doomVidPos }};background:#000;animation:odFade .35s ease both"></video>
     </sc-if>
     <div class="od-photo-scrim" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.5) 0%,rgba(8,8,10,0) 26%,rgba(8,8,10,0.08) 48%,rgba(8,8,10,0.72) 78%,rgba(8,8,10,0.97) 100%)"></div>
     <div class="od-photo-scrim" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,10,0) 62%,rgba(8,8,10,0.45) 100%)"></div>
@@ -349,22 +385,38 @@ body.od-menu-open .od-extinctions{display:none!important}
 
   <!-- ============ GAME SIDE ============ -->
   <div class="od-game">
-    <div class="od-game-doom" style="opacity:{{ doomBgOn }}"></div>
+    <div class="od-game-doom" style="opacity:{{ doomBgOn }};background:{{ doomBgGrad }}"></div>
 
     <!-- sound toggle, top-left of the play panel -->
-    <button onClick="{{ toggleMute }}" class="od-anim od-link" style="animation-delay:.4s;position:absolute;top:20px;left:24px;z-index:2;border:none;background:transparent;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5)">{{ muteLabel }}</button>
+    <button onClick="{{ toggleMute }}" class="od-anim od-link od-sound" style="animation-delay:.4s;position:absolute;top:20px;left:24px;z-index:2;border:none;background:transparent;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5)">{{ muteLabel }}</button>
+
+    <!-- TEST ONLY: force the next roll/spin/pick outcome (applies once). Remove before ship. -->
+    <sc-if value="{{ isPlay }}">
+      <div class="od-forcetest">
+        <span>TEST</span>
+        <button onClick="{{ forceGood }}" class="od-forcebtn {{ forceGoodCls }}">GOOD</button>
+        <button onClick="{{ forceBad }}" class="od-forcebtn {{ forceBadCls }}">BAD</button>
+      </div>
+    </sc-if>
+
+    <!-- mobile-only Choose Player, sits top-left of the game band (desktop uses the one on the photo) -->
+    <button onClick="{{ openMenu }}" class="od-game-choose" style="position:absolute;z-index:6;top:10px;left:12px;display:none;align-items:center;gap:7px;height:29px;padding:0 12px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;background:rgba(18,17,15,0.92);color:#f3f1ec;cursor:pointer;font:600 9.5px/1 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0.08em">
+      <span style="display:flex;gap:3px"><i style="width:4px;height:4px;border-radius:50%;background:#E0481B;display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i></span>
+      CHOOSE PLAYER
+    </button>
 
     <!-- STAGE AREA (top ~2/3 of the panel) -->
     <div class="od-anim od-stage-area" style="animation-delay:.46s">
 
       <sc-if value="{{ isDie }}">
-        <x-import component-from-global-scope="dario-die" from="./dario-die.js" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" class="od-die-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
+        <x-import component-from-global-scope="dario-die" from="./dario-die.js?v=10" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" encase="{{ dieEncase }}" class="od-die-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
       </sc-if>
 
       <sc-if value="{{ isWheel }}">
-        <div class="od-pop od-wheel-wrap" style="position:relative;width:390px;height:390px;max-width:78vw;max-height:78vw;display:flex;align-items:center;justify-content:center">
+        <div class="od-pop od-wheel-wrap {{ deadCls }}" style="position:relative;width:390px;height:390px;max-width:78vw;max-height:78vw;display:flex;align-items:center;justify-content:center">
+          <!-- the wheel — pointer, outer ring, coloured segments — removed entirely on annihilation -->
+          <sc-if value="{{ showWheel }}">
           <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:31px solid #FBEFFF;z-index:4;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.5));opacity:{{ wheelRingOpacity }};transition:opacity .7s ease"></div>
-          <!-- ring scaler (handles the shrink on annihilation; the inner ring keeps the per-frame spin) -->
           <div style="position:absolute;inset:0;transform:scale({{ wheelRingScale }});opacity:{{ wheelRingOpacity }};transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .8s ease">
             <div style="position:absolute;inset:0;border-radius:50%;border:7px solid #11050f;box-shadow:0 16px 44px rgba(0,0,0,0.5);transform:rotate({{ wheelRot }}deg);background:{{ wheelGradient }}">
               <sc-for list="{{ wheelTicks }}" as="tk" hint-placeholder-count="5">
@@ -372,21 +424,12 @@ body.od-menu-open .od-extinctions{display:none!important}
               </sc-for>
             </div>
           </div>
+          </sc-if>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none">
-            <div class="od-globe" style="position:relative;width:min(372px,74vw);height:min(372px,74vw);border-radius:50%;overflow:hidden;transform:scale({{ globeScale }});transform-origin:center center;box-shadow:{{ earthShadow }};filter:{{ earthFilter }};transition:transform .9s cubic-bezier(.2,.7,.2,1),box-shadow .8s ease">
-              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js" spin="{{ wheelSpinToken }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
-              <sc-if value="{{ earthBurn }}">
-                <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 60%,rgba(255,120,30,0.55),rgba(120,20,0,0.2) 60%,transparent 75%);mix-blend-mode:screen;z-index:2"></div>
-              </sc-if>
+            <div class="od-globe {{ deadCls }}" style="position:relative;width:min(372px,74vw);height:min(372px,74vw);border-radius:50%;overflow:hidden;transform:scale({{ globeScale }});transform-origin:center center;box-shadow:{{ earthShadow }};filter:{{ earthFilter }};transition:transform .9s cubic-bezier(.2,.7,.2,1),box-shadow .8s ease">
+              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=18" spin="{{ wheelSpinToken }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
             </div>
           </div>
-          <sc-if value="{{ earthBurn }}">
-            <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:4;pointer-events:none">
-              <sc-for list="{{ embers }}" as="e" hint-placeholder-count="7">
-                <div style="position:absolute;left:{{ e.x }}px;top:6px;width:5px;height:5px;border-radius:50%;background:{{ e.color }};animation:odEmber {{ e.dur }}s ease-out {{ e.delay }}s infinite"></div>
-              </sc-for>
-            </div>
-          </sc-if>
         </div>
       </sc-if>
 
@@ -440,7 +483,7 @@ body.od-menu-open .od-extinctions{display:none!important}
 
       <!-- CENTERED ZONE: result (if any) + button, centered together -->
       <div class="od-center">
-        <sc-if value="{{ isResult }}">
+        <sc-if value="{{ showResult }}">
           <div class="od-result">
             <sc-if value="{{ showVerdictHead }}">
               <div class="{{ rheadClass }}" style="color:{{ verdictColor }}">{{ verdictHead }}</div>
@@ -452,17 +495,13 @@ body.od-menu-open .od-extinctions{display:none!important}
 
         <div class="od-btnblock">
           <sc-if value="{{ showRollButton }}">
-            <div class="od-anim od-rollhint" style="animation-delay:.64s">{{ chargeHint }}</div>
-            <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll od-charge od-ledger-btn" style="animation-delay:.68s;position:relative;overflow:hidden;isolation:isolate;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:0.12em;text-transform:uppercase;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ actLabel }}</span><svg class="od-redo" style="position:relative;z-index:1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 4v5h-5"/></svg></button>
+            <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll od-charge od-ledger-btn" style="animation-delay:.68s;position:relative;overflow:hidden;isolation:isolate;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ actLabel }}</span><svg class="od-redo" style="position:relative;z-index:1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 4v5h-5"/></svg></button>
           </sc-if>
           <sc-if value="{{ showPickPrompt }}">
             <div class="od-rollhint">{{ pickHint }}</div>
           </sc-if>
-          <sc-if value="{{ isResult }}">
-            <sc-if value="{{ replayCharge }}">
-              <div class="od-rollhint">{{ chargeHint }}</div>
-            </sc-if>
-            <button onClick="{{ primaryAction }}" class="od-roll {{ replayClass }} od-ledger-btn" style="position:relative;overflow:hidden;isolation:isolate;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:13.5px;letter-spacing:0.12em;text-transform:uppercase;background:#FBEFFF;color:#1A0B2E"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ replayLabel }}</span><sc-if value="{{ replayRedo }}"><svg class="od-redo" style="position:relative;z-index:1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 4v5h-5"/></svg></sc-if></button>
+          <sc-if value="{{ showResult }}">
+            <button onClick="{{ primaryAction }}" class="od-roll {{ replayClass }} od-ledger-btn" style="position:relative;overflow:hidden;isolation:isolate;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;background:#FBEFFF;color:#1A0B2E"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ replayLabel }}</span><sc-if value="{{ replayRedo }}"><svg class="od-redo" style="position:relative;z-index:1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 4v5h-5"/></svg></sc-if></button>
           </sc-if>
         </div>
       </div>
@@ -495,9 +534,6 @@ body.od-menu-open .od-extinctions{display:none!important}
               </span>
             </button>
           </sc-for>
-        </div>
-        <div style="display:flex;justify-content:center">
-          <button onClick="{{ startGauntlet }}" class="od-ghost" style="padding:12px 26px;border:1px solid #33333a;border-radius:999px;background:transparent;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:#ECEAE6">OR FACE THEM ALL →</button>
         </div>
       </div>
     </div>
@@ -537,9 +573,10 @@ class Component extends DCLogic {
     menuOpen: false,
     mode: 'single', gIndex: 0, gResults: [],
     phase: 'ready', outcome: null, faceEnd: false,
-    dieToken: 0, dieTarget: 7,
+    force: null,   // TEST: 'good' | 'doom' — forces the next roll's outcome once
+    dieToken: 0, dieTarget: 7, dieMuseum: false,
     wheelRot: 0, earthBurn: false, wheelSpinToken: 0,
-    drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false,
+    drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false, finaleReveal: false,
     dealt: [0,1,2,3,4,5,6,7,8,9,10,11], pickedPos: null,
     extinctions: (function(){ try { return parseInt(localStorage.getItem('theodds_extinctions'), 10) || 0; } catch (e) { return 0; } })(),
   };
@@ -559,11 +596,12 @@ class Component extends DCLogic {
       source: 'Axios AI+ DC Summit \u00B7 17 Sept 2025',
       mechanic: 'die', mechLabel: 'D12 · ROLL',
       slug: 'dario-amodei', initials: 'DA', mechTag: 'DIE', accent: '#9B7BFF', accentTint: 'rgba(155,123,255,0.10)', cta: 'Roll the dice', objpos: '50% 30%', flip: true,
+      portraitVideo: '/odds-of-surviving-ai/media/dario-museum-02.mp4', portraitPos: '50% 36%',
     },
     musk: {
       short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
-      photo: '/odds-of-surviving-ai/research/elon-musk.jpg',
-      credit: 'Photo: Gage Skidmore, CC BY-SA 2.0',
+      photo: '/odds-of-surviving-ai/research/elon-first.jpg',   // the video's first frame → seamless into the doom clip
+      credit: 'Image: AI-generated',
       teaser: 'Only a 20% chance of annihilation.', teaserNum: '20%',
       oddsBig: '20%', oddsCaption: 'CHANCE EARTH BURNS', oddsCap: 'EARTH BURNS',
       doom: 0.20,
@@ -571,13 +609,14 @@ class Component extends DCLogic {
       quoteContext: 'On the risks of advanced AI',
       source: 'Joe Rogan Experience \u00B7 2025',
       mechanic: 'wheel', mechLabel: 'WHEEL · SPIN',
-      slug: 'elon-musk', initials: 'EM', mechTag: 'WHEEL', accent: '#FF6F61', accentTint: 'rgba(255,111,97,0.10)', cta: 'Spin the wheel', objpos: '50% 24%',
+      slug: 'elon-musk', initials: 'EM', mechTag: 'WHEEL', accent: '#FF6F61', accentTint: 'rgba(255,111,97,0.10)', cta: 'Spin the wheel', objpos: '50% 28%',
+      doomVid: '/odds-of-surviving-ai/media/elon-doom.mp4', doomVidPos: '50% 28%',
     },
     tegmark: {
       short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
       photo: '/odds-of-surviving-ai/research/max-tegmark.jpg',
       credit: 'Photo: Web Summit, CC BY 2.0',
-      teaser: 'In 3 of the 12 futures, humanity is gone.', teaserNum: '3',
+      teaser: '12 possible futures', teaserNum: '12',
       oddsBig: '12', oddsCaption: 'FUTURES · NOT PROBABILITIES', oddsCap: 'FUTURES',
       doom: null,
       quote: 'The real risk with AGI isn\u2019t malice but competence. A superintelligent AI will be extremely good at accomplishing its goals, and if those goals aren\u2019t aligned with ours, we\u2019re in trouble.',
@@ -641,11 +680,169 @@ class Component extends DCLogic {
     // start the Dario doom video once, the moment it appears (belt-and-braces
     // with the autoplay attribute); it then plays through to the end and stays.
     if (this.state.doomVideo && !this._doomVidOn) {
-      this._doomVidOn = true;
-      try { const v = document.querySelector('.od-doom-vid'); if (v) { v.currentTime = 0; const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); } } catch (e) {}
+      this._doomVidOn = true; this._finaleDone = false;
+      try {
+        const pl = this.players[this.state.playerId];
+        if (pl.portraitVideo) {
+          // Dario: the portrait video itself plays; when it ends, encase the die + reveal the verdict
+          const v = document.querySelector('.od-portrait-vid');
+          if (v) {
+            v.muted = true; v.playsInline = true; try { v.currentTime = 0; } catch (e) {}
+            const fire = () => this._dieFinale();
+            v.onended = fire;
+            const secs = (v.duration && isFinite(v.duration)) ? v.duration : 5.2;
+            this._finaleTimer = setTimeout(fire, secs * 1000 + 200);   // fallback if 'ended' never fires
+            const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+          } else { this._dieFinale(); }
+        } else {
+          const v = document.querySelector('.od-doom-vid');
+          if (v) {
+            v.muted = true; v.playsInline = true; v.currentTime = 0;
+            // Elon (wheel): when the clip ends, blow the rocket + shatter the portrait — all in sync
+            if (pl.mechanic === 'wheel') {
+              const fire = () => this._doomFinale(v);
+              v.onended = fire;
+              const secs = (v.duration && isFinite(v.duration)) ? v.duration : 9;
+              this._finaleTimer = setTimeout(fire, secs * 1000 + 120);   // fallback if 'ended' never fires
+            }
+            const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+          }
+        }
+      } catch (e) {}
     } else if (!this.state.doomVideo) {
-      this._doomVidOn = false;
+      this._doomVidOn = false; this._finaleDone = false;
+      if (this._finaleTimer) { clearTimeout(this._finaleTimer); this._finaleTimer = null; }
+      if (this._revealTimer) { clearTimeout(this._revealTimer); this._revealTimer = null; }
+      try { document.querySelectorAll('.od-shatter').forEach((c) => c.remove()); } catch (e) {}
+      try { const h = document.querySelector('.od-hero-img'); if (h) h.style.visibility = ''; } catch (e) {}
+      try { const pv = document.querySelector('.od-portrait-vid'); if (pv) { pv.pause(); pv.currentTime = 0; } } catch (e) {}
     }
+  }
+  // the moment the doom clip ends: detonate the rocket (via the globe) and shatter the portrait into particles
+  _doomFinale(v) {
+    if (this._finaleDone) return; this._finaleDone = true;
+    if (this._finaleTimer) { clearTimeout(this._finaleTimer); this._finaleTimer = null; }
+    try { const g = document.querySelector('earth-globe'); if (g) g.setAttribute('boom', String((this._boomTok = (this._boomTok || 0) + 1))); } catch (e) {}
+    try { this._shatterPortrait(v); } catch (e) {}
+    // hold the annihilation copy back until the rocket + satellites have blown and the portrait is
+    // disintegrating — so the reveal doesn't fight the explosion for attention
+    if (this._revealTimer) clearTimeout(this._revealTimer);
+    this._revealTimer = setTimeout(() => this.setState({ finaleReveal: true }), 1600);
+  }
+  // Dario: the portrait clip has finished — build the museum vitrine around the die, then reveal the verdict
+  _dieFinale() {
+    if (this._finaleDone) return; this._finaleDone = true;
+    if (this._finaleTimer) { clearTimeout(this._finaleTimer); this._finaleTimer = null; }
+    this.setState({ finaleReveal: true });   // the clip has finished (the case has assembled alongside it) -> reveal the verdict
+  }
+  _shatterPortrait(video) {
+    const panel = document.querySelector('.od-photo');
+    if (!panel) return;
+    const Wc = panel.clientWidth, Hc = panel.clientHeight;
+    if (!Wc || !Hc) return;
+    const rw = Math.min(Wc, 480) | 0, rh = Math.round(Hc * rw / Wc) | 0;   // fine working res
+    // snapshot the video's last frame, cover-fit (object-position 50% 28%), into a source canvas
+    const src = document.createElement('canvas'); src.width = rw; src.height = rh;
+    const sctx = src.getContext('2d');
+    const vw = (video && video.videoWidth) || Wc, vh = (video && video.videoHeight) || Hc;
+    const cover = Math.max(rw / vw, rh / vh), dw = vw * cover, dh = vh * cover;
+    try { sctx.drawImage(video, (rw - dw) / 2, (rh - dh) * 0.28, dw, dh); } catch (e) { return; }
+    const S = sctx.getImageData(0, 0, rw, rh).data;
+    const hero = panel.querySelector('.od-hero-img');
+    const cv = document.createElement('canvas'); cv.className = 'od-shatter'; cv.width = rw; cv.height = rh;
+    cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;background:#08080A';
+    // sit BELOW the scrims + name/quote text (and the panel's overflow:hidden keeps it in frame)
+    if (hero) hero.insertAdjacentElement('afterend', cv); else panel.appendChild(cv);
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(src, 0, 0);                                     // show the full last frame INSTANTLY → seamless from the video
+    if (video) video.style.visibility = 'hidden';                // only now hide the video (the canvas already holds the frame)
+    if (hero) hero.style.visibility = 'hidden';
+    const out = ctx.createImageData(rw, rh), O = out.data;
+    // Thanos-style disintegration: the man stays intact and clear on the left and crumbles from the
+    // RIGHT into super-fine dust that blows up-and-right (away from the name/quote) and then lingers,
+    // gently floating. A solid layer erodes along a noise front; fine dust particles peel off it.
+    const N = rw * rh, th = new Float32Array(N), emitted = new Uint8Array(N);
+    for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) {
+      const grad = (1 - x / rw) * 0.62 + (1 - y / rh) * 0.18;       // dissolves from the top-right first
+      th[y * rw + x] = Math.random() * 0.44 + grad * 0.72;
+    }
+    const CAP = Math.min(90000, (N * 0.28) | 0);
+    const ppx = new Float32Array(CAP), ppy = new Float32Array(CAP), pvx = new Float32Array(CAP), pvy = new Float32Array(CAP), pci = new Int32Array(CAP), pa = new Float32Array(CAP);
+    let pn = 0;
+    const DISSOLVE = 2.6, TAU_MAX = 0.55, EMIT = 0.24, WX = 26, WY = -34, FLOOR = 0.6;
+    const solidBuf = new Uint8ClampedArray(O.length); let solidReady = false;
+    // realistic wispy smoke over the top — domain-warped fbm noise (curling tendrils, not dots)
+    const TS = 128, stex = new Float32Array(TS * TS);
+    { const octs = [[4, 0.5], [8, 0.28], [16, 0.15], [32, 0.07]];
+      for (let oi = 0; oi < octs.length; oi++) { const cells = octs[oi][0], wgt = octs[oi][1], lat = new Float32Array(cells * cells);
+        for (let li = 0; li < lat.length; li++) lat[li] = Math.random();
+        for (let ty = 0; ty < TS; ty++) for (let tx = 0; tx < TS; tx++) {
+          const fx = tx / TS * cells, fy = ty / TS * cells; let ix = Math.floor(fx), iy = Math.floor(fy); const ux = fx - ix, uy = fy - iy, i2 = (ix + 1) % cells, j2 = (iy + 1) % cells; ix %= cells; iy %= cells;
+          const sx = ux * ux * (3 - 2 * ux), sy = uy * uy * (3 - 2 * uy), a = lat[iy * cells + ix], b = lat[iy * cells + i2], c = lat[j2 * cells + ix], d = lat[j2 * cells + i2];
+          stex[ty * TS + tx] += ((a * (1 - sx) + b * sx) * (1 - sy) + (c * (1 - sx) + d * sx) * sy) * wgt;
+        } }
+      let mn = 9, mx = -9; for (let mi = 0; mi < stex.length; mi++) { if (stex[mi] < mn) mn = stex[mi]; if (stex[mi] > mx) mx = stex[mi]; } const rr = 1 / (mx - mn); for (let ni = 0; ni < stex.length; ni++) stex[ni] = (stex[ni] - mn) * rr;
+    }
+    const smp = (u, v) => { u -= Math.floor(u); v -= Math.floor(v); const fx = u * TS, fy = v * TS, ix = fx | 0, iy = fy | 0, ux = fx - ix, uy = fy - iy, i2 = (ix + 1) % TS, j2 = (iy + 1) % TS, a = stex[iy * TS + ix], b = stex[iy * TS + i2], c = stex[j2 * TS + ix], d = stex[j2 * TS + i2]; return (a * (1 - ux) + b * ux) * (1 - uy) + (c * (1 - ux) + d * ux) * uy; };
+    const sstep = (a, b, x) => { if (x <= a) return 0; if (x >= b) return 1; const t = (x - a) / (b - a); return t * t * (3 - 2 * t); };
+    const SWARP = 0.6, SDSC = 2.0, SLO = 0.4, SHI = 0.85, SOP = 0.72, SCOV = 0.55;   // warp, density scale, wisp threshold, opacity, coverage
+    const t0 = performance.now(); let lastDraw = t0;
+    const step = (now) => {
+      if (!this.state.doomVideo) { cv.remove(); return; }
+      requestAnimationFrame(step);
+      if (now - lastDraw < 50) return;
+      const dt = Math.min((now - lastDraw) / 1000, 0.06); lastDraw = now;
+      const el = (now - t0) / 1000, tau = Math.min(TAU_MAX, el / DISSOLVE * (TAU_MAX + 0.05));
+      // particles: fly off, decelerate, then settle to a gentle lingering float
+      for (let j = 0; j < CAP; j++) {
+        if (pa[j] <= 0) continue;
+        pvx[j] += Math.sin(ppy[j] * 0.05 + el * 1.3) * 5 * dt; pvy[j] += -0.9 * dt;
+        pvx[j] *= 0.955; pvy[j] *= 0.955;
+        ppx[j] += pvx[j] * dt; ppy[j] += pvy[j] * dt;
+        pa[j] += (FLOOR - pa[j]) * Math.min(1, dt * 1.4);          // ease alpha to the lingering floor
+      }
+      // emit fine dust along the dissolving front (until it's fully swept)
+      if (!solidReady) {
+        for (let i = 0; i < N; i++) if (!emitted[i] && th[i] < tau) {
+          emitted[i] = 1;
+          if (Math.random() < EMIT) {
+            const k = pn++ % CAP; pci[k] = i << 2; pa[k] = 1;
+            ppx[k] = i % rw; ppy[k] = (i / rw) | 0;
+            pvx[k] = WX * (0.4 + Math.random()) + (Math.random() - 0.5) * 44;
+            pvy[k] = WY * (0.4 + Math.random()) - Math.random() * 30;
+          }
+        }
+        if (tau >= TAU_MAX) { // dissolve complete → cache the surviving solid part
+          for (let i = 0; i < N; i++) { const o = i << 2; if (th[i] > tau) { solidBuf[o] = S[o]; solidBuf[o + 1] = S[o + 1]; solidBuf[o + 2] = S[o + 2]; solidBuf[o + 3] = S[o + 3]; } else solidBuf[o + 3] = 0; }
+          solidReady = true;
+        }
+      }
+      // compose: solid remnant + floating dust
+      if (solidReady) { O.set(solidBuf); }
+      else { O.fill(0); for (let i = 0; i < N; i++) if (th[i] > tau) { const o = i << 2; O[o] = S[o]; O[o + 1] = S[o + 1]; O[o + 2] = S[o + 2]; O[o + 3] = S[o + 3]; } }
+      for (let j = 0; j < CAP; j++) {
+        if (pa[j] <= 0.02) continue;
+        const X = ppx[j] | 0, Y = ppy[j] | 0; if (X < 0 || X >= rw || Y < 0 || Y >= rh) continue;
+        const c = pci[j], o = (Y * rw + X) << 2; O[o] = S[c]; O[o + 1] = S[c + 1]; O[o + 2] = S[c + 2]; O[o + 3] = (pa[j] * S[c + 3]) | 0;
+      }
+      // wispy smoke: domain-warped noise → curling tendrils that drift and evolve slowly, top-weighted
+      const sws = el * 0.01, sds = el * 0.02;                                        // slow drift/evolution
+      for (let sy2 = 0; sy2 < rh; sy2 += 2) {
+        const fall = sstep(0, 0.14, 1 - sy2 / (rh * SCOV)); if (fall <= 0.001) continue;   // concentrated at the top
+        for (let sx2 = 0; sx2 < rw; sx2 += 2) {
+          const wu = sx2 / rw * 0.9 + sws, wv = sy2 / rh * 1.1 - sws;                 // warp field (low-freq)
+          const wx = (smp(wu, wv) - 0.5) * SWARP, wy = (smp(wu + 3.7, wv + 1.3) - 0.5) * SWARP;
+          const dc = smp(sx2 / rw * SDSC + wx + sds * 0.5, sy2 / rh * SDSC * 1.5 + wy - sds);
+          let aw = sstep(SLO, SHI, dc) * fall * SOP; if (aw < 0.004) continue; if (aw > 0.9) aw = 0.9;
+          const ia = 1 - aw, av = (aw * 255) | 0;
+          for (let yy = 0; yy < 2; yy++) { const Yr = sy2 + yy; if (Yr >= rh) continue; const base = (Yr * rw) << 2;
+            for (let xx = 0; xx < 2; xx++) { const Xr = sx2 + xx; if (Xr >= rw) continue; const o = base + (Xr << 2);
+              O[o] = 200 * aw + O[o] * ia; O[o + 1] = 198 * aw + O[o + 1] * ia; O[o + 2] = 194 * aw + O[o + 2] * ia; if (O[o + 3] < av) O[o + 3] = av; } }
+        }
+      }
+      ctx.putImageData(out, 0, 0);
+    };
+    requestAnimationFrame(step);
   }
   applyPhotos() {
     try {
@@ -661,6 +858,7 @@ class Component extends DCLogic {
   clearTimers() {
     if (this.raf) cancelAnimationFrame(this.raf);
     if (this.safety) clearTimeout(this.safety);
+    if (this._revealTimer) { clearTimeout(this._revealTimer); this._revealTimer = null; }
     this.raf = this.safety = null;
   }
   shuffled() { const a = [0,1,2,3,4,5,6,7,8,9,10,11]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
@@ -743,11 +941,37 @@ class Component extends DCLogic {
     if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
     [40, 300, 650, 980, 1240].forEach((tm, i) => setTimeout(() => { const v = 0.2 * Math.pow(0.66, i); this.noiseburst(v); }, tm));
   }
+  // one dry mechanical click (wheel pawl / card flick): short filtered-noise blip, no shrill tone
+  clickNoise(vol, freq, q, dur) {
+    if (this.state.muted || !this.ac) return;
+    const len = Math.max(1, Math.floor(this.ac.sampleRate * (dur || 0.03)));
+    const buf = this.ac.createBuffer(1, len, this.ac.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.4);
+    const s = this.ac.createBufferSource(); s.buffer = buf;
+    const f = this.ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q || 3;
+    const g = this.ac.createGain(); g.gain.value = vol;
+    s.connect(f).connect(g).connect(this.ac.destination); s.start();
+  }
+  // wheel spin: a run of soft wooden clicks that slow and drop in pitch as the wheel decelerates
   ticks(n, span) {
     if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
-    for (let i = 0; i < n; i++) { const t = span * (1 - Math.pow(1 - i / n, 2)); setTimeout(() => this.tone(1400, 0.02, 'square', 0.03), t); }
+    for (let i = 0; i < n; i++) {
+      const prog = i / n, t = span * (1 - Math.pow(1 - prog, 0.2));   // matches the wheel's ease-out: fast clicks first, spacing out as it slows
+      setTimeout(() => this.clickNoise(0.055 * (1 - prog * 0.5), 1250 - prog * 560, 3.2, 0.028), t);
+    }
   }
-  riffle() { if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return; for (let i = 0; i < 7; i++) setTimeout(() => this.noiseburst(0.07, 2400, 2), i * 30); }
+  // cards fanned out across the table: a staggered spread of soft paper flicks (matches the fan-in stagger)
+  dealCards() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    for (let i = 0; i < 12; i++) setTimeout(() => this.clickNoise(0.045 + Math.random() * 0.02, 1000 + Math.random() * 800, 0.9, 0.05), 70 + i * 40);
+  }
+  _dealIfCards(id) { if (this.players[id] && this.players[id].mechanic === 'cards') this.dealCards(); }
+  // one card slid out and flipped face-up: a soft draw swish, then the flip landing a beat later (mid-turn)
+  cardPick() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    this.clickNoise(0.09, 1500, 0.8, 0.09);
+    setTimeout(() => this.clickNoise(0.08, 850, 1.1, 0.06), 340);
+  }
   doomTone() {
     if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
     const o = this.ac.createOscillator(), g = this.ac.createGain();
@@ -771,6 +995,9 @@ class Component extends DCLogic {
   }
 
   toggleMute = () => this.setState(s => ({ muted: !s.muted }));
+  // TEST: arm the next outcome (applies once, then clears)
+  forceGood = () => this.setState(s => ({ force: s.force === 'good' ? null : 'good' }));
+  forceBad = () => this.setState(s => ({ force: s.force === 'doom' ? null : 'doom' }));
   // "Choose player" returns to the homepage screen itself (not a separate
   // modal) — so the chooser IS the homepage, exactly.
   openMenu = () => { this.click(); this.clearTimers(); this.setState({ screen: 'landing', menuOpen: false, faceEnd: false }); this.pushRoute('landing', {}, ''); };
@@ -779,7 +1006,7 @@ class Component extends DCLogic {
   resetMechanic(patch) {
     this.setState(Object.assign({
       phase: 'ready', outcome: null,
-      earthBurn: false, drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false,
+      earthBurn: false, dieMuseum: false, drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false,
       dealt: this.shuffled(), pickedPos: null,
     }, patch || {}));
   }
@@ -788,6 +1015,7 @@ class Component extends DCLogic {
     this.click(); this.clearTimers();
     this.setState({ playerId: id, menuOpen: false, mode: 'single', faceEnd: false, screen: 'play' });
     this.resetMechanic();
+    this._dealIfCards(id);   // Tegmark: sound the cards fanning out
     this.replaceRoute('play', { id: id }, this.players[id].slug);
   };
 
@@ -840,7 +1068,7 @@ class Component extends DCLogic {
     // 8s hard cap so the die is always the authority on when it settled.
     this._pendingP = p;
     this._diePower = (typeof power === 'number') ? power : 0.55;
-    this.setState(s => ({ dieToken: s.dieToken + 1 }));
+    this.setState(s => ({ dieToken: s.dieToken + 1, dieMuseum: false }));
     this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._dieSettled(null); }, 8600);
   }
   diceLaunch() { if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return; this.noiseburst(0.14, 560, 0.7); }
@@ -855,7 +1083,12 @@ class Component extends DCLogic {
     const p = this._pendingP || this.players[this.state.playerId];
     let face = e && e.detail && e.detail.face;
     if (!(face >= 1 && face <= 12)) face = 1 + Math.floor(Math.random() * 12); // safety fallback (fair)
-    const isDoom = face >= 10; // 10, 11, 12 of 12 = 25%
+    let isDoom = face >= 10; // 10, 11, 12 of 12 = 25%
+    if (this.state.force) {   // TEST override (result text follows this; the die body keeps its physical face)
+      const fd = this.state.force === 'doom'; isDoom = fd;
+      face = fd ? (10 + Math.floor(Math.random() * 3)) : (1 + Math.floor(Math.random() * 9));
+      this.setState({ force: null });
+    }
     this.setState({ dieTarget: face });
     this.resolve(isDoom, p, null);
   }
@@ -864,7 +1097,8 @@ class Component extends DCLogic {
     this.ensureAudio();
     this.setState(s => ({ wheelSpinToken: s.wheelSpinToken + 1 }));   // kick the 3D globe into a fast spin
     const pw = (typeof power === 'number') ? power : 0.55;
-    const isDoom = Math.random() < p.doom;
+    let isDoom = Math.random() < p.doom;
+    if (this.state.force) { isDoom = this.state.force === 'doom'; this.setState({ force: null }); }   // TEST override
     const theta = isDoom ? (10 + Math.random() * 52) : (80 + Math.random() * 272);
     const spins = 4 + Math.round(pw * 9);   // 4..13 full turns — even the lightest tap spins several times over
     const cur = this.state.wheelRot;
@@ -886,9 +1120,15 @@ class Component extends DCLogic {
     if (this.state.phase !== 'ready') return;
     const p = this.players[this.state.playerId];
     if (p.mechanic !== 'cards') return;
-    this.ensureAudio(); this.riffle();
-    const idx = this.state.dealt[pos];
-    const card = this.deck[idx];
+    this.ensureAudio(); this.cardPick();
+    let idx = this.state.dealt[pos];
+    let card = this.deck[idx];
+    if (this.state.force) {   // TEST override: swap in a card matching the forced outcome
+      const fd = this.state.force === 'doom';
+      const matches = this.deck.map((c, i) => ({ c, i })).filter(o => !!o.c.doom === fd);
+      if (matches.length) { const m = matches[Math.floor(Math.random() * matches.length)]; idx = m.i; card = m.c; }
+      this.setState({ force: null });
+    }
     this.setState({ phase: 'rolling', drawn: true, drawnIdx: idx, cardFlip: 0, pickedPos: pos });
     const ease = x => 1 - Math.pow(1 - x, 3);
     this.tween(760, (pr) => { this.setState({ cardFlip: 180 * ease(pr) }); }, () => {
@@ -916,15 +1156,18 @@ class Component extends DCLogic {
     } else {
       // Dario's die landing on "really, really badly" → swap the portrait for
       // the doom morph video, which plays once through to the end.
-      const doomVideo = isDoom && p.mechanic === 'die';
-      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', doomVideo });
+      const doomVideo = isDoom && (p.mechanic === 'die' || p.mechanic === 'wheel');   // Dario + Elon fade into their doom clip
+      // Elon (wheel) holds its result copy until the finale; everyone else shows it right away
+      const finaleReveal = !doomVideo;   // die + wheel doom both hold the result until their clip finishes
+      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', doomVideo, finaleReveal });
+      if (isDoom && p.mechanic === 'die') this.setState({ dieMuseum: true });   // mat->glass-case runs alongside the whole video
     }
   }
 
   replay = () => {
     if (this.state.mode === 'gauntlet') { this.advanceGauntlet(); return; }
     const p = this.players[this.state.playerId];
-    if (p.mechanic === 'cards') { this.click(); this.resetMechanic(); }
+    if (p.mechanic === 'cards') { this.resetMechanic(); this.dealCards(); }   // re-deal the fan with its sound
     else this.act();
   };
 
@@ -938,7 +1181,7 @@ class Component extends DCLogic {
   advanceGauntlet = () => {
     this.click();
     const next = this.state.gIndex + 1;
-    if (next < this.order.length) { this.setState({ gIndex: next, playerId: this.order[next] }); this.resetMechanic(); }
+    if (next < this.order.length) { this.setState({ gIndex: next, playerId: this.order[next] }); this.resetMechanic(); this._dealIfCards(this.order[next]); }
     else { this.setState({ faceEnd: true }); }
   };
   exitGauntlet = () => { this.click(); this.setState({ screen: 'play', mode: 'single', faceEnd: false, gIndex: 0, gResults: [], playerId: 'amodei' }); this.resetMechanic(); this.replaceRoute('play', { id: 'amodei' }, 'dario-amodei'); };
@@ -951,12 +1194,13 @@ class Component extends DCLogic {
     const wheelGradient = 'conic-gradient(' + this.wheelDoomCol + ' 0deg 72deg,' + this.wheelGood1 + ' 72deg 144deg,' + this.wheelGood2 + ' 144deg 216deg,' + this.wheelGood1 + ' 216deg 288deg,' + this.wheelGood2 + ' 288deg 360deg)';
     const wheelTicks = [0, 72, 144, 216, 288].map(d => ({ deg: d }));
     const earthBg = 'radial-gradient(circle at 38% 32%, #6FB8FF, #2E6FB0 46%, #18406E 78%, #0c2440)';
-    const earthFilter = s.earthBurn ? 'grayscale(0.7) brightness(0.4) sepia(0.5) hue-rotate(-18deg)' : 'brightness(1.18) contrast(1.1) saturate(1.15)';
+    const earthFilter = s.earthBurn ? 'brightness(1.08) contrast(1.04) saturate(0.82)' : 'brightness(1.18) contrast(1.1) saturate(1.15)';
     const earthShadow = s.earthBurn
       ? '0 0 30px 8px rgba(255,90,20,0.65), 0 0 70px 18px rgba(220,60,10,0.3)'
       : '0 0 26px 3px rgba(150,185,255,0.55), 0 0 60px 14px rgba(95,140,235,0.32), 0 0 110px 30px rgba(70,110,210,0.16)';
     const embers = [];
     for (let i = 0; i < 7; i++) embers.push({ x: -28 + i * 9, color: i % 2 ? '#FFB23F' : '#FF5A1E', dur: (1.1 + Math.random() * 0.9).toFixed(2), delay: (Math.random() * 1.2).toFixed(2) });
+
 
     const N = 12, spread = 82;
     const fanCards = [];
@@ -1018,9 +1262,17 @@ class Component extends DCLogic {
 
     const isDoomOut = s.outcome === 'doom';
     const single = !inGauntlet;
-    // single-player doom on the die or the wheel ends the game: ominous copy + a
-    // "choose a different future" button that returns to the chooser
-    const endGame = single && isDoomOut && (p.mechanic === 'die' || p.mechanic === 'wheel');
+    // per-player doom glow on the game side: Dario = cold teal, Elon = dark space blue, Tegmark(card) = red
+    const doomBgGrad = p.mechanic === 'wheel'
+      ? 'radial-gradient(ellipse 90% 78% at 50% 40%, rgba(46,66,138,0.34) 0%, rgba(9,15,38,0.94) 46%, #04060e 78%), #04060e'
+      : (p.mechanic === 'cards'
+        ? 'radial-gradient(ellipse 88% 72% at 50% 34%, rgba(122,22,26,0.32) 0%, rgba(34,8,11,0.9) 46%, #08080a 78%), #08080a'
+        : 'radial-gradient(ellipse 90% 74% at 50% 36%, rgba(44,120,132,0.34) 0%, rgba(12,34,44,0.92) 46%, #060b0e 78%), #060b0e');
+    const doomBg = single && isDoomOut;
+    // single-player doom on the die, the wheel, or a Tegmark "we're gone" card ends
+    // the game: ominous copy + a "try a different timeline" button back to the chooser
+    // (no replay — once humanity's gone, there's no picking again)
+    const endGame = single && isDoomOut && (p.mechanic === 'die' || p.mechanic === 'wheel' || p.mechanic === 'cards');
     let verdictHead = '', verdictSub = '', verdictSub2 = '';
     let showVerdictHead = true;
     const isCardsResult = p.mechanic === 'cards' && s.phase === 'result';
@@ -1044,7 +1296,7 @@ class Component extends DCLogic {
     else if (p.mechanic === 'cards') { keyGood = 'STILL HERE \u00b7 9 OF 12'; keyBad = 'GONE \u00b7 3 OF 12'; goodPct = 75; }
     else { keyGood = '1\u20139 \u00b7 GOOD TO BAD'; keyBad = '10\u201312 \u00b7 REALLY, REALLY BAD'; goodPct = 75; }
     const replayLabel = endGame
-      ? 'CHOOSE A DIFFERENT FUTURE'
+      ? 'TRY A DIFFERENT TIMELINE'
       : inGauntlet
       ? (s.gIndex < 2 ? 'NEXT PLAYER \u2192' : 'SEE THE ODDS \u2192')
       : (p.mechanic === 'wheel' ? 'SPIN AGAIN' : p.mechanic === 'cards' ? 'PICK AGAIN' : 'ROLL AGAIN');
@@ -1058,6 +1310,8 @@ class Component extends DCLogic {
 
     return {
       p, muteLabel: s.muted ? 'SOUND OFF' : 'SOUND ON', toggleMute: this.toggleMute,
+      forceGood: this.forceGood, forceBad: this.forceBad,
+      forceGoodCls: s.force === 'good' ? 'is-on' : '', forceBadCls: s.force === 'doom' ? 'is-on' : '',
       notGauntlet: !inGauntlet, isGauntlet: inGauntlet, gauntletNav, gauntletNum: s.gIndex + 1,
       menuOpen: s.menuOpen, openMenu: this.openMenu, closeMenu: this.closeMenu, roster,
       isLanding, isPlay: !isLanding, landingRoster,
@@ -1065,9 +1319,12 @@ class Component extends DCLogic {
 
       isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards',
       reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
+      dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0',
       wheelGradient, wheelTicks, wheelRot: s.wheelRot.toFixed(1),
       wheelGoodColor: this.wheelGood1, wheelDoomColor: this.wheelDoomCol,
-      earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, embers, wheelSpinToken: String(s.wheelSpinToken), doomVideo: s.doomVideo,
+      earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, earthBurnFlag: s.earthBurn ? '1' : '0', showWheel: !s.earthBurn, deadCls: s.earthBurn ? 'is-dead' : '', embers, wheelSpinToken: String(s.wheelSpinToken), doomVideo: s.doomVideo,
+      doomVid: p.doomVid || '', doomVidFlipCls: p.doomVidFlip ? 'od-flip' : '', doomVidPos: p.doomVidPos || '50% 50%',
+      hasPortraitVid: !!p.portraitVideo, noPortraitVid: !p.portraitVideo, portraitVid: p.portraitVideo || '', portraitPos: p.portraitPos || '50% 18%', showDoomVid: s.doomVideo && !p.portraitVideo,
       globeScale: s.earthBurn ? '1' : '0.5',
       wheelRingScale: s.earthBurn ? '0.16' : '1',
       wheelRingOpacity: s.earthBurn ? '0' : '1',
@@ -1078,14 +1335,15 @@ class Component extends DCLogic {
       showRollButton: (s.phase === 'ready' || s.phase === 'rolling') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
       showPickPrompt: s.phase === 'ready' && p.mechanic === 'cards',
       isResult: s.phase === 'result',
-      actLabel: s.phase === 'rolling' ? (p.mechanic === 'wheel' ? 'SPINNING\u2026' : 'ROLLING\u2026') : (p.mechanic === 'wheel' ? 'SPIN' : 'ROLL'),
+      showResult: s.phase === 'result' && s.finaleReveal,   // Elon's annihilation copy waits for the finale
+      actLabel: s.phase === 'rolling' ? (p.mechanic === 'wheel' ? 'SPINNING\u2026' : 'ROLLING\u2026') : (p.mechanic === 'wheel' ? 'CLICK & HOLD TO SPIN' : 'CLICK & HOLD TO ROLL'),
       actOpacity: s.phase === 'rolling' ? 0.6 : 1,
       chargeHint: s.phase === 'rolling' ? ' ' : (p.mechanic === 'wheel' ? 'CLICK & HOLD TO SPIN' : 'CLICK & HOLD TO ROLL'),
       replayCharge: !endGame && (s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
       replayClass: (!endGame && (s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel')) ? 'od-charge' : '',
       verdictHead, verdictSub, showVerdictHead,
       verdictSub2, hasSub2: !!verdictSub2, rdescClass: endGame ? 'od-rdesc od-rdesc-big' : 'od-rdesc', showKey: !endGame,
-      rheadClass: endGame ? 'od-rhead od-rhead-big' : 'od-rhead', doomBgOn: endGame ? '1' : '0',
+      rheadClass: endGame ? 'od-rhead od-rhead-big' : 'od-rhead', doomBgOn: doomBg ? '1' : '0', doomBgGrad,
       verdictTag: inGauntlet ? ('STEP ' + (s.gIndex + 1) + ' OF 3') : (isCardsResult ? (isDoomOut ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE') : 'THE RESULT'),
       verdictColor, verdictKicker, replayLabel, primaryAction: endGame ? this.openMenu : this.replay,
       keyGood, keyBad, goodPct: String(goodPct), goodColor: this.wheelGood1, badColor: this.wheelDoomCol,
