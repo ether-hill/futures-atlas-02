@@ -55,6 +55,16 @@ html, body {
   z-index: 5;
 }
 .gw-cashrow { display: flex; align-items: baseline; gap: 10px; }
+.gw-mute {
+  margin-left: auto;
+  padding: 2px 6px;
+  font-size: 13px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--gw-hairline);
+  border-radius: 6px;
+  cursor: pointer;
+}
 .gw-cash {
   font-family: var(--font-display);
   font-weight: 800;
@@ -104,6 +114,8 @@ html, body {
   width: 218px;
   padding: 12px 14px;
   z-index: 5;
+  max-height: calc(100% - 224px);
+  overflow-y: auto;
 }
 .gw-meter { margin-bottom: 10px; }
 .gw-meter__head {

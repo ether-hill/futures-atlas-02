@@ -15,6 +15,7 @@ export interface UICallbacks {
   onDecline(id: number): void;
   onSell(unitId: number): void;
   onStart(seed: string): void;
+  onMute(): boolean; // returns the new muted state
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -31,10 +32,19 @@ function el<K extends keyof HTMLElementTagNameMap>(
 function defStat(D: BuildingDef): string {
   if (D.gridMW) return `+${D.gridMW} MW grid import`;
   if (D.solarMW) return `+${D.solarMW} MW peak · day only`;
+  if (D.windMW) return `${D.windMW} MW rated · clean`;
+  if (D.gasMW) return `+${D.gasMW} MW · $${D.fuelPerMWh}/MWh · smog`;
   if (D.storeMWh) return `${D.storeMWh} MWh · ±${D.rateMW} MW`;
   if (D.itMW) return `${D.itMW} MW → ${D.pf} PF`;
   if (D.coolMW) return `${D.coolMW} MW cooling · ${D.waterMLpd ? "water" : "fans"}`;
   return "";
+}
+
+function aqiLabel(smog: number): string {
+  if (smog < 0.12) return "clear";
+  if (smog < 0.3) return "hazy";
+  if (smog < 0.55) return "poor";
+  return "hazardous";
 }
 
 interface Meter {
@@ -60,6 +70,7 @@ export class UI {
   private toastBox!: HTMLElement;
   private selCard!: HTMLElement;
   private overlay!: HTMLElement;
+  private muteBtn!: HTMLElement;
   private contractsSig = "";
 
   constructor(root: HTMLElement, cb: UICallbacks) {
@@ -84,7 +95,13 @@ export class UI {
     const cashRow = el("div", "gw-cashrow");
     this.cash = el("div", "gw-cash", "$60.0M");
     this.net = el("div", "gw-net", "");
-    cashRow.append(this.cash, this.net);
+    const mute = el("button", "gw-mute", "🔊");
+    mute.title = "toggle sound";
+    mute.addEventListener("click", () => {
+      mute.textContent = this.cb.onMute() ? "🔇" : "🔊";
+    });
+    this.muteBtn = mute;
+    cashRow.append(this.cash, this.net, mute);
     hud.append(cashRow);
 
     const timeRow = el("div", "gw-timerow");
@@ -116,6 +133,8 @@ export class UI {
       ["heat", "HEAT"],
       ["water", "WATER"],
       ["compute", "COMPUTE"],
+      ["air", "AIR"],
+      ["town", "TOWN"],
     ] as const) {
       const row = el("div", "gw-meter");
       const head = el("div", "gw-meter__head");
@@ -209,11 +228,19 @@ export class UI {
     this.meter("heat", r.heatGenMW, Math.max(r.coolCapMW, 1), `${r.heatGenMW.toFixed(0)} / ${r.coolCapMW.toFixed(0)} MW`, r.heatOK < 0.999);
     this.meter("water", 900 - r.waterML, 900, `${r.waterML.toFixed(0)} ML${r.waterUseMLpd > 0.5 ? ` · −${r.waterUseMLpd.toFixed(0)}/d` : ""}`, r.waterML < 180, true);
     this.meter("compute", r.pfLive, Math.max(r.pfInstalled, 1), `${r.pfLive.toFixed(0)} / ${r.pfInstalled.toFixed(0)} PF`, false);
+    this.meter("air", r.smog, 1, aqiLabel(r.smog), r.smog > 0.45, true);
+    this.meter(
+      "town",
+      r.sentiment, 100,
+      r.moratorium ? `${r.sentiment.toFixed(0)} · MORATORIUM` : r.sentiment.toFixed(0),
+      r.sentiment < 30,
+    );
 
     this.prices.innerHTML =
       `<span>SPOT <b>${fmtMoney(r.spot)}</b>/PF·day</span>` +
       `<span>GRID <b>$${r.gridPrice.toFixed(0)}</b>/MWh</span>` +
-      `<span>SUN <b>${(r.sun * 100).toFixed(0)}%</b></span>`;
+      `<span>SUN <b>${(r.sun * 100).toFixed(0)}%</b> · WIND <b>${(r.windF * 100).toFixed(0)}%</b></span>` +
+      `<span>NOISE <b>${r.noiseDb.toFixed(0)} dB</b> at town</span>`;
 
     for (const [id, card] of this.cards) {
       if (id === "demolish") continue;
@@ -359,14 +386,14 @@ export class UI {
       el(
         "p",
         "gw-modal__lede",
-        "An AI compute campus in the high desert. Mix grid, solar and battery power; keep the halls cool through heat waves and dust storms; watch the aquifer; and grow to <b>one gigawatt</b> of IT load before a bad week bankrupts you.",
+        "An AI compute campus in the high desert — with a town next door. Mix grid, solar, wind, gas and batteries; keep the halls cool through heat waves and dust storms; watch the aquifer, the smog and the neighbours; and grow to <b>one gigawatt</b> of IT load before a bad week bankrupts you.",
       ),
     );
     card.append(
       el(
         "p",
         "gw-modal__hints",
-        "<b>Drag</b> to orbit · <b>scroll</b> to zoom · <b>1–7</b> build · <b>R</b> rotate · <b>X</b> demolish · <b>space</b> pause · click a building to inspect",
+        "<b>Drag</b> to orbit · <b>scroll</b> to zoom · <b>1–9</b> build · <b>R</b> rotate · <b>X</b> demolish · <b>space</b> pause · click a building to inspect",
       ),
     );
     const seedRow = el("div", "gw-modal__seedrow");

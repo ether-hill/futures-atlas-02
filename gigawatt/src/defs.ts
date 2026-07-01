@@ -7,7 +7,9 @@
 export const CELL = 8; // metres per grid cell
 export const GRID = 30; // buildable cells per side (240 m square plot)
 
-export type DefId = "substation" | "solar" | "battery" | "hall" | "pod" | "drycool" | "chiller";
+export type DefId =
+  | "substation" | "solar" | "wind" | "battery" | "gas"
+  | "hall" | "pod" | "drycool" | "chiller";
 
 export interface BuildingDef {
   id: DefId;
@@ -21,6 +23,9 @@ export interface BuildingDef {
   // producers / consumers — leave unset where not applicable
   gridMW?: number; // substation import capacity
   solarMW?: number; // peak output at solar noon
+  windMW?: number; // rated turbine output (× live wind factor)
+  gasMW?: number; // peaker dispatchable capacity
+  fuelPerMWh?: number; // peaker marginal cost
   storeMWh?: number; // battery capacity
   rateMW?: number; // battery max charge/discharge
   itMW?: number; // IT draw (halls/pods)
@@ -29,6 +34,8 @@ export interface BuildingDef {
   coolDrawMW?: number; // parasitic power at full load
   waterMLpd?: number; // water draw at full load, ML/day (chillers)
   hot?: boolean; // suffers thermal damage when cooling falls behind
+  noise?: number; // dB-ish nuisance contribution at full load
+  smogPerMWh?: number; // smog units emitted per MWh generated on site
 }
 
 export const DEFS: Record<DefId, BuildingDef> = {
@@ -45,10 +52,20 @@ export const DEFS: Record<DefId, BuildingDef> = {
     id: "solar",
     name: "Solar field",
     short: "SOLAR",
-    blurb: "Up to 20 MW of free energy at solar noon, nothing at night. Dust storms all but blind it.",
+    blurb: "Up to 20 MW of free energy at solar noon, nothing at night. Dust storms all but blind it. The town approves.",
     cost: 5_000_000,
     w: 3, d: 3, h: 3,
     solarMW: 20,
+  },
+  wind: {
+    id: "wind",
+    name: "Wind turbine",
+    short: "WIND",
+    blurb: "10 MW rated, swinging with the wind. Clean, quiet-ish, and the town loves the skyline.",
+    cost: 9_000_000,
+    w: 1, d: 1, h: 46,
+    windMW: 10,
+    noise: 0.8,
   },
   battery: {
     id: "battery",
@@ -60,6 +77,16 @@ export const DEFS: Record<DefId, BuildingDef> = {
     storeMWh: 40,
     rateMW: 20,
   },
+  gas: {
+    id: "gas",
+    name: "Gas peaker plant",
+    short: "GAS PEAKER",
+    blurb: "35 MW on demand, any hour, any weather — burning fuel at ~$95/MWh and smearing smog over the valley.",
+    cost: 7_000_000,
+    w: 2, d: 2, h: 15,
+    gasMW: 35, fuelPerMWh: 95,
+    noise: 4.5, smogPerMWh: 1,
+  },
   hall: {
     id: "hall",
     name: "Server hall",
@@ -67,7 +94,7 @@ export const DEFS: Record<DefId, BuildingDef> = {
     blurb: "The workhorse: 25 MW of IT load producing 40 PF. Every megawatt in becomes a megawatt of heat.",
     cost: 12_000_000,
     w: 2, d: 3, h: 8,
-    itMW: 25, pf: 40, hot: true,
+    itMW: 25, pf: 40, hot: true, noise: 0.8,
   },
   pod: {
     id: "pod",
@@ -76,7 +103,7 @@ export const DEFS: Record<DefId, BuildingDef> = {
     blurb: "Dense accelerator racks: 30 MW for 90 PF. Premium compute, and it runs viciously hot.",
     cost: 20_000_000,
     w: 2, d: 2, h: 7,
-    itMW: 30, pf: 90, hot: true,
+    itMW: 30, pf: 90, hot: true, noise: 1.2,
   },
   drycool: {
     id: "drycool",
@@ -85,7 +112,7 @@ export const DEFS: Record<DefId, BuildingDef> = {
     blurb: "Fan-driven heat rejection, ~30 MW in mild air — but capacity derates hard on hot afternoons.",
     cost: 4_000_000,
     w: 1, d: 2, h: 4,
-    coolMW: 30, coolDrawMW: 3,
+    coolMW: 30, coolDrawMW: 3, noise: 2.4,
   },
   chiller: {
     id: "chiller",
@@ -94,11 +121,13 @@ export const DEFS: Record<DefId, BuildingDef> = {
     blurb: "55 MW of cooling in any weather — by evaporating ~30 ML of aquifer water a day at full load.",
     cost: 9_000_000,
     w: 2, d: 2, h: 6,
-    coolMW: 55, coolDrawMW: 8, waterMLpd: 30,
+    coolMW: 55, coolDrawMW: 8, waterMLpd: 30, noise: 1.6,
   },
 };
 
-export const BUILD_ORDER: DefId[] = ["substation", "solar", "battery", "hall", "pod", "drycool", "chiller"];
+export const BUILD_ORDER: DefId[] = [
+  "substation", "solar", "wind", "battery", "gas", "hall", "pod", "drycool", "chiller",
+];
 
 // --- economy / world constants -------------------------------------------
 
@@ -117,6 +146,15 @@ export const MAINT_PCT_PER_DAY = 0.004; // 0.4 %/day of installed capex
 export const REPAIR_PCT = 0.15; // slice of build cost per failure
 export const REPAIR_HOURS = 36;
 export const SELL_BACK = 0.5;
+
+// --- town / environment ------------------------------------------------------
+// The company town sits SOUTH of the plot (high z), so noisy or smoggy kit
+// placed on the southern rows lands hardest on sentiment.
+export const NOISE_BASE_DB = 32;
+export const NOISE_LIMIT_DB = 55; // complaints start past this
+export const SENTIMENT_START = 70;
+export const MORATORIUM_BELOW = 30; // county blocks new construction
+export const PROTEST_BELOW = 18; // road blockades cut deliveries
 
 export const fmtMoney = (v: number): string => {
   const sign = v < 0 ? "−" : "";

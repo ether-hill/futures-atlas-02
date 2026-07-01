@@ -5,12 +5,18 @@
 
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import "./style.css";
-import { DEFS, GRID, type DefId } from "./defs";
+import { BUILD_ORDER, DEFS, GRID, type DefId } from "./defs";
 import { buildMesh, makeGhost, tintGhost, type BuildingView } from "./buildings";
 import { Sim, type Unit } from "./sim";
 import { UI, type Tool } from "./ui";
 import { World, cellToWorld, worldToCell, PLOT } from "./world";
+import { Town } from "./town";
+import { AudioEngine } from "./audio";
 import { randomSeedWord } from "./rng";
 
 const app = document.getElementById("app")!;
@@ -41,6 +47,24 @@ controls.target.set(0, 0, 10);
 
 const world = new World(seed);
 const sim = new Sim(seed);
+// optional start-of-run clock override (e.g. ?hour=20.5 for a dusk screenshot)
+const hourParam = Number(new URLSearchParams(location.search).get("hour"));
+if (Number.isFinite(hourParam) && hourParam > 0) sim.timeH = hourParam % 24;
+const town = new Town(seed);
+world.scene.add(town.group);
+const audio = new AudioEngine();
+
+// post: render → bloom (night glow) → tonemap/output, on an MSAA target
+const rtSize = new THREE.Vector2();
+renderer.getSize(rtSize);
+const composer = new EffectComposer(
+  renderer,
+  new THREE.WebGLRenderTarget(rtSize.x, rtSize.y, { samples: 4, type: THREE.HalfFloatType }),
+);
+composer.addPass(new RenderPass(world.scene, camera));
+const bloom = new UnrealBloomPass(rtSize.clone(), 0.32, 0.65, 0.82);
+composer.addPass(bloom);
+composer.addPass(new OutputPass());
 
 // --- unit meshes -------------------------------------------------------------
 const views = new Map<number, BuildingView>();
@@ -86,10 +110,14 @@ const ui = new UI(app, {
   onAccept: (id) => sim.accept(id),
   onDecline: (id) => sim.decline(id),
   onSell: (unitId) => {
-    if (sim.demolish(unitId)) removeUnitMesh(unitId);
+    if (sim.demolish(unitId)) {
+      removeUnitMesh(unitId);
+      audio.blip("demolish");
+    }
     select(null);
   },
   onStart: (s) => {
+    audio.start(); // user gesture — safe to spin up WebAudio here
     if (s !== seed) {
       const u = new URL(location.href);
       u.searchParams.set("seed", s);
@@ -102,6 +130,7 @@ const ui = new UI(app, {
     history.replaceState(null, "", u.toString());
     ui.hideOverlay();
   },
+  onMute: () => audio.toggleMute(),
 });
 ui.showIntro(seed);
 ui.setSpeed(1);
@@ -217,6 +246,7 @@ renderer.domElement.addEventListener("pointerup", (e) => {
     const u = sim.place(ghostDef, ghostCell.x, ghostCell.z, w, d);
     if (u) {
       addUnitMesh(u);
+      audio.blip("place");
       updateGhost(e); // re-validate for chained placement
     }
     return;
@@ -229,7 +259,10 @@ renderer.domElement.addEventListener("pointerup", (e) => {
   const hits = raycaster.intersectObjects(unitRoot.children, true);
   const u = hits.length ? unitFromObject(hits[0].object) : null;
   if (tool?.kind === "demolish") {
-    if (u && sim.demolish(u.id)) removeUnitMesh(u.id);
+    if (u && sim.demolish(u.id)) {
+      removeUnitMesh(u.id);
+      audio.blip("demolish");
+    }
     return;
   }
   select(u);
@@ -238,9 +271,9 @@ renderer.domElement.addEventListener("contextmenu", (e) => e.preventDefault());
 
 window.addEventListener("keydown", (e) => {
   if ((e.target as HTMLElement).tagName === "INPUT") return;
-  const idx = "1234567".indexOf(e.key);
-  if (idx >= 0) {
-    setTool({ kind: "build", def: (["substation", "solar", "battery", "hall", "pod", "drycool", "chiller"] as DefId[])[idx] });
+  const idx = "123456789".indexOf(e.key);
+  if (idx >= 0 && idx < BUILD_ORDER.length) {
+    setTool({ kind: "build", def: BUILD_ORDER[idx] });
   } else if (e.key === "r" || e.key === "R") {
     rotated = !rotated;
   } else if (e.key === "x" || e.key === "X") {
@@ -259,6 +292,7 @@ window.addEventListener("keydown", (e) => {
 function resize(): void {
   const w = app.clientWidth, h = app.clientHeight;
   renderer.setSize(w, h);
+  composer.setSize(w, h);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
 }
@@ -287,8 +321,23 @@ function frame(now: number): void {
   }
 
   const dust = sim.event?.kind === "duststorm" ? 1 : 0;
-  const env = world.update(sim.hourOfDay(), dust);
+  const env = world.update(sim.hourOfDay(), dust, sim.smog);
+  town.update(env.night);
+  bloom.strength = 0.22 + env.night * 0.33;
   controls.update();
+
+  // soundscape follows the sim; one-shot cues ride on the toast stream
+  const r = sim.readout;
+  audio.update({
+    itLoad: r.itInstalledMW > 0 ? r.itMW / r.itInstalledMW : 0,
+    coolLoad: r.coolCapMW > 0 ? Math.min(1, r.heatGenMW / r.coolCapMW) : 0,
+    gasLoad: r.gasCapMW > 0 ? r.gasUsedMW / r.gasCapMW : 0,
+    windF: r.windF,
+    night: env.night,
+  });
+  for (const toast of sim.toasts) {
+    audio.blip(toast.kind === "bad" ? "alarm" : toast.kind === "warn" ? "warn" : toast.kind === "good" ? "cash" : "click");
+  }
 
   // drive building animations from live unit state
   const t = now / 1000;
@@ -316,6 +365,6 @@ function frame(now: number): void {
     ui.showEnd(sim.gameOver, sim);
   }
 
-  renderer.render(world.scene, camera);
+  composer.render();
 }
 requestAnimationFrame(frame);

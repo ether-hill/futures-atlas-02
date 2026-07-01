@@ -2,13 +2,19 @@
  * The whole economy/physics loop, deterministic per seed and free of any
  * rendering concern. Fixed-step ticks (fractions of a sim-hour); the view
  * reads `Sim` + `Readout` each frame.
+ *
+ * Systems: power dispatch (renewables → cheapest of grid/gas → battery),
+ * thermal chain, water, the compute market, and the civic layer — smog from
+ * on-site generation, noise drifting toward the town on the southern edge,
+ * and a sentiment score with teeth (construction moratorium, road blockades).
  */
 
 import {
   AQUIFER_ML, AQUIFER_RECHARGE_MLPD, BANKRUPT_AT, DEFS, GRID, GRID_PRICE_BASE,
-  MAINT_PCT_PER_DAY, REPAIR_HOURS, REPAIR_PCT, SELL_BACK, SPOT_DRIFT_PER_DAY,
-  SPOT_PF_BASE, START_CASH, VICTORY_IT_MW, WATER_PRICE_PER_ML, fmtMoney,
-  type DefId,
+  MAINT_PCT_PER_DAY, MORATORIUM_BELOW, NOISE_BASE_DB, NOISE_LIMIT_DB,
+  PROTEST_BELOW, REPAIR_HOURS, REPAIR_PCT, SELL_BACK, SENTIMENT_START,
+  SPOT_DRIFT_PER_DAY, SPOT_PF_BASE, START_CASH, VICTORY_IT_MW,
+  WATER_PRICE_PER_ML, fmtMoney, type DefId,
 } from "./defs";
 import { RNG, hashSeed } from "./rng";
 
@@ -26,10 +32,10 @@ export interface Unit {
   failed: boolean;
   repairH: number; // hours of repair remaining (when failed)
   charge: number; // MWh (batteries)
-  load: number; // 0..1 visual duty (coolers: fraction of capacity in use)
+  load: number; // 0..1 visual duty (coolers: capacity in use; gas: dispatch; wind: wind factor)
 }
 
-export type EventKind = "heatwave" | "duststorm" | "pricesurge" | "brownout" | "boom";
+export type EventKind = "heatwave" | "duststorm" | "pricesurge" | "brownout" | "boom" | "protest";
 
 export interface WorldEvent {
   kind: EventKind;
@@ -70,6 +76,9 @@ export interface Readout {
   gridMW: number;
   gridUsedMW: number;
   solarMW: number;
+  windOutMW: number;
+  gasCapMW: number;
+  gasUsedMW: number;
   battMW: number; // +discharge / −charge
   battCharge: number;
   battCap: number;
@@ -86,19 +95,26 @@ export interface Readout {
   pfContracted: number;
   tempC: number;
   sun: number; // 0..1 solar elevation factor
+  windF: number; // 0..1 live wind
   gridPrice: number;
   spot: number;
   netPerDay: number; // smoothed cash rate
   powerOK: number; // 0..1 (1 = fully fed)
   heatOK: number; // 0..1 (1 = fully cooled)
+  smog: number; // 0..1 haze over the valley
+  noiseDb: number; // at the town edge
+  sentiment: number; // 0..100
+  cleanShare: number; // 0..1 of draw covered by renewables
+  moratorium: boolean;
 }
 
 const EVENT_META: Record<EventKind, { name: string; blurb: string; days: [number, number] }> = {
   heatwave: { name: "Heat wave", blurb: "Ambient +11 °C — dry coolers derate hard.", days: [2.5, 4.5] },
-  duststorm: { name: "Dust storm", blurb: "Solar output collapses to 15 %.", days: [1, 2] },
+  duststorm: { name: "Dust storm", blurb: "Solar collapses to 15 %; at least the wind picks up.", days: [1, 2] },
   pricesurge: { name: "Grid price surge", blurb: "Utility power at 4× spot.", days: [1.5, 3] },
   brownout: { name: "Grid brownout", blurb: "Substation imports cut to 40 %.", days: [0.4, 0.8] },
   boom: { name: "Compute boom", blurb: "Spot compute pays 1.7× for a few days.", days: [3, 5] },
+  protest: { name: "Road blockade", blurb: "Residents block the access road — deliveries cut 30 %.", days: [0.8, 1.6] },
 };
 
 const INFER_CLIENTS = ["Cascade Search", "Loomwork AI", "Vantage Maps", "Parlance Labs", "Fieldnote Health", "Orrery Games"];
@@ -119,6 +135,9 @@ export class Sim {
   aquiferML = AQUIFER_ML;
   spot = SPOT_PF_BASE;
   gridPrice = GRID_PRICE_BASE;
+  smog = 0;
+  sentiment = SENTIMENT_START;
+  moratorium = false;
 
   gameOver: "bankrupt" | "victory" | null = null;
   toasts: Toast[] = []; // drained by the UI each frame
@@ -127,6 +146,7 @@ export class Sim {
   private nextId = 1;
   private nextEventH: number;
   private nextOfferH: number;
+  private nextProtestH = 0;
   private occupied = new Map<string, number>(); // "x,z" -> unit id
   private capex = 0;
   private cashRate = 0; // smoothed $/day
@@ -150,6 +170,10 @@ export class Sim {
 
   place(def: DefId, x: number, z: number, w: number, d: number): Unit | null {
     const D = DEFS[def];
+    if (this.moratorium) {
+      this.toasts.push({ text: "County moratorium — no permits until the town comes around.", kind: "bad" });
+      return null;
+    }
     if (!this.canPlace(x, z, w, d) || this.cash < D.cost) return null;
     const u: Unit = {
       id: this.nextId++, def, x, z, w, d,
@@ -160,6 +184,7 @@ export class Sim {
     for (let i = x; i < x + w; i++) for (let j = z; j < z + d; j++) this.occupied.set(`${i},${j}`, u.id);
     this.cash -= D.cost;
     this.capex += D.cost;
+    this.lastCash -= D.cost; // keep capex out of the smoothed net/day readout
     return u;
   }
 
@@ -172,6 +197,7 @@ export class Sim {
     const D = DEFS[u.def];
     this.cash += D.cost * SELL_BACK;
     this.capex -= D.cost;
+    this.lastCash += D.cost * SELL_BACK; // sale proceeds aren't operating income
     this.toasts.push({ text: `${D.name} sold for ${fmtMoney(D.cost * SELL_BACK)}`, kind: "info" });
     return u;
   }
@@ -199,6 +225,16 @@ export class Sim {
   tempC(): number {
     const base = 23.5 + 10.5 * Math.cos(((this.hourOfDay() - 15) / 24) * Math.PI * 2);
     return base + (this.event?.kind === "heatwave" ? 11 : 0);
+  }
+  /** Live wind 0..1 — smooth deterministic gusts; dust storms blow hard. */
+  windFactor(): number {
+    const h = this.timeH;
+    let w =
+      0.55 +
+      0.42 * Math.sin(h * 0.23) * Math.sin(h * 0.061 + 1.7) +
+      0.1 * Math.sin(h * 0.9 + 0.5);
+    if (this.event?.kind === "duststorm") w = Math.min(1, w * 1.5 + 0.2);
+    return clamp(w, 0.05, 1);
   }
 
   // --- contracts ----------------------------------------------------------
@@ -256,6 +292,10 @@ export class Sim {
   private rollEvent(): void {
     const kinds: EventKind[] = ["heatwave", "duststorm", "pricesurge", "brownout", "boom"];
     const kind = this.rng.pick(kinds);
+    this.startEvent(kind);
+  }
+
+  private startEvent(kind: EventKind): void {
     const meta = EVENT_META[kind];
     this.event = {
       kind,
@@ -263,7 +303,7 @@ export class Sim {
       blurb: meta.blurb,
       endsH: this.timeH + 24 * this.rng.range(meta.days[0], meta.days[1]),
     };
-    this.toasts.push({ text: `${meta.name} — ${meta.blurb}`, kind: kind === "boom" ? "good" : "warn" });
+    this.toasts.push({ text: `${meta.name} — ${meta.blurb}`, kind: kind === "boom" ? "good" : kind === "protest" ? "bad" : "warn" });
   }
 
   // --- the tick -------------------------------------------------------------
@@ -273,16 +313,21 @@ export class Sim {
     this.timeH += dtH;
     const sun = this.sunFactor();
     const temp = this.tempC();
-    const ev = this.event;
+    const windF = this.windFactor();
 
     // event lifecycle
-    if (ev && this.timeH >= ev.endsH) {
-      this.toasts.push({ text: `${ev.name} has passed.`, kind: "info" });
+    if (this.event && this.timeH >= this.event.endsH) {
+      this.toasts.push({ text: `${this.event.name} has passed.`, kind: "info" });
       this.event = null;
     }
     if (!this.event && this.timeH >= this.nextEventH) {
       this.rollEvent();
       this.nextEventH = this.timeH + 24 * this.rng.range(4, 9);
+    }
+    // civic unrest jumps the queue when the town is furious
+    if (!this.event && this.sentiment < PROTEST_BELOW && this.timeH >= this.nextProtestH) {
+      this.startEvent("protest");
+      this.nextProtestH = this.timeH + 24 * this.rng.range(2, 4);
     }
 
     // market walk (hourly-ish noise, sub-stepped safely)
@@ -314,6 +359,11 @@ export class Sim {
       .reduce((s, u) => s + (DEFS[u.def].gridMW ?? 0), 0) * gridCapFactor;
     const solarMW = this.units.filter((u) => u.def === "solar" && alive(u))
       .reduce((s, u) => s + (DEFS[u.def].solarMW ?? 0), 0) * sun * dustFactor;
+    const windOutMW = this.units.filter((u) => u.def === "wind" && alive(u))
+      .reduce((s, u) => s + (DEFS[u.def].windMW ?? 0), 0) * windF;
+    const gasCapMW = this.units.filter((u) => u.def === "gas" && alive(u))
+      .reduce((s, u) => s + (DEFS[u.def].gasMW ?? 0), 0);
+    const renewMW = solarMW + windOutMW;
 
     const batts = this.units.filter((u) => u.def === "battery" && alive(u));
     const battCap = batts.reduce((s, u) => s + (DEFS[u.def].storeMWh ?? 0), 0);
@@ -338,7 +388,8 @@ export class Sim {
     }
 
     // power balance: can we feed IT + cooling? (batteries help; grid is capped)
-    const supplyMW = gridMW + solarMW + battAvailMW;
+    const nonBattSupply = renewMW + gridMW + gasCapMW;
+    const supplyMW = nonBattSupply + battAvailMW;
     const wantMW = itWantMW + coolDrawFullMW;
     const powerOK = wantMW > 0 ? Math.min(1, supplyMW / wantMW) : 1;
 
@@ -385,27 +436,40 @@ export class Sim {
         u.throttle = u.load;
       } else if (D.solarMW) {
         u.load = sun * dustFactor;
+      } else if (D.windMW) {
+        u.load = windF;
       }
     }
 
-    // actual electric draw + battery flow
+    // actual electric draw + battery flow (batteries store renewable surplus only)
     const coolDrawMW = coolDrawFullMW * (heatGenPrelim > 0 ? clamp(heatGenPrelim / Math.max(coolCapMW, 1e-6), 0.15, 1) : 0.05);
     const drawMW = itUnits.filter(alive).reduce((s, u) => s + (DEFS[u.def].itMW ?? 0) * u.throttle, 0) + coolDrawMW;
     let battMW = 0;
-    const nonBattSupply = gridMW + solarMW;
     if (drawMW > nonBattSupply && battCharge > 0) {
       battMW = Math.min(battRate, drawMW - nonBattSupply, battCharge / Math.max(dtH, 1e-6)); // discharge
-    } else if (drawMW < nonBattSupply && battCharge < battCap) {
-      battMW = -Math.min(battRate, nonBattSupply - drawMW, (battCap - battCharge) / Math.max(dtH, 1e-6)); // charge
+    } else if (drawMW < renewMW && battCharge < battCap) {
+      battMW = -Math.min(battRate, renewMW - drawMW, (battCap - battCharge) / Math.max(dtH, 1e-6)); // charge
     }
-    // distribute battery flow across banks proportionally
     if (batts.length && battMW !== 0) {
       const perBank = (battMW * dtH) / batts.length;
       for (const b of batts) b.charge = clamp(b.charge - perBank, 0, DEFS[b.def].storeMWh ?? 0);
     }
     for (const b of batts) b.load = battCap > 0 ? b.charge / (DEFS[b.def].storeMWh ?? 1) : 0;
 
-    const gridUsedMW = clamp(drawMW - solarMW - Math.max(battMW, 0), 0, gridMW);
+    // paid dispatch: whatever renewables + battery don't cover, buy from the
+    // cheaper of grid and gas first
+    const paidNeed = clamp(drawMW - renewMW - Math.max(battMW, 0), 0, gridMW + gasCapMW);
+    const gasFuel = DEFS.gas.fuelPerMWh ?? 95;
+    let gridUsedMW: number, gasUsedMW: number;
+    if (gridPriceNow <= gasFuel) {
+      gridUsedMW = Math.min(paidNeed, gridMW);
+      gasUsedMW = Math.min(paidNeed - gridUsedMW, gasCapMW);
+    } else {
+      gasUsedMW = Math.min(paidNeed, gasCapMW);
+      gridUsedMW = Math.min(paidNeed - gasUsedMW, gridMW);
+    }
+    const gasLoad = gasCapMW > 0 ? gasUsedMW / gasCapMW : 0;
+    for (const u of this.units) if (u.def === "gas" && !u.failed) u.load = gasLoad;
 
     // water
     const chillerLoad = coolCapMW > 0 ? clamp(heatGenPrelim / coolCapMW, 0, 1) : 0;
@@ -413,6 +477,40 @@ export class Sim {
       .filter((u) => u.def === "chiller" && alive(u))
       .reduce((s, u) => s + (DEFS[u.def].waterMLpd ?? 0), 0) * chillerLoad;
     this.aquiferML = clamp(this.aquiferML + (AQUIFER_RECHARGE_MLPD - waterUseMLpd) * (dtH / 24), 0, AQUIFER_ML);
+
+    // --- civic layer: smog, noise, sentiment --------------------------------
+    // smog accumulates from on-site combustion (plus a whiff from grid import)
+    // and disperses with the wind
+    const emit = gasUsedMW * 1.0e-3 + gridUsedMW * 0.2e-4;
+    this.smog = clamp(this.smog + emit * dtH - this.smog * (0.03 + 0.13 * windF) * dtH, 0, 1);
+
+    // noise at the town edge: each source weighted by how far south it sits
+    let noiseDb = NOISE_BASE_DB;
+    for (const u of this.units) {
+      const D = DEFS[u.def];
+      if (!D.noise || u.failed) continue;
+      const prox = 0.45 + 1.15 * ((u.z + u.d / 2) / GRID); // z=GRID edge faces the town
+      noiseDb += D.noise * Math.max(u.load, u.def === "wind" ? 0.3 : 0) * prox;
+    }
+
+    const waterStress = 1 - this.aquiferML / AQUIFER_ML;
+    const cleanShare = drawMW > 1 ? clamp(renewMW / drawMW, 0, 1) : 0;
+    const sentimentTarget = clamp(
+      78 - this.smog * 52 - Math.max(0, noiseDb - NOISE_LIMIT_DB) * 1.7 - waterStress * 18 + cleanShare * 14,
+      0, 100,
+    );
+    this.sentiment += (sentimentTarget - this.sentiment) * Math.min(1, dtH * (4 / 24));
+
+    if (!this.moratorium && this.sentiment < MORATORIUM_BELOW) {
+      this.moratorium = true;
+      this.toasts.push({ text: "The county has frozen your permits — construction moratorium until sentiment recovers.", kind: "bad" });
+    } else if (this.moratorium && this.sentiment > MORATORIUM_BELOW + 10) {
+      this.moratorium = false;
+      this.toasts.push({ text: "Moratorium lifted — the county will issue permits again.", kind: "good" });
+    }
+
+    // a blockade cuts what actually reaches customers
+    if (this.event?.kind === "protest") pfLive *= 0.7;
 
     // --- compute market -----------------------------------------------------
     let pfFree = pfLive;
@@ -451,7 +549,7 @@ export class Sim {
     revenue += pfFree * ((this.spot * 0.6 * boom) / 24) * dtH;
 
     // --- costs ---------------------------------------------------------------
-    const energyCost = gridUsedMW * gridPriceNow * dtH;
+    const energyCost = gridUsedMW * gridPriceNow * dtH + gasUsedMW * gasFuel * dtH;
     const waterCost = waterUseMLpd * (dtH / 24) * WATER_PRICE_PER_ML;
     const maint = this.capex * MAINT_PCT_PER_DAY * (dtH / 24);
     this.cash += revenue - energyCost - waterCost - maint;
@@ -469,17 +567,20 @@ export class Sim {
     }
 
     this.readout = {
-      supplyMW, gridMW, gridUsedMW, solarMW, battMW,
+      supplyMW, gridMW, gridUsedMW, solarMW, windOutMW, gasCapMW, gasUsedMW, battMW,
       battCharge: batts.reduce((s, u) => s + u.charge, 0), battCap,
       drawMW, itMW: drawMW - coolDrawMW, itInstalledMW, coolDrawMW,
       heatGenMW, coolCapMW,
       waterML: this.aquiferML, waterUseMLpd,
       pfInstalled: this.units.reduce((s, u) => s + (DEFS[u.def].pf ?? 0), 0),
       pfLive, pfContracted: this.contracts.reduce((s, c) => s + c.pf, 0),
-      tempC: temp, sun,
+      tempC: temp, sun, windF,
       gridPrice: gridPriceNow, spot: this.spot * boom,
       netPerDay: this.cashRate,
       powerOK, heatOK,
+      smog: this.smog, noiseDb,
+      sentiment: this.sentiment, cleanShare,
+      moratorium: this.moratorium,
     };
   }
 }
@@ -490,10 +591,12 @@ function clamp(v: number, a: number, b: number): number {
 
 function emptyReadout(): Readout {
   return {
-    supplyMW: 0, gridMW: 0, gridUsedMW: 0, solarMW: 0, battMW: 0, battCharge: 0, battCap: 0,
+    supplyMW: 0, gridMW: 0, gridUsedMW: 0, solarMW: 0, windOutMW: 0, gasCapMW: 0, gasUsedMW: 0,
+    battMW: 0, battCharge: 0, battCap: 0,
     drawMW: 0, itMW: 0, itInstalledMW: 0, coolDrawMW: 0, heatGenMW: 0, coolCapMW: 0,
     waterML: AQUIFER_ML, waterUseMLpd: 0, pfInstalled: 0, pfLive: 0, pfContracted: 0,
-    tempC: 20, sun: 0.5, gridPrice: GRID_PRICE_BASE, spot: SPOT_PF_BASE, netPerDay: 0,
-    powerOK: 1, heatOK: 1,
+    tempC: 20, sun: 0.5, windF: 0.5, gridPrice: GRID_PRICE_BASE, spot: SPOT_PF_BASE, netPerDay: 0,
+    powerOK: 1, heatOK: 1, smog: 0, noiseDb: NOISE_BASE_DB, sentiment: SENTIMENT_START,
+    cleanShare: 0, moratorium: false,
   };
 }

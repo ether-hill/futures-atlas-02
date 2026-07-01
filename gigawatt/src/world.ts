@@ -57,7 +57,7 @@ const STOPS: { h: number; sky: string; fog: string; sun: string; sunI: number; h
   { h: 24.0, sky: "#0b1020", fog: "#131627", sun: "#8fa3c8", sunI: 0.14, hemiI: 0.26 },
 ];
 
-export function envAt(hour: number, dust: number): Env {
+export function envAt(hour: number, dust: number, smog = 0): Env {
   let a = STOPS[0], b = STOPS[STOPS.length - 1];
   for (let i = 0; i < STOPS.length - 1; i++) {
     if (hour >= STOPS[i].h && hour <= STOPS[i + 1].h) {
@@ -80,6 +80,13 @@ export function envAt(hour: number, dust: number): Env {
     sunI *= 1 - 0.6 * dust;
     hemiI *= 1 - 0.25 * dust;
   }
+  // lingering combustion smog: a grey-brown pall that flattens the light
+  if (smog > 0) {
+    const pall = new THREE.Color("#8a7657");
+    sky.lerp(pall, 0.45 * smog);
+    fog.lerp(pall, 0.55 * smog);
+    sunI *= 1 - 0.35 * smog;
+  }
   const night = THREE.MathUtils.clamp(1 - sunI / 0.5, 0, 1);
   return { sky, fog, sunI, hemiI, sunColor, night };
 }
@@ -93,6 +100,7 @@ export class World {
   private starsMat: THREE.PointsMaterial;
   private sunDisc: THREE.Mesh;
   private fogExp: THREE.FogExp2;
+  private hazeMat!: THREE.MeshBasicMaterial;
 
   constructor(seedWord: string) {
     const rng = new RNG(hashSeed(seedWord));
@@ -125,11 +133,20 @@ export class World {
     const sandPale = new THREE.Color("#d8bf98");
     const c = new THREE.Color();
     const tSeed = hashSeed(seedWord + "-terrain");
+    // the town rectangle south of the plot stays flat too
+    const townFade = (x: number, z: number) => {
+      const dx = Math.max(Math.abs(x) - 200, 0);
+      const dz = Math.max(z - (PLOT / 2 + 195), (PLOT / 2 - 10) - z, 0);
+      return THREE.MathUtils.smoothstep(Math.max(dx, dz), 4, 90);
+    };
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), z = pos.getZ(i);
       const r = Math.max(Math.abs(x), Math.abs(z));
       // 0 inside the plot (+ small apron), ramping to full noise outside
-      const fade = THREE.MathUtils.smoothstep(r, PLOT * 0.62, PLOT * 1.5);
+      const fade = Math.min(
+        THREE.MathUtils.smoothstep(r, PLOT * 0.62, PLOT * 1.5),
+        townFade(x, z),
+      );
       const h = vnoise(x / 90, z / 90, tSeed) * 9 * fade + vnoise(x / 22, z / 22, tSeed ^ 7) * 1.4 * fade;
       pos.setY(i, h);
       const n = vnoise(x / 14, z / 14, tSeed ^ 13) * 0.5 + 0.5;
@@ -169,6 +186,8 @@ export class World {
       const ang = rng.range(0, Math.PI * 2);
       const dist = rng.range(PLOT * 0.72, 640);
       const x = Math.cos(ang) * dist, z = Math.sin(ang) * dist;
+      // keep the town's lawns clear of desert litter
+      if (Math.abs(x) < 205 && z > PLOT / 2 - 12 && z < PLOT / 2 + 200) continue;
       const isRock = rng.chance(0.45);
       const m = new THREE.Mesh(isRock ? rockGeo : scrubGeo, isRock ? rockMat : scrubMat);
       const s = isRock ? rng.range(0.5, 2.6) : rng.range(0.7, 1.5);
@@ -181,15 +200,23 @@ export class World {
     }
     scene.add(dressing);
 
-    // access road from the south edge
+    // access road from the campus gate through the town
     const road = new THREE.Mesh(
-      new THREE.PlaneGeometry(10, 560),
-      new THREE.MeshStandardMaterial({ color: "#4c443c", roughness: 1 }),
+      new THREE.PlaneGeometry(10, 200),
+      new THREE.MeshStandardMaterial({ color: "#43413d", roughness: 1 }),
     );
     road.rotation.x = -Math.PI / 2;
-    road.position.set(0, 0.05, PLOT / 2 + 280);
+    road.position.set(0, 0.05, PLOT / 2 + 100);
     road.receiveShadow = true;
     scene.add(road);
+    // centreline dashes
+    const dashMat = new THREE.MeshStandardMaterial({ color: "#cfcabb", roughness: 0.9 });
+    for (let i = 0; i < 24; i++) {
+      const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 3), dashMat);
+      dash.rotation.x = -Math.PI / 2;
+      dash.position.set(0, 0.065, PLOT / 2 + 6 + i * 8.2);
+      scene.add(dash);
+    }
 
     // plot apron + boundary
     const apron = new THREE.Mesh(
@@ -200,12 +227,43 @@ export class World {
     apron.position.y = 0.02;
     apron.receiveShadow = true;
     scene.add(apron);
-    const fence = new THREE.LineSegments(
-      new THREE.EdgesGeometry(new THREE.PlaneGeometry(PLOT + 8, PLOT + 8).rotateX(-Math.PI / 2)),
-      new THREE.LineBasicMaterial({ color: 0x6b5a42, transparent: true, opacity: 0.9 }),
-    );
-    fence.position.y = 0.1;
-    scene.add(fence);
+    // security fence: posts + translucent chain-link panels + top rail
+    const fenceR = PLOT / 2 + 5;
+    const postMat = new THREE.MeshStandardMaterial({ color: "#5b6066", roughness: 0.5, metalness: 0.6 });
+    const meshMat = new THREE.MeshStandardMaterial({
+      color: "#aeb6bd", transparent: true, opacity: 0.16, side: THREE.DoubleSide,
+      roughness: 0.4, metalness: 0.6, depthWrite: false,
+    });
+    const postGeo = new THREE.CylinderGeometry(0.07, 0.07, 2.6, 5);
+    const fenceGrp = new THREE.Group();
+    for (const side of [0, 1, 2, 3]) {
+      const horiz = side % 2 === 0;
+      const fixed = side < 2 ? fenceR : -fenceR;
+      // wire panel + top rail for the whole side
+      const panel = new THREE.Mesh(new THREE.PlaneGeometry(fenceR * 2, 2.4), meshMat);
+      panel.position.y = 1.2;
+      const rail = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, fenceR * 2, 5), postMat);
+      rail.rotation.z = Math.PI / 2;
+      rail.position.y = 2.45;
+      if (horiz) {
+        panel.position.set(0, 1.2, fixed);
+        rail.position.set(0, 2.45, fixed);
+      } else {
+        panel.rotation.y = Math.PI / 2;
+        panel.position.set(fixed, 1.2, 0);
+        rail.rotation.set(Math.PI / 2, 0, 0);
+        rail.position.set(fixed, 2.45, 0);
+      }
+      fenceGrp.add(panel, rail);
+      for (let p = -fenceR; p <= fenceR; p += 12) {
+        // leave a gate gap where the access road meets the south side
+        if (horiz && fixed > 0 && Math.abs(p) < 7) continue;
+        const post = new THREE.Mesh(postGeo, postMat);
+        post.position.set(horiz ? p : fixed, 1.3, horiz ? fixed : p);
+        fenceGrp.add(post);
+      }
+    }
+    scene.add(fenceGrp);
 
     // placement grid (shown only while building)
     this.grid = new THREE.GridHelper(PLOT, GRID, 0x223244, 0x223244);
@@ -239,14 +297,24 @@ export class World {
       new THREE.MeshBasicMaterial({ color: 0xffe9c4, fog: false }),
     );
     scene.add(this.sunDisc);
+
+    // low brown pall that thickens over the campus as smog builds
+    this.hazeMat = new THREE.MeshBasicMaterial({
+      color: 0x6e5c40, transparent: true, opacity: 0, depthWrite: false,
+    });
+    const haze = new THREE.Mesh(new THREE.PlaneGeometry(PLOT * 2.6, PLOT * 2.6), this.hazeMat);
+    haze.rotation.x = -Math.PI / 2;
+    haze.position.y = 26;
+    scene.add(haze);
   }
 
-  /** Drive lighting/sky from sim time. `dust` 0..1 during a dust storm. */
-  update(hour: number, dust: number): Env {
-    const env = envAt(hour, dust);
+  /** Drive lighting/sky from sim time. `dust`/`smog` 0..1. */
+  update(hour: number, dust: number, smog = 0): Env {
+    const env = envAt(hour, dust, smog);
     this.scene.background = env.sky;
     this.fogExp.color.copy(env.fog);
-    this.fogExp.density = 0.001 + dust * 0.0045;
+    this.fogExp.density = 0.001 + dust * 0.0045 + smog * 0.0014;
+    this.hazeMat.opacity = smog * 0.3;
 
     // sun path: rises east (+x), sets west; parks below horizon at night
     const ang = ((hour - 6) / 12) * Math.PI; // 0 at 06h → π at 18h
