@@ -15,7 +15,7 @@
   const IPHI = 1 / PHI;
 
   class DarioDie extends HTMLElement {
-    static get observedAttributes() { return ['facecolor', 'numcolor', 'rolltoken', 'reduced']; }
+    static get observedAttributes() { return ['facecolor', 'numcolor', 'rolltoken', 'reduced', 'encase']; }
     connectedCallback() {
       if (this._booted) return;
       this._booted = true;
@@ -36,6 +36,7 @@
     attributeChangedCallback(name, oldV, newV) {
       if (!this._ready) return;
       if (name === 'rolltoken') { if (newV && newV !== oldV) { const pw = parseFloat(String(newV).split(':')[1]); this._rollPower = isNaN(pw) ? 0.6 : Math.max(0, Math.min(1, pw)); this._roll(); } }
+      else if (name === 'encase') { this._setEncase(newV === '1'); }
       else if (name !== 'reduced') this._applyTheme();
     }
 
@@ -142,7 +143,10 @@
       bGlow.rotation.x = -Math.PI / 2; bGlow.position.y = FLOOR_Y + 0.008; scene.add(bGlow);
       // the mat fades in on load (paired with the die falling onto it)
       this._matMats = [{ mat: bLineMat, target: 0.5 }, { mat: bGlowMat, target: 0.06 }];
+      this._bLine = bLine; this._bGlow = bGlow;
       this._matFade = 0;
+
+      this._buildVitrine();
 
       // body mesh
       const positions = [], normals = [], numByFace = [];
@@ -155,7 +159,7 @@
       const geo = new THREE.BufferGeometry();
       geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
       geo.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
-      this._bodyMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(this.getAttribute('facecolor') || '#f4efe2'), roughness: 0.33, metalness: 0.0, envMapIntensity: 0.9, flatShading: true });
+      this._bodyMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(this.getAttribute('facecolor') || '#f4efe2'), roughness: 0.4, metalness: 0.0, envMapIntensity: 1.15, flatShading: true });
       const dieGroup = new THREE.Group(); this._die = dieGroup; scene.add(dieGroup);
       const body = new THREE.Mesh(geo, this._bodyMat); body.castShadow = true; body.receiveShadow = true; dieGroup.add(body);
       dieGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(geo, 8), new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.16 })));
@@ -222,6 +226,8 @@
       } else {
         this._introDrop();          // the die falls onto the mat as it fades in
       }
+      if (this._encasePending != null) { this._setEncase(this._encasePending); this._encasePending = null; }
+      else if (this.getAttribute('encase') === '1') { this._setEncase(true); }
       this._ro = new ResizeObserver(() => this._resize()); this._ro.observe(this);
       this._loop();
     }
@@ -231,9 +237,14 @@
       const c = document.createElement('canvas'); c.width = c.height = s;
       const ctx = c.getContext('2d');
       ctx.font = '700 150px Archivo, system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillStyle = color || this.getAttribute('numcolor') || '#1a1813'; ctx.fillText(String(n), s / 2, s / 2 + 6);
-      if (n === 6 || n === 9) ctx.fillRect(s / 2 - 42, s / 2 + 78, 84, 12);
-      const tex = new THREE.CanvasTexture(c); tex.anisotropy = 4;
+      const ink = color || this.getAttribute('numcolor') || '#1a1813';
+      const cx = s / 2, cy = s / 2 + 6;
+      // engraved look: a lit lower-right lip + a shadowed upper-left recess behind the ink
+      const draw = (dx, dy) => { ctx.fillText(String(n), cx + dx, cy + dy); if (n === 6 || n === 9) ctx.fillRect(cx - 42 + dx, cy + 72 + dy, 84, 12); };
+      ctx.fillStyle = 'rgba(255,255,255,0.5)'; draw(2.5, 3.5);   // catch-light on the bottom edge of the groove
+      ctx.fillStyle = 'rgba(0,0,0,0.55)'; draw(-2, -2.5);        // shadow inside the top of the groove
+      ctx.fillStyle = ink; draw(0, 0);                            // the engraved fill
+      const tex = new THREE.CanvasTexture(c); tex.anisotropy = this._maxAniso || 8;
       if ('colorSpace' in tex) tex.colorSpace = THREE.SRGBColorSpace;
       return tex;
     }
@@ -372,6 +383,208 @@
       this._rolling = true; this._phase = 'tumble'; this._t0 = performance.now(); this._last = performance.now();
     }
 
+    // ---- museum vitrine: built FROM the mat's own footprint so walls seat exactly on the floor edges ----
+    _buildVitrine() {
+      const THREE = this.THREE;
+      const CX = 2.35, CZ = 1.95, H = 3.1;
+      const PLW = 2.7, PLD = 2.55, PLH = 1.15;
+      const grp = new THREE.Group(); grp.visible = false; this._scene.add(grp); this._vitrine = grp;
+      this._case = { CX, CZ, H, matSX: this._bx / CX, matSZ: this._bz / CZ, glassOp: 1.0, edgeOp: 0.4, plY: -PLH / 2 };
+      this._glassMats = []; this._glassMeshes = [];
+      this._maxAniso = (this._renderer.capabilities && this._renderer.capabilities.getMaxAnisotropy) ? this._renderer.capabilities.getMaxAnisotropy() : 8;
+
+      // velvet floor with baked ambient occlusion (darker toward walls/corners) = the case BOTTOM
+      const vel = new THREE.Mesh(new THREE.PlaneGeometry(2 * CX, 2 * CZ),
+        new THREE.MeshStandardMaterial({ map: this._velvetTex(), roughness: 0.78, metalness: 0.0, transparent: true, opacity: 0 }));
+      vel.rotation.x = -Math.PI / 2; vel.position.y = 0.02; vel.receiveShadow = true; grp.add(vel); this._velvet = vel;
+
+      // four glass walls (bottom edge on the mat, rising to y=H)
+      this._walls = [];
+      const mkWall = (w, px, pz, ry) => { const g = new THREE.PlaneGeometry(w, H); g.translate(0, H / 2, 0); const m = new THREE.Mesh(g, this._glassMaterial()); m.position.set(px, 0, pz); m.rotation.y = ry; m.scale.y = 0.0001; m.renderOrder = 4; grp.add(m); this._walls.push(m); this._glassMeshes.push(m); };
+      mkWall(2 * CX, 0, CZ, 0);
+      mkWall(2 * CX, 0, -CZ, Math.PI);
+      mkWall(2 * CZ, -CX, 0, -Math.PI / 2);
+      mkWall(2 * CZ, CX, 0, Math.PI / 2);
+
+      const top = new THREE.Mesh(new THREE.PlaneGeometry(2 * CX, 2 * CZ), this._glassMaterial());
+      top.rotation.x = -Math.PI / 2; top.position.y = H; top.renderOrder = 4; grp.add(top); this._top = top; this._glassMeshes.push(top);
+
+      // soft light-catching edges (additive glints, not hard lines)
+      const boxGeo = new THREE.BoxGeometry(2 * CX, H, 2 * CZ); boxGeo.translate(0, H / 2, 0);
+      const edges = new THREE.LineSegments(new THREE.EdgesGeometry(boxGeo),
+        new THREE.LineBasicMaterial({ color: 0xbfe0ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+      edges.scale.y = 0.0001; edges.renderOrder = 5; grp.add(edges); this._edges = edges;
+
+      // dark matte plinth + faint top-edge highlight
+      const pl = new THREE.Mesh(new THREE.BoxGeometry(2 * PLW, PLH, 2 * PLD),
+        new THREE.MeshStandardMaterial({ color: 0x15171d, roughness: 0.62, metalness: 0.04, transparent: true, opacity: 0 }));
+      pl.position.set(0, -PLH / 2, 0); pl.castShadow = true; pl.receiveShadow = true; grp.add(pl); this._plinth = pl;
+      const rectPts = [[-PLW, PLD], [PLW, PLD], [PLW, -PLD], [-PLW, -PLD], [-PLW, PLD]].map(([x, z]) => new THREE.Vector3(x, 0.005, z));
+      const plEdge = new THREE.Line(new THREE.BufferGeometry().setFromPoints(rectPts),
+        new THREE.LineBasicMaterial({ color: 0x6b7285, transparent: true, opacity: 0, depthWrite: false }));
+      grp.add(plEdge); this._plinthEdge = plEdge;
+
+      // soft contact shadow grounding the whole case
+      const cs = new THREE.Mesh(new THREE.PlaneGeometry(2 * PLW * 2.1, 2 * PLD * 2.1),
+        new THREE.MeshBasicMaterial({ map: this._radialTex('rgba(0,0,0,0.72)'), transparent: true, opacity: 0, depthWrite: false }));
+      cs.rotation.x = -Math.PI / 2; cs.position.y = -PLH + 0.012; cs.renderOrder = -1; grp.add(cs); this._contact = cs;
+
+      // museum placard — a lectern on the plinth's front lip
+      const plc = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 0.88),
+        new THREE.MeshBasicMaterial({ map: this._placardTexture(), transparent: true, opacity: 0, toneMapped: false }));
+      plc.position.set(0, 0.36, PLD - 0.27); plc.rotation.x = -0.72; grp.add(plc); this._placard = plc;
+
+      // spotlight: bright pool on the die + a bright spot on the case floor, soft falloff (kept in the scene at 0 so light-count stays stable)
+      const spot = new THREE.SpotLight(0xdfeaf7, 0, 26, 0.46, 0.8, 0.0);
+      spot.position.set(0, 11, 1.2); spot.target.position.set(0, 0, 0);
+      this._scene.add(spot); this._scene.add(spot.target); this._spot = spot;
+    }
+
+    _glassMaterial() {
+      const THREE = this.THREE;
+      const m = new THREE.MeshPhysicalMaterial({ color: 0xdfeee9, metalness: 0, roughness: 0.045, transparent: true, opacity: 0, envMapIntensity: 2.2, clearcoat: 1, clearcoatRoughness: 0.06, side: THREE.DoubleSide, depthWrite: false });
+      // Fresnel: near-invisible head-on, more reflective/visible at grazing angles
+      m.onBeforeCompile = (sh) => {
+        sh.fragmentShader = sh.fragmentShader.replace('#include <opaque_fragment>',
+          'float _fres = pow(1.0 - clamp(dot(normalize(normal), normalize(vViewPosition)), 0.0, 1.0), 2.4);\n' +
+          '  diffuseColor.a = mix(0.028, 0.4, _fres) * opacity;\n' +
+          '  #include <opaque_fragment>');
+      };
+      m.customProgramCacheKey = () => 'ddGlassFresnel';
+      this._glassMats.push(m);
+      return m;
+    }
+
+    _velvetTex() {
+      const THREE = this.THREE; const s = 512;
+      const c = document.createElement('canvas'); c.width = c.height = s; const x = c.getContext('2d');
+      const g = x.createRadialGradient(s / 2, s / 2, s * 0.08, s / 2, s / 2, s * 0.64);
+      g.addColorStop(0, '#1f3b41'); g.addColorStop(0.55, '#162c31'); g.addColorStop(1, '#0c1a1e');
+      x.fillStyle = g; x.fillRect(0, 0, s, s);
+      const vg = x.createRadialGradient(s / 2, s / 2, s * 0.42, s / 2, s / 2, s * 0.72);
+      vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.6)');   // corner AO
+      x.fillStyle = vg; x.fillRect(0, 0, s, s);
+      const t = new THREE.CanvasTexture(c); t.anisotropy = this._maxAniso || 8; if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
+
+    _radialTex(centerColor) {
+      const THREE = this.THREE; const s = 256;
+      const c = document.createElement('canvas'); c.width = c.height = s; const x = c.getContext('2d');
+      const g = x.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+      g.addColorStop(0, centerColor); g.addColorStop(0.5, 'rgba(0,0,0,0.34)'); g.addColorStop(1, 'rgba(0,0,0,0)');
+      x.fillStyle = g; x.fillRect(0, 0, s, s);
+      const t = new THREE.CanvasTexture(c); if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace; return t;
+    }
+
+    // one-time cube render so the glass reflects the real dice / placard / lit floor
+    _reflect() {
+      try {
+        const THREE = this.THREE;
+        if (!this._reflectRT) {
+          this._reflectRT = new THREE.WebGLCubeRenderTarget(128, { generateMipmaps: true, minFilter: THREE.LinearMipmapLinearFilter });
+          this._reflectCam = new THREE.CubeCamera(0.1, 60, this._reflectRT);
+          this._reflectCam.position.set(0, this._case.H * 0.42, 0); this._scene.add(this._reflectCam);
+        }
+        this._glassMeshes.forEach((m) => { m.visible = false; });
+        const ev = this._edges.visible; this._edges.visible = false;
+        this._reflectCam.update(this._renderer, this._scene);
+        this._glassMeshes.forEach((m) => { m.visible = true; });
+        this._edges.visible = ev;
+        this._glassMats.forEach((m) => { m.envMap = this._reflectRT.texture; m.needsUpdate = true; });
+      } catch (e) { /* fall back to scene.environment reflections */ }
+    }
+
+    _placardTexture() {
+      const THREE = this.THREE; const w = 2560, h = 720;
+      const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+      x.fillStyle = '#f8f2e4'; x.fillRect(0, 0, w, h);                 // flat bright ivory = max contrast
+      x.strokeStyle = 'rgba(0,0,0,0.32)'; x.lineWidth = 10; x.strokeRect(12, 12, w - 24, h - 24);
+      x.textAlign = 'center'; x.textBaseline = 'middle';
+      x.fillStyle = '#0a0803'; x.font = '800 176px Archivo, system-ui, sans-serif';   // near-black title
+      x.fillText('THE DICE', w / 2, 196);
+      x.fillStyle = '#15100a'; x.font = '600 italic 100px "Playfair Display", Georgia, serif';   // heavier, darker body
+      x.fillText("An artifact of humanity’s final gamble", w / 2, 452);
+      x.fillText('on artificial intelligence.', w / 2, 578);
+      const t = new THREE.CanvasTexture(c); t.generateMipmaps = true; t.minFilter = THREE.LinearMipmapLinearFilter;
+      if ('colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = this._maxAniso || 16; return t;
+    }
+
+    _setEncase(on) {
+      if (!this._vitrine) { this._encasePending = on; return; }
+      if (!!on === !!this._encaseOn && this._encaseActive === false && (this._encaseProg === (on ? 1 : 0))) return;
+      const THREE = this.THREE, cam = this._camera;
+      if (on) {
+        // capture the live camera so we can lerp to the hero framing and back
+        this._camBase = cam.position.clone(); this._fovBase = cam.fov; this._lensBase = this._lensY || 0;
+        this._lookBase = new THREE.Vector3(0, -0.6, 0);
+        this._camTgt = new THREE.Vector3(0, 8.0, 10.3); this._lookTgt = new THREE.Vector3(0, 0.85, 0); this._fovTgt = 42;
+        this._dieFrom = this._die.position.clone();
+        this._dieTo = new THREE.Vector3(0, this._floorY + this._inradWorld, 0);
+        this._reflected = false;
+        this._vitrine.visible = true;
+      }
+      this._encaseOn = !!on; this._encaseDur = 5000;   // match the doom video length so mat->case runs across the whole clip
+      // start from the current progress so a reverse mid-flight is smooth
+      const cur = this._encaseProg || 0;
+      this._encaseT0 = performance.now() - (on ? cur : (1 - cur)) * this._encaseDur;
+      this._encaseActive = true;
+    }
+
+    _restoreCam() {
+      const cam = this._camera; if (!this._camBase) return;
+      cam.position.copy(this._camBase); cam.fov = this._fovBase; cam.lookAt(this._lookBase);
+      cam.updateProjectionMatrix(); this._fitCamera();
+    }
+
+    _updateEncase() {
+      if (!this._encaseActive) return;
+      const now = performance.now();
+      let tt = (now - this._encaseT0) / this._encaseDur; if (tt > 1) tt = 1; if (tt < 0) tt = 0;
+      const prog = this._encaseOn ? tt : 1 - tt; this._encaseProg = prog;
+      const ease = (x) => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+      const seg = (a, b) => Math.max(0, Math.min(1, (prog - a) / (b - a)));
+      const lerp = (a, b, k) => a + (b - a) * k;
+      const V = this._case;
+      const shrink = ease(seg(0, 0.4));
+      // the real mat physically shrinks to the case footprint (same rate as the velvet) -> it becomes the case floor
+      const msx = lerp(1, V.CX / this._bx, shrink), msz = lerp(1, V.CZ / this._bz, shrink);
+      if (this._bGlow) this._bGlow.scale.set(msx, msz, 1);
+      if (this._bLine) this._bLine.scale.set(msx, 1, msz);
+      const moveP = ease(seg(0, 0.5));
+      if (this._dieFrom && this._dieTo) this._die.position.lerpVectors(this._dieFrom, this._dieTo, moveP);
+      const rise = ease(seg(0.28, 0.72));
+      const topP = ease(seg(0.56, 0.86));
+      const plinthP = ease(seg(0.72, 1));
+      const camP = ease(prog);
+      // pink mat fades out as the velvet base fades in
+      if (this._matMats) this._matMats.forEach((m) => { m.mat.opacity = m.target * (1 - shrink); });
+      // velvet floor shrinks from the full mat footprint down to the case footprint
+      this._velvet.visible = prog > 0.001;
+      this._velvet.material.opacity = shrink;
+      this._velvet.scale.set(lerp(V.matSX, 1, shrink), 1, lerp(V.matSZ, 1, shrink));
+      // walls + frame rise from the mat edges
+      this._walls.forEach((w) => { w.scale.y = Math.max(0.0001, rise); w.material.opacity = V.glassOp * rise; });
+      this._edges.scale.y = Math.max(0.0001, rise); this._edges.material.opacity = V.edgeOp * rise;
+      if (this._spot) this._spot.intensity = 1.75 * camP;
+      // top closes
+      this._top.material.opacity = V.glassOp * 1.15 * topP;
+      this._top.position.y = V.H + (1 - topP) * 1.4;
+      // plinth + placard resolve (rise into place)
+      this._plinth.material.opacity = plinthP; this._plinth.position.y = V.plY - (1 - plinthP) * 1.6;
+      this._placard.material.opacity = plinthP; this._placard.position.y = 0.36 - (1 - plinthP) * 1.2;
+      this._plinthEdge.material.opacity = 0.35 * plinthP;
+      this._contact.material.opacity = 0.72 * plinthP;
+      if (this._encaseOn && prog > 0.9 && !this._reflected) { this._reflected = true; this._reflect(); }
+      // camera glides to the hero framing
+      const cam = this._camera;
+      cam.position.lerpVectors(this._camBase, this._camTgt, camP);
+      cam.lookAt(this._lookBase.clone().lerp(this._lookTgt, camP));
+      cam.fov = lerp(this._fovBase, this._fovTgt, camP);
+      cam.updateProjectionMatrix();
+      cam.projectionMatrix.elements[9] = lerp(this._lensBase, 0, camP);
+      if (tt >= 1 && !this._encaseOn) { this._vitrine.visible = false; this._encaseActive = false; this._restoreCam(); }
+    }
+
     _loop() {
       const CANNON = this.CANNON;
       const step = () => {
@@ -412,8 +625,9 @@
           const dq = this._die.quaternion;
           this._numMeshes.forEach((nm) => { nm.mesh.visible = nm.localNormal.clone().applyQuaternion(dq).dot(camDir) > 0.1; });
         }
-        // keep the vertical lens shift (mat centring) applied every frame
-        if (this._lensY != null) this._camera.projectionMatrix.elements[9] = this._lensY;
+        // encase animation (die -> museum vitrine), then the mat-centring lens shift when idle
+        this._updateEncase();
+        if (!this._encaseActive && this._lensY != null) this._camera.projectionMatrix.elements[9] = this._lensY;
         this._renderer.render(this._scene, this._camera);
       };
       step();
