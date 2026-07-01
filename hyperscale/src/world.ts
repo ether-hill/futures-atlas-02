@@ -1,5 +1,10 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { SMAAPass } from "three/examples/jsm/postprocessing/SMAAPass.js";
+import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment.js";
 import { GRID_COLS, GRID_ROWS, type Kind } from "./config";
 import { createBuilding, type Building, type BStatus } from "./buildings";
 
@@ -23,6 +28,7 @@ export class World {
   camera: THREE.PerspectiveCamera;
   controls: OrbitControls;
   private container: HTMLElement;
+  private composer!: EffectComposer;
   private sun!: THREE.DirectionalLight;
   private buildings = new Map<number, Building>();
   private plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -53,12 +59,18 @@ export class World {
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.18;
+    this.renderer.toneMappingExposure = 1.05;
     container.appendChild(this.renderer.domElement);
 
     // sky + fog
     this.scene.background = makeSky();
-    this.scene.fog = new THREE.Fog(0xcadcec, 30, 70);
+    this.scene.fog = new THREE.Fog(0xcadcec, 34, 82);
+
+    // image-based lighting — gives metal, glass and painted surfaces real
+    // reflections/shading instead of flat colour (a big fidelity lever)
+    const pmrem = new THREE.PMREMGenerator(this.renderer);
+    this.scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    this.scene.environmentIntensity = 0.5;
 
     this.camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 200);
     this.camera.position.set(9.5, 9.5, 13);
@@ -72,6 +84,13 @@ export class World {
     this.controls.maxPolarAngle = 1.21; // keep above the horizon
     this.controls.minPolarAngle = 0.15;
     this.controls.update();
+
+    // post: crisp SMAA anti-aliasing (fidelity from IBL + shadows + materials)
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.composer.addPass(new SMAAPass(w, h));
+    this.composer.addPass(new OutputPass());
 
     this.buildLights();
     this.buildGround();
@@ -98,19 +117,20 @@ export class World {
   }
 
   private buildLights() {
-    const hemi = new THREE.HemisphereLight(0xdcecff, 0x5a6b48, 1.05);
+    const hemi = new THREE.HemisphereLight(0xdcecff, 0x6a7a52, 0.7);
     this.scene.add(hemi);
-    const sun = new THREE.DirectionalLight(0xfff3da, 2.75);
-    sun.position.set(7, 12, 4);
+    const sun = new THREE.DirectionalLight(0xfff1d0, 2.6);
+    sun.position.set(9, 11, 6); // lower, raking light for longer shadows
     sun.castShadow = true;
-    sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.mapSize.set(4096, 4096);
     sun.shadow.camera.near = 1;
-    sun.shadow.camera.far = 40;
-    const s = 9;
+    sun.shadow.camera.far = 60;
+    const s = 16; // cover the pad + the nearby community
     sun.shadow.camera.left = -s; sun.shadow.camera.right = s;
     sun.shadow.camera.top = s; sun.shadow.camera.bottom = -s;
-    sun.shadow.bias = -0.0004;
-    sun.shadow.normalBias = 0.02;
+    sun.shadow.bias = -0.00025;
+    sun.shadow.normalBias = 0.025;
+    sun.shadow.radius = 3;
     this.scene.add(sun);
     this.scene.add(sun.target);
     this.sun = sun;
@@ -152,10 +172,10 @@ export class World {
 
   private buildTrees() {
     const rnd = scatter(20260628);
-    const trunkGeo = new THREE.CylinderGeometry(0.045, 0.06, 0.32, 5);
-    const foliageGeo = new THREE.ConeGeometry(0.24, 0.6, 7);
-    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5a4632, roughness: 1 });
-    const foliageMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95 });
+    const trunkGeo = new THREE.CylinderGeometry(0.04, 0.055, 0.42, 6);
+    const foliageGeo = new THREE.IcosahedronGeometry(0.32, 1); // rounded low-poly canopy
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x6a5138, roughness: 1 });
+    const foliageMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, flatShading: true });
     const N = 70;
     const trunks = new THREE.InstancedMesh(trunkGeo, trunkMat, N);
     const foliage = new THREE.InstancedMesh(foliageGeo, foliageMat, N);
@@ -172,11 +192,11 @@ export class World {
       const z = Math.sin(ang) * rad * 0.9;
       if (Math.abs(x) < halfW && Math.abs(z) < halfD) continue; // keep the pad clear
       const sc = 0.7 + rnd() * 0.9;
-      m.makeScale(sc, sc, sc); m.setPosition(x, -SLAB_H + 0.16 * sc, z);
+      m.makeScale(sc, sc, sc); m.setPosition(x, -SLAB_H + 0.21 * sc, z);
       trunks.setMatrixAt(placed, m);
-      m.makeScale(sc, sc, sc); m.setPosition(x, -SLAB_H + (0.32 + 0.3) * sc, z);
+      m.makeScale(sc, sc * 1.15, sc); m.setPosition(x, -SLAB_H + (0.42 + 0.26) * sc, z);
       foliage.setMatrixAt(placed, m);
-      col.setHSL(0.27 + rnd() * 0.07, 0.45 + rnd() * 0.2, 0.32 + rnd() * 0.12);
+      col.setHSL(0.26 + rnd() * 0.08, 0.5 + rnd() * 0.18, 0.32 + rnd() * 0.1);
       foliage.setColorAt(placed, col);
       placed++;
     }
@@ -565,7 +585,7 @@ export class World {
     for (const hub of this.turbines) hub.rotation.z += dt * 0.5;
     this.updateNoiseWaves(dt);
     this.sun.target.position.set(0, 0, 0);
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render();
   }
 
   resize = () => {
@@ -574,6 +594,7 @@ export class World {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h);
+    this.composer.setSize(w, h);
   };
 
   dispose() {

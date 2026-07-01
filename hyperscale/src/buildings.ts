@@ -21,16 +21,23 @@ const STATUS_COLOR: Record<BStatus, number> = {
   failed: 0xff3b30,
 };
 
-// ── shared materials ───────────────────────────────────────────────
+// ── shared materials (PBR — tuned to catch the scene environment map) ──
 const mat = {
-  concrete: new THREE.MeshStandardMaterial({ color: 0x9298a2, roughness: 0.96, metalness: 0.04 }),
+  concrete: new THREE.MeshStandardMaterial({ color: 0xb7bcc4, roughness: 0.9, metalness: 0.05 }),
   pad: new THREE.MeshStandardMaterial({ color: 0x595f68, roughness: 0.9 }),
-  panel: new THREE.MeshStandardMaterial({ color: 0x7a818c, roughness: 0.66, metalness: 0.22 }),
-  dark: new THREE.MeshStandardMaterial({ color: 0x454c58, roughness: 0.55, metalness: 0.5 }),
-  steel: new THREE.MeshStandardMaterial({ color: 0x9aa1ab, roughness: 0.42, metalness: 0.7 }),
-  tower: new THREE.MeshStandardMaterial({ color: 0xbcc1cb, roughness: 0.92, side: THREE.DoubleSide }),
+  // warm/cream metal cladding with dark-blue trim — the industrial-hall look
+  clad: new THREE.MeshStandardMaterial({ color: 0xd7d2c4, roughness: 0.5, metalness: 0.35 }),
+  cladBlue: new THREE.MeshStandardMaterial({ color: 0x2c3f5c, roughness: 0.45, metalness: 0.5 }),
+  panel: new THREE.MeshStandardMaterial({ color: 0x9aa0aa, roughness: 0.5, metalness: 0.45 }),
+  dark: new THREE.MeshStandardMaterial({ color: 0x3a4150, roughness: 0.45, metalness: 0.6 }),
+  steel: new THREE.MeshStandardMaterial({ color: 0xaab0ba, roughness: 0.32, metalness: 0.85 }),
+  tower: new THREE.MeshStandardMaterial({ color: 0xc4c8d0, roughness: 0.88, metalness: 0.08, side: THREE.DoubleSide }),
   insulator: new THREE.MeshStandardMaterial({ color: 0xd9d4c6, roughness: 0.6 }),
-  glass: new THREE.MeshStandardMaterial({ color: 0x16202b, roughness: 0.18, metalness: 0.4 }),
+  // reflective glazing — low roughness so it mirrors the sky/environment
+  glass: new THREE.MeshStandardMaterial({ color: 0x9fc4e0, roughness: 0.06, metalness: 0.1, envMapIntensity: 1.6 }),
+  roofGlass: new THREE.MeshStandardMaterial({ color: 0xaed2ec, roughness: 0.05, metalness: 0.15, envMapIntensity: 2.0, side: THREE.DoubleSide }),
+  roofMetal: new THREE.MeshStandardMaterial({ color: 0xc7ccd3, roughness: 0.45, metalness: 0.55 }),
+  door: new THREE.MeshStandardMaterial({ color: 0x8a929c, roughness: 0.5, metalness: 0.55 }),
 };
 
 function led(color: number): THREE.MeshStandardMaterial {
@@ -177,59 +184,98 @@ function box(w: number, h: number, d: number, m: THREE.Material, x = 0, y = 0, z
 }
 
 // ── server hall ────────────────────────────────────────────────────
+// vertical mullion strips down a clad facade
+function mullions(g: THREE.Group, faceZ: number, spanX: number, y0: number, y1: number, count: number) {
+  for (let i = 0; i <= count; i++) {
+    const x = -spanX / 2 + i * (spanX / count);
+    g.add(box(0.016, y1 - y0, 0.014, mat.cladBlue, x, (y0 + y1) / 2, faceZ));
+  }
+}
+// a ribbed roller/loading door
+function rollerDoor(g: THREE.Group, x: number, faceZ: number, w: number, h: number, y0: number) {
+  g.add(box(w, h, 0.02, mat.door, x, y0 + h / 2, faceZ));
+  for (let i = 1; i < 6; i++) g.add(box(w - 0.02, 0.012, 0.006, mat.dark, x, y0 + i * (h / 6), faceZ + 0.012));
+}
+// a rooftop HVAC / chiller unit
+function hvac(g: THREE.Group, x: number, z: number, y: number) {
+  g.add(box(0.17, 0.09, 0.15, mat.panel, x, y + 0.045, z));
+  g.add(box(0.14, 0.012, 0.12, mat.dark, x, y + 0.096, z));
+}
+// a low-pitch glazed skylight roof with mullion lines (the "data hall" look)
+function glazedRoof(g: THREE.Group, w: number, d: number, y: number) {
+  const ridge = 0.13;
+  for (const s of [1, -1]) {
+    const slope = new THREE.Mesh(new THREE.PlaneGeometry(w, d / 2 * 1.06), mat.roofGlass);
+    slope.rotation.x = -Math.PI / 2 + s * 0.34;
+    slope.position.set(0, y + ridge / 2, (s * d) / 4);
+    slope.castShadow = true;
+    g.add(slope);
+    for (let i = 0; i < 7; i++) {
+      const x = -w / 2 + (i + 0.5) * (w / 7);
+      const ln = box(0.01, 0.008, (d / 2) * 1.02, mat.roofMetal, x, y + ridge / 2, (s * d) / 4);
+      ln.rotation.x = s * 0.34;
+      g.add(ln);
+    }
+  }
+  g.add(box(w + 0.02, 0.025, 0.03, mat.roofMetal, 0, y + ridge, 0)); // ridge beam
+  for (const s of [1, -1]) g.add(box(0.02, ridge, d, mat.clad, (s * w) / 2, y + ridge / 2, 0)); // gable ends
+}
+
+// ── server hall — a clad industrial hall ────────────────────────────
 function serverHall(): Building {
   const g = new THREE.Group();
-  g.add(box(0.86, 0.14, 0.86, mat.concrete, 0, 0.07));
-  g.add(box(0.7, 0.4, 0.62, mat.panel, 0, 0.34));
-  g.add(box(0.72, 0.05, 0.64, mat.dark, 0, 0.2));
-  g.add(box(0.72, 0.05, 0.64, mat.dark, 0, 0.46));
-  // glass entrance
-  g.add(box(0.22, 0.26, 0.02, mat.glass, -0.18, 0.27, 0.32));
-  // LED strip along the front
+  const W = 0.82, D = 0.66, H = 0.42, y0 = 0.06;
+  g.add(box(0.86, 0.06, 0.86, mat.pad, 0, 0.03));
+  g.add(box(W, 0.1, D, mat.cladBlue, 0, y0 + 0.05));           // plinth
+  g.add(box(W, H, D, mat.clad, 0, y0 + 0.1 + H / 2 - 0.05));   // clad body
+  const top = y0 + H;
+  mullions(g, D / 2 + 0.005, W, y0, top, 8);
+  mullions(g, -D / 2 - 0.005, W, y0, top, 8);
+  g.add(box(W * 0.9, 0.1, 0.012, mat.glass, 0, top - 0.1, D / 2 + 0.006)); // clerestory
+  rollerDoor(g, -0.22, D / 2 + 0.006, 0.28, 0.26, y0);
+  g.add(box(0.12, 0.2, 0.02, mat.door, 0.28, y0 + 0.1, D / 2 + 0.006));    // personnel door
+  g.add(box(W + 0.02, 0.03, D + 0.02, mat.roofMetal, 0, top + 0.015, 0));  // roof cap
+  for (const s of [1, -1]) g.add(box(W + 0.03, 0.05, 0.02, mat.cladBlue, 0, top + 0.02, (s * D) / 2)); // parapet
   const okColor = 0x3a86ff;
   const lmat = led(okColor);
-  g.add(box(0.6, 0.03, 0.02, lmat, 0.08, 0.33, 0.322));
-  // rooftop exhaust fans
+  g.add(box(0.5, 0.018, 0.012, lmat, 0, y0 + 0.05, D / 2 + 0.008));        // status LED strip
   const fans: THREE.Group[] = [];
   for (let i = -1; i <= 1; i++) {
-    const f = makeFan(0.1);
-    f.group.position.set(i * 0.21, 0.55, 0.04);
-    g.add(f.group);
-    fans.push(f.blades);
+    hvac(g, i * 0.24, -0.02, top + 0.02);
+    const f = makeFan(0.07); f.group.position.set(i * 0.24, top + 0.09, 0.16); g.add(f.group); fans.push(f.blades);
   }
   return assemble({ group: g, leds: [lmat], fans, fanRate: 5.5, okColor, canFail: true });
 }
 
-// ── GPU pod ────────────────────────────────────────────────────────
+// ── GPU hall — the premium glazed data hall ─────────────────────────
 function gpuPod(): Building {
   const g = new THREE.Group();
-  g.add(box(0.86, 0.14, 0.86, mat.concrete, 0, 0.07));
-  g.add(box(0.66, 0.66, 0.62, mat.dark, 0, 0.47));
+  const W = 0.82, D = 0.7, H = 0.56, y0 = 0.06;
+  g.add(box(0.86, 0.06, 0.86, mat.pad, 0, 0.03));
+  g.add(box(W, 0.12, D, mat.cladBlue, 0, y0 + 0.06));
+  g.add(box(W, H, D, mat.clad, 0, y0 + 0.12 + H / 2 - 0.06));
+  const top = y0 + H;
+  mullions(g, D / 2 + 0.005, W, y0, top, 9);
+  mullions(g, -D / 2 - 0.005, W, y0, top, 9);
+  g.add(box(W * 0.9, 0.18, 0.012, mat.glass, 0, top - 0.16, D / 2 + 0.006)); // glazed facade band
+  rollerDoor(g, -0.2, D / 2 + 0.006, 0.26, 0.32, y0);
+  rollerDoor(g, 0.16, D / 2 + 0.006, 0.26, 0.32, y0);
+  glazedRoof(g, W, D, top);
   const okColor = 0x18e0c8;
   const leds: THREE.MeshStandardMaterial[] = [];
-  // glowing vertical vents on the long faces
-  for (const sx of [-1, 1]) {
-    for (let i = -1; i <= 1; i++) {
-      const lm = led(okColor);
-      leds.push(lm);
-      g.add(box(0.02, 0.52, 0.07, lm, sx * 0.335, 0.47, i * 0.19));
-    }
-  }
-  // rooftop beacon
+  const lm = led(okColor); leds.push(lm);
+  g.add(box(0.5, 0.018, 0.012, lm, 0, y0 + 0.06, D / 2 + 0.008));
   const bmat = led(okColor);
-  const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.05, 12, 12), bmat);
-  beacon.position.set(0, 0.85, 0);
+  const beacon = new THREE.Mesh(new THREE.SphereGeometry(0.032, 12, 12), bmat);
+  beacon.position.set(W / 2 - 0.05, top + 0.16, -D / 2 + 0.05);
   g.add(beacon);
-  // 2×2 rooftop fans
   const fans: THREE.Group[] = [];
-  for (const fx of [-0.16, 0.16]) for (const fz of [-0.15, 0.15]) {
-    const f = makeFan(0.1);
-    f.group.position.set(fx, 0.81, fz);
-    g.add(f.group);
-    fans.push(f.blades);
+  for (const fx of [-0.28, 0.28]) {
+    hvac(g, fx, -D / 2 + 0.11, top + 0.02);
+    const f = makeFan(0.07); f.group.position.set(fx, top + 0.09, -D / 2 + 0.11); g.add(f.group); fans.push(f.blades);
   }
-  const smoke = new Puffs(6, 0x2b2f36, 1.3, 0.12, 0.34);
-  smoke.group.position.set(0, 0.8, 0);
+  const smoke = new Puffs(6, 0x2b2f36, 1.1, 0.12, 0.3);
+  smoke.group.position.set(0.28, top + 0.1, -D / 2 + 0.11);
   g.add(smoke.group);
   return assemble({ group: g, leds, fans, fanRate: 8, okColor, beacon: bmat, smoke, canFail: true });
 }
