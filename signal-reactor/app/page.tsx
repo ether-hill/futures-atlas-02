@@ -120,6 +120,40 @@ export default function Page() {
             </button>
           </div>
           <p className="honesty">{HONESTY_LINE}</p>
+
+          {/* a fanned spread of the briefing's paper slides */}
+          <div className="deck-fan" aria-hidden="true">
+            <div className="fan-card">
+              <span className="fc-kicker" />
+              <span className="fc-title fc-title--short" />
+              <div className="fc-cols"><i /><i /><i /></div>
+              <div className="fc-foot"><i /><em /></div>
+            </div>
+            <div className="fan-card">
+              <span className="fc-kicker" />
+              <div className="fc-rows"><i /><i /><i /></div>
+              <div className="fc-foot"><i /><em /></div>
+            </div>
+            <div className="fan-card">
+              <span className="fc-kicker" />
+              <span className="fc-title" />
+              <span className="fc-line" />
+              <span className="fc-line fc-line--half" />
+              <div className="fc-foot"><i /><em /></div>
+            </div>
+            <div className="fan-card">
+              <span className="fc-kicker" />
+              <div className="fc-rows"><i /><i /><i /></div>
+              <div className="fc-foot"><i /><em /></div>
+            </div>
+            <div className="fan-card">
+              <span className="fc-kicker" />
+              <span className="fc-title fc-title--short" />
+              <span className="fc-line" />
+              <div className="fc-cols"><i /><i /></div>
+              <div className="fc-foot"><i /><em /></div>
+            </div>
+          </div>
         </Reveal>
       </section>
 
@@ -171,7 +205,7 @@ export default function Page() {
 
         {phase.name === "deck" && (
           <Reveal>
-            <Viewer deck={phase.deck} cached={phase.cached} onNew={reset} />
+            <Viewer deck={phase.deck} onNew={reset} />
           </Reveal>
         )}
       </div>

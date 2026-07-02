@@ -13,15 +13,7 @@ import type { Deck } from "../lib/types";
 import { HONESTY_LINE, SLIDE_SLUGS } from "../lib/types";
 import { SlideBoard } from "./Slides";
 
-export function Viewer({
-  deck,
-  cached,
-  onNew,
-}: {
-  deck: Deck;
-  cached?: boolean;
-  onNew: () => void;
-}) {
+export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
   const [index, setIndex] = useState(0);
   const [scale, setScale] = useState(0.5);
   const [lbScale, setLbScale] = useState(0.9);
@@ -138,14 +130,7 @@ export function Viewer({
   return (
     <div className="viewer">
       <div className="viewer-top">
-        <span className="sector-label">
-          {deck.sector}
-          {cached && (
-            <span className="archive-tag" title="This briefing was generated earlier and served from the archive">
-              Archived · {deck.generatedAt.slice(0, 10)}
-            </span>
-          )}
-        </span>
+        <h2 className="deck-title">{deck.sector}</h2>
         <div className="actions">
           <button className="action-btn action-btn--download" onClick={downloadPptx} disabled={!!exporting}>
             {exporting === "pptx" ? "Preparing PPTX…" : "↓ Download PPTX"}
@@ -168,8 +153,13 @@ export function Viewer({
           <div className="board-scale" style={{ transform: `scale(${scale})`, transformOrigin: "top left" }}>
             <SlideBoard deck={deck} index={index} />
           </div>
-          <button className="fs-btn" onClick={() => setFullscreen(true)} aria-label="View the deck full screen">
-            <span aria-hidden="true">⛶</span> Full screen
+          <button
+            className="fs-btn"
+            onClick={() => setFullscreen(true)}
+            aria-label="View the deck full screen"
+            title="Full screen"
+          >
+            ⛶
           </button>
         </div>
       </div>
