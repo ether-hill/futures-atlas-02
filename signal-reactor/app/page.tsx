@@ -137,8 +137,8 @@ export default function Page() {
               <p className="sr-hero__lede">
                 A public foresight instrument. Name your organization and it builds an honest,
                 presentable eight-slide briefing on what quantum computing and advanced AI actually
-                mean for you — hype deflated, the real signal extrapolated, ready to run a
-                stakeholder discussion from, and exportable as PPTX or PDF.
+                mean for you — hype deflated, the real signal extrapolated. A deck you can run a
+                stakeholder discussion from, exportable as PPTX or PDF.
               </p>
               <div className="sr-hero__ctas">
                 <button className="cta-primary" onClick={() => scrollTo(pickerRef.current)}>
