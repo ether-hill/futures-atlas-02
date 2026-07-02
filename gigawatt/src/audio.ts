@@ -1,6 +1,6 @@
 /**
  * Procedural soundscape — no samples, everything synthesised in WebAudio.
- * Layers: desert wind (filtered noise), the electrical hum of live IT load,
+ * Layers: valley wind (filtered noise), the electrical hum of live IT load,
  * the whoosh of cooling fans, a gas-turbine roar, plus one-shot UI cues.
  * Gains track the sim every frame; the context starts on first user gesture.
  */

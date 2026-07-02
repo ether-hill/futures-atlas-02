@@ -11,7 +11,7 @@
 import * as THREE from "three";
 import { CELL, type DefId } from "./defs";
 import { RNG, hashSeed } from "./rng";
-import { makeCar } from "./town";
+import { makeCar } from "./dressing";
 
 export interface UnitView {
   throttle: number; // 0..1 effective output

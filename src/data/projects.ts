@@ -38,7 +38,7 @@ export const projects: Project[] = [
     id: "gigawatt",
     title: "Gigawatt",
     tagline:
-      "A second take on the compute-boom builder, this time in the high desert — with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment (anger the county and your permits freeze). Full day–night cycle, seeded weather and markets, procedural audio. Built from scratch by Claude Fable 5 as a model-comparison companion to Hyperscale.",
+      "A second take on the compute-boom builder, this time in a green river valley — with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment (anger the county and your permits freeze). Full day–night cycle, seeded weather and markets, procedural audio. Built from scratch by Claude Fable 5 as a model-comparison companion to Hyperscale.",
     year: "2026",
     date: "2026-07-01",
     field: "Simulation",

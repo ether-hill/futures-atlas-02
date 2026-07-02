@@ -1,11 +1,13 @@
 /**
- * The desert stage: terrain, mesas, rocks, road, sky/sun/stars and the
- * day-night lighting rig. Everything cosmetic is seeded from the world RNG so
- * a given seed always looks the same.
+ * The valley stage: grassland terrain carved by a winding river, distant
+ * buttes, the campus plot with its security fence, gate and visitor parking,
+ * plus the sky/sun/stars day-night rig. Everything cosmetic is seeded so a
+ * given seed always looks the same.
  */
 
 import * as THREE from "three";
 import { CELL, GRID } from "./defs";
+import { buildTreeField, makeCar, type TreeItem } from "./dressing";
 import { RNG, hashSeed } from "./rng";
 
 export const PLOT = GRID * CELL; // 240 m
@@ -35,6 +37,10 @@ function vnoise(x: number, z: number, seed: number): number {
   return sum / norm;
 }
 
+// the river meanders down the east side of the valley
+const riverX = (z: number) => 355 + 70 * Math.sin(z * 0.004) + 45 * Math.sin(z * 0.0013 + 2);
+const riverW = (z: number) => 56 + 16 * Math.sin(z * 0.002 + 1);
+
 export interface Env {
   sky: THREE.Color;
   fog: THREE.Color;
@@ -48,11 +54,11 @@ export interface Env {
 const STOPS: { h: number; sky: string; fog: string; sun: string; sunI: number; hemiI: number }[] = [
   { h: 0.0, sky: "#0b1020", fog: "#131627", sun: "#8fa3c8", sunI: 0.14, hemiI: 0.26 },
   { h: 4.5, sky: "#0d1226", fog: "#181a2c", sun: "#8fa3c8", sunI: 0.14, hemiI: 0.26 },
-  { h: 6.0, sky: "#3d3550", fog: "#7a4f57", sun: "#ff9d5c", sunI: 0.55, hemiI: 0.3 },
-  { h: 7.5, sky: "#8fb0cf", fog: "#e0b18f", sun: "#ffd9a0", sunI: 1.1, hemiI: 0.5 },
-  { h: 12.0, sky: "#a9c6de", fog: "#d9cdb4", sun: "#fff3dd", sunI: 1.45, hemiI: 0.62 },
-  { h: 16.5, sky: "#9db8d3", fog: "#dcc3a2", sun: "#ffe3b0", sunI: 1.25, hemiI: 0.55 },
-  { h: 18.5, sky: "#54425f", fog: "#b06a4e", sun: "#ff7e45", sunI: 0.5, hemiI: 0.3 },
+  { h: 6.0, sky: "#3d3550", fog: "#7a5a5c", sun: "#ff9d5c", sunI: 0.55, hemiI: 0.3 },
+  { h: 7.5, sky: "#8fb0cf", fog: "#cbbfa2", sun: "#ffd9a0", sunI: 1.1, hemiI: 0.5 },
+  { h: 12.0, sky: "#a9c6de", fog: "#c9cdb0", sun: "#fff3dd", sunI: 1.45, hemiI: 0.62 },
+  { h: 16.5, sky: "#9db8d3", fog: "#c5c2a0", sun: "#ffe3b0", sunI: 1.25, hemiI: 0.55 },
+  { h: 18.5, sky: "#54425f", fog: "#a06a52", sun: "#ff7e45", sunI: 0.5, hemiI: 0.3 },
   { h: 20.0, sky: "#131730", fog: "#1d1e33", sun: "#93a6cc", sunI: 0.15, hemiI: 0.27 },
   { h: 24.0, sky: "#0b1020", fog: "#131627", sun: "#8fa3c8", sunI: 0.14, hemiI: 0.26 },
 ];
@@ -106,52 +112,68 @@ export class World {
     const rng = new RNG(hashSeed(seedWord));
     const scene = this.scene;
 
-    this.fogExp = new THREE.FogExp2(0xd9cdb4, 0.001);
+    this.fogExp = new THREE.FogExp2(0xc9cdb0, 0.00055);
     scene.fog = this.fogExp;
 
     // lights
-    this.hemi = new THREE.HemisphereLight(0xcfe0f2, 0x8a6f52, 0.6);
+    this.hemi = new THREE.HemisphereLight(0xcfe0f2, 0x5f7048, 0.6);
     scene.add(this.hemi);
     this.sun = new THREE.DirectionalLight(0xfff3dd, 1.4);
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(2048, 2048);
     const sc = this.sun.shadow.camera;
-    sc.left = -220; sc.right = 220; sc.top = 220; sc.bottom = -220;
-    sc.near = 50; sc.far = 900;
-    this.sun.shadow.bias = -0.0004;
+    sc.left = -330; sc.right = 330; sc.top = 330; sc.bottom = -330;
+    sc.near = 50; sc.far = 1100;
+    this.sun.shadow.bias = -0.0005;
     scene.add(this.sun);
     scene.add(this.sun.target);
 
-    // terrain: flat buildable plateau, noisy desert beyond
-    const size = 1600, seg = 160;
-    const geo = new THREE.PlaneGeometry(size, size, seg, seg);
-    geo.rotateX(-Math.PI / 2);
-    const pos = geo.attributes.position as THREE.BufferAttribute;
-    const colors = new Float32Array(pos.count * 3);
-    const sand = new THREE.Color("#c9a97e");
-    const sandDark = new THREE.Color("#a5825c");
-    const sandPale = new THREE.Color("#d8bf98");
-    const c = new THREE.Color();
+    // --- terrain: flat plot + town, grassland valley, carved river ----------
     const tSeed = hashSeed(seedWord + "-terrain");
-    // the town rectangle south of the plot stays flat too
     const townFade = (x: number, z: number) => {
       const dx = Math.max(Math.abs(x) - 200, 0);
       const dz = Math.max(z - (PLOT / 2 + 195), (PLOT / 2 - 10) - z, 0);
       return THREE.MathUtils.smoothstep(Math.max(dx, dz), 4, 90);
     };
+    const terrainH = (x: number, z: number): number => {
+      const r = Math.max(Math.abs(x), Math.abs(z));
+      const fade = Math.min(THREE.MathUtils.smoothstep(r, PLOT * 0.62, PLOT * 1.5), townFade(x, z));
+      let h = vnoise(x / 95, z / 95, tSeed) * 7 * fade + vnoise(x / 24, z / 24, tSeed ^ 7) * 1.2 * fade;
+      const rd = Math.abs(x - riverX(z));
+      const rw = riverW(z);
+      // wide flat floodplain so the water reads from a shallow camera angle,
+      // then the carved channel itself
+      h *= THREE.MathUtils.smoothstep(rd, rw * 0.6, rw + 140);
+      h -= (1 - THREE.MathUtils.smoothstep(rd, rw * 0.35, rw + 55)) * 4.4;
+      return h;
+    };
+    this.heightAt = terrainH;
+
+    const size = 1700, seg = 170;
+    const geo = new THREE.PlaneGeometry(size, size, seg, seg);
+    geo.rotateX(-Math.PI / 2);
+    const pos = geo.attributes.position as THREE.BufferAttribute;
+    const colors = new Float32Array(pos.count * 3);
+    const grass = new THREE.Color("#7d9955");
+    const grassDry = new THREE.Color("#a3a06b");
+    const grassDeep = new THREE.Color("#69894c");
+    const marsh = new THREE.Color("#a5985e");
+    const wetBank = new THREE.Color("#8a7d55");
+    const c = new THREE.Color();
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i), z = pos.getZ(i);
-      const r = Math.max(Math.abs(x), Math.abs(z));
-      // 0 inside the plot (+ small apron), ramping to full noise outside
-      const fade = Math.min(
-        THREE.MathUtils.smoothstep(r, PLOT * 0.62, PLOT * 1.5),
-        townFade(x, z),
-      );
-      const h = vnoise(x / 90, z / 90, tSeed) * 9 * fade + vnoise(x / 22, z / 22, tSeed ^ 7) * 1.4 * fade;
-      pos.setY(i, h);
-      const n = vnoise(x / 14, z / 14, tSeed ^ 13) * 0.5 + 0.5;
-      c.copy(sand).lerp(n > 0.5 ? sandPale : sandDark, Math.abs(n - 0.5) * 2 * 0.8);
-      c.multiplyScalar(1 - fade * 0.12);
+      pos.setY(i, terrainH(x, z));
+      const n = vnoise(x / 16, z / 16, tSeed ^ 13) * 0.5 + 0.5;
+      const patch = vnoise(x / 55, z / 55, tSeed ^ 29) * 0.5 + 0.5;
+      c.copy(grass).lerp(patch > 0.55 ? grassDry : grassDeep, Math.abs(patch - 0.5) * 1.6);
+      c.lerp(grassDry, n * 0.25);
+      // marsh grasses + wet banks near the river, like a real floodplain
+      const rd = Math.abs(x - riverX(z));
+      const rw = riverW(z);
+      const marshT = 1 - THREE.MathUtils.smoothstep(rd, rw * 0.9, rw + 95);
+      if (marshT > 0) c.lerp(marsh, marshT * (0.45 + n * 0.4));
+      const bankT = 1 - THREE.MathUtils.smoothstep(rd, rw * 0.5, rw * 0.95);
+      if (bankT > 0) c.lerp(wetBank, bankT * 0.8);
       colors[i * 3] = c.r; colors[i * 3 + 1] = c.g; colors[i * 3 + 2] = c.b;
     }
     geo.setAttribute("color", new THREE.BufferAttribute(colors, 3));
@@ -163,42 +185,90 @@ export class World {
     ground.receiveShadow = true;
     scene.add(ground);
 
-    // distant mesas — low-poly silhouettes on the horizon
-    const mesaMat = new THREE.MeshStandardMaterial({ color: "#7a5940", roughness: 1, flatShading: true });
-    for (let i = 0; i < 8; i++) {
-      const ang = rng.range(0, Math.PI * 2);
-      const dist = rng.range(640, 920);
-      const w = rng.range(55, 150);
-      const h = rng.range(26, 62);
-      const mesa = new THREE.Mesh(new THREE.CylinderGeometry(w * rng.range(0.5, 0.8), w, h, rng.int(5, 8)), mesaMat);
-      mesa.position.set(Math.cos(ang) * dist, h / 2 - 6, Math.sin(ang) * dist);
-      mesa.rotation.y = rng.range(0, Math.PI);
-      scene.add(mesa);
+    // --- the river itself: a ribbon following the meander --------------------
+    {
+      const steps: number[] = [];
+      const verts: number[] = [];
+      const idx: number[] = [];
+      let n = 0;
+      for (let z = -820; z <= 820; z += 22) steps.push(z);
+      for (const z of steps) {
+        const cx = riverX(z), hw = riverW(z) * 0.72;
+        verts.push(cx - hw, -0.7, z, cx + hw, -0.7, z);
+        if (n > 0) {
+          const a = (n - 1) * 2;
+          idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
+        }
+        n++;
+      }
+      const rGeo = new THREE.BufferGeometry();
+      rGeo.setAttribute("position", new THREE.Float32BufferAttribute(verts, 3));
+      rGeo.setIndex(idx);
+      rGeo.computeVertexNormals();
+      const water = new THREE.Mesh(
+        rGeo,
+        // DoubleSide: the strip's winding faces down; render both sides
+        new THREE.MeshStandardMaterial({ color: "#4d7382", roughness: 0.2, metalness: 0.55, side: THREE.DoubleSide }),
+      );
+      water.receiveShadow = true;
+      scene.add(water);
     }
 
-    // scattered rocks + scrub outside the plot
-    const rockMat = new THREE.MeshStandardMaterial({ color: "#9d7f5f", roughness: 1, flatShading: true });
-    const scrubMat = new THREE.MeshStandardMaterial({ color: "#5f6244", roughness: 1, flatShading: true });
-    const rockGeo = new THREE.DodecahedronGeometry(1, 0);
-    const scrubGeo = new THREE.IcosahedronGeometry(1, 0);
-    const dressing = new THREE.Group();
-    for (let i = 0; i < 260; i++) {
+    // distant buttes on the horizon, muted and half-lost in haze
+    const butteMat = new THREE.MeshStandardMaterial({ color: "#77704f", roughness: 1, flatShading: true });
+    for (let i = 0; i < 8; i++) {
       const ang = rng.range(0, Math.PI * 2);
-      const dist = rng.range(PLOT * 0.72, 640);
+      const dist = rng.range(660, 940);
+      const w = rng.range(55, 150);
+      const h = rng.range(24, 58);
+      const butte = new THREE.Mesh(new THREE.CylinderGeometry(w * rng.range(0.5, 0.8), w, h, rng.int(5, 8)), butteMat);
+      butte.position.set(Math.cos(ang) * dist, h / 2 - 8, Math.sin(ang) * dist);
+      butte.rotation.y = rng.range(0, Math.PI);
+      scene.add(butte);
+    }
+
+    // scattered rocks + bushes across the grassland (clear of town + river)
+    const rockMat = new THREE.MeshStandardMaterial({ color: "#8d8676", roughness: 1, flatShading: true });
+    const bushMat = new THREE.MeshStandardMaterial({ color: "#55703f", roughness: 1, flatShading: true });
+    const rockGeo = new THREE.DodecahedronGeometry(1, 0);
+    const bushGeo = new THREE.IcosahedronGeometry(1, 0);
+    const dressing = new THREE.Group();
+    const inTown = (x: number, z: number) => Math.abs(x) < 205 && z > PLOT / 2 - 12 && z < PLOT / 2 + 200;
+    const inRiver = (x: number, z: number) => Math.abs(x - riverX(z)) < riverW(z) + 8;
+    for (let i = 0; i < 220; i++) {
+      const ang = rng.range(0, Math.PI * 2);
+      const dist = rng.range(PLOT * 0.72, 680);
       const x = Math.cos(ang) * dist, z = Math.sin(ang) * dist;
-      // keep the town's lawns clear of desert litter
-      if (Math.abs(x) < 205 && z > PLOT / 2 - 12 && z < PLOT / 2 + 200) continue;
-      const isRock = rng.chance(0.45);
-      const m = new THREE.Mesh(isRock ? rockGeo : scrubGeo, isRock ? rockMat : scrubMat);
-      const s = isRock ? rng.range(0.5, 2.6) : rng.range(0.7, 1.5);
-      m.scale.set(s * rng.range(0.7, 1.4), s * (isRock ? rng.range(0.5, 1) : rng.range(0.8, 1.3)), s);
-      const y = vnoise(x / 90, z / 90, tSeed) * 9 * THREE.MathUtils.smoothstep(Math.max(Math.abs(x), Math.abs(z)), PLOT * 0.62, PLOT * 1.5);
-      m.position.set(x, y + s * 0.3, z);
+      if (inTown(x, z) || inRiver(x, z)) continue;
+      const isRock = rng.chance(0.35);
+      const m = new THREE.Mesh(isRock ? rockGeo : bushGeo, isRock ? rockMat : bushMat);
+      const s = isRock ? rng.range(0.5, 2.2) : rng.range(0.6, 1.4);
+      m.scale.set(s * rng.range(0.7, 1.4), s * (isRock ? rng.range(0.5, 1) : rng.range(0.7, 1.1)), s);
+      m.position.set(x, terrainH(x, z) + s * 0.3, z);
       m.rotation.set(rng.range(0, 3), rng.range(0, 3), rng.range(0, 3));
       m.castShadow = s > 1.2;
       dressing.add(m);
     }
     scene.add(dressing);
+
+    // valley trees: thick riparian bands along the river + loose groves
+    const trees: TreeItem[] = [];
+    for (let i = 0; i < 190; i++) {
+      const z = rng.range(-700, 700);
+      const side = rng.chance(0.5) ? 1 : -1;
+      const rd = riverW(z) + rng.range(10, 80);
+      const x = riverX(z) + side * rd;
+      if (inTown(x, z)) continue;
+      trees.push({ x, y: terrainH(x, z), z, s: rng.range(0.9, 1.7), conifer: rng.chance(0.25) });
+    }
+    for (let i = 0; i < 110; i++) {
+      const ang = rng.range(0, Math.PI * 2);
+      const dist = rng.range(PLOT * 0.75, 700);
+      const x = Math.cos(ang) * dist, z = Math.sin(ang) * dist;
+      if (inTown(x, z) || inRiver(x, z)) continue;
+      trees.push({ x, y: terrainH(x, z), z, s: rng.range(0.8, 1.5), conifer: rng.chance(0.4) });
+    }
+    scene.add(buildTreeField(trees));
 
     // access road from the campus gate through the town
     const road = new THREE.Mesh(
@@ -209,7 +279,6 @@ export class World {
     road.position.set(0, 0.05, PLOT / 2 + 100);
     road.receiveShadow = true;
     scene.add(road);
-    // centreline dashes
     const dashMat = new THREE.MeshStandardMaterial({ color: "#cfcabb", roughness: 0.9 });
     for (let i = 0; i < 24; i++) {
       const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.3, 3), dashMat);
@@ -218,15 +287,20 @@ export class World {
       scene.add(dash);
     }
 
-    // plot apron + boundary
+    // plot apron: compacted campus ground inside the fence
     const apron = new THREE.Mesh(
       new THREE.PlaneGeometry(PLOT + 14, PLOT + 14),
-      new THREE.MeshStandardMaterial({ color: "#b99a72", roughness: 1 }),
+      new THREE.MeshStandardMaterial({
+        color: "#aaa596", roughness: 1,
+        // wins the depth fight against the coplanar terrain at grazing angles
+        polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2,
+      }),
     );
     apron.rotation.x = -Math.PI / 2;
-    apron.position.y = 0.02;
+    apron.position.y = 0.04;
     apron.receiveShadow = true;
     scene.add(apron);
+
     // security fence: posts + translucent chain-link panels + top rail
     const fenceR = PLOT / 2 + 5;
     const postMat = new THREE.MeshStandardMaterial({ color: "#5b6066", roughness: 0.5, metalness: 0.6 });
@@ -239,7 +313,6 @@ export class World {
     for (const side of [0, 1, 2, 3]) {
       const horiz = side % 2 === 0;
       const fixed = side < 2 ? fenceR : -fenceR;
-      // wire panel + top rail for the whole side
       const panel = new THREE.Mesh(new THREE.PlaneGeometry(fenceR * 2, 2.4), meshMat);
       panel.position.y = 1.2;
       const rail = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, fenceR * 2, 5), postMat);
@@ -264,6 +337,56 @@ export class World {
       }
     }
     scene.add(fenceGrp);
+
+    // gate: guard hut + barrier arms + visitor parking with painted stalls
+    {
+      const hut = new THREE.Group();
+      const hutBody = new THREE.Mesh(new THREE.BoxGeometry(3, 2.6, 2.4), new THREE.MeshStandardMaterial({ color: "#d9d6cc", roughness: 0.8 }));
+      hutBody.position.y = 1.3;
+      hutBody.castShadow = true;
+      hut.add(hutBody);
+      const hutRoof = new THREE.Mesh(new THREE.BoxGeometry(3.5, 0.2, 2.9), postMat);
+      hutRoof.position.y = 2.7;
+      hut.add(hutRoof);
+      const glass = new THREE.Mesh(new THREE.BoxGeometry(3.04, 0.9, 2.44), new THREE.MeshStandardMaterial({ color: "#2e5d8f", roughness: 0.2, metalness: 0.8 }));
+      glass.position.y = 1.8;
+      hut.add(glass);
+      hut.position.set(8.4, 0, fenceR);
+      scene.add(hut);
+      for (const bx of [-6.6, 6.4] as const) {
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 0.14), new THREE.MeshStandardMaterial({ color: "#c8483c", roughness: 0.6 }));
+        arm.position.set(bx > 0 ? 3.4 : -3.4, 1.05, fenceR);
+        scene.add(arm);
+        const armPost = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.09, 1.1, 6), postMat);
+        armPost.position.set(bx, 0.55, fenceR);
+        scene.add(armPost);
+      }
+      // visitor parking, west of the gate
+      const lot = new THREE.Mesh(new THREE.PlaneGeometry(44, 17), new THREE.MeshStandardMaterial({ color: "#3d3d3b", roughness: 1 }));
+      lot.rotation.x = -Math.PI / 2;
+      lot.position.set(-33, 0.06, fenceR + 11);
+      lot.receiveShadow = true;
+      scene.add(lot);
+      const stallMat = new THREE.MeshStandardMaterial({ color: "#d8d4c6", roughness: 0.9 });
+      for (let i = 0; i < 9; i++) {
+        const line = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 5.6), stallMat);
+        line.rotation.x = -Math.PI / 2;
+        line.position.set(-52 + i * 4.6, 0.075, fenceR + 6.5);
+        scene.add(line);
+        if (i < 8 && rng.chance(0.6)) {
+          const car = makeCar(rng);
+          car.scale.setScalar(0.9);
+          car.rotation.y = Math.PI / 2 + rng.range(-0.04, 0.04);
+          car.position.set(-49.7 + i * 4.6, 0.06, fenceR + 6.5);
+          scene.add(car);
+        }
+      }
+      for (const lx of [-50, -33, -16]) {
+        const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.12, 6, 6), postMat);
+        pole.position.set(lx, 3, fenceR + 18.5);
+        scene.add(pole);
+      }
+    }
 
     // placement grid (shown only while building)
     this.grid = new THREE.GridHelper(PLOT, GRID, 0x223244, 0x223244);
@@ -308,12 +431,15 @@ export class World {
     scene.add(haze);
   }
 
+  /** terrain height sampler (0 across the plot + town) */
+  heightAt: (x: number, z: number) => number = () => 0;
+
   /** Drive lighting/sky from sim time. `dust`/`smog` 0..1. */
   update(hour: number, dust: number, smog = 0): Env {
     const env = envAt(hour, dust, smog);
     this.scene.background = env.sky;
     this.fogExp.color.copy(env.fog);
-    this.fogExp.density = 0.001 + dust * 0.0045 + smog * 0.0014;
+    this.fogExp.density = 0.00055 + dust * 0.0045 + smog * 0.0014;
     this.hazeMat.opacity = smog * 0.3;
 
     // sun path: rises east (+x), sets west; parks below horizon at night

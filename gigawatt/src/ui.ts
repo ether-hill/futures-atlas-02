@@ -386,7 +386,7 @@ export class UI {
       el(
         "p",
         "gw-modal__lede",
-        "An AI compute campus in the high desert — with a town next door. Mix grid, solar, wind, gas and batteries; keep the halls cool through heat waves and dust storms; watch the aquifer, the smog and the neighbours; and grow to <b>one gigawatt</b> of IT load before a bad week bankrupts you.",
+        "An AI compute campus in a green river valley — with a town next door. Mix grid, solar, wind, gas and batteries; keep the halls cool through heat waves and dust storms; watch the aquifer, the smog and the neighbours; and grow to <b>one gigawatt</b> of IT load before a bad week bankrupts you.",
       ),
     );
     card.append(
@@ -430,7 +430,7 @@ export class UI {
         "gw-modal__lede",
         kind === "victory"
           ? `Day ${sim.day()}: the campus crossed ${VICTORY_IT_MW} MW of IT load — a fully-fledged gigasite. Final position: <b>${fmtMoney(sim.cash)}</b>.`
-          : `Day ${sim.day()}: the creditors called it. The desert keeps the buildings; seed <b>${sim.seed}</b> keeps the story.`,
+          : `Day ${sim.day()}: the creditors called it. The valley keeps the buildings; seed <b>${sim.seed}</b> keeps the story.`,
       ),
     );
     const again = el("button", "gw-btn gw-btn--big", "Run it back");

@@ -35,15 +35,21 @@ renderer.toneMappingExposure = 1.12;
 app.append(renderer.domElement);
 
 const camera = new THREE.PerspectiveCamera(46, 1, 1, 2600);
-camera.position.set(125, 92, 158);
+// default frame: town in the foreground, campus centre, river on the horizon
+// (camera south-west, looking north-east) — the reference composition
+camera.position.set(-205, 225, 315);
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
+controls.rotateSpeed = 0.85;
 controls.maxPolarAngle = 1.38;
 controls.minDistance = 28;
-controls.maxDistance = 520;
-controls.target.set(0, 0, 10);
+controls.maxDistance = 620;
+controls.target.set(85, 0, 15);
+
+// debug handle for scripted screenshots / camera checks
+(window as unknown as Record<string, unknown>).__gw = { camera, controls };
 
 const world = new World(seed);
 const sim = new Sim(seed);
@@ -62,7 +68,7 @@ const composer = new EffectComposer(
   new THREE.WebGLRenderTarget(rtSize.x, rtSize.y, { samples: 4, type: THREE.HalfFloatType }),
 );
 composer.addPass(new RenderPass(world.scene, camera));
-const bloom = new UnrealBloomPass(rtSize.clone(), 0.32, 0.65, 0.82);
+const bloom = new UnrealBloomPass(rtSize.clone(), 0.32, 0.65, 0.9);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -323,7 +329,7 @@ function frame(now: number): void {
   const dust = sim.event?.kind === "duststorm" ? 1 : 0;
   const env = world.update(sim.hourOfDay(), dust, sim.smog);
   town.update(env.night);
-  bloom.strength = 0.22 + env.night * 0.33;
+  bloom.strength = 0.16 + env.night * 0.4;
   controls.update();
 
   // soundscape follows the sim; one-shot cues ride on the toast stream
