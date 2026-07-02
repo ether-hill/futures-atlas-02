@@ -321,16 +321,25 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   padding: 3px 7px;
   vertical-align: 1px;
 }
-.viewer-top .actions { display: flex; gap: 10px; align-items: center; }
-.link-btn {
-  font: 500 11px var(--mono);
+.viewer-top .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+/* the deck's primary actions — proper buttons, clearly visible */
+.action-btn {
+  font: 600 11.5px var(--mono);
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--fg-subtle);
-  padding: 6px 2px;
-  transition: color 0.18s var(--ease);
+  color: var(--fg);
+  border: 1px solid var(--border-2);
+  border-radius: 2px;
+  padding: 11px 18px;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease), color 0.18s var(--ease);
 }
-.link-btn:hover { color: var(--accent); }
+.action-btn:hover:not(:disabled) { border-color: var(--accent); }
+.action-btn:disabled { opacity: 0.5; cursor: wait; }
+.action-btn--download {
+  border-color: rgba(224, 149, 47, 0.55);
+  color: var(--accent);
+}
+.action-btn--download:hover:not(:disabled) { background: rgba(224, 149, 47, 0.12); }
 
 .stage-wrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .board-scale { transform-origin: center center; }
@@ -536,6 +545,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* section anchors get room under the sticky nav */
 .flow-section { scroll-margin-top: calc(var(--fa-nav-h, 64px) + 12px); }
+/* generous air between the industry chooser and the deck */
+.flow-section--picker { padding-bottom: clamp(64px, 10vh, 140px); }
+.flow-section--deck { padding-top: clamp(90px, 14vh, 180px); border-top: 1px solid var(--border); }
+.flow-section--deck:empty { padding-top: 0; border-top: 0; }
 
 /* ---- viewer controls ------------------------------------------------------------- */
 .controls {
@@ -579,7 +592,55 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .export-stage .board { margin-bottom: 8px; }
 .export-stage .board-body > * { animation: none !important; opacity: 1 !important; transform: none !important; }
 
-.link-btn:disabled { opacity: 0.5; cursor: wait; }
+/* floating full-screen affordance on the board's bottom-right corner */
+.fs-btn {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font: 600 10px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #efece4;
+  background: rgba(11, 11, 12, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 2px;
+  padding: 8px 12px;
+  transition: border-color 0.18s var(--ease), background 0.18s var(--ease);
+}
+.fs-btn:hover { border-color: var(--accent); background: rgba(11, 11, 12, 0.92); }
+.fs-btn span { font-size: 13px; line-height: 1; }
+
+/* ---- full-screen lightbox ------------------------------------------------------ */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px;
+  background: rgba(8, 8, 9, 0.96);
+}
+.lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font: 500 13px var(--mono);
+  letter-spacing: 0.1em;
+  color: var(--fg-muted);
+  border: 1px solid var(--border-2);
+  border-radius: 2px;
+  padding: 9px 14px;
+  transition: color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.lightbox-close:hover { color: var(--fg); border-color: var(--accent); }
+.controls--lightbox { padding: 4px 0 0; }
 
 /* ---- small screens: the board scales; chrome stacks ------------------------------- */
 @media (max-width: 700px) {

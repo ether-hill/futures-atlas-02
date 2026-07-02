@@ -124,12 +124,12 @@ export default function Page() {
       </section>
 
       {/* start screen */}
-      <div ref={pickerRef} className="flow-section">
+      <div ref={pickerRef} className="flow-section flow-section--picker">
         <Picker onGenerate={(s) => generate(s)} />
       </div>
 
       {/* deck section */}
-      <div ref={deckRef} className="flow-section">
+      <div ref={deckRef} className="flow-section flow-section--deck">
         {phase.name === "generating" && (
           <section className="gen-stage" aria-live="polite">
             <Reveal>
@@ -171,12 +171,7 @@ export default function Page() {
 
         {phase.name === "deck" && (
           <Reveal>
-            <Viewer
-              deck={phase.deck}
-              cached={phase.cached}
-              onNew={reset}
-              onRegenerate={() => generate(phase.sector, true)}
-            />
+            <Viewer deck={phase.deck} cached={phase.cached} onNew={reset} />
           </Reveal>
         )}
       </div>
