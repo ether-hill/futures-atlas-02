@@ -10,17 +10,18 @@ import type { Deck, Severity, Slide } from "./types";
 import { HONESTY_LINE, SLIDE_SLUGS } from "./types";
 import { toSlug } from "./sectors";
 
-// design tokens (PPTX colors are hex without '#')
+// design tokens — the PAPER (white, print-ready) deck theme, matching the
+// viewer's .board overrides (PPTX colors are hex without '#')
 const C = {
-  bg: "0F0F10",
-  fg: "EFECE4",
-  muted: "9A968C",
-  subtle: "67645C",
-  border: "2F2F2A",
-  accent: "E0952F",
-  high: "D9633F",
-  medium: "C9A227",
-  low: "6F8A67",
+  bg: "FDFCF8",
+  fg: "1B1812",
+  muted: "5A554A",
+  subtle: "8B8577",
+  border: "D6D1C3",
+  accent: "A86B10",
+  high: "BF4C2B",
+  medium: "8F7010",
+  low: "587A50",
 };
 const DISPLAY = "Archivo";
 const MONO = "IBM Plex Mono";

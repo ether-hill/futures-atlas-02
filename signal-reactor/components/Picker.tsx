@@ -23,7 +23,6 @@ export function Picker({
   return (
     <>
       <section className="hero">
-        <span className="kicker">Signal Reactor · Organizational foresight — quantum + advanced AI</span>
         <h1>
           Deflate the <span className="deflated">hype</span>.
           <br />
@@ -33,10 +32,6 @@ export function Picker({
           Name your organization and get an eight-slide foresight briefing you can run a stakeholder
           discussion from — one that tells you plainly when quantum barely matters to you, and where
           the genuine disruption actually lands.
-        </p>
-        <p className="honesty">
-          AI-generated foresight, not verified analysis. Use it to structure a conversation, not to
-          make the decision.
         </p>
       </section>
 

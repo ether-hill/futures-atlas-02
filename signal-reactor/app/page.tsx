@@ -1,10 +1,12 @@
 "use client";
 
 /**
- * Signal Reactor — single-page flow: picker → staged generation → deck viewer.
- * State is URL-serialized (?s=<sector-slug>) so a briefing is linkable; a
- * shared link regenerates fresh content for that sector (hosted decks are M3).
- * Generation runs in the HOST app at /api/signal-reactor/generate.
+ * Signal Reactor — one scrolling flow: title banner (modelled on the Atlas
+ * homepage hero) → sector picker → deck viewer. "Let's begin" scrolls to the
+ * picker; choosing an industry scrolls to the deck section, where staged
+ * generation plays and the briefing lands. State is URL-serialized
+ * (?s=<sector-slug>); generation runs in the HOST app at
+ * /api/signal-reactor/generate and archived decks are served instantly.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -12,7 +14,7 @@ import { Picker } from "../components/Picker";
 import { Viewer } from "../components/Viewer";
 import { SAMPLE_DECK } from "../lib/sample";
 import { fromSlug, toSlug } from "../lib/sectors";
-import type { Deck, GenerateResponse } from "../lib/types";
+import { HONESTY_LINE, type Deck, type GenerateResponse } from "../lib/types";
 
 const API = "/api/signal-reactor/generate";
 
@@ -26,7 +28,7 @@ const STAGES = [
 ];
 
 type Phase =
-  | { name: "idle"; prefill?: string }
+  | { name: "idle" }
   | { name: "generating"; sector: string; stage: number }
   | { name: "error"; sector: string; message: string }
   | { name: "deck"; deck: Deck; sector: string; cached: boolean };
@@ -35,6 +37,14 @@ export default function Page() {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const stageTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const booted = useRef(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const deckRef = useRef<HTMLDivElement>(null);
+
+  function scrollTo(el: HTMLElement | null) {
+    if (!el) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    el.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+  }
 
   // ?s= in the URL → prefill and auto-generate (linkable briefings)
   useEffect(() => {
@@ -55,6 +65,7 @@ export default function Page() {
   async function generate(sector: string, fresh = false) {
     setUrl(sector);
     setPhase({ name: "generating", sector, stage: 0 });
+    requestAnimationFrame(() => scrollTo(deckRef.current));
     if (stageTimer.current) clearInterval(stageTimer.current);
     stageTimer.current = setInterval(() => {
       setPhase((p) =>
@@ -71,6 +82,7 @@ export default function Page() {
       const data = (await res.json()) as GenerateResponse;
       if (!data.ok) throw new Error(data.message || "Generation failed.");
       setPhase({ name: "deck", deck: data.deck, sector, cached: !!data.cached });
+      requestAnimationFrame(() => scrollTo(deckRef.current));
     } catch (e) {
       setPhase({
         name: "error",
@@ -85,57 +97,84 @@ export default function Page() {
   function reset() {
     setUrl(null);
     setPhase({ name: "idle" });
+    scrollTo(pickerRef.current);
   }
 
   return (
     <main className="shell">
-      {phase.name === "idle" && <Picker onGenerate={generate} initialSector={phase.prefill} />}
-
-      {phase.name === "generating" && (
-        <section className="gen-stage" aria-live="polite">
-          <span className="kicker kicker--accent">Generating briefing — {phase.sector}</span>
-          {STAGES.map((label, i) => (
-            <div
-              key={label}
-              className="gen-line"
-              data-state={i < phase.stage ? "done" : i === phase.stage ? "active" : "pending"}
-            >
-              {label}
-            </div>
-          ))}
-        </section>
-      )}
-
-      {phase.name === "error" && (
-        <section className="error-panel">
-          <span className="kicker">Generation failed</span>
-          <h2>The reactor didn&rsquo;t deliver.</h2>
-          <p>{phase.message}</p>
-          <div className="error-actions">
-            <button className="generate-btn" onClick={() => generate(phase.sector)}>
-              Try again
-            </button>
-            <button
-              className="btn-secondary"
-              onClick={() => setPhase({ name: "deck", deck: SAMPLE_DECK, sector: SAMPLE_DECK.sector, cached: false })}
-            >
-              Load the sample briefing
-            </button>
-            <button className="btn-secondary" onClick={reset}>
-              Start over
+      {/* title banner — same vocabulary as the Atlas homepage hero */}
+      <section className="sr-hero">
+        <div className="sr-hero__inner">
+          <p className="eyebrow tick">Organizational foresight · quantum + advanced AI</p>
+          <h1>Signal Reactor</h1>
+          <p className="sr-hero__lede">
+            A public foresight instrument. Name your organization and it builds an honest,
+            presentable eight-slide briefing on what quantum computing and advanced AI actually
+            mean for you — hype deflated, the real signal extrapolated, ready to run a stakeholder
+            discussion from, and exportable as PPTX or PDF.
+          </p>
+          <div className="sr-hero__ctas">
+            <button className="cta-primary" onClick={() => scrollTo(pickerRef.current)}>
+              Let&rsquo;s begin <span>↓</span>
             </button>
           </div>
-        </section>
-      )}
+          <p className="honesty">{HONESTY_LINE}</p>
+        </div>
+      </section>
 
-      {phase.name === "deck" && (
-        <Viewer
-          deck={phase.deck}
-          cached={phase.cached}
-          onNew={reset}
-          onRegenerate={() => generate(phase.sector, true)}
-        />
-      )}
+      {/* start screen */}
+      <div ref={pickerRef} className="flow-section">
+        <Picker onGenerate={(s) => generate(s)} />
+      </div>
+
+      {/* deck section */}
+      <div ref={deckRef} className="flow-section">
+        {phase.name === "generating" && (
+          <section className="gen-stage" aria-live="polite">
+            <span className="kicker kicker--accent">Generating briefing — {phase.sector}</span>
+            {STAGES.map((label, i) => (
+              <div
+                key={label}
+                className="gen-line"
+                data-state={i < phase.stage ? "done" : i === phase.stage ? "active" : "pending"}
+              >
+                {label}
+              </div>
+            ))}
+          </section>
+        )}
+
+        {phase.name === "error" && (
+          <section className="error-panel">
+            <span className="kicker">Generation failed</span>
+            <h2>The reactor didn&rsquo;t deliver.</h2>
+            <p>{phase.message}</p>
+            <div className="error-actions">
+              <button className="generate-btn" onClick={() => generate(phase.sector)}>
+                Try again
+              </button>
+              <button
+                className="btn-secondary"
+                onClick={() => setPhase({ name: "deck", deck: SAMPLE_DECK, sector: SAMPLE_DECK.sector, cached: false })}
+              >
+                Load the sample briefing
+              </button>
+              <button className="btn-secondary" onClick={reset}>
+                Start over
+              </button>
+            </div>
+          </section>
+        )}
+
+        {phase.name === "deck" && (
+          <Viewer
+            deck={phase.deck}
+            cached={phase.cached}
+            onNew={reset}
+            onRegenerate={() => generate(phase.sector, true)}
+          />
+        )}
+      </div>
     </main>
   );
 }

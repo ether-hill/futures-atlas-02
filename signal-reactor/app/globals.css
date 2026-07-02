@@ -75,7 +75,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 /* ---- page shell ------------------------------------------------------------- */
 .shell {
-  min-height: calc(100vh - var(--fa-nav-h, 64px));
   display: flex;
   flex-direction: column;
   max-width: 1220px;
@@ -83,15 +82,81 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   padding: 0 28px 48px;
 }
 
+/* ---- title banner — modelled on the Atlas homepage hero ----------------------- */
+.sr-hero {
+  min-height: calc(78svh - var(--fa-nav-h, 64px));
+  display: flex;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--border);
+  /* the homepage's blueprint plan-grid, in the dark register */
+  background-image:
+    linear-gradient(rgba(239, 236, 228, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(239, 236, 228, 0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+  margin: 0 -28px;
+  padding: 0 28px;
+}
+.sr-hero__inner { padding: clamp(72px, 14vh, 170px) 0 clamp(56px, 9vh, 110px); max-width: 1164px; margin: 0 auto; width: 100%; }
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+.tick::before {
+  content: "";
+  display: inline-block;
+  width: 0.7rem;
+  height: 1px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+  background: var(--accent);
+}
+.sr-hero h1 {
+  margin: 22px 0 0;
+  max-width: 16ch;
+  font-weight: 800;
+  font-size: clamp(40px, 8vw, 120px);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.sr-hero__lede {
+  margin: 28px 0 0;
+  max-width: 620px;
+  font-family: var(--mono);
+  font-size: clamp(13px, 1.4vw, 16px);
+  line-height: 1.7;
+  color: var(--fg-muted);
+}
+.sr-hero__ctas { margin-top: 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.cta-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 2px;
+  background: var(--accent);
+  padding: 14px 22px;
+  font: 500 12px var(--mono);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #0b0b0c;
+  transition: filter 0.18s var(--ease);
+}
+.cta-primary:hover { filter: brightness(1.12); }
+.cta-primary span { font-size: 14px; }
+.sr-hero .honesty { margin-top: 26px; max-width: 560px; }
+
 /* ---- picker ------------------------------------------------------------------ */
-.hero { padding: 72px 0 20px; }
+.hero { padding: clamp(56px, 9vh, 100px) 0 20px; }
 .hero .kicker { display: block; margin-bottom: 26px; }
 .hero h1 {
   margin: 0;
   font-weight: 800;
-  font-size: clamp(44px, 7vw, 96px);
-  letter-spacing: -0.035em;
-  line-height: 0.95;
+  font-size: clamp(32px, 4.8vw, 64px);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
   text-wrap: balance;
 }
 .hero h1 .deflated {
@@ -264,11 +329,24 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .stage-wrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .board-scale { transform-origin: center center; }
+/* The deck itself runs on PAPER — a white, print-ready style — while the app
+   chrome stays in the dark register. All slide styles read these variables,
+   so the override here restyles every slide (and the PDF export) at once. */
 .board {
+  --fg: #1b1812;
+  --fg-muted: #5a554a;
+  --fg-subtle: #8b8577;
+  --border: #e8e4d9;
+  --border-2: #d6d1c3;
+  --accent: #a86b10;
+  --sev-high: #bf4c2b;
+  --sev-medium: #8f7010;
+  --sev-low: #587a50;
   width: 1280px;
   height: 720px;
-  background: var(--panel);
-  border: 1px solid var(--border);
+  color: var(--fg);
+  background: #fdfcf8;
+  border: 1px solid #d6d1c3;
   position: relative;
   overflow: hidden;
   display: flex;
@@ -437,6 +515,9 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 .board-foot .wordmark { font: 600 11px var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--fg-subtle); }
 .board-foot .honesty { font-size: 10px; max-width: 660px; }
+
+/* section anchors get room under the sticky nav */
+.flow-section { scroll-margin-top: calc(var(--fa-nav-h, 64px) + 12px); }
 
 /* ---- viewer controls ------------------------------------------------------------- */
 .controls {
