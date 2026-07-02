@@ -35,6 +35,29 @@ type Phase =
   | { name: "error"; sector: string; message: string }
   | { name: "deck"; deck: Deck; sector: string; cached: boolean };
 
+/** A fluid miniature of one real slide — measures itself and scales the
+ *  1280×720 board down to fit. */
+function MiniSlide({ index }: { index: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [s, setS] = useState(0.2);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => setS(el.clientWidth / 1280);
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    <div className="mini-slide" ref={ref}>
+      <div className="mini-scale" style={{ transform: `scale(${s})` }}>
+        <SlideBoard deck={SAMPLE_DECK} index={index} />
+      </div>
+    </div>
+  );
+}
+
 export default function Page() {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const stageTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -107,50 +130,30 @@ export default function Page() {
       {/* title banner — same vocabulary as the Atlas homepage hero */}
       <section className="sr-hero">
         <Reveal className="sr-hero__inner">
-          <p className="eyebrow tick">Organizational foresight · quantum + advanced AI</p>
-          <h1>Signal Reactor</h1>
-          <p className="sr-hero__lede">
-            A public foresight instrument. Name your organization and it builds an honest,
-            presentable eight-slide briefing on what quantum computing and advanced AI actually
-            mean for you — hype deflated, the real signal extrapolated, ready to run a stakeholder
-            discussion from, and exportable as PPTX or PDF.
-          </p>
-          <div className="sr-hero__ctas">
-            <button className="cta-primary" onClick={() => scrollTo(pickerRef.current)}>
-              Let&rsquo;s begin <span>↓</span>
-            </button>
-          </div>
-          <p className="honesty">{HONESTY_LINE}</p>
-
-          {/* a cascading spread of the real deck — miniature renders of the
-              sample briefing's slides, cover on top */}
-          <div className="deck-fan" aria-hidden="true">
-            {(
-              [
-                { slide: 3, s: 0.205, r: -10, x: 0, y: 20, b: 0.8 }, // vectors
-                { slide: 2, s: 0.21, r: -5.5, x: 74, y: 9, b: 0.86 }, // horizons
-                { slide: 6, s: 0.215, r: -1, x: 150, y: 3, b: 0.92 }, // assumptions
-                { slide: 1, s: 0.22, r: 4, x: 228, y: 9, b: 0.96 }, // signal
-                { slide: 0, s: 0.25, r: 9.5, x: 300, y: 24, b: 1 }, // cover, on top
-              ] as const
-            ).map((c) => (
-              <div
-                key={c.slide}
-                className="fan-slide"
-                style={{
-                  left: c.x,
-                  width: 1280 * c.s,
-                  height: 720 * c.s,
-                  transform: `rotate(${c.r}deg) translateY(${c.y}px)`,
-                  filter: `brightness(${c.b})`,
-                  boxShadow: `0 ${18 + c.b * 14}px ${40 + c.b * 30}px rgba(0,0,0,${0.35 + c.b * 0.25})`,
-                }}
-              >
-                <div className="fan-scale" style={{ transform: `scale(${c.s})` }}>
-                  <SlideBoard deck={SAMPLE_DECK} index={c.slide} />
-                </div>
+          <div className="hero-grid">
+            <div>
+              <p className="eyebrow tick">Organizational foresight · quantum + advanced AI</p>
+              <h1>Signal Reactor</h1>
+              <p className="sr-hero__lede">
+                A public foresight instrument. Name your organization and it builds an honest,
+                presentable eight-slide briefing on what quantum computing and advanced AI actually
+                mean for you — hype deflated, the real signal extrapolated, ready to run a
+                stakeholder discussion from, and exportable as PPTX or PDF.
+              </p>
+              <div className="sr-hero__ctas">
+                <button className="cta-primary" onClick={() => scrollTo(pickerRef.current)}>
+                  Let&rsquo;s begin <span>↓</span>
+                </button>
               </div>
-            ))}
+              <p className="honesty">{HONESTY_LINE}</p>
+            </div>
+
+            {/* the real deck, squared: the sample briefing's first four slides */}
+            <div className="deck-grid" aria-hidden="true">
+              {[0, 1, 2, 3].map((i) => (
+                <MiniSlide key={i} index={i} />
+              ))}
+            </div>
           </div>
         </Reveal>
       </section>
