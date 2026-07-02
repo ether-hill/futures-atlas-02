@@ -24,6 +24,17 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "quantum-spark",
+    title: "Quantum Spark",
+    tagline:
+      "Signal Reactor's energized companion: type your industry and get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it — the kind of insight that makes a room lean forward. Grounded hype with an honest label: provocations to spark conversation, not forecasts.",
+    year: "2026",
+    date: "2026-07-03",
+    field: "AI & risk",
+    status: "live",
+    path: "/quantum-spark",
+  },
+  {
     id: "signal-reactor",
     title: "Signal Reactor",
     tagline:

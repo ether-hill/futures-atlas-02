@@ -46,6 +46,10 @@
 /signal-reactor/.next/
 /signal-reactor/node_modules/
 /signal-reactor/out/
+/public/quantum-spark/
+/quantum-spark/.next/
+/quantum-spark/node_modules/
+/quantum-spark/out/
 /generatives/.next/
 /literal-frequency/.next/
 /quantum-sandbox/.next/

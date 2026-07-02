@@ -55,6 +55,9 @@ const nextConfig: NextConfig = {
         // Signal Reactor — Next static export (foresight briefing generator;
         // its generate API runs in THIS app at /api/signal-reactor/*)
         { source: "/signal-reactor", destination: "/signal-reactor/index.html" },
+        // Quantum Spark — Next static export (inspirational insight generator;
+        // its spark API runs in THIS app at /api/quantum-spark/*)
+        { source: "/quantum-spark", destination: "/quantum-spark/index.html" },
       ],
     };
   },
