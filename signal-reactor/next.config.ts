@@ -9,5 +9,24 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   trailingSlash: true,
   eslint: { ignoreDuringBuilds: true },
+  // pptxgenjs references node builtins (node:fs / node:https) on its Node
+  // code paths; strip the scheme and void the modules for the browser bundle
+  // (we only use the in-browser writeFile).
+  webpack: (config, { webpack }) => {
+    config.plugins.push(
+      new webpack.NormalModuleReplacementPlugin(/^node:/, (resource: { request: string }) => {
+        resource.request = resource.request.replace(/^node:/, "");
+      }),
+    );
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+      https: false,
+      http: false,
+      os: false,
+      path: false,
+    };
+    return config;
+  },
 };
 export default nextConfig;

@@ -459,6 +459,19 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .viewer-honesty { text-align: center; padding: 10px 0 0; }
 .viewer-honesty .honesty { display: inline-block; text-align: left; border-left: 2px solid var(--accent); }
 
+/* ---- PDF export stage: full-size boards offscreen, no entrance animation ---------- */
+.export-stage {
+  position: fixed;
+  top: 0;
+  left: -20000px;
+  z-index: -1;
+  pointer-events: none;
+}
+.export-stage .board { margin-bottom: 8px; }
+.export-stage .board-body > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+
+.link-btn:disabled { opacity: 0.5; cursor: wait; }
+
 /* ---- small screens: the board scales; chrome stacks ------------------------------- */
 @media (max-width: 700px) {
   .shell { padding: 0 16px 32px; }

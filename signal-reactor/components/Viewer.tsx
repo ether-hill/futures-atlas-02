@@ -14,8 +14,40 @@ import { SlideBoard } from "./Slides";
 export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
   const [index, setIndex] = useState(0);
   const [scale, setScale] = useState(0.5);
+  const [exporting, setExporting] = useState<null | "pdf" | "pptx">(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const exportRef = useRef<HTMLDivElement>(null);
   const total = deck.slides.length;
+
+  async function downloadPptx() {
+    if (exporting) return;
+    setExporting("pptx");
+    try {
+      const { buildPptx } = await import("../lib/export-pptx");
+      await buildPptx(deck);
+    } finally {
+      setExporting(null);
+    }
+  }
+
+  // PDF needs the hidden export stage mounted first; capture runs in the effect
+  useEffect(() => {
+    if (exporting !== "pdf") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const nodes = Array.from(exportRef.current?.querySelectorAll<HTMLElement>(".board") ?? []);
+        if (!nodes.length) return;
+        const { buildPdf } = await import("../lib/export-pdf");
+        await buildPdf(nodes, deck);
+      } finally {
+        if (!cancelled) setExporting(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [exporting, deck]);
 
   const go = useCallback(
     (d: number) => setIndex((i) => Math.min(total - 1, Math.max(0, i + d))),
@@ -54,6 +86,12 @@ export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
       <div className="viewer-top">
         <span className="sector-label">{deck.sector}</span>
         <div className="actions">
+          <button className="link-btn" onClick={downloadPptx} disabled={!!exporting}>
+            {exporting === "pptx" ? "Preparing PPTX…" : "↓ PPTX"}
+          </button>
+          <button className="link-btn" onClick={() => setExporting("pdf")} disabled={!!exporting}>
+            {exporting === "pdf" ? "Preparing PDF…" : "↓ PDF"}
+          </button>
           <button className="link-btn" onClick={onNew}>
             ← New briefing
           </button>
@@ -98,6 +136,15 @@ export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
       <div className="viewer-honesty">
         <p className="honesty">{HONESTY_LINE}</p>
       </div>
+
+      {/* hidden full-size boards, mounted only while a PDF export runs */}
+      {exporting === "pdf" && (
+        <div className="export-stage" ref={exportRef} aria-hidden="true">
+          {deck.slides.map((_, i) => (
+            <SlideBoard key={i} deck={deck} index={i} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
