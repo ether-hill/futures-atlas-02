@@ -144,6 +144,12 @@ export async function POST(req: Request) {
     console.error(JSON.stringify({ tool: "signal-reactor", error: msg }));
     if (e instanceof Anthropic.APIError) {
       if (e.status === 429) return fail(429, "rate_limited", "The generator is busy — try again in a moment.");
+      if (msg.includes("credit balance")) {
+        return fail(503, "billing", "The connected Anthropic account is out of API credits — generation is paused until it's topped up.");
+      }
+      if (e.status === 401) {
+        return fail(503, "bad_key", "The API key on this deployment was rejected — it may have been rotated.");
+      }
       return fail(502, "upstream_error", "The model call failed. Try again.");
     }
     return fail(502, "invalid_output", "The model returned an unusable response twice. Try again or load the sample briefing.");
