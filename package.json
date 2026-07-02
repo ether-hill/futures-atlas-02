@@ -10,13 +10,15 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0",
     "@upstash/redis": "^1.38.0",
     "futures-atlas-core": "file:./packages/futures-atlas-core",
     "ioredis": "^5.11.1",
     "next": "15.5.19",
     "node-html-parser": "^7.1.0",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

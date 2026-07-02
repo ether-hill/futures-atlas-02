@@ -52,6 +52,9 @@ const nextConfig: NextConfig = {
         { source: "/woodchipper", destination: "/woodchipper/index.html" },
         // Quantum Dominance — Next static export (graphic-novel scenario explorer)
         { source: "/quantum-dominance", destination: "/quantum-dominance/index.html" },
+        // Signal Reactor — Next static export (foresight briefing generator;
+        // its generate API runs in THIS app at /api/signal-reactor/*)
+        { source: "/signal-reactor", destination: "/signal-reactor/index.html" },
       ],
     };
   },

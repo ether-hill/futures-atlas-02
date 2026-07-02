@@ -24,6 +24,17 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "signal-reactor",
+    title: "Signal Reactor",
+    tagline:
+      "An organizational foresight instrument built with Rixt Bouman: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it — deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
+    year: "2026",
+    date: "2026-07-02",
+    field: "AI & risk",
+    status: "live",
+    path: "/signal-reactor",
+  },
+  {
     id: "trajectories",
     title: "Trajectories",
     tagline:

@@ -63,6 +63,16 @@ cp -R "$HERE/woodchipper/out/." "$HERE/public/woodchipper/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/woodchipper"
 echo "✓ woodchipper → public/woodchipper (with atlas-nav)"
 
+# Signal Reactor: Next static export → out/, then copy into public/.
+# (Its generation API lives in the HOST app at /api/signal-reactor/*.)
+echo "→ building signal-reactor"
+( cd "$HERE/signal-reactor" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/signal-reactor"
+mkdir -p "$HERE/public/signal-reactor"
+cp -R "$HERE/signal-reactor/out/." "$HERE/public/signal-reactor/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/signal-reactor"
+echo "✓ signal-reactor → public/signal-reactor (with atlas-nav)"
+
 # Quantum Dominance: Next static export → out/, then copy into public/.
 echo "→ building quantum-dominance"
 ( cd "$HERE/quantum-dominance" && npm install --include=dev --no-audit --no-fund && npm run build )

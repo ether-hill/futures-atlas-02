@@ -42,6 +42,10 @@
 /quantum-dominance/.next/
 /quantum-dominance/node_modules/
 /quantum-dominance/out/
+/public/signal-reactor/
+/signal-reactor/.next/
+/signal-reactor/node_modules/
+/signal-reactor/out/
 /generatives/.next/
 /literal-frequency/.next/
 /quantum-sandbox/.next/
