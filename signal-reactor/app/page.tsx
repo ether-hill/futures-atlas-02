@@ -12,6 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Picker } from "../components/Picker";
 import { Reveal } from "../components/Reveal";
+import { SlideBoard } from "../components/Slides";
 import { Viewer } from "../components/Viewer";
 import { SAMPLE_DECK } from "../lib/sample";
 import { fromSlug, toSlug } from "../lib/sectors";
@@ -121,38 +122,35 @@ export default function Page() {
           </div>
           <p className="honesty">{HONESTY_LINE}</p>
 
-          {/* a fanned spread of the briefing's paper slides */}
+          {/* a cascading spread of the real deck — miniature renders of the
+              sample briefing's slides, cover on top */}
           <div className="deck-fan" aria-hidden="true">
-            <div className="fan-card">
-              <span className="fc-kicker" />
-              <span className="fc-title fc-title--short" />
-              <div className="fc-cols"><i /><i /><i /></div>
-              <div className="fc-foot"><i /><em /></div>
-            </div>
-            <div className="fan-card">
-              <span className="fc-kicker" />
-              <div className="fc-rows"><i /><i /><i /></div>
-              <div className="fc-foot"><i /><em /></div>
-            </div>
-            <div className="fan-card">
-              <span className="fc-kicker" />
-              <span className="fc-title" />
-              <span className="fc-line" />
-              <span className="fc-line fc-line--half" />
-              <div className="fc-foot"><i /><em /></div>
-            </div>
-            <div className="fan-card">
-              <span className="fc-kicker" />
-              <div className="fc-rows"><i /><i /><i /></div>
-              <div className="fc-foot"><i /><em /></div>
-            </div>
-            <div className="fan-card">
-              <span className="fc-kicker" />
-              <span className="fc-title fc-title--short" />
-              <span className="fc-line" />
-              <div className="fc-cols"><i /><i /></div>
-              <div className="fc-foot"><i /><em /></div>
-            </div>
+            {(
+              [
+                { slide: 3, s: 0.205, r: -10, x: 0, y: 20, b: 0.8 }, // vectors
+                { slide: 2, s: 0.21, r: -5.5, x: 74, y: 9, b: 0.86 }, // horizons
+                { slide: 6, s: 0.215, r: -1, x: 150, y: 3, b: 0.92 }, // assumptions
+                { slide: 1, s: 0.22, r: 4, x: 228, y: 9, b: 0.96 }, // signal
+                { slide: 0, s: 0.25, r: 9.5, x: 300, y: 24, b: 1 }, // cover, on top
+              ] as const
+            ).map((c) => (
+              <div
+                key={c.slide}
+                className="fan-slide"
+                style={{
+                  left: c.x,
+                  width: 1280 * c.s,
+                  height: 720 * c.s,
+                  transform: `rotate(${c.r}deg) translateY(${c.y}px)`,
+                  filter: `brightness(${c.b})`,
+                  boxShadow: `0 ${18 + c.b * 14}px ${40 + c.b * 30}px rgba(0,0,0,${0.35 + c.b * 0.25})`,
+                }}
+              >
+                <div className="fan-scale" style={{ transform: `scale(${c.s})` }}>
+                  <SlideBoard deck={SAMPLE_DECK} index={c.slide} />
+                </div>
+              </div>
+            ))}
           </div>
         </Reveal>
       </section>

@@ -153,50 +153,27 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .cta-primary span { font-size: 14px; }
 .sr-hero .honesty { margin-top: 26px; max-width: 560px; }
 
-/* hero graphic: a fanned stack of the briefing's paper slides */
+/* hero graphic: a cascading spread of the ACTUAL deck — miniature renders of
+   the sample briefing's real slides, cover on top. Back cards sit dimmer and
+   smaller so the stack has depth and doesn't fight the headline. */
 .deck-fan {
   position: absolute;
   right: 8px;
-  bottom: clamp(40px, 9vh, 110px);
-  width: 560px;
-  height: 380px;
+  bottom: clamp(36px, 8vh, 96px);
+  width: 620px;
+  height: 400px;
   pointer-events: none;
 }
-.fan-card {
+.fan-slide {
   position: absolute;
   bottom: 0;
-  width: 310px;
-  height: 174px; /* 16:9 */
-  background: #fdfcf8;
-  border: 1px solid #d6d1c3;
+  overflow: hidden;
   border-radius: 2px;
-  padding: 20px 22px;
-  box-shadow: 0 26px 64px rgba(0, 0, 0, 0.55);
   transform-origin: bottom center;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
 }
-.fan-card:nth-child(1) { left: 0; transform: rotate(-11deg) translateY(26px); }
-.fan-card:nth-child(2) { left: 62px; transform: rotate(-5.5deg) translateY(10px); }
-.fan-card:nth-child(3) { left: 126px; transform: rotate(0.5deg); }
-.fan-card:nth-child(4) { left: 190px; transform: rotate(6deg) translateY(12px); }
-.fan-card:nth-child(5) { left: 250px; transform: rotate(12deg) translateY(30px); }
-/* abstract slide furniture */
-.fc-kicker { width: 74px; height: 5px; background: #e0952f; }
-.fc-title { width: 72%; height: 17px; background: #1b1812; }
-.fc-title--short { width: 48%; }
-.fc-line { width: 92%; height: 6px; background: #ddd8cb; }
-.fc-line--half { width: 55%; }
-.fc-cols { display: flex; gap: 10px; margin-top: 2px; }
-.fc-cols i { flex: 1; height: 44px; background: #eeeade; border-top: 2px solid #1b1812; }
-.fc-rows { display: flex; flex-direction: column; gap: 7px; }
-.fc-rows i { height: 9px; background: #eeeade; }
-.fc-rows i:nth-child(2) { width: 84%; }
-.fc-rows i:nth-child(3) { width: 68%; }
-.fc-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
-.fc-foot i { width: 58px; height: 4px; background: #d6d1c3; }
-.fc-foot em { width: 22px; height: 4px; background: #e0952f; }
+.fan-scale { transform-origin: top left; }
+/* miniatures are static images, effectively: no entrance animation inside */
+.deck-fan .board-body > * { animation: none !important; opacity: 1 !important; transform: none !important; }
 @media (max-width: 1180px) { .deck-fan { display: none; } }
 
 /* ---- picker ------------------------------------------------------------------ */
