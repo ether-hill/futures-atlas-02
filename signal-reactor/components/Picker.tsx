@@ -4,6 +4,7 @@
 
 import { useState } from "react";
 import { OTHER_PLACEHOLDER, SECTORS } from "../lib/sectors";
+import { Reveal } from "./Reveal";
 
 export function Picker({
   onGenerate,
@@ -23,19 +24,22 @@ export function Picker({
   return (
     <>
       <section className="hero">
-        <h1>
-          Deflate the <span className="deflated">hype</span>.
-          <br />
-          Extrapolate the <span className="signal">signal</span>.
-        </h1>
-        <p className="lede">
-          Name your organization and get an eight-slide foresight briefing you can run a stakeholder
-          discussion from — one that tells you plainly when quantum barely matters to you, and where
-          the genuine disruption actually lands.
-        </p>
+        <Reveal>
+          <h1>
+            Deflate the <span className="deflated">hype</span>.
+            <br />
+            Extrapolate the <span className="signal">signal</span>.
+          </h1>
+          <p className="lede">
+            Name your organization and get an eight-slide foresight briefing you can run a
+            stakeholder discussion from — one that tells you plainly when quantum barely matters to
+            you, and where the genuine disruption actually lands.
+          </p>
+        </Reveal>
       </section>
 
       <section className="picker" aria-label="Choose your organization type">
+        <Reveal>
         <span className="kicker">Choose your organization</span>
         <div className="sector-grid">
           {SECTORS.map((s) => (
@@ -83,6 +87,7 @@ export function Picker({
             {ready ? "≈ 30 seconds · 8 slides" : "pick a sector, or describe yours"}
           </span>
         </div>
+        </Reveal>
       </section>
     </>
   );

@@ -11,6 +11,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Picker } from "../components/Picker";
+import { Reveal } from "../components/Reveal";
 import { Viewer } from "../components/Viewer";
 import { SAMPLE_DECK } from "../lib/sample";
 import { fromSlug, toSlug } from "../lib/sectors";
@@ -104,7 +105,7 @@ export default function Page() {
     <main className="shell">
       {/* title banner — same vocabulary as the Atlas homepage hero */}
       <section className="sr-hero">
-        <div className="sr-hero__inner">
+        <Reveal className="sr-hero__inner">
           <p className="eyebrow tick">Organizational foresight · quantum + advanced AI</p>
           <h1>Signal Reactor</h1>
           <p className="sr-hero__lede">
@@ -119,7 +120,7 @@ export default function Page() {
             </button>
           </div>
           <p className="honesty">{HONESTY_LINE}</p>
-        </div>
+        </Reveal>
       </section>
 
       {/* start screen */}
@@ -131,16 +132,18 @@ export default function Page() {
       <div ref={deckRef} className="flow-section">
         {phase.name === "generating" && (
           <section className="gen-stage" aria-live="polite">
-            <span className="kicker kicker--accent">Generating briefing — {phase.sector}</span>
-            {STAGES.map((label, i) => (
-              <div
-                key={label}
-                className="gen-line"
-                data-state={i < phase.stage ? "done" : i === phase.stage ? "active" : "pending"}
-              >
-                {label}
-              </div>
-            ))}
+            <Reveal>
+              <span className="kicker kicker--accent">Generating briefing — {phase.sector}</span>
+              {STAGES.map((label, i) => (
+                <div
+                  key={label}
+                  className="gen-line"
+                  data-state={i < phase.stage ? "done" : i === phase.stage ? "active" : "pending"}
+                >
+                  {label}
+                </div>
+              ))}
+            </Reveal>
           </section>
         )}
 
@@ -167,12 +170,14 @@ export default function Page() {
         )}
 
         {phase.name === "deck" && (
-          <Viewer
-            deck={phase.deck}
-            cached={phase.cached}
-            onNew={reset}
-            onRegenerate={() => generate(phase.sector, true)}
-          />
+          <Reveal>
+            <Viewer
+              deck={phase.deck}
+              cached={phase.cached}
+              onNew={reset}
+              onRegenerate={() => generate(phase.sector, true)}
+            />
+          </Reveal>
         )}
       </div>
     </main>

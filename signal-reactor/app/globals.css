@@ -73,13 +73,18 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   vertical-align: middle;
 }
 
-/* ---- page shell ------------------------------------------------------------- */
+/* ---- page shell — the ATLAS-STANDARD global margins ---------------------------
+   Mirrors the host Container exactly: full-width, mx-auto, px-4 below 680px and
+   px-7 (28px) above. Content blocks constrain themselves (max-w in ch / px),
+   never the shell. */
+:root { --gutter: 16px; }
+@media (min-width: 680px) { :root { --gutter: 28px; } }
 .shell {
   display: flex;
   flex-direction: column;
-  max-width: 1220px;
+  width: 100%;
   margin: 0 auto;
-  padding: 0 28px 48px;
+  padding: 0 var(--gutter) 48px;
 }
 
 /* ---- title banner — modelled on the Atlas homepage hero ----------------------- */
@@ -93,10 +98,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
     linear-gradient(rgba(239, 236, 228, 0.035) 1px, transparent 1px),
     linear-gradient(90deg, rgba(239, 236, 228, 0.035) 1px, transparent 1px);
   background-size: 40px 40px;
-  margin: 0 -28px;
-  padding: 0 28px;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: 0 var(--gutter);
 }
-.sr-hero__inner { padding: clamp(72px, 14vh, 170px) 0 clamp(56px, 9vh, 110px); max-width: 1164px; margin: 0 auto; width: 100%; }
+.sr-hero__inner { padding: clamp(72px, 14vh, 170px) 0 clamp(56px, 9vh, 110px); width: 100%; }
 .eyebrow {
   font-family: var(--mono);
   font-size: 0.7rem;
@@ -363,15 +368,28 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .board-body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 
 /* orchestrated entrance: one reveal per slide, staggered children */
-.board-body > * { opacity: 0; transform: translateY(12px); animation: rise 0.5s var(--ease) forwards; }
+.board-body > * { opacity: 0; transform: translateY(12px); animation: slide-rise 0.5s var(--ease) forwards; }
 .board-body > *:nth-child(2) { animation-delay: 0.06s; }
 .board-body > *:nth-child(3) { animation-delay: 0.12s; }
 .board-body > *:nth-child(4) { animation-delay: 0.18s; }
 .board-body > *:nth-child(5) { animation-delay: 0.24s; }
 .board-body > *:nth-child(6) { animation-delay: 0.3s; }
-@keyframes rise { to { opacity: 1; transform: none; } }
+@keyframes slide-rise { to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .board-body > * { animation: none; opacity: 1; transform: none; }
+}
+
+/* ---- ATLAS-STANDARD scroll reveal (identical to the homepage) ------------------ */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: none; }
+}
+[data-reveal] { opacity: 0; }
+[data-reveal].is-in {
+  animation: rise 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] { opacity: 1 !important; transform: none !important; animation: none !important; }
 }
 
 /* ---- slide compositions ---------------------------------------------------------- */
