@@ -29,7 +29,7 @@ type Phase =
   | { name: "idle"; prefill?: string }
   | { name: "generating"; sector: string; stage: number }
   | { name: "error"; sector: string; message: string }
-  | { name: "deck"; deck: Deck };
+  | { name: "deck"; deck: Deck; sector: string; cached: boolean };
 
 export default function Page() {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
@@ -52,7 +52,7 @@ export default function Page() {
     window.history.replaceState(null, "", u.toString());
   }
 
-  async function generate(sector: string) {
+  async function generate(sector: string, fresh = false) {
     setUrl(sector);
     setPhase({ name: "generating", sector, stage: 0 });
     if (stageTimer.current) clearInterval(stageTimer.current);
@@ -66,11 +66,11 @@ export default function Page() {
       const res = await fetch(API, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ sector }),
+        body: JSON.stringify({ sector, fresh }),
       });
       const data = (await res.json()) as GenerateResponse;
       if (!data.ok) throw new Error(data.message || "Generation failed.");
-      setPhase({ name: "deck", deck: data.deck });
+      setPhase({ name: "deck", deck: data.deck, sector, cached: !!data.cached });
     } catch (e) {
       setPhase({
         name: "error",
@@ -115,7 +115,10 @@ export default function Page() {
             <button className="generate-btn" onClick={() => generate(phase.sector)}>
               Try again
             </button>
-            <button className="btn-secondary" onClick={() => setPhase({ name: "deck", deck: SAMPLE_DECK })}>
+            <button
+              className="btn-secondary"
+              onClick={() => setPhase({ name: "deck", deck: SAMPLE_DECK, sector: SAMPLE_DECK.sector, cached: false })}
+            >
               Load the sample briefing
             </button>
             <button className="btn-secondary" onClick={reset}>
@@ -125,7 +128,14 @@ export default function Page() {
         </section>
       )}
 
-      {phase.name === "deck" && <Viewer deck={phase.deck} onNew={reset} />}
+      {phase.name === "deck" && (
+        <Viewer
+          deck={phase.deck}
+          cached={phase.cached}
+          onNew={reset}
+          onRegenerate={() => generate(phase.sector, true)}
+        />
+      )}
     </main>
   );
 }

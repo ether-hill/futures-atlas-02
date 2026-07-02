@@ -26,7 +26,7 @@ export interface Deck {
 }
 
 export type GenerateResponse =
-  | { ok: true; deck: Deck }
+  | { ok: true; deck: Deck; cached?: boolean }
   | { ok: false; code: string; message: string };
 
 /** Mono kicker per slide type (fixed slugs from the brief). */

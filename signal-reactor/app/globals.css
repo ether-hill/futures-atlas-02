@@ -241,6 +241,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   flex-wrap: wrap;
 }
 .viewer-top .sector-label { font: 600 12px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--fg-muted); }
+.archive-tag {
+  margin-left: 12px;
+  font: 500 9.5px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+  border: 1px solid var(--border-2);
+  padding: 3px 7px;
+  vertical-align: 1px;
+}
 .viewer-top .actions { display: flex; gap: 10px; align-items: center; }
 .link-btn {
   font: 500 11px var(--mono);

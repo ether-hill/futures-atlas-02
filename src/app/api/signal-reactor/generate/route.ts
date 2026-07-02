@@ -5,8 +5,12 @@
  * lives here and only here — the sub-app at /signal-reactor is a static
  * export that calls this same-origin route.
  *
- * Body: { sector: string, model?: "sonnet" | "haiku" }
- * 200 → { ok: true, deck }        4xx/5xx → { ok: false, code, message }
+ * Generated decks are archived (lib/signal-reactor/store) and served from
+ * the archive on subsequent requests for the same sector — pass fresh: true
+ * to force a regeneration (which overwrites the archived deck).
+ *
+ * Body: { sector: string, model?: "sonnet" | "haiku", fresh?: boolean }
+ * 200 → { ok: true, deck, cached }   4xx/5xx → { ok: false, code, message }
  */
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
@@ -19,6 +23,7 @@ import {
   extractJson,
   type Analysis,
 } from "@/lib/signal-reactor/deck";
+import { deckKey, readDeck, writeDeck } from "@/lib/signal-reactor/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -52,6 +57,19 @@ export async function POST(req: Request) {
   if (sector.length < 2) return fail(400, "bad_sector", "Describe the organization in at least 2 characters.");
   const modelKey: ModelKey = body.model === "haiku" ? "haiku" : "sonnet";
   const model = MODELS[modelKey];
+
+  // archive first: an already-generated deck for this sector is served as-is
+  const key = deckKey(sector, PROMPT_VERSION, "provocation", model.id);
+  if (!body.fresh) {
+    const archived = await readDeck(key);
+    if (archived) {
+      console.log(JSON.stringify({ tool: "signal-reactor", call: "archive-hit", key }));
+      return NextResponse.json(
+        { ok: true, deck: archived, cached: true },
+        { headers: { "cache-control": "no-store" } },
+      );
+    }
+  }
 
   const client = new Anthropic();
 
@@ -135,8 +153,10 @@ export async function POST(req: Request) {
       FacilitationSchema,
     );
 
+    const deck = assemble(analysis, facilitation);
+    await writeDeck(key, deck); // archive for next time (best-effort)
     return NextResponse.json(
-      { ok: true, deck: assemble(analysis, facilitation) },
+      { ok: true, deck, cached: false },
       { headers: { "cache-control": "no-store" } },
     );
   } catch (e) {

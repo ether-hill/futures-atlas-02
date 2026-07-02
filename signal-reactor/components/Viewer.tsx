@@ -11,7 +11,17 @@ import type { Deck } from "../lib/types";
 import { HONESTY_LINE, SLIDE_SLUGS } from "../lib/types";
 import { SlideBoard } from "./Slides";
 
-export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
+export function Viewer({
+  deck,
+  cached,
+  onNew,
+  onRegenerate,
+}: {
+  deck: Deck;
+  cached?: boolean;
+  onNew: () => void;
+  onRegenerate?: () => void;
+}) {
   const [index, setIndex] = useState(0);
   const [scale, setScale] = useState(0.5);
   const [exporting, setExporting] = useState<null | "pdf" | "pptx">(null);
@@ -84,8 +94,20 @@ export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
   return (
     <div className="viewer">
       <div className="viewer-top">
-        <span className="sector-label">{deck.sector}</span>
+        <span className="sector-label">
+          {deck.sector}
+          {cached && (
+            <span className="archive-tag" title="This briefing was generated earlier and served from the archive">
+              Archived · {deck.generatedAt.slice(0, 10)}
+            </span>
+          )}
+        </span>
         <div className="actions">
+          {cached && onRegenerate && (
+            <button className="link-btn" onClick={onRegenerate}>
+              ↻ Regenerate
+            </button>
+          )}
           <button className="link-btn" onClick={downloadPptx} disabled={!!exporting}>
             {exporting === "pptx" ? "Preparing PPTX…" : "↓ PPTX"}
           </button>
