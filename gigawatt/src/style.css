@@ -95,6 +95,30 @@ html, body {
   cursor: pointer;
 }
 .gw-speed.is-on { color: var(--gw-ink); background: var(--gw-accent); border-color: transparent; }
+.gw-rand {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 7px 0;
+  font: 700 10px var(--font-display);
+  letter-spacing: 0.1em;
+  color: var(--gw-bone);
+  background: rgba(111, 220, 255, 0.1);
+  border: 1px solid rgba(111, 220, 255, 0.35);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.gw-rand:hover { background: rgba(111, 220, 255, 0.22); }
+
+.gw-btn--ghost {
+  margin-top: 10px;
+  color: var(--gw-bone);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--gw-hairline);
+}
+.gw-btn--ghost:hover { background: rgba(255, 255, 255, 0.13); }
+
 .gw-event {
   margin-top: 10px;
   padding: 6px 9px;

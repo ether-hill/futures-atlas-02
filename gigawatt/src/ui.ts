@@ -14,8 +14,9 @@ export interface UICallbacks {
   onAccept(id: number): void;
   onDecline(id: number): void;
   onSell(unitId: number): void;
-  onStart(seed: string): void;
+  onStart(seed: string, random?: boolean): void;
   onMute(): boolean; // returns the new muted state
+  onRandomize(): void;
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(
@@ -119,6 +120,11 @@ export class UI {
       this.speedBtns.push(b);
     });
     hud.append(speeds);
+
+    const rand = el("button", "gw-rand", "🎲 RANDOMISE CAMPUS");
+    rand.title = "Replace the campus with a random build — anything from a starter site to a gigasite";
+    rand.addEventListener("click", () => this.cb.onRandomize());
+    hud.append(rand);
 
     this.eventChip = el("div", "gw-event");
     this.eventChip.style.display = "none";
@@ -407,7 +413,9 @@ export class UI {
     input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") this.cb.onStart(input.value.trim() || seed);
     });
-    card.append(seedRow, start);
+    const randStart = el("button", "gw-btn gw-btn--big gw-btn--ghost", "🎲 Start with a random campus");
+    randStart.addEventListener("click", () => this.cb.onStart(input.value.trim() || seed, true));
+    card.append(seedRow, start, randStart);
     card.append(
       el(
         "p",

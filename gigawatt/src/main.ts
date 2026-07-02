@@ -17,7 +17,7 @@ import { UI, type Tool } from "./ui";
 import { World, cellToWorld, worldToCell, PLOT } from "./world";
 import { Town } from "./town";
 import { AudioEngine } from "./audio";
-import { randomSeedWord } from "./rng";
+import { RNG, hashSeed, randomSeedWord } from "./rng";
 
 const app = document.getElementById("app")!;
 
@@ -48,11 +48,10 @@ controls.minDistance = 28;
 controls.maxDistance = 620;
 controls.target.set(85, 0, 15);
 
-// debug handle for scripted screenshots / camera checks
-(window as unknown as Record<string, unknown>).__gw = { camera, controls };
-
 const world = new World(seed);
 const sim = new Sim(seed);
+// debug handle for scripted screenshots / camera checks
+(window as unknown as Record<string, unknown>).__gw = { camera, controls, sim };
 // optional start-of-run clock override (e.g. ?hour=20.5 for a dusk screenshot)
 const hourParam = Number(new URLSearchParams(location.search).get("hour"));
 if (Number.isFinite(hourParam) && hourParam > 0) sim.timeH = hourParam % 24;
@@ -122,24 +121,45 @@ const ui = new UI(app, {
     }
     select(null);
   },
-  onStart: (s) => {
+  onStart: (s, random) => {
     audio.start(); // user gesture — safe to spin up WebAudio here
     if (s !== seed) {
       const u = new URL(location.href);
       u.searchParams.set("seed", s);
+      if (random) u.searchParams.set("rand", "1");
+      else u.searchParams.delete("rand");
       location.href = u.toString();
       return;
     }
     started = true;
     const u = new URL(location.href);
     u.searchParams.set("seed", seed);
+    u.searchParams.delete("rand");
     history.replaceState(null, "", u.toString());
     ui.hideOverlay();
+    if (random || pendingRandom) doRandomise();
   },
   onMute: () => audio.toggleMute(),
+  onRandomize: () => doRandomise(),
 });
 ui.showIntro(seed);
 ui.setSpeed(1);
+
+// each click walks a deterministic-per-seed sequence of generated campuses
+let randCount = 0;
+function doRandomise(): void {
+  if (sim.gameOver) return;
+  for (const v of views.values()) unitRoot.remove(v.group);
+  views.clear();
+  sim.randomCampus(new RNG(hashSeed(seed + "-rand-" + randCount++)));
+  for (const u of sim.units) addUnitMesh(u);
+  setTool(null);
+  select(null);
+  audio.blip("place");
+}
+// ?rand=1 (set when a seed change on the intro asked for a random start):
+// apply the random build once the player breaks ground
+const pendingRandom = new URLSearchParams(location.search).get("rand") === "1";
 
 function setTool(t: Tool): void {
   // toggling the same tool disarms it

@@ -207,6 +207,102 @@ export class Sim {
     return id === undefined ? undefined : this.units.find((u) => u.id === id);
   }
 
+  /**
+   * Replace the campus with a procedurally generated build — the demo
+   * "randomise" action. Scales range from a couple of halls to a near-gigasite.
+   * Layout respects the civic layer: combustion and grid kit go on the far
+   * northern rows, IT mid-plot with cooling alongside, clean power anywhere.
+   * Contracts/offers reset (a smaller build must not inherit obligations);
+   * cash becomes working capital scaled to the campus.
+   */
+  randomCampus(rng: RNG): { label: string; itMW: number; capex: number } {
+    this.units = [];
+    this.occupied.clear();
+    this.capex = 0;
+    this.contracts = [];
+    this.offers = [];
+    this.nextOfferH = this.timeH + 24 * rng.range(0.1, 0.5);
+
+    const tryPlace = (def: DefId, zMin: number, zMax: number): boolean => {
+      const D = DEFS[def];
+      for (let t = 0; t < 140; t++) {
+        const rot = D.w !== D.d && rng.chance(0.5);
+        const w = rot ? D.d : D.w, d = rot ? D.w : D.d;
+        const x = rng.int(0, GRID - w);
+        const z = rng.int(Math.max(0, zMin), Math.max(0, Math.min(GRID - d, zMax)));
+        if (!this.canPlace(x, z, w, d)) continue;
+        const u: Unit = {
+          id: this.nextId++, def, x, z, w, d,
+          health: 1, throttle: 0, failed: false, repairH: 0,
+          charge: def === "battery" ? (D.storeMWh ?? 0) * 0.5 : 0,
+          load: 0,
+        };
+        this.units.push(u);
+        for (let i = x; i < x + w; i++) for (let j = z; j < z + d; j++) this.occupied.set(`${i},${j}`, u.id);
+        this.capex += D.cost;
+        return true;
+      }
+      return false;
+    };
+
+    const scales = [
+      { label: "starter site", it: [2, 4] as const },
+      { label: "regional build", it: [6, 10] as const },
+      { label: "flagship campus", it: [12, 18] as const },
+      { label: "gigasite push", it: [20, 26] as const },
+    ];
+    const scale = rng.pick(scales);
+
+    // IT mid-plot
+    const nIT = rng.int(scale.it[0], scale.it[1]);
+    const podFrac = rng.range(0.25, 0.55);
+    let itMW = 0;
+    for (let i = 0; i < nIT; i++) {
+      const def: DefId = rng.chance(podFrac) ? "pod" : "hall";
+      if (tryPlace(def, 8, 22)) itMW += DEFS[def].itMW ?? 0;
+    }
+
+    // cooling ≈ 1.15× IT heat, mixed fans/chillers, near the IT rows
+    const chillFrac = rng.range(0.15, 0.5);
+    let coolMW = 0;
+    let guard = 0;
+    while (coolMW < itMW * 1.15 && guard++ < 80) {
+      const def: DefId = rng.chance(chillFrac) ? "chiller" : "drycool";
+      if (!tryPlace(def, 6, 24)) break;
+      coolMW += (DEFS[def].coolMW ?? 0) * (def === "drycool" ? 0.8 : 1);
+    }
+    const coolDraw = this.units.reduce((s, u) => s + (DEFS[u.def].coolDrawMW ?? 0), 0);
+
+    // power mix ≈ 1.25× total draw; intermittents counted at typical output
+    const powerNeed = (itMW + coolDraw) * 1.25;
+    const solarShare = rng.range(0.05, 0.3);
+    const windShare = rng.range(0, 0.25);
+    const gasShare = rng.range(0, 0.3);
+    const nSolar = Math.round((powerNeed * solarShare) / 20);
+    const nWind = Math.round((powerNeed * windShare) / (10 * 0.55));
+    const nGas = Math.round((powerNeed * gasShare) / 35);
+    const firmNeed = powerNeed - nGas * 35 - nWind * 10 * 0.55 * 0.7 - nSolar * 20 * 0.3;
+    const nSub = Math.max(1, Math.ceil(firmNeed / 50));
+    const nBatt = Math.ceil(nSolar / 2);
+    for (let i = 0; i < nSub; i++) tryPlace("substation", 0, 6);
+    for (let i = 0; i < nGas; i++) tryPlace("gas", 0, 5);
+    for (let i = 0; i < nWind; i++) tryPlace("wind", 0, 8);
+    for (let i = 0; i < nSolar; i++) tryPlace("solar", 2, 26);
+    for (let i = 0; i < nBatt; i++) tryPlace("battery", 2, 26);
+
+    // working capital scaled to the build; keep the net/day readout honest
+    this.cash = Math.min(140_000_000, Math.max(25_000_000, this.capex * 0.15));
+    this.lastCash = this.cash;
+    this.cashRate = 0;
+
+    const label = scale.label;
+    this.toasts.push({
+      text: `Randomised ${label}: ${itMW} MW of IT for ${fmtMoney(this.capex)} · ${fmtMoney(this.cash)} in the bank.`,
+      kind: "info",
+    });
+    return { label, itMW, capex: this.capex };
+  }
+
   // --- environment ------------------------------------------------------
 
   hourOfDay(): number {
