@@ -11,7 +11,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Reveal } from "../components/Reveal";
 import { SAMPLE_SPARK } from "../lib/sample";
-import { EXAMPLE_CHIPS, HONESTY_LINE, type SparkResponse, type SparkResult } from "../lib/types";
+import { HONESTY_LINE, INDUSTRY_OPTIONS, type SparkResponse, type SparkResult } from "../lib/types";
 
 const API = "/api/quantum-spark/spark";
 
@@ -34,6 +34,7 @@ function toSlug(s: string): string {
 export default function Page() {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const [query, setQuery] = useState("");
+  const [other, setOther] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const msgTimer = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -66,7 +67,7 @@ export default function Page() {
     toastTimer.current = setTimeout(() => setToast(null), 5000);
   }
 
-  async function spark(businessRaw: string) {
+  async function spark(businessRaw: string, fresh = false) {
     const business = businessRaw.trim();
     if (business.length < 2) return;
     setUrl(business);
@@ -81,7 +82,7 @@ export default function Page() {
       const res = await fetch(API, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ business }),
+        body: JSON.stringify({ business, fresh }),
       });
       const data = (await res.json()) as SparkResponse;
       if (!data.ok) throw new Error(data.message || "Generation failed.");
@@ -118,6 +119,7 @@ export default function Page() {
   function reset() {
     setUrl(null);
     setQuery("");
+    setOther(false);
     setPhase({ name: "idle" });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -132,45 +134,58 @@ export default function Page() {
           Five <span className="grad-text">sparks</span> for what&rsquo;s next.
         </h1>
         <p className="sub">
-          Type your industry — get five bold, grounded glimpses of how quantum computing and
+          Pick your industry — get five bold, grounded glimpses of how quantum computing and
           next-wave AI will transform it. Inspiration, not fabrication.
         </p>
-        <form
-          className="spark-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (ready) spark(query);
-          }}
-        >
-          <label className="sr-only" htmlFor="business">
-            Your business or industry
-          </label>
-          <input
-            id="business"
-            className="spark-input"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Your business or industry…"
-            autoComplete="off"
-          />
-          <button className="spark-btn" type="submit" disabled={!ready || phase.name === "loading"}>
-            Spark 5 insights ✦
-          </button>
-        </form>
-        <div className="chips">
-          {EXAMPLE_CHIPS.map((c) => (
+        {/* lead with the options: 20 industries + Other… (reveals free text) */}
+        <div className="chips" role="group" aria-label="Choose your industry">
+          {INDUSTRY_OPTIONS.map((c) => (
             <button
               key={c}
               className="chip"
+              disabled={phase.name === "loading"}
               onClick={() => {
                 setQuery(c);
+                setOther(false);
                 spark(c);
               }}
             >
               {c}
             </button>
           ))}
+          <button
+            className="chip chip--other"
+            aria-pressed={other}
+            onClick={() => setOther((o) => !o)}
+          >
+            Other…
+          </button>
         </div>
+        {other && (
+          <form
+            className="spark-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (ready) spark(query);
+            }}
+          >
+            <label className="sr-only" htmlFor="business">
+              Your business or industry
+            </label>
+            <input
+              id="business"
+              className="spark-input"
+              autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Describe your business — e.g. 'a craft brewery', 'a shipping port'…"
+              autoComplete="off"
+            />
+            <button className="spark-btn" type="submit" disabled={!ready || phase.name === "loading"}>
+              Spark 5 insights ✦
+            </button>
+          </form>
+        )}
       </Reveal>
 
       <div ref={resultsRef} style={{ scrollMarginTop: "calc(var(--fa-nav-h, 64px) + 16px)" }}>
@@ -197,7 +212,7 @@ export default function Page() {
               </article>
             ))}
             <div className="actions">
-              <button className="act-primary" onClick={() => spark(phase.business)}>
+              <button className="act-primary" onClick={() => spark(phase.business, true)}>
                 Spark 5 more ✦
               </button>
               <button className="act-ghost" onClick={() => copyAll(phase.result)}>

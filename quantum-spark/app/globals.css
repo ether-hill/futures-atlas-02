@@ -167,9 +167,20 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-  margin-top: 22px;
-  max-width: 640px;
+  margin-top: 34px;
+  max-width: 780px;
 }
+.chip--other {
+  border-style: dashed;
+  color: var(--subtle);
+}
+.chip--other[aria-pressed="true"] {
+  color: var(--fg);
+  border-color: var(--violet);
+  border-style: solid;
+}
+.chip:disabled { opacity: 0.45; cursor: wait; }
+.spark-form { margin-top: 24px; }
 .chip {
   padding: 8px 15px;
   font-size: 13px;

@@ -17,20 +17,33 @@ export interface SparkResult {
 }
 
 export type SparkResponse =
-  | { ok: true; result: SparkResult }
+  | { ok: true; result: SparkResult; cached?: boolean }
   | { ok: false; code: string; message: string };
 
 /** The one restrained honesty line (brief §9 — verbatim, never inflated). */
 export const HONESTY_LINE =
   "Forward-looking, inspirational scenarios grounded in real quantum and AI capabilities — provocations to spark imagination and conversation, not forecasts or investment advice.";
 
-export const EXAMPLE_CHIPS = [
+/** The leading grid: 20 curated industries; "Other…" reveals free text. */
+export const INDUSTRY_OPTIONS = [
   "Logistics",
   "Healthcare",
   "Finance",
-  "A coffee brand",
-  "Renewable energy",
-  "A law firm",
+  "Insurance",
+  "Manufacturing",
+  "Retail & E-commerce",
   "Agriculture",
+  "Energy & Utilities",
+  "Renewable energy",
+  "Telecommunications",
+  "Pharma & Biotech",
+  "Automotive",
+  "Aerospace & Defense",
+  "Construction",
+  "Education",
+  "Legal services",
+  "Media & Entertainment",
+  "Hospitality & Tourism",
+  "Real estate",
   "Fashion retail",
 ] as const;

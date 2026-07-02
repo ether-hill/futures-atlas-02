@@ -12,6 +12,7 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { PROMPT_VERSION, SYS_SPARK } from "@/lib/quantum-spark/prompts";
 import { SparkSchema, extractJson, type SparkResult } from "@/lib/quantum-spark/schema";
+import { readSpark, sparkKey, writeSpark } from "@/lib/quantum-spark/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,6 +44,20 @@ export async function POST(req: Request) {
       : "";
   if (business.length < 2) return fail(400, "bad_business", "Describe the business in at least 2 characters.");
   const model = MODELS[body.model === "haiku" ? "haiku" : "sonnet"];
+
+  // archive first: a stored spark for this business is served as-is unless
+  // the caller forces a fresh set ("Spark 5 more")
+  const key = sparkKey(business, PROMPT_VERSION, model.id);
+  if (!body.fresh) {
+    const archived = await readSpark(key);
+    if (archived) {
+      console.log(JSON.stringify({ tool: "quantum-spark", call: "archive-hit", key }));
+      return NextResponse.json(
+        { ok: true, result: archived, cached: true },
+        { headers: { "cache-control": "no-store" } },
+      );
+    }
+  }
 
   const client = new Anthropic();
   let corrective = "";
@@ -89,7 +104,11 @@ export async function POST(req: Request) {
             generatedAt: new Date().toISOString(),
             promptVersion: PROMPT_VERSION,
           };
-          return NextResponse.json({ ok: true, result }, { headers: { "cache-control": "no-store" } });
+          await writeSpark(key, result); // archive for next time (best-effort)
+          return NextResponse.json(
+            { ok: true, result, cached: false },
+            { headers: { "cache-control": "no-store" } },
+          );
         }
         const issues = parsed.error.issues
           .slice(0, 3)
