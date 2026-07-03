@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // futures-atlas-core ships TSX source; Next must transpile it.
   transpilePackages: ["futures-atlas-core"],
 
+  // Baked once per deployment — the footer's "last updated" date.
+  env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString() },
+
   // Both sub-projects are served from THIS deployment as self-contained static
   // bundles under public/ — no proxies, no separate Vercel projects. These
   // rewrites resolve the bundles' clean entry URLs to their index.html.
