@@ -11,7 +11,7 @@
   Tablet/mobile: the links collapse into an animated hamburger sheet that holds
   the primary links, the current project's own pages (under its title), and the
   theme toggle. Theme is one class (html.dark) + one key (localStorage
-  "fa-theme"): dark by default on project pages, light on the hub.
+  "fa-theme"): dark by default everywhere; light only if the user chose it.
   Edit THIS file to change the nav anywhere.
 */
 (function () {
@@ -64,7 +64,7 @@
     (document.head || document.documentElement).appendChild(css);
   }
 
-  // theme: one key, one class. dark-default on project pages, light on the hub.
+  // theme: one key, one class. dark by default everywhere (hub + project pages); light only if the user picked it.
   var root = document.documentElement;
   function storedTheme() { try { return localStorage.getItem("fa-theme"); } catch (e) { return null; } }
   // A project may LOCK its theme (e.g. The Odds is dark-only, Village Oracle is
@@ -72,7 +72,7 @@
   var lockedTheme = (cur && cur.theme) || null;
   (function applyDefault() {
     var s = storedTheme();
-    var dark = lockedTheme ? lockedTheme === "dark" : isProject ? s !== "light" : s === "dark";
+    var dark = lockedTheme ? lockedTheme === "dark" : s !== "light";
     root.classList.toggle("dark", dark);
   })();
 
