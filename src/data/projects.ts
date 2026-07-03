@@ -24,6 +24,102 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "odds-of-surviving-ai",
+    title: "The Odds",
+    tagline:
+      "An interactive that plays three public p(doom) estimates — Amodei’s die, Musk’s wheel, Tegmark’s deck — as games of chance, then asks what your survival odds really are.",
+    year: "2026",
+    date: "2026-02-14",
+    field: "AI & risk",
+    status: "live",
+    path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
+    image: "/projects/odds-of-surviving-ai.jpg",
+  },
+  {
+    id: "signal-reactor",
+    title: "Signal Reactor",
+    tagline:
+      "An organizational foresight instrument: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it — deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
+    year: "2026",
+    date: "2026-07-02",
+    field: "AI & risk",
+    status: "live",
+    path: "/signal-reactor",
+    image: "/projects/signal-reactor.jpg",
+  },
+  {
+    id: "quantum-spark",
+    title: "Quantum Spark",
+    tagline:
+      "Signal Reactor's energized companion: type your industry and get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it — the kind of insight that makes a room lean forward. Grounded hype with an honest label: provocations to spark conversation, not forecasts.",
+    year: "2026",
+    date: "2026-07-03",
+    field: "AI & risk",
+    status: "live",
+    path: "/quantum-spark",
+    image: "/projects/quantum-spark.jpg",
+  },
+  {
+    id: "hyperscale",
+    title: "Hyperscale",
+    tagline:
+      "A 3D management sim about the physical reality of the AI buildout — a compute campus in a river valley with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment as you grow toward a gigawatt. Full day–night cycle, seeded weather and markets, procedural audio.",
+    year: "2026",
+    date: "2026-07-01",
+    field: "Simulation",
+    status: "live",
+    path: "/hyperscale",
+    image: "/projects/hyperscale.jpg",
+  },
+  {
+    id: "hollow-villages",
+    title: "The Hollow Villages",
+    tagline:
+      "An AI oracle forecasting how depopulating rural villages could be revived — people write it letters; it answers with grounded, cited plans and a picture of the place in 2050.",
+    year: "2026",
+    date: "2026-04-10",
+    field: "Rural futures",
+    status: "live",
+    path: "/hollow-villages", // the full project, served within this site
+    image: "/projects/hollow-villages.jpg",
+  },
+  {
+    id: "generatives",
+    title: "Generatives",
+    tagline:
+      "A generative-visual lab — an array of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
+    year: "2026",
+    date: "2026-06-19",
+    field: "Generative visuals",
+    status: "in-progress",
+    path: "/generatives", // self-contained Vite static bundle (dashboard + embed player)
+    image: "/projects/generatives.jpg",
+  },
+  {
+    id: "swipe-the-future",
+    title: "Swipe the Future",
+    tagline:
+      "A calibration game: pick your line of work, swipe Believe or Doubt on six source-checked claims about AI and quantum, then see how far your gut sat from where the evidence actually lands.",
+    year: "2026",
+    date: "2026-06-23",
+    field: "Calibration",
+    status: "live",
+    path: "/swipe-the-future",
+    image: "/projects/swipe-the-future.jpg",
+  },
+  {
+    id: "trajectories",
+    title: "Trajectories",
+    tagline:
+      "A real-time sphere of luminous filaments: thousands of strands reach from a boiling core to the shell, bending through noise that grows with radius, while pulses of brightness flow outward and ripples bloom at the surface. A non-commercial reimplementation (WebGL) of Jeongho Park's “Collective Trajectories” (CC BY-NC 4.0).",
+    year: "2026",
+    date: "2026-06-28",
+    field: "Generative visuals",
+    status: "live",
+    path: "/trajectories",
+    image: "/projects/trajectories.jpg",
+  },
+  {
     id: "quantum-dominance",
     title: "Quantum Dominance",
     tagline:
@@ -48,30 +144,6 @@ export const projects: Project[] = [
     image: "/projects/woodchipper.jpg",
   },
   {
-    id: "swipe-the-future",
-    title: "Swipe the Future",
-    tagline:
-      "A calibration game: pick your line of work, swipe Believe or Doubt on six source-checked claims about AI and quantum, then see how far your gut sat from where the evidence actually lands.",
-    year: "2026",
-    date: "2026-06-23",
-    field: "Calibration",
-    status: "live",
-    path: "/swipe-the-future",
-    image: "/projects/swipe-the-future.jpg",
-  },
-  {
-    id: "hollow-villages",
-    title: "The Hollow Villages",
-    tagline:
-      "An AI oracle forecasting how depopulating rural villages could be revived — people write it letters; it answers with grounded, cited plans and a picture of the place in 2050.",
-    year: "2026",
-    date: "2026-04-10",
-    field: "Rural futures",
-    status: "live",
-    path: "/hollow-villages", // the full project, served within this site
-    image: "/projects/hollow-villages.jpg",
-  },
-  {
     id: "underground-intelligence",
     title: "Underground Intelligence",
     tagline:
@@ -84,18 +156,6 @@ export const projects: Project[] = [
     image: "/projects/underground-intelligence.jpg",
   },
   {
-    id: "odds-of-surviving-ai",
-    title: "The Odds",
-    tagline:
-      "An interactive that plays three public p(doom) estimates — Amodei’s die, Musk’s wheel, Tegmark’s deck — as games of chance, then asks what your survival odds really are.",
-    year: "2026",
-    date: "2026-02-14",
-    field: "AI & risk",
-    status: "live",
-    path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
-    image: "/projects/odds-of-surviving-ai.jpg",
-  },
-  {
     id: "quantum-sandbox",
     title: "Quantum Sandbox",
     tagline:
@@ -106,18 +166,6 @@ export const projects: Project[] = [
     status: "in-progress",
     path: "/quantum-sandbox", // self-contained Vite static bundle served within this site
     image: "/projects/quantum-sandbox.jpg",
-  },
-  {
-    id: "generatives",
-    title: "Generatives",
-    tagline:
-      "A generative-visual lab — an array of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
-    year: "2026",
-    date: "2026-06-19",
-    field: "Generative visuals",
-    status: "in-progress",
-    path: "/generatives", // self-contained Vite static bundle (dashboard + embed player)
-    image: "/projects/generatives.jpg",
   },
   {
     id: "literal-frequency",
@@ -145,14 +193,8 @@ export const projects: Project[] = [
   },
 ];
 
-export const statusLabel: Record<ProjectStatus, string> = {
-  live: "Live",
-  "in-progress": "In progress",
-  concept: "Concept",
-};
-
-/** Projects newest-first (by `date`). */
-export const projectsByDate: Project[] = [...projects].sort((a, b) => (a.date < b.date ? 1 : -1));
+// Display order is curated by the owner — the array order above IS the order.
+export const projectsOrdered: Project[] = [...projects];
 
 /** The distinct category tags (from `field`), for the projects-page filters. */
 export const projectFields: string[] = Array.from(new Set(projects.map((p) => p.field)));

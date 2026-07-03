@@ -24,6 +24,9 @@
 # step, so they stay committed.
 /public/generatives/
 /public/literal-frequency/
+/public/hyperscale/
+/public/gigawatt/
+/public/trajectories/
 /public/quantum-sandbox/
 /public/social-composer/
 /public/hollow-villages/
@@ -39,11 +42,22 @@
 /quantum-dominance/.next/
 /quantum-dominance/node_modules/
 /quantum-dominance/out/
+/public/signal-reactor/
+/signal-reactor/.next/
+/signal-reactor/node_modules/
+/signal-reactor/out/
+/public/quantum-spark/
+/quantum-spark/.next/
+/quantum-spark/node_modules/
+/quantum-spark/out/
 /generatives/.next/
 /literal-frequency/.next/
 /quantum-sandbox/.next/
 /generatives/node_modules/
 /literal-frequency/node_modules/
+/hyperscale/node_modules/
+/gigawatt/node_modules/
+/trajectories/node_modules/
 /quantum-sandbox/node_modules/
 /social-composer/node_modules/
 /social-composer/out/
@@ -77,3 +91,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+.env*.local

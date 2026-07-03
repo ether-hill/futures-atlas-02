@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hyperscale · 3D Data-Center Builder · Futures Atlas</title>
+    <meta
+      name="description"
+      content="A 3D data-center builder: place server halls, cooling towers and substations on a terrain plot, then balance power, heat, compute and cash as demand for AI compute explodes."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Futures Atlas" />
+    <meta property="og:title" content="Hyperscale — Futures Atlas" />
+    <meta
+      property="og:description"
+      content="Build an AI data center in 3D. Drop server halls, cooling towers and substations on a green plot; keep power, heat and cash in balance while the compute boom keeps pushing demand higher."
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
+    <link rel="stylesheet" href="/atlas-nav.css?v=8" data-fa-nav-css />
+    <script src="/atlas-nav.js?v=8" defer></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <section hidden data-fa-seed>
+      <h2>Hyperscale — build an AI data center in 3D</h2>
+      <p>Hyperscale is a small 3D builder about the physical reality behind the compute boom. You drop buildings on a green terrain plot — server halls, GPU pods, cooling towers, substations — and keep four things in balance: power, heat, compute and cash.</p>
+      <p>Substations supply megawatts; server halls and GPU pods turn power into compute and heat; cooling towers vent the heat as steam. Underfeed power or fall behind on cooling and machines throttle, glow red, then fail and go dark until you repair them. Demand for compute climbs every day, so standing still means falling behind.</p>
+      <p>Orbit the camera, watch the fans spin and the towers steam, and grow the site. Runs are seeded — heat waves, power-price spikes, grid outages and demand surges replay identically for a given seed.</p>
+    </section>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

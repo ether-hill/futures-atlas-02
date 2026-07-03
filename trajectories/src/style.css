@@ -1,0 +1,60 @@
+:root {
+  --ink: oklch(0.95 0.01 255);
+  --muted: oklch(0.72 0.02 255);
+  --faint: oklch(0.58 0.02 255);
+  --accent: oklch(0.78 0.13 235);
+  --line: oklch(0.4 0.02 255);
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fa-nav-h: 64px;
+  --glass: color-mix(in oklab, oklch(0.13 0.02 260) 76%, transparent);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #05060c; }
+body { font-family: var(--sans); -webkit-font-smoothing: antialiased; color: var(--ink); }
+
+#app { position: fixed; inset: var(--fa-nav-h) 0 0 0; overflow: hidden; }
+.scene { position: absolute; inset: 0; }
+.scene canvas { display: block; }
+
+.ui { position: absolute; inset: 0; pointer-events: none; }
+.ui a, .ui button, .ui input, .ui .panel { pointer-events: auto; }
+
+/* title */
+.title { position: absolute; top: 16px; left: 18px; }
+.title b { display: block; font: 600 19px var(--sans); letter-spacing: -0.02em; }
+.title span { display: block; font: 700 8.5px var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--faint); margin-top: 3px; }
+
+/* lil-gui control panel — top-right, below the global SHARE button */
+.ui .gui-host { pointer-events: auto; position: absolute; top: 56px; right: 12px; max-height: calc(100% - 96px); overflow-y: auto; overflow-x: hidden; border-radius: 12px; }
+.gui-host::-webkit-scrollbar { width: 8px; }
+.gui-host::-webkit-scrollbar-thumb { background: color-mix(in oklab, var(--line) 80%, transparent); border-radius: 8px; }
+.gui-host .lil-gui {
+  --background-color: oklch(0.16 0.02 260);
+  --widget-color: oklch(0.28 0.02 260);
+  --text-color: oklch(0.92 0.01 260);
+  --title-background-color: oklch(0.21 0.025 260);
+  --title-text-color: oklch(0.96 0.01 260);
+  --focus-color: var(--accent);
+  --hover-color: oklch(0.34 0.04 260);
+  --number-color: var(--accent);
+  --string-color: var(--accent);
+  --font-family: var(--mono); --font-size: 11px; --widget-height: 24px; --spacing: 5px;
+  border: 1px solid color-mix(in oklab, var(--line) 70%, transparent); border-radius: 12px;
+}
+/* lil-gui titles are sticky by default; inside our scroll host they pile up and
+   overlap, so pin them all to relative flow */
+.gui-host .lil-gui .title { position: relative; top: 0; letter-spacing: 0.06em; }
+
+/* attribution credit */
+.credit {
+  position: absolute; left: 18px; bottom: 16px; max-width: min(560px, 84vw);
+  font: 500 11.5px var(--mono); line-height: 1.55; color: var(--faint);
+}
+.credit a { color: var(--muted); text-decoration: none; border-bottom: 1px solid color-mix(in oklab, var(--muted) 40%, transparent); }
+.credit a:hover { color: var(--accent); border-color: var(--accent); }
+
+@media (max-width: 640px) {
+  .credit { font-size: 10.5px; left: 14px; bottom: 12px; }
+  .ctrls { width: 200px; }
+}

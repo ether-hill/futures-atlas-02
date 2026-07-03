@@ -11,6 +11,8 @@ interface BeforeAfterProps {
   afterIsPlaceholder?: boolean;
   /** Small annotation naming the change realised in 2050. */
   callout?: string;
+  /** Aspect-ratio utility for the frame (default 4:3). */
+  aspectClass?: string;
 }
 
 /**
@@ -24,6 +26,7 @@ export function BeforeAfter({
   alt,
   afterIsPlaceholder = false,
   callout,
+  aspectClass = "aspect-[4/3]",
 }: BeforeAfterProps) {
   const [pos, setPos] = useState(50);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -58,7 +61,7 @@ export function BeforeAfter({
   return (
     <figure
       ref={frameRef}
-      className="group relative aspect-[4/3] w-full select-none overflow-hidden rounded-sm border border-ink/15 bg-bone"
+      className={`group relative ${aspectClass} w-full select-none overflow-hidden rounded-sm border border-ink/15 bg-bone`}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerLeave={onPointerUp}

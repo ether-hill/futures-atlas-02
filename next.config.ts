@@ -37,6 +37,10 @@ const nextConfig: NextConfig = {
         { source: "/generatives", destination: "/generatives/index.html" },
         // Literal Frequency — Vite static app (Source Library word-frequency viz)
         { source: "/literal-frequency", destination: "/literal-frequency/index.html" },
+        // Hyperscale — Vite static app (data-center management sim)
+        { source: "/hyperscale", destination: "/hyperscale/index.html" },
+        // Trajectories — Vite static app (generative filament sphere)
+        { source: "/trajectories", destination: "/trajectories/index.html" },
         // Social Composer — Next static export (basePath baked in, trailingSlash)
         { source: "/social-composer", destination: "/social-composer/index.html" },
         { source: "/social-composer/about", destination: "/social-composer/about/index.html" },
@@ -46,6 +50,12 @@ const nextConfig: NextConfig = {
         { source: "/woodchipper", destination: "/woodchipper/index.html" },
         // Quantum Dominance — Next static export (graphic-novel scenario explorer)
         { source: "/quantum-dominance", destination: "/quantum-dominance/index.html" },
+        // Signal Reactor — Next static export (foresight briefing generator;
+        // its generate API runs in THIS app at /api/signal-reactor/*)
+        { source: "/signal-reactor", destination: "/signal-reactor/index.html" },
+        // Quantum Spark — Next static export (inspirational insight generator;
+        // its spark API runs in THIS app at /api/quantum-spark/*)
+        { source: "/quantum-spark", destination: "/quantum-spark/index.html" },
       ],
     };
   },
@@ -66,6 +76,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/prism", destination: "/generatives", permanent: true },
+      // Gigawatt became THE Hyperscale (the older sim was retired from the site)
+      { source: "/gigawatt", destination: "/hyperscale", permanent: true },
+      { source: "/gigawatt/:path*", destination: "/hyperscale/:path*", permanent: true },
       { source: "/prism/:path*", destination: "/generatives/:path*", permanent: true },
       { source: "/visualize", destination: "/literal-frequency", permanent: true },
       { source: "/visualize/:path*", destination: "/literal-frequency/:path*", permanent: true },

@@ -22,6 +22,8 @@ const eslintConfig = [
       "quantum-sandbox/**",
       "generatives/**",
       "literal-frequency/**",
+      "hyperscale/**",
+      "trajectories/**",
       "social-composer/**",
     ],
   },

@@ -1,0 +1,9 @@
+{
+  "name": "quantum-spark",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Futures Atlas — Quantum Spark. Type your industry, get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it. Signal Reactor's energized companion: Spark ignites, Reactor grounds.",
+  "scripts": { "dev": "next dev", "build": "next build", "start": "next start" },
+  "dependencies": { "next": "15.5.19", "react": "19.1.0", "react-dom": "19.1.0" },
+  "devDependencies": { "@types/node": "^20", "@types/react": "^19", "@types/react-dom": "^19", "typescript": "^5" }
+}

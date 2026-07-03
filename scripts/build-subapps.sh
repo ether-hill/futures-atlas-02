@@ -19,7 +19,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 # Vite apps build straight into public/<slug> via their vite.config outDir.
-for app in generatives quantum-sandbox literal-frequency; do
+for app in generatives quantum-sandbox literal-frequency gigawatt trajectories; do
   echo "→ building $app"
   ( cd "$HERE/$app" && npm install --include=dev --no-audit --no-fund && npm run build )
   echo "✓ $app → public/$app"
@@ -62,6 +62,26 @@ mkdir -p "$HERE/public/woodchipper"
 cp -R "$HERE/woodchipper/out/." "$HERE/public/woodchipper/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/woodchipper"
 echo "✓ woodchipper → public/woodchipper (with atlas-nav)"
+
+# Quantum Spark: Next static export → out/, then copy into public/.
+# (Its generation API lives in the HOST app at /api/quantum-spark/*.)
+echo "→ building quantum-spark"
+( cd "$HERE/quantum-spark" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/quantum-spark"
+mkdir -p "$HERE/public/quantum-spark"
+cp -R "$HERE/quantum-spark/out/." "$HERE/public/quantum-spark/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-spark"
+echo "✓ quantum-spark → public/quantum-spark (with atlas-nav)"
+
+# Signal Reactor: Next static export → out/, then copy into public/.
+# (Its generation API lives in the HOST app at /api/signal-reactor/*.)
+echo "→ building signal-reactor"
+( cd "$HERE/signal-reactor" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/signal-reactor"
+mkdir -p "$HERE/public/signal-reactor"
+cp -R "$HERE/signal-reactor/out/." "$HERE/public/signal-reactor/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/signal-reactor"
+echo "✓ signal-reactor → public/signal-reactor (with atlas-nav)"
 
 # Quantum Dominance: Next static export → out/, then copy into public/.
 echo "→ building quantum-dominance"

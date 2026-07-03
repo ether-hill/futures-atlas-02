@@ -13,11 +13,17 @@ export function Reveal({
   as: Tag = "div",
   delay = 0,
   className = "",
+  effect = "rise",
+  threshold = 0.15,
 }: {
   children: ReactNode;
   as?: ElementType;
   delay?: number;
   className?: string;
+  /** "rise" = the default translate/fade; "blur" = sharpen from soft-focus. */
+  effect?: "rise" | "blur";
+  /** Fraction visible before it triggers (1 = only once fully in view). */
+  threshold?: number;
 }) {
   const ref = useRef<HTMLElement>(null);
   const [seen, setSeen] = useState(false);
@@ -25,25 +31,26 @@ export function Reveal({
   useEffect(() => {
     const el = ref.current;
     if (!el || seen) return;
+    const full = threshold >= 0.9; // "only once fully in view"
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
-          if (e.isIntersecting) {
+          if (e.isIntersecting && e.intersectionRatio >= (full ? threshold - 0.02 : 0.14)) {
             setSeen(true);
             io.disconnect();
           }
         }
       },
-      { threshold: 0.15, rootMargin: "0px 0px -8% 0px" },
+      { threshold: full ? threshold : 0.15, rootMargin: full ? "0px" : "0px 0px -8% 0px" },
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [seen]);
+  }, [seen, threshold]);
 
   return (
     <Tag
       ref={ref}
-      data-reveal
+      {...(effect === "blur" ? { "data-blur": "" } : { "data-reveal": "" })}
       className={`${seen ? "is-in" : ""} ${className}`}
       style={delay ? { animationDelay: `${delay}ms` } : undefined}
     >

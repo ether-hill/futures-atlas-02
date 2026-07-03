@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Container } from "./Container";
 
 /**
@@ -15,12 +15,18 @@ import { Container } from "./Container";
 export function HeroSlider({
   beforeImage,
   afterImage,
+  onConsult,
 }: {
   beforeImage: string;
   afterImage: string;
+  /** When set, "Consult the oracle" opens the consultation in place instead of navigating. */
+  onConsult?: () => void;
 }) {
-  const [pct, setPct] = useState(50);
+  // Starts fully revealing the 2025 side (divider hard right), then the intro
+  // animation sweeps it left to reveal 2050, then settles at halfway.
+  const [pct, setPct] = useState(100);
   const frame = useRef<HTMLElement>(null);
+  const interacted = useRef(false);
 
   const fromX = useCallback((clientX: number) => {
     const el = frame.current;
@@ -29,10 +35,42 @@ export function HeroSlider({
     setPct(Math.max(0, Math.min(100, ((clientX - r.left) / r.width) * 100)));
   }, []);
 
+  // Intro sweep on load: 100% → 0% → 66%. Cancels the moment the visitor
+  // interacts; respects reduced-motion (jumps straight to 66%).
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setPct(66);
+      return;
+    }
+    const legs = [
+      { from: 100, to: 0, at: 0, dur: 1014 },
+      { from: 0, to: 66, at: 1170, dur: 728 },
+    ];
+    const total = 1900;
+    const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+    const start = performance.now();
+    let raf = 0;
+    const tick = (now: number) => {
+      if (interacted.current) return;
+      const e = now - start;
+      if (e >= total) {
+        setPct(66);
+        return;
+      }
+      const leg = e < legs[1].at ? legs[0] : legs[1];
+      const lt = Math.max(0, Math.min(1, (e - leg.at) / leg.dur));
+      setPct(leg.from + (leg.to - leg.from) * ease(lt));
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
   // Drag via window listeners — robust across mouse/touch and any capture quirks.
   const startDrag = useCallback(
     (e: React.PointerEvent<HTMLElement>) => {
       e.preventDefault();
+      interacted.current = true;
       fromX(e.clientX);
       const onMove = (ev: PointerEvent) => fromX(ev.clientX);
       const onUp = () => {
@@ -48,6 +86,7 @@ export function HeroSlider({
   );
 
   const key = (e: React.KeyboardEvent) => {
+    interacted.current = true;
     if (e.key === "ArrowLeft") setPct((p) => Math.max(0, p - 2));
     if (e.key === "ArrowRight") setPct((p) => Math.min(100, p + 2));
     if (e.key === "Home") setPct(0);
@@ -74,15 +113,17 @@ export function HeroSlider({
         <div className="absolute inset-0 bg-[#211e18]/30" />
       </div>
 
-      {/* legibility scrims */}
+      {/* legibility scrims — a top wash for the year labels + a left wash
+          behind the centred headline block */}
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[34%] bg-gradient-to-b from-[#211e18]/55 to-transparent" aria-hidden />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#211e18]/70 via-[#211e18]/20 to-transparent" aria-hidden />
 
       {/* year labels — inside the Container so they align with the headline */}
       <div className="pointer-events-none absolute inset-x-0 top-[clamp(78px,11vh,108px)] z-[12]">
         <Container className="flex items-start justify-between">
           <div>
             <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#f4efe4]/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.6)]">Now</div>
-            <div className="year text-[clamp(34px,6vw,84px)] leading-[0.9] text-[#f4efe4] [text-shadow:0_2px_24px_rgba(0,0,0,0.55)]">2025</div>
+            <div className="year text-[clamp(34px,6vw,84px)] leading-[0.9] text-[#f4efe4] [text-shadow:0_2px_24px_rgba(0,0,0,0.55)]">2026</div>
           </div>
           <div className="text-right">
             <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#f4efe4]/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.55)]">Forecast</div>
@@ -110,37 +151,30 @@ export function HeroSlider({
         </button>
       </div>
 
-      {/* overlaid content — pointer-transparent so the whole hero drags;
-          only the links re-enable pointer events (and stop the drag) */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[16] bg-gradient-to-t from-[#211e18]/90 via-[#211e18]/45 to-transparent pt-44">
-        <Container className="flex flex-col items-start gap-5 pb-[clamp(34px,6vh,72px)]">
-          <div className="max-w-[760px]">
-            <div className="mb-[18px] inline-flex items-center gap-2.5 rounded-[2px] bg-[#f4efe4] px-3 py-[7px] font-mono text-[clamp(9.5px,1.1vw,11px)] uppercase tracking-[0.16em] text-[#211e18]">
-              <span className="h-[7px] w-[7px] shrink-0 bg-accent" />
-              Forecasts what rural places could become by 2050
-            </div>
+      {/* overlaid content — vertically centred in the hero; pointer-transparent
+          so the whole hero drags, only the links re-enable pointer events */}
+      <div className="pointer-events-none absolute inset-0 z-[16] flex items-center">
+        <Container className="flex w-full flex-col items-start gap-5">
+          <div className="w-full md:w-2/3">
             <h1 className="text-[clamp(34px,6.6vw,92px)] font-extrabold leading-[0.97] tracking-[-0.025em] text-[#f4efe4] text-balance [text-shadow:0_2px_30px_rgba(0,0,0,0.6)]">
-              A village is not dying.
-              <br />
-              It is between uses.
+              What does the future hold for Europe&rsquo;s emptying villages?
             </h1>
             <p className="mt-5 max-w-[560px] font-mono text-[clamp(12px,1.3vw,15px)] leading-[1.65] text-[#f4efe4]/90 [text-shadow:0_1px_14px_rgba(0,0,0,0.7)]">
-              The oracle reads a place as it is now — who has left, what stands
-              empty, how people move, where the work is — and forecasts what it
-              could become by 2050. Every answer points to somewhere it has
-              already worked.
+              As people keep moving to overcrowded cities, the countryside
+              empties. Tell the oracle about your village, and see a forecast of
+              how it could be revived by 2050.
             </p>
           </div>
           <div onPointerDown={stop} className="pointer-events-auto flex flex-wrap items-center gap-3">
-            <Link href="/oracle" className="inline-flex items-center gap-2.5 rounded-[2px] bg-accent px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper shadow-[0_8px_30px_rgba(33,30,24,0.25)] transition-colors hover:bg-accent-deep">
-              Consult the oracle <span className="text-[14px]">→</span>
-            </Link>
-            <Link href="/research" className="inline-flex items-center gap-2.5 rounded-[2px] border-[1.5px] border-[#f4efe4]/60 px-[21px] py-3 font-mono text-[12px] uppercase tracking-[0.1em] text-[#f4efe4] transition-colors hover:border-[#f4efe4] hover:bg-[#f4efe4]/10">
-              See the research
-            </Link>
-            <span className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-[#f4efe4]/85">
-              ⇆ Drag the line
-            </span>
+            {onConsult ? (
+              <button type="button" onClick={onConsult} className="inline-flex items-center gap-2.5 rounded-[2px] bg-accent px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper shadow-[0_8px_30px_rgba(33,30,24,0.25)] transition-colors hover:bg-accent-deep">
+                Consult the oracle <span className="text-[14px]">→</span>
+              </button>
+            ) : (
+              <Link href="/oracle" className="inline-flex items-center gap-2.5 rounded-[2px] bg-accent px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper shadow-[0_8px_30px_rgba(33,30,24,0.25)] transition-colors hover:bg-accent-deep">
+                Consult the oracle <span className="text-[14px]">→</span>
+              </Link>
+            )}
           </div>
         </Container>
       </div>
