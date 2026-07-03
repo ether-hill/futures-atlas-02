@@ -48,9 +48,11 @@ function makeSrc(): string {
       lineWidth: rand(0.8, 2.2),
     },
     size: { w: 1600, h: 900 },
-    // complexity drives particle count (300–6000): keep it in the ~1000–1700
-    // band — the trails read dense at half-res while the sim stays cheap
-    meta: { complexity: rand(0.13, 0.25), chaos: rand(0.3, 0.75) },
+    // complexity drives particle count (300–6000): the ~1500–2600 band is the
+    // quality floor the owner signed off on — don't lower it again, and keep
+    // the render at full resolution (a half-res upscale was rejected as too
+    // low quality)
+    meta: { complexity: rand(0.22, 0.4), chaos: rand(0.3, 0.75) },
     theme: "quantum-ink",
     colors: { bg: FIELD_BG, ...pal },
   };
@@ -96,16 +98,13 @@ export function HeroField() {
   return (
     <div ref={hostRef} className="pointer-events-none absolute inset-0" aria-hidden="true">
       {src && inView && (
-        /* render the sim at HALF resolution and upscale 2× — the canvas
-           rasterizes a quarter of the pixels per frame, and the soft scaled
-           trails read as glow rather than blur */
         <iframe
           key={src}
           src={src}
           title=""
           tabIndex={-1}
           loading="eager"
-          className="pointer-events-none absolute left-0 top-0 h-1/2 w-1/2 origin-top-left scale-[2] border-0 opacity-80"
+          className="pointer-events-none absolute inset-0 h-full w-full border-0 opacity-80"
         />
       )}
       {/* scrim so the headline and lede stay readable over the field — heavier
