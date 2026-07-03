@@ -33,6 +33,7 @@ export const projects: Project[] = [
     field: "AI & risk",
     status: "live",
     path: "/quantum-spark",
+    image: "/projects/quantum-spark.jpg",
   },
   {
     id: "signal-reactor",
@@ -44,6 +45,7 @@ export const projects: Project[] = [
     field: "AI & risk",
     status: "live",
     path: "/signal-reactor",
+    image: "/projects/signal-reactor.jpg",
   },
   {
     id: "trajectories",
@@ -55,6 +57,7 @@ export const projects: Project[] = [
     field: "Generative visuals",
     status: "live",
     path: "/trajectories",
+    image: "/projects/trajectories.jpg",
   },
   {
     id: "gigawatt",
@@ -66,6 +69,7 @@ export const projects: Project[] = [
     field: "Simulation",
     status: "live",
     path: "/gigawatt",
+    image: "/projects/gigawatt.jpg",
   },
   {
     id: "hyperscale",
@@ -77,6 +81,7 @@ export const projects: Project[] = [
     field: "Simulation",
     status: "live",
     path: "/hyperscale",
+    image: "/projects/hyperscale.jpg",
   },
   {
     id: "quantum-dominance",
