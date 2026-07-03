@@ -10,7 +10,7 @@ export default function Home() {
     <div>
       {/* Hero — an always-black stage (does not follow the light theme) with
           Generatives "Field Dynamics" flowing behind the headline */}
-      <section className="relative flex min-h-[78svh] items-end overflow-hidden border-b border-ink bg-black">
+      <section className="relative flex min-h-[calc(100svh-64px)] items-end overflow-hidden border-b border-ink bg-black">
         <HeroField />
         <Container className="relative z-[1] py-[clamp(96px,16vh,200px)]">
           <Reveal>

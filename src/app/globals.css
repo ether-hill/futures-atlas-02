@@ -188,15 +188,15 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 
 .plan-grid {
   background-image:
-    linear-gradient(rgba(33, 30, 24, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(33, 30, 24, 0.04) 1px, transparent 1px);
+    linear-gradient(rgba(23, 24, 27, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 24, 27, 0.04) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
 /* hatch placeholder, when no photo is present */
 .hatch {
   background-color: #c4bdad;
-  background-image: repeating-linear-gradient(135deg, rgba(33, 30, 24, 0.06) 0 1px, transparent 1px 12px);
+  background-image: repeating-linear-gradient(135deg, rgba(23, 24, 27, 0.06) 0 1px, transparent 1px 12px);
 }
 
 .tick::before {
@@ -272,4 +272,19 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] .stack-tile { opacity: 1 !important; animation: none !important; }
   .wf-pulse { display: none !important; }
+}
+
+/* homepage hero scrim — rgba black over the generative field (documented
+   texture exception). Heavier, bottom-weighted on small screens so the
+   summary stays legible over bright flow lines. */
+.hero-scrim {
+  background:
+    linear-gradient(100deg, rgba(5, 6, 10, 0.88) 16%, rgba(5, 6, 10, 0) 62%),
+    linear-gradient(0deg, rgba(5, 6, 10, 0.7) 2%, rgba(5, 6, 10, 0) 34%);
+}
+@media (max-width: 767px) {
+  .hero-scrim {
+    background:
+      linear-gradient(0deg, rgba(5, 6, 10, 0.95) 34%, rgba(5, 6, 10, 0.72) 62%, rgba(5, 6, 10, 0.3) 100%);
+  }
 }

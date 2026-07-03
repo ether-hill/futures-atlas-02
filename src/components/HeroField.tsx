@@ -12,6 +12,7 @@ import { useCallback, useEffect, useState } from "react";
  */
 
 const CYCLE_S = 11;
+const RING = 2 * Math.PI * 6.5; // circumference of the countdown ring
 
 // Colour data below is piece-config payload for the embedded canvas — not UI
 // styling — a documented exception like the hero scrims (see CLAUDE.md).
@@ -86,23 +87,33 @@ export function HeroField() {
         loading="eager"
         className="pointer-events-none absolute inset-0 h-full w-full border-0 opacity-80"
       />
-      {/* scrim so the headline and lede stay readable over the field
-          (rgba black over texture — documented exception, like other hero scrims) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "linear-gradient(100deg, rgba(5,6,10,0.88) 16%, rgba(5,6,10,0) 62%), linear-gradient(0deg, rgba(5,6,10,0.7) 2%, rgba(5,6,10,0) 34%)",
-        }}
-      />
+      {/* scrim so the headline and lede stay readable over the field — heavier
+          on small screens (rgba black over texture — documented exception,
+          like other hero scrims; see globals.css .hero-scrim) */}
+      <div aria-hidden="true" className="hero-scrim pointer-events-none absolute inset-0" />
       <button
         type="button"
         onClick={randomise}
-        className="absolute bottom-5 right-5 z-[2] inline-flex items-center gap-2 rounded-[2px] border border-paper/25 bg-black/50 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-paper/75 backdrop-blur-sm transition-colors hover:border-paper/60 hover:text-paper"
-        aria-label={`Randomise the background field now (auto-randomises in ${left} seconds)`}
+        className="absolute bottom-5 right-5 z-[2] inline-flex items-center gap-2.5 rounded-[2px] border border-paper/25 bg-black/50 px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-paper/75 backdrop-blur-sm transition-colors hover:border-paper/60 hover:text-paper"
+        aria-label={`Reseed the background field now (reseeds itself in ${left} seconds)`}
       >
-        ↻ Randomise <span className="tabular-nums text-paper/45">0:{String(left).padStart(2, "0")}</span>
+        Reseed
+        {/* circular countdown: the ring drains over the 11s cycle */}
+        <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" className="-rotate-90">
+          <circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.25" />
+          <circle
+            cx="8"
+            cy="8"
+            r="6.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeDasharray={RING}
+            strokeDashoffset={RING * (1 - left / CYCLE_S)}
+            style={{ transition: left === CYCLE_S ? "none" : "stroke-dashoffset 1s linear" }}
+          />
+        </svg>
       </button>
     </>
   );
