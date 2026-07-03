@@ -8,7 +8,7 @@ import { LOGOS } from "@/lib/logos";
 
 // The stack strip: which marks headline the homepage tech banner (all render
 // as paper-tone inline SVGs; the full inventory lives on /about).
-const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "runway", "nextjs", "react", "threejs", "p5js", "tailwindcss", "vercel", "huggingface", "mistral", "deepseek"];
+const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "veo", "nextjs", "react", "threejs", "p5js", "tailwindcss", "vercel", "huggingface", "mistral", "deepseek"];
 
 export default function Home() {
   return (
