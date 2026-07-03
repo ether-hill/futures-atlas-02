@@ -73,7 +73,7 @@ export const projects: Project[] = [
   },
   {
     id: "hollow-villages",
-    title: "The Hollow Villages",
+    title: "Village Oracle",
     tagline:
       "An AI oracle forecasting how depopulating rural villages could be revived — people write it letters; it answers with grounded, cited plans and a picture of the place in 2050.",
     year: "2026",
