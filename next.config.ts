@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   // futures-atlas-core ships TSX source; Next must transpile it.
   transpilePackages: ["futures-atlas-core"],
 
+  // Baked once per deployment — the footer's "last updated" date.
+  env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString() },
+
   // Both sub-projects are served from THIS deployment as self-contained static
   // bundles under public/ — no proxies, no separate Vercel projects. These
   // rewrites resolve the bundles' clean entry URLs to their index.html.
@@ -14,9 +17,9 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        { source: "/hollow-villages", destination: "/hollow-villages/index.html" },
-        { source: "/hollow-villages/oracle", destination: "/hollow-villages/oracle/index.html" },
-        { source: "/hollow-villages/research", destination: "/hollow-villages/research/index.html" },
+        { source: "/village-oracle", destination: "/village-oracle/index.html" },
+        { source: "/village-oracle/oracle", destination: "/village-oracle/oracle/index.html" },
+        { source: "/village-oracle/research", destination: "/village-oracle/research/index.html" },
         { source: "/underground-intelligence", destination: "/underground-intelligence/index.html" },
         {
           source: "/underground-intelligence/:tab(story|dashboard|research)",
@@ -88,6 +91,9 @@ const nextConfig: NextConfig = {
       // /odds-of-surviving-ai/* are served directly and must NOT be matched.)
       { source: "/odds-of-surviving-ai", destination: "/theodds", permanent: true },
       { source: "/odds-of-surviving-ai/research", destination: "/theodds/research", permanent: true },
+      // The Hollow Villages was renamed Village Oracle — keep old links working.
+      { source: "/hollow-villages", destination: "/village-oracle", permanent: true },
+      { source: "/hollow-villages/:path*", destination: "/village-oracle/:path*", permanent: true },
     ];
   },
 };

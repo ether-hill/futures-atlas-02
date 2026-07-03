@@ -2,7 +2,7 @@
  * Before -> 2050 render pairs, one per correspondent. The "before" is that
  * correspondent's village today (real free-stock, sourced into /public/villages
  * by letter id); the "after" is the owner's 2050 render of the SAME frame with
- * the reply's lever realised. See /public/hollow-villages/villages/CREDITS.md.
+ * the reply's lever realised. See /public/village-oracle/villages/CREDITS.md.
  *
  * RULE: same viewpoint, keep the bones — revival is reoccupation, not demolition.
  * realPlaceCaption is set only where the before photo is a verifiable real place.
@@ -11,8 +11,8 @@
 export interface FuturePair {
   id: string; // matches Letter.reply.futurePairId (we use the letter id)
   letterId: string;
-  beforeImage: string; // "/hollow-villages/villages/giorgio-72-before.jpg" (sourced)
-  afterImage: string; // "/hollow-villages/villages/giorgio-72-after.jpg" (OWNER adds later)
+  beforeImage: string; // "/village-oracle/villages/giorgio-72-before.jpg" (sourced)
+  afterImage: string; // "/village-oracle/villages/giorgio-72-after.jpg" (OWNER adds later)
   realPlaceCaption?: string; // name the real place IF the before is verifiably one
   conceptText: string; // the 2050 narrative for this place
   callout: string; // short label of the change realised, shown on the render
@@ -25,8 +25,8 @@ export interface FuturePair {
 }
 
 const slot = (id: string) => ({
-  beforeImage: `/hollow-villages/villages/${id}-before.jpg`,
-  afterImage: `/hollow-villages/villages/${id}-after.jpg`,
+  beforeImage: `/village-oracle/villages/${id}-before.jpg`,
+  afterImage: `/village-oracle/villages/${id}-after.jpg`,
   afterIsPlaceholder: true,
 });
 
@@ -35,7 +35,7 @@ export const futurePairs: FuturePair[] = [
     id: "anna-8",
     letterId: "anna-8",
     ...slot("anna-8"),
-    visionImage: "/hollow-villages/villages/anna-8-vision.jpg",
+    visionImage: "/village-oracle/villages/anna-8-vision.jpg",
     realPlaceCaption: "Usseaux, Piedmont, Italy",
     conceptText:
       "The square that held only echoes holds children again. The old school is a village-as-classroom where the eighty-year-olds teach the eight-year-olds, and a festival each spring puts the place back on the map. Anna is not the last child. By 2050 she is the first of the next ones.",
@@ -46,7 +46,7 @@ export const futurePairs: FuturePair[] = [
     id: "giorgio-72",
     letterId: "giorgio-72",
     ...slot("giorgio-72"),
-    visionImage: "/hollow-villages/villages/giorgio-72-vision.jpg",
+    visionImage: "/village-oracle/villages/giorgio-72-vision.jpg",
     realPlaceCaption: "Cervara di Roma, Lazio, Italy",
     conceptText:
       "The switchback road still climbs. But the square below it is not silent on a Tuesday: a demand-responsive van waits at the kerb, summoned by a phone call rather than a timetable, and the three neighbours who no longer drive are out together. Reach, returned.",
@@ -57,7 +57,7 @@ export const futurePairs: FuturePair[] = [
     id: "mara-34",
     letterId: "mara-34",
     ...slot("mara-34"),
-    visionImage: "/hollow-villages/villages/mara-34-vision.jpg",
+    visionImage: "/village-oracle/villages/mara-34-vision.jpg",
     realPlaceCaption: "Santo Stefano di Sessanio, Abruzzo, Italy",
     conceptText:
       "The beautiful dead lane keeps its view and loses its silence. A civic building is now a co-working hub; a café spills onto the street; the windows are lit because the people behind them need each other and the shop, so both stay. Density and difference, arrived by fibre.",
@@ -68,7 +68,7 @@ export const futurePairs: FuturePair[] = [
     id: "tomas-19",
     letterId: "tomas-19",
     ...slot("tomas-19"),
-    visionImage: "/hollow-villages/villages/tomas-19-vision.jpg",
+    visionImage: "/village-oracle/villages/tomas-19-vision.jpg",
     realPlaceCaption: "Pentedattilo, Calabria, Italy",
     conceptText:
       "The shuttered frontages that offered Tomás nothing now offer a maker space and an apprenticeship. E-bikes lean by the door; the road out is still there, but it is no longer the only road. A future built here that finally includes the nineteen-year-old.",
@@ -79,7 +79,7 @@ export const futurePairs: FuturePair[] = [
     id: "yusuf-45",
     letterId: "yusuf-45",
     ...slot("yusuf-45"),
-    visionImage: "/hollow-villages/villages/yusuf-45-vision.jpg",
+    visionImage: "/village-oracle/villages/yusuf-45-vision.jpg",
     realPlaceCaption: "Craco, Basilicata, Italy",
     conceptText:
       "The shop Yusuf shuttered reopens — not as one man's losing battle but as the village's own: post counter, groceries, a coffee machine, a few tables. A community-run multi-service shop, the kind that has held the last service open across rural Britain and France. The social anchor, re-dropped.",
@@ -90,7 +90,7 @@ export const futurePairs: FuturePair[] = [
     id: "bianca-51",
     letterId: "bianca-51",
     ...slot("bianca-51"),
-    visionImage: "/hollow-villages/villages/bianca-51-vision.jpg",
+    visionImage: "/village-oracle/villages/bianca-51-vision.jpg",
     realPlaceCaption: "Castelmezzano, Basilicata, Italy",
     conceptText:
       "The tired municipal frontage is busy again, but the work behind it is shared: Sylvie's village of four hundred pools governance with its neighbours to reach the scale that funding requires, and the borghi money lands at last. Too small to matter alone; together, impossible to skip.",
@@ -121,7 +121,7 @@ export const futurePairs: FuturePair[] = [
     id: "henrik-58",
     letterId: "henrik-58",
     ...slot("henrik-58"),
-    visionImage: "/hollow-villages/villages/henrik-58-vision.jpg",
+    visionImage: "/village-oracle/villages/henrik-58-vision.jpg",
     realPlaceCaption: "Bosco Gurin, Ticino, Switzerland",
     conceptText:
       "Henrik no longer has to be everywhere at once. The shuttered clinic is a rotating surgery and a telemedicine point; a community health worker covers the days between. Care reaches the five valleys without one doctor driving himself into the ground to deliver it.",

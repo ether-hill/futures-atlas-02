@@ -11,7 +11,7 @@ const favicon = (domain: string) => `https://www.google.com/s2/favicons?domain=$
 
 /** The finished 2050 renders — tiled behind the "consult again" slide. */
 const VISION_TILES = ["anna-8", "giorgio-72", "mara-34", "tomas-19", "yusuf-45", "henrik-58", "bianca-51"].map(
-  (id) => `/hollow-villages/villages/${id}-vision.jpg`,
+  (id) => `/village-oracle/villages/${id}-vision.jpg`,
 );
 
 /** Body copy is set in the sans display face, never mono — kept for readability. */

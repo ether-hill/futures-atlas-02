@@ -45,7 +45,7 @@ export const projects: Project[] = [
     field: "AI & risk",
     status: "live",
     path: "/signal-reactor",
-    image: "/projects/signal-reactor.jpg",
+    image: "/projects/signal-reactor-2.jpg",
   },
   {
     id: "quantum-spark",
@@ -57,7 +57,7 @@ export const projects: Project[] = [
     field: "AI & risk",
     status: "live",
     path: "/quantum-spark",
-    image: "/projects/quantum-spark.jpg",
+    image: "/projects/quantum-spark-2.jpg",
   },
   {
     id: "hyperscale",
@@ -69,7 +69,7 @@ export const projects: Project[] = [
     field: "Simulation",
     status: "live",
     path: "/hyperscale",
-    image: "/projects/hyperscale.jpg",
+    image: "/projects/hyperscale-2.jpg",
   },
   {
     id: "hollow-villages",
@@ -80,7 +80,7 @@ export const projects: Project[] = [
     date: "2026-04-10",
     field: "Rural futures",
     status: "live",
-    path: "/hollow-villages", // the full project, served within this site
+    path: "/village-oracle", // the full project, served within this site
     image: "/projects/hollow-villages.jpg",
   },
   {
@@ -93,7 +93,7 @@ export const projects: Project[] = [
     field: "Generative visuals",
     status: "in-progress",
     path: "/generatives", // self-contained Vite static bundle (dashboard + embed player)
-    image: "/projects/generatives.jpg",
+    image: "/projects/generatives-4.jpg",
   },
   {
     id: "swipe-the-future",

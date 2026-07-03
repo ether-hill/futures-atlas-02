@@ -3,7 +3,7 @@ import { Container } from "@/components/Container";
 import { ResearchExplorer } from "@/components/ResearchExplorer";
 
 export const metadata: Metadata = {
-  title: "Research — The Hollow Villages",
+  title: "Research — Village Oracle",
   description:
     "The full evidence base behind every forecast — real, verified sources, plus a problem→solution matrix mapping how each lever reaches across the crisis.",
 };

@@ -3,7 +3,7 @@
 
   Loaded as a plain <script src="/atlas-nav.js" defer> by the hub (Next), the
   Vite tools (Generatives, Quantum Sandbox), Social Composer (Next export) and the
-  static zone bundles (Hollow Villages / Underground Intelligence / The Odds).
+  static zone bundles (Village Oracle / Underground Intelligence / The Odds).
   It self-injects /atlas-nav.css, so one script tag is all any page needs.
 
   Desktop: a sticky frosted bar — brand + (on a project page) a breadcrumb
@@ -35,10 +35,10 @@
       { name: "Dashboard", path: "/underground-intelligence/dashboard" },
       { name: "Research", path: "/underground-intelligence/research" },
     ] },
-    { name: "The Hollow Villages", path: "/hollow-villages", pages: [
-      { name: "Home", path: "/hollow-villages" },
-      { name: "Oracle", path: "/hollow-villages/oracle" },
-      { name: "Research", path: "/hollow-villages/research" },
+    { name: "Village Oracle", path: "/village-oracle", pages: [
+      { name: "Home", path: "/village-oracle" },
+      { name: "Oracle", path: "/village-oracle/oracle" },
+      { name: "Research", path: "/village-oracle/research" },
     ] },
   ];
   var LINKS = [
@@ -190,18 +190,46 @@
     if (isProject && !root.hasAttribute("data-fa-no-footer") && !document.querySelector("footer.fa-foot")) {
       var foot = document.createElement("footer");
       foot.className = "fa-foot";
+      // "last updated" = this static page's deploy time (Last-Modified header)
+      var upd = "";
+      try {
+        var lm = new Date(document.lastModified);
+        if (!isNaN(lm) && lm.getFullYear() > 2000) {
+          var mo = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+          upd = " Last updated " + lm.getDate() + " " + mo[lm.getMonth()] + " " + lm.getFullYear() + ".";
+        }
+      } catch (e) {}
       foot.innerHTML =
         '<div class="fa-foot__inner">' +
-        '<p class="fa-foot__lede">The future is plural</p>' +
-        '<p class="fa-foot__blurb">Futures Atlas collects speculative-design projects that each draw one possible world in full — grounded, specific, and built to be argued with.</p>' +
-        '<div class="fa-foot__row">' +
-        '<span class="fa-foot__brand">FUTURES ATLAS</span>' +
-        '<nav class="fa-foot__nav">' +
+        '<div class="fa-foot__grid">' +
+        '<div class="fa-foot__col">' +
+        '<a class="fa-foot__home" href="/" aria-label="Futures Atlas home">' +
+        '<span class="fa-foot__mark" aria-hidden="true">' + mark + "</span>" +
+        '<span class="fa-foot__word">Futures Atlas</span></a>' +
+        '<p class="fa-foot__body">A growing collection of speculative-design projects — prototypes, open-source tools, and research on quantum computing, emerging AI, and the organisations driving them. <b>It\u2019s meant to be used.</b></p>' +
+        "</div>" +
+        '<div class="fa-foot__col">' +
+        '<p class="fa-foot__h">Explore</p>' +
+        '<nav class="fa-foot__list">' +
         '<a class="fa-foot__link" href="/">Home</a>' +
+        '<a class="fa-foot__link" href="/projects">Projects</a>' +
         '<a class="fa-foot__link" href="/about">About</a>' +
         '<a class="fa-foot__link" href="/contact">Contact</a></nav>' +
-        '<span class="fa-foot__tag">A catalogue of possible worlds · MMXXVI</span>' +
-        '</div></div>';
+        "</div>" +
+        '<div class="fa-foot__col">' +
+        '<p class="fa-foot__h">Use the work</p>' +
+        '<p class="fa-foot__body">Open by default. Prototypes and tools are published with copyable, replicatable code unless noted otherwise. Fork them, adapt them, wire them into your own workflows — attribution appreciated, permission not required. Research is free to cite; sources are linked in every piece.</p>' +
+        '<p class="fa-foot__body"><a class="fa-foot__a" href="https://github.com/ether-hill" target="_blank" rel="noopener">GitHub \u2197</a> · <a class="fa-foot__a" href="/about">License</a></p>' +
+        "</div>" +
+        '<div class="fa-foot__col">' +
+        '<p class="fa-foot__h">Contact</p>' +
+        '<p class="fa-foot__body">Get in touch. If you\u2019ve used something from the Atlas — in a workshop, a project, a classroom — we\u2019d like to hear how it went. Collaboration inquiries welcome.</p>' +
+        '<p class="fa-foot__body"><a class="fa-foot__a" href="/contact">Contact form \u2192</a></p>' +
+        "</div></div>" +
+        '<div class="fa-foot__row">' +
+        '<span class="fa-foot__tag">© 2026 Futures Atlas · A living project — things change, break, and improve.' + upd + "</span>" +
+        '<span class="fa-foot__tag">Built with Next.js, Claude Code, and an evolving stack — <a class="fa-foot__a" href="/about#stack">see the full inventory \u2192</a></span>' +
+        "</div></div>";
       document.body.appendChild(foot);
     }
 

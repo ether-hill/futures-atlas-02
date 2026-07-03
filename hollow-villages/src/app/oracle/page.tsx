@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { OracleExperience } from "@/components/OracleExperience";
 
 export const metadata: Metadata = {
-  title: "Consult the Oracle — The Hollow Villages",
+  title: "Consult the Oracle — Village Oracle",
   description:
     "Begin a consultation. The oracle opens a real letter, names the system behind the complaint, and shows you that village in 2050 — with the levers, the precedents, and the real funding to start.",
 };

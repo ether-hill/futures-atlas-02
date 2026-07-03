@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /*
-  "The Hollow Villages" — Claude Design comp system.
+  "Village Oracle" — Claude Design comp system.
   Architectural / urbanist: ink linework on warm bone paper, technical-drawing
   annotations, a NOW → 2050 temporal spine. Single themeable accent (blue).
   Display = Archivo · letters/oracle = Bodoni Moda · years = Saira Condensed ·
@@ -113,7 +113,7 @@ html.hide-fa-foot footer.fa-foot { display: none !important; }
 }
 
 /* The "Futures Atlas" brand mark (top-left of the shared nav) already links home,
-   so the redundant "Home" link on the right is hidden on the Hollow Villages pages. */
+   so the redundant "Home" link on the right is hidden on the Village Oracle pages. */
 .fa-shell__navlink[href="/"] { display: none !important; }
 
 /* ---------- the vision teaser: delayed fade + a moving shine on the button ---------- */

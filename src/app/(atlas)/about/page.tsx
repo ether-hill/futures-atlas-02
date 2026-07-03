@@ -118,7 +118,7 @@ export default function AboutPage() {
       </section>
 
       {/* ── The stack ───────────────────────────────────────────────────── */}
-      <section className="border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
+      <section id="stack" className="scroll-mt-20 border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
         <Container>
           <Reveal>
             <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
