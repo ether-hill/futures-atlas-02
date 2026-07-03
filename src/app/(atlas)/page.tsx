@@ -17,9 +17,8 @@ export default function Home() {
           Generatives "Field Dynamics" flowing behind the headline */}
       <section className="relative flex min-h-[calc(100svh-64px)] items-end overflow-hidden border-b border-ink bg-black">
         <HeroField />
-        <Container className="relative z-[1] py-[clamp(96px,16vh,200px)]">
+        <Container className="relative z-[1] pt-[clamp(96px,16vh,200px)] pb-[clamp(44px,7vh,84px)]">
           <Reveal>
-            <p className="eyebrow tick mb-6 !text-paper/55">A catalogue of possible worlds</p>
             <h1 className="max-w-[16ch] text-[clamp(40px,8vw,120px)] font-extrabold leading-[0.92] tracking-[-0.03em] !text-paper text-balance">
               Mapping foresight
             </h1>
@@ -35,12 +34,6 @@ export default function Home() {
                 className="inline-flex items-center gap-2.5 rounded-[2px] bg-accent px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-accent-deep"
               >
                 Browse the atlas <span className="text-[14px]">↓</span>
-              </Link>
-              <Link
-                href="/about"
-                className="inline-flex items-center gap-2.5 rounded-[2px] border-[1.5px] border-paper/30 px-[21px] py-3 font-mono text-[12px] uppercase tracking-[0.1em] text-paper transition-colors hover:border-paper"
-              >
-                Why we built this
               </Link>
             </div>
           </Reveal>
