@@ -131,7 +131,7 @@ html, body { height: 100%; background: var(--bg); color: var(--text); font-famil
 .dash-jump { position: absolute; top: 16px; left: 16px; z-index: 1200; display: inline-flex; gap: 8px; }
 
 /* Timeline transport, now centred in the feed section */
-.feed-transport { margin-top: 30px; display: flex; flex-direction: column; align-items: center; gap: 13px; }
+.feed-transport { margin-left: auto; display: flex; flex-direction: row; align-items: center; gap: 16px; }
 .ft-controls { display: flex; align-items: center; justify-content: center; gap: 10px; }
 
 /* ── Floating contextual nav (replaces the retired slim 2nd nav) ──────────── */
@@ -282,7 +282,7 @@ input[type="range"].opacity-slider::-webkit-slider-thumb {
   border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
   padding: 10px 24px 12px;
 }
-.tl-bar-top { display: flex; align-items: center; gap: 16px; margin-bottom: 8px; }
+.tl-bar-top { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 8px; }
 .tl-year { font-size: 28px; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1; flex-shrink: 0; min-width: 62px; }
 .tl-nodes { font-size: 9px; color: var(--ui-cyan); letter-spacing: 0.08em; flex: 1; }
 .tl-nodes.completion { color: var(--ui-accent); font-weight: 600; animation: tlpulse 1.2s ease-in-out 4; }
@@ -390,7 +390,7 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
   color: var(--ui-cyan); margin-bottom: 16px;
   text-shadow: 0 0 12px rgba(0,212,255,0.4);
 }
-.fd-text { font-size: 17px; color: #aaa; line-height: 1.75; max-width: 660px; margin: 0 auto; }
+.fd-text { font-size: 17px; color: #aaa; line-height: 1.75; max-width: 825px; margin: 0 auto; }
 
 /* Article images */
 .ac-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 3px; margin-bottom: 2px; display: block; background: var(--surface2); }
@@ -1532,6 +1532,20 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
     <div class="tl-bar-top">
       <div class="tl-year" id="tl-year-display">2025</div>
       <div class="tl-nodes" id="tl-nodes-display">NO NODES ACTIVE</div>
+      <!-- transport controls are part of the timeline -->
+      <div class="feed-transport">
+        <div class="ft-controls">
+          <button id="tl-prev-btn" class="tl-skip-btn" disabled aria-label="Previous milestone">&#9198;</button>
+          <button id="tl-play-btn">&#9654; PLAY TIMELINE</button>
+          <button id="tl-next-btn" class="tl-skip-btn" aria-label="Next milestone">&#9197;</button>
+        </div>
+        <div class="tl-speed">
+          <span class="tl-speed-lbl">Speed</span>
+          <button class="speed-btn" data-speed="0.5">&frac12;&times;</button>
+          <button class="speed-btn active" data-speed="1">1&times;</button>
+          <button class="speed-btn" data-speed="2">2&times;</button>
+        </div>
+      </div>
     </div>
     <div class="tl-slider-wrap">
       <input type="range" id="tl-slider" min="2025" max="2042" step="0.01" value="2025">
@@ -1572,20 +1586,6 @@ input[type="range"]#tl-slider::-webkit-slider-thumb {
         <div class="fd-title" id="fd-title">FIRST TRANSMISSION</div>
         <div class="fd-location" id="fd-location">Veluwe, Netherlands</div>
         <div class="fd-text" id="fd-text"></div>
-      </div>
-      <!-- Timeline transport lives in the feed section now -->
-      <div class="feed-transport">
-        <div class="ft-controls">
-          <button id="tl-prev-btn" class="tl-skip-btn" disabled aria-label="Previous milestone">&#9198;</button>
-          <button id="tl-play-btn">&#9654; PLAY TIMELINE</button>
-          <button id="tl-next-btn" class="tl-skip-btn" aria-label="Next milestone">&#9197;</button>
-        </div>
-        <div class="tl-speed">
-          <span class="tl-speed-lbl">Speed</span>
-          <button class="speed-btn" data-speed="0.5">&frac12;&times;</button>
-          <button class="speed-btn active" data-speed="1">1&times;</button>
-          <button class="speed-btn" data-speed="2">2&times;</button>
-        </div>
       </div>
     </div>
   </div>
@@ -2066,11 +2066,13 @@ function initMap() {
   // Trim the empty poles (no land/data) so the inhabited world fills a wide frame.
   const WORLD = L.latLngBounds([[-58, -180], [82, 180]]);
   map = L.map('map', { center: [12, 0], zoom: 2, zoomControl: true, noWrap: true,
-    maxBounds: WORLD, maxBoundsViscosity: 1.0 });
-  map.zoomControl.setPosition('topright');
-  // Frame the whole world and forbid zooming out past it (nothing but grey beyond).
+    zoomSnap: 0.5, maxBounds: WORLD, maxBoundsViscosity: 1.0 });
+  map.zoomControl.setPosition('bottomright');
+  // Frame the world a touch closer: negative padding lets the inhabited world
+  // spill just past the frame edges (with half-step zoom snapping it lands ~0.5
+  // closer). Single fitBounds call — no post-hoc setZoom that would churn tiles.
   function fitWorld() {
-    map.fitBounds(WORLD, { animate: false });
+    map.fitBounds(WORLD, { animate: false, paddingTopLeft: [-100, -62], paddingBottomRight: [-100, -62] });
     map.setMinZoom(map.getZoom());
   }
   fitWorld();

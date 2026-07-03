@@ -25,8 +25,18 @@ export function HeroSlider({
   // Starts fully revealing the 2025 side (divider hard right), then the intro
   // animation sweeps it left to reveal 2050, then settles at halfway.
   const [pct, setPct] = useState(100);
+  const [ready, setReady] = useState(false); // both photos decoded → fade in + start the sweep
   const frame = useRef<HTMLElement>(null);
   const interacted = useRef(false);
+  const loaded = useRef(0);
+  const markLoaded = useCallback(() => {
+    if (++loaded.current >= 2) setReady(true);
+  }, []);
+  // Fallback: never leave the hero hidden if an image is cached (no load event) or slow.
+  useEffect(() => {
+    const t = window.setTimeout(() => setReady(true), 2000);
+    return () => window.clearTimeout(t);
+  }, []);
 
   const fromX = useCallback((clientX: number) => {
     const el = frame.current;
@@ -35,9 +45,11 @@ export function HeroSlider({
     setPct(Math.max(0, Math.min(100, ((clientX - r.left) / r.width) * 100)));
   }, []);
 
-  // Intro sweep on load: 100% → 0% → 66%. Cancels the moment the visitor
-  // interacts; respects reduced-motion (jumps straight to 66%).
+  // Intro sweep: 100% → 0% → 66%, but only once the photos are decoded and the
+  // hero has faded in, so it never animates over blank/half-loaded images.
+  // Cancels the moment the visitor interacts; respects reduced-motion.
   useEffect(() => {
+    if (!ready || interacted.current) return;
     if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
       setPct(66);
       return;
@@ -48,10 +60,11 @@ export function HeroSlider({
     ];
     const total = 1900;
     const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
-    const start = performance.now();
     let raf = 0;
+    let start = 0;
     const tick = (now: number) => {
       if (interacted.current) return;
+      if (!start) start = now;
       const e = now - start;
       if (e >= total) {
         setPct(66);
@@ -62,9 +75,10 @@ export function HeroSlider({
       setPct(leg.from + (leg.to - leg.from) * ease(lt));
       raf = requestAnimationFrame(tick);
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, []);
+    // let the fade-in settle first, then sweep
+    const delay = window.setTimeout(() => { raf = requestAnimationFrame(tick); }, 460);
+    return () => { window.clearTimeout(delay); if (raf) cancelAnimationFrame(raf); };
+  }, [ready]);
 
   // Drag via window listeners — robust across mouse/touch and any capture quirks.
   const startDrag = useCallback(
@@ -99,17 +113,17 @@ export function HeroSlider({
       ref={frame}
       onPointerDown={startDrag}
       className="relative min-h-[600px] w-full cursor-ew-resize touch-none select-none overflow-hidden bg-haze"
-      style={{ height: "100svh" }}
+      style={{ height: "100svh", opacity: ready ? 1 : 0, transition: "opacity 0.8s ease" }}
     >
       {/* 2050 — accent-tinted render, full frame */}
       <div className="pointer-events-none absolute inset-0">
-        <Image src={afterImage} alt="The village in 2050 — a forecast" fill priority className="object-cover" />
+        <Image src={afterImage} alt="The village in 2050 — a forecast" fill priority onLoad={markLoaded} className="object-cover" />
         <div className="absolute inset-0 mix-blend-multiply" style={{ background: "color-mix(in oklch, var(--color-accent) 34%, transparent)" }} />
       </div>
 
       {/* 2025 — desaturated photo, clipped */}
       <div className="pointer-events-none absolute inset-0" style={{ clipPath: `inset(0 calc(100% - ${pct}%) 0 0)` }}>
-        <Image src={beforeImage} alt="The village today, 2025" fill priority className="object-cover saturate-[0.5]" />
+        <Image src={beforeImage} alt="The village today, 2025" fill priority onLoad={markLoaded} className="object-cover saturate-[0.5]" />
         <div className="absolute inset-0 bg-[#211e18]/30" />
       </div>
 
