@@ -66,16 +66,11 @@ export default function RootLayout({
         {/* Futures Atlas F favicon (same across the whole platform) */}
         <link rel="icon" href="/village-oracle/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/village-oracle/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
-        {/* Set the theme class before paint to avoid a flash. The Hollow
-            Villages defaults to LIGHT: it seeds the shared atlas-nav key
-            (`fa-theme`) to "light" on first visit, so the injected master nav
-            (which otherwise defaults project pages to dark) agrees. A saved
-            choice always wins, and the nav's toggle keeps working. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k='fa-theme',s=localStorage.getItem(k);if(s!=='dark'&&s!=='light'){s='light';localStorage.setItem(k,s);}document.documentElement.classList.toggle('dark',s==='dark');}catch(e){}})();`,
-          }}
-        />
+        {/* Village Oracle is LIGHT-ONLY. Force light before paint so there is no
+            flash even if a dark preference was saved elsewhere on the platform.
+            The shared atlas-nav also locks this project to light and removes its
+            theme toggle; this just avoids the pre-nav flash. */}
+        <script dangerouslySetInnerHTML={{ __html: `document.documentElement.classList.remove('dark');` }} />
       </head>
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
