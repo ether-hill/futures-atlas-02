@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/Container";
+import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
 import { projectsByDate } from "@/data/projects";
@@ -7,9 +8,10 @@ import { projectsByDate } from "@/data/projects";
 export default function Home() {
   return (
     <div>
-      {/* Hero — generic placeholder */}
-      <section className="plan-grid relative flex min-h-[78svh] items-end border-b border-ink">
-        <Container className="py-[clamp(96px,16vh,200px)]">
+      {/* Hero — Generatives "Field Dynamics" plays behind the headline */}
+      <section className="plan-grid relative flex min-h-[78svh] items-end overflow-hidden border-b border-ink">
+        <HeroField />
+        <Container className="relative z-[1] py-[clamp(96px,16vh,200px)]">
           <Reveal>
             <p className="eyebrow tick mb-6">A catalogue of possible worlds</p>
             <h1 className="max-w-[16ch] text-[clamp(40px,8vw,120px)] font-extrabold leading-[0.92] tracking-[-0.03em] text-ink text-balance">
