@@ -245,3 +245,31 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
   transform-origin: left;
   animation: draw-line 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
 }
+
+/* ---------- About page instrumentation (workflow pulse + stack stagger) ---------- */
+@keyframes wf-travel {
+  from { left: 24px; }
+  to { left: calc(100% - 30px); }
+}
+.wf-pulse {
+  top: 19px;
+  left: 24px;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  animation: wf-travel 7s linear infinite;
+}
+@keyframes tile-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+[data-reveal] .stack-tile { opacity: 0; }
+[data-reveal].is-in .stack-tile {
+  animation: tile-rise 0.5s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-reveal] .stack-tile { opacity: 1 !important; animation: none !important; }
+  .wf-pulse { display: none !important; }
+}
