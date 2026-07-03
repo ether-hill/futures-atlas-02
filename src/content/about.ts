@@ -90,7 +90,7 @@ export const STACK: StackTool[] = [
       { slug: "/signal-reactor", title: "Signal Reactor" },
       { slug: "/quantum-spark", title: "Quantum Spark" },
       { slug: "/hyperscale", title: "Hyperscale" },
-      { slug: "/hollow-villages", title: "The Hollow Villages" },
+      { slug: "/village-oracle", title: "Village Oracle" },
     ],
   },
   {
@@ -107,7 +107,7 @@ export const STACK: StackTool[] = [
     url: "https://www.midjourney.com",
     role: "Visual language and project imagery.",
     usedIn: [
-      { slug: "/hollow-villages", title: "The Hollow Villages" },
+      { slug: "/village-oracle", title: "Village Oracle" },
       { slug: "/quantum-dominance", title: "Quantum Dominance" },
     ],
   },
