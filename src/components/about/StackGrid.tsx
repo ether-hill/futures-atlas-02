@@ -2,16 +2,15 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { STACK, STACK_GROUPS, type StackTool } from "@/content/about";
-import { LOGOS, LOGO_FILES } from "@/lib/logos";
+import { STACK, STACK_GROUPS } from "@/content/about";
+import { LOGOS } from "@/lib/logos";
 import { Reveal } from "@/components/Reveal";
 
 /**
  * The stack, grouped, real brand marks for every tool — mono by default,
  * brand colour on hover/focus. Selecting a tool expands a card with what we
  * actually use it for and — the point of the section — which Atlas projects
- * it built. Path-based marks recolour via fill; file-based marks (Midjourney,
- * Kling) grayscale via CSS filter.
+ * it built.
  */
 
 export function LogoMark({ slug, name, colored, size = "h-12 w-12" }: { slug: string; name: string; colored: boolean; size?: string }) {
@@ -22,24 +21,15 @@ export function LogoMark({ slug, name, colored, size = "h-12 w-12" }: { slug: st
         viewBox="0 0 24 24"
         role="img"
         aria-hidden="true"
+        fillRule="evenodd"
+        clipRule="evenodd"
         className={`${size} transition-colors duration-200`}
         style={{ fill: colored ? glyph.hex : "currentColor" }}
       >
-        <path d={glyph.path} />
+        {glyph.paths.map((d, i) => (
+          <path key={i} d={d} />
+        ))}
       </svg>
-    );
-  }
-  const file = LOGO_FILES[slug];
-  if (file) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={file.src}
-        alt={file.title}
-        className={`${size} object-contain transition-[filter,opacity] duration-200 ${
-          colored ? "" : "opacity-75 grayscale"
-        }`}
-      />
     );
   }
   return (

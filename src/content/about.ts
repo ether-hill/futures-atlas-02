@@ -61,7 +61,7 @@ export const DOMAINS = {
 export const WORKFLOW_INTRO =
   "Every project on the Atlas is made with a mix of AI systems, creative tools, and open web technology. We document the workflow for each one — which models, which libraries, which steps — so the process is as replicatable as the output.";
 
-export type StackGroup = "ai-language" | "ai-media" | "web";
+export type StackGroup = "ai-language" | "ai-media" | "ai-open" | "web";
 
 export interface StackTool {
   slug: string; // key into LOGOS, or typographic tile when absent
@@ -75,6 +75,7 @@ export interface StackTool {
 export const STACK_GROUPS: { id: StackGroup; label: string }[] = [
   { id: "ai-language", label: "AI — language & code" },
   { id: "ai-media", label: "AI — image & video" },
+  { id: "ai-open", label: "AI — open-source models" },
   { id: "web", label: "Web & creative code" },
 ];
 
@@ -100,13 +101,6 @@ export const STACK: StackTool[] = [
     role: "Research cross-checks and alternative drafts.",
   },
   {
-    slug: "huggingface",
-    name: "Open-source models",
-    group: "ai-language",
-    url: "https://huggingface.co",
-    role: "Local experiments and cost-free replication paths — the roster (Llama, Mistral, Qwen, Flux and peers) shifts too fast to pin down.",
-  },
-  {
     slug: "midjourney",
     name: "Midjourney",
     group: "ai-media",
@@ -123,6 +117,76 @@ export const STACK: StackTool[] = [
     group: "ai-media",
     url: "https://klingai.com",
     role: "Video generation.",
+  },
+  {
+    slug: "sora",
+    name: "Sora",
+    group: "ai-media",
+    url: "https://sora.com",
+    role: "Video generation — scene studies and motion references.",
+  },
+  {
+    slug: "runway",
+    name: "Runway",
+    group: "ai-media",
+    url: "https://runwayml.com",
+    role: "Video generation and editing experiments.",
+  },
+  {
+    slug: "stability",
+    name: "Stable Diffusion",
+    group: "ai-media",
+    url: "https://stability.ai",
+    role: "Open image generation — local, controllable, replicable.",
+  },
+  {
+    slug: "flux",
+    name: "Flux",
+    group: "ai-media",
+    url: "https://bfl.ai",
+    role: "Open-weights image generation for cost-free replication paths.",
+  },
+  {
+    slug: "huggingface",
+    name: "Hugging Face",
+    group: "ai-open",
+    url: "https://huggingface.co",
+    role: "Where the open-model experiments live — weights, spaces, and evals.",
+  },
+  {
+    slug: "meta",
+    name: "Llama",
+    group: "ai-open",
+    url: "https://www.llama.com",
+    role: "Local language-model experiments and cost-free replication paths.",
+  },
+  {
+    slug: "mistral",
+    name: "Mistral",
+    group: "ai-open",
+    url: "https://mistral.ai",
+    role: "Small, fast open models for local pipelines.",
+  },
+  {
+    slug: "qwen",
+    name: "Qwen",
+    group: "ai-open",
+    url: "https://qwen.ai",
+    role: "Open multilingual models — capability cross-checks.",
+  },
+  {
+    slug: "deepseek",
+    name: "DeepSeek",
+    group: "ai-open",
+    url: "https://www.deepseek.com",
+    role: "Open reasoning models — a benchmark for what open weights can do.",
+  },
+  {
+    slug: "ollama",
+    name: "Ollama",
+    group: "ai-open",
+    url: "https://ollama.com",
+    role: "Runs the open models locally — one command from weights to endpoint.",
   },
   {
     slug: "nextjs",
@@ -206,7 +270,7 @@ export const WORKFLOW: WorkflowStage[] = [
     id: "visuals",
     label: "Visuals",
     blurb: "Imagery and motion in the project's own register.",
-    tools: ["midjourney", "kling", "huggingface"],
+    tools: ["midjourney", "kling", "sora", "runway", "stability", "flux"],
     types: ["read", "run"],
   },
   {

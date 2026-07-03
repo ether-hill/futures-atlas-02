@@ -8,7 +8,7 @@ import { LOGOS } from "@/lib/logos";
 
 // The stack strip: which marks headline the homepage tech banner (all render
 // as paper-tone inline SVGs; the full inventory lives on /about).
-const BANNER_TOOLS = ["claude", "openai", "nextjs", "react", "threejs", "p5js", "tailwindcss", "vercel", "d3", "huggingface"];
+const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "runway", "nextjs", "react", "threejs", "p5js", "tailwindcss", "vercel", "huggingface", "mistral", "deepseek"];
 
 export default function Home() {
   return (
@@ -90,10 +90,14 @@ export default function Home() {
                       viewBox="0 0 24 24"
                       role="img"
                       aria-label={glyph.title}
+                      fillRule="evenodd"
+                      clipRule="evenodd"
                       className="h-[clamp(28px,3vw,40px)] w-auto fill-current"
                     >
                       <title>{glyph.title}</title>
-                      <path d={glyph.path} />
+                      {glyph.paths.map((d, i) => (
+                        <path key={i} d={d} />
+                      ))}
                     </svg>
                   );
                 })}
