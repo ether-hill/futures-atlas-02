@@ -15,16 +15,13 @@ export default function ProjectsPage() {
     <div className="min-h-[70vh] bg-surface py-[clamp(48px,8vw,110px)]">
       <Container>
         <div className="mb-3.5 flex flex-wrap items-baseline gap-4">
-          <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-accent-deep">
-            The projects
-          </span>
           <span className="h-px min-w-10 flex-1 bg-ink/[0.18]" />
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-graphite">
             {filtered.length} {filtered.length === 1 ? "project" : "projects"}
           </span>
         </div>
         <h1 className="mb-[clamp(26px,4vw,46px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
-          Every world in the atlas
+          Projects
         </h1>
 
         {/* category filters */}
@@ -67,7 +64,9 @@ function FilterTag({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 rounded-[2px] border px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-        active ? "border-ink bg-ink text-paper" : "border-ink/25 text-ink/70 hover:border-ink/60"
+        // band is dark in BOTH themes, paper always light — ink/paper flip
+        // together in dark mode and went white-on-white here
+        active ? "border-band bg-band text-paper" : "border-ink/25 text-ink/70 hover:border-ink/60"
       }`}
     >
       {label}
