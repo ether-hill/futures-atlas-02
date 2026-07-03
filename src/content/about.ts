@@ -224,7 +224,7 @@ export const WORKFLOW: WorkflowStage[] = [
 export const STACK_INTRO = "The tools we use, in the open. Nothing here is an endorsement — it’s an inventory.";
 
 export const WHO = {
-  body: "Futures Atlas is a project by Frond Studio, developed with collaborators including Rixt Bouman.",
+  body: "Futures Atlas is a project by Frond Studio.",
   invite:
     "If you use something from the Atlas — a framework, a prototype, a kit — we’d like to hear how it went.",
   contactHref: "/contact",

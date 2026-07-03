@@ -39,8 +39,6 @@ const nextConfig: NextConfig = {
         { source: "/literal-frequency", destination: "/literal-frequency/index.html" },
         // Hyperscale — Vite static app (data-center management sim)
         { source: "/hyperscale", destination: "/hyperscale/index.html" },
-        // Gigawatt — Vite static app (desert compute-campus sim, Fable 5 rebuild)
-        { source: "/gigawatt", destination: "/gigawatt/index.html" },
         // Trajectories — Vite static app (generative filament sphere)
         { source: "/trajectories", destination: "/trajectories/index.html" },
         // Social Composer — Next static export (basePath baked in, trailingSlash)
@@ -78,6 +76,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/prism", destination: "/generatives", permanent: true },
+      // Gigawatt became THE Hyperscale (the older sim was retired from the site)
+      { source: "/gigawatt", destination: "/hyperscale", permanent: true },
+      { source: "/gigawatt/:path*", destination: "/hyperscale/:path*", permanent: true },
       { source: "/prism/:path*", destination: "/generatives/:path*", permanent: true },
       { source: "/visualize", destination: "/literal-frequency", permanent: true },
       { source: "/visualize/:path*", destination: "/literal-frequency/:path*", permanent: true },

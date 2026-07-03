@@ -39,7 +39,7 @@ export const projects: Project[] = [
     id: "signal-reactor",
     title: "Signal Reactor",
     tagline:
-      "An organizational foresight instrument built with Rixt Bouman: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it — deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
+      "An organizational foresight instrument: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it — deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
     year: "2026",
     date: "2026-07-02",
     field: "AI & risk",
@@ -60,24 +60,12 @@ export const projects: Project[] = [
     image: "/projects/trajectories.jpg",
   },
   {
-    id: "gigawatt",
-    title: "Gigawatt",
-    tagline:
-      "A second take on the compute-boom builder, this time in a green river valley — with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment (anger the county and your permits freeze). Full day–night cycle, seeded weather and markets, procedural audio. Built from scratch by Claude Fable 5 as a model-comparison companion to Hyperscale.",
-    year: "2026",
-    date: "2026-07-01",
-    field: "Simulation",
-    status: "live",
-    path: "/gigawatt",
-    image: "/projects/gigawatt.jpg",
-  },
-  {
     id: "hyperscale",
     title: "Hyperscale",
     tagline:
-      "A 3D data-center builder about the physical reality behind the compute boom. Drop server halls, GPU pods, cooling towers and substations on a terrain plot — orbit the camera while fans spin and towers steam — and keep power, heat, compute and cash in balance as demand climbs. Underfeed power or fall behind on cooling and machines throttle, glow red, then fail. Seeded runs, replayable to the day.",
+      "A 3D management sim about the physical reality of the AI buildout — a compute campus in a river valley with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment as you grow toward a gigawatt. Full day–night cycle, seeded weather and markets, procedural audio.",
     year: "2026",
-    date: "2026-06-28",
+    date: "2026-07-01",
     field: "Simulation",
     status: "live",
     path: "/hyperscale",

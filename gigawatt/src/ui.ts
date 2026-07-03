@@ -387,7 +387,7 @@ export class UI {
     this.overlay.innerHTML = "";
     const card = el("div", "gw-modal");
     card.append(el("div", "gw-modal__kicker", "FUTURES ATLAS · SIMULATION"));
-    card.append(el("h1", "gw-modal__title", "GIGAWATT"));
+    card.append(el("h1", "gw-modal__title", "HYPERSCALE"));
     card.append(
       el(
         "p",
@@ -420,7 +420,7 @@ export class UI {
       el(
         "p",
         "gw-modal__foot",
-        "Runs are seeded — the same seed replays the same weather, prices and offers. Built end-to-end by Claude Fable 5 as a fresh-take companion to Hyperscale.",
+        "Runs are seeded — the same seed replays the same weather, prices and offers.",
       ),
     );
     this.overlay.append(card);

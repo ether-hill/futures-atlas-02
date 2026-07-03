@@ -20,7 +20,6 @@
   var FA_PROJECTS = [
     { name: "Trajectories", path: "/trajectories" },
     { name: "Hyperscale", path: "/hyperscale" },
-    { name: "Gigawatt", path: "/gigawatt" },
     { name: "Signal Reactor", path: "/signal-reactor" },
     { name: "Quantum Spark", path: "/quantum-spark" },
     { name: "Quantum Dominance", path: "/quantum-dominance" },

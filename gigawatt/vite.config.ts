@@ -1,11 +1,11 @@
 import { defineConfig } from "vite";
 
 // Served as a self-contained static bundle inside the Futures Atlas site at
-// /gigawatt, mounted under ../public/gigawatt.
+// /hyperscale, mounted under ../public/hyperscale.
 export default defineConfig({
-  base: "/gigawatt/",
+  base: "/hyperscale/",
   build: {
-    outDir: "../public/gigawatt",
+    outDir: "../public/hyperscale",
     emptyOutDir: true,
   },
   server: { open: true },
