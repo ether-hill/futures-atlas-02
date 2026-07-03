@@ -193,12 +193,15 @@ body.od-menu-open .od-extinctions{display:none!important}
 
   /* --- band 1: portrait + info (32%); portrait flush to nav / left edge / game --- */
   .od-photo{flex:0 0 32%!important;height:auto!important;min-height:0;
-    display:flex!important;flex-direction:row;align-items:stretch;gap:0;padding:0!important;background:#0e0b16;overflow:hidden}
+    display:flex!important;flex-direction:row;align-items:stretch;gap:0;padding:0!important;background:#08080a;overflow:hidden}
   .od-photo-scrim{display:none!important}
-  .od-hero-img{position:relative!important;inset:auto!important;height:100%!important;width:auto!important;
-    aspect-ratio:3/4;max-width:40vw;flex:none!important;border-radius:0!important;object-position:50% 16%!important}
+  /* portrait = left 40%; the video portraits (Elon/Dario) match the photo layout instead of going full-bleed */
+  .od-hero-img,.od-portrait-vid{position:relative!important;inset:auto!important;height:100%!important;width:auto!important;
+    aspect-ratio:3/4;max-width:40vw;flex:none!important;border-radius:0!important;object-fit:cover!important;object-position:50% 18%!important;background:#08080a}
+  /* info = right 60%, on black with a red glow */
   .od-photo-info{position:relative!important;inset:auto!important;flex:1 1 0!important;min-width:0;
-    justify-content:center!important;gap:3px!important;padding:0 13px!important}
+    justify-content:center!important;gap:3px!important;padding:0 15px!important;
+    background:radial-gradient(ellipse 95% 130% at 118% 50%, rgba(224,72,27,0.34) 0%, rgba(224,72,27,0.08) 40%, transparent 68%)!important}
   .od-odds-line,.od-quote-ctx,.od-photo-src,.od-photo-top{display:none!important}  /* big %, eyebrow, attribution, on-photo pill — gone */
   .od-photo-info .od-name{font-size:clamp(17px,2.7vh,22px)!important;line-height:1.04!important}
   .od-photo-info .od-quote{display:-webkit-box!important;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
@@ -219,7 +222,7 @@ body.od-menu-open .od-extinctions{display:none!important}
   /* cards: smaller, filling the band; shrink the drawn card to fit */
   .od-cards-wrap{height:100%!important}
   .od-fan-deck{height:100%!important}
-  .od-fan{width:116px!important;height:166px!important;margin-left:-58px!important;bottom:8px!important}
+  .od-fan{width:112px!important;height:160px!important;margin-left:-56px!important;bottom:24%!important}   /* lift the fan so its arc clears the results panel below */
   .od-drawn-wrap{transform:scale(0.58)}
 
   /* --- band 3: results panel (38% of .od-game ≈ 26% screen) — small type + button --- */
@@ -242,8 +245,8 @@ body.od-menu-open .od-extinctions{display:none!important}
          fit one screen (no scroll, no cut-off card) — portrait left, copy right --- */
   .od-choose{display:none!important}                       /* "CHOOSE YOUR PLAYER" label — redundant on mobile */
   .od-pcards{display:flex!important;flex-direction:column;gap:10px!important;flex:1 1 auto!important;
-    height:auto!important;min-height:0;overflow:hidden}
-  .od-pcards .od-pcard{flex:1 1 0!important;min-height:0!important;height:auto!important;max-height:172px;
+    height:auto!important;min-height:0;overflow:hidden;margin-top:clamp(14px,2.6vh,24px)!important}   /* breathing room under the title */
+  .od-pcards .od-pcard{flex:1 1 0!important;min-height:0!important;height:auto!important;max-height:163px;   /* ~5% shorter cards → frees the space above */
     display:flex!important;flex-direction:row;align-items:stretch}
   .od-pcards .od-pcard-img{position:relative!important;inset:auto!important;width:34%!important;max-width:130px;
     height:auto!important;min-height:0!important;flex:none;object-position:50% 16%!important}
@@ -878,7 +881,9 @@ class Component extends DCLogic {
       if (hero) { const pl = this.players[this.state.playerId]; const url = pl.photo; hero.setAttribute('alt', pl.name + ' — ' + pl.role); hero.classList.toggle('od-flip', !!pl.flip); const blurClass = pl.flip ? 'od-blurin-flip' : 'od-blurin'; if (hero.getAttribute('src') !== url) { hero.onload = () => { hero.classList.remove('od-blurin', 'od-blurin-flip'); void hero.offsetWidth; hero.classList.add(blurClass); }; hero.setAttribute('src', url); } }
       // portrait video (Elon / Dario): blur-in its first frame on load, and re-trigger when the player changes
       const pv = document.querySelector('.od-portrait-vid');
-      if (pv) { const want = pv.getAttribute('src') || ''; if (pv._blurSrc !== want) { pv._blurSrc = want; const blur = () => { pv.classList.remove('od-vidblurin'); void pv.offsetWidth; pv.classList.add('od-vidblurin'); }; if (pv.readyState >= 2) blur(); else pv.addEventListener('loadeddata', blur, { once: true }); } }
+      // blur the portrait video in exactly ONCE per player selection (keyed on player id, not the
+      // element — so re-renders/element recreation during play can't re-trigger it and glitch)
+      if (pv) { const pid = this.state.playerId; if (this._pBlurFor !== pid) { this._pBlurFor = pid; const go = () => { pv.classList.remove('od-vidblurin'); void pv.offsetWidth; pv.classList.add('od-vidblurin'); }; if (pv.readyState >= 2) go(); else pv.addEventListener('loadeddata', go, { once: true }); } }
       // TEST: wire the Tegmark card-picker dropdown (native listener — independent of the template's event binding)
       const sel = document.querySelector('.od-cardsel');
       if (sel && !sel._wired) { sel._wired = true; sel.addEventListener('change', () => { const v = sel.value; if (v === '') return; this.previewCard(parseInt(v, 10)); setTimeout(() => { try { sel.value = ''; } catch (e) {} }, 0); }); }
@@ -1047,6 +1052,7 @@ class Component extends DCLogic {
 
   selectPlayer = (id) => {
     this.click(); this.clearTimers();
+    this._pBlurFor = null;   // re-arm the portrait blur-in so it plays on every fresh selection
     this.setState({ playerId: id, menuOpen: false, mode: 'single', faceEnd: false, screen: 'play' });
     this.resetMechanic();
     this._dealIfCards(id);   // Tegmark: sound the cards fanning out
