@@ -17,13 +17,14 @@ import {
 import { blobToBytes, dataUrlToBytes, downloadBlob, exportGIF, exportVideo, renderVideoBlob, zipDownload } from "@/lib/composer/export";
 import { loadAssets, saveAsset, deleteAsset } from "@/lib/composer/assets";
 
-type Aspect = "4:5" | "1:1" | "9:16";
-type PostTypeId = "single" | "carousel" | "story" | "reel" | "quote";
+type Aspect = "4:5" | "1:1" | "9:16" | "3:2" | "16:9";
+type PostTypeId = "single" | "carousel" | "story" | "reel" | "quote" | "desktop";
 type TypeSize = "S" | "M" | "L" | "XL";
 type Mode = "single" | "batch";
 
 const ASPECT_DIMS: Record<Aspect, { w: number; h: number }> = {
   "4:5": { w: 1080, h: 1350 }, "1:1": { w: 1080, h: 1080 }, "9:16": { w: 1080, h: 1920 },
+  "3:2": { w: 1620, h: 1080 }, "16:9": { w: 1920, h: 1080 },   // desktop / landscape
 };
 const POST_TYPES: Array<{ id: PostTypeId; label: string; glyph: string; dims: string; aspects: Aspect[]; multi?: boolean; video?: boolean }> = [
   { id: "single", label: "Single", glyph: "▭", dims: "1080 × 1350", aspects: ["4:5", "1:1"] },
@@ -31,6 +32,7 @@ const POST_TYPES: Array<{ id: PostTypeId; label: string; glyph: string; dims: st
   { id: "story", label: "Story", glyph: "▯", dims: "1080 × 1920", aspects: ["9:16"], video: true },
   { id: "reel", label: "Reel / Short", glyph: "▶", dims: "1080 × 1920 · video", aspects: ["9:16"], multi: true, video: true },
   { id: "quote", label: "Quote Card", glyph: "❝", dims: "1080 × 1080", aspects: ["1:1"] },
+  { id: "desktop", label: "Desktop", glyph: "▬", dims: "1620 × 1080 · landscape", aspects: ["3:2", "16:9"] },
 ];
 const TYPE_SIZES: TypeSize[] = ["S", "M", "L", "XL"];
 const SIZE_MUL: Record<TypeSize, number> = { S: 0.82, M: 1, L: 1.28, XL: 1.62 };
