@@ -3,7 +3,7 @@
 
   Loaded as a plain <script src="/atlas-nav.js" defer> by the hub (Next), the
   Vite tools (Generatives, Quantum Sandbox), Social Composer (Next export) and the
-  static zone bundles (Hollow Villages / Underground Intelligence / The Odds).
+  static zone bundles (Village Oracle / Underground Intelligence / The Odds).
   It self-injects /atlas-nav.css, so one script tag is all any page needs.
 
   Desktop: a sticky frosted bar — brand + (on a project page) a breadcrumb
@@ -35,10 +35,10 @@
       { name: "Dashboard", path: "/underground-intelligence/dashboard" },
       { name: "Research", path: "/underground-intelligence/research" },
     ] },
-    { name: "The Hollow Villages", path: "/hollow-villages", pages: [
-      { name: "Home", path: "/hollow-villages" },
-      { name: "Oracle", path: "/hollow-villages/oracle" },
-      { name: "Research", path: "/hollow-villages/research" },
+    { name: "Village Oracle", path: "/village-oracle", pages: [
+      { name: "Home", path: "/village-oracle" },
+      { name: "Oracle", path: "/village-oracle/oracle" },
+      { name: "Research", path: "/village-oracle/research" },
     ] },
   ];
   var LINKS = [

@@ -43,12 +43,12 @@ const HV_DESC =
 const HV_IMG = "https://futures-atlas-02.vercel.app/projects/hollow-villages.jpg";
 
 export const metadata: Metadata = {
-  title: "The Hollow Villages — a forecast instrument for emptying villages",
+  title: "Village Oracle — a forecast instrument for emptying villages",
   description: HV_DESC,
   openGraph: {
     type: "website",
     siteName: "Futures Atlas",
-    title: "The Hollow Villages — Futures Atlas",
+    title: "Village Oracle — Futures Atlas",
     description: HV_DESC,
     images: [HV_IMG],
   },
@@ -64,8 +64,8 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Futures Atlas F favicon (same across the whole platform) */}
-        <link rel="icon" href="/hollow-villages/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/hollow-villages/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+        <link rel="icon" href="/village-oracle/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/village-oracle/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
         {/* Set the theme class before paint to avoid a flash. The Hollow
             Villages defaults to LIGHT: it seeds the shared atlas-nav key
             (`fa-theme`) to "light" on first visit, so the injected master nav

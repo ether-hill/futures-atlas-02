@@ -80,7 +80,7 @@ export const projects: Project[] = [
     date: "2026-04-10",
     field: "Rural futures",
     status: "live",
-    path: "/hollow-villages", // the full project, served within this site
+    path: "/village-oracle", // the full project, served within this site
     image: "/projects/hollow-villages.jpg",
   },
   {

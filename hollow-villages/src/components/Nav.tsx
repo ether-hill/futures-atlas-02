@@ -26,14 +26,14 @@ export function Nav() {
       }
     >
       <Container className="flex items-center justify-between gap-4 py-[clamp(12px,1.6vw,16px)]">
-        <Link href="/" className="flex items-baseline gap-3" aria-label="The Hollow Villages — home">
+        <Link href="/" className="flex items-baseline gap-3" aria-label="Village Oracle — home">
           <span
             className={`text-[clamp(14px,1.4vw,17px)] font-extrabold tracking-[0.02em] ${
               overlay ? "text-paper [text-shadow:0_1px_12px_rgba(0,0,0,0.45)]" : "text-ink"
             }`}
             style={{ fontFamily: "var(--font-archivo)" }}
           >
-            THE HOLLOW VILLAGES
+            VILLAGE ORACLE
           </span>
           <span
             className={`hidden font-mono text-[10.5px] uppercase tracking-[0.18em] min-[1041px]:inline ${

@@ -7,7 +7,7 @@ import { OracleResponse } from "./OracleResponse";
 import { AtmospherePage, AtmosphereHero, type AtmosphereVariant } from "./OracleAtmosphere";
 
 /**
- * The whole Hollow Villages front door.
+ * The whole Village Oracle front door.
  *
  *  • mode "hero"  — the full-screen before/after photo hero (the landing).
  *  • mode "oracle"— the "Morning Consultation": a box that looks like you could
@@ -157,8 +157,8 @@ export function OracleExperience({ startInOracle = false }: { startInOracle?: bo
   if (mode === "hero") {
     return (
       <HeroSlider
-        beforeImage="/hollow-villages/hero/square-before.jpg"
-        afterImage="/hollow-villages/hero/square-after.jpg"
+        beforeImage="/village-oracle/hero/square-before.jpg"
+        afterImage="/village-oracle/hero/square-after.jpg"
         onConsult={enterOracle}
       />
     );

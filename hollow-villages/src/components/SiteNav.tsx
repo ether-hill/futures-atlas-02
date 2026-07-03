@@ -17,7 +17,7 @@ export function SiteNav() {
   const pathname = usePathname(); // basePath-stripped, e.g. "/research" or "/"
   const activeHref = pathname === "/" ? BASE : `${BASE}${pathname}`;
   return (
-    <nav className="fa-subnav" aria-label="The Hollow Villages">
+    <nav className="fa-subnav" aria-label="Village Oracle">
       {PAGES.map((p) => (
         <a
           key={p.href}

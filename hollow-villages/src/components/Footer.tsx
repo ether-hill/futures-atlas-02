@@ -42,7 +42,7 @@ export function Footer() {
             className="text-[15px] font-extrabold tracking-[0.02em] text-paper"
             style={{ fontFamily: "var(--font-archivo)" }}
           >
-            THE HOLLOW VILLAGES
+            VILLAGE ORACLE
           </span>
           <nav className="flex flex-wrap gap-[22px]">
             {links.map((l) => (

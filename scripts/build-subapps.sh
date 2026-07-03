@@ -9,7 +9,7 @@
 #   • generatives      → Vite, outputs to public/generatives
 #   • quantum-sandbox  → Vite, outputs to public/quantum-sandbox
 #   • social-composer  → Next static export → out/, copied to public/social-composer
-#   • hollow-villages  → Next static export → out/, copied to public/hollow-villages
+#   • hollow-villages  → Next static export → out/, copied to public/village-oracle
 #
 # The two remaining "zone" projects (underground-intelligence / odds-of-surviving-ai)
 # are NOT built here — they are hand-authored static bundles with no build step,
@@ -36,14 +36,14 @@ echo "✓ social-composer → public/social-composer"
 # Hollow Villages: Next static export → out/, then copy into public/.
 echo "→ building hollow-villages"
 ( cd "$HERE/hollow-villages" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/hollow-villages"
-mkdir -p "$HERE/public/hollow-villages"
-cp -R "$HERE/hollow-villages/out/." "$HERE/public/hollow-villages/"
+rm -rf "$HERE/public/village-oracle"
+mkdir -p "$HERE/public/village-oracle"
+cp -R "$HERE/hollow-villages/out/." "$HERE/public/village-oracle/"
 # Re-inject the shared master nav (atlas-nav) into every built page, matching the
 # other zone bundles (underground-intelligence / odds-of-surviving-ai carry the
 # same two tags). Idempotent; node is always present in the Vercel build.
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/hollow-villages"
-echo "✓ hollow-villages → public/hollow-villages (with atlas-nav)"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/village-oracle"
+echo "✓ hollow-villages → public/village-oracle (with atlas-nav)"
 
 # Swipe the Future: Next static export → out/, then copy into public/.
 echo "→ building swipe-the-future"
