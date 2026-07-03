@@ -29,13 +29,13 @@
     { name: "Generatives", path: "/generatives" },
     { name: "Literal Frequency", path: "/literal-frequency" },
     { name: "Quantum Sandbox", path: "/quantum-sandbox" },
-    { name: "The Odds", path: "/theodds" },
+    { name: "The Odds", path: "/theodds", theme: "dark" },
     { name: "Underground Intelligence", path: "/underground-intelligence", pages: [
       { name: "Story", path: "/underground-intelligence/story" },
       { name: "Dashboard", path: "/underground-intelligence/dashboard" },
       { name: "Research", path: "/underground-intelligence/research" },
     ] },
-    { name: "Village Oracle", path: "/village-oracle", pages: [
+    { name: "Village Oracle", path: "/village-oracle", theme: "light", pages: [
       { name: "Home", path: "/village-oracle" },
       { name: "Oracle", path: "/village-oracle/oracle" },
       { name: "Research", path: "/village-oracle/research" },
@@ -67,9 +67,12 @@
   // theme: one key, one class. dark-default on project pages, light on the hub.
   var root = document.documentElement;
   function storedTheme() { try { return localStorage.getItem("fa-theme"); } catch (e) { return null; } }
+  // A project may LOCK its theme (e.g. The Odds is dark-only, Village Oracle is
+  // light-only); a locked theme ignores the stored preference and is not saved.
+  var lockedTheme = (cur && cur.theme) || null;
   (function applyDefault() {
     var s = storedTheme();
-    var dark = isProject ? s !== "light" : s === "dark";
+    var dark = lockedTheme ? lockedTheme === "dark" : isProject ? s !== "light" : s === "dark";
     root.classList.toggle("dark", dark);
   })();
 
@@ -165,9 +168,16 @@
       try { localStorage.setItem("fa-theme", d ? "dark" : "light"); } catch (e) {}
       paintThemes();
     }
-    paintThemes();
-    barToggle.addEventListener("click", toggleTheme);
-    sheet.querySelector(".fa-sheet__theme").addEventListener("click", toggleTheme);
+    var sheetThemeBtn = sheet.querySelector(".fa-sheet__theme");
+    if (lockedTheme) {
+      // theme is fixed for this project — remove the toggle entirely
+      if (barToggle) barToggle.remove();
+      if (sheetThemeBtn) sheetThemeBtn.remove();
+    } else {
+      paintThemes();
+      barToggle.addEventListener("click", toggleTheme);
+      if (sheetThemeBtn) sheetThemeBtn.addEventListener("click", toggleTheme);
+    }
 
     // hamburger ⇄ sheet
     var burger = h.querySelector(".fa-shell__burger");

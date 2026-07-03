@@ -3,7 +3,7 @@ import { villagesSource } from "@/lib/composer/villages-source";
 
 // Second pre-stocked composer — Village Oracle screens (home, 2050 vision, consultation
 // sections, consult-again in 16:9 + 3:2, plus clean text-free 2050 renders). Fields empty
-// by default. Served at /social-composer/hollow-villages.
+// by default. Served at /social-composer/village-oracle.
 export default function Page() {
   return (
     <div className="px-7 pb-[110px] pt-11 max-[680px]:px-4">
