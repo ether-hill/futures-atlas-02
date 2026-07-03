@@ -38,10 +38,22 @@ export const OUTPUT_TYPES: { type: OutputType; label: string; title: string; bod
 export const DOMAINS = {
   intro: "What we work on",
   items: [
-    { term: "Quantum computing", def: "the technology, its real state, and the rhetoric sold around it." },
-    { term: "Quantum applications", def: "how the field evolves from lab results to claimed use cases." },
-    { term: "Emerging and future AI", def: "capabilities, trajectories, and the gap between the two." },
-    { term: "The people and organisations", def: "who’s building, funding, and narrating these futures." },
+    {
+      term: "Quantum computing",
+      def: "The technology itself, its real state, and the rhetoric sold around it. Quantum hardware is genuinely advancing — more qubits, better error correction, real laboratory milestones — and at the same time it is one of the most over-narrated technologies of the decade. We track both: what the machines can demonstrably do today, and how the story told about them departs from that baseline. When a claim reaches the press wrapped in inevitability, we trace it back to the paper, the benchmark, or the investor deck it came from.",
+    },
+    {
+      term: "Quantum applications",
+      def: "How the field evolves from lab results to claimed use cases. Between a physics result and an industry 'application' sits a long chain of assumptions — error rates, scaling, integration, economics — and most public claims skip the chain entirely. We map which applications have a credible path (optimization, molecular simulation, sensing, post-quantum cryptography), which are speculative, and which are marketing. The interesting work is in the middle: applications that are real but narrower, slower, or stranger than the pitch.",
+    },
+    {
+      term: "Emerging and future AI",
+      def: "Capabilities, trajectories, and the gap between the two. AI is moving fast enough that honest foresight has to be re-checked constantly — which is exactly why we build instruments instead of predictions. We look at what current systems actually do in working hands, where the next capabilities plausibly land, and how organisations should reason under that uncertainty. The gap between demonstrated capability and projected trajectory is where most decisions go wrong, so that gap is our subject.",
+    },
+    {
+      term: "The people and organisations",
+      def: "Who's building, funding, and narrating these futures. Technologies don't arrive on their own; they are carried by labs, companies, ministries and individuals with positions to defend and rounds to raise. We read the announcements, the filings and the incentives together, because the shape of a claimed future usually says as much about its narrator as about the technology. Understanding who benefits from a story is part of evaluating it.",
+    },
   ],
   closing: "Across all of it: cite everything, substance over hype.",
 };
@@ -76,12 +88,12 @@ export const STACK: StackTool[] = [
     usedIn: [
       { slug: "/signal-reactor", title: "Signal Reactor" },
       { slug: "/quantum-spark", title: "Quantum Spark" },
-      { slug: "/gigawatt", title: "Gigawatt" },
+      { slug: "/hyperscale", title: "Hyperscale" },
       { slug: "/hollow-villages", title: "The Hollow Villages" },
     ],
   },
   {
-    slug: "chatgpt",
+    slug: "openai",
     name: "ChatGPT",
     group: "ai-language",
     url: "https://chatgpt.com",
@@ -133,7 +145,6 @@ export const STACK: StackTool[] = [
     url: "https://threejs.org",
     role: "3D and WebGL work.",
     usedIn: [
-      { slug: "/gigawatt", title: "Gigawatt" },
       { slug: "/hyperscale", title: "Hyperscale" },
       { slug: "/trajectories", title: "Trajectories" },
     ],
@@ -181,7 +192,7 @@ export const WORKFLOW: WorkflowStage[] = [
     id: "research",
     label: "Research",
     blurb: "Source-first reading and claim-checking before anything is drawn or built.",
-    tools: ["claude", "chatgpt"],
+    tools: ["claude", "openai"],
     types: ["read", "copy", "run"],
   },
   {
@@ -222,13 +233,5 @@ export const WORKFLOW: WorkflowStage[] = [
 ];
 
 export const STACK_INTRO = "The tools we use, in the open. Nothing here is an endorsement — it’s an inventory.";
-
-export const WHO = {
-  body: "Futures Atlas is a project by Frond Studio.",
-  invite:
-    "If you use something from the Atlas — a framework, a prototype, a kit — we’d like to hear how it went.",
-  contactHref: "/contact",
-  contactLabel: "Get in touch",
-};
 
 export const FOOTER_CTA = { label: "Browse the projects", href: "/projects" };

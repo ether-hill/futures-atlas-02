@@ -12,7 +12,6 @@ import {
   HERO,
   OUTPUT_TYPES,
   STACK_INTRO,
-  WHO,
   WORKFLOW_INTRO,
 } from "@/content/about";
 
@@ -69,28 +68,32 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* ── What we work on ─────────────────────────────────────────────── */}
+      {/* ── What we work on — sticky title, scrolling essays ─────────────── */}
       <section className="border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
         <Container>
           <div className="grid grid-cols-1 gap-x-[clamp(24px,5vw,80px)] gap-y-8 lg:grid-cols-[1fr_1.6fr]">
-            <Reveal>
-              <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
-                {DOMAINS.intro}
-              </h2>
-            </Reveal>
-            <Reveal>
-              <dl className="flex flex-col divide-y divide-ink/10">
-                {DOMAINS.items.map((d) => (
-                  <div key={d.term} className="flex flex-col gap-1 py-4 sm:flex-row sm:gap-6">
-                    <dt className="min-w-[260px] font-semibold text-ink">{d.term}</dt>
-                    <dd className="font-mono text-[13.5px] leading-[1.7] text-ink-70">{d.def}</dd>
-                  </div>
-                ))}
-              </dl>
-              <p className="mt-6 font-mono text-[12.5px] uppercase tracking-[0.08em] text-accent-deep">
-                {DOMAINS.closing}
-              </p>
-            </Reveal>
+            <div className="self-start lg:sticky lg:top-[calc(var(--fa-nav-h,64px)+28px)]">
+              <Reveal>
+                <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
+                  {DOMAINS.intro}
+                </h2>
+                <p className="mt-6 font-mono text-[12.5px] uppercase tracking-[0.08em] text-accent-deep">
+                  {DOMAINS.closing}
+                </p>
+              </Reveal>
+            </div>
+            <div className="flex flex-col divide-y divide-ink/10">
+              {DOMAINS.items.map((d) => (
+                <Reveal key={d.term} className="py-[clamp(20px,3vw,36px)] first:pt-0 last:pb-0">
+                  <h3 className="text-[clamp(19px,2vw,26px)] font-extrabold tracking-[-0.018em] text-ink">
+                    {d.term}
+                  </h3>
+                  <p className="mt-4 max-w-[68ch] font-mono text-[13.5px] leading-[1.85] text-ink-70">
+                    {d.def}
+                  </p>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </Container>
       </section>
@@ -126,24 +129,6 @@ export default function AboutPage() {
           <div className="mt-[clamp(28px,4vw,48px)]">
             <StackGrid />
           </div>
-        </Container>
-      </section>
-
-      {/* ── Who's behind it ─────────────────────────────────────────────── */}
-      <section className="border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
-        <Container>
-          <Reveal>
-            <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
-              Who&rsquo;s behind it
-            </h2>
-            <p className="mt-5 max-w-[64ch] font-mono text-[14px] leading-[1.8] text-ink-70">{WHO.body}</p>
-            <p className="mt-4 max-w-[64ch] font-mono text-[14px] leading-[1.8] text-ink-70">
-              {WHO.invite}{" "}
-              <Link href={WHO.contactHref} className="text-accent-deep underline-offset-4 hover:underline">
-                {WHO.contactLabel} →
-              </Link>
-            </p>
-          </Reveal>
         </Container>
       </section>
 

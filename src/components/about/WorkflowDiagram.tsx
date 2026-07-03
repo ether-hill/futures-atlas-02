@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { OUTPUT_TYPES, STACK, WORKFLOW, type OutputType } from "@/content/about";
-import { LOGOS } from "@/lib/logos";
 import { OutputTypeBadge } from "./OutputTypeBadge";
+import { LogoMark } from "./StackGrid";
 
 /**
  * "How a project gets made" — an interactive pipeline. The connection line
@@ -130,15 +130,10 @@ export function WorkflowDiagram() {
             <div className="mt-4 flex flex-wrap items-center gap-4">
               {openDef.tools.map((slug) => {
                 const tool = STACK.find((t) => t.slug === slug);
-                const glyph = LOGOS[slug];
                 if (!tool) return null;
                 return (
                   <span key={slug} className="flex items-center gap-2 text-ink/65">
-                    {glyph ? (
-                      <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
-                        <path d={glyph.path} />
-                      </svg>
-                    ) : null}
+                    <LogoMark slug={slug} name={tool.name} colored={false} size="h-4 w-4" />
                     <span className="font-mono text-[12px]">{tool.name}</span>
                   </span>
                 );

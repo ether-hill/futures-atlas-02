@@ -117,7 +117,7 @@
 
 /* ── dark theme ─────────────────────────────────────────────────────────── */
 html.dark .fa-shell {
-  background: rgba(16, 17, 20, 0.8);
+  background: rgba(12, 13, 16, 0.8);
   color: #f3f1ec;
   border-bottom-color: rgba(255, 255, 255, 0.14);
 }
@@ -125,7 +125,7 @@ html.dark .fa-shell__current:hover,
 html.dark .fa-shell__toggle:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-shell__toggle { border-color: rgba(255, 255, 255, 0.3); }
 html.dark .fa-shell__mark img { filter: invert(1); } /* vanilla <img> marks → white */
-html.dark .fa-shell__menu { background: #101114; border-color: rgba(255, 255, 255, 0.14); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55); }
+html.dark .fa-shell__menu { background: #0c0d10; border-color: rgba(255, 255, 255, 0.14); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55); }
 html.dark .fa-shell__item { color: #f3f1ec; }
 html.dark .fa-shell__item:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-shell__item.is-current { color: rgba(243, 241, 236, 0.45); }
@@ -160,7 +160,7 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 .fa-foot__link { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(23, 24, 27, 0.66); text-decoration: none; }
 .fa-foot__link:hover { color: #17181b; }
 .fa-foot__tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(23, 24, 27, 0.5); }
-html.dark .fa-foot { background: #101114; color: #f3f1ec; }
+html.dark .fa-foot { background: #0c0d10; color: #f3f1ec; }
 html.dark .fa-foot__blurb { color: rgba(243, 241, 236, 0.78); }
 html.dark .fa-foot__row { border-top-color: rgba(243, 241, 236, 0.22); }
 html.dark .fa-foot__link { color: rgba(243, 241, 236, 0.72); }
@@ -210,7 +210,7 @@ html.dark .fa-foot__tag { color: rgba(243, 241, 236, 0.5); }
 }
 .fa-subnav__link:hover { opacity: 0.9; }
 .fa-subnav__link.is-active { opacity: 1; color: #b4541e; }
-html.dark .fa-subnav { background: rgba(16, 17, 20, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
+html.dark .fa-subnav { background: rgba(12, 13, 16, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
 html.dark .fa-subnav__link.is-active { color: #7fb2e6; }
 /* On pages with a sub-nav, keep the master pinned (don't hide on scroll) so the
    slim tab row never floats with a gap above it. */
@@ -264,7 +264,7 @@ body:has(.fa-subnav) .fa-shell.is-hidden { transform: none !important; }
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 .fa-sheet.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
-html.dark .fa-sheet { background: rgba(14, 15, 17, 0.975); color: #f3f1ec; }
+html.dark .fa-sheet { background: rgba(10, 11, 13, 0.975); color: #f3f1ec; }
 html.fa-menu-open { overflow: hidden; } /* lock scroll while the sheet is open */
 
 .fa-sheet__inner {
@@ -400,9 +400,9 @@ html.dark .fa-share__sep { background: rgba(255, 255, 255, 0.1); }
 html.dark .fa-share__iglbl { color: #7fb2e6; }
 html.dark .fa-share__chip { border-color: rgba(255, 255, 255, 0.18); color: #f3f1ec; }
 html.dark .fa-share__chip:hover { border-color: #7fb2e6; color: #7fb2e6; }
-html.dark .fa-share__btn { background: rgba(16, 17, 20, 0.92); color: #f3f1ec; border-color: rgba(255, 255, 255, 0.16); }
-html.dark .fa-share.is-open .fa-share__btn { background: #f3f1ec; color: #101114; }
-html.dark .fa-share__panel { background: rgba(16, 17, 20, 0.96); border-color: rgba(255, 255, 255, 0.12); }
+html.dark .fa-share__btn { background: rgba(12, 13, 16, 0.92); color: #f3f1ec; border-color: rgba(255, 255, 255, 0.16); }
+html.dark .fa-share.is-open .fa-share__btn { background: #f3f1ec; color: #0c0d10; }
+html.dark .fa-share__panel { background: rgba(12, 13, 16, 0.96); border-color: rgba(255, 255, 255, 0.12); }
 html.dark .fa-share__opt { color: #f3f1ec; }
 html.dark .fa-share__opt:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-share__opt--accent { color: #7fb2e6; }
