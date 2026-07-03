@@ -355,7 +355,7 @@ body.od-menu-open .od-extinctions{display:none!important}
     </sc-if>
     <sc-if value="{{ hasPortraitVid }}">
       <!-- the portrait IS the video, shown paused on its first frame; it plays only when doom is rolled -->
-      <video class="od-portrait-vid" src="{{ portraitVid }}" muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ portraitPos }};background:#08080A"></video>
+      <video class="od-portrait-vid" src="{{ portraitVid }}" poster="{{ portraitPoster }}" muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ portraitPos }};background:#08080A"></video>
     </sc-if>
     <sc-if value="{{ showDoomVid }}">
       <video class="od-doom-vid {{ doomVidFlipCls }}" src="{{ doomVid }}" autoplay muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ doomVidPos }};background:#000;animation:odFade .35s ease both"></video>
@@ -624,7 +624,7 @@ class Component extends DCLogic {
       source: 'Axios AI+ DC Summit \u00B7 17 Sept 2025',
       mechanic: 'die', mechLabel: 'D12 · ROLL',
       slug: 'dario-amodei', initials: 'DA', mechTag: 'DIE', accent: '#9B7BFF', accentTint: 'rgba(155,123,255,0.10)', cta: 'Roll the dice', objpos: '50% 30%', flip: true,
-      portraitVideo: '/odds-of-surviving-ai/media/dario-museum-02.mp4', portraitPos: '50% 36%',
+      portraitVideo: '/odds-of-surviving-ai/media/dario-museum-02.mp4', portraitPoster: '/odds-of-surviving-ai/research/dario-first.jpg', portraitPos: '50% 36%',
     },
     musk: {
       short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
@@ -638,7 +638,7 @@ class Component extends DCLogic {
       source: 'Joe Rogan Experience \u00B7 2025',
       mechanic: 'wheel', mechLabel: 'WHEEL · SPIN',
       slug: 'elon-musk', initials: 'EM', mechTag: 'WHEEL', accent: '#FF6F61', accentTint: 'rgba(255,111,97,0.10)', cta: 'Spin the wheel', objpos: '50% 28%',
-      portraitVideo: '/odds-of-surviving-ai/media/elon-doom.mp4', portraitPos: '50% 28%',   // the viewer IS the video (paused on frame 1, plays on doom)
+      portraitVideo: '/odds-of-surviving-ai/media/elon-doom.mp4', portraitPoster: '/odds-of-surviving-ai/research/elon-first.jpg', portraitPos: '50% 28%',   // the viewer IS the video (paused on frame 1, plays on doom)
     },
     tegmark: {
       short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
@@ -883,7 +883,7 @@ class Component extends DCLogic {
       const pv = document.querySelector('.od-portrait-vid');
       // blur the portrait video in exactly ONCE per player selection (keyed on player id, not the
       // element — so re-renders/element recreation during play can't re-trigger it and glitch)
-      if (pv) { const pid = this.state.playerId; if (this._pBlurFor !== pid) { this._pBlurFor = pid; const go = () => { pv.classList.remove('od-vidblurin'); void pv.offsetWidth; pv.classList.add('od-vidblurin'); }; if (pv.readyState >= 2) go(); else pv.addEventListener('loadeddata', go, { once: true }); } }
+      if (pv) { const pid = this.state.playerId; if (this._pBlurFor !== pid) { this._pBlurFor = pid; pv.classList.remove('od-vidblurin'); void pv.offsetWidth; pv.classList.add('od-vidblurin'); } }
       // TEST: wire the Tegmark card-picker dropdown (native listener — independent of the template's event binding)
       const sel = document.querySelector('.od-cardsel');
       if (sel && !sel._wired) { sel._wired = true; sel.addEventListener('change', () => { const v = sel.value; if (v === '') return; this.previewCard(parseInt(v, 10)); setTimeout(() => { try { sel.value = ''; } catch (e) {} }, 0); }); }
@@ -1379,7 +1379,7 @@ class Component extends DCLogic {
       wheelGoodColor: this.wheelGood1, wheelDoomColor: this.wheelDoomCol,
       earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, earthBurnFlag: s.earthBurn ? '1' : '0', showWheel: !s.earthBurn, deadCls: s.earthBurn ? 'is-dead' : '', embers, wheelSpinToken: String(s.wheelSpinToken), doomVideo: s.doomVideo,
       doomVid: p.doomVid || '', doomVidFlipCls: p.doomVidFlip ? 'od-flip' : '', doomVidPos: p.doomVidPos || '50% 50%',
-      hasPortraitVid: !!p.portraitVideo, noPortraitVid: !p.portraitVideo, portraitVid: p.portraitVideo || '', portraitPos: p.portraitPos || '50% 18%', showDoomVid: s.doomVideo && !p.portraitVideo,
+      hasPortraitVid: !!p.portraitVideo, noPortraitVid: !p.portraitVideo, portraitVid: p.portraitVideo || '', portraitPoster: p.portraitPoster || p.photo || '', portraitPos: p.portraitPos || '50% 18%', showDoomVid: s.doomVideo && !p.portraitVideo,
       globeScale: s.earthBurn ? '1' : '0.5',
       wheelRingScale: s.earthBurn ? '0.16' : '1',
       wheelRingOpacity: s.earthBurn ? '0' : '1',

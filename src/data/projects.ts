@@ -27,7 +27,7 @@ export const projects: Project[] = [
     id: "odds-of-surviving-ai",
     title: "The Odds",
     tagline:
-      "An interactive that plays three public p(doom) estimates — Amodei’s die, Musk’s wheel, Tegmark’s deck — as games of chance, then asks what your survival odds really are.",
+      "The people who build and study AI have put odds on the risk. Roll the dice, spin the wheel, draw the card, and gamble on our future.",
     year: "2026",
     date: "2026-02-14",
     field: "AI & risk",
