@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Container } from "@/components/Container";
 import { ProjectCard } from "@/components/ProjectCard";
-import { projectsByDate, projectFields } from "@/data/projects";
+import { projectsOrdered, projectFields } from "@/data/projects";
 
 // Full project listing: a 3-column grid (newest first) with category-tag
 // filters. Chrome (nav + footer) comes from the (atlas) layout.
 export default function ProjectsPage() {
   const [active, setActive] = useState<string | null>(null);
-  const filtered = active ? projectsByDate.filter((p) => p.field === active) : projectsByDate;
+  const filtered = active ? projectsOrdered.filter((p) => p.field === active) : projectsOrdered;
 
   return (
     <div className="min-h-[70vh] bg-surface py-[clamp(48px,8vw,110px)]">
@@ -29,12 +29,12 @@ export default function ProjectsPage() {
 
         {/* category filters */}
         <div className="mb-[clamp(28px,4vw,48px)] flex flex-wrap gap-2.5">
-          <FilterTag label="All" count={projectsByDate.length} active={active === null} onClick={() => setActive(null)} />
+          <FilterTag label="All" count={projectsOrdered.length} active={active === null} onClick={() => setActive(null)} />
           {projectFields.map((f) => (
             <FilterTag
               key={f}
               label={f}
-              count={projectsByDate.filter((p) => p.field === f).length}
+              count={projectsOrdered.filter((p) => p.field === f).length}
               active={active === f}
               onClick={() => setActive(f)}
             />

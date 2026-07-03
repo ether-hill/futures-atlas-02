@@ -11,9 +11,9 @@ import { useEffect, useRef } from "react";
  * frame. Decoration only: aria-hidden, pointer-events none.
  */
 
-const N = 180;
-const LINK_RADIUS = 110;
-const MAX_CONSTELLATIONS = 3;
+const N = 220;
+const LINK_RADIUS = 130;
+const MAX_CONSTELLATIONS = 5;
 
 interface Pt {
   x: number;
@@ -79,7 +79,7 @@ export function SignalField() {
         y: Math.random() * h,
         vx: (Math.random() - 0.5) * 0.22,
         vy: (Math.random() - 0.5) * 0.22,
-        r: Math.random() < 0.85 ? 1.1 : 1.9,
+        r: Math.random() < 0.85 ? 1.5 : 2.4,
       });
     }
 
@@ -102,7 +102,7 @@ export function SignalField() {
       ctx!.clearRect(0, 0, w, h);
       // points
       for (const p of pts) {
-        ctx!.globalAlpha = 0.34;
+        ctx!.globalAlpha = 0.55;
         ctx!.fillStyle = colors.ink;
         ctx!.beginPath();
         ctx!.arc(p.x, p.y, p.r, 0, Math.PI * 2);
@@ -112,9 +112,9 @@ export function SignalField() {
       for (const c of constellations) {
         const age = now - c.born;
         const a = age < 600 ? age / 600 : age > c.ttl - 700 ? Math.max(0, (c.ttl - age) / 700) : 1;
-        ctx!.globalAlpha = a * 0.55;
+        ctx!.globalAlpha = a;
         ctx!.strokeStyle = colors.accent;
-        ctx!.lineWidth = 1;
+        ctx!.lineWidth = 1.5;
         ctx!.beginPath();
         for (let k = 0; k < c.ids.length - 1; k++) {
           const p1 = pts[c.ids[k]];
@@ -128,7 +128,7 @@ export function SignalField() {
         for (const id of c.ids) {
           const p = pts[id];
           ctx!.beginPath();
-          ctx!.arc(p.x, p.y, 2, 0, Math.PI * 2);
+          ctx!.arc(p.x, p.y, 2.6, 0, Math.PI * 2);
           ctx!.fill();
         }
       }
@@ -161,7 +161,7 @@ export function SignalField() {
       }
       if (now > nextConstellation && constellations.length < MAX_CONSTELLATIONS) {
         spawnConstellation(now);
-        nextConstellation = now + 1600 + Math.random() * 2400;
+        nextConstellation = now + 900 + Math.random() * 1500;
       }
       drawFrame(now);
       raf = requestAnimationFrame(step);

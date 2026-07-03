@@ -3,7 +3,7 @@ import { Container } from "@/components/Container";
 import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
-import { projectsByDate } from "@/data/projects";
+import { projectsOrdered } from "@/data/projects";
 
 export default function Home() {
   return (
@@ -52,7 +52,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <ProjectGrid items={projectsByDate.slice(0, 6)} />
+            <ProjectGrid items={projectsOrdered.slice(0, 6)} />
             <div className="mt-[clamp(32px,5vw,56px)] flex justify-center">
               <Link
                 href="/projects"
