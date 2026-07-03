@@ -1,17 +1,9 @@
 import { StudioApp } from "./studio-app";
-import { emptySource, type ComposerFrame } from "@/lib/composer/source";
+import { oddsSource } from "@/lib/composer/odds-source";
 
-// Standalone tool: the composer is the homepage. We seed one blank canvas so the
-// preview is live and every Compose control (layout, background, text colour…)
-// works on first load — uploads simply add more frames alongside it.
-const starter: ComposerFrame = {
-  id: "starter",
-  kind: "cover",
-  label: "Blank canvas",
-  headline: "Your headline",
-  sub: "",
-  imageUrl: null,
-};
+// Pre-stocked with "The Odds" screens (home, each game on load, and each game's
+// survival / annihilation end state, desktop + mobile). Users can still upload
+// their own or transmutate a URL; these just give the library a ready starting set.
 
 // Frond-style project page: title + summary up top, the composer (the tool)
 // framed below, then an About section — all on the global nav grid (28px sides).
@@ -33,7 +25,7 @@ export default function Page() {
       </header>
 
       <section className="rounded-xl border border-ink/12">
-        <StudioApp source={{ ...emptySource(), frames: [starter] }} />
+        <StudioApp source={oddsSource()} />
       </section>
 
       <section className="mt-11 border-t border-ink/15 pt-7">
