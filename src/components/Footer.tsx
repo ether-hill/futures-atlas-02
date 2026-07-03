@@ -36,12 +36,12 @@ export function Footer() {
       <Container>
         <div className="grid grid-cols-1 gap-x-[clamp(28px,4vw,64px)] gap-y-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_0.7fr_1.3fr_1fr]">
           <div>
-            <p
-              className="text-[15px] font-extrabold tracking-[0.02em] text-paper"
-              style={{ fontFamily: "var(--font-archivo)" }}
-            >
-              FUTURES ATLAS
-            </p>
+            <Link href="/" className="inline-flex items-center gap-2.5 text-paper">
+              {/* the header's brand lockup — mark inverted for the dark band */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/fa.svg" alt="" aria-hidden="true" className="block h-5 w-auto invert" />
+              <span className="text-[19px] font-medium tracking-[-0.01em]">Futures Atlas</span>
+            </Link>
             <p className={colBody}>
               A growing collection of speculative-design projects — prototypes,
               open-source tools, and research on quantum computing, emerging

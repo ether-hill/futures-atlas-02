@@ -203,7 +203,9 @@
         '<div class="fa-foot__inner">' +
         '<div class="fa-foot__grid">' +
         '<div class="fa-foot__col">' +
-        '<span class="fa-foot__brand">FUTURES ATLAS</span>' +
+        '<a class="fa-foot__home" href="/" aria-label="Futures Atlas home">' +
+        '<span class="fa-foot__mark" aria-hidden="true">' + mark + "</span>" +
+        '<span class="fa-foot__word">Futures Atlas</span></a>' +
         '<p class="fa-foot__body">A growing collection of speculative-design projects — prototypes, open-source tools, and research on quantum computing, emerging AI, and the organisations driving them. <b>It\u2019s meant to be used.</b></p>' +
         "</div>" +
         '<div class="fa-foot__col">' +
