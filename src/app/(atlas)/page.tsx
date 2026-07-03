@@ -45,7 +45,7 @@ export default function Home() {
         <Container>
           <Reveal>
             <h2 className="mb-[clamp(30px,5vw,56px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
-              Latest
+              Recent projects
             </h2>
           </Reveal>
 
