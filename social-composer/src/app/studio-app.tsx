@@ -201,7 +201,7 @@ function videoTargetTime(v: HTMLVideoElement, localT: number, dur: number): numb
 
 export function StudioApp({ source }: { source: ComposerSource }) {
   const isCorp = source.kind === "corporation";
-  const slugKey = source.url;
+  const slugKey = source.url + "|v2";   // bump to orphan stale saved working-state after default changes
 
   const [mode] = useState<Mode>("single"); // batch UI removed; always single
   const [postType, setPostType] = useState<PostTypeId>("single");
