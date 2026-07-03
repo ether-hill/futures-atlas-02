@@ -330,6 +330,126 @@ export const research: ResearchEntry[] = [
     thumbnailType: "press-image",
     thumbnailCredit: "DW Documentary / YouTube",
   },
+
+  // ---------- per-letter case studies (owner can drop a photo at the path;
+  //            until then the card shows the designed source-plate) ----------
+  {
+    id: "sardinia-relocation-grant",
+    title: "Sardinia dangles €15,000 relocation grant to revive its villages",
+    source: "The Jerusalem Post",
+    year: "2026",
+    category: "what-worked",
+    summary:
+      "Sardinia has allocated €45 million to offer non-repayable grants of up to €15,000 per household to people who move to villages under 3,000 inhabitants, with monthly payments per child until age five. The scheme is explicitly aimed at stabilising school enrolments and giving young families a reason to stay.",
+    url: "https://www.jpost.com/travel/article-891656",
+    thumbnail: "/hollow-villages/research/sardinia-relocation-grant.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — the Sardinian town of Bosa, Italy · Zsuzsanna Tóth · CC0",
+  },
+  {
+    id: "east-tyrol-carsharing",
+    title: "East Tyrol: volunteer e-taxis and e-carsharing keep an ageing valley moving",
+    source: "SMARTA-NET (EU rural mobility)",
+    year: "2024",
+    category: "the-mechanisms",
+    summary:
+      "In alpine East Tyrol, where a quarter of residents are over 60 and buses are sparse, eight municipalities run non-profit door-to-door e-car taxis on 160-plus volunteer drivers, alongside the Flugs station-based e-carsharing scheme and a shared taxi in the Defereggen valley. A direct blueprint for keeping an isolated mountain village reachable.",
+    url: "https://www.smarta-net.eu/lighthouse-east-tyrol/",
+    thumbnail: "/hollow-villages/research/east-tyrol-carsharing.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — Matrei in Osttirol, East Tyrol, Austria · Haeferl · CC BY-SA 4.0",
+  },
+  {
+    id: "pueblos-remotos-canaries",
+    title: "'Remote Villages' combines teleworking and rural life in the Canary Islands",
+    source: "European Commission (Rural Pact)",
+    year: "2023",
+    category: "what-worked",
+    summary:
+      "An EU-recognised good practice: the Pueblos Remotos model brought around 30 remote workers to Canary Island villages in 2021–22, created 18 new tourism products and channelled over €40,000 directly into rural communities before expanding to seven areas. Proof that structured programmes, not just cheap houses, are what root newcomers.",
+    url: "https://ruralpact.rural-vision.europa.eu/good-practice/remote-villages-combines-teleworking-and-rural-surroundings-canary-islands-spain_en",
+    thumbnail: "/hollow-villages/research/pueblos-remotos-canaries.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — the Canary village of Tejeda, Gran Canaria · Tamara k · CC BY-SA 3.0 es",
+  },
+  {
+    id: "galicia-rural-coworking",
+    title: "The last room standing: rural coworking as the frontline against youth emigration",
+    source: "London Coworking Assembly",
+    year: "2026",
+    category: "what-worked",
+    summary:
+      "An argument that rural coworking is infrastructure against youth flight, in a Galicia losing roughly 6,000 graduates a year. It profiles Sende and Anceu in Galicia and el Taller in Catalonia — tiny-village spaces that brought fibre and kept young people working locally instead of leaving.",
+    url: "https://londoncoworkingassembly.com/the-last-room-standing-why-rural-coworking-is-the-real-frontline-of-european-revitalisation/",
+    thumbnail: "/hollow-villages/research/galicia-rural-coworking.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — the Galician mountain village of O Cebreiro, Spain · Bjørn Christian Tørrissen · CC BY-SA 3.0",
+  },
+  {
+    id: "candover-community-store",
+    title: "Candover Valley Community Store — five villages reopen their shop",
+    source: "Plunkett UK",
+    year: "2019",
+    category: "what-worked",
+    summary:
+      "When the only shop serving five Hampshire villages closed in 2013, residents raised £225,000 — £120,000 in community shares plus grants including the LEADER programme — and opened a community-owned store and post office beside the village hall, run with paid staff and around 40 volunteers.",
+    url: "https://plunkett.co.uk/candover-valley-community-store/",
+    thumbnail: "/hollow-villages/research/candover-community-store.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — Preston Candover, Hampshire, England · Graham Clutton · CC BY-SA 2.0",
+  },
+  {
+    id: "turano-borghi-cluster",
+    title: "Three tiny comuni band together and win €2.56m for the Turano valley",
+    source: "Borghi del Turano",
+    year: "2025",
+    category: "what-worked",
+    summary:
+      "Paganico Sabino (as lead), Castel di Tora and Collalto Sabino — three small comuni — applied as a single cluster and won €2,560,000 in PNRR Borghi funding for 15 shared interventions across the valley. A near-exact template for a mayor too small to win alone: pooled, they became fundable.",
+    url: "https://borghidelturano.it/en/the-project/",
+    thumbnail: "/hollow-villages/research/turano-borghi-cluster.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — Castel di Tora on Lake Turano, Lazio, Italy · FeaturedPics · CC BY-SA 4.0",
+  },
+  {
+    id: "idealista-paid-to-live",
+    title: "The Spanish villages where you can get paid to live",
+    source: "idealista",
+    year: "2025",
+    category: "the-mechanisms",
+    summary:
+      "A rundown of named Spanish villages using incentives instead of forced sales to fill empty homes — Griegos in Aragón offering three months free rent then €225/month plus per-child reductions, and Olmeda de la Cuesta auctioning plots from €200. Concrete templates for repopulating a village around its dark houses.",
+    url: "https://www.idealista.com/en/news/lifestyle-spain/2025/06/13/7292-towns-and-villages-spain-where-you-could-get-paid-live",
+    thumbnail: "/hollow-villages/research/idealista-paid-to-live.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — the Aragonese village of Griegos, Teruel, Spain · Chantejot · Public domain",
+  },
+  {
+    id: "terre-de-liens-saint-dizier",
+    title: "Terre de Liens: a village buys its farmland as a commons",
+    source: "ARC2020",
+    year: "2017",
+    category: "what-worked",
+    summary:
+      "In a 35-inhabitant French pre-Alps village, residents worked with Terre de Liens to collectively buy fragmented mountain land and lease it to young farmers who built a cheese and microbrewery business. In five years the village gained three new farm businesses and four families — a direct parallel to reactivating scattered terraces.",
+    url: "https://www.arc2020.eu/farmland-as-commons/",
+    thumbnail: "/hollow-villages/research/terre-de-liens-saint-dizier.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — a village in the Drôme pre-Alps, France · Mingoid · CC0",
+  },
+  {
+    id: "si4care-calabria-telecare",
+    title: "Transforming elderly care in rural Italy with digital solutions",
+    source: "Interreg (EU)",
+    year: "2024",
+    category: "what-worked",
+    summary:
+      "The Interreg SI4CARE project brought telemedicine and remote monitoring — wearables and vital-sign bracelets — to depopulating Calabrian villages of a few hundred to a few thousand people that face a shortage of doctors. A local physician reports patients now feel reassured that help is close at hand despite living far from hospitals.",
+    url: "https://interreg.eu/news-stories/transforming-elderly-care-in-rural-italy-with-digital-solutions/",
+    thumbnail: "/hollow-villages/research/si4care-calabria-telecare.jpg",
+    thumbnailType: "commons",
+    thumbnailCredit: "Wikimedia Commons — the Calabrian hill town of Morano Calabro, Italy · Enm9790 · CC BY-SA 3.0",
+  },
 ];
 
 /** Lookup helper used by the oracle + futures pages to resolve citations. */

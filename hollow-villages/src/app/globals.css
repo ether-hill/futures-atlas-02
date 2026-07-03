@@ -96,6 +96,10 @@ html {
   scroll-behavior: smooth;
 }
 
+/* The consultation reveals the shared Futures Atlas footer only at the very end
+   (after "where this has already happened"). Hidden until then. */
+html.hide-fa-foot footer.fa-foot { display: none !important; }
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
@@ -104,6 +108,25 @@ html {
     transition-duration: 0.001ms !important;
   }
   [data-reveal] { opacity: 1 !important; transform: none !important; }
+  [data-blur] { opacity: 1 !important; filter: none !important; }
+  .hv-delay-in { opacity: 1 !important; }
+}
+
+/* The "Futures Atlas" brand mark (top-left of the shared nav) already links home,
+   so the redundant "Home" link on the right is hidden on the Hollow Villages pages. */
+.fa-shell__navlink[href="/"] { display: none !important; }
+
+/* ---------- the vision teaser: delayed fade + a moving shine on the button ---------- */
+@keyframes hv-fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.hv-delay-in { opacity: 0; animation: hv-fade-up 0.9s cubic-bezier(0.22, 1, 0.36, 1) 2.6s both; }
+
+@keyframes hv-shine { 0% { transform: translateX(-130%) skewX(-18deg); } 55%, 100% { transform: translateX(240%) skewX(-18deg); } }
+.hv-shine { position: relative; overflow: hidden; isolation: isolate; }
+.hv-shine::after {
+  content: ""; position: absolute; top: -20%; bottom: -20%; left: 0; width: 45%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: translateX(-130%) skewX(-18deg);
+  animation: hv-shine 3s ease-in-out infinite; pointer-events: none;
 }
 
 /* base element styles live in @layer base so Tailwind text-* / font-* utilities
@@ -237,4 +260,36 @@ html {
 .draw-line {
   transform-origin: left;
   animation: draw-line 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.3s both;
+}
+
+/* ---------- the oracle's "dream" — animated blurred rural-colour gradient ---------- */
+/* Slow drifting blobs of sky-blue, meadow-green, warm light and teal, blurred
+   into a soft dreaming wash. Used behind the consultation (see OracleAtmosphere). */
+@keyframes hv-drift-1 {
+  0%, 100% { transform: translate3d(-4%, -3%, 0) scale(1.05); }
+  50% { transform: translate3d(5%, 4%, 0) scale(1.2); }
+}
+@keyframes hv-drift-2 {
+  0%, 100% { transform: translate3d(4%, 3%, 0) scale(1.12); }
+  50% { transform: translate3d(-5%, -5%, 0) scale(1.02); }
+}
+@keyframes hv-drift-3 {
+  0%, 100% { transform: translate3d(-3%, 4%, 0) scale(1); }
+  50% { transform: translate3d(5%, -3%, 0) scale(1.16); }
+}
+@keyframes hv-spin { to { transform: rotate(360deg); } }
+@keyframes hv-breathe {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* blur-on reveal — starts soft-focus, sharpens when scrolled into view.
+   Only the filter animates (never opacity), so the image can never end up
+   invisible if the observer misses. */
+[data-blur] {
+  filter: blur(20px);
+  transition: filter 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+[data-blur].is-in {
+  filter: blur(0);
 }

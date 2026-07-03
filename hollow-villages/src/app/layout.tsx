@@ -3,8 +3,6 @@ import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/
 import "futures-atlas-core/tokens.css";
 import "futures-atlas-core/nav.css";
 import "./globals.css";
-import { SiteNav } from "@/components/SiteNav";
-import { Footer } from "@/components/Footer";
 
 // Display / headings
 const archivo = Archivo({
@@ -68,20 +66,21 @@ export default function RootLayout({
         {/* Futures Atlas F favicon (same across the whole platform) */}
         <link rel="icon" href="/hollow-villages/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/hollow-villages/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
-        {/* Set the theme class before paint to avoid a flash. Honours a saved
-            choice, otherwise the OS preference. */}
+        {/* Set the theme class before paint to avoid a flash. The Hollow
+            Villages defaults to LIGHT: it seeds the shared atlas-nav key
+            (`fa-theme`) to "light" on first visit, so the injected master nav
+            (which otherwise defaults project pages to dark) agrees. A saved
+            choice always wins, and the nav's toggle keeps working. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`,
+            __html: `(function(){try{var k='fa-theme',s=localStorage.getItem(k);if(s!=='dark'&&s!=='light'){s='light';localStorage.setItem(k,s);}document.documentElement.classList.toggle('dark',s==='dark');}catch(e){}})();`,
           }}
         />
       </head>
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
       >
-        <SiteNav />
         <main className="flex-1">{children}</main>
-        <Footer />
       </body>
     </html>
   );

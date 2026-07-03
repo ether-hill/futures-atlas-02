@@ -19,6 +19,9 @@ export interface FuturePair {
   researchIds: string[];
   /** true until the owner replaces the placeholder "after" render */
   afterIsPlaceholder?: boolean;
+  /** A single finished 2050 render — when set, the vision shows just this image
+   *  (no before/after slider). */
+  visionImage?: string;
 }
 
 const slot = (id: string) => ({
@@ -32,6 +35,7 @@ export const futurePairs: FuturePair[] = [
     id: "anna-8",
     letterId: "anna-8",
     ...slot("anna-8"),
+    visionImage: "/hollow-villages/villages/anna-8-vision.jpg",
     realPlaceCaption: "Usseaux, Piedmont, Italy",
     conceptText:
       "The square that held only echoes holds children again. The old school is a village-as-classroom where the eighty-year-olds teach the eight-year-olds, and a festival each spring puts the place back on the map. Anna is not the last child. By 2050 she is the first of the next ones.",
@@ -42,6 +46,7 @@ export const futurePairs: FuturePair[] = [
     id: "giorgio-72",
     letterId: "giorgio-72",
     ...slot("giorgio-72"),
+    visionImage: "/hollow-villages/villages/giorgio-72-vision.jpg",
     realPlaceCaption: "Cervara di Roma, Lazio, Italy",
     conceptText:
       "The switchback road still climbs. But the square below it is not silent on a Tuesday: a demand-responsive van waits at the kerb, summoned by a phone call rather than a timetable, and the three neighbours who no longer drive are out together. Reach, returned.",
@@ -52,6 +57,7 @@ export const futurePairs: FuturePair[] = [
     id: "mara-34",
     letterId: "mara-34",
     ...slot("mara-34"),
+    visionImage: "/hollow-villages/villages/mara-34-vision.jpg",
     realPlaceCaption: "Santo Stefano di Sessanio, Abruzzo, Italy",
     conceptText:
       "The beautiful dead lane keeps its view and loses its silence. A civic building is now a co-working hub; a café spills onto the street; the windows are lit because the people behind them need each other and the shop, so both stay. Density and difference, arrived by fibre.",
@@ -62,6 +68,7 @@ export const futurePairs: FuturePair[] = [
     id: "tomas-19",
     letterId: "tomas-19",
     ...slot("tomas-19"),
+    visionImage: "/hollow-villages/villages/tomas-19-vision.jpg",
     realPlaceCaption: "Pentedattilo, Calabria, Italy",
     conceptText:
       "The shuttered frontages that offered Tomás nothing now offer a maker space and an apprenticeship. E-bikes lean by the door; the road out is still there, but it is no longer the only road. A future built here that finally includes the nineteen-year-old.",
@@ -72,19 +79,21 @@ export const futurePairs: FuturePair[] = [
     id: "yusuf-45",
     letterId: "yusuf-45",
     ...slot("yusuf-45"),
+    visionImage: "/hollow-villages/villages/yusuf-45-vision.jpg",
     realPlaceCaption: "Craco, Basilicata, Italy",
     conceptText:
       "The shop Yusuf shuttered reopens — not as one man's losing battle but as the village's own: post counter, groceries, a coffee machine, a few tables. A community-run multi-service shop, the kind that has held the last service open across rural Britain and France. The social anchor, re-dropped.",
-    callout: "Community-run multi-service shop",
+    callout: "Community-run shop · café · shared-mobility hub",
     researchIds: ["plunkett-more-than-a-pub", "bistrot-de-pays-network"],
   },
   {
     id: "bianca-51",
     letterId: "bianca-51",
     ...slot("bianca-51"),
+    visionImage: "/hollow-villages/villages/bianca-51-vision.jpg",
     realPlaceCaption: "Castelmezzano, Basilicata, Italy",
     conceptText:
-      "The tired municipal frontage is busy again, but the work behind it is shared: Bianca's village of four hundred pools governance with its neighbours to reach the scale that funding requires, and the borghi money lands at last. Too small to matter alone; together, impossible to skip.",
+      "The tired municipal frontage is busy again, but the work behind it is shared: Sylvie's village of four hundred pools governance with its neighbours to reach the scale that funding requires, and the borghi money lands at last. Too small to matter alone; together, impossible to skip.",
     callout: "Inter-municipal cooperation · funded works",
     researchIds: ["pnrr-borghi-fund", "espana-vaciada-movement"],
   },
@@ -112,6 +121,7 @@ export const futurePairs: FuturePair[] = [
     id: "henrik-58",
     letterId: "henrik-58",
     ...slot("henrik-58"),
+    visionImage: "/hollow-villages/villages/henrik-58-vision.jpg",
     realPlaceCaption: "Bosco Gurin, Ticino, Switzerland",
     conceptText:
       "Henrik no longer has to be everywhere at once. The shuttered clinic is a rotating surgery and a telemedicine point; a community health worker covers the days between. Care reaches the five valleys without one doctor driving himself into the ground to deliver it.",
