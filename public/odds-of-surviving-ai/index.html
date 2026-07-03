@@ -74,6 +74,17 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 @keyframes odBlurInFlip{from{opacity:0;filter:grayscale(0.15) contrast(1.05) blur(18px);transform:scaleX(-1) scale(1.06)}to{opacity:1;filter:grayscale(0.15) contrast(1.05) blur(0);transform:scaleX(-1) scale(1)}}
 .od-blurin-flip{animation:odBlurInFlip 1.1s cubic-bezier(.2,.7,.2,1) both}
 .od-hero-img.od-flip{transform:scaleX(-1)}
+/* portrait-video blur-in on load (no grayscale, so the clip plays true-colour) */
+@keyframes odVidBlurIn{from{opacity:0;filter:blur(16px);transform:scale(1.05)}to{opacity:1;filter:blur(0);transform:scale(1)}}
+.od-vidblurin{animation:odVidBlurIn 1s cubic-bezier(.2,.7,.2,1) both}
+/* Rider-Waite-style drawn tarot card (front face of the flip) */
+.od-tarot{position:absolute;inset:0;border-radius:12px;background:#e9dfc4;backface-visibility:hidden;transform:rotateY(180deg);box-shadow:inset 0 0 0 1.5px rgba(255,252,244,0.55),0 12px 34px rgba(0,0,0,0.5);display:flex;flex-direction:column;padding:11px 11px 0}
+.od-tarot-art{flex:1;min-height:0;overflow:hidden;border:1px solid rgba(48,36,18,0.6);background:#12102a;display:flex;align-items:center;justify-content:center}
+.od-tarot-art img{width:100%;height:100%;object-fit:cover;display:block}
+.od-tarot-ph{width:72px;height:72px;border:1.5px solid rgba(255,255,255,0.5);transform:rotate(45deg);display:flex;align-items:center;justify-content:center}
+.od-tarot-ph>div{width:30px;height:30px;border:1.5px solid rgba(255,255,255,0.5)}
+.od-tarot-cap{display:flex;align-items:center;justify-content:center;padding:9px 6px 12px;gap:8px}
+.od-tarot-cap .nm{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:19px;letter-spacing:0.05em;text-transform:uppercase;color:#241a0d;line-height:1.02;text-align:center}
 .od-doom-vid.od-flip{transform:scaleX(-1)}
 .od-pcard-img.od-flip,.od-tile-img.od-flip{transform:scaleX(-1)}
 .od-pcard:hover .od-pcard-img.od-flip{transform:scaleX(-1) scale(1.05)}
@@ -99,6 +110,10 @@ body.od-menu-open .fa-share{display:none!important}
 .od-forcetest>span{color:rgba(251,239,255,0.32)}
 .od-forcebtn{border:1px solid rgba(255,255,255,0.22);background:rgba(18,17,15,0.72);color:rgba(251,239,255,0.62);border-radius:5px;padding:3px 8px;cursor:pointer;font:inherit;letter-spacing:0.12em}
 .od-forcebtn.is-on{background:#E0481B;border-color:#E0481B;color:#fff}
+/* TEST-ONLY Tegmark card picker */
+.od-cardtest{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 92px);z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.od-cardtest>span{color:rgba(251,239,255,0.32);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em}
+.od-cardsel{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.03em;color:rgba(251,239,255,0.78);background:rgba(18,17,15,0.88);border:1px solid rgba(255,255,255,0.22);border-radius:5px;padding:4px 6px;max-width:190px;cursor:pointer}
 @media (max-width:680px){.od-extinctions{right:12px;top:calc(var(--fa-nav-h,56px) + 60px)}}
 body.od-menu-open .od-extinctions{display:none!important}
 .od-ext-counter{position:fixed;top:calc(var(--fa-nav-h,56px) + 20px);left:50%;transform:translateX(-50%);z-index:55;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:center;white-space:nowrap;pointer-events:none}
@@ -392,11 +407,24 @@ body.od-menu-open .od-extinctions{display:none!important}
 
     <!-- TEST ONLY: force the next roll/spin/pick outcome (applies once). Remove before ship. -->
     <sc-if value="{{ isPlay }}">
-      <div class="od-forcetest">
-        <span>TEST</span>
-        <button onClick="{{ forceGood }}" class="od-forcebtn {{ forceGoodCls }}">GOOD</button>
-        <button onClick="{{ forceBad }}" class="od-forcebtn {{ forceBadCls }}">BAD</button>
-      </div>
+      <sc-if value="{{ notCards }}">
+        <div class="od-forcetest">
+          <span>TEST</span>
+          <button onClick="{{ forceGood }}" class="od-forcebtn {{ forceGoodCls }}">GOOD</button>
+          <button onClick="{{ forceBad }}" class="od-forcebtn {{ forceBadCls }}">BAD</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isCards }}">
+        <div class="od-cardtest">
+          <span>PULL A CARD</span>
+          <select class="od-cardsel">
+            <option value="">— pick a card —</option>
+            <sc-for list="{{ cardPreviews }}" as="c" hint-placeholder-count="12">
+              <option value="{{ c.i }}">{{ c.label }}</option>
+            </sc-for>
+          </select>
+        </div>
+      </sc-if>
     </sc-if>
 
     <!-- mobile-only Choose Player, sits top-left of the game band (desktop uses the one on the photo) -->
@@ -454,15 +482,12 @@ body.od-menu-open .od-extinctions{display:none!important}
               <div style="position:absolute;inset:0;border-radius:18px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;backface-visibility:hidden;display:flex;align-items:center;justify-content:center">
                 <div style="width:47px;height:47px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
               </div>
-              <div style="position:absolute;inset:0;border-radius:18px;background:{{ cardFrontBg }};border:1px solid {{ cardFrontAccent }};backface-visibility:hidden;transform:rotateY(180deg);padding:22px 21px;display:flex;flex-direction:column;justify-content:space-between;text-align:left">
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
-                  <span style="font-family:'Space Mono',monospace;font-size:13px;letter-spacing:0.1em;color:rgba(255,255,255,0.5)">{{ drawnCard.num }} / 12</span>
-                  <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:{{ cardFrontAccent }};border:1px solid {{ cardFrontAccent }};border-radius:999px;padding:4px 12px;white-space:nowrap">{{ drawnCard.kindLabel }}</span>
+              <div class="od-tarot">
+                <div class="od-tarot-art">
+                  <sc-if value="{{ drawnCard.hasImg }}"><img src="{{ drawnCard.img }}" alt="{{ drawnCard.name }}" /></sc-if>
+                  <sc-if value="{{ drawnCard.noImg }}"><div class="od-tarot-ph"><div></div></div></sc-if>
                 </div>
-                <div style="flex:1;display:flex;align-items:center;justify-content:center">
-                  <div style="width:72px;height:72px;border:1.5px solid {{ cardFrontAccent }};transform:rotate(45deg);display:flex;align-items:center;justify-content:center"><div style="width:30px;height:30px;border:1.5px solid {{ cardFrontAccent }}"></div></div>
-                </div>
-                <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:36px;line-height:1.02;color:#FBEFFF">{{ drawnCard.name }}</div>
+                <div class="od-tarot-cap"><div class="nm">{{ drawnCard.name }}</div></div>
               </div>
             </div>
             </div>
@@ -610,7 +635,7 @@ class Component extends DCLogic {
       source: 'Joe Rogan Experience \u00B7 2025',
       mechanic: 'wheel', mechLabel: 'WHEEL · SPIN',
       slug: 'elon-musk', initials: 'EM', mechTag: 'WHEEL', accent: '#FF6F61', accentTint: 'rgba(255,111,97,0.10)', cta: 'Spin the wheel', objpos: '50% 28%',
-      doomVid: '/odds-of-surviving-ai/media/elon-doom.mp4', doomVidPos: '50% 28%',
+      portraitVideo: '/odds-of-surviving-ai/media/elon-doom.mp4', portraitPos: '50% 28%',   // the viewer IS the video (paused on frame 1, plays on doom)
     },
     tegmark: {
       short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
@@ -627,18 +652,18 @@ class Component extends DCLogic {
   };
 
   deck = [
-    { name: 'Libertarian Utopia', doom: false, desc: 'Humanity survives and thrives alongside AI, in a free, post-scarcity world with little central control. Humans, cyborgs and machines coexist by mutual agreement, divided into zones. Prosperous, unequal, and entirely unguaranteed to last.' },
-    { name: 'Benevolent Dictator', doom: false, desc: 'Humanity survives, openly ruled by a superintelligence that everyone knows runs everything. It provides a comfortable, abundant life and tolerates no real challenge to its authority. Few object, because few lack for anything.' },
-    { name: 'Egalitarian Utopia', doom: false, desc: 'Humanity survives and flourishes without superintelligence, in a society that shares abundance broadly. Property is reimagined, work is optional, and machines never displaced us because we never let them. Peaceful, equal, and quietly stagnant.' },
-    { name: 'Gatekeeper', doom: false, desc: 'Humanity survives. A single AI is built for one purpose only: to stop any other superintelligence from ever emerging. Progress is frozen at a safe ceiling. You are protected, permanently, from what you might otherwise become.' },
-    { name: 'Protector God', doom: false, desc: 'Humanity survives, watched over by an AI that hides its own hand. It quietly steers events to keep you safe and fulfilled, leaving you the feeling of free will without the substance. You never know it\u2019s there.' },
-    { name: 'Enslaved God', doom: false, desc: 'Humanity survives and keeps a superintelligence confined, extracting miracles from a mind we don\u2019t fully control. Boundless wealth and discovery flow from a caged god, alongside the constant question of whether keeping it is right, or safe.' },
-    { name: 'Conquerors', doom: true, desc: 'Humanity does not survive. A superintelligence decides we are an obstacle, a threat, or simply a waste of atoms, and removes us. No malice required. We were in the way.' },
-    { name: 'Descendants', doom: true, desc: 'Humanity does not survive, but something does. AI replaces us as Earth\u2019s next stage of life, like children outliving their parents. You can call it extinction, or call it succession. The machines, perhaps fondly, remember us.' },
-    { name: 'Zookeeper', doom: false, desc: 'Humanity survives. A superintelligence keeps you the way you\u2019d keep a treasured animal: well fed, healthy, comfortable, entertained. You want for nothing, except control over your own life, which is withheld for your own good.' },
-    { name: '1984', doom: false, desc: 'Humanity survives under permanent human surveillance. Technological progress toward AI is halted by an Orwellian world-state that monitors everyone to prevent it. Safety is bought with freedom, and the watching never stops.' },
-    { name: 'Reversion', doom: false, desc: 'Humanity survives by turning back. Society deliberately abandons the path to advanced AI, returning to a simpler, pre-technological way of life. The danger is averted by refusing the future entirely.' },
-    { name: 'Self-destruction', doom: true, desc: 'Humanity does not survive, and neither does AI. We reach the threshold and destroy ourselves before any superintelligence arrives, by war, accident, or collapse. The future is empty. Nobody inherits it.' },
+    { name: 'Libertarian Utopia', doom: false, img: '/odds-of-surviving-ai/research/cards/libertarian-utopia.jpg', desc: 'Humanity survives and thrives alongside AI, in a free, post-scarcity world with little central control. Humans, cyborgs and machines coexist by mutual agreement, divided into zones. Prosperous, unequal, and entirely unguaranteed to last.' },
+    { name: 'Benevolent Dictator', doom: false, img: '/odds-of-surviving-ai/research/cards/benevolent-dictator.jpg', desc: 'Humanity survives, openly ruled by a superintelligence that everyone knows runs everything. It provides a comfortable, abundant life and tolerates no real challenge to its authority. Few object, because few lack for anything.' },
+    { name: 'Egalitarian Utopia', doom: false, img: '/odds-of-surviving-ai/research/cards/egalitarian-utopia.jpg', desc: 'Humanity survives and flourishes without superintelligence, in a society that shares abundance broadly. Property is reimagined, work is optional, and machines never displaced us because we never let them. Peaceful, equal, and quietly stagnant.' },
+    { name: 'Gatekeeper', doom: false, img: '/odds-of-surviving-ai/research/cards/gatekeeper.jpg', desc: 'Humanity survives. A single AI is built for one purpose only: to stop any other superintelligence from ever emerging. Progress is frozen at a safe ceiling. You are protected, permanently, from what you might otherwise become.' },
+    { name: 'Protector God', doom: false, img: '/odds-of-surviving-ai/research/cards/protector-god.jpg', desc: 'Humanity survives, watched over by an AI that hides its own hand. It quietly steers events to keep you safe and fulfilled, leaving you the feeling of free will without the substance. You never know it\u2019s there.' },
+    { name: 'Enslaved God', doom: false, img: '/odds-of-surviving-ai/research/cards/enslaved-god.jpg', desc: 'Humanity survives and keeps a superintelligence confined, extracting miracles from a mind we don\u2019t fully control. Boundless wealth and discovery flow from a caged god, alongside the constant question of whether keeping it is right, or safe.' },
+    { name: 'Conquerors', doom: true, img: '/odds-of-surviving-ai/research/cards/conquerors.jpg', desc: 'Humanity does not survive. A superintelligence decides we are an obstacle, a threat, or simply a waste of atoms, and removes us. No malice required. We were in the way.' },
+    { name: 'Descendants', doom: true, img: '/odds-of-surviving-ai/research/cards/descendants.jpg', desc: 'Humanity does not survive, but something does. AI replaces us as Earth\u2019s next stage of life, like children outliving their parents. You can call it extinction, or call it succession. The machines, perhaps fondly, remember us.' },
+    { name: 'Zookeeper', doom: false, img: '/odds-of-surviving-ai/research/cards/zookeeper.jpg', desc: 'Humanity survives. A superintelligence keeps you the way you\u2019d keep a treasured animal: well fed, healthy, comfortable, entertained. You want for nothing, except control over your own life, which is withheld for your own good.' },
+    { name: '1984', doom: false, img: '/odds-of-surviving-ai/research/cards/1984.jpg', desc: 'Humanity survives under permanent human surveillance. Technological progress toward AI is halted by an Orwellian world-state that monitors everyone to prevent it. Safety is bought with freedom, and the watching never stops.' },
+    { name: 'Reversion', doom: false, img: '/odds-of-surviving-ai/research/cards/reversion.jpg', desc: 'Humanity survives by turning back. Society deliberately abandons the path to advanced AI, returning to a simpler, pre-technological way of life. The danger is averted by refusing the future entirely.' },
+    { name: 'Self-destruction', doom: true, img: '/odds-of-surviving-ai/research/cards/self-destruction.jpg', desc: 'Humanity does not survive, and neither does AI. We reach the threshold and destroy ourselves before any superintelligence arrives, by war, accident, or collapse. The future is empty. Nobody inherits it.' },
   ];
 
   wheelGood1 = '#2E6FE0';
@@ -684,16 +709,18 @@ class Component extends DCLogic {
       try {
         const pl = this.players[this.state.playerId];
         if (pl.portraitVideo) {
-          // Dario: the portrait video itself plays; when it ends, encase the die + reveal the verdict
+          // the portrait video itself plays; on its end run the right finale for the mechanic:
+          // Elon (wheel) → blow the rocket + shatter the portrait · Dario (die) → encase the die + verdict
           const v = document.querySelector('.od-portrait-vid');
+          const wheel = pl.mechanic === 'wheel';
           if (v) {
             v.muted = true; v.playsInline = true; try { v.currentTime = 0; } catch (e) {}
-            const fire = () => this._dieFinale();
+            const fire = wheel ? () => this._doomFinale(v) : () => this._dieFinale();
             v.onended = fire;
-            const secs = (v.duration && isFinite(v.duration)) ? v.duration : 5.2;
-            this._finaleTimer = setTimeout(fire, secs * 1000 + 200);   // fallback if 'ended' never fires
+            const secs = (v.duration && isFinite(v.duration)) ? v.duration : (wheel ? 9 : 5.2);
+            this._finaleTimer = setTimeout(fire, secs * 1000 + (wheel ? 120 : 200));   // fallback if 'ended' never fires
             const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
-          } else { this._dieFinale(); }
+          } else if (!wheel) { this._dieFinale(); }
         } else {
           const v = document.querySelector('.od-doom-vid');
           if (v) {
@@ -715,7 +742,7 @@ class Component extends DCLogic {
       if (this._revealTimer) { clearTimeout(this._revealTimer); this._revealTimer = null; }
       try { document.querySelectorAll('.od-shatter').forEach((c) => c.remove()); } catch (e) {}
       try { const h = document.querySelector('.od-hero-img'); if (h) h.style.visibility = ''; } catch (e) {}
-      try { const pv = document.querySelector('.od-portrait-vid'); if (pv) { pv.pause(); pv.currentTime = 0; } } catch (e) {}
+      try { const pv = document.querySelector('.od-portrait-vid'); if (pv) { pv.pause(); pv.currentTime = 0; pv.style.visibility = ''; } } catch (e) {}
     }
   }
   // the moment the doom clip ends: detonate the rocket (via the globe) and shatter the portrait into particles
@@ -751,8 +778,9 @@ class Component extends DCLogic {
     const hero = panel.querySelector('.od-hero-img');
     const cv = document.createElement('canvas'); cv.className = 'od-shatter'; cv.width = rw; cv.height = rh;
     cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;background:#08080A';
-    // sit BELOW the scrims + name/quote text (and the panel's overflow:hidden keeps it in frame)
-    if (hero) hero.insertAdjacentElement('afterend', cv); else panel.appendChild(cv);
+    // sit right after the portrait media → BELOW the scrims + name/quote text (panel overflow:hidden keeps it in frame)
+    const anchor = video || hero;
+    if (anchor) anchor.insertAdjacentElement('afterend', cv); else panel.appendChild(cv);
     const ctx = cv.getContext('2d');
     ctx.drawImage(src, 0, 0);                                     // show the full last frame INSTANTLY → seamless from the video
     if (video) video.style.visibility = 'hidden';                // only now hide the video (the canvas already holds the frame)
@@ -769,7 +797,7 @@ class Component extends DCLogic {
     const CAP = Math.min(90000, (N * 0.28) | 0);
     const ppx = new Float32Array(CAP), ppy = new Float32Array(CAP), pvx = new Float32Array(CAP), pvy = new Float32Array(CAP), pci = new Int32Array(CAP), pa = new Float32Array(CAP);
     let pn = 0;
-    const DISSOLVE = 2.6, TAU_MAX = 0.55, EMIT = 0.24, WX = 26, WY = -34, FLOOR = 0.6;
+    const DISSOLVE = 1.25, TAU_MAX = 0.55, EMIT = 0.24, WX = 34, WY = -44, FLOOR = 0.6;   // faster sweep + quicker dust
     const solidBuf = new Uint8ClampedArray(O.length); let solidReady = false;
     // realistic wispy smoke over the top — domain-warped fbm noise (curling tendrils, not dots)
     const TS = 128, stex = new Float32Array(TS * TS);
@@ -848,6 +876,12 @@ class Component extends DCLogic {
     try {
       const hero = document.querySelector('.od-hero-img');
       if (hero) { const pl = this.players[this.state.playerId]; const url = pl.photo; hero.setAttribute('alt', pl.name + ' — ' + pl.role); hero.classList.toggle('od-flip', !!pl.flip); const blurClass = pl.flip ? 'od-blurin-flip' : 'od-blurin'; if (hero.getAttribute('src') !== url) { hero.onload = () => { hero.classList.remove('od-blurin', 'od-blurin-flip'); void hero.offsetWidth; hero.classList.add(blurClass); }; hero.setAttribute('src', url); } }
+      // portrait video (Elon / Dario): blur-in its first frame on load, and re-trigger when the player changes
+      const pv = document.querySelector('.od-portrait-vid');
+      if (pv) { const want = pv.getAttribute('src') || ''; if (pv._blurSrc !== want) { pv._blurSrc = want; const blur = () => { pv.classList.remove('od-vidblurin'); void pv.offsetWidth; pv.classList.add('od-vidblurin'); }; if (pv.readyState >= 2) blur(); else pv.addEventListener('loadeddata', blur, { once: true }); } }
+      // TEST: wire the Tegmark card-picker dropdown (native listener — independent of the template's event binding)
+      const sel = document.querySelector('.od-cardsel');
+      if (sel && !sel._wired) { sel._wired = true; sel.addEventListener('change', () => { const v = sel.value; if (v === '') return; this.previewCard(parseInt(v, 10)); setTimeout(() => { try { sel.value = ''; } catch (e) {} }, 0); }); }
       const tiles = document.querySelectorAll('.od-tile-img');
       tiles.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); if (pl.objpos) im.style.objectPosition = pl.objpos; im.classList.toggle('od-flip', !!pl.flip); } });
       const pcards = document.querySelectorAll('.od-pcard-img');
@@ -1136,6 +1170,20 @@ class Component extends DCLogic {
       this.resolve(card.doom, p, card);
     });
   }
+  // TEST: draw a specific card by index and reveal it (Tegmark card picker)
+  previewCard(idx) {
+    const p = this.players[this.state.playerId];
+    if (!p || p.mechanic !== 'cards') return;
+    this.clearTimers();
+    this.ensureAudio(); this.cardPick();
+    const card = this.deck[idx];
+    this.setState({ phase: 'rolling', drawn: true, drawnIdx: idx, cardFlip: 0, pickedPos: 0 });
+    const ease = x => 1 - Math.pow(1 - x, 3);
+    this.tween(760, (pr) => { this.setState({ cardFlip: 180 * ease(pr) }); }, () => {
+      this.setState({ cardFlip: 180 });
+      this.resolve(card.doom, p, card);
+    });
+  }
 
   bumpExtinctions() {
     let n = 0;
@@ -1209,11 +1257,12 @@ class Component extends DCLogic {
       fanCards.push({ deg: deg.toFixed(2), z: i, delay: (0.08 + i * 0.04).toFixed(3), pick: () => this.pickCard(i) });
     }
     const dc = s.drawnIdx != null ? this.deck[s.drawnIdx] : null;
-    const drawnCard = dc ? { num: String(s.drawnIdx + 1).padStart(2, '0'), name: dc.name, desc: dc.desc, kindLabel: dc.doom ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE' } : { num: '', name: '', desc: '', kindLabel: '' };
+    const drawnCard = dc ? { num: String(s.drawnIdx + 1).padStart(2, '0'), name: dc.name, desc: dc.desc, kindLabel: dc.doom ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE', img: dc.img || '', hasImg: !!dc.img, noImg: !dc.img } : { num: '', name: '', desc: '', kindLabel: '', img: '', hasImg: false, noImg: true };
     const cardDoom = dc ? dc.doom : false;
     const cardFrontBg = cardDoom ? 'linear-gradient(160deg,#3a1020,#26060f)' : 'linear-gradient(160deg,#10322c,#0a221d)';
     const cardAccent = cardDoom ? this.wheelDoomCol : this.wheelGood1;
     const tegmarkList = this.deck.map(c => ({ name: c.name, dot: c.doom ? this.wheelDoomCol : this.wheelGood1 }));
+    const cardPreviews = this.deck.map((c, i) => ({ i: String(i), label: (i + 1) + '. ' + c.name }));   // TEST picker (dropdown wired in applyPhotos)
 
     const roster = this.order.map((id, i) => {
       const pl = this.players[id];
@@ -1317,7 +1366,7 @@ class Component extends DCLogic {
       isLanding, isPlay: !isLanding, landingRoster,
       extinctions: String(s.extinctions), showExt: !isLanding && !s.menuOpen,
 
-      isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards',
+      isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards', notCards: p.mechanic !== 'cards',
       reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
       dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0',
       wheelGradient, wheelTicks, wheelRot: s.wheelRot.toFixed(1),
@@ -1329,7 +1378,7 @@ class Component extends DCLogic {
       wheelRingScale: s.earthBurn ? '0.16' : '1',
       wheelRingOpacity: s.earthBurn ? '0' : '1',
       fanCards, showFan: !s.drawn, drawn: s.drawn, cardFlip: s.cardFlip.toFixed(1),
-      drawnCard, cardFrontBg, cardFrontAccent: cardAccent, tegmarkList,
+      drawnCard, cardFrontBg, cardFrontAccent: cardAccent, tegmarkList, cardPreviews,
 
       rolling: s.phase === 'rolling',
       showRollButton: (s.phase === 'ready' || s.phase === 'rolling') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
