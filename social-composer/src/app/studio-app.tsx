@@ -573,6 +573,36 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     else if (fmt === "portrait") { setPostType("single"); setAspect("4:5"); }
   }, []);
 
+  // Deep-link: sibling Atlas tools hand off ready-made frames at ?import=<key>
+  // — e.g. Quantum Spark packages its five sparks as `finding` frames (plus
+  // its own bg/text colours) in localStorage under
+  // social-composer:import:<key>. All frames land selected, as a carousel.
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const imp = sp.get("import");
+    if (!imp || !/^[a-z0-9-]{1,40}$/.test(imp)) return;
+    try {
+      const raw = window.localStorage.getItem(`social-composer:import:${imp}`);
+      if (!raw) return;
+      const p = JSON.parse(raw) as { frames?: ComposerFrame[]; bgColor?: string; textColor?: string };
+      const made = (p.frames ?? []).filter((f) => f && typeof f.id === "string" && f.id.startsWith("tm-"));
+      if (!made.length) return;
+      setUserFrames((prev) => {
+        const seen = new Set(prev.map((x) => x.id));
+        const next = [...made.filter((f) => !seen.has(f.id)), ...prev];
+        try { window.localStorage.setItem(tmKey(slugKey), JSON.stringify(next.filter((x) => x.id.startsWith("tm-")))); } catch { /* */ }
+        return next;
+      });
+      setSelected(made.map((f) => f.id));
+      setPreviewIdx(0);
+      if (typeof p.bgColor === "string" && /^#[0-9a-f]{6}$/i.test(p.bgColor)) setBgColor(p.bgColor);
+      if (typeof p.textColor === "string" && /^#[0-9a-f]{6}$/i.test(p.textColor)) setTextColor(p.textColor);
+      if (made.length > 1 && !sp.get("format")) setPostType("carousel");
+      showToast(`Imported ${made.length} frames from ${imp.replace(/-/g, " ")}`);
+    } catch { /* ignore malformed handoffs */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const setActiveText = useCallback((patch: Override) => { if (activeId) setOverrides((p) => ({ ...p, [activeId]: { ...p[activeId], ...patch } })); }, [activeId]);
   const onRandomise = useCallback(() => {
     const pool = source.headlineOptions;

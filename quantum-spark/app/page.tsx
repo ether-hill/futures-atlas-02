@@ -31,16 +31,60 @@ function toSlug(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 80);
 }
 
+/** Package the five sparks as Social Composer `finding` frames and stash the
+ *  handoff payload; the composer picks it up at ?import=quantum-spark. */
+function stashComposerHandoff(result: SparkResult): void {
+  const ts = Date.now();
+  const payload = {
+    name: `Quantum Spark — ${result.business_display}`,
+    url: window.location.href,
+    bgColor: "#07080f",
+    textColor: "#f2f3fb",
+    frames: result.insights.map((ins, i) => ({
+      id: `tm-spark-${ts}-${i}`,
+      kind: "finding",
+      label: `Spark ${String(i + 1).padStart(2, "0")}`,
+      date: ins.tag,
+      headline: ins.headline,
+      sub: `${ins.tag} · Quantum Spark`,
+      body: ins.insight,
+    })),
+  };
+  try {
+    window.localStorage.setItem("social-composer:import:quantum-spark", JSON.stringify(payload));
+  } catch {
+    /* storage full/blocked — the composer will simply open empty */
+  }
+}
+
 export default function Page() {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const [query, setQuery] = useState("");
-  const [other, setOther] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const msgTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
   const booted = useRef(false);
+
+  // close the share menu on outside click / Escape
+  useEffect(() => {
+    if (!shareOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (!shareRef.current?.contains(e.target as Node)) setShareOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setShareOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [shareOpen]);
 
   useEffect(() => {
     if (booted.current) return;
@@ -119,7 +163,7 @@ export default function Page() {
   function reset() {
     setUrl(null);
     setQuery("");
-    setOther(false);
+    setShareOpen(false);
     setPhase({ name: "idle" });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -129,63 +173,59 @@ export default function Page() {
   return (
     <main className="shell">
       <Reveal className="hero">
-        <p className="eyebrow">Quantum Spark · ignite the room</p>
-        <h1>
-          Five <span className="grad-text">sparks</span> for what&rsquo;s next.
-        </h1>
-        <p className="sub">
-          Pick your industry — get five bold, grounded glimpses of how quantum computing and
-          next-wave AI will transform it. Inspiration, not fabrication.
-        </p>
-        {/* lead with the options: 20 industries + Other… (reveals free text) */}
-        <div className="chips" role="group" aria-label="Choose your industry">
-          {INDUSTRY_OPTIONS.map((c) => (
-            <button
-              key={c}
-              className="chip"
-              disabled={phase.name === "loading"}
-              onClick={() => {
-                setQuery(c);
-                setOther(false);
-                spark(c);
+        <div className="hero-grid">
+          <div className="hero-text">
+            <p className="eyebrow">Quantum Spark · ignite the room</p>
+            <h1>
+              Five <span className="grad-text">sparks</span> for what&rsquo;s next.
+            </h1>
+            <p className="sub">
+              Name your business — get five bold, grounded glimpses of how quantum computing and
+              next-wave AI will transform it. Inspiration, not fabrication.
+            </p>
+          </div>
+
+          {/* picker: entry field first, the industry grid beneath it */}
+          <div className="picker-panel">
+            <form
+              className="spark-form"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (ready) spark(query);
               }}
             >
-              {c}
-            </button>
-          ))}
-          <button
-            className="chip chip--other"
-            aria-pressed={other}
-            onClick={() => setOther((o) => !o)}
-          >
-            Other…
-          </button>
+              <label className="sr-only" htmlFor="business">
+                Your business or industry
+              </label>
+              <input
+                id="business"
+                className="spark-input"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Your business or industry…"
+                autoComplete="off"
+              />
+              <button className="spark-btn" type="submit" disabled={!ready || phase.name === "loading"}>
+                Spark ✦
+              </button>
+            </form>
+            <div className="chips" role="group" aria-label="Or pick an industry">
+              {INDUSTRY_OPTIONS.map((c) => (
+                <button
+                  key={c}
+                  className="chip"
+                  disabled={phase.name === "loading"}
+                  onClick={() => {
+                    setQuery(c);
+                    spark(c);
+                  }}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
-        {other && (
-          <form
-            className="spark-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (ready) spark(query);
-            }}
-          >
-            <label className="sr-only" htmlFor="business">
-              Your business or industry
-            </label>
-            <input
-              id="business"
-              className="spark-input"
-              autoFocus
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Describe your business — e.g. 'a craft brewery', 'a shipping port'…"
-              autoComplete="off"
-            />
-            <button className="spark-btn" type="submit" disabled={!ready || phase.name === "loading"}>
-              Spark 5 insights ✦
-            </button>
-          </form>
-        )}
       </Reveal>
 
       <div ref={resultsRef} style={{ scrollMarginTop: "calc(var(--fa-nav-h, 64px) + 16px)" }}>
@@ -212,9 +252,17 @@ export default function Page() {
               </article>
             ))}
             <div className="actions">
-              <button className="act-primary" onClick={() => spark(phase.business, true)}>
-                Spark 5 more ✦
-              </button>
+              <div className="share-wrap" ref={shareRef}>
+                <button
+                  className="act-primary"
+                  aria-haspopup="menu"
+                  aria-expanded={shareOpen}
+                  onClick={() => setShareOpen((o) => !o)}
+                >
+                  Share this now ✦
+                </button>
+                {shareOpen && <ShareMenu result={phase.result} onClose={() => setShareOpen(false)} onToast={quietToast} />}
+              </div>
               <button className="act-ghost" onClick={() => copyAll(phase.result)}>
                 {copied ? "Copied ✓" : "Copy all"}
               </button>
@@ -229,5 +277,79 @@ export default function Page() {
 
       {toast && <div className="toast">{toast}</div>}
     </main>
+  );
+}
+
+/** The same share functions as the global Atlas Share tool — with the
+ *  Social Composer paths carrying the five sparks as ready-made post frames
+ *  (stashed just before navigation, picked up at ?import=quantum-spark). */
+function ShareMenu({
+  result,
+  onClose,
+  onToast,
+}: {
+  result: SparkResult;
+  onClose: () => void;
+  onToast: (t: string) => void;
+}) {
+  const u = typeof window !== "undefined" ? window.location.href : "";
+  const t = `Quantum Spark — ${result.business_display}`;
+  const enc = encodeURIComponent;
+  const composerHref = (format?: string) =>
+    `/social-composer?import=quantum-spark${format ? `&format=${format}` : ""}`;
+  const stash = () => stashComposerHandoff(result);
+
+  return (
+    <div className="share-pop" role="menu">
+      <a className="share-opt share-opt--accent" href={composerHref()} onClick={stash} role="menuitem">
+        ⚗ Open in Social Composer
+      </a>
+      <div className="share-ig">
+        <span className="share-iglbl">⌗ Instagram</span>
+        {(["story", "square", "reel"] as const).map((f) => (
+          <a key={f} className="share-chip" href={composerHref(f)} onClick={stash} role="menuitem">
+            {f[0].toUpperCase() + f.slice(1)}
+          </a>
+        ))}
+      </div>
+      <span className="share-sep" />
+      <button
+        className="share-opt"
+        role="menuitem"
+        onClick={() => {
+          navigator.clipboard
+            .writeText(u)
+            .then(() => onToast("Link copied"))
+            .catch(() => onToast("Couldn't access the clipboard"));
+          onClose();
+        }}
+      >
+        Copy link
+      </button>
+      {typeof navigator !== "undefined" && "share" in navigator && (
+        <button
+          className="share-opt"
+          role="menuitem"
+          onClick={() => {
+            navigator.share({ title: t, url: u }).catch(() => {});
+            onClose();
+          }}
+        >
+          Share…
+        </button>
+      )}
+      <a className="share-opt" role="menuitem" target="_blank" rel="noopener" href={`https://wa.me/?text=${enc(`${t} ${u}`)}`} onClick={onClose}>
+        WhatsApp
+      </a>
+      <a className="share-opt" role="menuitem" target="_blank" rel="noopener" href={`https://twitter.com/intent/tweet?url=${enc(u)}&text=${enc(t)}`} onClick={onClose}>
+        Post to X
+      </a>
+      <a className="share-opt" role="menuitem" target="_blank" rel="noopener" href={`https://www.linkedin.com/sharing/share-offsite/?url=${enc(u)}`} onClick={onClose}>
+        Share to LinkedIn
+      </a>
+      <a className="share-opt" role="menuitem" href={`mailto:?subject=${enc(t)}&body=${enc(u)}`} onClick={onClose}>
+        Email a link
+      </a>
+    </div>
   );
 }

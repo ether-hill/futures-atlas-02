@@ -96,15 +96,29 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   [data-reveal] { opacity: 1 !important; transform: none !important; animation: none !important; }
 }
 
-/* ---- hero ----------------------------------------------------------------------- */
+/* ---- hero: full-width 50/50 — text left, picker right --------------------------- */
 .hero {
-  min-height: calc(66svh - var(--fa-nav-h, 64px));
+  min-height: calc(70svh - var(--fa-nav-h, 64px));
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: clamp(72px, 12vh, 150px) 0 clamp(36px, 6vh, 72px);
+  padding: clamp(64px, 11vh, 140px) 0 clamp(36px, 6vh, 72px);
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(36px, 5vw, 88px);
+  align-items: center;
+  width: 100%;
+}
+@media (max-width: 1023px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 44px; }
+}
+.picker-panel {
+  padding: clamp(18px, 2vw, 28px);
+  background: var(--card);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
 }
 .hero .eyebrow {
   font-size: 11.5px;
@@ -134,8 +148,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .spark-form {
   display: flex;
   gap: 10px;
-  margin-top: 38px;
-  width: min(640px, 100%);
+  width: 100%;
 }
 .spark-input {
   flex: 1;
@@ -165,22 +178,10 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .chips {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 34px;
-  max-width: 780px;
-}
-.chip--other {
-  border-style: dashed;
-  color: var(--subtle);
-}
-.chip--other[aria-pressed="true"] {
-  color: var(--fg);
-  border-color: var(--violet);
-  border-style: solid;
+  gap: 7px;
+  margin-top: 18px;
 }
 .chip:disabled { opacity: 0.45; cursor: wait; }
-.spark-form { margin-top: 24px; }
 .chip {
   padding: 8px 15px;
   font-size: 13px;
@@ -335,6 +336,54 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   line-height: 1.7;
   color: var(--subtle);
 }
+
+/* ---- share menu ---------------------------------------------------------------------------- */
+.share-wrap { position: relative; }
+.share-pop {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 0;
+  z-index: 40;
+  min-width: 240px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(12, 13, 24, 0.96);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  backdrop-filter: blur(14px);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.55);
+}
+.share-opt {
+  display: block;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: none;
+  text-align: left;
+  border-radius: 8px;
+  transition: background 0.15s, color 0.15s;
+}
+.share-opt:hover { background: rgba(255, 255, 255, 0.06); color: var(--fg); }
+.share-opt--accent { color: var(--fg); font-weight: 600; }
+.share-ig {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 8px;
+}
+.share-iglbl { font-size: 12px; color: var(--subtle); margin-right: 2px; }
+.share-chip {
+  padding: 5px 11px;
+  font-size: 12px;
+  color: var(--muted);
+  text-decoration: none;
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  transition: color 0.15s, border-color 0.15s;
+}
+.share-chip:hover { color: var(--fg); border-color: rgba(34, 211, 238, 0.55); }
+.share-sep { height: 1px; margin: 4px 8px; background: var(--card-border); }
 
 /* ---- toast -------------------------------------------------------------------------------- */
 .toast {
