@@ -14,9 +14,23 @@ const BUDGET = [
   { label: "Social", initial: "€1.5k", remaining: "€1.5k", note: "unspent, social not started" },
 ];
 
-/* Labels are the ones used in the room; thumbnails come from the atlas registry
-   by id, so a new card image flows through here without a second edit. */
-const PHASE_1: { id: string; label: string }[] = [
+/* Screengrabs of work that lives outside the atlas registry. */
+const ATLAS_THUMB = "/roadmap/futures-atlas-home.jpg";
+const DELTAI_THUMB = "/roadmap/deltai-home.jpg";
+const MAKEMODE_LOGO = "/roadmap/makemode-logo.png";
+const DELTAI_SHOTS = [
+  { src: DELTAI_THUMB, caption: "The site" },
+  { src: "/roadmap/deltai-session.jpg", caption: "The session tool" },
+];
+
+/* Labels are the ones used in the room. Registry ids resolve to the atlas card
+   image, so a new card image flows through here without a second edit; `src` is
+   a literal path for work that sits outside the registry. */
+type Item = { id?: string; src?: string; label: string; plus?: boolean };
+
+const PHASE_1: Item[] = [
+  { src: ATLAS_THUMB, label: "Futures Atlas site" },
+  { id: "social-composer", label: "Social composer", plus: true },
   { id: "odds-of-surviving-ai", label: "The Odds" },
   { id: "signal-reactor", label: "Signal Reactor" },
   { id: "quantum-spark", label: "Quantum Spark" },
@@ -24,17 +38,9 @@ const PHASE_1: { id: string; label: string }[] = [
   { id: "generatives", label: "Generatives" },
   { id: "swipe-the-future", label: "Swiper" },
 ];
-const PHASE_1_PLUS = { id: "social-composer", label: "Social composer" };
 
 const thumbFor = (id: string) => projects.find((p) => p.id === id)?.image;
-
-/* Screengrabs of work that lives outside the atlas registry. */
-const DELTAI_THUMB = "/roadmap/deltai-home.jpg";
-const MAKEMODE_THUMB = "/roadmap/makemode.jpg";
-const DELTAI_SHOTS = [
-  { src: DELTAI_THUMB, caption: "deltai-website.vercel.app" },
-  { src: "/roadmap/deltai-session.jpg", caption: "The session tool" },
-];
+const srcFor = (item: Item) => item.src ?? thumbFor(item.id ?? "");
 
 /** Small inline thumbnail for the Phase 2 sub-lists. */
 function MiniThumb({ src }: { src?: string }) {
@@ -54,8 +60,8 @@ function MiniThumb({ src }: { src?: string }) {
   );
 }
 
-function ProjectTile({ id, label, plus = false }: { id: string; label: string; plus?: boolean }) {
-  const src = thumbFor(id);
+function ProjectTile({ item }: { item: Item }) {
+  const src = srcFor(item);
   return (
     <li className="flex flex-col">
       <span className="block aspect-[3/2] overflow-hidden border border-ink/15 bg-haze">
@@ -70,46 +76,40 @@ function ProjectTile({ id, label, plus = false }: { id: string; label: string; p
           />
         )}
       </span>
-      <span className={`mt-3 flex items-baseline gap-2 ${bodyCls} text-ink`}>
-        {plus && (
+      <span className={`mt-2.5 flex items-baseline gap-1.5 font-display text-[13px] font-normal leading-[1.4] text-ink`}>
+        {item.plus && (
           <span aria-hidden="true" className="text-accent-deep">
             +
           </span>
         )}
-        {label}
+        {item.label}
       </span>
     </li>
   );
 }
 
-type Strand = {
-  title: string;
-  body: string;
-  /* `id` looks the thumbnail up in the atlas registry; `src` is a literal path
-     for work that lives outside it. */
-  items: { id?: string; src?: string; label: string }[];
-};
+type Strand = { title: string; body: string; items: Item[] };
 
 const PHASE_2: Strand[] = [
   {
     title: "Expanding Phase 1 projects",
-    body: "Taking what launched further. Swiper, for example, could become a tool people use themselves — uploading or building their own question sets, and reviewing the data that comes back.",
+    body: "Taking what launched further. Swiper, for example, could become a tool people run themselves: uploading or building their own question sets, then reviewing the data that comes back.",
     items: [
-      { id: "signal-reactor", label: "Signal Reactor — branded presentation pages" },
-      { id: "hollow-villages", label: "Village Oracle — API integration" },
-      { id: "swipe-the-future", label: "Swiper — own sets, login, data overview" },
-      { id: "hyperscale", label: "Hyperscale — finish" },
-      { id: "quantum-spark", label: "Quantum Spark — scope TBD" },
+      { id: "signal-reactor", label: "Signal Reactor: branded presentation pages" },
+      { id: "hollow-villages", label: "Village Oracle: API integration" },
+      { id: "swipe-the-future", label: "Swiper: own sets, login, data overview" },
+      { id: "hyperscale", label: "Hyperscale: finish" },
+      { id: "quantum-spark", label: "Quantum Spark: scope to be confirmed" },
     ],
   },
   {
     title: "Agreed projects",
-    body: "Larger, more defined pieces scoped and committed to up front, rather than explored.",
-    items: [{ src: DELTAI_THUMB, label: "Workshop (DeltAI) — Deborah" }],
+    body: "Larger, more defined pieces, scoped and committed to up front rather than explored.",
+    items: [{ src: DELTAI_THUMB, label: "Workshop (DeltAI), led by Deborah" }],
   },
   {
-    title: "New prototypes & explorations",
-    body: "Continuing the prototyping approach from Phase 1. Speculative pieces around computing, futures and technology, with a stronger quantum weighting — drawing on TU Delft research, “quantum for good” and quantum vision/foresight framing.",
+    title: "New prototypes and explorations",
+    body: "Continuing the prototyping approach from Phase 1. Speculative pieces on computing, futures and technology, weighted more heavily towards quantum and drawing on TU Delft research, “quantum for good” and quantum foresight framing.",
     items: [],
   },
 ];
@@ -123,7 +123,7 @@ const TEAM = [
   },
   {
     name: "Diedrick",
-    body: "Next stages of Swiper, or the Signal Reactor work he showed particular interest in; otherwise projects of his choice, run in sprints as he requested.",
+    body: "Next stages of Swiper, or the Signal Reactor work he showed particular interest in. Otherwise projects of his choice, run in sprints as he requested.",
   },
 ];
 
@@ -131,7 +131,7 @@ const sectionCls = "border-t border-ink/15 py-[clamp(48px,8vw,110px)]";
 const h2Cls =
   "text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink";
 const h3Cls = "font-display text-[20px] font-extrabold leading-[1.2] tracking-[-0.015em] text-ink";
-/* Prose runs in the display face — mono is kept for labels and data only. */
+/* Prose runs in the display face; mono is kept for labels and data only. */
 const introCls =
   "mt-5 max-w-[62ch] font-display text-[clamp(15px,1.7vw,18px)] font-normal leading-[1.65] text-ink-70";
 const bodyCls = "font-display text-[15px] font-normal leading-[1.6] text-ink-70";
@@ -144,7 +144,7 @@ export default function RoadmapPage() {
       <section className="border-b border-ink/15 py-[clamp(56px,9vw,120px)]">
         <Container>
           <Reveal>
-            <p className="eyebrow tick mb-6">Internal — not for circulation</p>
+            <p className="eyebrow tick mb-6">Internal. Not for circulation.</p>
             <h1 className="max-w-[18ch] text-[clamp(36px,5.6vw,80px)] font-extrabold leading-[0.96] tracking-[-0.028em] text-ink text-balance">
               Futures Atlas + CQS
             </h1>
@@ -176,7 +176,7 @@ export default function RoadmapPage() {
                       {b.remaining}
                     </p>
                     <p className={`mt-2 ${labelCls}`}>
-                      Remaining{b.note ? ` — ${b.note}` : ""}
+                      Remaining{b.note ? ` (${b.note})` : ""}
                     </p>
                   </div>
                 </div>
@@ -206,7 +206,7 @@ export default function RoadmapPage() {
           <Reveal>
             <h2 className={h2Cls}>Phase 1</h2>
             <p className={introCls}>
-              We&rsquo;re aiming to launch around September, September at the earliest.
+              Targeting a September launch at the earliest.
             </p>
           </Reveal>
 
@@ -215,27 +215,26 @@ export default function RoadmapPage() {
               <div className="h-full border border-ink/15 p-[clamp(24px,3.5vw,40px)]">
                 <h3 className={`${h3Cls} text-[clamp(19px,2vw,26px)]`}>Futures Atlas</h3>
                 <p className={`mt-4 ${bodyCls}`}>
-                  Get everything launch-ready. Bring what already exists to a launchable state — no
-                  new scope this round.
+                  Getting everything launch-ready: bringing what already exists to a launchable
+                  state, with no new scope this round.
                 </p>
-                <ul className="mt-7 grid grid-cols-1 gap-x-4 gap-y-6 min-[520px]:grid-cols-2">
+                <ul className="mt-7 grid grid-cols-2 gap-x-3 gap-y-5 min-[900px]:grid-cols-3">
                   {PHASE_1.map((item) => (
-                    <ProjectTile key={item.id} id={item.id} label={item.label} />
+                    <ProjectTile key={item.label} item={item} />
                   ))}
-                  <ProjectTile id={PHASE_1_PLUS.id} label={PHASE_1_PLUS.label} plus />
                 </ul>
               </div>
             </Reveal>
 
-            {/* Its own track — not part of the launch push, so it reads a shade
+            {/* Its own track, not part of the launch push, so it reads a shade
                 darker than the launch-ready list beside it. */}
             <Reveal delay={90} className="self-start">
               <div className="border border-ink/25 bg-haze p-[clamp(24px,3.5vw,40px)]">
-                <p className={labelCls}>Own track — not part of the launch push</p>
+                <p className={labelCls}>Own track, not part of the launch push</p>
                 <h3 className={`mt-5 ${h3Cls} text-[clamp(19px,2vw,26px)]`}>Workshop (DeltAI)</h3>
                 <p className={`mt-4 ${bodyCls}`}>
-                  Runs alongside the Futures Atlas projects, with Deborah leading. Its Phase 1 is to
-                  begin the next phase of the work: improving the output.
+                  Runs alongside the Futures Atlas projects, led by Deborah. Its Phase 1 opens the
+                  next stage of the work: improving the output.
                 </p>
                 <div className="mt-7 flex flex-col gap-4">
                   {DELTAI_SHOTS.map((shot) => (
@@ -300,19 +299,17 @@ export default function RoadmapPage() {
                 <div>
                   <h3 className={h3Cls}>Incorporate Makemode</h3>
                   <p className={`mt-4 max-w-[62ch] ${bodyCls}`}>
-                    Derek&rsquo;s Makemode, to be incorporated in place of some of the AI systems we
-                    currently use.
+                    Adopting Derek&rsquo;s Makemode in place of some of the AI systems we currently use.
                   </p>
                 </div>
                 <figure>
-                  <span className="block aspect-[3/2] overflow-hidden border border-ink/15 bg-haze">
+                  <span className="flex items-center justify-center border border-ink/15 bg-paper px-8 py-7">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
-                      src={MAKEMODE_THUMB}
-                      alt=""
+                      src={MAKEMODE_LOGO}
+                      alt="Makemode"
                       loading="lazy"
-                      aria-hidden="true"
-                      className="h-full w-full object-cover object-top"
+                      className="h-auto w-full max-w-[260px] object-contain"
                     />
                   </span>
                   <figcaption className={`mt-3 ${labelCls}`}>makemode.eu</figcaption>
