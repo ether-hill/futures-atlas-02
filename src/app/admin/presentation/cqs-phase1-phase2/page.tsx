@@ -294,6 +294,19 @@ export default function RoadmapPage() {
             ))}
           </div>
 
+          {/* Cross-cutting, so it sits below the three strands rather than beside them. */}
+          <Reveal>
+            <div className="mt-3 border border-ink/15 bg-haze p-[clamp(24px,3.5vw,40px)]">
+              <p className={labelCls}>Across every project</p>
+              <h3 className={`mt-5 ${h3Cls}`}>Social</h3>
+              <p className={`mt-4 max-w-[70ch] ${bodyCls}`}>
+                Reach and visibility are a core goal: using the work to bring more people to
+                quantum, computing and future scenarios. Social is the most direct route there, and
+                each project has been considered for what it can carry.
+              </p>
+            </div>
+          </Reveal>
+
           <Reveal>
             <div className="mt-3 border border-ink/15 bg-haze p-[clamp(24px,3.5vw,40px)]">
               <p className={labelCls}>Running across all three</p>
