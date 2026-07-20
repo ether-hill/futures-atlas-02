@@ -13,7 +13,9 @@
  * so the live site can read the saved overrides.
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { ADMIN_COOKIE, verifySession } from "@/lib/admin-session";
+// Relative, not "@/lib/…": the social-composer sub-app build also picks this
+// file up and resolves "@/" against its own src/, which breaks the root build.
+import { ADMIN_COOKIE, verifySession } from "./lib/admin-session";
 
 export const config = {
   matcher: ["/style-guide", "/api/tokens", "/admin/:path*"],
