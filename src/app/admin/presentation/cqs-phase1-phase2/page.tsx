@@ -28,6 +28,32 @@ const PHASE_1_PLUS = { id: "social-composer", label: "Social composer" };
 
 const thumbFor = (id: string) => projects.find((p) => p.id === id)?.image;
 
+/* Screengrabs of work that lives outside the atlas registry. */
+const DELTAI_THUMB = "/roadmap/deltai-home.jpg";
+const MAKEMODE_THUMB = "/roadmap/makemode.jpg";
+const DELTAI_SHOTS = [
+  { src: DELTAI_THUMB, caption: "deltai-website.vercel.app" },
+  { src: "/roadmap/deltai-session.jpg", caption: "The session tool" },
+];
+
+/** Small inline thumbnail for the Phase 2 sub-lists. */
+function MiniThumb({ src }: { src?: string }) {
+  return (
+    <span className="block h-8 w-12 shrink-0 overflow-hidden border border-ink/15 bg-haze">
+      {src && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={src}
+          alt=""
+          loading="lazy"
+          aria-hidden="true"
+          className="h-full w-full object-cover object-top"
+        />
+      )}
+    </span>
+  );
+}
+
 function ProjectTile({ id, label, plus = false }: { id: string; label: string; plus?: boolean }) {
   const src = thumbFor(id);
   return (
@@ -56,22 +82,30 @@ function ProjectTile({ id, label, plus = false }: { id: string; label: string; p
   );
 }
 
-const PHASE_2 = [
+type Strand = {
+  title: string;
+  body: string;
+  /* `id` looks the thumbnail up in the atlas registry; `src` is a literal path
+     for work that lives outside it. */
+  items: { id?: string; src?: string; label: string }[];
+};
+
+const PHASE_2: Strand[] = [
   {
     title: "Expanding Phase 1 projects",
     body: "Taking what launched further. Swiper, for example, could become a tool people use themselves — uploading or building their own question sets, and reviewing the data that comes back.",
     items: [
-      "Signal Reactor — branded presentation pages",
-      "Village Oracle — API integration",
-      "Swiper — own sets, login, data overview",
-      "Hyperscale — finish",
-      "Quantum Spark — scope TBD",
+      { id: "signal-reactor", label: "Signal Reactor — branded presentation pages" },
+      { id: "hollow-villages", label: "Village Oracle — API integration" },
+      { id: "swipe-the-future", label: "Swiper — own sets, login, data overview" },
+      { id: "hyperscale", label: "Hyperscale — finish" },
+      { id: "quantum-spark", label: "Quantum Spark — scope TBD" },
     ],
   },
   {
     title: "Agreed projects",
     body: "Larger, more defined pieces scoped and committed to up front, rather than explored.",
-    items: ["Workshop (DeltAI) — Deborah"],
+    items: [{ src: DELTAI_THUMB, label: "Workshop (DeltAI) — Deborah" }],
   },
   {
     title: "New prototypes & explorations",
@@ -155,11 +189,11 @@ export default function RoadmapPage() {
               <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-accent-deep">
                 Proposal
               </p>
+              <p className="mt-4 max-w-[52ch] font-mono text-[12.5px] leading-[1.7] text-ink-70">
+                Fold the unspent €1.5k social budget into remaining work.
+              </p>
               <p className="mt-4 max-w-[24ch] text-[clamp(26px,3.6vw,46px)] font-extrabold leading-[1.05] tracking-[-0.022em] text-ink text-balance">
                 Available: €3.5k work plus €500 in AI credits.
-              </p>
-              <p className="mt-5 max-w-[52ch] font-mono text-[12.5px] leading-[1.7] text-ink-70">
-                Fold the unspent €1.5k social budget into remaining work.
               </p>
             </div>
           </Reveal>
@@ -170,18 +204,21 @@ export default function RoadmapPage() {
       <section className={sectionCls}>
         <Container>
           <Reveal>
-            <h2 className={h2Cls}>Phase 1 — get everything launch-ready</h2>
+            <h2 className={h2Cls}>Phase 1</h2>
             <p className={introCls}>
-              Bring what already exists to a launchable state — no new scope this round. We&rsquo;re
-              aiming to launch around September, September at the earliest.
+              We&rsquo;re aiming to launch around September, September at the earliest.
             </p>
           </Reveal>
 
           <div className="mt-[clamp(28px,4vw,48px)] grid grid-cols-1 gap-3 lg:grid-cols-[1.6fr_1fr]">
             <Reveal>
               <div className="h-full border border-ink/15 p-[clamp(24px,3.5vw,40px)]">
-                <p className={labelCls}>Futures Atlas</p>
-                <ul className="mt-6 grid grid-cols-1 gap-x-4 gap-y-6 min-[520px]:grid-cols-2">
+                <h3 className={`${h3Cls} text-[clamp(19px,2vw,26px)]`}>Futures Atlas</h3>
+                <p className={`mt-4 ${bodyCls}`}>
+                  Get everything launch-ready. Bring what already exists to a launchable state — no
+                  new scope this round.
+                </p>
+                <ul className="mt-7 grid grid-cols-1 gap-x-4 gap-y-6 min-[520px]:grid-cols-2">
                   {PHASE_1.map((item) => (
                     <ProjectTile key={item.id} id={item.id} label={item.label} />
                   ))}
@@ -200,6 +237,23 @@ export default function RoadmapPage() {
                   Runs alongside the Futures Atlas projects, with Deborah leading. Its Phase 1 is to
                   begin the next phase of the work: improving the output.
                 </p>
+                <div className="mt-7 flex flex-col gap-4">
+                  {DELTAI_SHOTS.map((shot) => (
+                    <figure key={shot.src}>
+                      <span className="block aspect-[3/2] overflow-hidden border border-ink/15 bg-haze">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={shot.src}
+                          alt=""
+                          loading="lazy"
+                          aria-hidden="true"
+                          className="h-full w-full object-cover object-top"
+                        />
+                      </span>
+                      <figcaption className={`mt-3 ${labelCls}`}>{shot.caption}</figcaption>
+                    </figure>
+                  ))}
+                </div>
               </div>
             </Reveal>
           </div>
@@ -222,16 +276,14 @@ export default function RoadmapPage() {
                   <h3 className={h3Cls}>{strand.title}</h3>
                   <p className={`mt-4 ${bodyCls}`}>{strand.body}</p>
                   {strand.items.length > 0 && (
-                    <ul className="mt-6 flex flex-col gap-2.5 border-t border-ink/15 pt-5">
+                    <ul className="mt-6 flex flex-col gap-3 border-t border-ink/15 pt-5">
                       {strand.items.map((item) => (
                         <li
-                          key={item}
-                          className={`flex items-baseline gap-2.5 ${bodyCls} text-[14px] text-ink`}
+                          key={item.label}
+                          className={`flex items-center gap-3 ${bodyCls} text-[14px] text-ink`}
                         >
-                          <span aria-hidden="true" className="text-ink/30">
-                            —
-                          </span>
-                          {item}
+                          <MiniThumb src={item.src ?? thumbFor(item.id ?? "")} />
+                          {item.label}
                         </li>
                       ))}
                     </ul>
@@ -244,11 +296,28 @@ export default function RoadmapPage() {
           <Reveal>
             <div className="mt-3 border border-ink/15 bg-haze p-[clamp(24px,3.5vw,40px)]">
               <p className={labelCls}>Running across all three</p>
-              <h3 className={`mt-5 ${h3Cls}`}>Incorporate Makemode</h3>
-              <p className={`mt-4 max-w-[62ch] ${bodyCls}`}>
-                Derek&rsquo;s Makemode, to be incorporated in place of some of the AI systems we
-                currently use.
-              </p>
+              <div className="mt-5 grid grid-cols-1 items-start gap-[clamp(20px,3vw,40px)] md:grid-cols-[1.4fr_1fr]">
+                <div>
+                  <h3 className={h3Cls}>Incorporate Makemode</h3>
+                  <p className={`mt-4 max-w-[62ch] ${bodyCls}`}>
+                    Derek&rsquo;s Makemode, to be incorporated in place of some of the AI systems we
+                    currently use.
+                  </p>
+                </div>
+                <figure>
+                  <span className="block aspect-[3/2] overflow-hidden border border-ink/15 bg-haze">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={MAKEMODE_THUMB}
+                      alt=""
+                      loading="lazy"
+                      aria-hidden="true"
+                      className="h-full w-full object-cover object-top"
+                    />
+                  </span>
+                  <figcaption className={`mt-3 ${labelCls}`}>makemode.eu</figcaption>
+                </figure>
+              </div>
             </div>
           </Reveal>
         </Container>
