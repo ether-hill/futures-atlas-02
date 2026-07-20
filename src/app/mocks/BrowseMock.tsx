@@ -348,9 +348,6 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
               <img src="/fa.svg" alt="" style={{ width: "clamp(34px,3.4vw,46px)", height: "clamp(34px,3.4vw,46px)", flex: "none", filter: T.logoFilter }} />
               <h1 style={{ fontSize: "clamp(28px,3.8vw,50px)", fontWeight: 500, margin: 0, color: T.text, whiteSpace: isMobile ? "normal" : "nowrap", textShadow: "0 2px 30px rgba(0,0,0,.6)" }}>{greeting}</h1>
             </div>
-            <p style={{ fontFamily: mono, fontSize: 12.5, letterSpacing: ".08em", color: tx(0.65), margin: "0 0 30px" }}>
-              a catalogue of possible worlds · {rows.total} projects · open by default
-            </p>
             <div style={{ background: T.panel, border: `1px solid ${tx(0.14)}`, borderRadius: 14, boxShadow: "0 30px 80px rgba(0,0,0,.6)", padding: "22px 24px 16px", textAlign: "left", backdropFilter: "blur(6px)" }}>
               <input
                 ref={inputRef}
