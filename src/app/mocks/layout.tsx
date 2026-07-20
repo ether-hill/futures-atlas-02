@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Mono, Space_Grotesk } from "next/font/google";
 
 /**
- * /mocks — high-fidelity ports of the design_handoff_futures_atlas bundle
- * (Claude-app × Netflix browse UI, three themes). The mock ships its own
- * chrome (sidebar + footer), so this layout deliberately skips the atlas
- * nav/footer. Design exploration only: noindexed, unlinked from the site.
+ * /mocks — ports of the design_handoff_futures_atlas bundle, restyled onto
+ * the CURRENT Futures Atlas system: Archivo (the site display face, loaded
+ * by the root layout) + the site mono stack — no external fonts. The mock
+ * ships its own chrome, so the injected atlas bar/share/footer are
+ * suppressed, and the body's reserved nav padding (the "grey top bar") is
+ * removed. Design exploration only: noindexed, unlinked from the site.
  */
-
-const grotesk = Space_Grotesk({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-grotesk" });
-const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plexmono" });
 
 export const metadata: Metadata = {
   title: "Browse mocks — Futures Atlas",
@@ -18,10 +16,11 @@ export const metadata: Metadata = {
 
 export default function MocksLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className={`${grotesk.variable} ${plexMono.variable}`}>
-      {/* the mock brings its own chrome — suppress the injected global bar,
-          share pill and footer while a /mocks route is mounted */}
-      <style>{`.fa-shell,.fa-share,.fa-foot{display:none!important}`}</style>
+    <div>
+      <style>{`
+        .fa-shell,.fa-share,.fa-foot{display:none!important}
+        body{padding-top:0!important}
+      `}</style>
       {children}
     </div>
   );

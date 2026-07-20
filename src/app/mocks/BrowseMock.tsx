@@ -55,7 +55,7 @@ const embedSrc = (h: HeroSpec) =>
 
 /* ---------- content (real projects + handoff extras) ---------- */
 
-const GREETINGS = ["Back at it, Ether", "Now, where were we?", "Which future today?", "The atlas is open", "Pick a possible world"];
+const GREETINGS = ["Back at it, Derek", "Now, where were we?", "Which future today?", "The atlas is open", "Pick a possible world"];
 
 const RECENTS = [
   "What odds do AI insiders put on catastrophe?",
@@ -164,7 +164,7 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
   }, []);
 
   const railW = railOpen ? "min(300px,84vw)" : "64px";
-  const mono = "var(--font-plexmono), ui-monospace, monospace";
+  const mono = 'ui-monospace, "SF Mono", Menlo, monospace';
   const rgba = (a: number) => `rgba(${T.scrimRgb},${a})`;
   const tx = (a: number) => `color-mix(in srgb, ${T.text} ${a * 100}%, transparent)`;
 
@@ -293,10 +293,10 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
           <div style={{ flex: 1 }} />
         )}
         <div style={{ flex: "none", display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderTop: `1px solid ${tx(0.1)}` }}>
-          <div style={{ width: 34, height: 34, borderRadius: "50%", background: T.avatarBg, border: `1px solid color-mix(in srgb, ${T.accent} 40%, transparent)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: T.accent, flex: "none" }}>E</div>
+          <div style={{ width: 34, height: 34, borderRadius: "50%", background: T.avatarBg, border: `1px solid color-mix(in srgb, ${T.accent} 40%, transparent)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, color: T.accent, flex: "none" }}>D</div>
           {railOpen && (
             <div style={{ minWidth: 0, whiteSpace: "nowrap" }}>
-              <div style={{ fontSize: 13.5, fontWeight: 600 }}>Ether</div>
+              <div style={{ fontSize: 13.5, fontWeight: 600 }}>Derek</div>
               <div style={{ fontSize: 11.5, color: tx(0.5) }}>Open by default</div>
             </div>
           )}
@@ -305,7 +305,7 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
 
       <div style={{ paddingLeft: railW, transition: "padding-left .35s cubic-bezier(.25,.8,.25,1)" }}>
         {/* ============ hero: generative field + greeting + composer ============ */}
-        <section style={{ position: "relative", minHeight: "min(75vh,700px)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: T.name === "gallery" ? T.bg : "#000" }}>
+        <section style={{ position: "relative", minHeight: "min(75vh,700px)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: "#000" }}>
           {heroReady && motion && (
             <iframe
               src={embedSrc(hero)}
@@ -329,7 +329,7 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "0 0 12px" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/fa.svg" alt="" style={{ width: "clamp(34px,3.4vw,46px)", height: "clamp(34px,3.4vw,46px)", flex: "none", filter: T.logoFilter }} />
-              <h1 style={{ fontSize: "clamp(28px,3.8vw,50px)", fontWeight: 500, margin: 0, color: T.text, whiteSpace: "nowrap", textShadow: T.name === "gallery" ? "0 2px 30px rgba(255,255,255,.5)" : "0 2px 30px rgba(0,0,0,.6)" }}>{greeting}</h1>
+              <h1 style={{ fontSize: "clamp(28px,3.8vw,50px)", fontWeight: 500, margin: 0, color: T.text, whiteSpace: "nowrap", textShadow: "0 2px 30px rgba(0,0,0,.6)" }}>{greeting}</h1>
             </div>
             <p style={{ fontFamily: mono, fontSize: 12.5, letterSpacing: ".08em", color: tx(0.65), margin: "0 0 30px" }}>
               a catalogue of possible worlds · {rows.total} projects · open by default

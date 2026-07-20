@@ -1,6 +1,6 @@
 "use client";
 
-/** Gallery — light swiss theme; hero: lattice-waves. */
+/** Gallery — dark blue-violet theme; hero: lattice-waves. */
 
 import { BrowseMock } from "../BrowseMock";
 
@@ -9,24 +9,24 @@ export default function Gallery() {
     <BrowseMock
       T={{
         name: "gallery",
-        bg: "#FAFAF7",
-        text: "#15151A",
-        accent: "#2244FF",
-        accentBright: "#0F2BCC",
-        panel: "rgba(255,255,255,.9)",
-        rail: "rgba(245,245,241,.96)",
-        avatarBg: "#E8E8FF",
-        sendText: "#FFFFFF",
-        logoFilter: "brightness(0)",
-        bodyFont: "var(--font-grotesk), sans-serif",
-        scrimRgb: "250,250,247",
+        bg: "#0b0c0e",
+        text: "#f4efe4",
+        accent: "#5b7cff",
+        accentBright: "#93aaff",
+        panel: "rgba(20,21,26,.9)",
+        rail: "rgba(10,11,13,.96)",
+        avatarBg: "#171a2c",
+        sendText: "#f4efe4",
+        logoFilter: "brightness(0) invert(1)",
+        bodyFont: "var(--font-archivo), system-ui, sans-serif",
+        scrimRgb: "11,12,14",
       }}
       hero={{
         pieceId: "lattice-waves",
         seed: "gallery",
         params: { spin: 0.4 },
         meta: { complexity: 0.55, chaos: 0.35 },
-        colors: { bg: "#e9e9ef", lo: "#2244FF", hi: "#8fa4ff" },
+        colors: { bg: "#0b0c10", lo: "#3a56d4", hi: "#93aaff" },
       }}
     />
   );

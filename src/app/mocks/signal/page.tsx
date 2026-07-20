@@ -9,16 +9,16 @@ export default function Signal() {
     <BrowseMock
       T={{
         name: "signal",
-        bg: "#0A0A0A",
-        text: "#E8E8E8",
+        bg: "#0b0c0e",
+        text: "#f4efe4",
         accent: "#3CFF9E",
         accentBright: "#9BFFCE",
-        panel: "rgba(20,20,20,.9)",
-        rail: "rgba(14,14,14,.96)",
+        panel: "rgba(19,21,20,.9)",
+        rail: "rgba(10,11,13,.96)",
         avatarBg: "#1C2C22",
         sendText: "#0A0A0A",
         logoFilter: "brightness(0) invert(1)",
-        bodyFont: "var(--font-plexmono), ui-monospace, monospace",
+        bodyFont: 'ui-monospace, "SF Mono", Menlo, monospace',
         scrimRgb: "10,10,10",
       }}
       hero={{

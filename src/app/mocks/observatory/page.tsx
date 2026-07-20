@@ -9,17 +9,17 @@ export default function Observatory() {
     <BrowseMock
       T={{
         name: "observatory",
-        bg: "#0B0A11",
-        text: "#EDECF4",
-        accent: "#7DE1FF",
-        accentBright: "#B9EEFF",
-        panel: "rgba(19,17,30,.9)",
-        rail: "rgba(13,12,20,.96)",
-        avatarBg: "#241E3E",
-        sendText: "#0B0A11",
+        bg: "#0d0e11",
+        text: "#f4efe4",
+        accent: "#7fb2e8",
+        accentBright: "#a9ccf2",
+        panel: "rgba(22,23,27,.9)",
+        rail: "rgba(11,12,14,.96)",
+        avatarBg: "#16222f",
+        sendText: "#0d0e11",
         logoFilter: "brightness(0) invert(1)",
-        bodyFont: "var(--font-grotesk), sans-serif",
-        scrimRgb: "11,10,17",
+        bodyFont: "var(--font-archivo), system-ui, sans-serif",
+        scrimRgb: "13,14,17",
       }}
       hero={{
         pieceId: "particle-nebula",
