@@ -69,6 +69,21 @@ export default function HomeLabIndex() {
             </Link>
           ))}
         </div>
+        <div className="mt-[clamp(28px,4vw,44px)] border-t border-ink/15 pt-8">
+          <p className="eyebrow tick mb-5">Design handoff — Claude × Netflix browse UI (own chrome, full-screen)</p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { name: "Observatory", href: "/mocks/observatory", note: "dark indigo · particle nebula" },
+              { name: "Gallery", href: "/mocks/gallery", note: "light swiss · lattice waves" },
+              { name: "Signal", href: "/mocks/signal", note: "terminal green · boids" },
+            ].map((m) => (
+              <Link key={m.name} href={m.href} className="group border border-ink/15 px-6 py-4 transition-colors hover:border-ink/50">
+                <span className="block text-[18px] font-extrabold tracking-[-0.015em] text-ink group-hover:text-accent-deep">{m.name}</span>
+                <span className="mt-1 block font-mono text-[11px] text-ink/50">{m.note}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
       </Container>
     </section>
   );
