@@ -206,7 +206,7 @@ export default function RoadmapPage() {
           <Reveal>
             <h2 className={h2Cls}>Phase 1</h2>
             <p className={introCls}>
-              Targeting a September launch at the earliest.
+              The remaining €3.5k of work budget goes into finishing what already exists.
             </p>
           </Reveal>
 
@@ -230,11 +230,9 @@ export default function RoadmapPage() {
                 darker than the launch-ready list beside it. */}
             <Reveal delay={90} className="self-start">
               <div className="border border-ink/25 bg-haze p-[clamp(24px,3.5vw,40px)]">
-                <p className={labelCls}>Own track, not part of the launch push</p>
-                <h3 className={`mt-5 ${h3Cls} text-[clamp(19px,2vw,26px)]`}>Workshop (DeltAI)</h3>
+                <h3 className={`${h3Cls} text-[clamp(19px,2vw,26px)]`}>Workshop (DeltAI)</h3>
                 <p className={`mt-4 ${bodyCls}`}>
-                  Runs alongside the Futures Atlas projects, led by Deborah. Its Phase 1 opens the
-                  next stage of the work: improving the output.
+                  Runs alongside the Futures Atlas projects, led by Deborah.
                 </p>
                 <div className="mt-7 flex flex-col gap-4">
                   {DELTAI_SHOTS.map((shot) => (
