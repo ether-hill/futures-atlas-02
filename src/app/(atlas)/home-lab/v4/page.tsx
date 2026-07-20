@@ -106,7 +106,7 @@ export default function V4() {
         <Container>
           <Reveal>
             <p className="mx-auto max-w-[24ch] text-[clamp(22px,3vw,40px)] font-extrabold leading-[1.15] tracking-[-0.02em] text-ink">
-              It's meant to be used.
+              It&rsquo;s meant to be used.
             </p>
             <Link href="/projects" className="mt-7 inline-block rounded-[2px] border-[1.5px] border-ink/30 px-7 py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-ink hover:border-ink">
               Browse all projects

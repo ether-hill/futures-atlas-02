@@ -35,7 +35,7 @@ export default function V2() {
                 Enter the atlas
               </Link>
               <Link href="/about" className="rounded-[2px] border-[1.5px] border-paper/30 px-6 py-3 font-mono text-[12px] uppercase tracking-[0.1em] text-paper hover:border-paper">
-                How it's made
+                How it&rsquo;s made
               </Link>
             </div>
           </Reveal>
