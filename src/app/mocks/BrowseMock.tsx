@@ -147,6 +147,7 @@ function useRows() {
 
 export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
   const [railOpen, setRailOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const [askQuery, setAskQuery] = useState("");
   const [asked, setAsked] = useState<string | null>(null);
   const [motion, setMotion] = useState(true);
@@ -157,13 +158,25 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    // mobile: rail starts CLOSED and overlays instead of pushing content
+    const mq = window.matchMedia("(max-width: 767px)");
+    const apply = () => {
+      setIsMobile(mq.matches);
+      if (mq.matches) setRailOpen(false);
+    };
+    apply();
+    mq.addEventListener("change", apply);
     setGreeting(GREETINGS[Math.floor(Math.random() * GREETINGS.length)]);
     setHeroReady(true);
     const t = setTimeout(() => setHeroIn(true), 300); // fade-in from black, as the video did
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      mq.removeEventListener("change", apply);
+    };
   }, []);
 
   const railW = railOpen ? "min(300px,84vw)" : "64px";
+  const contentPad = isMobile ? "64px" : railW; // open rail overlays on mobile
   const mono = 'ui-monospace, "SF Mono", Menlo, monospace';
   const rgba = (a: number) => `rgba(${T.scrimRgb},${a})`;
   const tx = (a: number) => `color-mix(in srgb, ${T.text} ${a * 100}%, transparent)`;
@@ -176,7 +189,8 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
 
   const navItems: { icon: string; label: string; href: string; accent?: boolean }[] = [
     { icon: "▤", label: "Projects", href: "/projects" },
-    { icon: "✶", label: "Generatives", href: "/generatives", accent: true },
+    { icon: "❐", label: "News and articles", href: "#news" },
+    { icon: "⚑", label: "Get involved", href: "/contact", accent: true },
     { icon: "⌘", label: "The Lab", href: "/about" },
     { icon: "✉", label: "Contact", href: "/contact" },
   ];
@@ -303,7 +317,10 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
         </div>
       </div>
 
-      <div style={{ paddingLeft: railW, transition: "padding-left .35s cubic-bezier(.25,.8,.25,1)" }}>
+      {isMobile && railOpen && (
+        <div onClick={() => setRailOpen(false)} aria-hidden="true" style={{ position: "fixed", inset: 0, zIndex: 39, background: "rgba(0,0,0,.55)" }} />
+      )}
+      <div style={{ paddingLeft: contentPad, transition: "padding-left .35s cubic-bezier(.25,.8,.25,1)" }}>
         {/* ============ hero: generative field + greeting + composer ============ */}
         <section style={{ position: "relative", minHeight: "min(75vh,700px)", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", background: "#000" }}>
           {heroReady && motion && (
@@ -325,11 +342,11 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
           >
             {motion ? "❚❚" : "▶"}
           </button>
-          <div style={{ position: "relative", zIndex: 2, width: "min(760px,92%)", textAlign: "center", padding: "70px 0 56px" }}>
+          <div style={{ position: "relative", zIndex: 2, width: "min(760px,92%)", textAlign: "center", padding: isMobile ? "48px 0 40px" : "70px 0 56px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 16, margin: "0 0 12px" }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/fa.svg" alt="" style={{ width: "clamp(34px,3.4vw,46px)", height: "clamp(34px,3.4vw,46px)", flex: "none", filter: T.logoFilter }} />
-              <h1 style={{ fontSize: "clamp(28px,3.8vw,50px)", fontWeight: 500, margin: 0, color: T.text, whiteSpace: "nowrap", textShadow: "0 2px 30px rgba(0,0,0,.6)" }}>{greeting}</h1>
+              <h1 style={{ fontSize: "clamp(28px,3.8vw,50px)", fontWeight: 500, margin: 0, color: T.text, whiteSpace: isMobile ? "normal" : "nowrap", textShadow: "0 2px 30px rgba(0,0,0,.6)" }}>{greeting}</h1>
             </div>
             <p style={{ fontFamily: mono, fontSize: 12.5, letterSpacing: ".08em", color: tx(0.65), margin: "0 0 30px" }}>
               a catalogue of possible worlds · {rows.total} projects · open by default
