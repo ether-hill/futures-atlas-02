@@ -67,6 +67,14 @@ const RECENTS = [
   "How calibrated is my gut on AI claims?",
 ];
 
+const TRENDING = [
+  "Will PQC deadlines hit banks before quantum does?",
+  "Is the AI data-center buildout a bubble?",
+  "What does Sora-grade video do to evidence?",
+  "Who actually profits from AGI timelines?",
+  "Can open models catch the frontier by 2028?",
+];
+
 // per-project fallback art (behind the real preview image) — handoff ART map
 const ART: Record<string, string> = {
   "odds-of-surviving-ai": "radial-gradient(circle at 25% 30%, rgba(255,90,120,.55), transparent 55%), radial-gradient(circle at 75% 75%, rgba(125,225,255,.35), transparent 55%), conic-gradient(from 210deg at 60% 40%, #1A1030, #0B0A11, #241E3E, #0B0A11)",
@@ -300,6 +308,21 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
                 style={{ display: "block", width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13.5, lineHeight: 1.35, color: tx(0.85), padding: "7px 8px", borderRadius: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
               >
                 {q}
+              </button>
+            ))}
+            <div style={{ fontSize: 12.5, color: tx(0.5), padding: "16px 8px 6px" }}>Trending topics</div>
+            {TRENDING.map((q) => (
+              <button
+                key={q}
+                className="mock-hov"
+                onClick={() => {
+                  setAskQuery(q);
+                  setAsked(q);
+                }}
+                style={{ display: "flex", alignItems: "baseline", gap: 8, width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: 13.5, lineHeight: 1.35, color: tx(0.85), padding: "7px 8px", borderRadius: 6, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+              >
+                <span style={{ color: T.accent, fontSize: 11, flex: "none" }}>↗</span>
+                <span style={{ overflow: "hidden", textOverflow: "ellipsis" }}>{q}</span>
               </button>
             ))}
           </div>
