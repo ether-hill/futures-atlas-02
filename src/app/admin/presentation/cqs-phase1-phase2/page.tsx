@@ -104,14 +104,14 @@ const PHASE_2: Strand[] = [
     ],
   },
   {
-    title: "Agreed projects",
-    body: "Larger, more defined pieces, scoped and committed to up front rather than explored.",
-    items: [{ src: DELTAI_THUMB, label: "Workshop (DeltAI), led by Deborah" }],
+    title: "Expand Futures Atlas",
+    body: "Continuing the prototyping approach from Phase 1: a broad set of pieces (speculative, exploratory, and tool-based) on compute power and how it might shape our future, spanning quantum, AI and beyond, drawing on TU Delft research and the “quantum for good” and quantum foresight framing.",
+    items: [],
   },
   {
-    title: "New prototypes and explorations",
-    body: "Continuing the prototyping approach from Phase 1. Speculative pieces on computing, futures and technology, weighted more heavily towards quantum and drawing on TU Delft research, “quantum for good” and quantum foresight framing.",
-    items: [],
+    title: "Agreed projects",
+    body: "Work that sits outside the Futures Atlas, scoped and committed to up front.",
+    items: [{ src: DELTAI_THUMB, label: "Workshop (DeltAI), led by Deborah" }],
   },
 ];
 
