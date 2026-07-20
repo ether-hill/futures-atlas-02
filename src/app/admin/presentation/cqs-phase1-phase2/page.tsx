@@ -121,7 +121,8 @@ const VISION =
 const TAGS = [
   "#quantum", "#quantumcomputing", "#AI", "#computing", "#technology", "#futures",
   "#foresight", "#emergingtech", "#speculativedesign", "#designfiction",
-  "#responsibleinnovation", "#creativetechnology", "#quantumforgood", "#QDNL",
+  "#responsibleinnovation", "#creativetechnology", "#vibecoding", "#quantumforgood",
+  "#QDNL",
   "#TUDelft", "#quantumandsociety",
 ];
 
@@ -388,6 +389,11 @@ export default function RoadmapPage() {
                 Reach and visibility are a core goal: using the work to bring more people to
                 quantum, computing and future scenarios. Social is the most direct route there, and
                 each project has been considered for what it can carry.
+              </p>
+              <p className={`mt-4 max-w-[70ch] ${bodyCls}`}>
+                We propose running dedicated Futures Atlas channels, with CQS and QDNL sharing or
+                being tagged in posts as they prefer. That keeps a healthy separation and splits the
+                responsibility, while the posts that serve them still land where they should.
               </p>
             </div>
           </Reveal>
