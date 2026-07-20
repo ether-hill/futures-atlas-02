@@ -44,6 +44,24 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|oklch\(' src/components src/app --include='*.tsx'
 
 - `KV_REST_API_URL`, `KV_REST_API_TOKEN` — from the Vercel KV / Upstash integration.
 - `STYLE_GUIDE_PASSWORD` (required to unlock the panel), `STYLE_GUIDE_USER` (optional, default `admin`).
+- `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` — the internal `/admin/*` area (see below).
+  Both required; the routes 503 until they are set.
+
+## Internal area (`/admin/*`)
+
+Password-gated internal pages (roadmap/presentation decks). Not linked from
+anywhere, `noindex`, and `Disallow`ed in `src/app/robots.ts`.
+
+- `src/middleware.ts` — gates `/admin/:path*` on a signed session cookie and
+  **rewrites** unauthenticated requests to `/admin/login` (so no page renders or
+  ships markup before auth). Fail-closed if the env vars are unset.
+- `src/lib/admin-session.ts` — HMAC-SHA256 cookie sign/verify via Web Crypto, so
+  the same helpers run in Edge middleware and the Node route handler. Also holds
+  `safeNext()`, which normalises the `?next=` param before checking it stays
+  under `/admin/` (guards the open redirect).
+- `src/app/api/admin/login/route.ts` — Node runtime; `crypto.timingSafeEqual`
+  against `ADMIN_PASSWORD`, sets the httpOnly · secure · sameSite=lax cookie
+  (12h), then redirects to the validated `next`.
 
 ## Deploy
 
