@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#0B0A11;}
+  body{font-family:'Space Grotesk',sans-serif;color:#EDECF4;-webkit-font-smoothing:antialiased;}
+  a{color:#7DE1FF;text-decoration:none;}
+  a:hover{color:#B9EEFF;}
+  ::selection{background:rgba(125,225,255,.3);}
+  [data-scroller]{scrollbar-width:none;scroll-behavior:smooth;}
+  [data-scroller]::-webkit-scrollbar{display:none;}
+</style>
+</helmet>
+
+<div style="background:#0B0A11;color:#EDECF4;overflow-x:hidden;min-height:100vh;">
+
+  <!-- ============ ICON RAIL / SIDEBAR ============ -->
+  <div data-screen-label="Icon rail" style="position:fixed;top:0;bottom:0;left:0;z-index:40;width:{{ railWidth }};background:rgba(13,12,20,.96);border-right:1px solid rgba(237,236,244,.12);backdrop-filter:blur(8px);transition:width .35s cubic-bezier(.25,.8,.25,1);display:flex;flex-direction:column;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 15px 12px;">
+      <sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">
+        <a href="https://futures-atlas-02.vercel.app/" style="display:flex;align-items:center;gap:12px;color:#EDECF4;white-space:nowrap;">
+          <img src="https://futures-atlas-02.vercel.app/fa.svg" alt="Futures Atlas" style="height:40px;width:auto;flex:none;filter:brightness(0) invert(1);">
+          <span style="font-size:17px;font-weight:600;letter-spacing:.01em;">Futures Atlas</span>
+        </a>
+      </sc-if>
+      <button onClick="{{ toggleRail }}" aria-label="Toggle sidebar" title="Toggle sidebar" style="width:34px;height:34px;border-radius:8px;border:none;background:none;color:rgba(237,236,244,.75);font-size:14px;cursor:pointer;flex:none;" style-hover="background:rgba(237,236,244,.08);color:#EDECF4;">◫</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:2px;padding:8px 12px;">
+      <button onClick="{{ newQuestion }}" title="New question" style="display:flex;align-items:center;gap:14px;background:none;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:600;color:#EDECF4;padding:8px;border-radius:8px;text-align:left;white-space:nowrap;" style-hover="background:rgba(237,236,244,.08);"><span style="width:26px;height:26px;border-radius:50%;background:rgba(237,236,244,.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex:none;">＋</span><sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">New question</sc-if></button>
+      <a href="https://futures-atlas-02.vercel.app/projects" title="Projects" style="display:flex;align-items:center;gap:14px;color:#EDECF4;font-size:14.5px;padding:8px;border-radius:8px;white-space:nowrap;" style-hover="background:rgba(237,236,244,.08);color:#EDECF4;"><span style="width:26px;display:flex;justify-content:center;font-size:14px;color:rgba(237,236,244,.75);flex:none;">▤</span><sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">Projects</sc-if></a>
+      <a href="https://futures-atlas-02.vercel.app/generatives" title="Generatives" style="display:flex;align-items:center;gap:14px;color:#EDECF4;font-size:14.5px;padding:8px;border-radius:8px;white-space:nowrap;" style-hover="background:rgba(237,236,244,.08);color:#EDECF4;"><span style="width:26px;display:flex;justify-content:center;font-size:14px;color:#7DE1FF;flex:none;">✶</span><sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">Generatives</sc-if></a>
+      <a href="https://futures-atlas-02.vercel.app/about" title="The Lab" style="display:flex;align-items:center;gap:14px;color:#EDECF4;font-size:14.5px;padding:8px;border-radius:8px;white-space:nowrap;" style-hover="background:rgba(237,236,244,.08);color:#EDECF4;"><span style="width:26px;display:flex;justify-content:center;font-size:14px;color:rgba(237,236,244,.75);flex:none;">⌘</span><sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">The Lab</sc-if></a>
+      <a href="https://futures-atlas-02.vercel.app/contact" title="Contact" style="display:flex;align-items:center;gap:14px;color:#EDECF4;font-size:14.5px;padding:8px;border-radius:8px;white-space:nowrap;" style-hover="background:rgba(237,236,244,.08);color:#EDECF4;"><span style="width:26px;display:flex;justify-content:center;font-size:14px;color:rgba(237,236,244,.75);flex:none;">✉</span><sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">Contact</sc-if></a>
+    </div>
+    <sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">
+      <div style="flex:1;overflow-y:auto;min-height:0;padding:10px 12px;">
+        <div style="font-size:12.5px;color:rgba(237,236,244,.5);padding:6px 8px;">Recents</div>
+        <sc-for list="{{ recents }}" as="p" hint-placeholder-count="7">
+          <button onClick="{{ askRecent }}" data-q="{{ p }}" style="display:block;width:100%;text-align:left;background:none;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:13.5px;line-height:1.35;color:rgba(237,236,244,.85);padding:7px 8px;border-radius:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" style-hover="background:rgba(237,236,244,.07);">{{ p }}</button>
+        </sc-for>
+      </div>
+    </sc-if>
+    <sc-if value="{{ railClosed }}" hint-placeholder-val="{{ false }}">
+      <div style="flex:1;"></div>
+    </sc-if>
+    <div style="flex:none;display:flex;align-items:center;gap:12px;padding:12px 14px;border-top:1px solid rgba(237,236,244,.1);">
+      <div style="width:34px;height:34px;border-radius:50%;background:#241E3E;border:1px solid rgba(125,225,255,.4);display:flex;align-items:center;justify-content:center;font-size:14px;color:#7DE1FF;flex:none;">E</div>
+      <sc-if value="{{ railOpen }}" hint-placeholder-val="{{ true }}">
+        <div style="min-width:0;white-space:nowrap;">
+          <div style="font-size:13.5px;font-weight:600;">Ether</div>
+          <div style="font-size:11.5px;color:rgba(237,236,244,.5);">Open by default</div>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+
+  <div style="padding-left:{{ contentPad }};transition:padding-left .35s cubic-bezier(.25,.8,.25,1);">
+
+    <!-- ============ VIDEO HERO · GREETING ============ -->
+    <section data-screen-label="Greeting hero" style="position:relative;min-height:min(75vh,700px);display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000;">
+      <sc-if value="{{ heroReady }}" hint-placeholder-val="{{ false }}">
+        <video src="https://videos.pexels.com/video-files/3129957/3129957-uhd_3840_2160_25fps.mp4" data-auto="1" loop playsInline style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1.4s ease;"></video>
+      </sc-if>
+      <div style="position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at center,rgba(11,10,17,.35) 0%,rgba(11,10,17,.8) 100%);"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(0deg,#0B0A11 3%,rgba(11,10,17,0) 30%);"></div>
+      <button onClick="{{ toggleMotion }}" aria-label="{{ motionLabel }}" title="{{ motionLabel }}" style="position:absolute;right:16px;bottom:16px;z-index:5;width:34px;height:34px;border-radius:50%;border:1px solid rgba(237,236,244,.35);background:rgba(11,10,17,.6);color:#EDECF4;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">{{ motionIcon }}</button>
+      <div style="position:relative;z-index:2;width:min(760px,92%);text-align:center;padding:70px 0 56px;">
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:0 0 12px;">
+          <img src="https://futures-atlas-02.vercel.app/fa.svg" alt="" style="width:clamp(34px,3.4vw,46px);height:clamp(34px,3.4vw,46px);flex:none;filter:brightness(0) invert(1);">
+          <h1 style="font-size:clamp(28px,3.8vw,50px);font-weight:500;margin:0;color:#EDECF4;white-space:nowrap;text-shadow:0 2px 30px rgba(0,0,0,.6);">{{ greeting }}</h1>
+        </div>
+        <p style="font-family:'IBM Plex Mono',monospace;font-size:12.5px;letter-spacing:.08em;color:rgba(237,236,244,.65);margin:0 0 30px;">a catalogue of possible worlds · 14 projects · open by default</p>
+        <div style="background:rgba(19,17,30,.9);border:1px solid rgba(237,236,244,.14);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.6);padding:22px 24px 16px;text-align:left;backdrop-filter:blur(6px);">
+          <input value="{{ askQuery }}" onChange="{{ setAskQuery }}" onKeyDown="{{ askKeyDown }}" placeholder="Ask the Atlas about a possible future…" style="width:100%;box-sizing:border-box;background:none;border:none;outline:none;color:#EDECF4;font-family:'Space Grotesk',sans-serif;font-size:16.5px;padding:2px 0 26px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <span style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;color:rgba(237,236,244,.7);cursor:pointer;" style-hover="background:rgba(237,236,244,.08);">＋</span>
+            <div style="display:flex;align-items:center;gap:16px;">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(237,236,244,.6);">ATLAS · grounded <span style="font-size:9px;">▾</span></span>
+              <button onClick="{{ askSubmit }}" aria-label="Ask" style="width:34px;height:34px;border-radius:8px;border:none;background:#7DE1FF;color:#0B0A11;font-size:14px;font-weight:700;cursor:pointer;" style-hover="background:#B9EEFF;">↑</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:center;gap:10px;margin-top:22px;flex-wrap:wrap;">
+          <a href="https://futures-atlas-02.vercel.app/projects" style="display:flex;align-items:center;gap:8px;border:1px solid rgba(237,236,244,.2);background:rgba(13,12,20,.6);color:#EDECF4;padding:10px 20px;border-radius:10px;font-size:13.5px;" style-hover="border-color:#7DE1FF;color:#B9EEFF;"><span style="color:#7DE1FF;">◆</span>Explore</a>
+          <a href="https://github.com/ether-hill" style="display:flex;align-items:center;gap:8px;border:1px solid rgba(237,236,244,.2);background:rgba(13,12,20,.6);color:#EDECF4;padding:10px 20px;border-radius:10px;font-size:13.5px;" style-hover="border-color:#7DE1FF;color:#B9EEFF;"><span style="color:#7DE1FF;">⑂</span>Fork</a>
+          <a href="https://futures-atlas-02.vercel.app/about" style="display:flex;align-items:center;gap:8px;border:1px solid rgba(237,236,244,.2);background:rgba(13,12,20,.6);color:#EDECF4;padding:10px 20px;border-radius:10px;font-size:13.5px;" style-hover="border-color:#7DE1FF;color:#B9EEFF;"><span style="color:#7DE1FF;">❝</span>Cite</a>
+        </div>
+        <sc-if value="{{ askAnswer }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:24px;text-align:left;background:rgba(19,17,30,.92);border:1px solid rgba(237,236,244,.14);border-radius:14px;padding:22px 26px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:#7DE1FF;margin-bottom:11px;">The Atlas answers</div>
+            <p style="font-size:15.5px;line-height:1.6;margin:0 0 16px;color:rgba(237,236,244,.9);">{{ askAnswer }}</p>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;">
+              <sc-for list="{{ askCitations }}" as="c" hint-placeholder-count="3">
+                <a href="{{ c.href }}" style="display:flex;align-items:baseline;gap:8px;border:1px solid rgba(237,236,244,.2);border-radius:6px;padding:6px 11px;color:#EDECF4;font-family:'IBM Plex Mono',monospace;font-size:11px;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">
+                  <span style="color:#7DE1FF;">{{ c.n }}</span>{{ c.ref }}
+                </a>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </section>
+
+    <!-- ============ ROW 1 · RECENT PROJECTS ============ -->
+    <section data-screen-label="Recent projects" data-row style="padding:20px 0 8px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 clamp(16px,3vw,40px);margin-bottom:13px;">
+        <h2 style="font-size:15.5px;font-weight:600;margin:0;">Recent projects</h2>
+        <div style="display:flex;gap:6px;"><button onClick="{{ rowPrev }}" aria-label="Previous" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">←</button><button onClick="{{ rowNext }}" aria-label="Next" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">→</button></div>
+      </div>
+      <div data-scroller style="display:flex;gap:12px;overflow-x:auto;padding:4px clamp(16px,3vw,40px) 12px;">
+        <sc-for list="{{ recent }}" as="p" hint-placeholder-count="6">
+          <a href="{{ p.href }}" style="flex:none;width:min(320px,78vw);color:#EDECF4;transition:transform .2s ease;" style-hover="transform:translateY(-6px);">
+            <div style="position:relative;aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:{{ p.art }};"><img data-cands="{{ p.cands }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,4,10,.88) 10%,rgba(5,4,10,.05) 55%);"></div>
+              <div style="position:absolute;top:12px;left:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:rgba(237,236,244,.75);">{{ p.cat }}</div>
+              <div style="position:absolute;left:16px;right:16px;bottom:14px;">
+                <div style="font-size:21px;font-weight:600;line-height:1.12;color:#fff;">{{ p.title }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(237,236,244,.65);margin-top:6px;">{{ p.date }} · {{ p.status }}</div>
+              </div>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ============ ROW 2 · CONTINUE EXPLORING ============ -->
+    <section data-screen-label="Continue exploring" data-row style="padding:10px 0 8px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 clamp(16px,3vw,40px);margin-bottom:13px;">
+        <h2 style="font-size:15.5px;font-weight:600;margin:0;">Continue exploring</h2>
+        <div style="display:flex;gap:6px;"><button onClick="{{ rowPrev }}" aria-label="Previous" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">←</button><button onClick="{{ rowNext }}" aria-label="Next" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">→</button></div>
+      </div>
+      <div data-scroller style="display:flex;gap:12px;overflow-x:auto;padding:4px clamp(16px,3vw,40px) 12px;">
+        <sc-for list="{{ exploring }}" as="p" hint-placeholder-count="5">
+          <a href="{{ p.href }}" style="flex:none;width:min(320px,78vw);color:#EDECF4;transition:transform .2s ease;" style-hover="transform:translateY(-6px);">
+            <div style="position:relative;aspect-ratio:16/10;border-radius:6px 6px 0 0;overflow:hidden;background:{{ p.art }};"><img data-cands="{{ p.cands }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,4,10,.88) 10%,rgba(5,4,10,.05) 55%);"></div>
+              <div style="position:absolute;left:16px;right:16px;bottom:14px;">
+                <div style="font-size:20px;font-weight:600;line-height:1.12;color:#fff;">{{ p.title }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(237,236,244,.65);margin-top:6px;">{{ p.at }}</div>
+              </div>
+            </div>
+            <div style="height:4px;background:rgba(237,236,244,.15);border-radius:0 0 6px 6px;overflow:hidden;"><div style="height:100%;width:{{ p.pct }}%;background:#7DE1FF;"></div></div>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ============ ROW 3 · POPULAR THIS WEEK ============ -->
+    <section data-screen-label="Popular this week" data-row style="padding:10px 0 8px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 clamp(16px,3vw,40px);margin-bottom:13px;">
+        <h2 style="font-size:15.5px;font-weight:600;margin:0;">Popular this week</h2>
+        <div style="display:flex;gap:6px;"><button onClick="{{ rowPrev }}" aria-label="Previous" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">←</button><button onClick="{{ rowNext }}" aria-label="Next" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">→</button></div>
+      </div>
+      <div data-scroller style="display:flex;gap:12px;overflow-x:auto;padding:4px clamp(16px,3vw,40px) 12px;">
+        <sc-for list="{{ popular }}" as="p" hint-placeholder-count="5">
+          <a href="{{ p.href }}" style="flex:none;width:min(320px,78vw);color:#EDECF4;transition:transform .2s ease;" style-hover="transform:translateY(-6px);">
+            <div style="position:relative;aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:{{ p.art }};"><img data-cands="{{ p.cands }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,4,10,.88) 10%,rgba(5,4,10,.05) 55%);"></div>
+              <div style="position:absolute;top:8px;right:8px;background:rgba(5,4,10,.82);color:#7DE1FF;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:500;padding:2px 7px;border-radius:2px;">{{ p.rank }}</div>
+              <div style="position:absolute;left:16px;right:16px;bottom:14px;">
+                <div style="font-size:20px;font-weight:600;line-height:1.12;color:#fff;">{{ p.title }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(237,236,244,.65);margin-top:6px;">{{ p.cat }}</div>
+              </div>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ============ ROW 4 · AI & RISK ============ -->
+    <section data-screen-label="AI and risk" data-row style="padding:10px 0 36px;">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;padding:0 clamp(16px,3vw,40px);margin-bottom:13px;">
+        <h2 style="font-size:15.5px;font-weight:600;margin:0;">AI &amp; risk</h2>
+        <div style="display:flex;gap:6px;"><button onClick="{{ rowPrev }}" aria-label="Previous" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">←</button><button onClick="{{ rowNext }}" aria-label="Next" style="width:32px;height:32px;border-radius:2px;border:1px solid rgba(237,236,244,.2);background:none;color:#EDECF4;font-size:12px;cursor:pointer;" style-hover="border-color:#7DE1FF;color:#B9EEFF;">→</button></div>
+      </div>
+      <div data-scroller style="display:flex;gap:12px;overflow-x:auto;padding:4px clamp(16px,3vw,40px) 12px;">
+        <sc-for list="{{ risk }}" as="p" hint-placeholder-count="5">
+          <a href="{{ p.href }}" style="flex:none;width:min(320px,78vw);color:#EDECF4;transition:transform .2s ease;" style-hover="transform:translateY(-6px);">
+            <div style="position:relative;aspect-ratio:16/10;border-radius:6px;overflow:hidden;background:{{ p.art }};"><img data-cands="{{ p.cands }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;">
+              <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,4,10,.88) 10%,rgba(5,4,10,.05) 55%);"></div>
+              <div style="position:absolute;left:16px;right:16px;bottom:14px;">
+                <div style="font-size:20px;font-weight:600;line-height:1.12;color:#fff;">{{ p.title }}</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:rgba(237,236,244,.65);margin-top:6px;">{{ p.date }} · {{ p.blurb }}</div>
+              </div>
+            </div>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer data-screen-label="Footer" style="padding:30px clamp(16px,3vw,40px) 40px;border-top:1px solid rgba(237,236,244,.1);display:flex;flex-wrap:wrap;justify-content:space-between;gap:14px;font-size:12.5px;">
+      <span style="color:rgba(237,236,244,.4);">Futures Atlas · a catalogue of possible worlds · open by default</span>
+      <div style="display:flex;gap:24px;">
+        <a href="Atlas Observatory.dc.html" style="color:rgba(237,236,244,.55);" style-hover="color:#B9EEFF;">Observatory</a>
+        <a href="Atlas Gallery.dc.html" style="color:rgba(237,236,244,.55);" style-hover="color:#B9EEFF;">Gallery</a>
+        <a href="Atlas Signal.dc.html" style="color:rgba(237,236,244,.55);" style-hover="color:#B9EEFF;">Signal</a>
+        <a href="Home Librarian.dc.html" style="color:rgba(237,236,244,.55);" style-hover="color:#B9EEFF;">Source Library</a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { railOpen: true, askQuery: '', asked: null, motion: true, heroReady: false, greeting: null };
+
+  componentDidMount() {
+    this._onVideoError = (e) => {
+      const v = e.target;
+      if (!v) return;
+      if (v.tagName === 'IMG' && v.dataset && v.dataset.cands) {
+        const list = v.dataset.cands.split('|');
+        const i = list.indexOf(v.getAttribute('src'));
+        if (i >= 0 && i < list.length - 1) { v.src = list[i + 1]; return; }
+        v.style.display = 'none';
+        return;
+      }
+      if (v.tagName !== 'VIDEO' || v._fallbackDone) return;
+      v._fallbackDone = true;
+      v.style.display = 'none';
+    };
+    document.addEventListener('error', this._onVideoError, true);
+    this._playTimer = setInterval(() => this._playAll(), 1600);
+    this._imgTimer = setInterval(() => {
+      document.querySelectorAll('img[data-cands]:not([src])').forEach(img => {
+        const first = (img.dataset.cands || '').split('|')[0];
+        if (first && first.indexOf('{{') < 0) img.src = first;
+      });
+    }, 500);
+    const g = ['Back at it, Ether', 'Now, where were we?', 'Which future today?', 'The atlas is open', 'Pick a possible world'];
+    this.setState({ heroReady: true, greeting: g[Math.floor(Math.random() * g.length)] });
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('error', this._onVideoError, true);
+    clearInterval(this._playTimer);
+    clearInterval(this._imgTimer);
+  }
+
+  _playAll() {
+    if (!this.state.motion) return;
+    document.querySelectorAll('video[data-auto="1"]').forEach(v => {
+      v.muted = true;
+      if (!v._fadeWired) {
+        v._fadeWired = true;
+        v.addEventListener('playing', () => { v.style.opacity = 1; }, { once: true });
+      }
+      if (v.paused && v.style.display !== 'none') v.play().catch(() => {});
+    });
+  }
+
+  renderVals() {
+    const U = 'https://futures-atlas-02.vercel.app/';
+    // generative art per project — flow-field / interference gradient language
+    const ART = {
+      odds:    'radial-gradient(circle at 25% 30%, rgba(255,90,120,.55), transparent 55%), radial-gradient(circle at 75% 75%, rgba(125,225,255,.35), transparent 55%), conic-gradient(from 210deg at 60% 40%, #1A1030, #0B0A11, #241E3E, #0B0A11)',
+      reactor: 'repeating-linear-gradient(105deg, rgba(125,225,255,.14) 0 2px, transparent 2px 14px), radial-gradient(circle at 70% 25%, rgba(125,225,255,.5), transparent 60%), linear-gradient(160deg, #0E1B2E, #0B0A11)',
+      spark:   'radial-gradient(circle at 50% 110%, rgba(255,196,80,.6), transparent 60%), conic-gradient(from 0deg at 50% 120%, #2E1A0E, #0B0A11 40%, #241E3E 70%, #0B0A11)',
+      hyper:   'linear-gradient(0deg, rgba(60,220,160,.28), transparent 55%), repeating-linear-gradient(0deg, rgba(237,236,244,.09) 0 1px, transparent 1px 22px), repeating-linear-gradient(90deg, rgba(237,236,244,.09) 0 1px, transparent 1px 22px), linear-gradient(180deg, #101826, #0B0A11)',
+      oracle:  'radial-gradient(ellipse at 30% 70%, rgba(140,255,190,.4), transparent 55%), radial-gradient(ellipse at 80% 20%, rgba(125,225,255,.3), transparent 50%), linear-gradient(200deg, #10221A, #0B0A11)',
+      gener:   'conic-gradient(from 90deg at 30% 40%, #7DE1FF22, #B96CFF33, #FF5A7822, #7DE1FF22), radial-gradient(circle at 70% 60%, rgba(185,108,255,.4), transparent 60%), #0F0C1C',
+      swipe:   'linear-gradient(75deg, rgba(255,90,120,.35) 0 50%, rgba(60,220,160,.35) 50% 100%), radial-gradient(circle at 50% 50%, rgba(11,10,17,.2), rgba(11,10,17,.9)), #14101E',
+      traj:    'radial-gradient(circle at 50% 50%, rgba(255,255,255,.35), rgba(125,225,255,.25) 30%, transparent 65%), repeating-conic-gradient(from 0deg at 50% 50%, rgba(125,225,255,.12) 0 2deg, transparent 2deg 9deg), #060510',
+      dominance:'repeating-linear-gradient(45deg, rgba(255,90,120,.18) 0 10px, transparent 10px 26px), radial-gradient(circle at 20% 20%, rgba(255,90,120,.45), transparent 55%), linear-gradient(160deg, #200E18, #0B0A11)',
+      chipper: 'repeating-linear-gradient(-15deg, rgba(255,196,80,.16) 0 3px, transparent 3px 18px), radial-gradient(circle at 80% 80%, rgba(255,140,60,.4), transparent 60%), #171008',
+      underground:'repeating-radial-gradient(circle at 50% 120%, rgba(125,225,255,.12) 0 2px, transparent 2px 26px), linear-gradient(0deg, #0E141F, #0B0A11)',
+      sandbox: 'conic-gradient(from 180deg at 50% 50%, #7DE1FF33, #B96CFF44, #3CDCA033, #7DE1FF33), radial-gradient(circle at 50% 50%, transparent 30%, #0B0A11 75%), #121024',
+      literal: 'radial-gradient(circle at 30% 40%, rgba(237,236,244,.25), transparent 45%), radial-gradient(circle at 60% 65%, rgba(125,225,255,.3), transparent 40%), radial-gradient(circle at 78% 30%, rgba(185,108,255,.25), transparent 35%), #0D0C16',
+      social:  'linear-gradient(120deg, rgba(125,225,255,.2), transparent 55%), repeating-linear-gradient(90deg, rgba(237,236,244,.1) 0 1px, transparent 1px 34px), linear-gradient(180deg, #16121F, #0B0A11)',
+    };
+    const P = (title, cat, date, art, slug, extra) => { const og = (extra && extra.og) || slug; const IMGMAP = { theodds: 'og/the-odds.png', 'signal-reactor': null, 'quantum-spark': null, hyperscale: null, 'village-oracle': null, generatives: null }; const im = IMGMAP[slug] === null ? null : (IMGMAP[slug] || 'projects/' + slug + '.jpg'); const cands = im ? [U + im] : []; return { title, cat, date, art: ART[art], href: U + slug, status: 'Open the project', cands: cands.join('|'), ...(extra || {}) }; };
+
+    const all = {
+      odds: P('The Odds', 'AI & risk', '14 Feb 2026', 'odds', 'theodds', { og: 'the-odds' }),
+      reactor: P('Signal Reactor', 'AI & risk', '2 Jul 2026', 'reactor', 'signal-reactor'),
+      spark: P('Quantum Spark', 'AI & risk', '3 Jul 2026', 'spark', 'quantum-spark'),
+      hyper: P('Hyperscale', 'Simulation', '1 Jul 2026', 'hyper', 'hyperscale'),
+      oracle: P('Village Oracle', 'Rural futures', '10 Apr 2026', 'oracle', 'village-oracle'),
+      gener: P('Generatives', 'Generative visuals', '19 Jun 2026', 'gener', 'generatives', { status: 'Forthcoming' }),
+      swipe: P('Swipe the Future', 'Calibration', '23 Jun 2026', 'swipe', 'swipe-the-future'),
+      traj: P('Trajectories', 'Generative visuals', '28 Jun 2026', 'traj', 'trajectories'),
+      dominance: P('Quantum Dominance', 'AI & risk', '24 Jun 2026', 'dominance', 'quantum-dominance'),
+      chipper: P('Woodchipper Futures', 'AI & risk', '23 Jun 2026', 'chipper', 'woodchipper'),
+      underground: P('Underground Intelligence', 'Systems & evidence', '30 Nov 2025', 'underground', 'underground-intelligence'),
+      sandbox: P('Quantum Sandbox', 'Quantum & computation', '28 May 2026', 'sandbox', 'quantum-sandbox', { status: 'Forthcoming' }),
+      literal: P('Literal Frequency', 'Data visualisation', '22 Jun 2026', 'literal', 'literal-frequency', { status: 'Forthcoming' }),
+      social: P('Social Composer', 'Creative tools', '17 Jun 2026', 'social', 'social-composer'),
+    };
+
+    const asked = this.state.asked;
+    return {
+      railOpen: this.state.railOpen,
+      railClosed: !this.state.railOpen,
+      railWidth: this.state.railOpen ? 'min(300px,84vw)' : '64px',
+      contentPad: this.state.railOpen ? 'min(300px,84vw)' : '64px',
+      toggleRail: () => this.setState(s => ({ railOpen: !s.railOpen })),
+      newQuestion: () => this.setState({ askQuery: '', asked: null }),
+      recents: [
+        'What odds do AI insiders put on catastrophe?',
+        'How would quantum change my industry?',
+        'Can a gigawatt campus coexist with a town?',
+        'How could a depopulating village revive by 2050?',
+        'Where did the USAID cuts actually land?',
+        'What lives beneath everyday infrastructure?',
+        'How calibrated is my gut on AI claims?',
+      ],
+      askRecent: (e) => { const q = e.currentTarget.dataset.q; this.setState({ askQuery: q, asked: q }); },
+      askQuery: this.state.askQuery,
+      setAskQuery: (e) => this.setState({ askQuery: e.target.value }),
+      askKeyDown: (e) => { if (e.key === 'Enter' && e.target.value.trim()) this.setState({ asked: e.target.value.trim() }); },
+      askSubmit: () => { if (this.state.askQuery.trim()) this.setState({ asked: this.state.askQuery.trim() }); },
+      askAnswer: asked ? 'Several projects in the atlas map this question — each a grounded forecast, sources linked. Start with the citations below; every claim traces back to something on the record.' : null,
+      askCitations: asked ? [
+        { n: 'i', ref: 'The Odds · insider estimates', href: U + 'theodds' },
+        { n: 'ii', ref: 'Signal Reactor · briefing', href: U + 'signal-reactor' },
+        { n: 'iii', ref: 'Woodchipper · evidence base', href: U + 'woodchipper' },
+      ] : [],
+      heroReady: this.state.heroReady,
+      greeting: this.state.greeting || 'Back at it, Ether',
+      motionIcon: this.state.motion ? '❚❚' : '▶',
+      motionLabel: this.state.motion ? 'Pause background video' : 'Play background video',
+      toggleMotion: () => {
+        const motion = !this.state.motion;
+        document.querySelectorAll('video[data-auto="1"]').forEach(v => {
+          if (motion) { v.muted = true; v.play().catch(() => {}); } else { v.pause(); }
+        });
+        this.setState({ motion });
+      },
+      rowNext: (e) => this._scroll(e, 1),
+      rowPrev: (e) => this._scroll(e, -1),
+      recent: [all.spark, all.reactor, all.hyper, all.traj, all.sandbox, all.swipe, all.gener, all.literal, all.social, all.oracle],
+      exploring: [
+        { ...all.hyper, at: 'campus at 640 MW · heat wave inbound', pct: 64 },
+        { ...all.swipe, at: 'claim 4 of 6 · calibrating', pct: 66 },
+        { ...all.oracle, at: 'letter drafted · awaiting oracle', pct: 30 },
+        { ...all.chipper, at: 'audit branch · 12 outcomes seen', pct: 48 },
+        { ...all.underground, at: 'chapter 3 · the grid beneath', pct: 82 },
+        { ...all.dominance, at: 'the backfire · future 2 of 5', pct: 40 },
+      ],
+      popular: [
+        { ...all.odds, rank: 'Nº1' }, { ...all.hyper, rank: 'Nº2' }, { ...all.spark, rank: 'Nº3' },
+        { ...all.traj, rank: 'Nº4' }, { ...all.reactor, rank: 'Nº5' }, { ...all.social, rank: 'Nº6' },
+      ],
+      risk: [
+        { ...all.odds, blurb: 'gamble on our future' },
+        { ...all.reactor, blurb: 'an honest briefing' },
+        { ...all.spark, blurb: 'grounded hype' },
+        { ...all.dominance, blurb: 'satire, two lenses' },
+        { ...all.chipper, blurb: 'fact-checked outcomes' },
+      ],
+    };
+  }
+
+  _scroll(e, dir) {
+    const row = e.currentTarget.closest('[data-row]');
+    const sc = row && row.querySelector('[data-scroller]');
+    if (sc) sc.scrollBy({ left: dir * sc.clientWidth * 0.75 });
+  }
+}
+
+</script>
+</body>
+</html>
