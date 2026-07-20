@@ -136,7 +136,8 @@ const h3Cls = "font-display text-[20px] font-extrabold leading-[1.2] tracking-[-
 const introCls =
   "mt-5 max-w-[62ch] font-display text-[clamp(15px,1.7vw,18px)] font-normal leading-[1.65] text-ink-70";
 const bodyCls = "font-display text-[15px] font-normal leading-[1.6] text-ink-70";
-const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graphite";
+const labelCls =
+  "font-display text-[11px] font-semibold uppercase tracking-[0.1em] text-graphite";
 /* Budget runs in the display face; the mono register stays on the rest of the page. */
 const budgetLabelCls =
   "font-display text-[11px] font-semibold uppercase tracking-[0.1em] text-graphite";
@@ -148,7 +149,6 @@ export default function RoadmapPage() {
       <section className="border-b border-ink/15 py-[clamp(56px,9vw,120px)]">
         <Container>
           <Reveal>
-            <p className="eyebrow tick mb-6">Internal. Not for circulation.</p>
             <h1 className="max-w-[18ch] text-[clamp(36px,5.6vw,80px)] font-extrabold leading-[0.96] tracking-[-0.028em] text-ink text-balance">
               Futures Atlas + CQS
             </h1>
@@ -168,13 +168,13 @@ export default function RoadmapPage() {
               <Reveal key={b.label} delay={i * 90}>
                 <div className="h-full border border-ink/15 p-6">
                   <div className="mb-5 flex items-center justify-between">
-                    <span className={budgetLabelCls}>{b.label}</span>
+                    <span className={budgetLabelCls}>Initial budget</span>
                     <span className="font-display text-[11px] font-medium text-ink/35">0{i + 1}</span>
                   </div>
                   <p className="font-condensed text-[clamp(40px,5vw,64px)] font-bold leading-[0.9] tracking-[-0.02em] text-ink">
                     {b.initial}
                   </p>
-                  <p className={`mt-1 ${budgetLabelCls}`}>Initial budget</p>
+                  <p className={`mt-1 ${budgetLabelCls}`}>{b.label}</p>
                   <div className="mt-6 border-t border-ink/15 pt-4">
                     <p className="font-condensed text-[clamp(22px,2.4vw,30px)] font-bold leading-none text-accent-deep">
                       {b.remaining}
@@ -236,7 +236,7 @@ export default function RoadmapPage() {
               <div className="border border-ink/25 bg-haze p-[clamp(24px,3.5vw,40px)]">
                 <h3 className={`${h3Cls} text-[clamp(19px,2vw,26px)]`}>Workshop (DeltAI)</h3>
                 <p className={`mt-4 ${bodyCls}`}>
-                  Runs alongside the Futures Atlas projects, led by Deborah.
+                  Explore output improvement, iterate based on feedback.
                 </p>
                 <div className="mt-7 flex flex-col gap-4">
                   {DELTAI_SHOTS.map((shot) => (
