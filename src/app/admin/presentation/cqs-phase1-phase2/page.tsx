@@ -115,6 +115,45 @@ const PHASE_2: Strand[] = [
   },
 ];
 
+const VISION =
+  "A platform exploring how computing power shapes what comes next. We build speculative, exploratory and tool-based pieces that make abstract technologies (quantum, AI and beyond) tangible enough to think and argue with.";
+
+const TAGS = [
+  "#quantum", "#quantumcomputing", "#AI", "#computing", "#technology", "#futures",
+  "#foresight", "#emergingtech", "#speculativedesign", "#designfiction",
+  "#responsibleinnovation", "#creativetechnology", "#quantumforgood", "#QDNL",
+  "#TUDelft", "#quantumandsociety",
+];
+
+/* Each goal is a label plus its expansion, so the pairs render as titled cards
+   rather than one long dash-separated line. */
+const GOALS = [
+  {
+    title: "Reach and visibility",
+    body: "Extend CQS and QDNL research beyond the existing quantum ecosystem, building science capital with audiences who wouldn’t otherwise encounter the field.",
+  },
+  {
+    title: "Tools for the organisation",
+    body: "Reusable pieces CQS can deploy in workshops, at events and with stakeholders, rather than one-off campaign assets.",
+  },
+  {
+    title: "Ways for people to engage",
+    body: "Interactive work that gives audiences something to do rather than read, building intuition through experience over explanation, and a sense of agency over technologies that feel remote.",
+  },
+  {
+    title: "Emotional-moral deliberation",
+    body: "Pieces designed to surface values and questions rather than transfer facts, opening space for people to articulate what a good life in a quantum-enabled society looks like.",
+  },
+  {
+    title: "Bridging research and public",
+    body: "Translating TU Delft and CQS output into forms non-specialists can enter without a physics background.",
+  },
+  {
+    title: "Testing formats",
+    body: "Each piece doubles as an experiment in what actually lands, with outcomes that can feed CQS’s impact evaluation work.",
+  },
+];
+
 /* Diedrick sits last: his strand is the one still to be settled. */
 const TEAM = [
   { name: "Deborah", body: "The Workshop (DeltAI)." },
@@ -153,6 +192,52 @@ export default function RoadmapPage() {
               Futures Atlas + CQS
             </h1>
           </Reveal>
+        </Container>
+      </section>
+
+      {/* ── Vision ──────────────────────────────────────────────────────── */}
+      <section className={sectionCls}>
+        <Container>
+          <Reveal>
+            <h2 className={h2Cls}>Vision</h2>
+            <p className="mt-6 max-w-[46ch] text-[clamp(19px,2.4vw,30px)] font-extrabold leading-[1.25] tracking-[-0.018em] text-ink text-balance">
+              {VISION}
+            </p>
+          </Reveal>
+          <Reveal>
+            <div className="mt-[clamp(28px,4vw,44px)] border-t border-ink/15 pt-6">
+              <p className={labelCls}>Tags</p>
+              <ul className="mt-4 flex flex-wrap gap-2">
+                {TAGS.map((t) => (
+                  <li
+                    key={t}
+                    className="border border-ink/15 px-3 py-1.5 font-display text-[13px] font-normal leading-none text-ink-70"
+                  >
+                    {t}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* ── Goals ───────────────────────────────────────────────────────── */}
+      <section className={sectionCls}>
+        <Container>
+          <Reveal>
+            <h2 className={h2Cls}>Goals</h2>
+          </Reveal>
+          <div className="mt-[clamp(28px,4vw,48px)] grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {GOALS.map((g, i) => (
+              <Reveal key={g.title} delay={i * 70}>
+                <div className="h-full border border-ink/15 p-6">
+                  <h3 className={h3Cls}>{g.title}</h3>
+                  <p className={`mt-4 ${bodyCls}`}>{g.body}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </Container>
       </section>
 
