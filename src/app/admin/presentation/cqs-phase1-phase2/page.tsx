@@ -26,12 +26,13 @@ const DELTAI_SHOTS = [
 /* Labels are the ones used in the room. Registry ids resolve to the atlas card
    image, so a new card image flows through here without a second edit; `src` is
    a literal path for work that sits outside the registry. */
-type Item = { id?: string; src?: string; label: string; plus?: boolean };
+type Item = { id?: string; src?: string; label: string; plus?: boolean; breakRow?: boolean };
 
 const PHASE_1: Item[] = [
   { src: ATLAS_THUMB, label: "Futures Atlas site" },
   { id: "social-composer", label: "Social composer", plus: true },
-  { id: "odds-of-surviving-ai", label: "The Odds" },
+  /* starts a fresh row, leaving the cell beside Social composer empty */
+  { id: "odds-of-surviving-ai", label: "The Odds", breakRow: true },
   { id: "signal-reactor", label: "Signal Reactor" },
   { id: "quantum-spark", label: "Quantum Spark" },
   { id: "hollow-villages", label: "Village Oracle (without API)" },
@@ -63,7 +64,7 @@ function MiniThumb({ src }: { src?: string }) {
 function ProjectTile({ item }: { item: Item }) {
   const src = srcFor(item);
   return (
-    <li className="flex flex-col">
+    <li className={`flex flex-col${item.breakRow ? " min-[900px]:col-start-1" : ""}`}>
       <span className="block aspect-[3/2] overflow-hidden border border-ink/15 bg-haze">
         {src && (
           // eslint-disable-next-line @next/next/no-img-element
@@ -136,6 +137,9 @@ const introCls =
   "mt-5 max-w-[62ch] font-display text-[clamp(15px,1.7vw,18px)] font-normal leading-[1.65] text-ink-70";
 const bodyCls = "font-display text-[15px] font-normal leading-[1.6] text-ink-70";
 const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graphite";
+/* Budget runs in the display face; the mono register stays on the rest of the page. */
+const budgetLabelCls =
+  "font-display text-[11px] font-semibold uppercase tracking-[0.1em] text-graphite";
 
 export default function RoadmapPage() {
   return (
@@ -164,18 +168,18 @@ export default function RoadmapPage() {
               <Reveal key={b.label} delay={i * 90}>
                 <div className="h-full border border-ink/15 p-6">
                   <div className="mb-5 flex items-center justify-between">
-                    <span className={labelCls}>{b.label}</span>
-                    <span className="font-mono text-[11px] text-ink/35">0{i + 1}</span>
+                    <span className={budgetLabelCls}>{b.label}</span>
+                    <span className="font-display text-[11px] font-medium text-ink/35">0{i + 1}</span>
                   </div>
                   <p className="font-condensed text-[clamp(40px,5vw,64px)] font-bold leading-[0.9] tracking-[-0.02em] text-ink">
                     {b.initial}
                   </p>
-                  <p className={`mt-1 ${labelCls}`}>Initial budget</p>
+                  <p className={`mt-1 ${budgetLabelCls}`}>Initial budget</p>
                   <div className="mt-6 border-t border-ink/15 pt-4">
                     <p className="font-condensed text-[clamp(22px,2.4vw,30px)] font-bold leading-none text-accent-deep">
                       {b.remaining}
                     </p>
-                    <p className={`mt-2 ${labelCls}`}>
+                    <p className={`mt-2 ${budgetLabelCls}`}>
                       Remaining{b.note ? ` (${b.note})` : ""}
                     </p>
                   </div>
@@ -186,10 +190,10 @@ export default function RoadmapPage() {
 
           <Reveal>
             <div className="mt-3 border border-accent-deep bg-accent-soft p-[clamp(24px,3.5vw,40px)]">
-              <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-accent-deep">
+              <p className="font-display text-[11px] font-semibold uppercase tracking-[0.1em] text-accent-deep">
                 Proposal
               </p>
-              <p className="mt-4 max-w-[52ch] font-mono text-[12.5px] leading-[1.7] text-ink-70">
+              <p className="mt-4 max-w-[56ch] font-display text-[15px] font-normal leading-[1.6] text-ink-70">
                 Fold the unspent €1.5k social budget into remaining work.
               </p>
               <p className="mt-4 max-w-[24ch] text-[clamp(26px,3.6vw,46px)] font-extrabold leading-[1.05] tracking-[-0.022em] text-ink text-balance">
