@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  SECTORS, SECTOR_DECKS, WILDCARD_DECKS, VLABEL, isAligned, profileFor,
+  SECTORS, VLABEL, isAligned, profileFor,
   type Card, type Sector,
 } from "../data/sectors";
+import { SectorPicker } from "./SectorPicker";
 
 const MIXED = 10; // length of the "surprise me" round; a sector deck runs its own length
 // How long the reveal sits before it moves on. Five seconds was not enough to read
@@ -14,7 +15,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 type Item = { card: Card; sector: Sector };
 type Ans = { card: Card; sector: Sector; sayTrue: boolean };
-type Phase = "pick" | "swipe" | "flinging" | "result" | "final";
+type Phase = "swipe" | "flinging" | "result" | "final";
 
 // The mixed deck. `sector` here is whichever deck the card came from, so the
 // result card can still credit it.
@@ -24,6 +25,22 @@ const MIXED_SECTOR: Sector = { id: "mixed", kind: "wildcard", name: "Mixed", blu
 // have been accumulating since launch keep adding up under the same keys.
 function track(body: Record<string, unknown>) {
   try { fetch("/api/swipe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {}); } catch { /* */ }
+}
+
+/**
+ * Bring the deck back into view after picking a sector below it.
+ *
+ * Not every browser honours `behavior: "smooth"` — some ignore the call
+ * outright — so if nothing has moved a beat later, jump instead of leaving the
+ * visitor stranded in the picker wondering what their click did.
+ */
+function scrollToDeck() {
+  const startY = window.scrollY;
+  if (startY === 0) return;
+  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { window.scrollTo(0, 0); return; }
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  setTimeout(() => { if (window.scrollY === startY) window.scrollTo(0, 0); }, 250);
 }
 
 function shuffle<T>(a: T[]): T[] {
@@ -37,9 +54,8 @@ export default function Calibration() {
   const [sector, setSector] = useState<Sector>(MIXED_SECTOR);
   const [pos, setPos] = useState(0);
   const [answers, setAnswers] = useState<Ans[]>([]);
-  const [phase, setPhase] = useState<Phase>("pick");
+  const [phase, setPhase] = useState<Phase>("swipe");
   const [secs, setSecs] = useState(DWELL);
-  const [pickerOpen, setPickerOpen] = useState(false);
   const [fling, setFling] = useState<0 | 1 | -1>(0);
 
   // sectors people have added themselves, fetched from the host API
@@ -62,6 +78,13 @@ export default function Calibration() {
   const item = deck[pos];
   const lastAns = answers[answers.length - 1];
 
+  // The first thing anyone sees is a card, face up. Sector choice lives in its
+  // own section further down; you do not have to make a decision to start.
+  useEffect(() => {
+    const pool = SECTORS.flatMap((sec) => sec.cards.map((c) => ({ card: c, sector: sec })));
+    setDeck(shuffle(pool).slice(0, MIXED));
+  }, []);
+
   const startDeck = useCallback((s: Sector | null) => {
     let next: Item[];
     let used: Sector;
@@ -76,7 +99,8 @@ export default function Calibration() {
       next = shuffle(s.cards.map((c) => ({ card: c, sector: s })));
     }
     setSector(used); setDeck(next); setPos(0); setAnswers([]);
-    setPhase("swipe"); setPickerOpen(false); locked.current = false;
+    setPhase("swipe"); locked.current = false;
+    scrollToDeck();
   }, [generated]);
 
   const decide = useCallback((sayTrue: boolean) => {
@@ -192,74 +216,15 @@ export default function Calibration() {
   const depths: number[] = [];
   for (let d = Math.min(2, behind); d >= 0; d--) depths.push(d);
 
-  const picker = (
-    <div className="cat-menu">
-      <div className="cat-menu-head">
-        <span>Pick a sector</span>
-        {phase !== "pick" && <button className="cat-close" onClick={() => setPickerOpen(false)} aria-label="Close">✕</button>}
-      </div>
-      <div className="cat-list">
-        <button className="cat-item mixed" onClick={() => startDeck(null)}>
-          <span className="cat-name">Surprise me</span>
-          <span className="cat-blurb">Ten cards pulled from every sector at once</span>
-        </button>
-
-        <div className="cat-ask">
-          <label className="cat-asklbl" htmlFor="stf-custom">Not here? Name a sector and we&apos;ll build it</label>
-          <div className="cat-askrow">
-            <input
-              id="stf-custom" className="cat-input" value={custom} placeholder="e.g. shipping, archaeology, social work"
-              onChange={(e) => { setCustom(e.target.value); if (gen.state === "error") setGen({ state: "idle" }); }}
-              onKeyDown={(e) => { if (e.key === "Enter") requestSector(); }}
-              disabled={gen.state === "loading"} maxLength={40}
-            />
-            <button className="cat-go" onClick={requestSector} disabled={custom.trim().length < 3 || gen.state === "loading"}>
-              {gen.state === "loading" ? <span className="spin" aria-hidden="true" /> : "→"}
-            </button>
-          </div>
-          {gen.state === "loading" && <span className="cat-note">Reading up on it — this takes two or three minutes, so hold on.</span>}
-          {gen.state === "error" && <span className="cat-note err">{gen.msg}</span>}
-        </div>
-
-        {generated.length > 0 && (
-          <>
-            <div className="cat-group">Added by visitors</div>
-            {generated.map((s) => (
-              <button key={s.id} className="cat-item" onClick={() => startDeck(s)}>
-                <span className="cat-name">{s.name}{!s.approved && <span className="cat-badge">AI-drafted</span>}</span>
-                <span className="cat-blurb">{s.blurb}</span>
-              </button>
-            ))}
-          </>
-        )}
-
-        <div className="cat-group">Sectors</div>
-        {SECTOR_DECKS.map((s) => (
-          <button key={s.id} className="cat-item" onClick={() => startDeck(s)}>
-            <span className="cat-name">{s.name}</span>
-            <span className="cat-blurb">{s.blurb}</span>
-          </button>
-        ))}
-
-        <div className="cat-group">Wildcards</div>
-        {WILDCARD_DECKS.map((s) => (
-          <button key={s.id} className="cat-item" onClick={() => startDeck(s)}>
-            <span className="cat-name">{s.name}</span>
-            <span className="cat-blurb">{s.blurb}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-
   return (
+    <>
     <section className="stf-banner">
       <div className="banner-inner">
         <div className="bcol-l">
           <div className="stf-head">
             <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
             <h1>Swipe the <em>future.</em></h1>
-            <p className="lede">It&apos;s 2026, and AI and quantum computing are rewriting whole sectors — fast, and unevenly. Every card here is a real claim about where things <em>actually</em> stand: each one fact-checked and linked to its source, no hype, no doom. Pick a sector, call each claim <em>true</em> or <em>false</em>, then see how far your gut sat from the evidence.</p>
+            <p className="lede">It&apos;s 2026, and AI and quantum computing are rewriting whole sectors, fast and unevenly. Every card here is a real claim about where things <em>actually</em> stand: fact-checked, linked to its source, no hype and no doom. Call it <em>true</em> or <em>false</em>. Ten cards later you find out how far your gut sat from the evidence.</p>
             <p className="stf-links">
               <a href="/swipe-the-future/stats">See what everyone else answered →</a>
             </p>
@@ -268,18 +233,12 @@ export default function Calibration() {
         <div className="bcol-r">
 
       <div className="deck-head">
-        {phase === "pick" ? (
-          <span className="count">Choose your deck</span>
-        ) : (
-          <>
-            <div className="dots">{deck.map((_, k) => <span key={k} className={`dot${k < pos ? " done" : k === pos ? " cur" : ""}`} />)}</div>
-            <span className="count">{phase === "final" ? "DONE" : `${pad(pos + 1)} / ${pad(deck.length)}`}</span>
-          </>
-        )}
+        <div className="dots">{deck.map((_, k) => <span key={k} className={`dot${k < pos ? " done" : k === pos ? " cur" : ""}`} />)}</div>
+        <span className="count">{phase === "final" ? "DONE" : `${pad(pos + 1)} / ${pad(deck.length)}`}</span>
       </div>
 
       <div className="tinder">
-        {phase === "pick" ? picker : phase === "final" ? (
+        {phase === "final" ? (
           <div className="tcard final">
             <span className="card-eyebrow">{sector.name} · your calibration</span>
             <div className="score-big">{matched}<span className="sof">/ {total}</span></div>
@@ -288,7 +247,7 @@ export default function Calibration() {
             <p className="pdesc">{prof.desc}</p>
             <div className="final-actions">
               <button className="card-cta" onClick={() => startDeck(null)}>Ten more, mixed →</button>
-              <button className="card-cta ghost" onClick={() => setPickerOpen(true)}>Pick another sector →</button>
+              <a className="card-cta ghost" href="#sectors">Pick another sector →</a>
               <a className="card-cta ghost" href="/swipe-the-future/stats">How did everyone else do? →</a>
             </div>
           </div>
@@ -335,17 +294,30 @@ export default function Calibration() {
             );
           })
         )}
-        {phase !== "pick" && pickerOpen && picker}
       </div>
 
       <p className="deckhint">
-        {phase === "pick" ? "Every claim is sourced — pick where to start"
-          : phase === "result" ? `Auto-advancing in ${secs}s`
-          : phase === "final" ? `${sector.name} · pick up where you left off, or switch sectors`
-          : `${sector.name} · swipe the card · tap ✕ / ✓ · or use ← / →`}
+        {phase === "result" ? `Auto-advancing in ${secs}s`
+          : phase === "final" ? "Pick up where you left off, or change the deck"
+          : "Swipe the card · tap ✕ / ✓ · or use ← / →"}
+      </p>
+      <p className="deckwhich">
+        <span>{sector.name}</span>
+        <a href="#sectors">change sector →</a>
       </p>
         </div>
       </div>
     </section>
+
+    <SectorPicker
+      current={sector.id}
+      generated={generated}
+      custom={custom}
+      gen={gen}
+      onPick={startDeck}
+      onCustom={(v) => { setCustom(v); if (gen.state === "error") setGen({ state: "idle" }); }}
+      onRequest={requestSector}
+    />
+    </>
   );
 }
