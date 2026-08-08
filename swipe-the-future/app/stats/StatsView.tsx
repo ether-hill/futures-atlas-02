@@ -6,8 +6,10 @@ import {
   sectorStat, truthOf, sensitivityLabel, leanLabel,
   type CardStat, type SectorStat,
 } from "./stats-math";
+import { Reveal, CountUp, useInView } from "./Reveal";
+import { SectorExplorer } from "./SectorExplorer";
 
-const MIN_N = 3;      // a claim needs this many swipes before it goes on the plot
+const MIN_N = 3;       // a claim needs this many swipes before it goes on the plot
 const MIN_SECTOR = 20; // and a sector this many scorable answers before it's ranked
 
 // Diverging pair, validated for CVD separation against both the dark and light
@@ -16,6 +18,7 @@ const MIN_SECTOR = 20; // and a sector this many scorable answers before it's ra
 const C_DOUBT = "#3E93D8";
 const C_BELIEVE = "#D8694E";
 const C_MID = "#8A96A6";
+const COLOURS = { believe: C_BELIEVE, doubt: C_DOUBT, mid: C_MID };
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
@@ -27,6 +30,7 @@ export default function StatsView() {
   const [err, setErr] = useState(false);
   const [tip, setTip] = useState<Tip>(null);
   const plotRef = useRef<HTMLDivElement | null>(null);
+  const { ref: plotSeenRef, seen: plotSeen } = useInView<HTMLDivElement>();
 
   useEffect(() => {
     Promise.all([
@@ -58,18 +62,36 @@ export default function StatsView() {
 
   const plotted = useMemo(() => cards.filter((c) => c.n >= MIN_N), [cards]);
   const heldBack = cards.filter((c) => c.n > 0 && c.n < MIN_N).length;
+  const seen = cards.filter((c) => c.n > 0).length;
 
-  const sectors: SectorStat[] = useMemo(() => {
-    const byId = new Map<string, { name: string; cards: CardStat[] }>();
+  const cardsBySector = useMemo(() => {
+    const m = new Map<string, CardStat[]>();
     for (const c of cards) {
-      if (!byId.has(c.sectorId)) byId.set(c.sectorId, { name: c.sector, cards: [] });
-      byId.get(c.sectorId)!.cards.push(c);
+      if (!m.has(c.sectorId)) m.set(c.sectorId, []);
+      m.get(c.sectorId)!.push(c);
     }
-    return [...byId.entries()]
-      .map(([id, v]) => sectorStat(id, v.name, v.cards))
-      .filter((s): s is SectorStat => s !== null && s.n >= MIN_SECTOR)
-      .sort((a, b) => Number(b.measurable) - Number(a.measurable) || b.dPrime - a.dPrime);
+    return m;
   }, [cards]);
+
+  const names = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const c of cards) m.set(c.sectorId, c.sector);
+    return m;
+  }, [cards]);
+
+  /** Every sector with any traffic — the explorer shows all of these. */
+  const allSectors: SectorStat[] = useMemo(() =>
+    [...cardsBySector.entries()]
+      .map(([id, cs]) => sectorStat(id, names.get(id) ?? id, cs))
+      .filter((s): s is SectorStat => s !== null && s.n > 0)
+      .sort((a, b) => b.n - a.n),
+    [cardsBySector, names]);
+
+  /** The ranked table only shows sectors with enough answers to rank honestly. */
+  const ranked = useMemo(() =>
+    allSectors.filter((s) => s.n >= MIN_SECTOR)
+      .sort((a, b) => Number(b.measurable) - Number(a.measurable) || b.dPrime - a.dPrime),
+    [allSectors]);
 
   const swipes = n("swipes"), believe = n("believe"), doubt = n("doubt");
   const aligned = n("aligned"), scored = n("scored"), rounds = n("rounds");
@@ -85,7 +107,7 @@ export default function StatsView() {
   // The evidence scale is ordinal — four rungs, not a ruler — so the columns are
   // evenly spaced and the reference line bends through each rung's actual truth
   // value. Dots are jittered inside their column (deterministically, off the card
-  // id) because otherwise 128 claims land on four vertical lines.
+  // id) because otherwise every claim lands on four vertical lines.
   const W = 760, H = 480, P = { t: 30, r: 74, b: 58, l: 58 };
   const SLOT: Record<number, number> = { 0: 0, 0.5: 1, 0.8: 2, 1: 3 };
   const px = (u: number) => P.l + u * (W - P.l - P.r);
@@ -97,7 +119,6 @@ export default function StatsView() {
     for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
     return ((h >>> 0) % 1000) / 1000 - 0.5; // −0.5 … 0.5, stable per claim
   };
-  // Columns sit inside [0.07, 0.95] so the leftmost never rides the y-axis labels.
   const slotU = (i: number) => 0.07 + (i / 3) * 0.88;
   const dotX = (c: CardStat) => px(slotU(SLOT[c.truth] ?? 0) + jitter(c.id) * 0.17);
 
@@ -109,14 +130,15 @@ export default function StatsView() {
 
   return (
     <Shell>
-      <div className="st-grid">
-        <Tile v={swipes.toLocaleString()} k="swipes" />
-        <Tile v={rounds.toLocaleString()} k="rounds finished" />
-        <Tile v={pct(swipes ? believe / swipes : 0)} k={`called true · ${pct(swipes ? doubt / swipes : 0)} called false`} />
-        <Tile v={pct(scored ? aligned / scored : 0)} k="matched the evidence" />
-      </div>
+      <Reveal as="div" className="st-grid">
+        <Tile n={swipes} k="swipes" />
+        <Tile n={rounds} k="rounds finished" />
+        <Tile n={swipes ? believe / swipes : 0} k={`called true · ${pct(swipes ? doubt / swipes : 0)} called false`} isPct />
+        <Tile n={scored ? aligned / scored : 0} k="matched the evidence" isPct />
+      </Reveal>
 
-      <section className="st-sec">
+      <Reveal className="st-sec">
+        <span className="st-kicker">01 — the whole deck at once</span>
         <h2>The Reality Gap</h2>
         <p className="st-lede">
           Every claim, plotted twice over: along the bottom, where the evidence actually puts it.
@@ -129,93 +151,85 @@ export default function StatsView() {
           <div className="st-plotwrap empty">
             <p className="st-msg sm">
               No claim has {MIN_N} swipes yet, so there is nothing honest to plot. The chart appears
-              as soon as the deck has been played enough — {cards.filter((c) => c.n > 0).length} of{" "}
-              {cards.length} claims have been seen at least once so far.
+              as soon as the deck has been played enough — {seen} of {cards.length} claims have been
+              seen at least once so far.
             </p>
           </div>
         ) : (
-        <div className="st-plotwrap" ref={plotRef} onMouseLeave={() => setTip(null)}>
-          <svg viewBox={`0 0 ${W} ${H}`} className="st-plot" role="img"
-            aria-label="Scatter plot of every claim: evidence strength against the share of players who called it true.">
-            {/* grid */}
-            {[0, 0.25, 0.5, 0.75, 1].map((p) => (
-              <g key={`g${p}`}>
-                <line x1={P.l} x2={W - P.r} y1={py(p)} y2={py(p)} className="st-grid" />
-                <text x={P.l - 10} y={py(p) + 4} className="st-tick end">{pct(p)}</text>
-              </g>
-            ))}
-            {/* where a perfectly calibrated crowd would sit at each rung */}
-            <polyline
-              className="st-diag" fill="none"
-              points={[0, 0.5, 0.8, 1].map((t, i) => `${px(slotU(i))},${py(t)}`).join(" ")}
-            />
-            <text x={W - P.r} y={py(1) - 20} className="st-diaglbl">a crowd that reads</text>
-            <text x={W - P.r} y={py(1) - 8} className="st-diaglbl">the evidence right</text>
+          <>
+            <div className="st-plotwrap" ref={plotRef} onMouseLeave={() => setTip(null)}>
+              <div ref={plotSeenRef}>
+                <svg viewBox={`0 0 ${W} ${H}`} className="st-plot" role="img"
+                  aria-label="Scatter plot of every claim: evidence strength against the share of players who called it true.">
+                  {[0, 0.25, 0.5, 0.75, 1].map((p) => (
+                    <g key={`g${p}`}>
+                      <line x1={P.l} x2={W - P.r} y1={py(p)} y2={py(p)} className="st-grid" />
+                      <text x={P.l - 10} y={py(p) + 4} className="st-tick end">{pct(p)}</text>
+                    </g>
+                  ))}
+                  <polyline
+                    className="st-diag" fill="none"
+                    points={[0, 0.5, 0.8, 1].map((t, i) => `${px(slotU(i))},${py(t)}`).join(" ")}
+                  />
+                  <text x={W - P.r} y={py(1) - 20} className="st-diaglbl">a crowd that reads</text>
+                  <text x={W - P.r} y={py(1) - 8} className="st-diaglbl">the evidence right</text>
 
-            {/* quadrant captions, kept clear of the columns */}
-            <text x={P.l + 6} y={P.t + 34} className="st-quad start" fill={C_BELIEVE}>HYPE TRAPS</text>
-            <text x={P.l + 6} y={P.t + 49} className="st-quadsub start">not true, widely believed</text>
-            <text x={W - P.r} y={py(0.16)} className="st-quad end" fill={C_DOUBT}>BLIND SPOTS</text>
-            <text x={W - P.r} y={py(0.16) + 15} className="st-quadsub end">already real, doubted</text>
+                  <text x={P.l + 6} y={P.t + 34} className="st-quad start" fill={C_BELIEVE}>HYPE TRAPS</text>
+                  <text x={P.l + 6} y={P.t + 49} className="st-quadsub start">not true, widely believed</text>
+                  <text x={W - P.r} y={py(0.16)} className="st-quad end" fill={C_DOUBT}>BLIND SPOTS</text>
+                  <text x={W - P.r} y={py(0.16) + 15} className="st-quadsub end">already real, doubted</text>
 
-            {/* dots, biggest first so small ones stay clickable on top */}
-            {[...plotted].sort((a, b) => b.n - a.n).map((c) => (
-              <circle
-                key={c.id} cx={dotX(c)} cy={py(c.pTrue)} r={rOf(c.n)}
-                fill={colourOf(c.gap)} fillOpacity={0.82} className="st-dot"
-                onMouseMove={(e) => showTip(e, c.claim, [
-                  `${c.sector} · ${VLABEL[c.verdict]}`,
-                  `${pct(c.pTrue)} called it true · ${c.n} swipes`,
-                ])}
-              >
-                <title>{`${c.claim} — ${pct(c.pTrue)} called it true (${VLABEL[c.verdict]}, ${c.n} swipes)`}</title>
-              </circle>
-            ))}
+                  <g className={`st-dots${plotSeen ? " in" : ""}`}>
+                    {[...plotted].sort((a, b) => b.n - a.n).map((c, i) => (
+                      <circle
+                        key={c.id} cx={dotX(c)} cy={py(c.pTrue)} r={rOf(c.n)}
+                        fill={colourOf(c.gap)} className="st-dot"
+                        style={{ animationDelay: `${Math.min(i * 22, 900)}ms` }}
+                        onMouseMove={(e) => showTip(e, c.claim, [
+                          `${c.sector} · ${VLABEL[c.verdict]}`,
+                          `${pct(c.pTrue)} called it true · ${c.n} swipes`,
+                        ])}
+                      >
+                        <title>{`${c.claim} — ${pct(c.pTrue)} called it true (${VLABEL[c.verdict]}, ${c.n} swipes)`}</title>
+                      </circle>
+                    ))}
+                  </g>
 
-            {/* x axis */}
-            <line x1={P.l} x2={W - P.r} y1={H - P.b} y2={H - P.b} className="st-axis" />
-            {(["Not true", "Partly true", "Broadly true", "Already real"] as const).map((lbl, i) => (
-              <text key={lbl} x={px(slotU(i))} y={H - P.b + 22} className="st-tick mid">{lbl}</text>
-            ))}
-            <text x={(P.l + W - P.r) / 2} y={H - 12} className="st-axlbl">WHERE THE EVIDENCE SITS →</text>
-            <text transform={`translate(16, ${(P.t + H - P.b) / 2}) rotate(-90)`} className="st-axlbl mid">SHARE WHO SAID TRUE →</text>
-          </svg>
-          {tip && (
-            <div className="st-tip" style={{ left: tip.x, top: tip.y }}>
-              <b>{tip.title}</b>
-              {tip.lines.map((l) => <span key={l}>{l}</span>)}
+                  <line x1={P.l} x2={W - P.r} y1={H - P.b} y2={H - P.b} className="st-axis" />
+                  {(["Not true", "Partly true", "Broadly true", "Already real"] as const).map((lbl, i) => (
+                    <text key={lbl} x={px(slotU(i))} y={H - P.b + 22} className="st-tick mid">{lbl}</text>
+                  ))}
+                  <text x={(P.l + W - P.r) / 2} y={H - 12} className="st-axlbl">WHERE THE EVIDENCE SITS →</text>
+                  <text transform={`translate(16, ${(P.t + H - P.b) / 2}) rotate(-90)`} className="st-axlbl mid">SHARE WHO SAID TRUE →</text>
+                </svg>
+              </div>
+              {tip && (
+                <div className="st-tip" style={{ left: tip.x, top: tip.y }}>
+                  <b>{tip.title}</b>
+                  {tip.lines.map((l) => <span key={l}>{l}</span>)}
+                </div>
+              )}
             </div>
-          )}
-        </div>
+            <p className="st-note">
+              Dot size is how many people swiped it. {plotted.length} of {cards.length} claims have enough
+              swipes to plot{heldBack > 0 ? `; ${heldBack} more are still under ${MIN_N} and held back` : ""}.
+            </p>
+          </>
         )}
-        {plotted.length > 0 && (
-          <p className="st-note">
-            Dot size is how many people swiped it. {plotted.length} of {cards.length} claims have enough
-            swipes to plot{heldBack > 0 ? `; ${heldBack} more are still under ${MIN_N} and held back` : ""}.
-          </p>
-        )}
+      </Reveal>
 
-        {plotted.length > 0 && (
-        <details className="st-details">
-          <summary>See the same data as a table</summary>
-          <div className="st-tablewrap">
-            <table className="st-table">
-              <thead><tr><th>Claim</th><th>Sector</th><th>Evidence</th><th className="num">Said true</th><th className="num">Swipes</th></tr></thead>
-              <tbody>
-                {[...plotted].sort((a, b) => b.gap - a.gap).map((c) => (
-                  <tr key={c.id}>
-                    <td>{c.claim}</td><td>{c.sector}</td><td>{VLABEL[c.verdict]}</td>
-                    <td className="num">{pct(c.pTrue)}</td><td className="num">{c.n}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </details>
-        )}
-      </section>
+      <Reveal className="st-sec">
+        <span className="st-kicker">02 — sector by sector, claim by claim</span>
+        <h2>Where each sector stands</h2>
+        <p className="st-lede">
+          Open a sector to see every claim in it and how the room split. The bar under each claim is
+          the vote: blue for the share who called it true, red for the share who called it false.
+        </p>
+        <SectorExplorer sectors={allSectors} cardsBySector={cardsBySector} colours={COLOURS} />
+      </Reveal>
 
-      <section className="st-sec">
+      <Reveal className="st-sec">
+        <span className="st-kicker">03 — the underlying skill</span>
         <h2>Can people tell true from false?</h2>
         <p className="st-lede">
           Two different things get muddled when someone gets a claim wrong. One is whether they can
@@ -225,7 +239,7 @@ export default function StatsView() {
           (they&apos;re <em>d′</em> and <em>criterion</em>, if you want the textbook names).
         </p>
 
-        {sectors.length ? (
+        {ranked.length ? (
           <div className="st-tablewrap">
             <table className="st-table st-sectors">
               <thead>
@@ -238,8 +252,8 @@ export default function StatsView() {
                 </tr>
               </thead>
               <tbody>
-                {sectors.map((s) => (
-                  <tr key={s.id}>
+                {ranked.map((s, i) => (
+                  <tr key={s.id} style={{ animationDelay: `${Math.min(i * 45, 600)}ms` }} className="st-trow">
                     <td className="st-secname">{s.name}</td>
                     {s.measurable ? (
                       <>
@@ -291,14 +305,14 @@ export default function StatsView() {
           (there&apos;s no right answer to score). The small range under each accuracy is a 95% confidence
           interval, so a sector with 22 answers doesn&apos;t get to look as certain as one with 2,000.
         </p>
-      </section>
+      </Reveal>
 
-      <section className="st-sec st-two">
+      <Reveal className="st-sec st-two">
         <div>
           <h3 style={{ color: C_BELIEVE }}>What we fall for</h3>
           <p className="st-sublede">Not true. Believed anyway.</p>
-          {hypeTraps.length ? hypeTraps.map((c) => (
-            <div className="st-row" key={c.id}>
+          {hypeTraps.length ? hypeTraps.map((c, i) => (
+            <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
               <span className="st-rowpct" style={{ color: C_BELIEVE }}>{pct(c.pTrue)}</span>
               <span className="st-rowtxt"><b>{c.claim}</b><span>called true · {c.sector} · {c.n} swipes</span></span>
             </div>
@@ -307,14 +321,14 @@ export default function StatsView() {
         <div>
           <h3 style={{ color: C_DOUBT }}>What we miss</h3>
           <p className="st-sublede">Already real. Still doubted.</p>
-          {blindSpots.length ? blindSpots.map((c) => (
-            <div className="st-row" key={c.id}>
+          {blindSpots.length ? blindSpots.map((c, i) => (
+            <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
               <span className="st-rowpct" style={{ color: C_DOUBT }}>{pct(1 - c.pTrue)}</span>
               <span className="st-rowtxt"><b>{c.claim}</b><span>called false · {c.sector} · {c.n} swipes</span></span>
             </div>
           )) : <p className="st-msg sm">Not enough data yet.</p>}
         </div>
-      </section>
+      </Reveal>
 
       <p className="st-foot">
         Every figure here is the live tally of anonymous swipes. Nothing about who swiped is recorded.
@@ -342,6 +356,15 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Tile({ v, k }: { v: string; k: string }) {
-  return <div className="st-tile"><span className="st-tv">{v}</span><span className="st-tk">{k}</span></div>;
+function Tile({ n, k, isPct = false }: { n: number; k: string; isPct?: boolean }) {
+  return (
+    <div className="st-tile">
+      <span className="st-tv">
+        {isPct
+          ? <CountUp to={Math.round(n * 100)} format={(v) => `${v}%`} />
+          : <CountUp to={n} />}
+      </span>
+      <span className="st-tk">{k}</span>
+    </div>
+  );
 }

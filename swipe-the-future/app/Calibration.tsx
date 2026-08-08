@@ -7,6 +7,9 @@ import {
 } from "../data/sectors";
 
 const MIXED = 10; // length of the "surprise me" round; a sector deck runs its own length
+// How long the reveal sits before it moves on. Five seconds was not enough to read
+// the verdict, the note and the source; the ring in globals.css matches this.
+const DWELL = 11;
 const pad = (n: number) => String(n).padStart(2, "0");
 
 type Item = { card: Card; sector: Sector };
@@ -35,7 +38,7 @@ export default function Calibration() {
   const [pos, setPos] = useState(0);
   const [answers, setAnswers] = useState<Ans[]>([]);
   const [phase, setPhase] = useState<Phase>("pick");
-  const [secs, setSecs] = useState(5);
+  const [secs, setSecs] = useState(DWELL);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [fling, setFling] = useState<0 | 1 | -1>(0);
 
@@ -83,13 +86,13 @@ export default function Calibration() {
     track({ cardId: item.card.id, category: item.sector.id, verdict: item.card.verdict, believe: sayTrue });
     setFling(sayTrue ? 1 : -1);
     setPhase(reduce.current ? "result" : "flinging"); // the card swipes/fades off, then the result
-    if (reduce.current) setSecs(5);
+    if (reduce.current) setSecs(DWELL);
   }, [phase, item]);
 
   // the card flings off + fades, then the verdict fades in
   useEffect(() => {
     if (phase !== "flinging") return;
-    const t = setTimeout(() => { setPhase("result"); setSecs(5); }, 320);
+    const t = setTimeout(() => { setPhase("result"); setSecs(DWELL); }, 320);
     return () => clearTimeout(t);
   }, [phase]);
 
@@ -104,9 +107,9 @@ export default function Calibration() {
   // safety net (and the only timer when motion is reduced / animation disabled).
   useEffect(() => {
     if (phase !== "result") return;
-    setSecs(5);
+    setSecs(DWELL);
     const iv = setInterval(() => setSecs((s) => Math.max(0, s - 1)), 1000);
-    const fb = setTimeout(advance, reduce.current ? 1500 : 5800);
+    const fb = setTimeout(advance, reduce.current ? 2200 : DWELL * 1000 + 800);
     return () => { clearInterval(iv); clearTimeout(fb); };
   }, [phase, pos, advance]);
 
@@ -297,6 +300,7 @@ export default function Calibration() {
                 <div key={`res-${pos}`} className="tcard is-result">
                   <div className={`vo-big ${voClass}`}>{voBig}</div>
                   <div className="vo-label">Evidence: {VLABEL[lastAns.card.verdict]}</div>
+                  {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
                   <p className="vo-insight">{lastAns.card.note}</p>
                   <div className="vo-src">
                     {lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}
