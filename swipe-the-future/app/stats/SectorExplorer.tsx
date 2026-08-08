@@ -7,6 +7,9 @@ import { sensitivityLabel, leanLabel } from "./stats-math";
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
+/** Below this many swipes a per-card read is noise, so it is left unsaid. */
+const MIN_READ = 5;
+
 /**
  * Every sector, openable to reveal each of its cards: what the claim was, where
  * the evidence sits, and how the split fell. This is the level the ranked table
@@ -61,7 +64,9 @@ export function SectorExplorer({
                         <span><b>{pct(1 - c.pTrue)}</b> said false</span>
                         <span className="st-cverdict">Evidence: {VLABEL[c.verdict]}</span>
                         <span className="st-cn">{c.n} swipe{c.n === 1 ? "" : "s"}</span>
-                        {c.verdict !== "contested" && (
+                        {/* A verdict on two swipes is noise, so the read only
+                            appears once there is enough of a sample to mean it. */}
+                        {c.verdict !== "contested" && c.n >= MIN_READ && (
                           <span className="st-cgap" style={{ color: off }}>
                             {c.gap > 0.12 ? "over-believed" : c.gap < -0.12 ? "under-believed" : "well read"}
                           </span>
