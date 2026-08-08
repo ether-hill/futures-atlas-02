@@ -233,6 +233,10 @@ export function visibleProjects(isEditor: boolean): Project[] {
   return isEditor ? projectsOrdered : liveProjects;
 }
 
+/** The full listing regrouped for an editor: what the public sees first, drafts
+ *  after. Curated order is kept inside each group. */
+export const editorOrdered: Project[] = [...liveProjects, ...draftProjects];
+
 /** The distinct category tags (from `field`) present in a given list. */
 export function fieldsOf(items: Project[]): string[] {
   return Array.from(new Set(items.map((p) => p.field)));
