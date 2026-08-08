@@ -296,3 +296,5 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .st-scale { display: flex; justify-content: space-between; margin-top: 5px; font-family: var(--ff-sans); font-size: 9.5px; letter-spacing: 0; text-transform: none; color: rgba(232,234,240,.28); }
 .st-scale i { font-style: normal; }
 .st-barlbl.na { display: block; max-width: 46ch; line-height: 1.45; }
+.st-plotwrap.empty { display: grid; place-items: center; min-height: 200px; text-align: center; padding: 24px; }
+.st-plotwrap.empty .st-msg { max-width: 56ch; padding: 0; }

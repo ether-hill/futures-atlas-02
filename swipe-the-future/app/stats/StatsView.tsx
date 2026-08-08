@@ -7,7 +7,7 @@ import {
   type CardStat, type SectorStat,
 } from "./stats-math";
 
-const MIN_N = 5;      // a claim needs this many swipes before it goes on the plot
+const MIN_N = 3;      // a claim needs this many swipes before it goes on the plot
 const MIN_SECTOR = 20; // and a sector this many scorable answers before it's ranked
 
 // Diverging pair, validated for CVD separation against both the dark and light
@@ -125,6 +125,15 @@ export default function StatsView() {
           evidence warrants. Dots below are things that are already real and we still don&apos;t buy.
         </p>
 
+        {plotted.length === 0 ? (
+          <div className="st-plotwrap empty">
+            <p className="st-msg sm">
+              No claim has {MIN_N} swipes yet, so there is nothing honest to plot. The chart appears
+              as soon as the deck has been played enough — {cards.filter((c) => c.n > 0).length} of{" "}
+              {cards.length} claims have been seen at least once so far.
+            </p>
+          </div>
+        ) : (
         <div className="st-plotwrap" ref={plotRef} onMouseLeave={() => setTip(null)}>
           <svg viewBox={`0 0 ${W} ${H}`} className="st-plot" role="img"
             aria-label="Scatter plot of every claim: evidence strength against the share of players who called it true.">
@@ -178,11 +187,15 @@ export default function StatsView() {
             </div>
           )}
         </div>
-        <p className="st-note">
-          Dot size is how many people swiped it. {plotted.length} of {cards.length} claims have enough
-          swipes to plot{heldBack > 0 ? `; ${heldBack} more are still under ${MIN_N} and held back` : ""}.
-        </p>
+        )}
+        {plotted.length > 0 && (
+          <p className="st-note">
+            Dot size is how many people swiped it. {plotted.length} of {cards.length} claims have enough
+            swipes to plot{heldBack > 0 ? `; ${heldBack} more are still under ${MIN_N} and held back` : ""}.
+          </p>
+        )}
 
+        {plotted.length > 0 && (
         <details className="st-details">
           <summary>See the same data as a table</summary>
           <div className="st-tablewrap">
@@ -199,6 +212,7 @@ export default function StatsView() {
             </table>
           </div>
         </details>
+        )}
       </section>
 
       <section className="st-sec">
