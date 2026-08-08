@@ -80,6 +80,8 @@
 .fa-shell__item:hover { background: rgba(20, 21, 24, 0.06); }
 .fa-shell__item.is-current { color: rgba(20, 21, 24, 0.45); cursor: default; }
 .fa-shell__item--accent { color: #b4541e; }
+/* Editor-only marker in the switcher (drafts are listed for signed-in editors). */
+.fa-shell__draft { margin-left: 6px; border-radius: 3px; background: rgba(20, 21, 24, 0.1); padding: 1px 5px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: 1px; }
 .fa-shell__menusep { height: 1px; margin: 6px 4px; background: rgba(20, 21, 24, 0.1); }
 
 /* primary nav links (right) — uppercase, letter-spaced */
@@ -130,6 +132,7 @@ html.dark .fa-shell__item { color: #f3f1ec; }
 html.dark .fa-shell__item:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-shell__item.is-current { color: rgba(243, 241, 236, 0.45); }
 html.dark .fa-shell__item--accent { color: #7fb2e6; }
+html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 
 @media (max-width: 680px) {
   .fa-shell { padding: 0 14px; gap: 8px; }

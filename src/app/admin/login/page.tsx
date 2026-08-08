@@ -28,12 +28,13 @@ export default async function AdminLoginPage({
           className="mx-auto flex w-full max-w-[440px] flex-col gap-5 border border-ink bg-panel p-[clamp(28px,4vw,44px)]"
         >
           <div>
-            <p className="eyebrow tick mb-4">Internal</p>
+            <p className="eyebrow tick mb-4">Editors</p>
             <p className="text-[clamp(20px,2.4vw,28px)] font-extrabold leading-tight text-ink">
               This page is private
             </p>
             <p className="mt-2 font-mono text-[12px] leading-[1.6] text-graphite">
-              Enter the password to continue.
+              Sign in with your editor password to see it. Your password is who
+              you are, so there is no username to enter.
             </p>
           </div>
 

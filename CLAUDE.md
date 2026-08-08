@@ -44,24 +44,51 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|oklch\(' src/components src/app --include='*.tsx'
 
 - `KV_REST_API_URL`, `KV_REST_API_TOKEN` — from the Vercel KV / Upstash integration.
 - `STYLE_GUIDE_PASSWORD` (required to unlock the panel), `STYLE_GUIDE_USER` (optional, default `admin`).
-- `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` — the internal `/admin/*` area (see below).
-  Both required; the routes 503 until they are set.
+- `EDITOR_USERS`, `ADMIN_SESSION_SECRET` — editor sign-in (see below). Both
+  required; the gated routes 503 until they are set.
+- `ADMIN_PASSWORD` — legacy single password, used only if `EDITOR_USERS` is empty.
 
-## Internal area (`/admin/*`)
+## Editors, drafts, and the internal area
 
-Password-gated internal pages (roadmap/presentation decks). Not linked from
-anywhere, `noindex`, and `Disallow`ed in `src/app/robots.ts`.
+**Publication state is one word per project.** `visibility: "live" | "draft"` in
+`src/data/projects.ts` is the single source of truth: it drives the homepage
+strip, `/projects`, the `ProjectSiteNav` switcher, the contact dropdown,
+`robots.ts`, and the middleware gate on the project's own URL. To publish or
+unpublish, change that word and deploy — nothing else.
 
-- `src/middleware.ts` — gates `/admin/:path*` on a signed session cookie and
-  **rewrites** unauthenticated requests to `/admin/login` (so no page renders or
-  ships markup before auth). Fail-closed if the env vars are unset.
+- **Live** — public.
+- **Draft** — listed only for a signed-in editor (flagged `DRAFT` on the card),
+  and the URL itself is closed: an anonymous visitor to `/village-oracle` gets
+  the sign-in form, never the page's markup.
+- The nav bundle `public/atlas-nav.js` keeps its own `draft: true` flags (it is
+  plain JS shared with the static zone bundles, so it can't import the data
+  file). **Mirror it when you flip a project.** It decides what to list from the
+  readable `fa_editor` cookie, which carries no authority — every draft URL is
+  still checked against the signed cookie server-side.
+
+**Sign-in.** Two accounts, no username field: the password identifies the person.
+
+- `EDITOR_USERS="laura:<pw>,mike:<pw>"` (optionally `id:pw:Display Name`).
+  `src/lib/editors.ts` parses it; `ADMIN_PASSWORD` is the single-account fallback.
+- Gated: `/admin/*`, `/editor`, `/home-lab`, `/mocks`, and every draft project
+  path. All `noindex` + `Disallow`ed in `src/app/robots.ts`.
+- `src/middleware.ts` — rewrites (not redirects) unauthenticated requests to
+  `/admin/login`, so no gated page renders or ships markup before auth.
+  Fail-closed if the env vars are unset.
 - `src/lib/admin-session.ts` — HMAC-SHA256 cookie sign/verify via Web Crypto, so
-  the same helpers run in Edge middleware and the Node route handler. Also holds
-  `safeNext()`, which normalises the `?next=` param before checking it stays
-  under `/admin/` (guards the open redirect).
+  the same helpers run in Edge middleware and the Node route handler. The cookie
+  is `<expiry>.<editorId>.<sig>` — the id is authenticated, not just the expiry.
+  Also holds `safeNext()`, which normalises the `?next=` param and keeps it
+  same-origin (guards the open redirect).
+- `src/lib/editor.ts` — `getEditor()` for server components: who is looking, so a
+  listing can include drafts. Never the authority on URL access; that's the
+  middleware.
 - `src/app/api/admin/login/route.ts` — Node runtime; `crypto.timingSafeEqual`
-  against `ADMIN_PASSWORD`, sets the httpOnly · secure · sameSite=lax cookie
-  (12h), then redirects to the validated `next`.
+  against every configured account, sets the httpOnly · secure · sameSite=lax
+  cookie (12h) plus the readable `fa_editor` flag, then redirects to the
+  validated `next`. `…/logout/route.ts` clears both (POST only).
+- `src/components/EditorBar.tsx` — the "you are not seeing the public site" bar;
+  renders nothing for the public. `/editor` is the full live-vs-draft overview.
 
 ## Deploy
 

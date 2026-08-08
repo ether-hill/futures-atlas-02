@@ -3,14 +3,19 @@ import { Container } from "@/components/Container";
 import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
-import { projectsOrdered } from "@/data/projects";
+import { visibleProjects } from "@/data/projects";
+import { getEditor } from "@/lib/editor";
 import { LOGOS } from "@/lib/logos";
 
 // The stack strip: which marks headline the homepage tech banner (all render
 // as paper-tone inline SVGs; the full inventory lives on /about).
 const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "veo", "nextjs", "react", "threejs", "p5js", "tailwindcss", "vercel", "huggingface", "mistral", "deepseek"];
 
-export default function Home() {
+export default async function Home() {
+  // Editors see their drafts in the recent strip too, flagged as such.
+  const isEditor = Boolean(await getEditor());
+  const recent = visibleProjects(isEditor).slice(0, 6);
+
   return (
     <div>
       {/* Hero — an always-black stage (does not follow the light theme) with
@@ -50,7 +55,7 @@ export default function Home() {
           </Reveal>
 
           <Reveal>
-            <ProjectGrid items={projectsOrdered.slice(0, 6)} />
+            <ProjectGrid items={recent} showVisibility={isEditor} />
             <div className="mt-[clamp(32px,5vw,56px)] flex justify-center">
               <Link
                 href="/projects"

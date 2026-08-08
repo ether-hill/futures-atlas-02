@@ -6,6 +6,7 @@ import "futures-atlas-core/kit.css";
 import "futures-atlas-core/nav.css";
 import "./globals.css";
 import { buildOverrideCss } from "futures-atlas-core";
+import { EditorBar } from "@/components/EditorBar";
 import { readOverrides } from "@/lib/store";
 
 const archivo = Archivo({
@@ -91,6 +92,8 @@ export default async function RootLayout({
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
       >
+        {/* Renders nothing unless an editor is signed in. */}
+        <EditorBar />
         {children}
       </body>
     </html>

@@ -1,15 +1,26 @@
 /**
- * Password check for the internal /admin area.
+ * Sign-in for editors.
  *
- * Node runtime (not Edge) so the comparison can use crypto.timingSafeEqual.
- * On success: sets the signed httpOnly session cookie and redirects to the
- * originally requested /admin path. On failure: back to the form with a
- * generic message — no hint about whether the password was close, or whether
- * a password is even configured.
+ * The password identifies the person as well as authenticating them: each
+ * account in EDITOR_USERS has its own, so there is no username to type. Node
+ * runtime (not Edge) so the comparison can use crypto.timingSafeEqual, and every
+ * configured account is checked so the timing doesn't leak which one matched.
+ *
+ * On success: sets the signed httpOnly session cookie (plus the readable
+ * `fa_editor` flag the static nav uses) and redirects to the originally
+ * requested path. On failure: back to the form with a generic message — no hint
+ * about whether the password was close, or whether any are even configured.
  */
 import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
-import { ADMIN_COOKIE, ADMIN_MAX_AGE, createSession, safeNext } from "@/lib/admin-session";
+import {
+  ADMIN_COOKIE,
+  ADMIN_MAX_AGE,
+  EDITOR_FLAG_COOKIE,
+  createSession,
+  safeNext,
+} from "@/lib/admin-session";
+import { editorAccounts } from "@/lib/editors";
 
 export const runtime = "nodejs";
 
@@ -30,18 +41,33 @@ export async function POST(req: NextRequest) {
   const submitted = String(form.get("password") ?? "");
   const next = safeNext(String(form.get("next") ?? ""));
 
-  const password = process.env.ADMIN_PASSWORD;
+  const accounts = editorAccounts();
   const secret = process.env.ADMIN_SESSION_SECRET;
-  if (!password || !secret) {
-    return new NextResponse("Admin auth is not configured.", { status: 503 });
+  if (!accounts.length || !secret) {
+    return new NextResponse("Editor auth is not configured.", { status: 503 });
   }
 
-  if (!matches(submitted, password)) return backToForm(req, next);
+  // Check them all rather than short-circuiting: constant work, whoever matches.
+  const matched = accounts.reduce<string | null>(
+    (found, account) => (matches(submitted, account.password) ? account.id : found),
+    null,
+  );
+  if (!matched) return backToForm(req, next);
 
   const res = NextResponse.redirect(new URL(next, req.url), { status: 303 });
-  res.cookies.set(ADMIN_COOKIE, await createSession(secret), {
+  const secure = process.env.NODE_ENV === "production";
+  res.cookies.set(ADMIN_COOKIE, await createSession(matched, secret), {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure,
+    sameSite: "lax",
+    path: "/",
+    maxAge: ADMIN_MAX_AGE,
+  });
+  // Readable by the static nav bundle so it can list drafts. Carries no
+  // authority — the middleware always re-checks the signed cookie above.
+  res.cookies.set(EDITOR_FLAG_COOKIE, "1", {
+    httpOnly: false,
+    secure,
     sameSite: "lax",
     path: "/",
     maxAge: ADMIN_MAX_AGE,

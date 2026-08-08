@@ -2,11 +2,12 @@
 
 import { usePathname } from "next/navigation";
 import { Navbar } from "futures-atlas-core";
-import { projects } from "@/data/projects";
+import { liveProjects } from "@/data/projects";
 import { ThemeToggle } from "./ThemeToggle";
 
-// Shared platform switcher (every project with an in-site path).
-const SWITCHER = projects
+// Shared platform switcher (every published project with an in-site path).
+// Drafts stay out of it — this nav ships to public pages.
+const SWITCHER = liveProjects
   .filter((p) => p.path)
   .map((p) => ({ name: p.title, slug: p.path!.replace(/^\//, "") }));
 

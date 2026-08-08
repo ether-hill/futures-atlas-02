@@ -1,11 +1,43 @@
 import Link from "next/link";
-import { projects, formatProjectDate, type Project } from "@/data/projects";
+import { liveProjects, formatProjectDate, type Project } from "@/data/projects";
 
 // Fully token-driven (futures-atlas-core): every size/space/colour/font references
 // a semantic token, so the style-guide panel drives every dimension. Structural
 // utilities (flex/grid/absolute/aspect) are layout, not design values.
 
-export function ProjectCard({ project, index }: { project: Project; index: number }) {
+/** The LIVE / DRAFT flag — only ever rendered for a signed-in editor. */
+function VisibilityTag({ project }: { project: Project }) {
+  const draft = project.visibility === "draft";
+  return (
+    <span
+      className="absolute left-0 top-0 z-[2] inline-flex items-center gap-1.5"
+      style={{
+        margin: "var(--space-4)",
+        padding: "5px 10px",
+        borderRadius: "2px",
+        background: draft ? "var(--text)" : "var(--accent)",
+        color: draft ? "var(--bg)" : "var(--paper, #fff)",
+        fontFamily: "var(--font-mono)",
+        fontSize: "var(--text-label)",
+        textTransform: "uppercase",
+        letterSpacing: "var(--track-label)",
+      }}
+    >
+      {draft ? "Draft" : "Live"}
+    </span>
+  );
+}
+
+export function ProjectCard({
+  project,
+  index,
+  showVisibility = false,
+}: {
+  project: Project;
+  index: number;
+  /** Editor mode: flag each card as live or draft. Never set for the public. */
+  showVisibility?: boolean;
+}) {
   const n = String(index + 1).padStart(2, "0");
   const live = project.status === "live";
 
@@ -16,6 +48,7 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
         className={`group/plate relative flex aspect-[3/2] items-end overflow-hidden ${project.image ? "" : "fa-hatch"}`}
         style={{ borderBottom: "var(--border-hairline) solid var(--hairline)", padding: "var(--space-5)" }}
       >
+        {showVisibility && <VisibilityTag project={project} />}
         {project.image ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -94,11 +127,17 @@ export function ProjectCard({ project, index }: { project: Project; index: numbe
   );
 }
 
-export function ProjectGrid({ items = projects }: { items?: Project[] }) {
+export function ProjectGrid({
+  items = liveProjects,
+  showVisibility = false,
+}: {
+  items?: Project[];
+  showVisibility?: boolean;
+}) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" style={{ gap: "clamp(24px, 2.2vw, 40px)" }}>
       {items.map((p, i) => (
-        <ProjectCard key={p.id} project={p} index={i} />
+        <ProjectCard key={p.id} project={p} index={i} showVisibility={showVisibility} />
       ))}
     </div>
   );

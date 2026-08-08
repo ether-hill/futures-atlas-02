@@ -17,30 +17,39 @@
 (function () {
   // pages: a project's own internal tabs — shown in the mobile sheet under the
   // project title (and as the slim desktop sub-nav, rendered by each zone).
+  // draft: true = unpublished. Kept out of the switcher for everyone except a
+  // signed-in editor (detected via the readable "fa_editor" cookie). The cookie
+  // is only a hint for this list — the server gates every draft URL itself, so
+  // faking it here reveals nothing. Mirror src/data/projects.ts when you flip a
+  // project between live and draft.
   var FA_PROJECTS = [
-    { name: "Trajectories", path: "/trajectories" },
-    { name: "Hyperscale", path: "/hyperscale" },
+    { name: "Trajectories", path: "/trajectories", draft: true },
+    { name: "Hyperscale", path: "/hyperscale", draft: true },
     { name: "Signal Reactor", path: "/signal-reactor" },
     { name: "Quantum Spark", path: "/quantum-spark" },
-    { name: "Quantum Dominance", path: "/quantum-dominance" },
-    { name: "Woodchipper Futures", path: "/woodchipper" },
+    { name: "Quantum Dominance", path: "/quantum-dominance", draft: true },
+    { name: "Woodchipper Futures", path: "/woodchipper", draft: true },
     { name: "Swipe the Future", path: "/swipe-the-future" },
-    { name: "Social Composer", path: "/social-composer" },
+    { name: "Social Composer", path: "/social-composer", draft: true },
     { name: "Generatives", path: "/generatives" },
-    { name: "Literal Frequency", path: "/literal-frequency" },
-    { name: "Quantum Sandbox", path: "/quantum-sandbox" },
+    { name: "Literal Frequency", path: "/literal-frequency", draft: true },
+    { name: "Quantum Sandbox", path: "/quantum-sandbox", draft: true },
     { name: "The Odds", path: "/theodds", theme: "dark" },
     { name: "Underground Intelligence", path: "/underground-intelligence", pages: [
       { name: "Story", path: "/underground-intelligence/story" },
       { name: "Dashboard", path: "/underground-intelligence/dashboard" },
       { name: "Research", path: "/underground-intelligence/research" },
     ] },
-    { name: "Village Oracle", path: "/village-oracle", theme: "light", pages: [
+    { name: "Village Oracle", path: "/village-oracle", theme: "light", draft: true, pages: [
       { name: "Home", path: "/village-oracle" },
       { name: "Oracle", path: "/village-oracle/oracle" },
       { name: "Research", path: "/village-oracle/research" },
     ] },
   ];
+
+  var IS_EDITOR = /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
+  // What the switcher offers: drafts only once signed in.
+  var FA_LISTED = FA_PROJECTS.filter(function (x) { return IS_EDITOR || !x.draft; });
   var LINKS = [
     { name: "Home", path: "/" },
     { name: "Projects", path: "/projects" },
@@ -91,9 +100,10 @@
 
   var crumbHtml = "";
   if (isProject) {
-    var items = FA_PROJECTS.map(function (x) {
+    var items = FA_LISTED.map(function (x) {
       var c = x.path === cur.path;
-      return '<a role="menuitem" href="' + x.path + '" class="fa-shell__item' + (c ? " is-current" : "") + '"' + (c ? ' aria-current="true"' : "") + ">" + x.name + "</a>";
+      var tag = x.draft ? ' <span class="fa-shell__draft">Draft</span>' : "";
+      return '<a role="menuitem" href="' + x.path + '" class="fa-shell__item' + (c ? " is-current" : "") + '"' + (c ? ' aria-current="true"' : "") + ">" + x.name + tag + "</a>";
     }).join("");
     crumbHtml =
       '<span class="fa-shell__sep" aria-hidden="true">/</span>' +

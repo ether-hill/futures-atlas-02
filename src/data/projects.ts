@@ -1,11 +1,22 @@
 /**
- * The atlas index. Two projects are live; the rest are placeholders the owner
- * will flesh out. `url` makes a card a link; without it the card reads as
- * forthcoming. Copy here is placeholder except the two live entries.
+ * The atlas index. `visibility` decides who sees each entry: `live` is public,
+ * `draft` shows only to a signed-in editor (and its URL is closed to everyone
+ * else). This is the single source of truth for both — change the word here and
+ * the listings, the nav switcher, the contact dropdown and the URL gate follow.
+ *
+ * `url` makes a card a link; without it the card reads as forthcoming.
  * `date` is the full publish/added date (YYYY-MM-DD) — placeholders, adjust freely.
  */
 
 export type ProjectStatus = "live" | "in-progress" | "concept";
+
+/**
+ * Publication state — independent of `status` (which describes how finished a
+ * project is). `live` = anyone can see it. `draft` = only a signed-in editor
+ * sees it listed, and the public is turned away from its URL (see
+ * `src/middleware.ts`). Flip a project by changing this one word.
+ */
+export type ProjectVisibility = "live" | "draft";
 
 export interface Project {
   id: string;
@@ -15,6 +26,7 @@ export interface Project {
   date: string; // full date YYYY-MM-DD (used for ordering + display)
   field: string; // short category, e.g. "Rural futures"
   status: ProjectStatus;
+  visibility: ProjectVisibility; // live = public; draft = editors only
   url?: string; // external link if it exists
   path?: string; // internal path served within this site (e.g. "/coastlines-2100")
   image?: string; // card thumbnail (else a hatch plate)
@@ -32,6 +44,7 @@ export const projects: Project[] = [
     date: "2026-02-14",
     field: "AI & risk",
     status: "live",
+    visibility: "live",
     path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
     image: "/projects/odds-of-surviving-ai.jpg",
   },
@@ -44,6 +57,7 @@ export const projects: Project[] = [
     date: "2026-07-02",
     field: "AI & risk",
     status: "live",
+    visibility: "live",
     path: "/signal-reactor",
     image: "/projects/signal-reactor-2.jpg",
   },
@@ -56,6 +70,7 @@ export const projects: Project[] = [
     date: "2026-07-03",
     field: "AI & risk",
     status: "live",
+    visibility: "live",
     path: "/quantum-spark",
     image: "/projects/quantum-spark-2.jpg",
   },
@@ -68,6 +83,7 @@ export const projects: Project[] = [
     date: "2026-07-01",
     field: "Simulation",
     status: "live",
+    visibility: "draft",
     path: "/hyperscale",
     image: "/projects/hyperscale-2.jpg",
   },
@@ -80,6 +96,7 @@ export const projects: Project[] = [
     date: "2026-04-10",
     field: "Rural futures",
     status: "live",
+    visibility: "draft",
     path: "/village-oracle", // the full project, served within this site
     image: "/projects/hollow-villages.jpg",
   },
@@ -92,6 +109,7 @@ export const projects: Project[] = [
     date: "2026-06-19",
     field: "Generative visuals",
     status: "in-progress",
+    visibility: "live",
     path: "/generatives", // self-contained Vite static bundle (dashboard + embed player)
     image: "/projects/generatives-4.jpg",
   },
@@ -104,6 +122,7 @@ export const projects: Project[] = [
     date: "2026-06-23",
     field: "Calibration",
     status: "live",
+    visibility: "live",
     path: "/swipe-the-future",
     image: "/projects/swipe-the-future.jpg",
   },
@@ -116,6 +135,7 @@ export const projects: Project[] = [
     date: "2026-06-28",
     field: "Generative visuals",
     status: "live",
+    visibility: "draft",
     path: "/trajectories",
     image: "/projects/trajectories.jpg",
   },
@@ -128,6 +148,7 @@ export const projects: Project[] = [
     date: "2026-06-24",
     field: "AI & risk",
     status: "live",
+    visibility: "draft",
     path: "/quantum-dominance",
     image: "/projects/quantum-dominance.jpg",
   },
@@ -140,6 +161,7 @@ export const projects: Project[] = [
     date: "2026-06-23",
     field: "AI & risk",
     status: "live",
+    visibility: "draft",
     path: "/woodchipper",
     image: "/projects/woodchipper.jpg",
   },
@@ -152,6 +174,7 @@ export const projects: Project[] = [
     date: "2025-11-30",
     field: "Systems & evidence",
     status: "live",
+    visibility: "live",
     path: "/underground-intelligence", // the full project, served within this site
     image: "/projects/underground-intelligence.jpg",
   },
@@ -164,6 +187,7 @@ export const projects: Project[] = [
     date: "2026-05-28",
     field: "Quantum & computation",
     status: "in-progress",
+    visibility: "draft",
     path: "/quantum-sandbox", // self-contained Vite static bundle served within this site
     image: "/projects/quantum-sandbox.jpg",
   },
@@ -176,6 +200,7 @@ export const projects: Project[] = [
     date: "2026-06-22",
     field: "Data visualisation",
     status: "in-progress",
+    visibility: "draft",
     path: "/literal-frequency", // self-contained Vite static bundle served within this site
     image: "/projects/literal-frequency.jpg",
   },
@@ -188,6 +213,7 @@ export const projects: Project[] = [
     date: "2026-06-17",
     field: "Creative tools",
     status: "live",
+    visibility: "draft",
     path: "/social-composer", // self-contained Next static export served within this site
     image: "/projects/social-composer.jpg",
   },
@@ -196,8 +222,35 @@ export const projects: Project[] = [
 // Display order is curated by the owner — the array order above IS the order.
 export const projectsOrdered: Project[] = [...projects];
 
-/** The distinct category tags (from `field`), for the projects-page filters. */
-export const projectFields: string[] = Array.from(new Set(projects.map((p) => p.field)));
+/** Everything the public may see. */
+export const liveProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "live");
+
+/** Unpublished work — listed only for a signed-in editor. */
+export const draftProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "draft");
+
+/** The list for the current viewer: editors get everything, the public gets live only. */
+export function visibleProjects(isEditor: boolean): Project[] {
+  return isEditor ? projectsOrdered : liveProjects;
+}
+
+/** The distinct category tags (from `field`) present in a given list. */
+export function fieldsOf(items: Project[]): string[] {
+  return Array.from(new Set(items.map((p) => p.field)));
+}
+
+/** The distinct category tags across the public listing. */
+export const projectFields: string[] = fieldsOf(liveProjects);
+
+/** In-site paths belonging to draft projects — what the middleware gate closes. */
+export const draftPaths: string[] = draftProjects.flatMap((p) => (p.path ? [p.path] : []));
+
+/**
+ * True if `pathname` is a draft project's page (the path itself or anything
+ * under it). Runs in Edge middleware, so it stays plain string work.
+ */
+export function isDraftPath(pathname: string): boolean {
+  return draftPaths.some((base) => pathname === base || pathname.startsWith(`${base}/`));
+}
 
 /** "2026-06-20" → "20 Jun 2026". */
 export function formatProjectDate(iso: string): string {
@@ -208,9 +261,10 @@ export function formatProjectDate(iso: string): string {
 }
 
 /** The shared Project dropdown list for every contact form across the family.
- *  Adding a project (with a `path`) makes it appear here automatically. */
+ *  Adding a live project (with a `path`) makes it appear here automatically;
+ *  drafts stay out of it, since the public can't reach them. */
 export const contactProjects: string[] = [
   "Futures Atlas",
-  ...projects.filter((p) => p.path).map((p) => p.title),
+  ...liveProjects.filter((p) => p.path).map((p) => p.title),
   "Another project / general",
 ];
