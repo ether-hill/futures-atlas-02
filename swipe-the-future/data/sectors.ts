@@ -1,9 +1,16 @@
 // Swipe the Future — Calibration · data layer.
 // Content lives here, not in components. Claims + reveal notes are ported VERBATIM
 // from the source-checked prototype; each source carries a resolvable primary URL.
-// Adding a 6th role or 7th card is a data edit — no component change.
+// Adding a sector or a card is a data edit — no component change.
+//
+// A deck is a Sector. `kind: "sector"` decks are lines of work / fields of
+// activity (Military & Defence, Education, Agriculture & Food…); `kind: "wildcard"`
+// decks are the themed ones (Curveballs, Hype check, The oracles). Sectors people
+// type in themselves arrive at runtime from /api/swipe/sector with
+// `kind: "generated"` and carry an "AI-drafted" badge until an editor approves them.
 
 export type Verdict = "unlikely" | "contested" | "likely" | "already";
+export type SectorKind = "sector" | "wildcard" | "generated";
 
 export interface Card {
   id: string;
@@ -12,19 +19,25 @@ export interface Card {
   note: string; // grounded reveal, ≤ ~30 words
   source: { label: string; url?: string };
   attribution?: string; // present on "quote" cards — who said it (renders as a quote)
+  checked?: string; // ISO date the claim was last verified against its source
 }
 
-export interface Role { // a "category" in the UI
+export interface Sector {
   id: string;
+  kind: SectorKind;
   name: string;
   blurb: string;
-  cards: Card[]; // exactly 6 for v1
+  cards: Card[];
+  approved?: boolean; // generated decks only — false until an editor signs off
 }
 
 // Verdict config — positions on the meter, labels, colours. Imported everywhere.
+// The scale runs false → true; "contested" is the honest middle, shown as KINDA.
 export const POS: Record<Verdict, number> = { unlikely: 0.12, contested: 0.45, likely: 0.74, already: 0.95 };
-export const VLABEL: Record<Verdict, string> = { unlikely: "Unlikely", contested: "Contested", likely: "Likely", already: "Already real" };
+export const VLABEL: Record<Verdict, string> = { unlikely: "Not true", contested: "Partly true", likely: "Broadly true", already: "Already real" };
 export const VCOLOR: Record<Verdict, string> = { unlikely: "var(--oxblood)", contested: "var(--slate)", likely: "var(--verdigris)", already: "var(--brass)" };
+// How true a claim is, 0 (false) → 1 (already real). Drives the stats page's x-axis.
+export const TRUTH: Record<Verdict, number> = { unlikely: 0, contested: 0.5, likely: 0.8, already: 1 };
 
 // resolved primary sources (see brief appendix)
 const S = {
@@ -56,9 +69,9 @@ const S = {
   bnefIea: { label: "BNEF · IEA", url: "https://www.iea.org/reports/energy-and-ai" },
 } as const;
 
-export const ROLES: Role[] = [
+export const SECTORS: Sector[] = [
   {
-    id: "programmer", name: "Programmer", blurb: "Code · crypto-migration · automation",
+    id: "software", kind: "sector", name: "Software & Code", blurb: "Automation · crypto-migration · who writes the code",
     cards: [
       { id: "prog-1", claim: "Within a few years, AI writes the majority of new production code.", verdict: "contested", note: "The AI 2027 forecast projected near-total coding automation by early 2027 — but its own authors have since pushed that toward the early 2030s.", source: S.ai2027 },
       { id: "prog-2", claim: "You'll spend years rewriting working code just to defend it against quantum computers.", verdict: "likely", note: "NIST finalized post-quantum encryption standards in 2024; US federal systems must migrate by 2035. Anything touching encryption is in scope.", source: S.nistPqc },
@@ -69,7 +82,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "designer", name: "Designer", blurb: "Generative tools · craft · displacement",
+    id: "design", kind: "sector", name: "Design & Creative", blurb: "Generative tools · craft · displacement",
     cards: [
       { id: "des-1", claim: "Within a decade, AI handles most production-level design work.", verdict: "likely", note: "Goldman Sachs estimates ~26% of design tasks are automatable; the World Economic Forum lists graphic design among its fastest-declining jobs.", source: S.goldmanWef },
       { id: "des-2", claim: "Generative AI has already collapsed designers' wages.", verdict: "unlikely", note: "Despite the fear, large workforce datasets through 2024 show little measurable wage decline for AI-exposed creative roles — so far.", source: S.gallup },
@@ -80,7 +93,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "lawyer", name: "Lawyer", blurb: "Hallucinations · research · privilege",
+    id: "law", kind: "sector", name: "Law & Justice", blurb: "Hallucinations · research · privilege",
     cards: [
       { id: "law-1", claim: "Lawyers are already being fined by courts for AI 'hallucinated' citations.", verdict: "already", note: "Bloomberg Law counted 280+ filings with fabricated AI citations since 2023 — up sevenfold in 2025 — with sanctions from $1,000 to $30,000+.", source: S.bloombergLaw },
       { id: "law-2", claim: "Within a decade, AI handles most entry-level legal research.", verdict: "contested", note: "AI already does research and contract review, but courts insist on human verification and the field is split on how far junior work shrinks.", source: S.natLawReview },
@@ -91,7 +104,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "crypto", name: "Crypto trader", blurb: "Q-Day · wallets · ECDSA",
+    id: "money", kind: "sector", name: "Money & Crypto", blurb: "Q-Day · wallets · ECDSA",
     cards: [
       { id: "cry-1", claim: "A quantum computer could one day lift Bitcoin straight out of vulnerable wallets.", verdict: "likely", note: "Around 25% of all BTC — roughly 4 million coins — sit in addresses with exposed public keys, the part a quantum attacker could target.", source: S.deloitte },
       { id: "cry-2", claim: "Breaking Bitcoin's keys needs far more qubits than any machine has today.", verdict: "already", note: "Estimates run from hundreds of thousands to millions of qubits; today's best machines manage ~1,500. True — for now.", source: S.webberGoogle },
@@ -102,7 +115,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "energy", name: "Energy sector", blurb: "Data-center demand · grid · materials",
+    id: "energy", kind: "sector", name: "Energy & Grid", blurb: "Data-center demand · grid · materials",
     cards: [
       { id: "ene-1", claim: "AI data centers drive a massive jump in electricity demand this decade.", verdict: "already", note: "Goldman Sachs projects ~165% growth in data-center power demand by 2030; the IEA sees data-center electricity roughly doubling to ~945 TWh.", source: S.goldmanIea },
       { id: "ene-2", claim: "By 2030, AI data centers could consume as much power as a mid-sized country.", verdict: "likely", note: "Estimates add ~200 TWh of annual demand globally — comparable to the entire electricity use of Poland or Vietnam.", source: S.goldmanIea },
@@ -115,7 +128,7 @@ export const ROLES: Role[] = [
 
   // ── additional categories (research-sourced; see git log) ──────────────────
   {
-    id: "doctor", name: "Doctor", blurb: "Diagnosis · admin burden · clinical AI",
+    id: "health", kind: "sector", name: "Health & Medicine", blurb: "Diagnosis · admin burden · clinical AI",
     cards: [
       { id: "doc-1", claim: "An AI device can already diagnose a disease and report the result with no doctor reading it.", verdict: "already", note: "In 2018 the FDA cleared IDx-DR (now LumineticsCore), the first autonomous AI detecting diabetic retinopathy with no clinician interpreting the image.", source: { label: "FDA / Digital Diagnostics", url: "https://www.digitaldiagnostics.com/fda-permits-marketing-of-lumineticscore-formerly-known-as-idx-dr-for-automated-detection-of-diabetic-retinopathy-in-primary-care/" } },
       { id: "doc-2", claim: "AI 'scribes' that listen to visits and write the notes are already cutting doctor burnout.", verdict: "already", note: "A 2024 six-system study and a Stanford trial found ambient AI scribes significantly reduced documentation time and burnout; Kaiser logged ~15,791 hours saved.", source: { label: "JAMA-cited study (PMC)", url: "https://pmc.ncbi.nlm.nih.gov/articles/PMC12492056/" } },
@@ -126,7 +139,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "teacher", name: "Teacher", blurb: "Tutoring AI · cheating · the classroom",
+    id: "education", kind: "sector", name: "Education", blurb: "Tutoring AI · cheating · the classroom",
     cards: [
       { id: "tch-1", claim: "Roughly a quarter of US teens already use ChatGPT to help with their homework.", verdict: "already", note: "A 2024 Pew survey found about 26% of US teens aged 13–17 had used ChatGPT for schoolwork — double the share from the year before.", source: { label: "Pew Research / EdWeek", url: "https://www.edweek.org/technology/new-data-reveal-how-many-students-are-using-ai-to-cheat/2024/04" } },
       { id: "tch-2", claim: "AI-writing detectors are reliable enough to safely catch students cheating.", verdict: "unlikely", note: "A Stanford study found detectors flagged 61% of non-native-English essays as AI; Vanderbilt and others disabled Turnitin's detector over false positives.", source: { label: "Stanford (arXiv)", url: "https://arxiv.org/abs/2304.02819" } },
@@ -137,7 +150,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "journalist", name: "Journalist", blurb: "Automated copy · trust · investigations",
+    id: "media", kind: "sector", name: "Media & Journalism", blurb: "Automated copy · trust · investigations",
     cards: [
       { id: "jrn-1", claim: "A major newswire already auto-writes thousands of corporate earnings stories with no human writing them.", verdict: "already", note: "The AP has used natural-language generation since 2014, scaling earnings coverage from ~300 to thousands of stories per quarter straight from data feeds.", source: { label: "Poynter", url: "https://www.poynter.org/reporting-editing/2015/robot-writing-increased-aps-earnings-stories-by-tenfold/" } },
       { id: "jrn-2", claim: "A major magazine was caught publishing AI-written articles under fake, AI-generated author profiles.", verdict: "already", note: "In 2023 Futurism revealed Sports Illustrated ran articles bylined to invented writers with AI-generated headshots; CNET also corrected dozens of AI stories.", source: { label: "NPR", url: "https://www.npr.org/2023/11/28/1215693615/sports-illustrated-is-accused-of-posting-articles-by-writers-created-by-ai" } },
@@ -148,7 +161,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "accountant", name: "Accountant", blurb: "Bookkeeping · audit · advisory",
+    id: "accounting", kind: "sector", name: "Accounting & Audit", blurb: "Bookkeeping · audit · advisory",
     cards: [
       { id: "acc-1", claim: "A Big Four firm has already cut staff and credited new AI audit tools with the redundancy.", verdict: "already", note: "KPMG moved to lay off ~10% of US audit partners, citing AI audit tools that made some manager roles redundant; all Big Four firms cut jobs recently.", source: { label: "TheStreet", url: "https://www.thestreet.com/markets/big-four-accounting-faces-reckoning-theyre-choosing-ai-over-humans-cutting-benefits-and-hiring" } },
       { id: "acc-2", claim: "Routine bookkeeping and data-entry roles are among the jobs AI is set to shrink fastest.", verdict: "likely", note: "The WEF 2025 Future of Jobs Report lists accounting, bookkeeping and payroll clerks among the fastest-declining roles this decade as AI handles routine tasks.", source: { label: "World Economic Forum", url: "https://www.weforum.org/stories/2025/01/future-of-jobs-report-2025-the-fastest-growing-and-declining-jobs/" } },
@@ -159,7 +172,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "driver", name: "Driver", blurb: "Robotaxis · trucking · last mile",
+    id: "transport", kind: "sector", name: "Transport & Logistics", blurb: "Robotaxis · trucking · last mile",
     cards: [
       { id: "drv-1", claim: "Robotaxis already carry passengers with no human driver — half a million paid rides every week.", verdict: "already", note: "Waymo reported 500,000 paid driverless rides a week across 10 US cities by March 2026, up from 250,000 a year earlier.", source: { label: "TechCrunch (Mar 2026)", url: "https://techcrunch.com/2026/03/27/waymo-skyrocketing-ridership-in-one-chart/" } },
       { id: "drv-2", claim: "Driverless cars already crash far less than humans — roughly 90% fewer serious-injury wrecks.", verdict: "already", note: "A peer-reviewed 2025 study found Waymo had significantly lower injury-crash rates than humans over 56.7 million driverless miles.", source: { label: "Traffic Injury Prevention (2025)", url: "https://www.tandfonline.com/doi/full/10.1080/15389588.2025.2499887" } },
@@ -170,7 +183,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "farmer", name: "Farmer", blurb: "Precision ag · robots · yields",
+    id: "agriculture", kind: "sector", name: "Agriculture & Food", blurb: "Precision ag · robots · yields",
     cards: [
       { id: "frm-1", claim: "Robotic weeders now zap weeds with lasers on real commercial farms — no herbicide needed.", verdict: "already", note: "Carbon Robotics' LaserWeeders ran on 100+ farms across 14 countries, processing 250,000+ acres in 2024 using AI vision to laser-kill weeds.", source: { label: "RealAgriculture / Carbon Robotics", url: "https://www.realagriculture.com/2025/11/carbon-robotics-laser-weeder-targets-organic-corn-and-soybean-acres/" } },
       { id: "frm-2", claim: "AI sprayers can see individual weeds and cut a farm's herbicide use by more than half.", verdict: "already", note: "John Deere reports See & Spray averaged 59% herbicide savings in 2024, saving ~8 million gallons across more than a million acres.", source: { label: "John Deere", url: "https://www.deere.com/en/news/all-news/see-spray-herbicide-savings/" } },
@@ -181,7 +194,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "support", name: "Support agent", blurb: "Chatbots · call centres · deflection",
+    id: "service", kind: "sector", name: "Retail & Service", blurb: "Chatbots · call centres · deflection",
     cards: [
       { id: "sup-1", claim: "One company's AI chatbot did the work of 700 full-time support agents in a single month.", verdict: "already", note: "In Feb 2024 Klarna said its OpenAI-powered assistant handled 2.3M chats — two-thirds of support volume, equal to 700 full-time agents.", source: { label: "Klarna", url: "https://www.klarna.com/international/press/klarna-ai-assistant-handles-two-thirds-of-customer-service-chats-in-its-first-month/" } },
       { id: "sup-2", claim: "AI will soon fully replace human support agents.", verdict: "unlikely", note: "Klarna reversed course in May 2025, rehiring humans after admitting cost-cutting hurt quality; its CEO said customers should 'always' reach a person.", source: { label: "Entrepreneur", url: "https://www.entrepreneur.com/business-news/klarna-ceo-reverses-course-by-hiring-more-humans-not-ai/491396" } },
@@ -192,7 +205,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "scientist", name: "Scientist", blurb: "AlphaFold · AI discovery · quantum sim",
+    id: "science", kind: "sector", name: "Science & Research", blurb: "AlphaFold · AI discovery · quantum sim",
     cards: [
       { id: "sci-1", claim: "An AI that predicts protein structures just won a Nobel Prize in Chemistry.", verdict: "already", note: "AlphaFold won the 2024 Chemistry Nobel; its free database now covers 200M+ protein structures used by 2M+ researchers worldwide.", source: { label: "NobelPrize.org", url: "https://www.nobelprize.org/prizes/chemistry/2024/press-release/" } },
       { id: "sci-2", claim: "An AI-designed drug has already proven itself in a human clinical trial.", verdict: "contested", note: "Insilico's AI-designed lung-fibrosis drug hit positive Phase 2a results (Nature Medicine, 2025) — a first proof, but no AI drug is fully approved yet.", source: { label: "Insilico / Nature Medicine", url: "https://www.prnewswire.com/news-releases/insilico-medicine-announces-nature-medicine-publication-of-phase-iia-results-evaluating-rentosertib-the-novel-tnik-inhibitor-for-idiopathic-pulmonary-fibrosis-ipf-discovered-and-designed-with-a-pioneering-ai-approach-302472070.html" } },
@@ -203,7 +216,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "soldier", name: "Soldier", blurb: "Autonomous weapons · drones · decisions",
+    id: "military", kind: "sector", name: "Military & Defence", blurb: "Autonomous weapons · drones · decisions",
     cards: [
       { id: "sol-1", claim: "Drones that pick and strike their own targets are already used in combat.", verdict: "already", note: "Ukraine fields AI terminal-guidance FPV drones; Russia's V2U loitering munition autonomously searches and selects targets, first used in combat Feb 2025.", source: { label: "CSIS", url: "https://www.csis.org/analysis/ukraines-future-vision-and-current-capabilities-waging-ai-enabled-autonomous-warfare" } },
       { id: "sol-2", claim: "A binding global treaty now bans lethal autonomous 'killer robot' weapons.", verdict: "unlikely", note: "No binding treaty exists. The UN chief urged one by 2026, but consensus rules let major military states keep blocking it.", source: { label: "UN News", url: "https://news.un.org/en/story/2025/05/1163256" } },
@@ -214,7 +227,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "translator", name: "Translator", blurb: "Machine translation · interpreting · nuance",
+    id: "language", kind: "sector", name: "Language & Translation", blurb: "Machine translation · interpreting · nuance",
     cards: [
       { id: "trn-1", claim: "Companies are already replacing human translators with AI for routine work.", verdict: "already", note: "Duolingo cut ~10% of its contractors in early 2024 — largely translators — replacing them with GPT-4 and keeping a few as quality curators.", source: { label: "TechCrunch", url: "https://techcrunch.com/2024/01/09/duolingo-cut-10-of-its-contractor-workforce-as-the-company-embraces-ai/" } },
       { id: "trn-2", claim: "Your earbuds can already translate a live conversation in 70+ languages.", verdict: "already", note: "Google's Gemini-powered Live Translate does real-time speech-to-speech through ordinary headphones in 70+ languages, live in the US, Mexico and India.", source: { label: "Google", url: "https://blog.google/products/translate/language-learning-live-translate/" } },
@@ -225,9 +238,21 @@ export const ROLES: Role[] = [
     ],
   },
 
+  {
+    id: "environment", kind: "sector", name: "Environment & Climate", blurb: "Footprint · forecasting · what AI costs the planet",
+    cards: [
+      { id: "env-1", claim: "Data centres are on track to use about as much electricity as the whole of Japan.", verdict: "likely", note: "The IEA puts global data-centre demand at 415 TWh in 2024 and projects 945 TWh by 2030 — roughly Japan's entire annual consumption today.", source: { label: "IEA — Energy and AI, 2025", url: "https://www.iea.org/reports/energy-and-ai/executive-summary" }, checked: "2026-08-08" },
+      { id: "env-2", claim: "AI now forecasts the weather more accurately than the world's best physics supercomputer.", verdict: "already", note: "DeepMind's GenCast beat the ECMWF ensemble on 97.2% of 1,320 targets — and produces a 15-day global forecast in eight minutes on one chip.", source: { label: "DeepMind · Nature, Dec 2024", url: "https://deepmind.google/blog/gencast-predicts-weather-and-the-risks-of-extreme-conditions-with-sota-accuracy/" }, checked: "2026-08-08" },
+      { id: "env-3", claim: "Big Tech's carbon emissions are coming down as they get better at running AI.", verdict: "unlikely", note: "The opposite. Microsoft's emissions are up roughly a quarter since 2020 and Google's climbed 48% from its 2019 baseline, both blamed on data-centre build-out.", source: { label: "Company sustainability reports, 2025–26", url: "https://www.datacenterdynamics.com/en/news/microsoft-emissions-up-23-since-2020-blames-ai-data-centers/" }, checked: "2026-08-08" },
+      { id: "env-4", claim: "Most of a data centre's water footprint is nowhere near the building — it's at the power station.", verdict: "already", note: "The IEA attributes about 60% of data-centre water use to indirect consumption: the thermoelectric plants generating its electricity, not its cooling towers.", source: { label: "IEA — Energy and AI, 2025", url: "https://www.iea.org/reports/energy-and-ai" }, checked: "2026-08-08" },
+      { id: "env-5", claim: "AI's water use is already measured in hundreds of billions of litres a year.", verdict: "already", note: "Peer-reviewed estimates put AI's 2025 water footprint at 312–765 billion litres; US data-centre expansion alone pushed consumption toward a trillion litres.", source: { label: "Cell Reports Sustainability, 2026", url: "https://www.sciencedirect.com/science/article/pii/S2666389925002788" }, checked: "2026-08-08" },
+      { id: "env-6", claim: "The emissions AI helps the world avoid outweigh the emissions from running it.", verdict: "contested", note: "Industry modelling says yes; independent researchers say the avoided-emissions maths is unfalsifiable and the data-centre footprint is the only measured half.", source: { label: "IEA · independent reviews, 2025–26", url: "https://www.iea.org/reports/energy-and-ai" }, checked: "2026-08-08" },
+    ],
+  },
+
   // ── tricky / sarcastic curveballs (the gut answer is often wrong) ──────────
   {
-    id: "curveballs", name: "Curveballs", blurb: "Counterintuitive · gotchas · think twice",
+    id: "curveballs", kind: "wildcard", name: "Curveballs", blurb: "Counterintuitive · gotchas · think twice",
     cards: [
       { id: "cur-1", claim: "Relax — there's a binding UN treaty banning autonomous killer robots, so nobody's building lethal AI weapons.", verdict: "unlikely", note: "No binding treaty exists. A 2024 UN resolution passed 166–3, but the US, Russia, India and Israel have blocked actual negotiations.", source: { label: "Human Rights Watch, 2025", url: "https://www.hrw.org/news/2025/05/21/un-start-talks-treaty-ban-killer-robots" } },
       { id: "cur-2", claim: "Famously, GPT-4 aced the bar exam in the 90th percentile — basically smarter than 9 in 10 lawyers.", verdict: "unlikely", note: "An MIT reanalysis found the 90th-percentile figure compared it to repeat failers; against actual passers it lands near the 48th percentile, ~15th on essays.", source: { label: "MIT — re-evaluating GPT-4's bar exam", url: "https://dspace.mit.edu/handle/1721.1/153986" } },
@@ -237,7 +262,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "hype", name: "Hype check", blurb: "Marketing vs reality · myths · letdowns",
+    id: "hype", kind: "wildcard", name: "Hype check", blurb: "Marketing vs reality · myths · letdowns",
     cards: [
       { id: "hyp-1", claim: "Amazon's 'Just Walk Out' stores were pure computer vision — grab and go, zero humans in the loop.", verdict: "unlikely", note: "Around 700 of every 1,000 sales were reviewed by ~1,000 workers in India. Amazon dropped the system for smart carts in 2024.", source: { label: "Bloomberg / The Information, 2024", url: "https://www.bloomberg.com/opinion/articles/2024-04-03/the-humans-behind-amazon-s-just-walk-out-technology-are-all-over-ai" } },
       { id: "hyp-2", claim: "Those Tesla Optimus robots pouring drinks and chatting at the 2024 launch? Fully autonomous, obviously.", verdict: "unlikely", note: "At the October 2024 'We, Robot' event the bots walked via AI but were teleoperated by humans to chat and serve; Tesla later confirmed 'assisted.'", source: { label: "TechCrunch, October 2024", url: "https://techcrunch.com/2024/10/14/tesla-optimus-bots-were-controlled-by-humans-during-the-we-robot-event/" } },
@@ -248,7 +273,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "quantum", name: "Quantum reality", blurb: "Q-Day · hype · what's actually true",
+    id: "quantum", kind: "wildcard", name: "Quantum reality", blurb: "Q-Day · hype · what's actually true",
     cards: [
       { id: "qnt-1", claim: "Relax — that quantum chip would need 10 septillion years to out-compute a real supercomputer.", verdict: "already", note: "Google's 105-qubit Willow ran a random-circuit benchmark in under five minutes that Frontier would take ~10^25 years to match (Dec 2024).", source: { label: "Google — Willow", url: "https://blog.google/technology/research/google-willow-quantum-chip/" } },
       { id: "qnt-2", claim: "Sure, today's quantum computers can just run Shor's algorithm and crack your bank's RSA keys.", verdict: "unlikely", note: "Breaking RSA-2048 needs roughly a million noisy qubits for days; the largest number reliably Shor-factored on hardware is still 21.", source: { label: "IBM Quantum", url: "https://www.ibm.com/quantum/blog/factor-15-shors-algorithm" } },
@@ -259,7 +284,7 @@ export const ROLES: Role[] = [
     ],
   },
   {
-    id: "alreadyreal", name: "Already real?", blurb: "It sounds fake. It shipped.",
+    id: "alreadyreal", kind: "wildcard", name: "Already real?", blurb: "It sounds fake. It shipped.",
     cards: [
       { id: "arl-1", claim: "Come on — no AI has ever actually won a Nobel Prize. That's pure sci-fi.", verdict: "already", note: "The 2024 Nobel in Chemistry went to DeepMind's Hassabis and Jumper for AlphaFold's protein-structure prediction (shared with David Baker).", source: { label: "NobelPrize.org — Chemistry 2024", url: "https://www.nobelprize.org/prizes/chemistry/2024/press-release/" } },
       { id: "arl-2", claim: "A Physics Nobel for… neural networks? Sure. The physics committee would never reward AI.", verdict: "already", note: "The 2024 Nobel in Physics went to Hopfield and Hinton for foundational discoveries enabling machine learning with artificial neural networks.", source: { label: "NobelPrize.org — Physics 2024", url: "https://www.nobelprize.org/prizes/physics/2024/press-release/" } },
@@ -272,7 +297,7 @@ export const ROLES: Role[] = [
 
   // ── quote cards (a different flavour — real on-the-record predictions) ──────
   {
-    id: "quotes", name: "The oracles", blurb: "Bold predictions · on the record · aging fast",
+    id: "quotes", kind: "wildcard", name: "The oracles", blurb: "Bold predictions · on the record · aging fast",
     cards: [
       { id: "quo-1", claim: "AI could wipe out half of all entry-level white-collar jobs and spike unemployment to 10–20% in the next one to five years.", verdict: "contested", note: "Said to Axios in May 2025; named tech, finance, law, consulting. No bloodbath yet by 2026, but entry-level hiring has softened — jury's out.", attribution: "Dario Amodei, Anthropic CEO", source: { label: "Axios (May 2025)", url: "https://www.axios.com/2025/05/28/ai-jobs-white-collar-unemployment-anthropic" } },
       { id: "quo-2", claim: "People should stop training radiologists now — within five years deep learning will obviously do better.", verdict: "unlikely", note: "Said in 2016. Radiologist demand instead rose; Hinton himself conceded in 2025 he was wrong on timing — the field is hiring, not vanishing.", attribution: "Geoffrey Hinton, AI pioneer / Nobel laureate", source: { label: "New Republic / NYT", url: "https://newrepublic.com/article/187203/ai-radiology-geoffrey-hinton-nobel-prediction" } },
@@ -288,22 +313,29 @@ export const ROLES: Role[] = [
 ];
 
 // alignment + profiles (ported from prototype)
-export function isAligned(verdict: Verdict, believe: boolean): boolean {
-  if (verdict === "contested") return true; // never penalised
-  if (verdict === "unlikely") return believe === false;
-  return believe === true; // likely / already
+// `sayTrue` is the answer the player gave: true = "TRUE", false = "FALSE".
+export function isAligned(verdict: Verdict, sayTrue: boolean): boolean {
+  if (verdict === "contested") return true; // KINDA — never penalised either way
+  if (verdict === "unlikely") return sayTrue === false;
+  return sayTrue === true; // likely / already
 }
 
 export interface Profile { name: string; desc: string; lblNote: string }
 export function profileFor(matched: number, total: number, over: number, under: number): Profile {
   const rate = total ? matched / total : 0;
   if (under >= 2 && under > over)
-    return { name: "Caught Flat-Footed", desc: "The future you think you're waiting for is partly here already. You under-read how much has shipped.", lblNote: "but the present outran you" };
+    return { name: "Caught Flat-Footed", desc: "The future you think you're waiting for is partly here already. You called things false that have already shipped.", lblNote: "but the present outran you" };
   if (over >= 2 && over > under)
-    return { name: "The Accelerationist", desc: "You lean ahead of the evidence — quick to believe the bold claim before it's earned. Useful instinct, but check the qubit count.", lblNote: "running ahead of the proof" };
+    return { name: "The Accelerationist", desc: "You lean ahead of the evidence — quick to call the bold claim true before it's earned. Useful instinct, but check the qubit count.", lblNote: "running ahead of the proof" };
   if (rate >= 0.8)
     return { name: "Well Calibrated", desc: "Your gut tracks where the evidence actually sits — neither hyped nor in denial. Rare.", lblNote: "and your instincts held" };
   if (rate >= 0.5)
     return { name: "Roughly Tuned", desc: "You're in the right neighbourhood but a few cards slipped — usually the ones that are further along than they feel.", lblNote: "with a few blind spots" };
-  return { name: "The Skeptic", desc: "You resist the narrative hard — sometimes past the point where the evidence has caught up. Doubt is cheap; calibration isn't.", lblNote: "but doubt overshot the data" };
+  return { name: "The Skeptic", desc: "You resist the narrative hard — sometimes past the point where the evidence has caught up. Calling things false is cheap; calibration isn't.", lblNote: "but doubt overshot the data" };
 }
+
+// ── deck helpers ──────────────────────────────────────────────────────────
+export const SECTOR_DECKS = SECTORS.filter((s) => s.kind === "sector");
+export const WILDCARD_DECKS = SECTORS.filter((s) => s.kind === "wildcard");
+export const ALL_CARDS = SECTORS.flatMap((s) => s.cards.map((c) => ({ card: c, sector: s })));
+export const cardById = new Map(ALL_CARDS.map(({ card, sector }) => [card.id, { card, sector }]));

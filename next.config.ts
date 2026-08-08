@@ -50,6 +50,7 @@ const nextConfig: NextConfig = {
         { source: "/social-composer/village-oracle", destination: "/social-composer/village-oracle/index.html" },
         // Swipe the Future — Next static export (basePath baked in, trailingSlash)
         { source: "/swipe-the-future", destination: "/swipe-the-future/index.html" },
+        { source: "/swipe-the-future/stats", destination: "/swipe-the-future/stats/index.html" },
         // Woodchipper Futures — Next static export (USAID cuts scenario engine)
         { source: "/woodchipper", destination: "/woodchipper/index.html" },
         // Quantum Dominance — Next static export (graphic-novel scenario explorer)

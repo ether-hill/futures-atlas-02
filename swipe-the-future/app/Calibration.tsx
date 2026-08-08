@@ -1,17 +1,24 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ROLES, VLABEL, isAligned, profileFor, type Card } from "../data/roles";
-import Stats from "./Stats";
+import {
+  SECTORS, SECTOR_DECKS, WILDCARD_DECKS, VLABEL, isAligned, profileFor,
+  type Card, type Sector,
+} from "../data/sectors";
 
-const ROUND = 10;
+const MIXED = 10; // length of the "surprise me" round; a sector deck runs its own length
 const pad = (n: number) => String(n).padStart(2, "0");
 
-type Item = { card: Card; role: string };
-type Ans = { card: Card; role: string; believe: boolean };
-type Phase = "swipe" | "flinging" | "result" | "final";
+type Item = { card: Card; sector: Sector };
+type Ans = { card: Card; sector: Sector; sayTrue: boolean };
+type Phase = "pick" | "swipe" | "flinging" | "result" | "final";
 
-// fire-and-forget metrics
+// The mixed deck. `sector` here is whichever deck the card came from, so the
+// result card can still credit it.
+const MIXED_SECTOR: Sector = { id: "mixed", kind: "wildcard", name: "Mixed", blurb: "A bit of everything", cards: [] };
+
+// fire-and-forget metrics. The wire field stays `believe` so the counters that
+// have been accumulating since launch keep adding up under the same keys.
 function track(body: Record<string, unknown>) {
   try { fetch("/api/swipe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {}); } catch { /* */ }
 }
@@ -21,47 +28,60 @@ function shuffle<T>(a: T[]): T[] {
   for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j]!, r[i]!]; }
   return r;
 }
-function buildDeck(roleId?: string): Item[] {
-  const all = ROLES.flatMap((r) => r.cards.map((c) => ({ card: c, role: r.name })));
-  if (!roleId) return shuffle(all).slice(0, ROUND);
-  // Category round: always ROUND cards — all of the category's cards, topped up
-  // with random cards from other categories if it has fewer than ROUND.
-  const role = ROLES.find((r) => r.id === roleId);
-  const own = shuffle((role?.cards ?? []).map((c) => ({ card: c, role: role!.name })));
-  if (own.length >= ROUND) return own.slice(0, ROUND);
-  const ownIds = new Set(own.map((i) => i.card.id));
-  const rest = shuffle(all.filter((i) => !ownIds.has(i.card.id)));
-  return shuffle([...own, ...rest.slice(0, ROUND - own.length)]);
-}
 
 export default function Calibration() {
   const [deck, setDeck] = useState<Item[]>([]);
+  const [sector, setSector] = useState<Sector>(MIXED_SECTOR);
   const [pos, setPos] = useState(0);
   const [answers, setAnswers] = useState<Ans[]>([]);
-  const [phase, setPhase] = useState<Phase>("swipe");
+  const [phase, setPhase] = useState<Phase>("pick");
   const [secs, setSecs] = useState(5);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [fling, setFling] = useState<0 | 1 | -1>(0);
-  const [statsOpen, setStatsOpen] = useState(false);
+
+  // sectors people have added themselves, fetched from the host API
+  const [generated, setGenerated] = useState<Sector[]>([]);
+  const [custom, setCustom] = useState("");
+  const [gen, setGen] = useState<{ state: "idle" | "loading" | "error"; msg?: string }>({ state: "idle" });
 
   const reduce = useRef(false);
   const cardEl = useRef<HTMLDivElement | null>(null);
   const locked = useRef(false);
 
   useEffect(() => { reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
-  useEffect(() => { setDeck(buildDeck()); }, []);
+  useEffect(() => {
+    fetch("/api/swipe/sector", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d?.sectors)) setGenerated(d.sectors); })
+      .catch(() => {});
+  }, []);
 
   const item = deck[pos];
   const lastAns = answers[answers.length - 1];
 
-  const startDeck = (roleId?: string) => { setDeck(buildDeck(roleId)); setPos(0); setAnswers([]); setPhase("swipe"); setMenuOpen(false); locked.current = false; };
+  const startDeck = useCallback((s: Sector | null) => {
+    let next: Item[];
+    let used: Sector;
+    if (!s) {
+      used = MIXED_SECTOR;
+      const pool = [...SECTORS, ...generated].flatMap((sec) => sec.cards.map((c) => ({ card: c, sector: sec })));
+      next = shuffle(pool).slice(0, MIXED);
+    } else {
+      used = s;
+      // A sector round is only that sector's cards — no topping up from
+      // elsewhere, so "you picked Military" means what it says.
+      next = shuffle(s.cards.map((c) => ({ card: c, sector: s })));
+    }
+    setSector(used); setDeck(next); setPos(0); setAnswers([]);
+    setPhase("swipe"); setPickerOpen(false); locked.current = false;
+  }, [generated]);
 
-  const decide = useCallback((believe: boolean) => {
+  const decide = useCallback((sayTrue: boolean) => {
     if (locked.current || phase !== "swipe" || !item) return;
     locked.current = true;
-    setAnswers((a) => [...a, { card: item.card, role: item.role, believe }]);
-    track({ cardId: item.card.id, category: item.role, verdict: item.card.verdict, believe });
-    setFling(believe ? 1 : -1);
+    setAnswers((a) => [...a, { card: item.card, sector: item.sector, sayTrue }]);
+    track({ cardId: item.card.id, category: item.sector.id, verdict: item.card.verdict, believe: sayTrue });
+    setFling(sayTrue ? 1 : -1);
     setPhase(reduce.current ? "result" : "flinging"); // the card swipes/fades off, then the result
     if (reduce.current) setSecs(5);
   }, [phase, item]);
@@ -78,14 +98,6 @@ export default function Calibration() {
     if (pos + 1 >= deck.length) { setPhase("final"); track({ round: true }); }
     else { setPos(pos + 1); setPhase("swipe"); }
   }, [pos, deck.length]);
-
-  // hidden stats dashboard — type "qwerty"
-  useEffect(() => {
-    let buf = "";
-    const onKey = (e: KeyboardEvent) => { if (e.key.length === 1) { buf = (buf + e.key.toLowerCase()).slice(-6); if (buf === "qwerty") setStatsOpen(true); } };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
 
   // While the verdict shows: count seconds for the label, and let the ring's own
   // animationEnd drive the advance (so the loop always completes). A timeout is a
@@ -115,8 +127,8 @@ export default function Calibration() {
     };
     const up = () => {
       if (!dragging || locked.current) return; dragging = false; el.style.transition = "";
-      const commit = Math.abs(dx) > 95, believe = dx > 0;
-      if (commit) { decide(believe); } // leave transform — React applies the fling-off style
+      const commit = Math.abs(dx) > 95, sayTrue = dx > 0;
+      if (commit) { decide(sayTrue); } // leave transform — React applies the fling-off style
       else { el.style.transform = ""; if (yes) yes.style.opacity = "0"; if (no) no.style.opacity = "0"; }
       dx = 0;
     };
@@ -136,26 +148,106 @@ export default function Calibration() {
     return () => window.removeEventListener("keydown", onKey);
   }, [phase, decide, advance]);
 
+  // Ask the host to draft a sector nobody has covered yet. Claude searches the
+  // web for it, so this takes a while — the button holds a spinner throughout.
+  const requestSector = useCallback(async () => {
+    const name = custom.trim();
+    if (name.length < 3 || gen.state === "loading") return;
+    setGen({ state: "loading" });
+    try {
+      const r = await fetch("/api/swipe/sector", {
+        method: "POST", headers: { "content-type": "application/json" },
+        body: JSON.stringify({ sector: name }),
+      });
+      const d = await r.json();
+      if (!r.ok || !d?.ok) { setGen({ state: "error", msg: d?.message ?? "Couldn't build that one." }); return; }
+      setGenerated((g) => [d.sector, ...g.filter((x) => x.id !== d.sector.id)]);
+      setCustom(""); setGen({ state: "idle" });
+      startDeck(d.sector);
+    } catch {
+      setGen({ state: "error", msg: "Couldn't reach the server." });
+    }
+  }, [custom, gen.state, startDeck]);
+
   const stop = (e: React.PointerEvent) => e.stopPropagation();
 
   // verdict bits
-  const aligned = lastAns ? isAligned(lastAns.card.verdict, lastAns.believe) : false;
-  const contested = lastAns?.card.verdict === "contested";
-  const voClass = contested ? "fair" : aligned ? "yes" : "nope";
-  const voBig = contested ? "FAIR" : aligned ? "YES!" : "NOPE";
+  const aligned = lastAns ? isAligned(lastAns.card.verdict, lastAns.sayTrue) : false;
+  const kinda = lastAns?.card.verdict === "contested";
+  const voClass = kinda ? "kinda" : aligned ? "yes" : "nope";
+  const voBig = kinda ? "KINDA" : aligned ? "YES!" : "NOPE";
 
-  // score (for the final card)
-  // Score out of the whole round. Contested cards are "fair" — they count as
-  // matched either way (never against you), so a perfect run can reach N/N.
+  // score (for the final card). Contested cards are KINDA — they count as matched
+  // either way (never against you), so a perfect run can reach N/N.
   const total = answers.length;
-  const matched = answers.filter((a) => isAligned(a.card.verdict, a.believe)).length;
-  const overs = answers.filter((a) => a.card.verdict === "unlikely" && a.believe).length;
-  const unders = answers.filter((a) => a.card.verdict === "already" && !a.believe).length;
+  const matched = answers.filter((a) => isAligned(a.card.verdict, a.sayTrue)).length;
+  const overs = answers.filter((a) => a.card.verdict === "unlikely" && a.sayTrue).length;
+  const unders = answers.filter((a) => a.card.verdict === "already" && !a.sayTrue).length;
   const prof = profileFor(matched, total, overs, unders);
 
   const behind = deck.length - 1 - pos;
   const depths: number[] = [];
   for (let d = Math.min(2, behind); d >= 0; d--) depths.push(d);
+
+  const picker = (
+    <div className="cat-menu">
+      <div className="cat-menu-head">
+        <span>Pick a sector</span>
+        {phase !== "pick" && <button className="cat-close" onClick={() => setPickerOpen(false)} aria-label="Close">✕</button>}
+      </div>
+      <div className="cat-list">
+        <button className="cat-item mixed" onClick={() => startDeck(null)}>
+          <span className="cat-name">Surprise me</span>
+          <span className="cat-blurb">Ten cards pulled from every sector at once</span>
+        </button>
+
+        <div className="cat-ask">
+          <label className="cat-asklbl" htmlFor="stf-custom">Not here? Name a sector and we&apos;ll build it</label>
+          <div className="cat-askrow">
+            <input
+              id="stf-custom" className="cat-input" value={custom} placeholder="e.g. shipping, archaeology, social work"
+              onChange={(e) => { setCustom(e.target.value); if (gen.state === "error") setGen({ state: "idle" }); }}
+              onKeyDown={(e) => { if (e.key === "Enter") requestSector(); }}
+              disabled={gen.state === "loading"} maxLength={40}
+            />
+            <button className="cat-go" onClick={requestSector} disabled={custom.trim().length < 3 || gen.state === "loading"}>
+              {gen.state === "loading" ? <span className="spin" aria-hidden="true" /> : "→"}
+            </button>
+          </div>
+          {gen.state === "loading" && <span className="cat-note">Reading up on it — this takes two or three minutes, so hold on.</span>}
+          {gen.state === "error" && <span className="cat-note err">{gen.msg}</span>}
+        </div>
+
+        {generated.length > 0 && (
+          <>
+            <div className="cat-group">Added by visitors</div>
+            {generated.map((s) => (
+              <button key={s.id} className="cat-item" onClick={() => startDeck(s)}>
+                <span className="cat-name">{s.name}{!s.approved && <span className="cat-badge">AI-drafted</span>}</span>
+                <span className="cat-blurb">{s.blurb}</span>
+              </button>
+            ))}
+          </>
+        )}
+
+        <div className="cat-group">Sectors</div>
+        {SECTOR_DECKS.map((s) => (
+          <button key={s.id} className="cat-item" onClick={() => startDeck(s)}>
+            <span className="cat-name">{s.name}</span>
+            <span className="cat-blurb">{s.blurb}</span>
+          </button>
+        ))}
+
+        <div className="cat-group">Wildcards</div>
+        {WILDCARD_DECKS.map((s) => (
+          <button key={s.id} className="cat-item" onClick={() => startDeck(s)}>
+            <span className="cat-name">{s.name}</span>
+            <span className="cat-blurb">{s.blurb}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
 
   return (
     <section className="stf-banner">
@@ -164,27 +256,37 @@ export default function Calibration() {
           <div className="stf-head">
             <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
             <h1>Swipe the <em>future.</em></h1>
-            <p className="lede">It&apos;s 2026, and AI and quantum computing are rewriting what work looks like — fast, and unevenly. Every card here is a real claim about where things <em>actually</em> stand for a given line of work: each one fact-checked and linked to its source — no hype, no doom. Swipe Believe or Doubt on ten of them, then see how far your gut sat from the evidence, and which categories you read best.</p>
+            <p className="lede">It&apos;s 2026, and AI and quantum computing are rewriting whole sectors — fast, and unevenly. Every card here is a real claim about where things <em>actually</em> stand: each one fact-checked and linked to its source, no hype, no doom. Pick a sector, call each claim <em>true</em> or <em>false</em>, then see how far your gut sat from the evidence.</p>
+            <p className="stf-links">
+              <a href="/swipe-the-future/stats">See what everyone else answered →</a>
+            </p>
           </div>
         </div>
         <div className="bcol-r">
 
       <div className="deck-head">
-        <div className="dots">{deck.map((_, k) => <span key={k} className={`dot${k < pos ? " done" : k === pos ? " cur" : ""}`} />)}</div>
-        <span className="count">{phase === "final" ? "DONE" : `${pad(pos + 1)} / ${pad(deck.length || ROUND)}`}</span>
+        {phase === "pick" ? (
+          <span className="count">Choose your deck</span>
+        ) : (
+          <>
+            <div className="dots">{deck.map((_, k) => <span key={k} className={`dot${k < pos ? " done" : k === pos ? " cur" : ""}`} />)}</div>
+            <span className="count">{phase === "final" ? "DONE" : `${pad(pos + 1)} / ${pad(deck.length)}`}</span>
+          </>
+        )}
       </div>
 
       <div className="tinder">
-        {phase === "final" ? (
+        {phase === "pick" ? picker : phase === "final" ? (
           <div className="tcard final">
-            <span className="card-eyebrow">Phase 1 · your calibration</span>
+            <span className="card-eyebrow">{sector.name} · your calibration</span>
             <div className="score-big">{matched}<span className="sof">/ {total}</span></div>
             <div className="score-sub">matched the evidence {prof.lblNote}</div>
             <div className="pname">{prof.name}</div>
             <p className="pdesc">{prof.desc}</p>
             <div className="final-actions">
-              <button className="card-cta" onClick={() => startDeck()}>Keep going — 10 more →</button>
-              <button className="card-cta ghost" onClick={() => setMenuOpen(true)}>Explore a category →</button>
+              <button className="card-cta" onClick={() => startDeck(null)}>Ten more, mixed →</button>
+              <button className="card-cta ghost" onClick={() => setPickerOpen(true)}>Pick another sector →</button>
+              <a className="card-cta ghost" href="/swipe-the-future/stats">How did everyone else do? →</a>
             </div>
           </div>
         ) : (
@@ -196,7 +298,10 @@ export default function Calibration() {
                   <div className={`vo-big ${voClass}`}>{voBig}</div>
                   <div className="vo-label">Evidence: {VLABEL[lastAns.card.verdict]}</div>
                   <p className="vo-insight">{lastAns.card.note}</p>
-                  <div className="vo-src">{lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}</div>
+                  <div className="vo-src">
+                    {lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}
+                    {lastAns.card.checked && <span className="vo-checked"> · checked {lastAns.card.checked}</span>}
+                  </div>
                   <button className="nextring" onClick={advance} aria-label="Next claim">
                     <svg viewBox="0 0 72 72" aria-hidden="true">
                       <circle className="ring-bg" cx="36" cy="36" r="32" pathLength={100} />
@@ -213,11 +318,12 @@ export default function Calibration() {
             return (
               <div key={`claim-${pos + d}-${it.card.id}`} ref={active && phase === "swipe" ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}${it.card.attribution ? " quote" : ""}`} style={flingStyle}>
                 {it.card.attribution && <span className="quote-mark" aria-hidden="true">&ldquo;</span>}
+                {it.sector.kind === "generated" && !it.sector.approved && <span className="draft-flag">AI-drafted · unverified</span>}
                 <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">— {it.card.attribution}</span></> : it.card.claim}</h3>
                 {active && phase === "swipe" && (
                   <div className="card-actions">
-                    <span className="ca"><button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="Doubt — won't happen / not true">✕</button><span className="ca-lbl">Doubt</span></span>
-                    <span className="ca"><button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="Believe — likely / true">✓</button><span className="ca-lbl">Believe</span></span>
+                    <span className="ca"><button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="False">✕</button><span className="ca-lbl">False</span></span>
+                    <span className="ca"><button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="True">✓</button><span className="ca-lbl">True</span></span>
                   </div>
                 )}
                 {active && (phase === "swipe" || flung) && <><span className="stamp no" aria-hidden="true" style={flung && fling < 0 ? { opacity: 1 } : undefined}>✕</span><span className="stamp yes" aria-hidden="true" style={flung && fling > 0 ? { opacity: 1 } : undefined}>✓</span></>}
@@ -225,25 +331,17 @@ export default function Calibration() {
             );
           })
         )}
-        {phase === "final" && menuOpen && (
-          <div className="cat-menu">
-            <div className="cat-menu-head"><span>Explore a category</span><button className="cat-close" onClick={() => setMenuOpen(false)} aria-label="Close">✕</button></div>
-            <div className="cat-list">
-              {ROLES.map((r) => (
-                <button key={r.id} className="cat-item" onClick={() => startDeck(r.id)}>
-                  <span className="cat-name">{r.name}</span>
-                  <span className="cat-blurb">{r.blurb}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+        {phase !== "pick" && pickerOpen && picker}
       </div>
 
-      <p className="deckhint">{phase === "result" ? `Auto-advancing in ${secs}s` : phase === "final" ? "Pick up where you left off, or zoom in on one world" : "Swipe the card · tap ✕ / ✓ · or use ← / →"}</p>
+      <p className="deckhint">
+        {phase === "pick" ? "Every claim is sourced — pick where to start"
+          : phase === "result" ? `Auto-advancing in ${secs}s`
+          : phase === "final" ? `${sector.name} · pick up where you left off, or switch sectors`
+          : `${sector.name} · swipe the card · tap ✕ / ✓ · or use ← / →`}
+      </p>
         </div>
       </div>
-      {statsOpen && <Stats onClose={() => setStatsOpen(false)} />}
     </section>
   );
 }
