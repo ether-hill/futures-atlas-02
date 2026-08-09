@@ -40,6 +40,8 @@
   --wash-6: rgba(242, 237, 226, .6);
   --field-bg: rgba(23, 24, 27, .62);
   --tip-bg: rgba(10, 11, 13, .97);
+  --tip-fg: #f2ede2;
+  --tip-dim: rgba(242, 237, 226, .62);
   --banner-scrim: linear-gradient(102deg, rgba(7,8,12,.93) 0%, rgba(7,8,12,.74) 44%, rgba(7,8,12,.4) 100%);
 }
 
@@ -69,6 +71,8 @@ html:not(.dark) {
   --wash-6: rgba(23, 24, 27, .6);
   --field-bg: #fff;
   --tip-bg: rgba(28, 26, 22, .97);
+  --tip-fg: #f4efe4;
+  --tip-dim: rgba(244, 239, 228, .66);
   --banner-scrim: linear-gradient(102deg, rgba(244,239,228,.95) 0%, rgba(244,239,228,.8) 44%, rgba(244,239,228,.45) 100%);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -330,8 +334,8 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .st-dots.in .st-dot { animation: st-pop .5s cubic-bezier(.2,.9,.3,1.3) both; }
 @keyframes st-pop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
 
-.st-tip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 14px)); pointer-events: none; max-width: 300px; display: flex; flex-direction: column; gap: 4px; padding: 11px 13px; border-radius: 12px; background: var(--tip-bg); border: 1px solid var(--line); box-shadow: var(--shadow); font-size: 12.5px; line-height: 1.45; color: var(--bone); }
-.st-tip span { color: var(--faint); font-size: 11.5px; }
+.st-tip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 14px)); pointer-events: none; max-width: 300px; display: flex; flex-direction: column; gap: 4px; padding: 11px 13px; border-radius: 12px; background: var(--tip-bg); border: 1px solid rgba(255, 255, 255, .14); box-shadow: var(--shadow); font-size: 12.5px; line-height: 1.45; color: var(--tip-fg); }
+.st-tip span { color: var(--tip-dim); font-size: 11.5px; }
 
 /* sector explorer */
 .st-explorer { margin-top: 26px; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; background: var(--ink-2); }
@@ -551,3 +555,6 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .st-para { margin: 0 0 18px; font-size: 14px; line-height: 1.68; color: var(--muted); max-width: 46ch; }
 .st-two h3 { margin-bottom: 2px; }
 .st-sec > .st-two { margin-top: 28px; }
+.st-demo { margin-top: 16px; padding: 12px 16px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--brass) 45%, transparent); background: color-mix(in srgb, var(--brass) 12%, transparent); font-size: 13px; line-height: 1.55; color: var(--muted); }
+.st-demo b { color: var(--bone); }
+.st-demo a { color: var(--accent-deep); margin-left: 6px; }

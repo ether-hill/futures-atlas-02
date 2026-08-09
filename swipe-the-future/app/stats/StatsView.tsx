@@ -8,6 +8,7 @@ import {
 } from "./stats-math";
 import { Reveal, CountUp, useInView } from "./Reveal";
 import { SectorExplorer } from "./SectorExplorer";
+import { demoCounters } from "./demo-data";
 
 const MIN_N = 3;       // a claim needs this many swipes before it goes on the plot
 const MIN_SECTOR = 20; // and a sector this many scorable answers before it's ranked
@@ -38,6 +39,7 @@ export default function StatsView() {
   const [err, setErr] = useState(false);
   const [fetchedAt, setFetchedAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
+  const [demo, setDemo] = useState(false);
   const [tip, setTip] = useState<Tip>(null);
   const plotRef = useRef<HTMLDivElement | null>(null);
   const { ref: plotSeenRef, seen: plotSeen } = useInView<HTMLDivElement>();
@@ -45,6 +47,14 @@ export default function StatsView() {
   // Read once on load. The tallies move as people play, so there is a refresh
   // rather than a poll: nobody needs this page ticking in a background tab.
   const load = useCallback(() => {
+    // ?demo fills the page with synthetic tallies so the layout and the patterns
+    // can be judged on a full deck. Always labelled, never the default.
+    if (typeof window !== "undefined" && new URLSearchParams(location.search).has("demo")) {
+      setCounters(demoCounters());
+      setFetchedAt(new Date());
+      setDemo(true);
+      return;
+    }
     setLoading(true);
     Promise.all([
       fetch("/api/swipe", { cache: "no-store" }).then((r) => r.json()),
@@ -229,8 +239,17 @@ export default function StatsView() {
         <Tile n={scored ? aligned / scored : 0} k="matched the evidence" isPct />
       </Reveal>
 
+      {demo && (
+        <p className="st-demo">
+          <b>Sample data.</b> These are invented numbers, shown so the page can be read with a full
+          deck behind it. Nothing here is a real answer. <a href="/swipe-the-future/stats">See the real tally</a>
+        </p>
+      )}
+
       <p className="st-fresh">
-        {fetchedAt
+        {demo
+          ? "Sample data, generated in your browser."
+          : fetchedAt
           ? `Counted at ${fetchedAt.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}. The page reads the tally once when it loads, it does not tick along on its own.`
           : "Reading the tally…"}
         <button className="st-refresh" onClick={load} disabled={loading}>{loading ? "refreshing…" : "refresh"}</button>

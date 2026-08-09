@@ -57,6 +57,9 @@ Rules that matter more than anything else:
 - "already" claims should be things that sound like the future but have already shipped, the blind spots.
 - "contested" is for genuine expert disagreement, not for things you are simply unsure about. If you are unsure, do more research.
 - Claims are one sentence, plain language, no jargon, under 25 words. Written the way a knowledgeable person talks to a friend. No em dashes.
+- A claim has to be answerable WRONG. Never write "X could help with Y" or "X may be able to Y": there is no way to swipe FALSE on that, so everyone agrees and learns nothing. Cut could, may, might, has the potential to.
+- Anchor every claim in time: "today", "already", "by 2030", "this decade", "since 2024". A claim with no clock in it usually has no answer.
+- Give each claim something checkable: a number, a named organisation, a shipped product, a ruling.
 - The reveal note is one or two sentences, under 35 words, and carries the specific number or ruling that settles it.
 
 Verdict scale: "unlikely" = the evidence says no. "contested" = experts genuinely split. "likely" = the evidence points this way but it has not fully landed. "already" = it has already happened.
