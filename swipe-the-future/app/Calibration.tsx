@@ -46,6 +46,7 @@ export default function Calibration() {
   const reduce = useRef(false);
   const cardEl = useRef<HTMLDivElement | null>(null);
   const locked = useRef(false);
+  const roundTracked = useRef(false);
 
   useEffect(() => { reduce.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
   useEffect(() => {
@@ -56,7 +57,7 @@ export default function Calibration() {
   }, []);
 
   const item = deck[pos];
-  const lastAns = answers[answers.length - 1];
+  const lastAns = answers[pos];
 
   // The first thing anyone sees is a card, face up. Sector choice lives in its
   // own section further down; you do not have to make a decision to start.
@@ -79,7 +80,7 @@ export default function Calibration() {
       next = shuffle(s.cards.map((c) => ({ card: c, sector: s })));
     }
     setSector(used); setDeck(next); setPos(0); setAnswers([]);
-    setPhase("swipe"); locked.current = false;
+    setPhase("swipe"); locked.current = false; roundTracked.current = false;
   }, [generated]);
 
   const decide = useCallback((sayTrue: boolean) => {
@@ -98,11 +99,21 @@ export default function Calibration() {
     return () => clearTimeout(t);
   }, [phase]);
 
-  const advance = useCallback(() => {
+  // Step to any card in the deck. A card you have already answered reopens on
+  // its reveal rather than asking you again, so going back cannot double-count.
+  const goTo = useCallback((next: number) => {
     locked.current = false; setFling(0);
-    if (pos + 1 >= deck.length) { setPhase("final"); track({ round: true }); }
-    else { setPos(pos + 1); setPhase("swipe"); }
-  }, [pos, deck.length]);
+    if (next >= deck.length) {
+      setPhase("final");
+      if (!roundTracked.current) { roundTracked.current = true; track({ round: true }); }
+      return;
+    }
+    setPos(next);
+    setPhase(answers[next] ? "result" : "swipe");
+  }, [deck.length, answers]);
+
+  const advance = useCallback(() => goTo(pos + 1), [goTo, pos]);
+  const goBack = useCallback(() => { if (pos > 0) goTo(pos - 1); }, [goTo, pos]);
 
   // drag the active card (swipe phase only)
   useEffect(() => {
@@ -172,11 +183,14 @@ export default function Calibration() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (phase === "swipe") { if (e.key === "ArrowLeft") decide(false); if (e.key === "ArrowRight") decide(true); }
-      else if (phase === "result" && (e.key === "ArrowRight" || e.key === " " || e.key === "Enter")) { e.preventDefault(); advance(); }
+      else if (phase === "result") {
+        if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") { e.preventDefault(); advance(); }
+        if (e.key === "ArrowLeft") { e.preventDefault(); goBack(); }
+      }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [phase, decide, advance]);
+  }, [phase, decide, advance, goBack]);
 
   // Ask the host to draft a sector nobody has covered yet. Claude searches the
   // web for it, so this takes a while — the button holds a spinner throughout.
@@ -283,6 +297,9 @@ export default function Calibration() {
                   </div>
                   {/* same wrapper as the False/True row, so Next lands under your thumb */}
                   <div className="card-actions">
+                    {pos > 0 && (
+                      <button className="ca-back" onClick={goBack} aria-label="Previous claim">‹ back</button>
+                    )}
                     <span className="ca">
                       <button className="round next" onClick={advance} aria-label="Next claim">→</button>
                       <span className="ca-lbl">Next</span>
@@ -301,18 +318,23 @@ export default function Calibration() {
                 <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">— {it.card.attribution}</span></> : it.card.claim}</h3>
                 {active && phase === "swipe" && (
                   <div className="card-actions">
+                    {pos > 0 && (
+                      <button className="ca-back" onClick={goBack} aria-label="Previous claim">‹ back</button>
+                    )}
                     <span className="ca">
-                      <span className="ca-hint left" aria-hidden="true">←</span>
                       <button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="False">✕</button>
                       <span className="ca-lbl">False</span>
                     </span>
                     <span className="ca">
-                      <span className="ca-hint right" aria-hidden="true">→</span>
                       <button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="True">✓</button>
                       <span className="ca-lbl">True</span>
                     </span>
                   </div>
                 )}
+                {active && phase === "swipe" && <>
+                  <span className="ca-hint left" aria-hidden="true">←</span>
+                  <span className="ca-hint right" aria-hidden="true">→</span>
+                </>}
                 {active && (phase === "swipe" || flung) && <><span className="stamp no" aria-hidden="true" style={flung && fling < 0 ? { opacity: 1 } : undefined}>✕</span><span className="stamp yes" aria-hidden="true" style={flung && fling > 0 ? { opacity: 1 } : undefined}>✓</span></>}
               </div>
             );

@@ -37,8 +37,6 @@ export function SectorFilter({
 
   return (
     <div className="sf">
-      <label className="sf-lbl" htmlFor="sf-q">Deck</label>
-
       <div className="sf-field">
         <svg className="sf-icon" viewBox="0 0 16 16" aria-hidden="true">
           <circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" strokeWidth="1.6" />
@@ -49,6 +47,7 @@ export function SectorFilter({
           className="sf-input"
           value={query}
           placeholder="Filter sectors, or name a new one"
+          aria-label="Filter decks, or name a sector to build"
           onChange={(e) => onQuery(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter" && canBuild) onRequest(); }}
           disabled={gen.state === "loading"}
