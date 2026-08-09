@@ -5,7 +5,7 @@ import {
   SECTORS, VLABEL, isAligned, profileFor,
   type Card, type Sector,
 } from "../data/sectors";
-import { SectorPicker } from "./SectorPicker";
+import { SectorFilter } from "./SectorFilter";
 
 const MIXED = 10; // length of the "surprise me" round; a sector deck runs its own length
 // How long the reveal sits before it moves on. Five seconds was not enough to read
@@ -25,22 +25,6 @@ const MIXED_SECTOR: Sector = { id: "mixed", kind: "wildcard", name: "Mixed", blu
 // have been accumulating since launch keep adding up under the same keys.
 function track(body: Record<string, unknown>) {
   try { fetch("/api/swipe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {}); } catch { /* */ }
-}
-
-/**
- * Bring the deck back into view after picking a sector below it.
- *
- * Not every browser honours `behavior: "smooth"` — some ignore the call
- * outright — so if nothing has moved a beat later, jump instead of leaving the
- * visitor stranded in the picker wondering what their click did.
- */
-function scrollToDeck() {
-  const startY = window.scrollY;
-  if (startY === 0) return;
-  if (location.hash) history.replaceState(null, "", location.pathname + location.search);
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { window.scrollTo(0, 0); return; }
-  window.scrollTo({ top: 0, behavior: "smooth" });
-  setTimeout(() => { if (window.scrollY === startY) window.scrollTo(0, 0); }, 250);
 }
 
 function shuffle<T>(a: T[]): T[] {
@@ -100,7 +84,6 @@ export default function Calibration() {
     }
     setSector(used); setDeck(next); setPos(0); setAnswers([]);
     setPhase("swipe"); locked.current = false;
-    scrollToDeck();
   }, [generated]);
 
   const decide = useCallback((sayTrue: boolean) => {
@@ -142,27 +125,63 @@ export default function Calibration() {
     if (phase !== "swipe") return;
     const el = cardEl.current; if (!el) return;
     const yes = el.querySelector<HTMLElement>(".stamp.yes"), no = el.querySelector<HTMLElement>(".stamp.no");
-    let sx = 0, dx = 0, dragging = false;
-    const down = (e: PointerEvent) => { if (locked.current) return; if ((e.target as HTMLElement).closest(".card-actions")) return; dragging = true; sx = e.clientX; el.style.transition = "none"; try { el.setPointerCapture(e.pointerId); } catch {} };
-    const move = (e: PointerEvent) => {
-      if (!dragging || locked.current) return;
-      dx = e.clientX - sx; if (Math.abs(dx) > 6) e.preventDefault();
-      el.style.transform = `translateX(${dx}px) rotate(${dx / 22}deg)`;
-      const t = Math.min(Math.abs(dx) / 90, 1);
-      if (yes) yes.style.opacity = dx > 0 ? String(t) : "0";
-      if (no) no.style.opacity = dx < 0 ? String(t) : "0";
+
+    // Thresholds scale with the card. A fixed 95px commit is most of the width
+    // on a phone, which is what made swiping there feel like it was ignoring you.
+    const width = () => el.getBoundingClientRect().width || 320;
+    let sx = 0, sy = 0, dx = 0, dragging = false, decided = false, pid = -1;
+
+    const paint = (v: number) => {
+      el.style.transform = `translateX(${v}px) rotate(${v / 22}deg)`;
+      const t = Math.min(Math.abs(v) / (width() * 0.28), 1);
+      if (yes) yes.style.opacity = v > 0 ? String(t) : "0";
+      if (no) no.style.opacity = v < 0 ? String(t) : "0";
     };
-    const up = () => {
-      if (!dragging || locked.current) return; dragging = false; el.style.transition = "";
-      const commit = Math.abs(dx) > 95, sayTrue = dx > 0;
-      if (commit) { decide(sayTrue); } // leave transform — React applies the fling-off style
-      else { el.style.transform = ""; if (yes) yes.style.opacity = "0"; if (no) no.style.opacity = "0"; }
+    const reset = () => {
+      el.style.transition = "";
+      el.style.transform = "";
+      if (yes) yes.style.opacity = "0";
+      if (no) no.style.opacity = "0";
+    };
+
+    const down = (e: PointerEvent) => {
+      if (locked.current) return;
+      if ((e.target as HTMLElement).closest(".card-actions")) return;
+      dragging = true; decided = false; pid = e.pointerId;
+      sx = e.clientX; sy = e.clientY; dx = 0;
+      el.style.transition = "none";
+      try { el.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
+    };
+    const move = (e: PointerEvent) => {
+      if (!dragging || locked.current || e.pointerId !== pid) return;
+      dx = e.clientX - sx;
+      // Ignore a mostly-vertical drag: that is someone scrolling, not swiping.
+      if (!decided && Math.abs(dx) < 8 && Math.abs(e.clientY - sy) > 12) { dragging = false; reset(); return; }
+      if (Math.abs(dx) > 4) { decided = true; e.preventDefault(); }
+      paint(dx);
+    };
+    const up = (e: PointerEvent) => {
+      if (!dragging || locked.current) return;
+      if (e.pointerId !== pid) return;
+      dragging = false;
+      try { el.releasePointerCapture(pid); } catch { /* already released */ }
+      el.style.transition = "";
+      if (Math.abs(dx) > width() * 0.28) decide(dx > 0); // leave the transform; React flings it
+      else reset();
       dx = 0;
     };
+
     el.addEventListener("pointerdown", down);
-    window.addEventListener("pointermove", move, { passive: false });
-    window.addEventListener("pointerup", up);
-    return () => { el.removeEventListener("pointerdown", down); window.removeEventListener("pointermove", move); window.removeEventListener("pointerup", up); };
+    // On the element, not the window: pointer capture routes the rest here, and
+    // a lost pointer (a call, a gesture) then cancels cleanly instead of sticking.
+    el.addEventListener("pointermove", move, { passive: false });
+    el.addEventListener("pointerup", up);
+    el.addEventListener("pointercancel", () => { if (dragging) { dragging = false; reset(); } });
+    return () => {
+      el.removeEventListener("pointerdown", down);
+      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointerup", up);
+    };
   }, [phase, pos, decide]);
 
   // keyboard
@@ -217,19 +236,29 @@ export default function Calibration() {
   for (let d = Math.min(2, behind); d >= 0; d--) depths.push(d);
 
   return (
-    <>
     <section className="stf-banner">
       <div className="banner-inner">
         <div className="bcol-l">
           <div className="stf-head">
             <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
             <h1>Swipe the <em>future.</em></h1>
-            <p className="lede">It&apos;s 2026, and AI and quantum computing are rewriting whole sectors, fast and unevenly. Every card here is a real claim about where things <em>actually</em> stand: fact-checked, linked to its source, no hype and no doom. Call it <em>true</em> or <em>false</em>. Ten cards later you find out how far your gut sat from the evidence.</p>
+            <p className="lede">Every card is a real claim about where AI and quantum computing <em>actually</em> stand, fact-checked and linked to its source. Call it <em>true</em> or <em>false</em>.</p>
             <p className="stf-links">
               <a href="/swipe-the-future/stats">See what everyone else answered →</a>
             </p>
           </div>
+
+          <SectorFilter
+            current={sector.id}
+            generated={generated}
+            query={custom}
+            gen={gen}
+            onPick={startDeck}
+            onQuery={(v) => { setCustom(v); if (gen.state === "error") setGen({ state: "idle" }); }}
+            onRequest={requestSector}
+          />
         </div>
+
         <div className="bcol-r">
 
       <div className="deck-head">
@@ -247,7 +276,7 @@ export default function Calibration() {
             <p className="pdesc">{prof.desc}</p>
             <div className="final-actions">
               <button className="card-cta" onClick={() => startDeck(null)}>Ten more, mixed →</button>
-              <a className="card-cta ghost" href="#sectors">Pick another sector →</a>
+              
               <a className="card-cta ghost" href="/swipe-the-future/stats">How did everyone else do? →</a>
             </div>
           </div>
@@ -301,23 +330,9 @@ export default function Calibration() {
           : phase === "final" ? "Pick up where you left off, or change the deck"
           : "Swipe the card · tap ✕ / ✓ · or use ← / →"}
       </p>
-      <p className="deckwhich">
-        <span>{sector.name}</span>
-        <a href="#sectors">change sector →</a>
-      </p>
+
         </div>
       </div>
     </section>
-
-    <SectorPicker
-      current={sector.id}
-      generated={generated}
-      custom={custom}
-      gen={gen}
-      onPick={startDeck}
-      onCustom={(v) => { setCustom(v); if (gen.state === "error") setGen({ state: "idle" }); }}
-      onRequest={requestSector}
-    />
-    </>
   );
 }

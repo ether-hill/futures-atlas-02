@@ -135,6 +135,8 @@ html.dark .fa-shell__item--accent { color: #7fb2e6; }
 html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 
 @media (max-width: 680px) {
+  /* the bar is tall for a phone; trim the row and let consumers reclaim it */
+  :root { --fa-nav-h: 54px; }
   .fa-shell { padding: 0 14px; gap: 8px; }
   .fa-shell__navlink { padding: 8px 7px; letter-spacing: 0.08em; }
   .fa-shell__word { font-size: 17px; }

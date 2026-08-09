@@ -37,15 +37,15 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-x-[clamp(28px,4vw,64px)] gap-y-10 sm:grid-cols-2 lg:grid-cols-[1.3fr_0.7fr_1.3fr_1fr]">
           <div>
             <Link href="/" className="inline-flex items-center gap-2.5 text-paper">
-              {/* the header's brand lockup — mark inverted for the dark band */}
+              {/* the header's brand lockup, mark inverted for the dark band */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/fa.svg" alt="" aria-hidden="true" className="block h-5 w-auto invert" />
               <span className="text-[19px] font-medium tracking-[-0.01em]">Futures Atlas</span>
             </Link>
             <p className={colBody}>
-              A growing collection of speculative-design projects — prototypes,
-              open-source tools, and research on quantum computing, emerging
-              AI, and the organisations driving them.{" "}
+              Speculative-design projects, open-source tools and research on
+              quantum computing, emerging AI, and the organisations driving
+              them.{" "}
               <span className="text-paper">It&rsquo;s meant to be used.</span>
             </p>
           </div>
@@ -68,11 +68,9 @@ export function Footer() {
           <div>
             <p className={colHead}>Use the work</p>
             <p className={colBody}>
-              Open by default. Prototypes and tools are published with
-              copyable, replicatable code unless noted otherwise. Fork them,
-              adapt them, wire them into your own workflows — attribution
-              appreciated, permission not required. Research is free to cite;
-              sources are linked in every piece.
+              Open by default. Fork it, adapt it, wire it into your own work.
+              Attribution appreciated, permission not required. Research is
+              free to cite and every source is linked.
             </p>
             <p className="mt-3 font-mono text-[12.5px] text-paper/72">
               <a
@@ -90,9 +88,9 @@ export function Footer() {
           <div>
             <p className={colHead}>Contact</p>
             <p className={colBody}>
-              Get in touch. If you&rsquo;ve used something from the Atlas — in
-              a workshop, a project, a classroom — we&rsquo;d like to hear how
-              it went. Collaboration inquiries welcome.
+              Used something from the Atlas in a workshop, a project or a
+              classroom? We&rsquo;d like to hear how it went. Collaboration
+              inquiries welcome.
             </p>
             <p className="mt-3 font-mono text-[12.5px]">
               <Link href="/contact" className={colLink}>
@@ -104,11 +102,11 @@ export function Footer() {
 
         <div className="mt-[clamp(36px,5vw,64px)] flex flex-wrap items-baseline justify-between gap-x-8 gap-y-3 border-t border-paper/22 pt-6">
           <span className="font-mono text-[11px] leading-[1.7] text-paper/55">
-            © 2026 Futures Atlas · A living project — things change, break,
-            and improve.{updated ? ` Last updated ${updated}.` : ""}
+            © 2026 Futures Atlas · A living project. Things change, break and
+            improve.{updated ? ` Last updated ${updated}.` : ""}
           </span>
           <span className="font-mono text-[11px] leading-[1.7] text-paper/55">
-            Built with Next.js, Claude Code, and an evolving stack —{" "}
+            Built with Next.js, Claude Code and an evolving stack.{" "}
             <Link href="/about#stack" className={colLink}>
               see the full inventory →
             </Link>
