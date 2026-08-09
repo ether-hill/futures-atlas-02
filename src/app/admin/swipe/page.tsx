@@ -84,11 +84,20 @@ export default async function SwipeAdminPage() {
 }
 
 function Deck({ sector }: { sector: Awaited<ReturnType<typeof listSectors>>[number] }) {
+  // Drafted against v1's four-step scale, so it cannot be scored by a game that
+  // asks whether a thing has already happened. It is hidden from players; this
+  // says so, rather than leaving an editor wondering why nobody sees it.
+  const preV2 = !sector.cards.every((c) => c.verdict === "already" || c.verdict === "notyet");
   return (
     <article className="mb-5 rounded-2xl border border-line/70 p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-[19px] font-semibold tracking-[-0.015em] text-ink">{sector.name}</h3>
+          {preV2 && (
+            <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-accent-deep">
+              Old verdict scale · not served to players · rebuild or delete
+            </p>
+          )}
           <p className="mt-1 font-mono text-[11px] text-graphite">
             {sector.blurb} · asked for as “{sector.requestedAs ?? sector.id}” · {sector.cards.length} claims ·
             drafted {new Date(sector.createdAt).toLocaleDateString("en-GB")}

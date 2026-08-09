@@ -72,9 +72,20 @@ Return ONLY a JSON object, no prose around it:
 export async function GET() {
   const sectors = await listSectors();
   return NextResponse.json(
-    { ok: true, sectors: sectors.map(strip) },
+    { ok: true, sectors: sectors.filter(isV2).map(strip) },
     { headers: { "cache-control": "no-store" } },
   );
+}
+
+/**
+ * Decks drafted before the v2 rewrite carry the old four-step verdicts
+ * ("likely", "contested", …), which are not answers to the question the game
+ * now asks. They stay in Redis so an editor can see and delete them at
+ * /admin/swipe, but they are never served to a player: a card whose verdict the
+ * deck cannot score would render a blank answer and count nothing.
+ */
+function isV2(s: GenSector): boolean {
+  return s.cards.every((c) => c.verdict === "already" || c.verdict === "notyet");
 }
 
 /** The picker only needs the shape the sub-app's Sector type declares. */
