@@ -548,3 +548,6 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 }
 .st-legend { fill: var(--muted); font-family: var(--ff-sans); font-size: 11px; }
 .st-legend.dim { fill: var(--faint); }
+.st-para { margin: 0 0 18px; font-size: 14px; line-height: 1.68; color: var(--muted); max-width: 46ch; }
+.st-two h3 { margin-bottom: 2px; }
+.st-sec > .st-two { margin-top: 28px; }

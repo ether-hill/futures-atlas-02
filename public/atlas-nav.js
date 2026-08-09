@@ -1,12 +1,12 @@
 /*
-  THE single Futures Atlas global nav — one component for every surface.
+  THE single Futures Atlas global nav, one component for every surface.
 
   Loaded as a plain <script src="/atlas-nav.js" defer> by the hub (Next), the
   Vite tools (Generatives, Quantum Sandbox), Social Composer (Next export) and the
   static zone bundles (Village Oracle / Underground Intelligence / The Odds).
   It self-injects /atlas-nav.css, so one script tag is all any page needs.
 
-  Desktop: a sticky frosted bar — brand + (on a project page) a breadcrumb
+  Desktop: a sticky frosted bar, brand + (on a project page) a breadcrumb
   switcher, the primary links, and a theme toggle; hides on scroll-down.
   Tablet/mobile: the links collapse into an animated hamburger sheet that holds
   the primary links, the current project's own pages (under its title), and the
@@ -15,11 +15,11 @@
   Edit THIS file to change the nav anywhere.
 */
 (function () {
-  // pages: a project's own internal tabs — shown in the mobile sheet under the
+  // pages: a project's own internal tabs, shown in the mobile sheet under the
   // project title (and as the slim desktop sub-nav, rendered by each zone).
   // draft: true = unpublished. Kept out of the switcher for everyone except a
   // signed-in editor (detected via the readable "fa_editor" cookie). The cookie
-  // is only a hint for this list — the server gates every draft URL itself, so
+  // is only a hint for this list, the server gates every draft URL itself, so
   // faking it here reveals nothing. Mirror src/data/projects.ts when you flip a
   // project between live and draft.
   var FA_PROJECTS = [
@@ -180,7 +180,7 @@
     }
     var sheetThemeBtn = sheet.querySelector(".fa-sheet__theme");
     if (lockedTheme) {
-      // theme is fixed for this project — remove the toggle entirely
+      // theme is fixed for this project, remove the toggle entirely
       if (barToggle) barToggle.remove();
       if (sheetThemeBtn) sheetThemeBtn.remove();
     } else {
@@ -205,7 +205,7 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") setMenu(false); });
     window.addEventListener("resize", function () { if (window.innerWidth > 900) setMenu(false); });
 
-    // shared footer — only on project pages, unless the page brings its own
+    // shared footer, only on project pages, unless the page brings its own
     // (hub + Social Composer set data-fa-no-footer on <html> and supply theirs)
     if (isProject && !root.hasAttribute("data-fa-no-footer") && !document.querySelector("footer.fa-foot")) {
       var foot = document.createElement("footer");
@@ -226,7 +226,7 @@
         '<a class="fa-foot__home" href="/" aria-label="Futures Atlas home">' +
         '<span class="fa-foot__mark" aria-hidden="true">' + mark + "</span>" +
         '<span class="fa-foot__word">Futures Atlas</span></a>' +
-        '<p class="fa-foot__body">A growing collection of speculative-design projects — prototypes, open-source tools, and research on quantum computing, emerging AI, and the organisations driving them. <b>It\u2019s meant to be used.</b></p>' +
+        '<p class="fa-foot__body">Speculative-design projects, open-source tools and research on quantum computing, emerging AI, and the organisations driving them. <b>It\u2019s meant to be used.</b></p>' +
         "</div>" +
         '<div class="fa-foot__col">' +
         '<p class="fa-foot__h">Explore</p>' +
@@ -238,22 +238,22 @@
         "</div>" +
         '<div class="fa-foot__col">' +
         '<p class="fa-foot__h">Use the work</p>' +
-        '<p class="fa-foot__body">Open by default. Prototypes and tools are published with copyable, replicatable code unless noted otherwise. Fork them, adapt them, wire them into your own workflows — attribution appreciated, permission not required. Research is free to cite; sources are linked in every piece.</p>' +
+        '<p class="fa-foot__body">Open by default. Fork it, adapt it, wire it into your own work. Attribution appreciated, permission not required. Research is free to cite and every source is linked.</p>' +
         '<p class="fa-foot__body"><a class="fa-foot__a" href="https://github.com/ether-hill" target="_blank" rel="noopener">GitHub \u2197</a> · <a class="fa-foot__a" href="/about">License</a></p>' +
         "</div>" +
         '<div class="fa-foot__col">' +
         '<p class="fa-foot__h">Contact</p>' +
-        '<p class="fa-foot__body">Get in touch. If you\u2019ve used something from the Atlas — in a workshop, a project, a classroom — we\u2019d like to hear how it went. Collaboration inquiries welcome.</p>' +
+        '<p class="fa-foot__body">Used something from the Atlas in a workshop, a project or a classroom? We\u2019d like to hear how it went. Collaboration inquiries welcome.</p>' +
         '<p class="fa-foot__body"><a class="fa-foot__a" href="/contact">Contact form \u2192</a></p>' +
         "</div></div>" +
         '<div class="fa-foot__row">' +
-        '<span class="fa-foot__tag">© 2026 Futures Atlas · A living project — things change, break, and improve.' + upd + "</span>" +
-        '<span class="fa-foot__tag">Built with Next.js, Claude Code, and an evolving stack — <a class="fa-foot__a" href="/about#stack">see the full inventory \u2192</a></span>' +
+        '<span class="fa-foot__tag">© 2026 Futures Atlas · A living project. Things change, break and improve.' + upd + "</span>" +
+        '<span class="fa-foot__tag">Built with Next.js, Claude Code and an evolving stack. <a class="fa-foot__a" href="/about#stack">see the full inventory \u2192</a></span>' +
         "</div></div>";
       document.body.appendChild(foot);
     }
 
-    // ── global Share tool — fixed bottom-left on every page, expands on click ──
+    // ── global Share tool, fixed bottom-left on every page, expands on click ──
     // Standard share options plus "Open in Social Composer", which deep-links the
     // composer to transmutate THIS page (pull its pieces onto the canvas).
     if (!document.querySelector(".fa-share")) {

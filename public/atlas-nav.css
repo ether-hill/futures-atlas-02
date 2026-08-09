@@ -1,5 +1,5 @@
 /*
-  The one standard global nav — modelled on frond-studio.vercel.app:
+  The one standard global nav, modelled on frond-studio.vercel.app:
   • position: fixed, full-bleed, frosted glass (translucent + backdrop-blur)
   • hides on scroll-down, reveals on scroll-up (the `.is-hidden` transform)
   • light by default, dark under `html.dark` (the toggle flips that class)
@@ -39,7 +39,7 @@
 .fa-shell__word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; }
 /* The "Futures Atlas" wordmark shows alongside the logo on every page, including
    project pages, where the breadcrumb names the project after it. (Hidden only on
-   narrow screens — see the mobile block — so the project name keeps its room.) */
+   narrow screens, see the mobile block, so the project name keeps its room.) */
 
 .fa-shell__sep { color: currentColor; opacity: 0.32; padding: 0 4px; font-size: 18px; }
 
@@ -84,7 +84,7 @@
 .fa-shell__draft { margin-left: 6px; border-radius: 3px; background: rgba(20, 21, 24, 0.1); padding: 1px 5px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: 1px; }
 .fa-shell__menusep { height: 1px; margin: 6px 4px; background: rgba(20, 21, 24, 0.1); }
 
-/* primary nav links (right) — uppercase, letter-spaced */
+/* primary nav links (right), uppercase, letter-spaced */
 .fa-shell__nav { display: flex; align-items: center; gap: 8px; }
 .fa-shell__navlink {
   padding: 8px 12px;
@@ -146,7 +146,7 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
   .fa-shell__burger { flex: 0 0 auto; }
 }
 
-/* ── shared project-page footer — mirrors the Atlas home footer; themes with the light/dark toggle ── */
+/* ── shared project-page footer, mirrors the Atlas home footer; themes with the light/dark toggle ── */
 .fa-foot {
   /* above the full-viewport fixed canvases some project pages use, so the
      footer reads as a solid band instead of text floating over the art */
@@ -197,7 +197,7 @@ html.dark .fa-foot__tag { color: rgba(243, 241, 236, 0.5); }
 
 /* ── Project sub-nav ────────────────────────────────────────────────────────
    A slim row of the CURRENT project's own tabs, sitting directly below the one
-   master .fa-shell. No brand / switcher / toggle — the master owns those. Used
+   master .fa-shell. No brand / switcher / toggle, the master owns those. Used
    by the zones that have internal pages (Villages, Underground Intelligence,
    The Odds) so every zone reads as: one master bar + a slim tab row. ── */
 .fa-subnav {
@@ -243,7 +243,7 @@ body:has(.fa-subnav) .fa-shell.is-hidden { transform: none !important; }
 /* ── Hamburger + mobile sheet ───────────────────────────────────────────────
    On tablet/mobile the primary links collapse into a hamburger that opens a
    full sheet: primary links, the current project's own pages (under its title),
-   and the theme toggle — fading/staggering in. ── */
+   and the theme toggle, fading/staggering in. ── */
 .fa-shell__burger {
   display: none;
   position: relative;
@@ -385,7 +385,7 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
   .fa-subnav { display: none; } /* Villages tabs move into the sheet */
 }
 
-/* ── global Share tool — fixed bottom-left on every page, expands on click ── */
+/* ── global Share tool, fixed bottom-left on every page, expands on click ── */
 .fa-share { position: fixed; right: 18px; top: calc(var(--fa-nav-h, 56px) + 14px); z-index: 60; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; pointer-events: none; }
 .fa-share__btn {
   pointer-events: auto;

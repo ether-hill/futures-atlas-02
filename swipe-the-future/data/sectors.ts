@@ -39,7 +39,17 @@ export const POS: Record<Verdict, number> = { unlikely: 0.12, contested: 0.45, l
 export const VLABEL: Record<Verdict, string> = { unlikely: "False", contested: "Kinda", likely: "True", already: "Already real" };
 export const VCOLOR: Record<Verdict, string> = { unlikely: "var(--oxblood)", contested: "var(--slate)", likely: "var(--verdigris)", already: "var(--brass)" };
 // How true a claim is, 0 (false) → 1 (already real). Drives the stats page's x-axis.
-export const TRUTH: Record<Verdict, number> = { unlikely: 0, contested: 0.5, likely: 0.8, already: 1 };
+// Two different things, kept apart on purpose.
+//
+// RUNG is the claim's position on the x axis: four ordinal steps, evenly spaced,
+// because "false → kinda → true → already real" is a ladder, not a ruler.
+//
+// EXPECTED is how many people *should* say TRUE if they read the evidence right.
+// It has to agree with how the game scores an answer: TRUE is the correct answer
+// for both "true" and "already real", so both expect 100%. Putting "true" at 80%
+// made a crowd that answered it correctly look over-credulous on the map.
+export const RUNG: Record<Verdict, number> = { unlikely: 0, contested: 1, likely: 2, already: 3 };
+export const EXPECTED: Record<Verdict, number> = { unlikely: 0, contested: 0.5, likely: 1, already: 1 };
 
 // resolved primary sources (see brief appendix)
 const S = {

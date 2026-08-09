@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SECTORS, VLABEL, type Sector } from "../../data/sectors";
 import {
-  sectorStat, truthOf, sensitivityLabel, leanLabel,
+  sectorStat, expectedOf, rungOf, sensitivityLabel, leanLabel,
   type CardStat, type SectorStat,
 } from "./stats-math";
 import { Reveal, CountUp, useInView } from "./Reveal";
@@ -71,11 +71,11 @@ export default function StatsView() {
         const yes = Number(counters[`c:${c.id}:b`] ?? 0);
         const no = Number(counters[`c:${c.id}:d`] ?? 0);
         const total = yes + no;
-        const truth = truthOf(c.verdict);
+        const expected = expectedOf(c.verdict);
         const pTrue = total ? yes / total : 0;
         return {
           id: c.id, claim: c.claim, verdict: c.verdict, sector: s.name, sectorId: s.id,
-          yes, no, n: total, pTrue, truth, gap: pTrue - truth,
+          yes, no, n: total, pTrue, expected, rung: rungOf(c.verdict), gap: pTrue - expected,
         };
       }),
     );
@@ -117,8 +117,8 @@ export default function StatsView() {
   const swipes = n("swipes"), believe = n("believe"), doubt = n("doubt");
   const aligned = n("aligned"), scored = n("scored"), rounds = n("rounds");
 
-  const hypeTraps = [...plotted].filter((c) => c.verdict === "unlikely").sort((a, b) => b.gap - a.gap).slice(0, 5);
-  const blindSpots = [...plotted].filter((c) => c.verdict === "already" || c.verdict === "likely").sort((a, b) => a.gap - b.gap).slice(0, 5);
+  const hypeTraps = [...plotted].filter((c) => c.verdict === "unlikely" && c.gap > 0.12).sort((a, b) => b.gap - a.gap).slice(0, 5);
+  const blindSpots = [...plotted].filter((c) => (c.verdict === "already" || c.verdict === "likely") && c.gap < -0.12).sort((a, b) => a.gap - b.gap).slice(0, 5);
 
   if (err) return <Shell><p className="st-msg">Couldn&apos;t reach the metrics store.</p></Shell>;
   if (!counters) return <Shell><p className="st-msg">Loading…</p></Shell>;
@@ -130,7 +130,6 @@ export default function StatsView() {
   // value. Dots are jittered inside their column (deterministically, off the card
   // id) because otherwise every claim lands on four vertical lines.
   const W = 780, H = 560, P = { t: 46, r: 74, b: 116, l: 62 };
-  const SLOT: Record<number, number> = { 0: 0, 0.5: 1, 0.8: 2, 1: 3 };
   const px = (u: number) => P.l + u * (W - P.l - P.r);
   const py = (p: number) => H - P.b - p * (H - P.t - P.b);
   const rOf = (k: number) => Math.min(15, 4.5 + Math.sqrt(k) * 1.25);
@@ -141,7 +140,7 @@ export default function StatsView() {
     return ((h >>> 0) % 1000) / 1000 - 0.5; // −0.5 … 0.5, stable per claim
   };
   const slotU = (i: number) => 0.07 + (i / 3) * 0.88;
-  const dotX = (c: CardStat) => px(slotU(SLOT[c.truth] ?? 0) + jitter(c.id) * 0.17);
+  const dotX = (c: CardStat) => px(slotU(c.rung) + jitter(c.id) * 0.17);
 
   /** Rasterise the chart. The SVG leans on stylesheet rules, so the clone gets an
    *  inline <style> and an opaque ground, otherwise the PNG comes out bare. */
@@ -205,9 +204,9 @@ export default function StatsView() {
   const downloadCsv = () => {
     const esc = (v: string | number) => `"${String(v).replace(/"/g, '""')}"`;
     const rows = [
-      ["claim", "sector", "evidence", "evidence_value", "said_true", "said_false", "pct_said_true", "swipes", "gap"],
+      ["claim", "sector", "evidence", "expected_share_true", "said_true", "said_false", "pct_said_true", "swipes", "gap"],
       ...[...cards].sort((a, b) => b.n - a.n).map((c) => [
-        c.claim, c.sector, VLABEL[c.verdict], c.truth, c.yes, c.no,
+        c.claim, c.sector, VLABEL[c.verdict], c.expected, c.yes, c.no,
         c.n ? (c.pTrue).toFixed(4) : "", c.n, c.n ? c.gap.toFixed(4) : "",
       ]),
     ];
@@ -241,10 +240,11 @@ export default function StatsView() {
         <span className="st-kicker">01, the whole deck at once</span>
         <h2>The Reality Gap</h2>
         <p className="st-lede">
-          Every claim, plotted twice over: along the bottom, where the evidence actually puts it.
-          Up the side, how many people called it true. If the crowd read the evidence perfectly,
-          every dot would sit on the dotted line. Dots above it are things we believe more than the
-          evidence warrants. Dots below are things that are already real and we still don&apos;t buy.
+          Every dot is one claim. <em>Left to right</em> is how true it actually is, according to its
+          source: false at one end, already happened at the other. <em>Bottom to top</em> is how many
+          people swiped TRUE on it. So each dot says two things at once: how true a claim is, and how
+          many of us bought it. The dashed line is where a crowd that read the evidence perfectly
+          would sit. Above it we believed more than the claim deserves; below it, less.
         </p>
 
         {plotted.length === 0 ? (
@@ -272,7 +272,7 @@ export default function StatsView() {
                   <text x={P.l} y={P.t - 16} className="st-axlbl">SHARE WHO CALLED IT TRUE</text>
                   <polyline
                     className="st-diag" fill="none"
-                    points={[0, 0.5, 0.8, 1].map((t, i) => `${px(slotU(i))},${py(t)}`).join(" ")}
+                    points={[0, 0.5, 1, 1].map((v, i) => `${px(slotU(i))},${py(v)}`).join(" ")}
                   />
                   <text x={P.l + 6} y={P.t + 34} className="st-quad start" fill={C_BELIEVE}>HYPE TRAPS</text>
                   <text x={P.l + 6} y={P.t + 49} className="st-quadsub start">not true, widely believed</text>
@@ -430,26 +430,46 @@ export default function StatsView() {
         </p>
       </Reveal>
 
-      <Reveal className="st-sec st-two">
-        <div>
-          <h3 style={{ color: C_BELIEVE }}>What we fall for</h3>
-          <p className="st-sublede">Not true. Believed anyway.</p>
-          {hypeTraps.length ? hypeTraps.map((c, i) => (
-            <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
-              <span className="st-rowpct" style={{ color: C_BELIEVE }}>{pct(c.pTrue)}</span>
-              <span className="st-rowtxt"><b>{c.claim}</b><span>called true · {c.sector} · {c.n} swipes</span></span>
-            </div>
-          )) : <p className="st-msg sm">Not enough data yet.</p>}
-        </div>
-        <div>
-          <h3 style={{ color: C_DOUBT }}>What we miss</h3>
-          <p className="st-sublede">Already real. Still doubted.</p>
-          {blindSpots.length ? blindSpots.map((c, i) => (
-            <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
-              <span className="st-rowpct" style={{ color: C_DOUBT }}>{pct(1 - c.pTrue)}</span>
-              <span className="st-rowtxt"><b>{c.claim}</b><span>called false · {c.sector} · {c.n} swipes</span></span>
-            </div>
-          )) : <p className="st-msg sm">Not enough data yet.</p>}
+      <Reveal className="st-sec">
+        <span className="st-kicker">04, the two ways to be wrong</span>
+        <h2>Hype traps and blind spots</h2>
+        <div className="st-two">
+          <div>
+            <h3 style={{ color: C_BELIEVE }}>Hype traps</h3>
+            <p className="st-sublede">Not true. Believed anyway.</p>
+            <p className="st-para">
+              A hype trap is a claim the evidence does not support that people believe regardless.
+              They are what a good story leaves behind: a confident launch demo, a number quoted
+              away from the caveat that came with it, a product name that promises more than the
+              product does. They cluster where the marketing is loudest and the checking is hardest,
+              which is why so many of them are about the things being sold hardest right now. They
+              are the expensive kind of wrong, because budgets, hiring and policy get set on them.
+            </p>
+            {hypeTraps.length ? hypeTraps.map((c, i) => (
+              <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
+                <span className="st-rowpct" style={{ color: C_BELIEVE }}>{pct(c.pTrue)}</span>
+                <span className="st-rowtxt"><b>{c.claim}</b><span>called true · {c.sector} · {c.n} swipes</span></span>
+              </div>
+            )) : <p className="st-msg sm">Nothing here yet. Either nobody has been caught by one, or not enough people have played.</p>}
+          </div>
+          <div>
+            <h3 style={{ color: C_DOUBT }}>Blind spots</h3>
+            <p className="st-sublede">Already real. Still doubted.</p>
+            <p className="st-para">
+              A blind spot is the mirror image: something that has already happened and that people
+              still will not have. These are quieter, because nothing markets the ordinary Tuesday on
+              which a thing quietly started working, and because a capability that arrives without a
+              launch event tends to arrive without anyone updating. They are arguably the more
+              costly of the two: while you are waiting for a future to show up, somebody else is
+              already using it.
+            </p>
+            {blindSpots.length ? blindSpots.map((c, i) => (
+              <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
+                <span className="st-rowpct" style={{ color: C_DOUBT }}>{pct(1 - c.pTrue)}</span>
+                <span className="st-rowtxt"><b>{c.claim}</b><span>called false · {c.sector} · {c.n} swipes</span></span>
+              </div>
+            )) : <p className="st-msg sm">Nothing here yet. Either we are reading these right, or not enough people have played.</p>}
+          </div>
         </div>
       </Reveal>
 

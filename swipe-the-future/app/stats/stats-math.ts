@@ -7,7 +7,7 @@
 // Both are standard, both survive a statistician reading them, and both reduce
 // to two honest sentences for everyone else.
 
-import { TRUTH, type Verdict } from "../../data/sectors";
+import { EXPECTED, RUNG, type Verdict } from "../../data/sectors";
 
 export interface CardStat {
   id: string;
@@ -19,8 +19,9 @@ export interface CardStat {
   no: number;    // said FALSE
   n: number;
   pTrue: number; // share who said TRUE
-  truth: number; // where the evidence sits, 0 → 1
-  gap: number;   // pTrue − truth. Positive = crowd is more credulous than the evidence.
+  expected: number; // share who should say TRUE if they read the evidence right
+  rung: number;     // 0..3, the claim's step on the x axis
+  gap: number;      // pTrue − expected. Positive = the crowd is more credulous than the evidence.
 }
 
 /**
@@ -116,7 +117,8 @@ export function sectorStat(id: string, name: string, cards: CardStat[]): SectorS
   };
 }
 
-export const truthOf = (v: Verdict) => TRUTH[v];
+export const expectedOf = (v: Verdict) => EXPECTED[v];
+export const rungOf = (v: Verdict) => RUNG[v];
 
 /** Plain-English label for a d′, so the number isn't the only thing on offer. */
 export function sensitivityLabel(d: number): string {
