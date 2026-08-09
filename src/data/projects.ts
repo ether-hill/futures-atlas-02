@@ -127,6 +127,19 @@ export const projects: Project[] = [
     image: "/projects/swipe-the-future.jpg",
   },
   {
+    id: "swipe-v1",
+    title: "Swipe the Future v1",
+    tagline:
+      "The original game, kept as it was: pick a job, swipe Believe or Doubt on six claims, get a calibration score. Frozen so the first version stays playable next to v2, which asks whether a thing has already happened rather than whether it is true.",
+    year: "2026",
+    date: "2026-06-23",
+    field: "Calibration",
+    status: "live",
+    visibility: "draft",
+    path: "/swipe-v1",
+    image: "/projects/swipe-the-future.jpg",
+  },
+  {
     id: "trajectories",
     title: "Trajectories",
     tagline:

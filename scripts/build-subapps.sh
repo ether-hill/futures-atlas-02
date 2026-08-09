@@ -54,6 +54,17 @@ cp -R "$HERE/swipe-the-future/out/." "$HERE/public/swipe-the-future/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-the-future"
 echo "✓ swipe-the-future → public/swipe-the-future (with atlas-nav)"
 
+# Swipe the Future v1: the original game, frozen at commit 772ebf5 and kept as a
+# draft so the first version stays playable next to v2, which asks a different
+# question. Same build shape, its own basePath.
+echo "→ building swipe-v1"
+( cd "$HERE/swipe-v1" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/swipe-v1"
+mkdir -p "$HERE/public/swipe-v1"
+cp -R "$HERE/swipe-v1/out/." "$HERE/public/swipe-v1/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-v1"
+echo "✓ swipe-v1 → public/swipe-v1 (with atlas-nav)"
+
 # Woodchipper Futures: Next static export → out/, then copy into public/.
 echo "→ building woodchipper"
 ( cd "$HERE/woodchipper" && npm install --include=dev --no-audit --no-fund && npm run build )

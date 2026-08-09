@@ -51,6 +51,8 @@ const nextConfig: NextConfig = {
         // Swipe the Future — Next static export (basePath baked in, trailingSlash)
         { source: "/swipe-the-future", destination: "/swipe-the-future/index.html" },
         { source: "/swipe-the-future/stats", destination: "/swipe-the-future/stats/index.html" },
+        // Swipe the Future v1 — the original game, frozen. Draft-gated.
+        { source: "/swipe-v1", destination: "/swipe-v1/index.html" },
         // Woodchipper Futures — Next static export (USAID cuts scenario engine)
         { source: "/woodchipper", destination: "/woodchipper/index.html" },
         // Quantum Dominance — Next static export (graphic-novel scenario explorer)

@@ -30,6 +30,7 @@
     { name: "Quantum Dominance", path: "/quantum-dominance", draft: true },
     { name: "Woodchipper Futures", path: "/woodchipper", draft: true },
     { name: "Swipe the Future", path: "/swipe-the-future" },
+    { name: "Swipe the Future v1", path: "/swipe-v1", draft: true },
     { name: "Social Composer", path: "/social-composer", draft: true },
     { name: "Generatives", path: "/generatives" },
     { name: "Literal Frequency", path: "/literal-frequency", draft: true },

@@ -34,6 +34,10 @@
 /swipe-the-future/.next/
 /swipe-the-future/node_modules/
 /swipe-the-future/out/
+/public/swipe-v1/
+/swipe-v1/.next/
+/swipe-v1/node_modules/
+/swipe-v1/out/
 /public/woodchipper/
 /woodchipper/.next/
 /woodchipper/node_modules/
