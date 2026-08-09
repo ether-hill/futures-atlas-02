@@ -11,17 +11,18 @@ const MIXED = 10; // length of the "surprise me" round; a sector deck runs its o
 const pad = (n: number) => String(n).padStart(2, "0");
 
 type Item = { card: Card; sector: Sector };
-type Ans = { card: Card; sector: Sector; sayTrue: boolean };
+type Ans = { card: Card; sector: Sector; sayReal: boolean };
 type Phase = "swipe" | "flinging" | "result" | "final";
 
 // The mixed deck. `sector` here is whichever deck the card came from, so the
 // result card can still credit it.
 const MIXED_SECTOR: Sector = { id: "mixed", kind: "wildcard", name: "Mixed", blurb: "A bit of everything", cards: [] };
 
-// fire-and-forget metrics. The wire field stays `believe` so the counters that
-// have been accumulating since launch keep adding up under the same keys.
+// fire-and-forget metrics. `v: 2` tells the host this answer is to the
+// already/not-yet question, so it lands in the v2 counters and never mixes with
+// v1's true/false tallies, which were gathered against a different question.
 function track(body: Record<string, unknown>) {
-  try { fetch("/api/swipe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), keepalive: true }).catch(() => {}); } catch { /* */ }
+  try { fetch("/api/swipe", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ v: 2, ...body }), keepalive: true }).catch(() => {}); } catch { /* */ }
 }
 
 function shuffle<T>(a: T[]): T[] {
@@ -83,12 +84,12 @@ export default function Calibration() {
     setPhase("swipe"); locked.current = false; roundTracked.current = false;
   }, [generated]);
 
-  const decide = useCallback((sayTrue: boolean) => {
+  const decide = useCallback((sayReal: boolean) => {
     if (locked.current || phase !== "swipe" || !item) return;
     locked.current = true;
-    setAnswers((a) => [...a, { card: item.card, sector: item.sector, sayTrue }]);
-    track({ cardId: item.card.id, category: item.sector.id, verdict: item.card.verdict, believe: sayTrue });
-    setFling(sayTrue ? 1 : -1);
+    setAnswers((a) => [...a, { card: item.card, sector: item.sector, sayReal }]);
+    track({ cardId: item.card.id, category: item.sector.id, verdict: item.card.verdict, real: sayReal });
+    setFling(sayReal ? 1 : -1);
     setPhase(reduce.current ? "result" : "flinging"); // the card swipes/fades off, then the result
   }, [phase, item]);
 
@@ -215,20 +216,20 @@ export default function Calibration() {
 
   const stop = (e: React.PointerEvent) => e.stopPropagation();
 
-  // verdict bits
-  const aligned = lastAns ? isAligned(lastAns.card.verdict, lastAns.sayTrue) : false;
-  const kinda = lastAns?.card.verdict === "contested";
-  // The big word grades the answer, it does not restate the claim: someone who
-  // swiped FALSE and was right was being told "YES!", which read as a correction.
-  const voClass = kinda ? "kinda" : aligned ? "correct" : "wrong";
-  const voBig = kinda ? "KINDA" : aligned ? "CORRECT" : "WRONG";
+  // verdict bits. The big word grades the answer, it does not restate the claim:
+  // someone who swiped NOT YET and was right should be told they were right, not
+  // handed the claim back at them.
+  const aligned = lastAns ? isAligned(lastAns.card.verdict, lastAns.sayReal) : false;
+  const voClass = aligned ? "correct" : "wrong";
+  const voBig = aligned ? "CORRECT" : "WRONG";
 
-  // score (for the final card). Contested cards are KINDA, they count as matched
-  // either way (never against you), so a perfect run can reach N/N.
+  // score (for the final card). Every card is scorable now, so N/N means N/N.
+  // `overs` is buying a thing that has not happened, `unders` is doubting a thing
+  // that has. The two mistakes are different people, hence the two profiles.
   const total = answers.length;
-  const matched = answers.filter((a) => isAligned(a.card.verdict, a.sayTrue)).length;
-  const overs = answers.filter((a) => a.card.verdict === "unlikely" && a.sayTrue).length;
-  const unders = answers.filter((a) => a.card.verdict === "already" && !a.sayTrue).length;
+  const matched = answers.filter((a) => isAligned(a.card.verdict, a.sayReal)).length;
+  const overs = answers.filter((a) => a.card.verdict === "notyet" && a.sayReal).length;
+  const unders = answers.filter((a) => a.card.verdict === "already" && !a.sayReal).length;
   const prof = profileFor(matched, total, overs, unders);
 
   const behind = deck.length - 1 - pos;
@@ -241,7 +242,7 @@ export default function Calibration() {
         <div className="bcol-l">
           <div className="stf-head">
             <h1>Swipe the <em>future.</em></h1>
-            <p className="lede">Every card is a real claim about where AI and quantum computing <em>actually</em> stand, fact-checked and linked to its source. Call it <em>true</em> or <em>false</em>.</p>
+            <p className="lede">Every card is one thing a machine might be doing in the world, fact-checked and linked to its source. Has it <em>already</em> happened, or <em>not yet?</em></p>
             <p className="stf-links">
               <a href="/swipe-the-future/stats">See what everyone else answered →</a>
             </p>
@@ -287,7 +288,7 @@ export default function Calibration() {
                 <div key={`res-${pos}`} className="tcard is-result">
                   <div className="vo-body">
                     <div className={`vo-big ${voClass}`}>{voBig}</div>
-                    <div className="vo-label">Evidence: {VLABEL[lastAns.card.verdict]}</div>
+                    <div className="vo-label">{VLABEL[lastAns.card.verdict]}</div>
                     {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
                     <p className="vo-insight">{lastAns.card.note}</p>
                     <div className="vo-src">
@@ -322,12 +323,12 @@ export default function Calibration() {
                       <button className="ca-back" onClick={goBack} aria-label="Previous claim">‹ back</button>
                     )}
                     <span className="ca">
-                      <button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="False">✕</button>
-                      <span className="ca-lbl">False</span>
+                      <button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="Not yet">✕</button>
+                      <span className="ca-lbl">Not yet</span>
                     </span>
                     <span className="ca">
-                      <button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="True">✓</button>
-                      <span className="ca-lbl">True</span>
+                      <button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="Already real">✓</button>
+                      <span className="ca-lbl">Already real</span>
                     </span>
                   </div>
                 )}

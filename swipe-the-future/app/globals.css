@@ -334,6 +334,25 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .st-dots.in .st-dot { animation: st-pop .5s cubic-bezier(.2,.9,.3,1.3) both; }
 @keyframes st-pop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: scale(1); } }
 
+/* 01, the miss chart. Bars grow out of the centre line, so the animation reads
+   as "here is how far off we were" rather than as decoration. */
+.st-zeroline { stroke: var(--wash-5); stroke-width: 1.5; }
+.st-bar2 { fill-opacity: .85; cursor: pointer; transition: fill-opacity .12s; }
+.st-bar2:hover { fill-opacity: 1; }
+.st-bars .st-bar2 { opacity: 0; transform: scaleX(.02); transform-box: fill-box; transform-origin: left center; }
+/* a bar left of the truth line is anchored on its right edge, so both sides
+   grow out of the centre rather than one of them sliding in from the margin */
+.st-bars .st-bar2.neg { transform-origin: right center; }
+/* NOT st-grow: that name is already taken further down by a transform-only
+   keyframe, and the later definition wins, so the bars grew but stayed at
+   opacity 0. Keyframe names are global; this one has to be its own. */
+.st-bars.in .st-bar2 { animation: st-bargrow .42s cubic-bezier(.2,.85,.3,1) both; }
+@keyframes st-bargrow { from { opacity: 0; transform: scaleX(.02); } to { opacity: 1; transform: scaleX(1); } }
+.st-rlbl { fill: var(--bone); font-family: var(--ff-sans); font-size: 10px; opacity: .78; }
+.st-axlbl.end { text-anchor: end; }
+.st-lede.sm { font-size: 14px; margin-top: 18px; }
+.st-plotwrap.roc { max-width: 860px; }
+
 .st-tip { position: absolute; z-index: 5; transform: translate(-50%, calc(-100% - 14px)); pointer-events: none; max-width: 300px; display: flex; flex-direction: column; gap: 4px; padding: 11px 13px; border-radius: 12px; background: var(--tip-bg); border: 1px solid rgba(255, 255, 255, .14); box-shadow: var(--shadow); font-size: 12.5px; line-height: 1.45; color: var(--tip-fg); }
 .st-tip span { color: var(--tip-dim); font-size: 11.5px; }
 
@@ -411,7 +430,7 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .st-reveal { opacity: 1; transform: none; transition: none; }
-  .st-dots .st-dot, .st-trow, .st-row, .st-sxbody, .st-cbtrue, .st-cbfalse, .st-barfill, .st-divfill { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .st-dots .st-dot, .st-bars .st-bar2, .st-trow, .st-row, .st-sxbody, .st-cbtrue, .st-cbfalse, .st-barfill, .st-divfill { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 
 

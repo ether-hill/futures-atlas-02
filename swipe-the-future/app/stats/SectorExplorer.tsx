@@ -8,6 +8,8 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /** Below this many swipes a per-card read is noise, so it is left unsaid. */
 const MIN_READ = 5;
+/** And below this much of a gap, the miss is noise too. */
+const OFF = 0.12;
 
 type Sort = "accuracy" | "activity" | "name";
 
@@ -77,22 +79,22 @@ export function SectorExplorer({
               {isOpen && (
                 <div className="st-sxbody">
                   {cards.length ? cards.map((c) => {
-                    const off = c.gap > 0.12 ? colours.believe : c.gap < -0.12 ? colours.doubt : colours.mid;
+                    const off = c.gap > OFF ? colours.believe : c.gap < -OFF ? colours.doubt : colours.mid;
                     return (
                       <div className="st-card" key={c.id}>
                         <p className="st-cclaim">{c.claim}</p>
-                        <div className="st-cbar" title={`${pct(c.pTrue)} true, ${pct(1 - c.pTrue)} false`}>
-                          <span className="st-cbtrue" style={{ width: `${c.pTrue * 100}%` }} />
-                          <span className="st-cbfalse" style={{ width: `${(1 - c.pTrue) * 100}%` }} />
+                        <div className="st-cbar" title={`${pct(c.pReal)} already real, ${pct(1 - c.pReal)} not yet`}>
+                          <span className="st-cbtrue" style={{ width: `${c.pReal * 100}%` }} />
+                          <span className="st-cbfalse" style={{ width: `${(1 - c.pReal) * 100}%` }} />
                         </div>
                         <div className="st-cmeta">
-                          <span className="st-ctrue"><b>{pct(c.pTrue)}</b> said true</span>
-                          <span className="st-cfalse"><b>{pct(1 - c.pTrue)}</b> said false</span>
+                          <span className="st-ctrue"><b>{pct(c.pReal)}</b> said already real</span>
+                          <span className="st-cfalse"><b>{pct(1 - c.pReal)}</b> said not yet</span>
                           <span className="st-cverdict">Answer: <b>{VLABEL[c.verdict]}</b></span>
                           <span className="st-cn">{c.n} swipe{c.n === 1 ? "" : "s"}</span>
-                          {c.verdict !== "contested" && c.n >= MIN_READ && (
+                          {c.n >= MIN_READ && (
                             <span className="st-cgap" style={{ color: off }}>
-                              {c.gap > 0.12 ? "over-believed" : c.gap < -0.12 ? "under-believed" : "well read"}
+                              {c.gap > OFF ? "hype trap" : c.gap < -OFF ? "blind spot" : "read right"}
                             </span>
                           )}
                         </div>

@@ -21,7 +21,7 @@ const INDEX = "fa:swipe:secs";
 /** Freshness reports written by the weekly re-check cron. */
 export const RECHECK_KEY = "fa:swipe:recheck";
 
-export type Verdict = "unlikely" | "contested" | "likely" | "already";
+export type Verdict = "notyet" | "already";
 
 export interface GenCard {
   id: string;

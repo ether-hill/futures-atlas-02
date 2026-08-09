@@ -1,13 +1,21 @@
 // Swipe the Future, the analysis behind the stats page.
 //
-// Two ideas do the work. The Reality Gap is a calibration plot: for every claim,
-// where the evidence sits versus how many people called it true. The per-sector
-// numbers are signal detection theory, d′ for how well people separate true
-// claims from false ones, and criterion c for which way they lean when unsure.
-// Both are standard, both survive a statistician reading them, and both reduce
-// to two honest sentences for everyone else.
+// The question is binary now (already happened, or not yet), which is exactly
+// the shape signal detection theory was built for, so the maths got simpler and
+// more honest at the same time.
+//
+// A card whose answer is ALREADY REAL is signal. A card whose answer is NOT YET
+// is noise. Saying "already" to signal is a hit; saying it to noise is a false
+// alarm. From those two rates you get d′, how sharply someone separates the two,
+// and criterion c, which way they lean when they are unsure. Under v1's
+// four-step scale these were approximations over an ordinal ladder. Here they
+// are the textbook quantities.
+//
+// Two mistakes, and they are different people:
+//   HYPE TRAP  said already, it has not happened  (false alarm)
+//   BLIND SPOT said not yet, it happened years ago (miss)
 
-import { EXPECTED, RUNG, type Verdict } from "../../data/sectors";
+import { EXPECTED, type Verdict } from "../../data/sectors";
 
 export interface CardStat {
   id: string;
@@ -15,13 +23,12 @@ export interface CardStat {
   verdict: Verdict;
   sector: string;
   sectorId: string;
-  yes: number;   // said TRUE
-  no: number;    // said FALSE
+  real: number;   // said ALREADY REAL
+  notYet: number; // said NOT YET
   n: number;
-  pTrue: number; // share who said TRUE
-  expected: number; // share who should say TRUE if they read the evidence right
-  rung: number;     // 0..3, the claim's step on the x axis
-  gap: number;      // pTrue − expected. Positive = the crowd is more credulous than the evidence.
+  pReal: number;    // share who said ALREADY REAL
+  expected: number; // 1 if it happened, 0 if it hasn't
+  gap: number;      // pReal − expected. Positive = a hype trap, negative = a blind spot.
 }
 
 /**
@@ -64,34 +71,37 @@ export function wilson(successes: number, n: number, z = 1.96): { lo: number; hi
 export interface SectorStat {
   id: string;
   name: string;
-  n: number;        // scorable answers (contested claims excluded)
+  n: number;        // every answer, since every card is scorable now
   correct: number;
   accuracy: number;
   lo: number;       // Wilson bounds on accuracy
   hi: number;
   dPrime: number;   // 0 = coin flip, ~1 = decent, 2+ = sharp
-  lean: number;     // −c. Positive = leans TRUE, negative = leans FALSE.
-  /** False when the deck is all-true or all-false: accuracy is scorable, d′ isn't. */
+  lean: number;     // −c. Positive = leans ALREADY REAL, negative = leans NOT YET.
+  /** False when a deck is all-already or all-not-yet: accuracy still reads, d′ doesn't. */
   measurable: boolean;
   hits: number; falseAlarms: number; signal: number; noise: number;
+  /** Rates for the ROC plot: y and x respectively. */
+  hitRate: number; faRate: number;
 }
 
 /**
  * Signal detection over one sector's cards.
  *
- * "Signal" is a claim the evidence supports (likely / already real); "noise" is
- * one it contradicts (not true). Contested claims have no right answer, so they
- * sit out of this entirely. The log-linear correction (+0.5 per cell) keeps a
- * perfect or hopeless sector from producing an infinite d′.
+ * Signal is a card that already happened; noise is one that hasn't. A hit is
+ * answering ALREADY REAL to signal, a false alarm is answering it to noise.
+ * Every card counts, because every card has a right answer.
+ *
+ * The log-linear correction (+0.5 per cell) keeps a perfect or hopeless sector
+ * from producing an infinite d′.
  */
 export function sectorStat(id: string, name: string, cards: CardStat[]): SectorStat | null {
-  const scorable = cards.filter((c) => c.verdict !== "contested");
-  if (!scorable.length) return null;
+  if (!cards.length) return null;
 
   let hits = 0, signal = 0, falseAlarms = 0, noise = 0;
-  for (const c of scorable) {
-    if (c.verdict === "unlikely") { falseAlarms += c.yes; noise += c.n; }
-    else { hits += c.yes; signal += c.n; }
+  for (const c of cards) {
+    if (c.verdict === "already") { hits += c.real; signal += c.n; }
+    else { falseAlarms += c.real; noise += c.n; }
   }
   const n = signal + noise;
   if (n === 0) return null;
@@ -99,9 +109,9 @@ export function sectorStat(id: string, name: string, cards: CardStat[]): SectorS
   const correct = hits + (noise - falseAlarms);
   const { lo, hi } = wilson(correct, n);
 
-  // Both a hit rate and a false-alarm rate are needed for d′, a sector with only
-  // true claims (or only false ones) can be scored for accuracy but not for
-  // sensitivity, so d′ and lean are reported as 0 and the table shows the n.
+  // d′ needs both a hit rate and a false-alarm rate. A deck answered on only one
+  // side of the key can still be scored for accuracy, so d′ and lean report 0
+  // and the page says why rather than printing a number nobody should read.
   const measurable = signal > 0 && noise > 0;
   const H = measurable ? (hits + 0.5) / (signal + 1) : 0.5;
   const F = measurable ? (falseAlarms + 0.5) / (noise + 1) : 0.5;
@@ -111,14 +121,15 @@ export function sectorStat(id: string, name: string, cards: CardStat[]): SectorS
     id, name, n, correct,
     accuracy: correct / n, lo, hi,
     dPrime: measurable ? zH - zF : 0,
-    lean: measurable ? (zH + zF) / 2 : 0, // = −c, so positive reads as "leans true"
+    lean: measurable ? (zH + zF) / 2 : 0, // = −c, so positive reads as "leans already real"
     measurable,
     hits, falseAlarms, signal, noise,
+    hitRate: signal ? hits / signal : 0,
+    faRate: noise ? falseAlarms / noise : 0,
   };
 }
 
 export const expectedOf = (v: Verdict) => EXPECTED[v];
-export const rungOf = (v: Verdict) => RUNG[v];
 
 /** Plain-English label for a d′, so the number isn't the only thing on offer. */
 export function sensitivityLabel(d: number): string {
@@ -129,7 +140,7 @@ export function sensitivityLabel(d: number): string {
 }
 
 export function leanLabel(lean: number): string {
-  if (lean > 0.35) return "believes it";
-  if (lean < -0.35) return "doubts it";
+  if (lean > 0.35) return "assumes it shipped";
+  if (lean < -0.35) return "assumes it hasn't";
   return "even-handed";
 }

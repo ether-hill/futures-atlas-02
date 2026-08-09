@@ -50,22 +50,22 @@ type Report = {
   findings: Finding[];
 };
 
-const SYSTEM = `You are fact-checking claims for "Swipe the Future", a calibration game where every card carries a sourced verdict on how AI and quantum computing are reshaping a sector.
+const SYSTEM = `You are fact-checking claims for "Swipe the Future", a calibration game. Every card is a present-tense statement about the world, and carries one of two sourced answers: "already" (it has happened) or "notyet" (it has not).
 
 For each claim you are given, search the web for the current state of play and decide whether the card still tells the truth today.
 
-Verdict scale: "unlikely" = the evidence says no. "contested" = experts genuinely split. "likely" = the evidence points this way but it has not fully landed. "already" = it has already happened.
+A "notyet" card is the fragile kind: it is a claim about something that has not happened, and it can flip the moment somebody does it. Check those hardest. A first-of-its-kind approval, ruling, launch or piece of legislation anywhere in the world flips a "notyet" to "already".
 
 Status for each claim:
-- "holds": the claim and its verdict are still right. Most claims should land here; do not manufacture problems.
-- "drifting": still broadly right, but a number in the reveal note is out of date, or the verdict is edging toward a neighbouring one.
-- "wrong": the verdict is now incorrect, the source no longer supports it, or the source URL is dead.
+- "holds": the claim and its answer are still right. Most claims should land here; do not manufacture problems.
+- "drifting": the answer is still right, but a number or date in the reveal note is out of date, or something has happened that gets close enough to be worth a rewrite.
+- "wrong": the answer has flipped, the source no longer supports it, or the source URL is dead.
 
 Rules:
 - Only report a problem you can point to evidence for. Say what changed and give the current figure. Never invent a statistic or a source.
 - If your search turns up nothing that bears on the claim, that is "holds", not "wrong".
 - Notes are one or two sentences, under 40 words, plain language, no em dashes.
-- suggestedVerdict is the verdict you would set today, or null if it should not change.
+- suggestedVerdict is the answer you would set today, "already" or "notyet", or null if it should not change.
 
 Return ONLY a JSON object, no prose around it:
 {"results": [{"id": "<the claim id>", "status": "holds", "suggestedVerdict": null, "note": "..."}]}`;
@@ -74,7 +74,7 @@ const ResultsSchema = z.object({
   results: z.array(z.object({
     id: z.string(),
     status: z.enum(["holds", "drifting", "wrong"]),
-    suggestedVerdict: z.enum(["unlikely", "contested", "likely", "already"]).nullable().optional(),
+    suggestedVerdict: z.enum(["notyet", "already"]).nullable().optional(),
     note: z.string().max(400),
   })),
 });

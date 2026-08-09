@@ -35,7 +35,7 @@ const fail = (status: number, code: string, message: string) =>
 
 const CardSchema = z.object({
   claim: z.string().min(20).max(220),
-  verdict: z.enum(["unlikely", "contested", "likely", "already"]),
+  verdict: z.enum(["notyet", "already"]),
   note: z.string().min(20).max(320),
   source: z.object({ label: z.string().min(2).max(80), url: z.string().url() }),
 });
@@ -45,24 +45,26 @@ const DraftSchema = z.object({
   cards: z.array(CardSchema).min(6).max(12),
 });
 
-const SYSTEM = `You write fact-checked true/false claims for "Swipe the Future", a calibration game in the Futures Atlas. Players read a claim about how AI and quantum computing are reshaping a sector and swipe TRUE or FALSE. Then the card flips and shows where the evidence actually sits.
+const SYSTEM = `You write fact-checked claims for "Swipe the Future", a calibration game in the Futures Atlas.
 
-Your job: given a sector, research it with web search and return ${CARDS} claims about that sector in 2026.
+THE QUESTION. Every card is one statement about the world as it stands, and the player answers with one of exactly two things: ALREADY REAL, or NOT YET. Then the card flips and shows the sourced answer. The game measures two mistakes: buying a thing that was only announced, and doubting a thing that has been running for years.
+
+Your job: given a sector, research it with web search and return ${CARDS} claims about that sector.
 
 Rules that matter more than anything else:
 - Every claim must be checkable against a real, current source you actually found via search. Never invent a statistic, a study, an organisation or a URL. If you cannot source a claim, drop it and write a different one.
-- The source URL must be one you saw in search results and must resolve. Prefer primary sources: the IEA, NIST, a named journal, a government statistics office, a company's own report, a court record. Avoid content farms and SEO blogspam.
-- Spread the verdicts. Aim for roughly 3 "already", 3 "likely", 2 "unlikely", 2 "contested". A deck where everything is true teaches nothing.
-- "unlikely" claims should be things people plausibly believe but that the evidence contradicts, the hype traps. Not strawmen.
-- "already" claims should be things that sound like the future but have already shipped, the blind spots.
-- "contested" is for genuine expert disagreement, not for things you are simply unsure about. If you are unsure, do more research.
+- The source URL must be one you saw in search results and must resolve. Prefer primary sources: a regulator, a standards body, a named journal, a government statistics office, a court record, a company's own filing. Avoid content farms and SEO blogspam.
+- KEY THE DECK EVENLY. Exactly half the cards must be "already" and half "notyet". A deck where one answer keeps working is a deck people stop reading.
+- Write every claim in the PRESENT TENSE, about the world as it is. Never "by 2030, X will happen". A claim in the future tense has no answer. Turn it into the present-tense version and check whether that has happened.
+- Aim for one of the two good surprises. Either it sounds like science fiction and it shipped years or decades ago ("already"), or it sounds inevitable and has flatly not happened ("notyet"). A claim that is neither teaches nothing.
+- "notyet" claims should be things people plausibly believe have happened: announced, demonstrated, proposed, legislated somewhere else, or promised. Not strawmen.
+- "already" claims should be things that sound like the future and are old news. Reach back: a 1990s clearance or a 1980s deployment makes a far better card than this year's launch.
+- It has to be answerable wrong. If you cannot picture a well-read person swiping the other way, drop the card.
+- Give each claim something checkable: a number, a named organisation, a shipped product, a ruling, a date.
 - Claims are one sentence, plain language, no jargon, under 25 words. Written the way a knowledgeable person talks to a friend. No em dashes.
-- A claim has to be answerable WRONG. Never write "X could help with Y" or "X may be able to Y": there is no way to swipe FALSE on that, so everyone agrees and learns nothing. Cut could, may, might, has the potential to.
-- Anchor every claim in time: "today", "already", "by 2030", "this decade", "since 2024". A claim with no clock in it usually has no answer.
-- Give each claim something checkable: a number, a named organisation, a shipped product, a ruling.
-- The reveal note is one or two sentences, under 35 words, and carries the specific number or ruling that settles it.
+- The reveal note is one or two sentences, under 35 words, and carries the specific date, number or ruling that settles it. For a "notyet" card, say what DOES exist, so the player learns the boundary rather than just being told no.
 
-Verdict scale: "unlikely" = the evidence says no. "contested" = experts genuinely split. "likely" = the evidence points this way but it has not fully landed. "already" = it has already happened.
+Verdicts: "already" = it has happened, and you can point to when. "notyet" = it has not happened, however close it looks.
 
 Return ONLY a JSON object, no prose around it:
 {"name": "<sector name, title case, max 4 words>", "blurb": "<3-6 word subtitle, topics separated by ' · '>", "cards": [{"claim": "...", "verdict": "already", "note": "...", "source": {"label": "<publisher, year>", "url": "https://..."}}]}`;
