@@ -46,30 +46,36 @@ export default function StatsView() {
   const [demo, setDemo] = useState(false);
   const [tip, setTip] = useState<Tip>(null);
   const [rocTip, setRocTip] = useState<Tip>(null);
+  const [spreadTip, setSpreadTip] = useState<Tip>(null);
   const plotRef = useRef<HTMLDivElement | null>(null);
   const rocRef = useRef<HTMLDivElement | null>(null);
+  const spreadRef = useRef<HTMLDivElement | null>(null);
   const { ref: plotSeenRef, seen: plotSeen } = useInView<HTMLDivElement>();
   const { ref: rocSeenRef, seen: rocSeen } = useInView<HTMLDivElement>();
+  const { ref: spreadSeenRef } = useInView<HTMLDivElement>();
 
   // Read once on load. The tallies move as people play, so there is a refresh
   // rather than a poll: nobody needs this page ticking in a background tab.
   const load = useCallback(() => {
-    // ?demo fills the page with synthetic tallies so the layout and the patterns
-    // can be judged on a full deck. Always labelled, never the default.
-    if (typeof window !== "undefined" && new URLSearchParams(location.search).has("demo")) {
-      setCounters(demoCounters());
-      setFetchedAt(new Date());
-      setDemo(true);
-      return;
-    }
+    // Sample data fills the page with synthetic tallies so the layout and the
+    // patterns can be read on a full deck. It is used when ?demo is set, and as
+    // the fallback whenever the real tally is still empty, which is the state
+    // the page is in before anyone has played. Either way it is labelled
+    // loudly. ?real forces the true (possibly empty) view.
+    const q = typeof window !== "undefined" ? new URLSearchParams(location.search) : new URLSearchParams();
+    const useDemo = () => { setCounters(demoCounters()); setDemo(true); setFetchedAt(new Date()); };
+    if (q.has("demo")) { useDemo(); return; }
+
     setLoading(true);
     Promise.all([
       fetch("/api/swipe?v=2", { cache: "no-store" }).then((r) => r.json()),
       fetch("/api/swipe/sector", { cache: "no-store" }).then((r) => r.json()).catch(() => null),
     ])
       .then(([c, g]) => {
-        setCounters(c ?? {});
         if (Array.isArray(g?.sectors)) setGenerated(g.sectors);
+        if (!q.has("real") && Number(c?.swipes ?? 0) === 0) { useDemo(); setErr(false); return; }
+        setCounters(c ?? {});
+        setDemo(false);
         setFetchedAt(new Date());
         setErr(false);
       })
@@ -91,7 +97,7 @@ export default function StatsView() {
         const expected = expectedOf(c.verdict);
         const pReal = total ? real / total : 0;
         return {
-          id: c.id, claim: c.claim, verdict: c.verdict, sector: s.name, sectorId: s.id,
+          id: c.id, claim: c.claim, short: c.short ?? c.claim, verdict: c.verdict, sector: s.name, sectorId: s.id,
           real, notYet, n: total, pReal, expected, gap: pReal - expected,
         };
       }),
@@ -149,14 +155,37 @@ export default function StatsView() {
   // "how true is it" is not an axis any more, it is which side of zero a claim
   // sits on. Length is how far the room was from the answer; direction is which
   // of the two mistakes it made.
-  const ROW = 13, GW = 880;
-  const GP = { t: 58, r: 26, b: 62, l: 26 };
+  // A row is anonymous without its name, and hover is not a label: the chart
+  // has to read on a printed page and in the exported PNG too. So the left
+  // quarter is a reserved column for the short form of each claim.
+  const ROW = 15, GW = 1000;
+  const GP = { t: 58, r: 24, b: 62, l: 272 };
   const GH = GP.t + GP.b + Math.max(1, ordered.length) * ROW;
   const mid = GW / 2;
   const half = (GW - GP.l - GP.r) / 2;
   const gx = (g: number) => mid + g * half;
   const rowY = (i: number) => GP.t + i * ROW + ROW / 2;
   const colourOf = (gap: number) => (gap > OFF ? C_BELIEVE : gap < -OFF ? C_DOUBT : C_MID);
+
+  // ── 02b · the same misses, grouped by sector ──────────────────────────
+  // Section 01 sorts every claim into one global ranking, which answers "what
+  // did we get worst" but loses "who owns it". One row per sector, with that
+  // sector's claims scattered either side of the truth line, answers the second
+  // question: how far a sector's misses spread, and which way they lean.
+  const SW = 900, SROW = 62;
+  const SP = { t: 56, r: 112, b: 42, l: 168 };
+  const spreadSectors = allSectors.filter((sec) => (cardsBySector.get(sec.id) ?? []).some((c) => c.n >= MIN_N));
+  const SH = SP.t + SP.b + Math.max(1, spreadSectors.length) * SROW;
+  const smid = SP.l + (SW - SP.l - SP.r) / 2;
+  const shalf = (SW - SP.l - SP.r) / 2;
+  const sx = (g: number) => smid + g * shalf;
+  const srowY = (i: number) => SP.t + i * SROW + SROW / 2;
+  /** Deterministic vertical nudge, so claims at the same gap don't stack up. */
+  const nudge = (id: string) => {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+    return (((h >>> 0) % 1000) / 1000 - 0.5) * (SROW - 26);
+  };
 
   // ── 03 · sector discrimination, in ROC space ───────────────────────────
   // The plot has a reserved label column on the right. Sectors that score alike
@@ -280,8 +309,9 @@ export default function StatsView() {
 
       {demo && (
         <p className="st-demo">
-          <b>Sample data.</b> These are invented numbers, shown so the page can be read with a full
-          deck behind it. Nothing here is a real answer. <a href="/swipe-the-future/stats">See the real tally</a>
+          <b>Sample data.</b> Nobody has played this deck yet, so these are invented numbers, shown
+          so the page can be read with a full deck behind it. Nothing here is a real answer.
+          <a href="/swipe-the-future/stats/?real">See the real tally</a>
         </p>
       )}
 
@@ -330,6 +360,13 @@ export default function StatsView() {
                     <line key={`g${g}`} x1={gx(g)} x2={gx(g)} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-grid" />
                   ))}
 
+                  {/* the name of every row, not just the extremes */}
+                  {ordered.map((c, i) => (
+                    <text key={`l${c.id}`} x={GP.l - 16} y={rowY(i) + 3.5} className="st-rowlbl" textAnchor="end">
+                      {clip(c.short, 34)}
+                    </text>
+                  ))}
+
                   <g className={`st-bars${plotSeen ? " in" : ""}`}>
                     {ordered.map((c, i) => {
                       const y = rowY(i);
@@ -357,21 +394,6 @@ export default function StatsView() {
 
                   {/* the truth line, drawn over the bars so it always reads */}
                   <line x1={mid} x2={mid} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-zeroline" />
-
-                  {/* The two extremes get named in place; the rest are on hover.
-                      Each label sits on the EMPTY side of the centre line, not past
-                      the end of its own bar: the worst miss is the longest bar, so
-                      outside it there is no room and the text ran off the frame. */}
-                  {ordered.length > 1 && (
-                    <>
-                      <text x={mid - 10} y={rowY(0) + 3.5} className="st-rlbl" textAnchor="end">
-                        {clip(ordered[0]!.claim, 62)}
-                      </text>
-                      <text x={mid + 10} y={rowY(ordered.length - 1) + 3.5} className="st-rlbl">
-                        {clip(ordered[ordered.length - 1]!.claim, 62)}
-                      </text>
-                    </>
-                  )}
 
                   <line x1={GP.l} x2={GW - GP.r} y1={GH - GP.b + 6} y2={GH - GP.b + 6} className="st-axis" />
                   {[-1, -0.5, 0, 0.5, 1].map((g) => (
@@ -416,6 +438,67 @@ export default function StatsView() {
         <SectorExplorer sectors={allSectors} cardsBySector={cardsBySector} colours={COLOURS} />
       </Reveal>
 
+      {/* ── 02b ──────────────────────────────────────────────────────────── */}
+      {spreadSectors.length > 0 && (
+        <Reveal className="st-sec">
+          <span className="st-kicker">02b, the same misses, by sector</span>
+          <h2>Which way each sector leans</h2>
+          <p className="st-lede">
+            Every claim is either a hype trap or a blind spot, never both, so a sector fits on one
+            line with its claims spread either side of the truth. A row bunched on the right is a
+            sector we buy too easily. A row bunched on the left is one we keep underestimating. A row
+            spread across both is a sector nobody has a clock on at all.
+          </p>
+          <div className="st-plotwrap" ref={spreadRef} onMouseLeave={() => setSpreadTip(null)}>
+            <div ref={spreadSeenRef}>
+              <svg viewBox={`0 0 ${SW} ${SH}`} className="st-plot" role="img"
+                aria-label="One row per sector, with each of its claims placed by how far the crowd sat from the answer.">
+                <text x={sx(-0.55)} y={SP.t - 26} className="st-quad mid" fill={C_DOUBT}>← BLIND SPOTS</text>
+                <text x={smid} y={SP.t - 26} className="st-quadsub mid">accurate</text>
+                <text x={sx(0.55)} y={SP.t - 26} className="st-quad mid" fill={C_BELIEVE}>HYPE TRAPS →</text>
+
+                {spreadSectors.map((sec, i) => {
+                  const cs = (cardsBySector.get(sec.id) ?? []).filter((c) => c.n >= MIN_N);
+                  return (
+                    <g key={sec.id} style={{ animationDelay: `${Math.min(i * 70, 700)}ms` }}>
+                      <line x1={SP.l - 8} x2={SW - SP.r} y1={srowY(i) + SROW / 2 - 1} y2={srowY(i) + SROW / 2 - 1} className="st-grid" />
+                      <text x={SP.l - 24} y={srowY(i) + 4} className="st-rowlbl" textAnchor="end">{clip(sec.name, 22)}</text>
+                      <line x1={smid} x2={smid} y1={srowY(i) - SROW / 2 + 6} y2={srowY(i) + SROW / 2 - 6} className="st-zeroline" />
+                      {cs.map((c) => (
+                        <circle
+                          key={c.id} cx={sx(Math.max(-1, Math.min(1, c.gap)))} cy={srowY(i) + nudge(c.id)}
+                          r={Math.min(11, 4.5 + Math.sqrt(c.n) * 0.55)}
+                          fill={colourOf(c.gap)} className="st-dot"
+                          onMouseMove={(e) => tipAt(e, spreadRef.current, setSpreadTip, c.claim, [
+                            `${c.sector} · answer: ${VLABEL[c.verdict]}`,
+                            `${pct(c.pReal)} said already real · ${c.n} swipes`,
+                          ])}
+                        >
+                          <title>{`${c.claim}, ${pct(c.pReal)} said already real`}</title>
+                        </circle>
+                      ))}
+                      <text x={SW - SP.r + 20} y={srowY(i) + 4} className="st-rowlbl">{pct(sec.accuracy)} right</text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+            {spreadTip && (
+              <div className="st-tip" style={{ left: spreadTip.x, top: spreadTip.y }}>
+                <b>{spreadTip.title}</b>
+                {spreadTip.lines.map((l) => <span key={l}>{l}</span>)}
+              </div>
+            )}
+          </div>
+          <div className="st-underchart">
+            <p className="st-note">Bigger dot = more swipes behind that claim. Only claims with {MIN_N} or more are shown.</p>
+            <div className="st-actions">
+              <button className="st-btn" onClick={() => downloadPng(spreadRef.current, SW, SH, `sector-spread-${today()}.png`)}>Download plot (PNG)</button>
+            </div>
+          </div>
+        </Reveal>
+      )}
+
       {/* ── 03 ───────────────────────────────────────────────────────────── */}
       <Reveal className="st-sec">
         <span className="st-kicker">03, the underlying skill</span>
@@ -457,6 +540,14 @@ export default function StatsView() {
                   <text x={RP.l} y={RP.t - 14} className="st-axlbl">SPOTTED WHAT HAD HAPPENED</text>
                   <text x={(rx(0) + rx(1)) / 2} y={RH - 22} className="st-axlbl mid">WRONGLY CALLED IT ALREADY REAL</text>
                   <text x={rx(0.80)} y={ry(0.76)} className="st-quadsub start">guessing</text>
+
+                  {/* What each corner means, in words. A reader who has never met
+                      an ROC curve can still place a dot without decoding the axes. */}
+                  <text x={rx(0.03)} y={ry(0.97)} className="st-quadsub start" fill={C_MID}>reads both right</text>
+                  {/* both of these sit on the diagonal at the corner, so they are
+                      pulled off it rather than printed through the dashes */}
+                  <text x={rx(0.96)} y={ry(0.90)} className="st-quadsub end" fill={C_BELIEVE}>says already to everything</text>
+                  <text x={rx(0.06)} y={ry(0.02)} className="st-quadsub start" fill={C_DOUBT}>says not yet to everything</text>
 
                   <g className={`st-dots${rocSeen ? " in" : ""}`}>
                     {rocPlaced.map(({ s, i, cx, cy, r, ly }) => (

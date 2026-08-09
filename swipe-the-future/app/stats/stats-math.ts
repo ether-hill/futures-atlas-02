@@ -20,6 +20,7 @@ import { EXPECTED, type Verdict } from "../../data/sectors";
 export interface CardStat {
   id: string;
   claim: string;
+  short: string; // chart-row label, see Card.short
   verdict: Verdict;
   sector: string;
   sectorId: string;

@@ -327,6 +327,7 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .st-quadsub { fill: var(--faint); font-family: var(--ff-sans); font-size: 10.5px; }
 .st-quad.end, .st-quadsub.end { text-anchor: end; }
 .st-quad.start, .st-quadsub.start { text-anchor: start; }
+.st-quad.mid, .st-quadsub.mid { text-anchor: middle; }
 
 .st-dot { stroke: var(--ink-2); stroke-width: 2; cursor: pointer; fill-opacity: .82; transition: fill-opacity .12s; }
 .st-dot:hover { fill-opacity: 1; }
@@ -349,6 +350,7 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .st-bars.in .st-bar2 { animation: st-bargrow .42s cubic-bezier(.2,.85,.3,1) both; }
 @keyframes st-bargrow { from { opacity: 0; transform: scaleX(.02); } to { opacity: 1; transform: scaleX(1); } }
 .st-rlbl { fill: var(--bone); font-family: var(--ff-sans); font-size: 10px; opacity: .78; }
+.st-rowlbl { fill: var(--muted); font-family: var(--ff-sans); font-size: 10.5px; }
 .st-axlbl.end { text-anchor: end; }
 .st-lede.sm { font-size: 14px; margin-top: 18px; }
 .st-plotwrap.roc { max-width: 860px; }
