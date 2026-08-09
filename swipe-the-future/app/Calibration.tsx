@@ -8,9 +8,6 @@ import {
 import { SectorFilter } from "./SectorFilter";
 
 const MIXED = 10; // length of the "surprise me" round; a sector deck runs its own length
-// How long the reveal sits before it moves on. Five seconds was not enough to read
-// the verdict, the note and the source; the ring in globals.css matches this.
-const DWELL = 11;
 const pad = (n: number) => String(n).padStart(2, "0");
 
 type Item = { card: Card; sector: Sector };
@@ -39,7 +36,6 @@ export default function Calibration() {
   const [pos, setPos] = useState(0);
   const [answers, setAnswers] = useState<Ans[]>([]);
   const [phase, setPhase] = useState<Phase>("swipe");
-  const [secs, setSecs] = useState(DWELL);
   const [fling, setFling] = useState<0 | 1 | -1>(0);
 
   // sectors people have added themselves, fetched from the host API
@@ -93,13 +89,12 @@ export default function Calibration() {
     track({ cardId: item.card.id, category: item.sector.id, verdict: item.card.verdict, believe: sayTrue });
     setFling(sayTrue ? 1 : -1);
     setPhase(reduce.current ? "result" : "flinging"); // the card swipes/fades off, then the result
-    if (reduce.current) setSecs(DWELL);
   }, [phase, item]);
 
   // the card flings off + fades, then the verdict fades in
   useEffect(() => {
     if (phase !== "flinging") return;
-    const t = setTimeout(() => { setPhase("result"); setSecs(DWELL); }, 320);
+    const t = setTimeout(() => setPhase("result"), 320);
     return () => clearTimeout(t);
   }, [phase]);
 
@@ -108,17 +103,6 @@ export default function Calibration() {
     if (pos + 1 >= deck.length) { setPhase("final"); track({ round: true }); }
     else { setPos(pos + 1); setPhase("swipe"); }
   }, [pos, deck.length]);
-
-  // While the verdict shows: count seconds for the label, and let the ring's own
-  // animationEnd drive the advance (so the loop always completes). A timeout is a
-  // safety net (and the only timer when motion is reduced / animation disabled).
-  useEffect(() => {
-    if (phase !== "result") return;
-    setSecs(DWELL);
-    const iv = setInterval(() => setSecs((s) => Math.max(0, s - 1)), 1000);
-    const fb = setTimeout(advance, reduce.current ? 2200 : DWELL * 1000 + 800);
-    return () => { clearInterval(iv); clearTimeout(fb); };
-  }, [phase, pos, advance]);
 
   // drag the active card (swipe phase only)
   useEffect(() => {
@@ -220,8 +204,10 @@ export default function Calibration() {
   // verdict bits
   const aligned = lastAns ? isAligned(lastAns.card.verdict, lastAns.sayTrue) : false;
   const kinda = lastAns?.card.verdict === "contested";
-  const voClass = kinda ? "kinda" : aligned ? "yes" : "nope";
-  const voBig = kinda ? "KINDA" : aligned ? "YES!" : "NOPE";
+  // The big word grades the answer, it does not restate the claim: someone who
+  // swiped FALSE and was right was being told "YES!", which read as a correction.
+  const voClass = kinda ? "kinda" : aligned ? "correct" : "wrong";
+  const voBig = kinda ? "KINDA" : aligned ? "CORRECT" : "WRONG";
 
   // score (for the final card). Contested cards are KINDA — they count as matched
   // either way (never against you), so a perfect run can reach N/N.
@@ -240,7 +226,6 @@ export default function Calibration() {
       <div className="banner-inner">
         <div className="bcol-l">
           <div className="stf-head">
-            <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
             <h1>Swipe the <em>future.</em></h1>
             <p className="lede">Every card is a real claim about where AI and quantum computing <em>actually</em> stand, fact-checked and linked to its source. Call it <em>true</em> or <em>false</em>.</p>
             <p className="stf-links">
@@ -286,21 +271,23 @@ export default function Calibration() {
             if (active && phase === "result" && lastAns) {
               return (
                 <div key={`res-${pos}`} className="tcard is-result">
-                  <div className={`vo-big ${voClass}`}>{voBig}</div>
-                  <div className="vo-label">Evidence: {VLABEL[lastAns.card.verdict]}</div>
-                  {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
-                  <p className="vo-insight">{lastAns.card.note}</p>
-                  <div className="vo-src">
-                    {lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}
-                    {lastAns.card.checked && <span className="vo-checked"> · checked {lastAns.card.checked}</span>}
+                  <div className="vo-body">
+                    <div className={`vo-big ${voClass}`}>{voBig}</div>
+                    <div className="vo-label">Evidence: {VLABEL[lastAns.card.verdict]}</div>
+                    {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
+                    <p className="vo-insight">{lastAns.card.note}</p>
+                    <div className="vo-src">
+                      {lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}
+                      {lastAns.card.checked && <span className="vo-checked"> · checked {lastAns.card.checked}</span>}
+                    </div>
                   </div>
-                  <button className="nextring" onClick={advance} aria-label="Next claim">
-                    <svg viewBox="0 0 72 72" aria-hidden="true">
-                      <circle className="ring-bg" cx="36" cy="36" r="32" pathLength={100} />
-                      <circle className="ring-fg" cx="36" cy="36" r="32" pathLength={100} onAnimationEnd={advance} />
-                    </svg>
-                    <span className="nr-label">Next</span>
-                  </button>
+                  {/* same wrapper as the False/True row, so Next lands under your thumb */}
+                  <div className="card-actions">
+                    <span className="ca">
+                      <button className="round next" onClick={advance} aria-label="Next claim">→</button>
+                      <span className="ca-lbl">Next</span>
+                    </span>
+                  </div>
                 </div>
               );
             }
@@ -314,8 +301,16 @@ export default function Calibration() {
                 <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">— {it.card.attribution}</span></> : it.card.claim}</h3>
                 {active && phase === "swipe" && (
                   <div className="card-actions">
-                    <span className="ca"><button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="False">✕</button><span className="ca-lbl">False</span></span>
-                    <span className="ca"><button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="True">✓</button><span className="ca-lbl">True</span></span>
+                    <span className="ca">
+                      <span className="ca-hint left" aria-hidden="true">←</span>
+                      <button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="False">✕</button>
+                      <span className="ca-lbl">False</span>
+                    </span>
+                    <span className="ca">
+                      <span className="ca-hint right" aria-hidden="true">→</span>
+                      <button className="round yes" onPointerDown={stop} onClick={() => decide(true)} aria-label="True">✓</button>
+                      <span className="ca-lbl">True</span>
+                    </span>
                   </div>
                 )}
                 {active && (phase === "swipe" || flung) && <><span className="stamp no" aria-hidden="true" style={flung && fling < 0 ? { opacity: 1 } : undefined}>✕</span><span className="stamp yes" aria-hidden="true" style={flung && fling > 0 ? { opacity: 1 } : undefined}>✓</span></>}
@@ -325,11 +320,7 @@ export default function Calibration() {
         )}
       </div>
 
-      <p className="deckhint">
-        {phase === "result" ? `Auto-advancing in ${secs}s`
-          : phase === "final" ? "Pick up where you left off, or change the deck"
-          : "Swipe the card · tap ✕ / ✓ · or use ← / →"}
-      </p>
+
 
         </div>
       </div>

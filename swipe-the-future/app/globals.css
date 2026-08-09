@@ -20,6 +20,9 @@
   --paper: #f4efe4;            /* the swipe card stock */
   --paper-muted: #8C8576;
 
+  --good: #3f9e6b;            /* correct */
+  --good-ink: #1d7a4c;        /* correct, on paper */
+  --bad-ink: #b8452c;         /* wrong, on paper */
   --oxblood: #d8694e;
   --brass: #d8b13c;
   --slate: #8a96a6;
@@ -28,6 +31,9 @@
   --shadow: 0 30px 64px -30px rgba(0, 0, 0, .85);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
+/* 16px is the threshold below which iOS Safari zooms the page on focus. Never
+   go under it on a form control; shrink the field instead of the text. */
+input, textarea, select { font-size: 16px; }
 html, body { min-height: 100%; }
 body { background: var(--ink); color: var(--bone); font-family: var(--ff-sans); -webkit-font-smoothing: antialiased; }
 a { color: var(--accent); }
@@ -74,8 +80,8 @@ a { color: var(--accent); }
   will-change: transform; touch-action: none; transform-origin: center 135%;
   transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .3s ease;
 }
-.tcard.b1 { transform: translateX(17px) scale(.965); filter: brightness(.95); pointer-events: none; }
-.tcard.b2 { transform: translateX(34px) scale(.93); filter: brightness(.9); pointer-events: none; }
+.tcard.b1 { transform: translateX(17px); filter: brightness(.9); pointer-events: none; }
+.tcard.b2 { transform: translateX(34px); filter: brightness(.78); pointer-events: none; }
 .tcard .claim { flex: 1; min-height: 0; overflow: hidden; display: grid; place-items: center; text-align: center; font-weight: 600; font-size: clamp(20px, 2.4vw + 0.6vh, 31px); line-height: 1.16; letter-spacing: -.02em; color: #19140e; }
 /* quote-flavoured cards */
 .tcard.quote .claim { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; }
@@ -84,27 +90,36 @@ a { color: var(--accent); }
 .quote-mark { position: absolute; top: 6px; left: 22px; font-family: Georgia, "Times New Roman", serif; font-size: 84px; line-height: 1; color: var(--accent-ink); opacity: .42; pointer-events: none; }
 
 /* one centered interaction, on the card */
-.card-actions { display: flex; justify-content: center; gap: 38px; padding-top: 14px; }
-.card-actions .ca { display: flex; flex-direction: column; align-items: center; gap: 9px; }
-.ca-lbl { font-family: var(--ff-mono); font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: rgba(140, 133, 118, .7); }
+.card-actions { display: flex; justify-content: center; gap: 44px; padding-top: 14px; flex: 0 0 auto; }
+.card-actions .ca { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.ca-lbl { font-family: var(--ff-mono); font-size: 11.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #5d564a; }
+/* the arrow is the instruction: it says which way to throw the card */
+.ca-hint { position: absolute; top: 16px; font-size: 19px; line-height: 1; color: rgba(93, 86, 74, .38); pointer-events: none; }
+.ca-hint.left { right: calc(100% + 8px); animation: nudge-l 1.8s ease-in-out infinite; }
+.ca-hint.right { left: calc(100% + 8px); animation: nudge-r 1.8s ease-in-out infinite; }
+@keyframes nudge-l { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-5px); } }
+@keyframes nudge-r { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(5px); } }
 .card-actions .round { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 25px; line-height: 1; background: rgba(255, 255, 255, .55); border: 2px solid; cursor: pointer; transition: transform .12s ease, background .15s, border-color .15s, box-shadow .15s; }
 .card-actions .round:active { transform: scale(.94); }
 .card-actions .round.no { color: var(--oxblood); border-color: color-mix(in srgb, var(--oxblood) 55%, var(--card-line)); }
 .card-actions .round.no:hover { border-color: var(--oxblood); background: color-mix(in srgb, var(--oxblood) 12%, #fff); box-shadow: 0 10px 26px -10px var(--oxblood); transform: translateY(-3px) scale(1.05); }
-.card-actions .round.yes { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 55%, var(--card-line)); }
-.card-actions .round.yes:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); box-shadow: 0 10px 26px -10px var(--accent); transform: translateY(-3px) scale(1.05); }
+.card-actions .round.yes { color: var(--good-ink); border-color: color-mix(in srgb, var(--good) 60%, var(--card-line)); }
+.card-actions .round.yes:hover { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, #fff); box-shadow: 0 10px 26px -10px var(--good); transform: translateY(-3px) scale(1.05); }
+.card-actions .round.next { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 55%, var(--card-line)); font-size: 24px; }
+.card-actions .round.next:hover { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, #fff); box-shadow: 0 10px 26px -10px var(--accent); transform: translateY(-3px) scale(1.05); }
 
 /* swipe stamps */
 .stamp { position: absolute; top: 24px; font-weight: 800; font-size: 38px; line-height: 1; border: 3px solid; border-radius: 12px; padding: 4px 14px; opacity: 0; transition: opacity .1s; }
-.stamp.yes { left: 24px; color: oklch(0.5 0.15 245); border-color: oklch(0.5 0.15 245); transform: rotate(-13deg); }
+.stamp.yes { left: 24px; color: var(--good-ink); border-color: var(--good-ink); transform: rotate(-13deg); }
 .stamp.no { right: 24px; color: var(--oxblood); border-color: var(--oxblood); transform: rotate(13deg); }
 
 /* ── verdict, rendered on the same white card ───────────────────────────── */
-.tcard.is-result { align-items: center; justify-content: center; text-align: center; animation: res-in .3s ease both; }
+.tcard.is-result { align-items: stretch; justify-content: flex-start; text-align: center; animation: res-in .3s ease both; }
+.vo-body { flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 @keyframes res-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
 .vo-big { font-weight: 800; font-size: clamp(50px, 13vw, 80px); line-height: .92; letter-spacing: -.04em; }
-.vo-big.yes { color: var(--accent-ink); }
-.vo-big.nope { color: var(--oxblood); }
+.vo-big.correct { color: var(--good-ink); }
+.vo-big.wrong { color: var(--bad-ink); }
 .vo-big.fair { color: var(--slate); }
 .vo-label { margin-top: 10px; font-family: var(--ff-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--paper-muted); }
 /* who said it — quote cards drop their attribution when the card flips, so the
@@ -115,15 +130,6 @@ a { color: var(--accent); }
 .vo-src a { color: var(--oxblood); text-decoration: none; }
 .vo-src a:hover { text-decoration: underline; }
 
-/* circular-timer Next button */
-.nextring { position: relative; width: 78px; height: 78px; margin-top: 24px; background: none; border: 0; cursor: pointer; display: grid; place-items: center; }
-.nextring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
-.nextring .ring-bg { fill: none; stroke: #ded2bb; stroke-width: 4; }
-.nextring .ring-fg { fill: none; stroke: var(--accent); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 100; stroke-dashoffset: 100; animation: nr-fill 11s linear forwards; }
-.nextring .nr-label { font-family: var(--ff-mono); font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: #19140e; }
-.nextring:hover .nr-label { color: var(--accent); }
-.nextring:hover .ring-bg { stroke: #d3c6ad; }
-@keyframes nr-fill { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
 
 /* ── final calibration, on the card ─────────────────────────────────────── */
 .tcard.final { align-items: center; justify-content: center; text-align: center; }
@@ -223,7 +229,7 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
   .banner-inner { grid-template-columns: 1fr; gap: 30px; }
   .stf-head { max-width: none; }
 }
-@media (prefers-reduced-motion: reduce) { *, .stf-meterdemo .fill, .stf-meterdemo .ev, .nextring .ring-fg { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { *, .stf-meterdemo .fill, .stf-meterdemo .ev, .ca-hint { transition: none !important; animation: none !important; } }
 
 /* ── stats page (/swipe-the-future/stats) ───────────────────────────────── */
 /* Same ground and type as the deck: warm bone on near-black, mono eyebrows,
@@ -542,7 +548,7 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .sf-lbl { display: block; margin-bottom: 8px; font-family: var(--ff-mono); font-size: 9.5px; letter-spacing: .2em; text-transform: uppercase; color: rgba(242, 237, 226, .45); }
 .sf-field { position: relative; display: flex; align-items: center; }
 .sf-icon { position: absolute; left: 12px; width: 15px; height: 15px; color: var(--faint); pointer-events: none; }
-.sf-input { width: 100%; appearance: none; border-radius: 10px; border: 1px solid var(--line); background: rgba(23, 24, 27, .62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); padding: 10px 34px 10px 34px; font-family: var(--ff-sans); font-size: 13.5px; color: var(--bone); }
+.sf-input { width: 100%; appearance: none; border-radius: 10px; border: 1px solid var(--line); background: rgba(23, 24, 27, .62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); padding: 9px 34px 9px 34px; font-family: var(--ff-sans); font-size: 16px; color: var(--bone); }
 .sf-input::placeholder { color: var(--faint); }
 .sf-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
 .sf-input:disabled { opacity: .55; }
