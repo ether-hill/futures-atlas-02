@@ -1,11 +1,10 @@
 /**
- * Signal Reactor — deck data model, zod schemas for the two model responses,
+ * Signal Reactor, deck data model, zod schemas for the two model responses,
  * and the assembly step that merges them into the fixed 8-slide Deck.
  *
  * Model output is untrusted input: every response is zod-validated before it
  * touches assembly, and array lengths are clamped defensively per the brief.
- * The client sub-app (signal-reactor/lib/types.ts) mirrors the Deck types —
- * this file is the source of truth; keep them in sync.
+ * The client sub-app (signal-reactor/lib/types.ts) mirrors the Deck types, * this file is the source of truth; keep them in sync.
  */
 
 import { z } from "zod";

@@ -1,6 +1,6 @@
 /**
- * GET  /api/swipe — aggregated Swipe-the-Future metrics (for the hidden dashboard).
- * POST /api/swipe — record one answer { cardId, category, verdict, believe } or { round: true }.
+ * GET  /api/swipe, aggregated Swipe-the-Future metrics (for the hidden dashboard).
+ * POST /api/swipe, record one answer { cardId, category, verdict, believe } or { round: true }.
  * Backed by Redis HINCRBY (see lib/swipe-stats). No-ops if KV is unset.
  */
 import { NextResponse } from "next/server";

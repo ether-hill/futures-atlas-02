@@ -1,14 +1,14 @@
 /**
- * GET  /api/swipe/sector — list the visitor-added sector decks (for the picker).
- * POST /api/swipe/sector — draft a deck for a sector nobody has covered yet.
+ * GET  /api/swipe/sector, list the visitor-added sector decks (for the picker).
+ * POST /api/swipe/sector, draft a deck for a sector nobody has covered yet.
  *
  * The draft is written by Claude with the server-side web-search tool switched on,
  * so every claim has to come back with a real, resolvable source URL. The result is
  * zod-validated, cached in Redis (lib/swipe-sectors) and served to everyone after
- * that — but flagged `approved: false` until an editor signs it off at /admin/swipe,
+ * that, but flagged `approved: false` until an editor signs it off at /admin/swipe,
  * which is what puts the "AI-drafted" badge on the card.
  *
- * The API key lives here and only here — /swipe-the-future is a static export that
+ * The API key lives here and only here, /swipe-the-future is a static export that
  * calls this same-origin route.
  *
  * Body: { sector: string, fresh?: boolean }
@@ -53,8 +53,8 @@ Rules that matter more than anything else:
 - Every claim must be checkable against a real, current source you actually found via search. Never invent a statistic, a study, an organisation or a URL. If you cannot source a claim, drop it and write a different one.
 - The source URL must be one you saw in search results and must resolve. Prefer primary sources: the IEA, NIST, a named journal, a government statistics office, a company's own report, a court record. Avoid content farms and SEO blogspam.
 - Spread the verdicts. Aim for roughly 3 "already", 3 "likely", 2 "unlikely", 2 "contested". A deck where everything is true teaches nothing.
-- "unlikely" claims should be things people plausibly believe but that the evidence contradicts — the hype traps. Not strawmen.
-- "already" claims should be things that sound like the future but have already shipped — the blind spots.
+- "unlikely" claims should be things people plausibly believe but that the evidence contradicts, the hype traps. Not strawmen.
+- "already" claims should be things that sound like the future but have already shipped, the blind spots.
 - "contested" is for genuine expert disagreement, not for things you are simply unsure about. If you are unsure, do more research.
 - Claims are one sentence, plain language, no jargon, under 25 words. Written the way a knowledgeable person talks to a friend. No em dashes.
 - The reveal note is one or two sentences, under 35 words, and carries the specific number or ruling that settles it.
@@ -87,7 +87,7 @@ export async function POST(req: Request) {
 
   const raw = typeof body.sector === "string" ? body.sector.trim().slice(0, 40) : "";
   if (raw.length < 3) return fail(400, "too_short", "Give the sector a name of at least three letters.");
-  // Letters, spaces and the odd ampersand/hyphen — this string reaches a prompt.
+  // Letters, spaces and the odd ampersand/hyphen, this string reaches a prompt.
   if (!/^[\p{L}][\p{L} &'-]*$/u.test(raw)) return fail(400, "bad_name", "Letters and spaces only, please.");
 
   const slug = slugify(raw);

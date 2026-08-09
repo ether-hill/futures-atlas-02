@@ -1,7 +1,7 @@
 import type { OutputType } from "@/content/about";
 
 /**
- * The READ / COPY / RUN badge — built here for the About page and exported
+ * The READ / COPY / RUN badge, built here for the About page and exported
  * for reuse on project cards site-wide later (brief §4.4).
  */
 export function OutputTypeBadge({ type, active = true }: { type: OutputType; active?: boolean }) {

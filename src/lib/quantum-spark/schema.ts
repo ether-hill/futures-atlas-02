@@ -1,7 +1,7 @@
 /**
- * Quantum Spark — zod schema for the model response (untrusted input) and the
+ * Quantum Spark, zod schema for the model response (untrusted input) and the
  * result shape returned to the client. The client sub-app mirrors these types
- * in quantum-spark/lib/types.ts — this file is the source of truth.
+ * in quantum-spark/lib/types.ts, this file is the source of truth.
  */
 
 import { z } from "zod";

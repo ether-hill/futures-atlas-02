@@ -1,5 +1,5 @@
 /**
- * Swipe the Future — simple metrics store (one Redis hash, fa:swipe).
+ * Swipe the Future, simple metrics store (one Redis hash, fa:swipe).
  * Atomic HINCRBY counters: global tallies + per-card and per-category believe/doubt.
  * Reuses the same KV provisioning as the token store; no-ops if KV is absent.
  * Node-only.

@@ -1,5 +1,5 @@
 /**
- * /api/theme.css — the live override stylesheet, as CSS.
+ * /api/theme.css, the live override stylesheet, as CSS.
  *
  * Same overrides the root layout SSR-injects, but served as a standalone
  * stylesheet so non-Next zones (e.g. the static Underground Intelligence app)

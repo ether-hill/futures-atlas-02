@@ -1,10 +1,10 @@
 /**
- * GET /api/swipe/recheck — the weekly freshness pass for Swipe the Future.
+ * GET /api/swipe/recheck runs the weekly freshness pass for Swipe the Future.
  *
  * Claude re-reads each claim against current sources (server-side web search)
  * and says whether it still holds. It NEVER edits a live card: findings go into
  * a report in Redis that an editor reads at /admin/swipe and acts on by hand.
- * That keeps the hand-checked promise intact — nothing changes on the public
+ * That keeps the hand-checked promise intact, nothing changes on the public
  * site without a person deciding it should.
  *
  * Runs from the Vercel cron in vercel.json (Mondays, 07:00 UTC) and is
@@ -57,9 +57,9 @@ For each claim you are given, search the web for the current state of play and d
 Verdict scale: "unlikely" = the evidence says no. "contested" = experts genuinely split. "likely" = the evidence points this way but it has not fully landed. "already" = it has already happened.
 
 Status for each claim:
-- "holds" — the claim and its verdict are still right. Most claims should land here; do not manufacture problems.
-- "drifting" — still broadly right, but a number in the reveal note is out of date, or the verdict is edging toward a neighbouring one.
-- "wrong" — the verdict is now incorrect, the source no longer supports it, or the source URL is dead.
+- "holds": the claim and its verdict are still right. Most claims should land here; do not manufacture problems.
+- "drifting": still broadly right, but a number in the reveal note is out of date, or the verdict is edging toward a neighbouring one.
+- "wrong": the verdict is now incorrect, the source no longer supports it, or the source URL is dead.
 
 Rules:
 - Only report a problem you can point to evidence for. Say what changed and give the current figure. Never invent a statistic or a source.
@@ -94,7 +94,7 @@ async function allClaims(origin: string): Promise<Claim[]> {
       const d = (await r.json()) as { cards?: Claim[] };
       if (Array.isArray(d.cards)) claims.push(...d.cards);
     }
-  } catch { /* the sub-app bundle may not be built yet — generated decks still get checked */ }
+  } catch { /* the sub-app bundle may not be built yet, generated decks still get checked */ }
 
   for (const s of await listSectors()) {
     for (const c of s.cards) {

@@ -3,7 +3,7 @@ import { Container } from "@/components/Container";
 import { ADMIN_HOME, safeNext } from "@/lib/admin-session";
 
 export const metadata: Metadata = {
-  title: "Sign in — Futures Atlas",
+  title: "Sign in. Futures Atlas",
   robots: { index: false, follow: false },
 };
 

@@ -1,6 +1,6 @@
 "use client";
 
-/** V1 — "Signal Desk": feature-banner carousel, live mini-demos + CTA, quotes. */
+/** V1, "Signal Desk": feature-banner carousel, live mini-demos + CTA, quotes. */
 
 import Link from "next/link";
 import { Container } from "@/components/Container";
@@ -41,7 +41,7 @@ export default function V1() {
     <div>
       <LabBar current={1} />
 
-      {/* Hero — colored curl-flow streams over black */}
+      {/* Hero, colored curl-flow streams over black */}
       <section className="relative flex min-h-[62svh] items-end overflow-hidden border-b border-ink bg-black">
         <Backdrop
           spec={{
@@ -63,7 +63,7 @@ export default function V1() {
             </h1>
             <p className="mt-5 max-w-[560px] font-mono text-[14px] leading-[1.75] text-paper/70">
               Prototypes, open tools, and research on quantum computing and
-              emerging AI — laid out like a working desk, not a brochure.
+              emerging AI, laid out like a working desk, not a brochure.
             </p>
           </Reveal>
         </Container>
@@ -102,13 +102,13 @@ export default function V1() {
         </Container>
       </section>
 
-      {/* Live mini-demos — the pieces themselves, running in the cards */}
+      {/* Live mini-demos, the pieces themselves, running in the cards */}
       <section className="border-t border-ink/15 py-[clamp(44px,7vw,96px)]">
         <Container>
           <Reveal>
             <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
               <h2 className="text-[clamp(24px,3vw,40px)] font-extrabold tracking-[-0.02em] text-ink">Try a live system</h2>
-              <p className="font-mono text-[12px] text-ink/55">These cards are running right now — not screenshots.</p>
+              <p className="font-mono text-[12px] text-ink/55">These cards are running right now, not screenshots.</p>
             </div>
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               {DEMOS.map((d) => (
@@ -139,7 +139,7 @@ export default function V1() {
         <Container>
           <Reveal>
             {/* The shared Carousel paints its controls with ink tokens, which are
-                invisible on this dark band in the light theme — retint them to
+                invisible on this dark band in the light theme, retint them to
                 paper from here (dots keep the accent active state). */}
             <Carousel
               intervalMs={5500}

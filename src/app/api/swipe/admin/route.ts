@@ -1,5 +1,5 @@
 /**
- * POST /api/swipe/admin — editor actions on Swipe the Future's generated decks.
+ * POST /api/swipe/admin handles editor actions on Swipe the Future's generated decks.
  *
  * Body: { slug: string, action: "approve" | "unapprove" | "delete" }
  *

@@ -6,7 +6,7 @@ import { SectorActions } from "./SectorActions";
 import { RecheckButton } from "./RecheckButton";
 
 export const metadata: Metadata = {
-  title: "Swipe the Future — desk",
+  title: "Swipe the Future desk",
   robots: { index: false, follow: false },
 };
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ type Report = { ranAt: string; lastRunChecked: number; lastRunSkipped: number; f
 
 /**
  * The editor's desk for Swipe the Future: the decks visitors asked for and the
- * weekly freshness report. Both are review queues — nothing on this page runs
+ * weekly freshness report. Both are review queues, nothing on this page runs
  * automatically against the live deck.
  */
 export default async function SwipeAdminPage() {
@@ -38,7 +38,7 @@ export default async function SwipeAdminPage() {
   return (
     <Shell>
       <Section
-        title={`Waiting on you — ${pending.length}`}
+        title={`Waiting on you (${pending.length})`}
         note="Visitors typed these sectors and Claude drafted them with web search. They are already playable, flagged AI-drafted on the card. Read the claims, follow the sources, then approve to drop the badge, or delete."
       >
         {pending.length ? pending.map((s) => (
@@ -46,12 +46,12 @@ export default async function SwipeAdminPage() {
         )) : <Empty>Nothing waiting.</Empty>}
       </Section>
 
-      <Section title={`Approved — ${live.length}`} note="Signed off. These sit alongside the hand-written decks with no badge.">
+      <Section title={`Approved (${live.length})`} note="Signed off. These sit alongside the hand-written decks with no badge.">
         {live.length ? live.map((s) => <Deck key={s.id} sector={s} />) : <Empty>None yet.</Empty>}
       </Section>
 
       <Section
-        title={`Freshness — ${flagged.length} need a look`}
+        title={`Freshness · ${flagged.length} need a look`}
         note={
           report?.ranAt
             ? `Last run ${new Date(report.ranAt).toLocaleString("en-GB")}: ${report.lastRunChecked} claims re-checked${report.lastRunSkipped ? `, ${report.lastRunSkipped} never checked yet` : ""}. The cron runs Mondays and never edits a live card.`

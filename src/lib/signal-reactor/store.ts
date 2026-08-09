@@ -1,5 +1,5 @@
 /**
- * Signal Reactor — deck archive. Once a sector's briefing is generated it's
+ * Signal Reactor, deck archive. Once a sector's briefing is generated it's
  * stored here and served on subsequent requests instead of re-running the
  * model pipeline (instant, free, and shared links reopen the same deck).
  *

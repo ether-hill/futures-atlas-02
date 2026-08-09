@@ -6,7 +6,7 @@ import { OutputTypeBadge } from "./OutputTypeBadge";
 import { LogoMark } from "./StackGrid";
 
 /**
- * "How a project gets made" — an interactive pipeline. The connection line
+ * "How a project gets made", an interactive pipeline. The connection line
  * draws itself when scrolled into view; a slow pulse travels it (motion-safe
  * only); each stage expands to show the tools used there (same data as the
  * stack grid). Selecting READ / COPY / RUN re-highlights which stages that
@@ -58,7 +58,7 @@ export function WorkflowDiagram() {
           </button>
         ))}
         <span className="ml-1 font-mono text-[11px] text-ink/40">
-          {recipe ? "— stages this output type passes through" : "— select one to trace its path"}
+          {recipe ? ", stages this output type passes through" : ", select one to trace its path"}
         </span>
       </div>
 

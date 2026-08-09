@@ -1,13 +1,12 @@
 /**
- * Quantum Spark — spark archive. Once a business's five insights are
+ * Quantum Spark, spark archive. Once a business's five insights are
  * generated they're stored and served on subsequent requests instead of
  * re-running the model ("Spark 5 more" passes fresh:true to bypass and
  * overwrite, so live-audience regeneration still produces a new set).
  *
  * Keys carry prompt version + model so prompt edits invalidate naturally.
  * Same dual-backend pattern as the rest of the site; no-ops without KV.
- * (Owner-approved deviation from the brief's no-persistence guardrail —
- * mirrors the Signal Reactor deck archive.)
+ * (Owner-approved deviation from the brief's no-persistence guardrail, * mirrors the Signal Reactor deck archive.)
  */
 
 import Redis from "ioredis";

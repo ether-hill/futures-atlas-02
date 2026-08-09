@@ -1,6 +1,6 @@
 "use client";
 
-/** Observatory — dark indigo theme; hero: particle-nebula. */
+/** Observatory, dark indigo theme; hero: particle-nebula. */
 
 import { BrowseMock } from "../BrowseMock";
 

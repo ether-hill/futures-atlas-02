@@ -5,7 +5,7 @@ import { useEffect, useRef, useState, type ElementType, type ReactNode } from "r
 /**
  * Scroll-reveal wrapper. Adds `.is-in` when the element enters view so the
  * CSS `rise` animation plays once. Reduced-motion is handled in globals.css
- * (the element is forced visible). `delay` staggers sequenced reveals — used
+ * (the element is forced visible). `delay` staggers sequenced reveals, used
  * for the oracle's three reply tiers.
  */
 export function Reveal({

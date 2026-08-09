@@ -1,6 +1,6 @@
 "use client";
 
-/** V4 — "Hypergrid": Claude-homepage calm × Netflix shelf rows. */
+/** V4, "Hypergrid": Claude-homepage calm × Netflix shelf rows. */
 
 import Link from "next/link";
 import { Container } from "@/components/Container";
@@ -66,7 +66,7 @@ export default function V4() {
               Futures, in working form
             </h1>
             <p className="mx-auto mt-6 max-w-[520px] font-mono text-[13.5px] leading-[1.8] text-paper/80">
-              A library of playable foresight — simulations, instruments, and
+              A library of playable foresight, simulations, instruments, and
               studies on quantum computing and emerging AI.
             </p>
             <div className="mx-auto mt-9 flex max-w-[420px] items-center gap-2 rounded-full border border-paper/25 bg-black/60 p-1.5 backdrop-blur-sm">
@@ -88,7 +88,7 @@ export default function V4() {
             <ScrollRow title="Because you liked arguing with the future">
               {risk.map((p) => <Card key={p.id} p={p} wide />)}
             </ScrollRow>
-            <ScrollRow title="Simulations — build, break, rebuild">
+            <ScrollRow title="Simulations, build, break, rebuild">
               {[...sims, ...risk, ...rest.slice(0, 1)].map((p) => <Card key={p.id} p={p} />)}
             </ScrollRow>
             <ScrollRow title="Instruments & visual systems">

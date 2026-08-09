@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Faithful React port of projects/design_handoff_futures_atlas — the
+ * Faithful React port of projects/design_handoff_futures_atlas, the
  * "Claude-app × Netflix" browse UI. Three theme variants share this one
  * component; only tokens + the hero's generative piece differ. Per the
  * owner's brief the stock background VIDEO is replaced by the Generatives
@@ -75,7 +75,7 @@ const TRENDING = [
   "Can open models catch the frontier by 2028?",
 ];
 
-// per-project fallback art (behind the real preview image) — handoff ART map
+// per-project fallback art (behind the real preview image), handoff ART map
 const ART: Record<string, string> = {
   "odds-of-surviving-ai": "radial-gradient(circle at 25% 30%, rgba(255,90,120,.55), transparent 55%), radial-gradient(circle at 75% 75%, rgba(125,225,255,.35), transparent 55%), conic-gradient(from 210deg at 60% 40%, #1A1030, #0B0A11, #241E3E, #0B0A11)",
   "signal-reactor": "repeating-linear-gradient(105deg, rgba(125,225,255,.14) 0 2px, transparent 2px 14px), radial-gradient(circle at 70% 25%, rgba(125,225,255,.5), transparent 60%), linear-gradient(160deg, #0E1B2E, #0B0A11)",
@@ -406,7 +406,7 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
               <div style={{ marginTop: 24, textAlign: "left", background: T.panel, border: `1px solid ${tx(0.14)}`, borderRadius: 14, padding: "22px 26px" }}>
                 <div style={{ fontFamily: mono, fontSize: 10.5, letterSpacing: ".24em", textTransform: "uppercase", color: T.accent, marginBottom: 11 }}>The Atlas answers</div>
                 <p style={{ fontSize: 15.5, lineHeight: 1.6, margin: "0 0 16px", color: tx(0.9) }}>
-                  Several projects in the atlas map this question — each a grounded forecast, sources linked. Start with the citations below; every claim traces back to something on the record.
+                  Several projects in the atlas map this question, each a grounded forecast, sources linked. Start with the citations below; every claim traces back to something on the record.
                 </p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                   {[

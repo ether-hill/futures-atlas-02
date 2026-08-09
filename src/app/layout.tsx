@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/google";
-// shared design system (defaults) — must precede ./globals.css
+// shared design system (defaults), must precede ./globals.css
 import "futures-atlas-core/tokens.css";
 import "futures-atlas-core/kit.css";
 import "futures-atlas-core/nav.css";
@@ -41,14 +41,14 @@ const SITE_DESC =
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://futures-atlas-02.vercel.app"),
-  title: "Futures Atlas — a catalogue of possible worlds",
+  title: "Futures Atlas, a catalogue of possible worlds",
   description: SITE_DESC,
   // Default Open Graph so any page (and the Share → Social Composer transmutate)
   // has a go-to image + summary; individual pages/projects override these.
   openGraph: {
     type: "website",
     siteName: "Futures Atlas",
-    title: "Futures Atlas — a catalogue of possible worlds",
+    title: "Futures Atlas, a catalogue of possible worlds",
     description: SITE_DESC,
     images: ["/projects/og-default.jpg"],
   },
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
 };
 
 // Render per-request so the SSR-injected token overrides always reflect the
-// current store — live theming applies site-wide with no rebuild.
+// current store, live theming applies site-wide with no rebuild.
 export const dynamic = "force-dynamic";
 
 export default async function RootLayout({
@@ -70,7 +70,7 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Adaptive "F" favicon — light/dark by browser colour scheme. The svg
+        {/* Adaptive "F" favicon, light/dark by browser colour scheme. The svg
             self-adapts via @media (Safari/Firefox); the dark media link covers
             browsers that switch on the <link> instead. */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -83,7 +83,7 @@ export default async function RootLayout({
         {/* The one global nav, shared with every project bundle. The stylesheet
             is linked blocking in the head (not left to atlas-nav.js's async
             self-inject) so the bar + mobile sheet are fully styled at first
-            paint — otherwise the unstyled sheet/burger flash on every load.
+            paint, otherwise the unstyled sheet/burger flash on every load.
             atlas-nav.js sees this data-fa-nav-css link and skips re-injecting. */}
         <link rel="stylesheet" href="/atlas-nav.css?v=8" data-fa-nav-css />
         <script src="/atlas-nav.js?v=8" defer />

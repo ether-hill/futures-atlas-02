@@ -1,5 +1,5 @@
 /**
- * GET /api/vid?u=<encoded-url> — same-origin, range-aware video proxy.
+ * GET /api/vid?u=<encoded-url>, same-origin, range-aware video proxy.
  *
  * Transmutated remote videos are drawn onto a <canvas> and exported to PNG /
  * GIF / video. A cross-origin video without CORS headers taints the canvas and

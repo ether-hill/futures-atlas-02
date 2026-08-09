@@ -1,20 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { VLABEL } from "../../data/sectors";
 import type { CardStat, SectorStat } from "./stats-math";
-import { sensitivityLabel, leanLabel } from "./stats-math";
 
 const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 /** Below this many swipes a per-card read is noise, so it is left unsaid. */
 const MIN_READ = 5;
 
+type Sort = "accuracy" | "activity" | "name";
+
 /**
  * Every sector, openable to reveal each of its cards: what the claim was, where
- * the evidence sits, and how the split fell. This is the level the ranked table
- * can't show — the ranking tells you a sector is hard, this tells you which
- * claim made it hard.
+ * the evidence sits, and how the split fell. The ranked table tells you a sector
+ * is hard; this tells you which claim made it hard.
  */
 export function SectorExplorer({
   sectors, cardsBySector, colours,
@@ -23,63 +23,88 @@ export function SectorExplorer({
   cardsBySector: Map<string, CardStat[]>;
   colours: { believe: string; doubt: string; mid: string };
 }) {
-  const [open, setOpen] = useState<string | null>(sectors[0]?.id ?? null);
+  const [open, setOpen] = useState<Set<string>>(() => new Set(sectors[0] ? [sectors[0].id] : []));
+  const [sort, setSort] = useState<Sort>("activity");
+
+  const ordered = useMemo(() => {
+    const c = [...sectors];
+    if (sort === "accuracy") c.sort((a, b) => a.accuracy - b.accuracy);      // hardest first
+    else if (sort === "name") c.sort((a, b) => a.name.localeCompare(b.name));
+    else c.sort((a, b) => b.n - a.n);
+    return c;
+  }, [sectors, sort]);
 
   if (!sectors.length) return null;
 
-  return (
-    <div className="st-explorer">
-      {sectors.map((s) => {
-        const isOpen = open === s.id;
-        const cards = (cardsBySector.get(s.id) ?? [])
-          .filter((c) => c.n > 0)
-          .sort((a, b) => b.n - a.n);
-        return (
-          <div key={s.id} className={`st-sx${isOpen ? " open" : ""}`}>
-            <button className="st-sxhead" onClick={() => setOpen(isOpen ? null : s.id)} aria-expanded={isOpen}>
-              <span className="st-sxname">{s.name}</span>
-              <span className="st-sxmeta">
-                {s.measurable
-                  ? `${sensitivityLabel(s.dPrime)} · ${leanLabel(s.lean)}`
-                  : "accuracy only"}
-              </span>
-              <span className="st-sxacc">{pct(s.accuracy)}<i>right</i></span>
-              <span className="st-sxn">{s.n}<i>answers</i></span>
-              <span className="st-sxchev" aria-hidden="true">{isOpen ? "▾" : "▸"}</span>
-            </button>
+  const toggle = (id: string) => setOpen((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
 
-            {isOpen && (
-              <div className="st-sxbody">
-                {cards.length ? cards.map((c) => {
-                  const off = c.gap > 0.12 ? colours.believe : c.gap < -0.12 ? colours.doubt : colours.mid;
-                  return (
-                    <div className="st-card" key={c.id}>
-                      <p className="st-cclaim">{c.claim}</p>
-                      <div className="st-cbar" title={`${pct(c.pTrue)} true · ${pct(1 - c.pTrue)} false`}>
-                        <span className="st-cbtrue" style={{ width: `${c.pTrue * 100}%` }} />
-                        <span className="st-cbfalse" style={{ width: `${(1 - c.pTrue) * 100}%` }} />
+  return (
+    <div className="sx-wrap">
+      <div className="sx-tools">
+        <span className="sx-toolslbl">Order by</span>
+        {([["activity", "most played"], ["accuracy", "hardest first"], ["name", "A to Z"]] as const).map(([k, label]) => (
+          <button key={k} className={`sx-sort${sort === k ? " on" : ""}`} onClick={() => setSort(k)}>{label}</button>
+        ))}
+        <button className="sx-sort ghost" onClick={() => setOpen(open.size ? new Set() : new Set(sectors.map((s) => s.id)))}>
+          {open.size ? "collapse all" : "expand all"}
+        </button>
+      </div>
+
+      <div className="st-explorer">
+        {ordered.map((s) => {
+          const isOpen = open.has(s.id);
+          const cards = (cardsBySector.get(s.id) ?? [])
+            .filter((c) => c.n > 0)
+            .sort((a, b) => b.n - a.n);
+          return (
+            <div key={s.id} className={`st-sx${isOpen ? " open" : ""}`}>
+              <button className="st-sxhead" onClick={() => toggle(s.id)} aria-expanded={isOpen}>
+                <span className="st-sxchev" aria-hidden="true">{isOpen ? "▾" : "▸"}</span>
+                <span className="st-sxname">{s.name}</span>
+                <span className="st-sxscore">
+                  <span className="st-sxbar" aria-hidden="true">
+                    <span style={{ width: `${s.accuracy * 100}%` }} />
+                  </span>
+                  <b>{pct(s.accuracy)}</b> got it right
+                </span>
+                <span className="st-sxn">{s.n} answers</span>
+              </button>
+
+              {isOpen && (
+                <div className="st-sxbody">
+                  {cards.length ? cards.map((c) => {
+                    const off = c.gap > 0.12 ? colours.believe : c.gap < -0.12 ? colours.doubt : colours.mid;
+                    return (
+                      <div className="st-card" key={c.id}>
+                        <p className="st-cclaim">{c.claim}</p>
+                        <div className="st-cbar" title={`${pct(c.pTrue)} true, ${pct(1 - c.pTrue)} false`}>
+                          <span className="st-cbtrue" style={{ width: `${c.pTrue * 100}%` }} />
+                          <span className="st-cbfalse" style={{ width: `${(1 - c.pTrue) * 100}%` }} />
+                        </div>
+                        <div className="st-cmeta">
+                          <span className="st-ctrue"><b>{pct(c.pTrue)}</b> said true</span>
+                          <span className="st-cfalse"><b>{pct(1 - c.pTrue)}</b> said false</span>
+                          <span className="st-cverdict">Answer: <b>{VLABEL[c.verdict]}</b></span>
+                          <span className="st-cn">{c.n} swipe{c.n === 1 ? "" : "s"}</span>
+                          {c.verdict !== "contested" && c.n >= MIN_READ && (
+                            <span className="st-cgap" style={{ color: off }}>
+                              {c.gap > 0.12 ? "over-believed" : c.gap < -0.12 ? "under-believed" : "well read"}
+                            </span>
+                          )}
+                        </div>
                       </div>
-                      <div className="st-cmeta">
-                        <span><b>{pct(c.pTrue)}</b> said true</span>
-                        <span><b>{pct(1 - c.pTrue)}</b> said false</span>
-                        <span className="st-cverdict">Evidence: {VLABEL[c.verdict]}</span>
-                        <span className="st-cn">{c.n} swipe{c.n === 1 ? "" : "s"}</span>
-                        {/* A verdict on two swipes is noise, so the read only
-                            appears once there is enough of a sample to mean it. */}
-                        {c.verdict !== "contested" && c.n >= MIN_READ && (
-                          <span className="st-cgap" style={{ color: off }}>
-                            {c.gap > 0.12 ? "over-believed" : c.gap < -0.12 ? "under-believed" : "well read"}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }) : <p className="st-msg sm">Nobody has swiped this sector yet.</p>}
-              </div>
-            )}
-          </div>
-        );
-      })}
+                    );
+                  }) : <p className="st-msg sm">Nobody has swiped this sector yet.</p>}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

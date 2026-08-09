@@ -8,7 +8,7 @@
  *
  * On success: sets the signed httpOnly session cookie (plus the readable
  * `fa_editor` flag the static nav uses) and redirects to the originally
- * requested path. On failure: back to the form with a generic message — no hint
+ * requested path. On failure: back to the form with a generic message, no hint
  * about whether the password was close, or whether any are even configured.
  */
 import { createHash, timingSafeEqual } from "node:crypto";
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
     maxAge: ADMIN_MAX_AGE,
   });
   // Readable by the static nav bundle so it can list drafts. Carries no
-  // authority — the middleware always re-checks the signed cookie above.
+  // authority, the middleware always re-checks the signed cookie above.
   res.cookies.set(EDITOR_FLAG_COOKIE, "1", {
     httpOnly: false,
     secure,

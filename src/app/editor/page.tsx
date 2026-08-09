@@ -5,7 +5,7 @@ import { draftProjects, formatProjectDate, liveProjects, type Project } from "@/
 import { getEditor } from "@/lib/editor";
 
 export const metadata: Metadata = {
-  title: "Editor — Futures Atlas",
+  title: "Editor. Futures Atlas",
   robots: { index: false, follow: false },
 };
 
@@ -13,8 +13,8 @@ export const metadata: Metadata = {
  * The editor's own view of the atlas: everything in it, split by what the
  * public can see. Reachable only through the middleware gate.
  *
- * Publication state lives in `src/data/projects.ts` — one `visibility` word per
- * project — so this page reports it rather than editing it.
+ * Publication state lives in `src/data/projects.ts`, one `visibility` word per
+ * project, so this page reports it rather than editing it.
  */
 export default async function EditorPage() {
   const editor = await getEditor();
@@ -28,18 +28,18 @@ export default async function EditorPage() {
         </h1>
         <p className="mb-[clamp(30px,5vw,56px)] max-w-[62ch] font-mono text-[13px] leading-[1.7] text-graphite">
           Signed in as {editor?.name ?? "an editor"}. Live projects are on the public
-          site; drafts are listed and reachable only while you are signed in — a
+          site; drafts are listed and reachable only while you are signed in, a
           visitor who follows a draft link gets the sign-in form instead.
         </p>
 
         <Section
           title="Live"
-          note="Public — listed on the homepage, the projects page and the nav switcher."
+          note="Public, listed on the homepage, the projects page and the nav switcher."
           items={liveProjects}
         />
         <Section
           title="Draft"
-          note="Editors only — hidden from every public listing, and their URLs are closed."
+          note="Editors only, hidden from every public listing, and their URLs are closed."
           items={draftProjects}
         />
 

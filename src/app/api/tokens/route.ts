@@ -1,5 +1,5 @@
 /**
- * /api/tokens — the runtime theming store endpoint.
+ * /api/tokens, the runtime theming store endpoint.
  *   GET  -> { overrides, versions, configured }   (public; the site reads this)
  *   POST (protected by middleware Basic auth):
  *     { id, value }              save one override

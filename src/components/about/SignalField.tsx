@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 
 /**
  * The About hero's signature: a field of drifting signal points where a few
- * periodically connect into brief constellations, hold, then dissolve — the
+ * periodically connect into brief constellations, hold, then dissolve, the
  * site's thesis as motion (most signals are noise; a few connect). Pointer
  * proximity gently attracts nearby points. Two-tone from the live site
  * palette; pauses when the tab is hidden; reduced-motion renders one static

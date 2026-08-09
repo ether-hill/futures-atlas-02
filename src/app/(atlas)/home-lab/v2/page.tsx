@@ -1,6 +1,6 @@
 "use client";
 
-/** V2 — "Observatory": Trajectories hero, workflow carousel, studies & papers. */
+/** V2, "Observatory": Trajectories hero, workflow carousel, studies & papers. */
 
 import Link from "next/link";
 import { Container } from "@/components/Container";
@@ -13,7 +13,7 @@ export default function V2() {
     <div>
       <LabBar current={2} />
 
-      {/* Hero — the Trajectories filament sphere, centered statement over it */}
+      {/* Hero, the Trajectories filament sphere, centered statement over it */}
       <section className="relative flex min-h-[88svh] items-center overflow-hidden border-b border-ink bg-black">
         <TrajectoriesBackdrop opacity={0.95} />
         {/* Left-side scrim (desktop) + flat darkening layer (mobile, where the
@@ -60,7 +60,7 @@ export default function V2() {
               </Link>
             </Reveal>
             {/* min-w-0 lets the fr track shrink below the carousel's min-content
-                width — without it the left column collapses to word-width */}
+                width, without it the left column collapses to word-width */}
             <Reveal className="min-w-0">
               <Carousel intervalMs={5000}>
                 {WORKFLOW_SLIDES.map((s) => (

@@ -1,8 +1,8 @@
-// Swipe the Future — the analysis behind the stats page.
+// Swipe the Future, the analysis behind the stats page.
 //
 // Two ideas do the work. The Reality Gap is a calibration plot: for every claim,
 // where the evidence sits versus how many people called it true. The per-sector
-// numbers are signal detection theory — d′ for how well people separate true
+// numbers are signal detection theory, d′ for how well people separate true
 // claims from false ones, and criterion c for which way they lean when unsure.
 // Both are standard, both survive a statistician reading them, and both reduce
 // to two honest sentences for everyone else.
@@ -49,7 +49,7 @@ export function probit(p: number): number {
     (((((b[0]! * r + b[1]!) * r + b[2]!) * r + b[3]!) * r + b[4]!) * r + 1);
 }
 
-/** Wilson score interval — honest about small samples in a way p ± 1.96·SE isn't. */
+/** Wilson score interval, honest about small samples in a way p ± 1.96·SE isn't. */
 export function wilson(successes: number, n: number, z = 1.96): { lo: number; hi: number } {
   if (n === 0) return { lo: 0, hi: 1 };
   const p = successes / n;
@@ -98,7 +98,7 @@ export function sectorStat(id: string, name: string, cards: CardStat[]): SectorS
   const correct = hits + (noise - falseAlarms);
   const { lo, hi } = wilson(correct, n);
 
-  // Both a hit rate and a false-alarm rate are needed for d′ — a sector with only
+  // Both a hit rate and a false-alarm rate are needed for d′, a sector with only
   // true claims (or only false ones) can be scored for accuracy but not for
   // sensitivity, so d′ and lean are reported as 0 and the table shows the n.
   const measurable = signal > 0 && noise > 0;

@@ -16,7 +16,7 @@ export async function EditorBar() {
   return (
     <div
       // The global Share pill is fixed just under the nav, i.e. on top of this
-      // bar — the extra right padding keeps Sign out clear of it.
+      // bar, the extra right padding keeps Sign out clear of it.
       className="relative z-[60] flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-ink/20 bg-band py-2.5 pl-[clamp(16px,4vw,40px)] pr-[132px]"
       style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-label)" }}
     >

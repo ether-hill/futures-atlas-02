@@ -1,7 +1,7 @@
 /**
  * Server-side token store, shared across all visitors.
- *   fa:tokens   — the active overrides (hash: token id -> value)
- *   fa:versions — saved design snapshots (hash: id -> JSON{label,ts,overrides})
+ *   fa:tokens  , the active overrides (hash: token id -> value)
+ *   fa:versions, saved design snapshots (hash: id -> JSON{label,ts,overrides})
  *
  * Supports either KV provisioning: REST (KV_REST_API_URL/TOKEN -> @upstash/redis)
  * or a connection string (REDIS_URL -> ioredis). Degrades gracefully if neither

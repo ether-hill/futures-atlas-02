@@ -1,6 +1,5 @@
 /**
- * Sample editorial content for the home-lab variants. PLACEHOLDER copy —
- * plausible in register but not published work; swap for real entries if a
+ * Sample editorial content for the home-lab variants. PLACEHOLDER copy, * plausible in register but not published work; swap for real entries if a
  * variant graduates to the actual homepage.
  */
 
@@ -11,7 +10,7 @@ export const QUOTES = [
     role: "founding note",
   },
   {
-    text: "We used the Signal Reactor deck to open our board strategy day — it reframed the whole quantum conversation in twenty minutes.",
+    text: "We used the Signal Reactor deck to open our board strategy day, it reframed the whole quantum conversation in twenty minutes.",
     who: "Workshop participant",
     role: "financial services",
   },
@@ -31,7 +30,7 @@ export const ARTICLES = [
   {
     tag: "Rhetoric watch",
     title: "“Quantum advantage” is doing a lot of work in that sentence",
-    dek: "Tracing three vendor announcements back to the benchmarks they lean on — and what the benchmarks actually measured.",
+    dek: "Tracing three vendor announcements back to the benchmarks they lean on, and what the benchmarks actually measured.",
     date: "Jul 2026",
     read: "8 min",
   },
@@ -52,7 +51,7 @@ export const ARTICLES = [
   {
     tag: "Research note",
     title: "Post-quantum migration is a board topic now",
-    dek: "Reading the 2026 PQC mandates against real institutional timelines — the gap is the story.",
+    dek: "Reading the 2026 PQC mandates against real institutional timelines, the gap is the story.",
     date: "May 2026",
     read: "10 min",
   },
@@ -90,10 +89,10 @@ export const STUDIES = [
 ];
 
 export const WORKFLOW_SLIDES = [
-  { step: "01 — Research", body: "Source-first reading and claim-checking before anything is drawn or built. Every claim traced to the paper, the benchmark, or the filing it came from." },
-  { step: "02 — Frameworks", body: "Briefs, schemas, prompts and page architecture — the structure that makes an output replicatable rather than a one-off." },
-  { step: "03 — Visuals", body: "Imagery and motion in the project's own register, from generative systems to model-made film." },
-  { step: "04 — Build", body: "Working software, shipped from source on every push. Open, copyable, wired for reuse." },
-  { step: "05 — Test", body: "Real rooms, real workshops. Kits earn the RUN label by surviving contact with an audience." },
-  { step: "06 — Publish", body: "Ship it on the Atlas and open the code. Then document the workflow so the process replicates too." },
+  { step: "01. Research", body: "Source-first reading and claim-checking before anything is drawn or built. Every claim traced to the paper, the benchmark, or the filing it came from." },
+  { step: "02, Frameworks", body: "Briefs, schemas, prompts and page architecture, the structure that makes an output replicatable rather than a one-off." },
+  { step: "03. Visuals", body: "Imagery and motion in the project's own register, from generative systems to model-made film." },
+  { step: "04. Build", body: "Working software, shipped from source on every push. Open, copyable, wired for reuse." },
+  { step: "05. Test", body: "Real rooms, real workshops. Kits earn the RUN label by surviving contact with an audience." },
+  { step: "06. Publish", body: "Ship it on the Atlas and open the code. Then document the workflow so the process replicates too." },
 ];

@@ -1,6 +1,6 @@
 "use client";
 
-/** V3 — "Journal": editorial front page — news carousel, research, pull quote. */
+/** V3, "Journal": editorial front page, news carousel, research, pull quote. */
 
 import Link from "next/link";
 import { Container } from "@/components/Container";
@@ -15,9 +15,9 @@ export default function V3() {
     <div>
       <LabBar current={3} />
 
-      {/* Masthead — physarum growth behind a newspaper-flag treatment */}
+      {/* Masthead, physarum growth behind a newspaper-flag treatment */}
       <section className="relative overflow-hidden border-b border-ink bg-black">
-        {/* physarum renders black in this embed build — differential-growth gives the
+        {/* physarum renders black in this embed build, differential-growth gives the
             same organic-growth filaments (green/gold on black) and reliably paints */}
         <Backdrop
           spec={{
@@ -31,12 +31,12 @@ export default function V3() {
         />
         <Container className="relative z-[1] py-[clamp(48px,8vh,96px)]">
           <Reveal>
-            {/* dateline row — flag furniture */}
+            {/* dateline row, flag furniture */}
             <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 pb-2.5 font-mono text-[10.5px] uppercase tracking-[0.18em] text-paper/55">
-              <span>Futures Atlas — the foresight lab</span>
+              <span>Futures Atlas, the foresight lab</span>
               <span>Vol. 02 · July 2026</span>
             </div>
-            {/* border-paper/* utilities don't resolve in this build — bg-paper + opacity does */}
+            {/* border-paper/* utilities don't resolve in this build, bg-paper + opacity does */}
             <div className="h-px w-full bg-paper opacity-40" aria-hidden="true" />
             <div className="flex flex-wrap items-end justify-between gap-6 pb-6 pt-7">
               <h1 className="text-[clamp(40px,7vw,110px)] font-extrabold leading-[0.9] tracking-[-0.03em] !text-paper">

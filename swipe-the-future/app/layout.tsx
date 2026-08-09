@@ -8,12 +8,12 @@ const DESC = "Pick your line of work, swipe Believe or Doubt on six grounded cla
 const IMG = "https://futures-atlas-02.vercel.app/projects/swipe-the-future.jpg";
 
 export const metadata: Metadata = {
-  title: "Swipe the Future — Calibration",
+  title: "Swipe the Future · Calibration",
   description: DESC,
   openGraph: {
     type: "website",
     siteName: "Futures Atlas",
-    title: "Swipe the Future — Calibration",
+    title: "Swipe the Future · Calibration",
     description: DESC,
     images: [IMG, "https://futures-atlas-02.vercel.app/projects/swipe-the-future-2.jpg", "https://futures-atlas-02.vercel.app/projects/swipe-the-future-3.jpg"],
   },

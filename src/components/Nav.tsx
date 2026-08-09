@@ -58,7 +58,7 @@ export function Nav() {
         }`}
       >
         <Container className="flex items-center justify-between gap-4 py-[clamp(12px,1.6vw,16px)]">
-          <Link href="/" className="flex items-baseline gap-3" aria-label="Futures Atlas — home">
+          <Link href="/" className="flex items-baseline gap-3" aria-label="Futures Atlas, home">
             <span
               className="text-[clamp(14px,1.4vw,17px)] font-extrabold tracking-[0.02em] text-ink"
               style={{ fontFamily: "var(--font-archivo)" }}

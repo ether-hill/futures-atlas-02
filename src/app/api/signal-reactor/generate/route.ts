@@ -1,12 +1,12 @@
 /**
- * POST /api/signal-reactor/generate — Signal Reactor's server-side pipeline.
+ * POST /api/signal-reactor/generate. Signal Reactor's server-side pipeline.
  * Two sequential Claude calls (analysis → facilitation), each zod-validated
  * with one corrective retry, assembled into the 8-slide Deck. The API key
- * lives here and only here — the sub-app at /signal-reactor is a static
+ * lives here and only here, the sub-app at /signal-reactor is a static
  * export that calls this same-origin route.
  *
  * Generated decks are archived (lib/signal-reactor/store) and served from
- * the archive on subsequent requests for the same sector — pass fresh: true
+ * the archive on subsequent requests for the same sector, pass fresh: true
  * to force a regeneration (which overwrites the archived deck).
  *
  * Body: { sector: string, model?: "sonnet" | "haiku", fresh?: boolean }
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
           .map((i) => `${i.path.join(".")}: ${i.message}`)
           .join("; ")}. Return ONLY the corrected JSON object matching the schema exactly.`;
       } catch (e) {
-        corrective = `Your previous response was not parseable JSON (${(e as Error).message}). Return ONLY the JSON object — no markdown fences, no preamble.`;
+        corrective = `Your previous response was not parseable JSON (${(e as Error).message}). Return ONLY the JSON object, no markdown fences, no preamble.`;
       }
     }
     throw new Error(`${label} response failed validation after retry`);
@@ -141,7 +141,7 @@ export async function POST(req: Request) {
       `Organization type: ${sector}`,
       `Sector: ${analysis.sector_display}`,
       `Substance: ${analysis.signal.substance}`,
-      `Quantum verdict: ${analysis.signal.quantum_verdict} — ${analysis.signal.quantum_note}`,
+      `Quantum verdict: ${analysis.signal.quantum_verdict}, ${analysis.signal.quantum_note}`,
       `AI disruption: ${analysis.signal.ai_note}`,
       `Near-term horizon: ${analysis.horizons.near}`,
     ].join("\n");
@@ -163,12 +163,12 @@ export async function POST(req: Request) {
     const msg = e instanceof Error ? e.message : "unknown";
     console.error(JSON.stringify({ tool: "signal-reactor", error: msg }));
     if (e instanceof Anthropic.APIError) {
-      if (e.status === 429) return fail(429, "rate_limited", "The generator is busy — try again in a moment.");
+      if (e.status === 429) return fail(429, "rate_limited", "The generator is busy, try again in a moment.");
       if (msg.includes("credit balance")) {
-        return fail(503, "billing", "The connected Anthropic account is out of API credits — generation is paused until it's topped up.");
+        return fail(503, "billing", "The connected Anthropic account is out of API credits, generation is paused until it's topped up.");
       }
       if (e.status === 401) {
-        return fail(503, "bad_key", "The API key on this deployment was rejected — it may have been rotated.");
+        return fail(503, "bad_key", "The API key on this deployment was rejected, it may have been rotated.");
       }
       return fail(502, "upstream_error", "The model call failed. Try again.");
     }

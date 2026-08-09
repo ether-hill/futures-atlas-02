@@ -5,7 +5,7 @@
  * social-media elements from it: the headline + description, key images,
  * pull-quotes (blockquotes), section overviews (substantial paragraphs), and
  * outbound references. Returns structured JSON the client maps into library
- * frames. Purely extractive — it pulls what the page already contains.
+ * frames. Purely extractive, it pulls what the page already contains.
  */
 
 import { NextResponse } from "next/server";
@@ -61,8 +61,8 @@ export async function GET(request: Request) {
 
   // When transmutating a page on THIS same deployment (e.g. another Atlas page on
   // a Vercel preview), the target sits behind preview auth. The viewer is already
-  // authenticated, so forward their cookies — and the Vercel protection-bypass
-  // secret if configured — so the protected page can be read.
+  // authenticated, so forward their cookies, and the Vercel protection-bypass
+  // secret if configured, so the protected page can be read.
   const reqHost = request.headers.get("host") || new URL(request.url).host;
   const sameDeploy = target.host === reqHost;
   const fetchHeaders: Record<string, string> = {
@@ -86,7 +86,7 @@ export async function GET(request: Request) {
     });
     if (!res.ok) {
       if (res.status === 401 || res.status === 403)
-        return NextResponse.json({ error: "That page is private — it needs a login or is behind access protection (e.g. a Vercel preview URL), so it can't be imported. Try the public URL." }, { status: 502 });
+        return NextResponse.json({ error: "That page is private, it needs a login or is behind access protection (e.g. a Vercel preview URL), so it can't be imported. Try the public URL." }, { status: 502 });
       return NextResponse.json({ error: `The page returned ${res.status}.` }, { status: 502 });
     }
     const ct = res.headers.get("content-type") ?? "";
@@ -117,7 +117,7 @@ export async function GET(request: Request) {
   const description = meta("og:description") || meta("description") || meta("twitter:description");
   const siteName = meta("og:site_name") || target.hostname.replace(/^www\./, "");
 
-  // If the URL itself is a YouTube video, import ONLY that video — nothing else.
+  // If the URL itself is a YouTube video, import ONLY that video, nothing else.
   const ytSelf = target.toString().match(YT_ID);
   if (ytSelf) {
     const poster = await bestYouTubePoster(ytSelf[1]);
@@ -280,7 +280,7 @@ export async function GET(request: Request) {
 
   // ---- deep content (client-rendered apps) ----
   // Next.js RSC / SPAs ship their real content inside <script> JSON (self.__next_f,
-  // __NEXT_DATA__, application/json) rather than as DOM nodes — so a DOM scrape comes
+  // __NEXT_DATA__, application/json) rather than as DOM nodes, so a DOM scrape comes
   // back almost empty. When that happens, recover media URLs + prose text from those
   // embedded payloads.
   if (images.length + videos.length + paragraphs.length + headings.length < 4) {

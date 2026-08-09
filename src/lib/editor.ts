@@ -1,5 +1,5 @@
 /**
- * "Is an editor looking at this page?" — for server components.
+ * "Is an editor looking at this page?", for server components.
  *
  * The pages themselves never decide who may see a draft *URL* (the middleware
  * does that, before anything renders). This is what decides whether a listing

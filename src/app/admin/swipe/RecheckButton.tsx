@@ -30,7 +30,7 @@ export function RecheckButton() {
         disabled={state === "running"}
         className="rounded-full border border-line px-4 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-graphite hover:text-ink disabled:opacity-40"
       >
-        {state === "running" ? "Checking — a minute or two…" : "Run the check now"}
+        {state === "running" ? "Checking… takes a minute or two" : "Run the check now"}
       </button>
       {msg && <span className="font-mono text-[11px] text-graphite">{msg}</span>}
     </div>

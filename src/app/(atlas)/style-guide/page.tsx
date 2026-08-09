@@ -5,7 +5,7 @@ import { ProjectCard } from "@/components/ProjectCard";
 import { projects } from "@/data/projects";
 
 export const metadata: Metadata = {
-  title: "Style guide — Futures Atlas",
+  title: "Style guide. Futures Atlas",
   robots: { index: false, follow: false },
 };
 

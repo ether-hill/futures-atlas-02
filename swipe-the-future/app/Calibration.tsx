@@ -75,7 +75,7 @@ export default function Calibration() {
       next = shuffle(pool).slice(0, MIXED);
     } else {
       used = s;
-      // A sector round is only that sector's cards — no topping up from
+      // A sector round is only that sector's cards, no topping up from
       // elsewhere, so "you picked Military" means what it says.
       next = shuffle(s.cards.map((c) => ({ card: c, sector: s })));
     }
@@ -193,7 +193,7 @@ export default function Calibration() {
   }, [phase, decide, advance, goBack]);
 
   // Ask the host to draft a sector nobody has covered yet. Claude searches the
-  // web for it, so this takes a while — the button holds a spinner throughout.
+  // web for it, so this takes a while, the button holds a spinner throughout.
   const requestSector = useCallback(async () => {
     const name = custom.trim();
     if (name.length < 3 || gen.state === "loading") return;
@@ -223,7 +223,7 @@ export default function Calibration() {
   const voClass = kinda ? "kinda" : aligned ? "correct" : "wrong";
   const voBig = kinda ? "KINDA" : aligned ? "CORRECT" : "WRONG";
 
-  // score (for the final card). Contested cards are KINDA — they count as matched
+  // score (for the final card). Contested cards are KINDA, they count as matched
   // either way (never against you), so a perfect run can reach N/N.
   const total = answers.length;
   const matched = answers.filter((a) => isAligned(a.card.verdict, a.sayTrue)).length;
@@ -315,7 +315,7 @@ export default function Calibration() {
               <div key={`claim-${pos + d}-${it.card.id}`} ref={active && phase === "swipe" ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}${it.card.attribution ? " quote" : ""}`} style={flingStyle}>
                 {it.card.attribution && <span className="quote-mark" aria-hidden="true">&ldquo;</span>}
                 {it.sector.kind === "generated" && !it.sector.approved && <span className="draft-flag">AI-drafted · unverified</span>}
-                <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">— {it.card.attribution}</span></> : it.card.claim}</h3>
+                <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">, {it.card.attribution}</span></> : it.card.claim}</h3>
                 {active && phase === "swipe" && (
                   <div className="card-actions">
                     {pos > 0 && (

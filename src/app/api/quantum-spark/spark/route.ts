@@ -1,7 +1,7 @@
 /**
- * POST /api/quantum-spark/spark — Quantum Spark's server-side pipeline: ONE
+ * POST /api/quantum-spark/spark. Quantum Spark's server-side pipeline: ONE
  * Claude call, zod-validated with one corrective retry. The API key lives
- * here and only here — the sub-app at /quantum-spark is a static export
+ * here and only here, the sub-app at /quantum-spark is a static export
  * calling this same-origin route. No persistence: every spark is fresh by
  * design (regeneration for live audiences).
  *
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
         console.log(JSON.stringify({ tool: "quantum-spark", validation_failed: issues, attempt }));
         corrective = `Your previous response failed validation: ${issues}. Return ONLY the corrected JSON object matching the schema exactly, with exactly 5 insights.`;
       } catch (e) {
-        corrective = `Your previous response was not parseable JSON (${(e as Error).message}). Return ONLY the JSON object — no markdown fences, no preamble.`;
+        corrective = `Your previous response was not parseable JSON (${(e as Error).message}). Return ONLY the JSON object, no markdown fences, no preamble.`;
       }
     }
     return fail(502, "invalid_output", "The model returned an unusable response twice. Try again.");
@@ -125,7 +125,7 @@ export async function POST(req: Request) {
     const msg = e instanceof Error ? e.message : "unknown";
     console.error(JSON.stringify({ tool: "quantum-spark", error: msg }));
     if (e instanceof Anthropic.APIError) {
-      if (e.status === 429) return fail(429, "rate_limited", "The spark chamber is busy — try again in a moment.");
+      if (e.status === 429) return fail(429, "rate_limited", "The spark chamber is busy, try again in a moment.");
       if (msg.includes("credit balance")) {
         return fail(503, "billing", "The connected Anthropic account is out of API credits.");
       }

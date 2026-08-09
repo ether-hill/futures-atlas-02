@@ -1,6 +1,6 @@
 "use client";
 
-/** Signal — dark mono terminal theme; hero: boids. */
+/** Signal, dark mono terminal theme; hero: boids. */
 
 import { BrowseMock } from "../BrowseMock";
 

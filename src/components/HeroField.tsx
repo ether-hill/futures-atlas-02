@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 /**
  * The homepage hero's living background: the Generatives "Field Dynamics"
  * piece, embedded via its chrome-free player (/generatives/embed.html#<cfg>)
- * on an always-black stage — the banner does not follow the light theme.
+ * on an always-black stage, the banner does not follow the light theme.
  * Every cycle draws a new colourful flow palette. A countdown chip
  * re-randomises the field every 11 seconds; clicking randomises now.
  * Reduced-motion users get the static black hero (no iframe, no timer).
@@ -19,8 +19,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 const CYCLE_S = 11;
 const RING = 2 * Math.PI * 6.5; // circumference of the countdown ring
 
-// Colour data below is piece-config payload for the embedded canvas — not UI
-// styling — a documented exception like the hero scrims (see CLAUDE.md).
+// Colour data below is piece-config payload for the embedded canvas, not UI
+// styling, a documented exception like the hero scrims (see CLAUDE.md).
 const FIELD_BG = "#05060a";
 const PALETTES = [
   { lo: "#7c5cff", hi: "#22d3ee" }, // violet → cyan
@@ -49,7 +49,7 @@ function makeSrc(): string {
     },
     size: { w: 1600, h: 900 },
     // complexity drives particle count (300–6000): the ~1500–2600 band is the
-    // quality floor the owner signed off on — don't lower it again, and keep
+    // quality floor the owner signed off on, don't lower it again, and keep
     // the render at full resolution (a half-res upscale was rejected as too
     // low quality)
     meta: { complexity: rand(0.22, 0.4), chaos: rand(0.3, 0.75) },
@@ -107,8 +107,8 @@ export function HeroField() {
           className="pointer-events-none absolute inset-0 h-full w-full border-0 opacity-80"
         />
       )}
-      {/* scrim so the headline and lede stay readable over the field — heavier
-          on small screens (rgba black over texture — documented exception,
+      {/* scrim so the headline and lede stay readable over the field, heavier
+          on small screens (rgba black over texture, documented exception,
           like other hero scrims; see globals.css .hero-scrim) */}
       <div className="hero-scrim pointer-events-none absolute inset-0" />
       {src && (

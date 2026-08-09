@@ -33,7 +33,7 @@ export function SectorActions({ slug, approved }: { slug: string; approved: bool
         </button>
       ) : (
         <button className={`${btn} border-accent bg-accent text-surface`} disabled={busy !== null} onClick={() => run("approve")}>
-          {busy === "approve" ? "…" : "Approve — drop the badge"}
+          {busy === "approve" ? "…" : "Approve and drop the badge"}
         </button>
       )}
       <button className={`${btn} border-line text-graphite hover:text-ink`} disabled={busy !== null} onClick={() => run("delete")}>

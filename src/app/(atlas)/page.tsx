@@ -18,7 +18,7 @@ export default async function Home() {
 
   return (
     <div>
-      {/* Hero — an always-black stage (does not follow the light theme) with
+      {/* Hero, an always-black stage (does not follow the light theme) with
           Generatives "Field Dynamics" flowing behind the headline */}
       <section className="relative flex min-h-[calc(100svh-64px)] items-end overflow-hidden border-b border-ink bg-black">
         <HeroField />
@@ -28,8 +28,8 @@ export default async function Home() {
               Mapping foresight
             </h1>
             <p className="mt-7 max-w-[620px] font-mono text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-paper/70">
-              A growing collection of speculative-design projects — prototypes,
-              open-source tools, and research — built to raise awareness of
+              A growing collection of speculative-design projects, prototypes,
+              open-source tools, and research, built to raise awareness of
               quantum computing, emerging AI, and the organisations driving the
               future.
             </p>
@@ -68,7 +68,7 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* Tech banner — the whole band links to the About page's stack + workflow */}
+      {/* Tech banner, the whole band links to the About page's stack + workflow */}
       <section className="border-t border-ink/15 bg-band">
         <Container className="py-[clamp(56px,9vw,120px)]">
           <Reveal>

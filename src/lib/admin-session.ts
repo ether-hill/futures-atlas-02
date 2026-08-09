@@ -4,16 +4,14 @@
  *
  * Uses Web Crypto (HMAC-SHA256) rather than node:crypto so the same helpers run
  * in Edge middleware and in the Node route handler. The cookie carries no
- * secrets — only an expiry and the editor's id, authenticated by the signature —
- * so a tampered, expired or renamed value simply fails verification.
+ * secrets, only an expiry and the editor's id, authenticated by the signature, * so a tampered, expired or renamed value simply fails verification.
  *
  * Format: `<expiryMillis>.<editorId>.<base64url(hmac)>`
  */
 
 export const ADMIN_COOKIE = "fa_admin";
 /** Readable (non-httpOnly) companion flag: lets the static nav bundle know an
- *  editor is signed in so it can list drafts. It grants nothing on its own —
- *  every draft URL is still checked against the signed cookie above. */
+ *  editor is signed in so it can list drafts. It grants nothing on its own, *  every draft URL is still checked against the signed cookie above. */
 export const EDITOR_FLAG_COOKIE = "fa_editor";
 export const ADMIN_MAX_AGE = 12 * 60 * 60; // 12 hours, in seconds
 
@@ -81,7 +79,7 @@ export async function readSession(
 }
 
 /**
- * Only ever redirect back to a path on this site — never to an
+ * Only ever redirect back to a path on this site, never to an
  * attacker-supplied absolute URL or protocol-relative `//host` path. Any
  * internal path is allowed (an editor may be sent back to a draft project as
  * well as to /admin), so this normalises rather than prefix-matches.

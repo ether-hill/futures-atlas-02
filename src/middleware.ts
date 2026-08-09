@@ -10,11 +10,11 @@
  *
  * 3. Draft projects: every path belonging to a project marked
  *    `visibility: "draft"` in src/data/projects.ts. The public never renders
- *    one — unauthenticated requests are rewritten to the sign-in form, so the
+ *    one, unauthenticated requests are rewritten to the sign-in form, so the
  *    page's markup is never sent.
  *
  * All fail closed: if the relevant env var is unset the routes are locked
- * (503) — they can never become public by accident. GET /api/tokens stays open
+ * (503), they can never become public by accident. GET /api/tokens stays open
  * so the live site can read the saved overrides.
  */
 import { NextResponse, type NextRequest } from "next/server";
@@ -40,7 +40,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // /home-lab and /mocks are unlinked design experiments that list every
-  // project by name, drafts included — internal by nature, so they sign in too.
+  // project by name, drafts included, internal by nature, so they sign in too.
   const isInternal = ["/admin", "/editor", "/home-lab", "/mocks"].some(
     (base) => pathname === base || pathname.startsWith(`${base}/`),
   );

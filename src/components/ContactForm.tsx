@@ -9,7 +9,7 @@ const fieldCls =
 const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graphite";
 
 /**
- * The projects a visitor can address a message to — derived from the central
+ * The projects a visitor can address a message to, derived from the central
  * registry (`src/data/projects.ts`), so adding a project lists it here too.
  */
 export const CONTACT_PROJECTS = contactProjects;
@@ -28,7 +28,7 @@ export function ContactForm({
           ✓
         </span>
         <h2 className="text-[clamp(22px,2.6vw,32px)] font-extrabold leading-tight text-ink">
-          Thanks — your message is in.
+          Thanks, your message is in.
         </h2>
         <p className="max-w-[46ch] font-mono text-[13px] leading-[1.7] text-ink-70">
           We read everything that comes in and reply when we can. If you pitched

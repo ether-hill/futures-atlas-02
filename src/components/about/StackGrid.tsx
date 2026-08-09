@@ -7,9 +7,9 @@ import { LOGOS } from "@/lib/logos";
 import { Reveal } from "@/components/Reveal";
 
 /**
- * The stack, grouped, real brand marks for every tool — mono by default,
+ * The stack, grouped, real brand marks for every tool, mono by default,
  * brand colour on hover/focus. Selecting a tool expands a card with what we
- * actually use it for and — the point of the section — which Atlas projects
+ * actually use it for and, the point of the section, which Atlas projects
  * it built.
  */
 

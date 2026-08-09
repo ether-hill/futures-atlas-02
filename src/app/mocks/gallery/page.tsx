@@ -1,6 +1,6 @@
 "use client";
 
-/** Gallery — dark blue-violet theme; hero: lattice-waves. */
+/** Gallery, dark blue-violet theme; hero: lattice-waves. */
 
 import { BrowseMock } from "../BrowseMock";
 

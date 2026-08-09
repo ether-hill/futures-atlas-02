@@ -1,5 +1,5 @@
 /**
- * /api/sl/* — a same-origin read proxy to the Source Library API
+ * /api/sl/*, a same-origin read proxy to the Source Library API
  * (https://sourcelibrary.org/api/*). Source Library does not send CORS headers,
  * so the Visualize sub-app (served from this origin) cannot call it directly; it
  * calls /api/sl/... and we forward server-side. GET only, and only the public

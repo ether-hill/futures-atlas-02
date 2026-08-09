@@ -1,5 +1,5 @@
 /**
- * Swipe the Future — visitor-added sector decks.
+ * Swipe the Future: visitor-added sector decks.
  *
  * When someone types a sector the hand-checked set doesn't cover, Claude drafts
  * a deck for it (see api/swipe/sector) and it lands here. Decks are stored under
@@ -98,7 +98,7 @@ function parse(raw: unknown): GenSector | null {
   try {
     const v = typeof raw === "string" ? JSON.parse(raw) : raw;
     if (v && typeof v === "object" && Array.isArray((v as GenSector).cards) && (v as GenSector).cards.length) return v as GenSector;
-  } catch { /* corrupt entry — treat as missing */ }
+  } catch { /* corrupt entry, treat as missing */ }
   return null;
 }
 
@@ -138,7 +138,7 @@ export async function deleteSector(slug: string): Promise<void> {
   await st.srem(INDEX, slug);
 }
 
-/** Generic JSON slot — used for the weekly freshness report. */
+/** Generic JSON slot, used for the weekly freshness report. */
 export async function readJson<T>(key: string): Promise<T | null> {
   const st = store(); if (!st) return null;
   try {

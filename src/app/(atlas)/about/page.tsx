@@ -16,7 +16,7 @@ import {
 } from "@/content/about";
 
 export const metadata: Metadata = {
-  title: "About — Futures Atlas",
+  title: "About. Futures Atlas",
   description:
     "Futures Atlas is a showcase and prototype lab: frameworks and modular components for foresight around quantum computing, quantum applications, and emerging AI. It's meant to be used.",
 };
@@ -68,7 +68,7 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* ── What we work on — sticky title, scrolling essays ─────────────── */}
+      {/* ── What we work on, sticky title, scrolling essays ─────────────── */}
       <section className="border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
         <Container>
           <div className="grid grid-cols-1 gap-x-[clamp(24px,5vw,80px)] gap-y-8 lg:grid-cols-[1fr_1.6fr]">

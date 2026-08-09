@@ -1,17 +1,17 @@
 /**
  * The atlas index. `visibility` decides who sees each entry: `live` is public,
  * `draft` shows only to a signed-in editor (and its URL is closed to everyone
- * else). This is the single source of truth for both — change the word here and
+ * else). This is the single source of truth for both, change the word here and
  * the listings, the nav switcher, the contact dropdown and the URL gate follow.
  *
  * `url` makes a card a link; without it the card reads as forthcoming.
- * `date` is the full publish/added date (YYYY-MM-DD) — placeholders, adjust freely.
+ * `date` is the full publish/added date (YYYY-MM-DD), placeholders, adjust freely.
  */
 
 export type ProjectStatus = "live" | "in-progress" | "concept";
 
 /**
- * Publication state — independent of `status` (which describes how finished a
+ * Publication state, independent of `status` (which describes how finished a
  * project is). `live` = anyone can see it. `draft` = only a signed-in editor
  * sees it listed, and the public is turned away from its URL (see
  * `src/middleware.ts`). Flip a project by changing this one word.
@@ -52,7 +52,7 @@ export const projects: Project[] = [
     id: "signal-reactor",
     title: "Signal Reactor",
     tagline:
-      "An organizational foresight instrument: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it — deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
+      "An organizational foresight instrument: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it, deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
     year: "2026",
     date: "2026-07-02",
     field: "AI & risk",
@@ -65,7 +65,7 @@ export const projects: Project[] = [
     id: "quantum-spark",
     title: "Quantum Spark",
     tagline:
-      "Signal Reactor's energized companion: type your industry and get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it — the kind of insight that makes a room lean forward. Grounded hype with an honest label: provocations to spark conversation, not forecasts.",
+      "Signal Reactor's energized companion: type your industry and get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it, the kind of insight that makes a room lean forward. Grounded hype with an honest label: provocations to spark conversation, not forecasts.",
     year: "2026",
     date: "2026-07-03",
     field: "AI & risk",
@@ -78,7 +78,7 @@ export const projects: Project[] = [
     id: "hyperscale",
     title: "Hyperscale",
     tagline:
-      "A 3D management sim about the physical reality of the AI buildout — a compute campus in a river valley with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment as you grow toward a gigawatt. Full day–night cycle, seeded weather and markets, procedural audio.",
+      "A 3D management sim about the physical reality of the AI buildout, a compute campus in a river valley with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment as you grow toward a gigawatt. Full day–night cycle, seeded weather and markets, procedural audio.",
     year: "2026",
     date: "2026-07-01",
     field: "Simulation",
@@ -91,7 +91,7 @@ export const projects: Project[] = [
     id: "hollow-villages",
     title: "Village Oracle",
     tagline:
-      "An AI oracle forecasting how depopulating rural villages could be revived — people write it letters; it answers with grounded, cited plans and a picture of the place in 2050.",
+      "An AI oracle forecasting how depopulating rural villages could be revived, people write it letters; it answers with grounded, cited plans and a picture of the place in 2050.",
     year: "2026",
     date: "2026-04-10",
     field: "Rural futures",
@@ -104,7 +104,7 @@ export const projects: Project[] = [
     id: "generatives",
     title: "Generatives",
     tagline:
-      "A generative-visual lab — an array of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
+      "A generative-visual lab, an array of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
     year: "2026",
     date: "2026-06-19",
     field: "Generative visuals",
@@ -143,7 +143,7 @@ export const projects: Project[] = [
     id: "quantum-dominance",
     title: "Quantum Dominance",
     tagline:
-      "Speculative satire: one official 'quantum dominance' post, two lenses. Pick The Dystopia or The Backfire and explore randomized futures — each anchored to something on the record, ready to push into the composer.",
+      "Speculative satire: one official 'quantum dominance' post, two lenses. Pick The Dystopia or The Backfire and explore randomized futures, each anchored to something on the record, ready to push into the composer.",
     year: "2026",
     date: "2026-06-24",
     field: "AI & risk",
@@ -156,7 +156,7 @@ export const projects: Project[] = [
     id: "woodchipper",
     title: "Woodchipper Futures",
     tagline:
-      "An interactive futures engine on the 2025 USAID cuts: take the January-2025 chair — abolish, freeze, audit or reform — and watch a fact-checked, source-cited constellation of outcomes branch out. Every figure links to its study.",
+      "An interactive futures engine on the 2025 USAID cuts: take the January-2025 chair, abolish, freeze, audit or reform, and watch a fact-checked, source-cited constellation of outcomes branch out. Every figure links to its study.",
     year: "2026",
     date: "2026-06-23",
     field: "AI & risk",
@@ -182,7 +182,7 @@ export const projects: Project[] = [
     id: "quantum-sandbox",
     title: "Quantum Sandbox",
     tagline:
-      "A prototyping dashboard for quantum-computing generative systems — every amplitude drawn as colour, with magnitude as density and phase as hue.",
+      "A prototyping dashboard for quantum-computing generative systems, every amplitude drawn as colour, with magnitude as density and phase as hue.",
     year: "2026",
     date: "2026-05-28",
     field: "Quantum & computation",
@@ -195,7 +195,7 @@ export const projects: Project[] = [
     id: "literal-frequency",
     title: "Literal Frequency",
     tagline:
-      "Word-frequency visualisations built live from the Source Library — the open-access archive of digitised, translated books. Loads a book over the API and reads its vocabulary as a cloud, a word nebula, a bubble field, or bars, each view linking back to its source.",
+      "Word-frequency visualisations built live from the Source Library, the open-access archive of digitised, translated books. Loads a book over the API and reads its vocabulary as a cloud, a word nebula, a bubble field, or bars, each view linking back to its source.",
     year: "2026",
     date: "2026-06-22",
     field: "Data visualisation",
@@ -208,7 +208,7 @@ export const projects: Project[] = [
     id: "social-composer",
     title: "Social Composer",
     tagline:
-      "A standalone social-post composer — post types, layouts, motion, and PNG / GIF / video export, with a URL “transmutate” importer that pulls the reusable pieces out of any article.",
+      "A standalone social-post composer, post types, layouts, motion, and PNG / GIF / video export, with a URL “transmutate” importer that pulls the reusable pieces out of any article.",
     year: "2026",
     date: "2026-06-17",
     field: "Creative tools",
@@ -219,13 +219,13 @@ export const projects: Project[] = [
   },
 ];
 
-// Display order is curated by the owner — the array order above IS the order.
+// Display order is curated by the owner, the array order above IS the order.
 export const projectsOrdered: Project[] = [...projects];
 
 /** Everything the public may see. */
 export const liveProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "live");
 
-/** Unpublished work — listed only for a signed-in editor. */
+/** Unpublished work, listed only for a signed-in editor. */
 export const draftProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "draft");
 
 /** The list for the current viewer: editors get everything, the public gets live only. */
@@ -245,7 +245,7 @@ export function fieldsOf(items: Project[]): string[] {
 /** The distinct category tags across the public listing. */
 export const projectFields: string[] = fieldsOf(liveProjects);
 
-/** In-site paths belonging to draft projects — what the middleware gate closes. */
+/** In-site paths belonging to draft projects, what the middleware gate closes. */
 export const draftPaths: string[] = draftProjects.flatMap((p) => (p.path ? [p.path] : []));
 
 /**

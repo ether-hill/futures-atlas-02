@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 
 export const metadata: Metadata = {
-  title: "Home Lab — Futures Atlas",
+  title: "Home Lab. Futures Atlas",
   description: "Four exploratory homepage design variants.",
   robots: { index: false },
 };
@@ -70,7 +70,7 @@ export default function HomeLabIndex() {
           ))}
         </div>
         <div className="mt-[clamp(28px,4vw,44px)] border-t border-ink/15 pt-8">
-          <p className="eyebrow tick mb-5">Design handoff — Claude × Netflix browse UI (own chrome, full-screen)</p>
+          <p className="eyebrow tick mb-5">Design handoff. Claude × Netflix browse UI (own chrome, full-screen)</p>
           <div className="flex flex-wrap gap-3">
             {[
               { name: "Observatory", href: "/mocks/observatory", note: "dark indigo · particle nebula" },

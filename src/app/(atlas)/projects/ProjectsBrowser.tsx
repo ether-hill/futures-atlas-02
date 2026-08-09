@@ -5,8 +5,7 @@ import { Container } from "@/components/Container";
 import { ProjectCard } from "@/components/ProjectCard";
 import { fieldsOf, type Project } from "@/data/projects";
 
-// The interactive half of the listing. It filters whatever list it is handed —
-// deciding what belongs in that list (public vs editor) is the page's job, so a
+// The interactive half of the listing. It filters whatever list it is handed, // deciding what belongs in that list (public vs editor) is the page's job, so a
 // draft can never reach the browser for a visitor who isn't signed in.
 export function ProjectsBrowser({
   items,
@@ -72,7 +71,7 @@ function FilterTag({
       type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-1.5 rounded-[2px] border px-3.5 py-2 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors ${
-        // band is dark in BOTH themes, paper always light — ink/paper flip
+        // band is dark in BOTH themes, paper always light, ink/paper flip
         // together in dark mode and went white-on-white here
         active ? "border-band bg-band text-paper" : "border-ink/25 text-ink/70 hover:border-ink/60"
       }`}

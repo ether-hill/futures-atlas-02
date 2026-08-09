@@ -5,7 +5,7 @@ import { liveProjects, formatProjectDate, type Project } from "@/data/projects";
 // a semantic token, so the style-guide panel drives every dimension. Structural
 // utilities (flex/grid/absolute/aspect) are layout, not design values.
 
-/** The LIVE / DRAFT flag — only ever rendered for a signed-in editor. */
+/** The LIVE / DRAFT flag, only ever rendered for a signed-in editor. */
 function VisibilityTag({ project }: { project: Project }) {
   const draft = project.visibility === "draft";
   return (
@@ -53,7 +53,7 @@ export function ProjectCard({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={project.image}
-            alt={`${project.title} — preview`}
+            alt={`${project.title}, preview`}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
           />

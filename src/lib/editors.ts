@@ -8,14 +8,14 @@
  *
  * Each entry is `id:password` (optionally `id:password:Display Name`). The id is
  * what the session cookie carries and what the editor bar shows; the password is
- * all anyone types — it identifies the person as well as authenticating them, so
+ * all anyone types, it identifies the person as well as authenticating them, so
  * there is no username field to remember.
  *
  * Fail-closed: with no accounts configured, nothing unlocks. `ADMIN_PASSWORD`
  * still works as a single "admin" account so the existing /admin deployment keeps
  * running if EDITOR_USERS is not set.
  *
- * Edge-safe — plain string work, no node: imports (the middleware reads names
+ * Edge-safe, plain string work, no node: imports (the middleware reads names
  * from here too).
  */
 

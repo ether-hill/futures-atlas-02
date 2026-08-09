@@ -4,9 +4,9 @@ import { ContactForm } from "@/components/ContactForm";
 import { contactProjects } from "@/data/projects";
 
 export const metadata: Metadata = {
-  title: "Contact — Futures Atlas",
+  title: "Contact. Futures Atlas",
   description:
-    "Get in touch with the Futures Atlas — pitches, questions, collaborations.",
+    "Get in touch with the Futures Atlas, pitches, questions, collaborations.",
 };
 
 export default async function ContactPage({

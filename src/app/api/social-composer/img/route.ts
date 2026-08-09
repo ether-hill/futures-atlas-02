@@ -1,5 +1,5 @@
 /**
- * GET /api/img?u=<encoded-url> — same-origin image proxy.
+ * GET /api/img?u=<encoded-url>, same-origin image proxy.
  *
  * The Social Studio composites remote thumbnails (YouTube hqdefault, press
  * og:images, portraits) onto a <canvas> and then exports the canvas to PNG /

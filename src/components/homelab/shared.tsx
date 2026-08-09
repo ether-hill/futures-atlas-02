@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Home-lab shared machinery — design-exploration components for the four
+ * Home-lab shared machinery, design-exploration components for the four
  * homepage variants under /home-lab. Exploratory by design: these are NOT
  * wired into the real homepage. Visual configs feed the Generatives embed
  * player (same b64-hash contract as HeroField).
@@ -63,7 +63,7 @@ export function Backdrop({ spec, opacity = 0.75 }: { spec: EmbedSpec; opacity?: 
  *  panel + chrome hidden. The CC BY-NC attribution line stays visible (required). */
 export function TrajectoriesBackdrop({ opacity = 0.9 }: { opacity?: number }) {
   const ref = useRef<HTMLIFrameElement>(null);
-  // keep re-injecting until the style lands — the app injects its own nav
+  // keep re-injecting until the style lands, the app injects its own nav
   // late, and iframe load timing races React's onLoad
   useEffect(() => {
     const t = setInterval(() => {
@@ -80,7 +80,7 @@ export function TrajectoriesBackdrop({ opacity = 0.9 }: { opacity?: number }) {
           ".lil-gui,.fa-share,.fa-shell,.fa-subnav,header,h1,.title,.fs-btn{display:none!important}";
         doc.head.appendChild(style);
       } catch {
-        /* cross-origin in odd contexts — fine, worst case the panel shows */
+        /* cross-origin in odd contexts, fine, worst case the panel shows */
       }
     }, 400);
     return () => clearInterval(t);
@@ -89,7 +89,7 @@ export function TrajectoriesBackdrop({ opacity = 0.9 }: { opacity?: number }) {
     <iframe
       ref={ref}
       src="/trajectories/"
-      title="Trajectories — after Jeongho Park (CC BY-NC 4.0)"
+      title="Trajectories, after Jeongho Park (CC BY-NC 4.0)"
       tabIndex={-1}
       className="pointer-events-none absolute inset-0 h-full w-full border-0"
       style={{ opacity }}
