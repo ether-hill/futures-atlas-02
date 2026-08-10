@@ -16,7 +16,10 @@ export function GET() {
         sector: s.name,
         claim: c.claim,
         verdict: c.verdict,
-        note: c.note,
+        // the reveal is split across three fields on the card; the cron and
+        // any external reader want it as one piece of prose
+        note: `${c.lede} ${c.note}`,
+        headline: `${c.bigLabel}: ${c.big}`,
         source: c.source,
         checked: c.checked ?? null,
       })),

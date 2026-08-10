@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  SECTORS, VLABEL, isAligned, profileFor,
+  SECTORS, isAligned, profileFor,
   type Card, type Sector,
 } from "../data/sectors";
 import { SectorFilter } from "./SectorFilter";
@@ -43,6 +43,9 @@ export default function Calibration() {
   const [generated, setGenerated] = useState<Sector[]>([]);
   const [custom, setCustom] = useState("");
   const [gen, setGen] = useState<{ state: "idle" | "loading" | "error"; msg?: string }>({ state: "idle" });
+  // How everyone else answered, read once. Only used on the reveal, and only
+  // for cards with enough swipes to mean anything.
+  const [counts, setCounts] = useState<Record<string, string> | null>(null);
 
   const reduce = useRef(false);
   const cardEl = useRef<HTMLDivElement | null>(null);
@@ -54,6 +57,10 @@ export default function Calibration() {
     fetch("/api/swipe/sector", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => { if (Array.isArray(d?.sectors)) setGenerated(d.sectors); })
+      .catch(() => {});
+    fetch("/api/swipe?v=2", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => setCounts(d ?? {}))
       .catch(() => {});
   }, []);
 
@@ -221,7 +228,20 @@ export default function Calibration() {
   // handed the claim back at them.
   const aligned = lastAns ? isAligned(lastAns.card.verdict, lastAns.sayReal) : false;
   const voClass = aligned ? "correct" : "wrong";
-  const voBig = aligned ? "CORRECT" : "WRONG";
+  const voBig = aligned ? "Correct" : "Wrong";
+
+  /** The crowd split for the card being revealed, or null if too few have played
+   *  it to be worth showing. Never shown from sample data: this sits beside a
+   *  real answer, so an invented percentage next to it would read as fact. */
+  const CROWD_MIN = 5;
+  const crowd = (() => {
+    if (!lastAns || !counts) return null;
+    const r = Number(counts[`c:${lastAns.card.id}:r`] ?? 0);
+    const nn = Number(counts[`c:${lastAns.card.id}:n`] ?? 0);
+    const total = r + nn;
+    if (total < CROWD_MIN) return null;
+    return { pct: Math.round((r / total) * 100), n: total };
+  })();
 
   // score (for the final card). Every card is scorable now, so N/N means N/N.
   // `overs` is buying a thing that has not happened, `unders` is doubting a thing
@@ -287,13 +307,26 @@ export default function Calibration() {
               return (
                 <div key={`res-${pos}`} className="tcard is-result">
                   <div className="vo-body">
-                    <div className={`vo-big ${voClass}`}>{voBig}</div>
-                    <div className="vo-label">{VLABEL[lastAns.card.verdict]}</div>
+                    <div className={`vo-grade ${voClass}`}>{voBig}</div>
+                    <div className="vo-label">{lastAns.card.bigLabel}</div>
+                    <div className="vo-bignum">{lastAns.card.big}</div>
                     {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
-                    {/* the claim again: by the time the card flips, people have
-                        forgotten exactly what they just answered */}
-                    <p className="vo-claim"><b>You were asked</b>{lastAns.card.claim}</p>
+                    <p className="vo-lede">{lastAns.card.lede}</p>
                     <p className="vo-insight">{lastAns.card.note}</p>
+                    {crowd && (
+                      <div className="vo-crowd">
+                        <span className="vo-crowdtop">
+                          <b>{crowd.pct}%</b> said already real
+                          <i>{crowd.n} swipes</i>
+                        </span>
+                        <span className="vo-crowdbar" aria-hidden="true">
+                          <span style={{ width: `${crowd.pct}%`, background: lastAns.card.verdict === "already" ? "var(--good-ink)" : "var(--bad-ink)" }} />
+                        </span>
+                      </div>
+                    )}
+                    {/* the claim again, quietly: by the time the card flips people
+                        have forgotten exactly what they answered */}
+                    <p className="vo-claim"><b>You were asked</b>{lastAns.card.claim}</p>
                     <div className="vo-src">
                       {lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}
                       {lastAns.card.checked && <span className="vo-checked"> · checked {lastAns.card.checked}</span>}
