@@ -204,9 +204,17 @@ export default function StatsView() {
   // either side of it.
   const GAP = hidden > 0 ? 26 : 0;
   const GH = GP.t + GP.b + GAP + Math.max(1, ordered.length) * ROW;
-  const mid = GW / 2;
   const half = (GW - GP.l - GP.r) / 2;
-  const gx = (g: number) => mid + g * half;
+  // The centre of the PLOT, not of the canvas. Once the label column went in,
+  // the two stopped being the same place, and bars kept running left underneath
+  // their own labels.
+  const mid = GP.l + half;
+  // A fixed ±100% domain wastes most of the width, because a crowd is rarely
+  // more than 60 points from an answer. The axis takes the widest actual miss,
+  // rounded up to a tenth, so the bars use the space they were given. The tick
+  // labels carry the scale, so nothing is overstated by the zoom.
+  const DOM = Math.max(0.3, Math.min(1, Math.ceil(Math.max(...orderedAll.map((c) => Math.abs(c.gap)), 0.3) * 10) / 10));
+  const gx = (g: number) => mid + (g / DOM) * half;
   const rowY = (i: number) => GP.t + i * ROW + ROW / 2 + (hidden > 0 && i >= TOP ? GAP : 0);
   const colourOf = (gap: number) => (gap > OFF ? C_BELIEVE : gap < -OFF ? C_DOUBT : C_MID);
 
@@ -234,7 +242,10 @@ export default function StatsView() {
         while (taken.some((t) => Math.abs(t.x - lx) < 150 && Math.abs(t.y - ly) < 13)) ly -= 13;
         if (ly < RP.t + 10) { ly = row.cy + row.r + 13; while (taken.some((t) => Math.abs(t.x - lx) < 150 && Math.abs(t.y - ly) < 13)) ly += 13; }
         taken.push({ x: lx, y: ly });
-        return { ...row, lx, ly, anchor: right ? ("start" as const) : ("end" as const) };
+        // Only a label that had to move needs a leader; drawing one to every dot
+        // just adds lines to a chart that reads fine without them.
+        const moved = Math.abs(ly - (row.cy - row.r - 6)) > 3;
+        return { ...row, lx, ly, moved, anchor: right ? ("start" as const) : ("end" as const) };
       });
   })();
 
@@ -418,7 +429,7 @@ export default function StatsView() {
         </p>
 
         {ranked.filter((s) => s.measurable).length >= 2 && (
-          <>
+          <div className="st-split">
             <p className="st-lede sm">
               The plot below is the standard way to show both at once. Across is how often a sector
               said &ldquo;already real&rdquo; about something that has <em>not</em> happened. Up is how often
@@ -456,7 +467,7 @@ export default function StatsView() {
                   <text x={rx(0.06)} y={ry(0.02)} className="st-quadsub start" fill={C_DOUBT}>says not yet to everything</text>
 
                   <g className={`st-dots${rocSeen ? " in" : ""}`}>
-                    {rocPlaced.map(({ s, i, cx, cy, r, lx, ly, anchor }) => (
+                    {rocPlaced.map(({ s, i, cx, cy, r, lx, ly, moved, anchor }) => (
                       <g key={s.id} style={{ animationDelay: `${Math.min(i * 60, 700)}ms` }}>
                         <circle
                           cx={cx} cy={cy} r={r}
@@ -470,6 +481,7 @@ export default function StatsView() {
                         >
                           <title>{`${s.name}: hit rate ${pct(s.hitRate)}, false-alarm rate ${pct(s.faRate)}, d′ ${s.dPrime.toFixed(2)}`}</title>
                         </circle>
+                        {moved && <line x1={cx} y1={cy - r - 1} x2={lx + (anchor === "start" ? 2 : -2)} y2={ly + 3} className="st-grid" />}
                         <text x={lx} y={ly} className="st-rlbl" textAnchor={anchor}>{clip(s.name, 24)}</text>
                       </g>
                     ))}
@@ -483,7 +495,7 @@ export default function StatsView() {
                 </div>
               )}
             </div>
-            <div className="st-underchart">
+            <div className="st-underchart span2">
               <p className="st-note">
                 <span className="st-key"><i style={{ background: C_DOUBT }} />leans toward doubting</span>
                 <span className="st-key"><i style={{ background: C_MID }} />even-handed</span>
@@ -495,7 +507,7 @@ export default function StatsView() {
                 <button className="st-btn" onClick={() => downloadPng(rocRef.current, RW, RH, `sector-discrimination-${today()}.png`)}>Download plot (PNG)</button>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {ranked.length ? (
@@ -605,7 +617,7 @@ export default function StatsView() {
                   <text x={mid + 14} y={GP.t - 30} className="st-quad start" fill={C_BELIEVE}>HYPE TRAPS</text>
                   <text x={mid + 14} y={GP.t - 16} className="st-quadsub start">hasn&apos;t happened, we said it had</text>
 
-                  {[-1, -0.5, 0.5, 1].map((g) => (
+                  {[-DOM, -DOM / 2, DOM / 2, DOM].map((g) => (
                     <line key={`g${g}`} x1={gx(g)} x2={gx(g)} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-grid" />
                   ))}
 
@@ -619,7 +631,7 @@ export default function StatsView() {
                   <g className={`st-bars${plotSeen ? " in" : ""}`}>
                     {ordered.map((c, i) => {
                       const y = rowY(i);
-                      const w = Math.abs(c.gap) * half;
+                      const w = (Math.abs(c.gap) / DOM) * half;
                       const x = c.gap >= 0 ? mid : mid - w;
                       return (
                         <g key={c.id} style={{ animationDelay: `${Math.min(i * 14, 700)}ms` }}>
@@ -658,9 +670,9 @@ export default function StatsView() {
                   <line x1={mid} x2={mid} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-zeroline" />
 
                   <line x1={GP.l} x2={GW - GP.r} y1={GH - GP.b + 6} y2={GH - GP.b + 6} className="st-axis" />
-                  {[-1, -0.5, 0, 0.5, 1].map((g) => (
+                  {[-DOM, -DOM / 2, 0, DOM / 2, DOM].map((g) => (
                     <text key={`t${g}`} x={gx(g)} y={GH - GP.b + 24} className="st-tick mid">
-                      {g === 0 ? "right" : `${Math.abs(g) * 100}% out`}
+                      {g === 0 ? "right" : `${Math.round(Math.abs(g) * 100)}% out`}
                     </text>
                   ))}
                   <text x={mid} y={GH - 22} className="st-axlbl mid">HOW FAR THE ROOM SAT FROM THE ANSWER</text>

@@ -289,9 +289,9 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 /* ── stats page (/swipe-the-future/stats) ───────────────────────────────── */
 /* Same ground and type as the deck: warm bone on near-black, mono eyebrows,
    paper-stock panels where something wants to feel like a card. */
-.st-page { max-width: 1040px; margin: 0 auto; padding: calc(var(--fa-nav-h, 64px) + 60px) 24px 100px; }
+.st-page { max-width: 1240px; margin: 0 auto; padding: calc(var(--fa-nav-h, 64px) + 60px) 24px 100px; }
 
-.st-head { max-width: 62ch; }
+.st-head { max-width: 64ch; }
 .st-head .eyebrow { display: block; margin-bottom: 14px; }
 .st-head h1 { font-weight: 600; font-size: clamp(38px, 5.4vw, 66px); line-height: .94; letter-spacing: -.038em; color: var(--bone); }
 .st-head h1 em { font-style: normal; color: var(--accent-deep); }
@@ -362,7 +362,13 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
 .st-rowlbl { fill: var(--muted); font-family: var(--ff-sans); font-size: 10.5px; }
 .st-axlbl.end { text-anchor: end; }
 .st-lede.sm { font-size: 14px; margin-top: 18px; }
-.st-plotwrap.roc { max-width: 660px; }
+.st-plotwrap.roc { max-width: none; margin-top: 0; }
+/* Prose beside the plot rather than stacked above it: at 1240 a 72ch column
+   with a chart under it leaves half the page empty. */
+.st-split { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 40px; align-items: start; margin-top: 26px; }
+.st-split .st-lede.sm { margin-top: 0; }
+.st-split .st-underchart.span2 { grid-column: 1 / -1; }
+@media (max-width: 900px) { .st-split { grid-template-columns: 1fr; gap: 22px; } }
 .st-key { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; }
 .st-key i { width: 9px; height: 9px; border-radius: 50%; opacity: .85; }
 .st-key { display: inline-flex; align-items: center; gap: 6px; margin-right: 16px; }
