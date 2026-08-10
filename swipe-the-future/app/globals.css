@@ -124,7 +124,16 @@ a { color: var(--accent); }
   display: flex; flex-direction: column; padding: 28px 26px;
   will-change: transform; touch-action: none; transform-origin: center 135%;
   transition: transform .3s cubic-bezier(.2, .8, .2, 1), opacity .3s ease;
+  /* On a mouse, dragging across the claim was starting a native text selection,
+     which fights the gesture and makes the card judder instead of swipe. The
+     reveal turns selection back on, because a source line is worth copying. */
+  -webkit-user-select: none; user-select: none;
 }
+/* Say it is draggable. Without this the card looks like a static panel and
+   people only ever press the buttons. */
+.tcard:not(.is-result):not(.b1):not(.b2) { cursor: grab; }
+.tcard:not(.is-result):not(.b1):not(.b2):active { cursor: grabbing; }
+.tcard.is-result { -webkit-user-select: text; user-select: text; }
 .tcard.b1 { transform: translateX(17px); filter: brightness(.9); pointer-events: none; }
 .tcard.b2 { transform: translateX(34px); filter: brightness(.78); pointer-events: none; }
 .tcard .claim { flex: 1; min-height: 0; overflow: hidden; display: grid; place-items: center; text-align: center; font-weight: 600; font-size: clamp(20px, 2.4vw + 0.6vh, 31px); line-height: 1.34; letter-spacing: -.02em; color: #19140e; }
@@ -178,6 +187,8 @@ a { color: var(--accent); }
 .vo-label { margin-top: 2px; font-size: 19px; line-height: 1.2; color: var(--paper-muted); letter-spacing: -.01em; }
 .vo-bignum { margin-top: 4px; font-weight: 700; font-size: clamp(40px, 8.5vw, 58px); line-height: .96; letter-spacing: -.04em; color: #17140e; }
 .vo-lede { margin-top: 14px; max-width: 32ch; font-size: 16.5px; line-height: 1.34; letter-spacing: -.012em; color: #17140e; font-weight: 600; }
+/* No big number on this card, so the sentence carries the headline weight. */
+.vo-lede.solo { margin-top: 10px; font-size: clamp(20px, 2.6vw, 26px); line-height: 1.22; letter-spacing: -.02em; font-weight: 700; }
 /* who said it, quote cards drop their attribution when the card flips, so the
    reveal has to carry it or the note reads as an orphan ("said on Joe Rogan") */
 .vo-who { margin-top: 8px; font-family: var(--ff-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--paper-muted); max-width: 32ch; line-height: 1.5; }
@@ -519,6 +530,7 @@ a.card-cta { display: block; text-align: center; text-decoration: none; }
   .vo-label { font-size: 15px; }
   .vo-bignum { margin-top: 3px; font-size: clamp(32px, 11vw, 46px); }
   .vo-lede { margin-top: 11px; font-size: 14.5px; line-height: 1.3; }
+  .vo-lede.solo { font-size: 19px; line-height: 1.24; }
   .vo-insight { margin-top: 7px; font-size: 12.5px; line-height: 1.45; }
   .vo-crowd { margin-top: 11px; padding: 8px 10px; }
   .vo-crowdtop { font-size: 12.5px; }

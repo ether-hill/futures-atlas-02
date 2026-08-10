@@ -152,6 +152,8 @@ export default function Calibration() {
       if ((e.target as HTMLElement).closest(".card-actions")) return;
       dragging = true; decided = false; pid = e.pointerId;
       sx = e.clientX; sy = e.clientY; dx = 0;
+      // a mouse press on text otherwise begins a selection that fights the drag
+      if (e.pointerType === "mouse") e.preventDefault();
       el.style.transition = "none";
       try { el.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
     };
@@ -159,7 +161,11 @@ export default function Calibration() {
       if (!dragging || locked.current || e.pointerId !== pid) return;
       dx = e.clientX - sx;
       // Ignore a mostly-vertical drag: that is someone scrolling, not swiping.
-      if (!decided && Math.abs(dx) < 8 && Math.abs(e.clientY - sy) > 12) { dragging = false; reset(); return; }
+      // Touch only. A mouse never scrolls by dragging, so on desktop this was
+      // just cancelling any gesture that wandered slightly off the horizontal.
+      if (e.pointerType === "touch" && !decided && Math.abs(dx) < 8 && Math.abs(e.clientY - sy) > 12) {
+        dragging = false; reset(); return;
+      }
       if (Math.abs(dx) > 4) { decided = true; e.preventDefault(); }
       paint(dx);
     };
@@ -311,10 +317,14 @@ export default function Calibration() {
                         being told how it went */}
                     <p className="vo-claim">{lastAns.card.claim}</p>
                     <div className={`vo-grade ${voClass}`}>{voBig}</div>
-                    <div className="vo-label">{lastAns.card.bigLabel}</div>
-                    <div className="vo-bignum">{lastAns.card.big}</div>
+                    {lastAns.card.big && (
+                      <>
+                        <div className="vo-label">{lastAns.card.bigLabel}</div>
+                        <div className="vo-bignum">{lastAns.card.big}</div>
+                      </>
+                    )}
                     {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
-                    <p className="vo-lede">{lastAns.card.lede}</p>
+                    <p className={`vo-lede${lastAns.card.big ? "" : " solo"}`}>{lastAns.card.lede}</p>
                     <p className="vo-insight">{lastAns.card.note}</p>
                     {crowd && (
                       <div className="vo-crowd">
