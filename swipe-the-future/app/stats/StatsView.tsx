@@ -44,15 +44,13 @@ export default function StatsView() {
   const [fetchedAt, setFetchedAt] = useState<Date | null>(null);
   const [loading, setLoading] = useState(false);
   const [demo, setDemo] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const [tip, setTip] = useState<Tip>(null);
   const [rocTip, setRocTip] = useState<Tip>(null);
-  const [spreadTip, setSpreadTip] = useState<Tip>(null);
   const plotRef = useRef<HTMLDivElement | null>(null);
   const rocRef = useRef<HTMLDivElement | null>(null);
-  const spreadRef = useRef<HTMLDivElement | null>(null);
   const { ref: plotSeenRef, seen: plotSeen } = useInView<HTMLDivElement>();
   const { ref: rocSeenRef, seen: rocSeen } = useInView<HTMLDivElement>();
-  const { ref: spreadSeenRef } = useInView<HTMLDivElement>();
 
   // Read once on load. The tallies move as people play, so there is a refresh
   // rather than a poll: nobody needs this page ticking in a background tab.
@@ -63,8 +61,8 @@ export default function StatsView() {
     // the page is in before anyone has played. Either way it is labelled
     // loudly. ?real forces the true (possibly empty) view.
     const q = typeof window !== "undefined" ? new URLSearchParams(location.search) : new URLSearchParams();
-    const useDemo = () => { setCounters(demoCounters()); setDemo(true); setFetchedAt(new Date()); };
-    if (q.has("demo")) { useDemo(); return; }
+    const showSample = () => { setCounters(demoCounters()); setDemo(true); setFetchedAt(new Date()); };
+    if (q.has("demo")) { showSample(); return; }
 
     setLoading(true);
     Promise.all([
@@ -73,7 +71,7 @@ export default function StatsView() {
     ])
       .then(([c, g]) => {
         if (Array.isArray(g?.sectors)) setGenerated(g.sectors);
-        if (!q.has("real") && Number(c?.swipes ?? 0) === 0) { useDemo(); setErr(false); return; }
+        if (!q.has("real") && Number(c?.swipes ?? 0) === 0) { showSample(); setErr(false); return; }
         setCounters(c ?? {});
         setDemo(false);
         setFetchedAt(new Date());
@@ -131,24 +129,65 @@ export default function StatsView() {
       .sort((a, b) => b.n - a.n),
     [cardsBySector, names]);
 
-  /** The ranked table and the ROC plot only take sectors with enough answers. */
+  /** The table and the ROC plot only take sectors with enough answers.
+   *  Ordered by how much evidence is behind each one, NOT by score: sorting by
+   *  d′ reads as a league table, and at a few hundred answers a sector these
+   *  accuracies are usually a few points apart with overlapping intervals. */
   const ranked = useMemo(() =>
-    allSectors.filter((s) => s.n >= MIN_SECTOR)
-      .sort((a, b) => Number(b.measurable) - Number(a.measurable) || b.dPrime - a.dPrime),
+    allSectors.filter((s) => s.n >= MIN_SECTOR).sort((a, b) => b.n - a.n),
     [allSectors]);
 
-  const swipes = n("swipes"), saidReal = n("real"), saidNotYet = n("notyet");
-  const aligned = n("aligned"), rounds = n("rounds");
+  /** True when every sector's accuracy interval overlaps every other's, i.e.
+   *  the differences on show are not differences at all yet. */
+  const indistinguishable = useMemo(() => {
+    const m = ranked.filter((x) => x.measurable);
+    if (m.length < 2) return false;
+    return m.every((a) => m.every((b) => a.lo <= b.hi && b.lo <= a.hi));
+  }, [ranked]);
+
+  const swipes = n("swipes");
+
+  // The headline used to be one accuracy figure, which collapses the two error
+  // types the rest of the page exists to keep apart. These are the signed pair.
+  //   CREDULITY  of the things that have NOT happened, how often we said they had
+  //   SCEPTICISM of the things that HAVE happened, how often we said they hadn't
+  // Net is credulity minus scepticism: positive leans gullible, negative leans
+  // in denial, zero means the two mistakes cancel (which is not the same as
+  // making neither).
+  const rates = (() => {
+    let faN = 0, fa = 0, missN = 0, miss = 0;
+    for (const c of cards) {
+      if (c.n === 0) continue;
+      if (c.verdict === "notyet") { faN += c.n; fa += c.real; }
+      else { missN += c.n; miss += c.notYet; }
+    }
+    return {
+      credulity: faN ? fa / faN : 0,
+      scepticism: missN ? miss / missN : 0,
+      net: (faN ? fa / faN : 0) - (missN ? miss / missN : 0),
+      any: faN > 0 && missN > 0,
+    };
+  })();
+  const widest = plotted.reduce<CardStat | null>((w, c) => (!w || Math.abs(c.gap) > Math.abs(w.gap) ? c : w), null);
 
   /** Sorted most-over-believed first, so the chart reads top to bottom as one story. */
-  const ordered = useMemo(() => [...plotted].sort((a, b) => b.gap - a.gap), [plotted]);
+  const orderedAll = useMemo(() => [...plotted].sort((a, b) => b.gap - a.gap), [plotted]);
+  // Forty labelled rows are unreadable at the width this sits in. The ends are
+  // where the finding is, so the default is the ten worst each way and the
+  // middle is available on request rather than gone.
+  const TOP = 10;
+  const trimmed = orderedAll.length > TOP * 2;
+  const ordered = showAll || !trimmed
+    ? orderedAll
+    : [...orderedAll.slice(0, TOP), ...orderedAll.slice(-TOP)];
+  const hidden = orderedAll.length - ordered.length;
   const hypeTraps = ordered.filter((c) => c.verdict === "notyet" && c.gap > OFF).slice(0, 5);
   const blindSpots = [...ordered].reverse().filter((c) => c.verdict === "already" && c.gap < -OFF).slice(0, 5);
   const wellRead = plotted.filter((c) => Math.abs(c.gap) <= OFF).length;
 
-  if (err) return <Shell><p className="st-msg">Couldn&apos;t reach the metrics store.</p></Shell>;
-  if (!counters) return <Shell><p className="st-msg">Loading…</p></Shell>;
-  if (swipes === 0) return <Shell><p className="st-msg">No swipes recorded yet. Once people start playing, this page fills in.</p></Shell>;
+  if (err) return <Shell demo={demo}><p className="st-msg">Couldn&apos;t reach the metrics store.</p></Shell>;
+  if (!counters) return <Shell demo={demo}><p className="st-msg">Loading…</p></Shell>;
+  if (swipes === 0) return <Shell demo={demo}><p className="st-msg">No swipes recorded yet. Once people start playing, this page fills in.</p></Shell>;
 
   // ── 01 · the miss chart ────────────────────────────────────────────────
   // One row per claim, a bar from the centre line. The answer is binary, so
@@ -160,57 +199,43 @@ export default function StatsView() {
   // quarter is a reserved column for the short form of each claim.
   const ROW = 15, GW = 1000;
   const GP = { t: 58, r: 24, b: 62, l: 272 };
-  const GH = GP.t + GP.b + Math.max(1, ordered.length) * ROW;
+  // When the middle is elided, the two halves are pushed apart so the "n hidden"
+  // marker has somewhere to sit; printed on the join it landed on the labels
+  // either side of it.
+  const GAP = hidden > 0 ? 26 : 0;
+  const GH = GP.t + GP.b + GAP + Math.max(1, ordered.length) * ROW;
   const mid = GW / 2;
   const half = (GW - GP.l - GP.r) / 2;
   const gx = (g: number) => mid + g * half;
-  const rowY = (i: number) => GP.t + i * ROW + ROW / 2;
+  const rowY = (i: number) => GP.t + i * ROW + ROW / 2 + (hidden > 0 && i >= TOP ? GAP : 0);
   const colourOf = (gap: number) => (gap > OFF ? C_BELIEVE : gap < -OFF ? C_DOUBT : C_MID);
-
-  // ── 02b · the same misses, grouped by sector ──────────────────────────
-  // Section 01 sorts every claim into one global ranking, which answers "what
-  // did we get worst" but loses "who owns it". One row per sector, with that
-  // sector's claims scattered either side of the truth line, answers the second
-  // question: how far a sector's misses spread, and which way they lean.
-  const SW = 900, SROW = 62;
-  const SP = { t: 56, r: 112, b: 42, l: 168 };
-  const spreadSectors = allSectors.filter((sec) => (cardsBySector.get(sec.id) ?? []).some((c) => c.n >= MIN_N));
-  const SH = SP.t + SP.b + Math.max(1, spreadSectors.length) * SROW;
-  const smid = SP.l + (SW - SP.l - SP.r) / 2;
-  const shalf = (SW - SP.l - SP.r) / 2;
-  const sx = (g: number) => smid + g * shalf;
-  const srowY = (i: number) => SP.t + i * SROW + SROW / 2;
-  /** Deterministic vertical nudge, so claims at the same gap don't stack up. */
-  const nudge = (id: string) => {
-    let h = 0;
-    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
-    return (((h >>> 0) % 1000) / 1000 - 0.5) * (SROW - 26);
-  };
 
   // ── 03 · sector discrimination, in ROC space ───────────────────────────
   // The plot has a reserved label column on the right. Sectors that score alike
   // sit on top of each other, and names placed next to their own dots turn into
   // one smudge; stacking them in a gutter with leader lines cannot collide no
   // matter how tightly the dots cluster.
-  const RW = 820, RH = 520, RP = { t: 40, r: 232, b: 76, l: 68 };
+  const RW = 640, RH = 520, RP = { t: 46, r: 40, b: 76, l: 68 };
   const rx = (u: number) => RP.l + u * (RW - RP.l - RP.r);
   const ry = (u: number) => RH - RP.b - u * (RH - RP.t - RP.b);
-  const LABEL_X = RW - RP.r + 26;
-
+  // Labels sit ON the plot beside their own dot, which is what makes a scatter
+  // readable at a glance. Dots that score alike would print their names on top
+  // of each other, so each label is placed above its dot and stepped down until
+  // it finds a clear slot. Deterministic, so nothing reshuffles between renders.
   const rocPlaced = (() => {
-    const rows = ranked.filter((s) => s.measurable)
-      .map((s, i) => ({
-        s, i,
-        cx: rx(s.faRate), cy: ry(s.hitRate),
-        r: Math.min(14, 5 + Math.sqrt(s.n) * 0.5),
-      }))
-      .sort((a, b) => a.cy - b.cy); // top of the plot first, so leaders don't cross
-    let last = -Infinity;
-    return rows.map((row) => {
-      const ly = Math.max(row.cy, last + 17, RP.t + 8);
-      last = ly;
-      return { ...row, ly };
-    });
+    const taken: { x: number; y: number }[] = [];
+    return ranked.filter((s) => s.measurable)
+      .map((s, i) => ({ s, i, cx: rx(s.faRate), cy: ry(s.hitRate), r: Math.min(14, 5 + Math.sqrt(s.n) * 0.5) }))
+      .sort((a, b) => a.cy - b.cy)
+      .map((row) => {
+        const right = row.cx < RW * 0.6;
+        const lx = right ? row.cx + row.r + 7 : row.cx - row.r - 7;
+        let ly = row.cy - row.r - 6;
+        while (taken.some((t) => Math.abs(t.x - lx) < 150 && Math.abs(t.y - ly) < 13)) ly -= 13;
+        if (ly < RP.t + 10) { ly = row.cy + row.r + 13; while (taken.some((t) => Math.abs(t.x - lx) < 150 && Math.abs(t.y - ly) < 13)) ly += 13; }
+        taken.push({ x: lx, y: ly });
+        return { ...row, lx, ly, anchor: right ? ("start" as const) : ("end" as const) };
+      });
   })();
 
   /** Rasterise a chart. The SVG leans on stylesheet rules, so the clone gets an
@@ -299,23 +324,23 @@ export default function StatsView() {
   };
 
   return (
-    <Shell>
+    <Shell demo={demo}>
       <Reveal as="div" className="st-grid">
-        <Tile n={swipes} k="swipes" />
-        <Tile n={rounds} k="rounds finished" />
-        <Tile n={swipes ? saidReal / swipes : 0} k={`said already real · ${pct(swipes ? saidNotYet / swipes : 0)} said not yet`} isPct />
-        <Tile n={swipes ? aligned / swipes : 0} k="got it right" isPct />
+        <Tile n={rates.credulity} k="credulity · said it had happened, it hadn't" isPct tone={C_BELIEVE} />
+        <Tile n={rates.scepticism} k="scepticism · said not yet, it already had" isPct tone={C_DOUBT} />
+        <Tile
+          n={Math.abs(rates.net)}
+          k={rates.net > 0.02 ? "net lean toward buying it" : rates.net < -0.02 ? "net lean toward doubting it" : "net lean, the two cancel"}
+          isPct
+          tone={Math.abs(rates.net) < 0.02 ? C_MID : rates.net > 0 ? C_BELIEVE : C_DOUBT}
+        />
+        {widest
+          ? <Tile n={Math.abs(widest.gap)} k={`widest gap · ${clip(widest.short, 30)}`} isPct tone={C_MID} />
+          : <Tile n={swipes} k="swipes" />}
       </Reveal>
 
-      {demo && (
-        <p className="st-demo">
-          <b>Sample data.</b> Nobody has played this deck yet, so these are invented numbers, shown
-          so the page can be read with a full deck behind it. Nothing here is a real answer.
-          <a href="/swipe-the-future/stats/?real">See the real tally</a>
-        </p>
-      )}
-
       <p className="st-fresh">
+        {`${swipes.toLocaleString("en-GB")} swipes. `}
         {demo
           ? "Sample data, generated in your browser."
           : fetchedAt
@@ -326,104 +351,46 @@ export default function StatsView() {
 
       {/* ── 01 ───────────────────────────────────────────────────────────── */}
       <Reveal className="st-sec">
-        <span className="st-kicker">01, every claim, ranked by how wrong we were</span>
-        <h2>The Reality Gap</h2>
-        <p className="st-lede">
-          Each card has one right answer: it happened, or it hasn&apos;t. So every claim can be placed
-          on a single line. <em>The centre is the truth.</em> A bar to the right means the room said it
-          had already happened when it had not. A bar to the left means the room said not yet about
-          something that has been running for years. Length is how far off we were, and a claim
-          nobody missed has no bar at all.
-        </p>
-
-        {plotted.length === 0 ? (
-          <div className="st-plotwrap empty">
-            <p className="st-msg sm">
-              No claim has {MIN_N} swipes yet, so there is nothing honest to chart. It appears as soon
-              as the deck has been played enough. {seen} of {cards.length} claims have been seen at
-              least once so far.
+        <span className="st-kicker">01, the two ways to be wrong</span>
+        <h2>Hype traps and blind spots</h2>
+        <div className="st-two">
+          <div>
+            <h3 style={{ color: C_BELIEVE }}>Hype traps</h3>
+            <p className="st-sublede">Hasn&apos;t happened. We said it had.</p>
+            <p className="st-para">
+              A hype trap is something that was announced, demonstrated, promised or proposed, and
+              filed in memory as done. They are what a good story leaves behind: a confident launch
+              demo, a number quoted away from the caveat that came with it, a bill that was tabled
+              and never passed. They cluster where the marketing is loudest and the checking is
+              hardest. They are the expensive kind of wrong, because budgets, hiring and policy get
+              set on them.
             </p>
+            {hypeTraps.length ? hypeTraps.map((c, i) => (
+              <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
+                <span className="st-rowpct" style={{ color: C_BELIEVE }}>{pct(c.pReal)}</span>
+                <span className="st-rowtxt"><b>{c.claim}</b><span>said already real · {c.sector} · {c.n} swipes</span></span>
+              </div>
+            )) : <p className="st-msg sm">Nothing here yet. Either nobody has been caught by one, or not enough people have played.</p>}
           </div>
-        ) : (
-          <>
-            <div className="st-plotwrap" ref={plotRef} onMouseLeave={() => setTip(null)}>
-              <div ref={plotSeenRef}>
-                <svg viewBox={`0 0 ${GW} ${GH}`} className="st-plot" role="img"
-                  aria-label="Every claim as a bar from a centre line: right means the crowd thought it had already happened when it had not, left means it doubted something already real.">
-                  {/* quadrant headers */}
-                  <text x={mid - 14} y={GP.t - 30} className="st-quad end" fill={C_DOUBT}>BLIND SPOTS</text>
-                  <text x={mid - 14} y={GP.t - 16} className="st-quadsub end">already real, we said not yet</text>
-                  <text x={mid + 14} y={GP.t - 30} className="st-quad start" fill={C_BELIEVE}>HYPE TRAPS</text>
-                  <text x={mid + 14} y={GP.t - 16} className="st-quadsub start">hasn&apos;t happened, we said it had</text>
-
-                  {[-1, -0.5, 0.5, 1].map((g) => (
-                    <line key={`g${g}`} x1={gx(g)} x2={gx(g)} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-grid" />
-                  ))}
-
-                  {/* the name of every row, not just the extremes */}
-                  {ordered.map((c, i) => (
-                    <text key={`l${c.id}`} x={GP.l - 16} y={rowY(i) + 3.5} className="st-rowlbl" textAnchor="end">
-                      {clip(c.short, 34)}
-                    </text>
-                  ))}
-
-                  <g className={`st-bars${plotSeen ? " in" : ""}`}>
-                    {ordered.map((c, i) => {
-                      const y = rowY(i);
-                      const w = Math.abs(c.gap) * half;
-                      const x = c.gap >= 0 ? mid : mid - w;
-                      return (
-                        <g key={c.id} style={{ animationDelay: `${Math.min(i * 14, 700)}ms` }}>
-                          <rect
-                            x={x} y={y - ROW / 2 + 1.5} width={Math.max(w, 1.5)} height={ROW - 3} rx={2}
-                            fill={colourOf(c.gap)} className={`st-bar2${c.gap < 0 ? " neg" : ""}`}
-                            onMouseMove={(e) => tipAt(e, plotRef.current, setTip, c.claim, [
-                              `${c.sector} · answer: ${VLABEL[c.verdict]}`,
-                              `${pct(c.pReal)} said already real · ${c.n} swipes`,
-                              c.gap > OFF ? "Hype trap: bought a thing that hasn't happened"
-                                : c.gap < -OFF ? "Blind spot: doubted a thing that has"
-                                : "Read about right",
-                            ])}
-                          >
-                            <title>{`${c.claim}, ${pct(c.pReal)} said already real (answer: ${VLABEL[c.verdict]}, ${c.n} swipes)`}</title>
-                          </rect>
-                        </g>
-                      );
-                    })}
-                  </g>
-
-                  {/* the truth line, drawn over the bars so it always reads */}
-                  <line x1={mid} x2={mid} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-zeroline" />
-
-                  <line x1={GP.l} x2={GW - GP.r} y1={GH - GP.b + 6} y2={GH - GP.b + 6} className="st-axis" />
-                  {[-1, -0.5, 0, 0.5, 1].map((g) => (
-                    <text key={`t${g}`} x={gx(g)} y={GH - GP.b + 24} className="st-tick mid">
-                      {g === 0 ? "right" : `${Math.abs(g) * 100}% out`}
-                    </text>
-                  ))}
-                  <text x={mid} y={GH - 22} className="st-axlbl mid">HOW FAR THE ROOM SAT FROM THE ANSWER</text>
-                </svg>
+          <div>
+            <h3 style={{ color: C_DOUBT }}>Blind spots</h3>
+            <p className="st-sublede">Already real. We said not yet.</p>
+            <p className="st-para">
+              A blind spot is the mirror image: something that has been working for years and that
+              people still will not have. These are quieter, because nothing markets the ordinary
+              Tuesday on which a thing quietly started working, and a capability that arrives without
+              a launch event tends to arrive without anyone updating. Several of them here are
+              decades old. They are arguably the more costly of the two: while you are waiting for a
+              future to show up, somebody else is already using it.
+            </p>
+            {blindSpots.length ? blindSpots.map((c, i) => (
+              <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
+                <span className="st-rowpct" style={{ color: C_DOUBT }}>{pct(1 - c.pReal)}</span>
+                <span className="st-rowtxt"><b>{c.claim}</b><span>said not yet · {c.sector} · {c.n} swipes</span></span>
               </div>
-              {tip && (
-                <div className="st-tip" style={{ left: tip.x, top: tip.y }}>
-                  <b>{tip.title}</b>
-                  {tip.lines.map((l) => <span key={l}>{l}</span>)}
-                </div>
-              )}
-            </div>
-            <div className="st-underchart">
-              <p className="st-note">
-                {plotted.length} of {cards.length} claims have enough swipes to chart
-                {heldBack > 0 ? `, ${heldBack} more are still under ${MIN_N} and held back` : ""}.
-                {wellRead > 0 ? ` ${wellRead} of them the room read about right.` : ""}
-              </p>
-              <div className="st-actions">
-                <button className="st-btn" onClick={() => downloadPng(plotRef.current, GW, GH, `reality-gap-${today()}.png`)}>Download map (PNG)</button>
-                <button className="st-btn" onClick={downloadCsv}>Download data (CSV)</button>
-              </div>
-            </div>
-          </>
-        )}
+            )) : <p className="st-msg sm">Nothing here yet. Either we are reading these right, or not enough people have played.</p>}
+          </div>
+        </div>
       </Reveal>
 
       {/* ── 02 ───────────────────────────────────────────────────────────── */}
@@ -437,67 +404,6 @@ export default function StatsView() {
         </p>
         <SectorExplorer sectors={allSectors} cardsBySector={cardsBySector} colours={COLOURS} />
       </Reveal>
-
-      {/* ── 02b ──────────────────────────────────────────────────────────── */}
-      {spreadSectors.length > 0 && (
-        <Reveal className="st-sec">
-          <span className="st-kicker">02b, the same misses, by sector</span>
-          <h2>Which way each sector leans</h2>
-          <p className="st-lede">
-            Every claim is either a hype trap or a blind spot, never both, so a sector fits on one
-            line with its claims spread either side of the truth. A row bunched on the right is a
-            sector we buy too easily. A row bunched on the left is one we keep underestimating. A row
-            spread across both is a sector nobody has a clock on at all.
-          </p>
-          <div className="st-plotwrap" ref={spreadRef} onMouseLeave={() => setSpreadTip(null)}>
-            <div ref={spreadSeenRef}>
-              <svg viewBox={`0 0 ${SW} ${SH}`} className="st-plot" role="img"
-                aria-label="One row per sector, with each of its claims placed by how far the crowd sat from the answer.">
-                <text x={sx(-0.55)} y={SP.t - 26} className="st-quad mid" fill={C_DOUBT}>← BLIND SPOTS</text>
-                <text x={smid} y={SP.t - 26} className="st-quadsub mid">accurate</text>
-                <text x={sx(0.55)} y={SP.t - 26} className="st-quad mid" fill={C_BELIEVE}>HYPE TRAPS →</text>
-
-                {spreadSectors.map((sec, i) => {
-                  const cs = (cardsBySector.get(sec.id) ?? []).filter((c) => c.n >= MIN_N);
-                  return (
-                    <g key={sec.id} style={{ animationDelay: `${Math.min(i * 70, 700)}ms` }}>
-                      <line x1={SP.l - 8} x2={SW - SP.r} y1={srowY(i) + SROW / 2 - 1} y2={srowY(i) + SROW / 2 - 1} className="st-grid" />
-                      <text x={SP.l - 24} y={srowY(i) + 4} className="st-rowlbl" textAnchor="end">{clip(sec.name, 22)}</text>
-                      <line x1={smid} x2={smid} y1={srowY(i) - SROW / 2 + 6} y2={srowY(i) + SROW / 2 - 6} className="st-zeroline" />
-                      {cs.map((c) => (
-                        <circle
-                          key={c.id} cx={sx(Math.max(-1, Math.min(1, c.gap)))} cy={srowY(i) + nudge(c.id)}
-                          r={Math.min(11, 4.5 + Math.sqrt(c.n) * 0.55)}
-                          fill={colourOf(c.gap)} className="st-dot"
-                          onMouseMove={(e) => tipAt(e, spreadRef.current, setSpreadTip, c.claim, [
-                            `${c.sector} · answer: ${VLABEL[c.verdict]}`,
-                            `${pct(c.pReal)} said already real · ${c.n} swipes`,
-                          ])}
-                        >
-                          <title>{`${c.claim}, ${pct(c.pReal)} said already real`}</title>
-                        </circle>
-                      ))}
-                      <text x={SW - SP.r + 20} y={srowY(i) + 4} className="st-rowlbl">{pct(sec.accuracy)} right</text>
-                    </g>
-                  );
-                })}
-              </svg>
-            </div>
-            {spreadTip && (
-              <div className="st-tip" style={{ left: spreadTip.x, top: spreadTip.y }}>
-                <b>{spreadTip.title}</b>
-                {spreadTip.lines.map((l) => <span key={l}>{l}</span>)}
-              </div>
-            )}
-          </div>
-          <div className="st-underchart">
-            <p className="st-note">Bigger dot = more swipes behind that claim. Only claims with {MIN_N} or more are shown.</p>
-            <div className="st-actions">
-              <button className="st-btn" onClick={() => downloadPng(spreadRef.current, SW, SH, `sector-spread-${today()}.png`)}>Download plot (PNG)</button>
-            </div>
-          </div>
-        </Reveal>
-      )}
 
       {/* ── 03 ───────────────────────────────────────────────────────────── */}
       <Reveal className="st-sec">
@@ -550,7 +456,7 @@ export default function StatsView() {
                   <text x={rx(0.06)} y={ry(0.02)} className="st-quadsub start" fill={C_DOUBT}>says not yet to everything</text>
 
                   <g className={`st-dots${rocSeen ? " in" : ""}`}>
-                    {rocPlaced.map(({ s, i, cx, cy, r, ly }) => (
+                    {rocPlaced.map(({ s, i, cx, cy, r, lx, ly, anchor }) => (
                       <g key={s.id} style={{ animationDelay: `${Math.min(i * 60, 700)}ms` }}>
                         <circle
                           cx={cx} cy={cy} r={r}
@@ -564,9 +470,7 @@ export default function StatsView() {
                         >
                           <title>{`${s.name}: hit rate ${pct(s.hitRate)}, false-alarm rate ${pct(s.faRate)}, d′ ${s.dPrime.toFixed(2)}`}</title>
                         </circle>
-                        {/* leader line from the dot out to its row in the gutter */}
-                        <line x1={cx + r + 2} y1={cy} x2={LABEL_X - 6} y2={ly - 3} className="st-grid" />
-                        <text x={LABEL_X} y={ly} className="st-rlbl">{clip(s.name, 24)}</text>
+                        <text x={lx} y={ly} className="st-rlbl" textAnchor={anchor}>{clip(s.name, 24)}</text>
                       </g>
                     ))}
                   </g>
@@ -580,7 +484,13 @@ export default function StatsView() {
               )}
             </div>
             <div className="st-underchart">
-              <p className="st-note">Bigger dot = more answers behind it.</p>
+              <p className="st-note">
+                <span className="st-key"><i style={{ background: C_DOUBT }} />leans toward doubting</span>
+                <span className="st-key"><i style={{ background: C_MID }} />even-handed</span>
+                <span className="st-key"><i style={{ background: C_BELIEVE }} />leans toward buying it</span>
+                Bigger dot = more answers behind it.
+                {indistinguishable ? " At this sample size every sector's accuracy interval overlaps every other's, so treat their positions as one cluster, not a ranking." : ""}
+              </p>
               <div className="st-actions">
                 <button className="st-btn" onClick={() => downloadPng(rocRef.current, RW, RH, `sector-discrimination-${today()}.png`)}>Download plot (PNG)</button>
               </div>
@@ -590,6 +500,13 @@ export default function StatsView() {
 
         {ranked.length ? (
           <div className="st-tablewrap">
+            {indistinguishable && (
+              <p className="st-note warn">
+                These sectors are not yet telling apart from one another: every accuracy interval
+                below overlaps every other. The rows are ordered by how many answers are behind them,
+                deliberately, so the table is not read as a league table it cannot support.
+              </p>
+            )}
             <table className="st-table st-sectors">
               <thead>
                 <tr>
@@ -659,46 +576,121 @@ export default function StatsView() {
 
       {/* ── 04 ───────────────────────────────────────────────────────────── */}
       <Reveal className="st-sec">
-        <span className="st-kicker">04, the two ways to be wrong</span>
-        <h2>Hype traps and blind spots</h2>
-        <div className="st-two">
-          <div>
-            <h3 style={{ color: C_BELIEVE }}>Hype traps</h3>
-            <p className="st-sublede">Hasn&apos;t happened. We said it had.</p>
-            <p className="st-para">
-              A hype trap is something that was announced, demonstrated, promised or proposed, and
-              filed in memory as done. They are what a good story leaves behind: a confident launch
-              demo, a number quoted away from the caveat that came with it, a bill that was tabled
-              and never passed. They cluster where the marketing is loudest and the checking is
-              hardest. They are the expensive kind of wrong, because budgets, hiring and policy get
-              set on them.
+        <span className="st-kicker">04, the whole deck, claim by claim</span>
+        <h2>Every claim, worst miss first</h2>
+        <p className="st-lede">
+          The reference exhibit: the whole deck on one line. <em>The centre is the truth.</em> A bar to
+          the right means the room said it had already happened when it had not. A bar to the left
+          means the room said not yet about something that has been running for years. Length is how
+          far off we were, and a claim nobody missed has no bar at all.
+        </p>
+
+        {plotted.length === 0 ? (
+          <div className="st-plotwrap empty">
+            <p className="st-msg sm">
+              No claim has {MIN_N} swipes yet, so there is nothing honest to chart. It appears as soon
+              as the deck has been played enough. {seen} of {cards.length} claims have been seen at
+              least once so far.
             </p>
-            {hypeTraps.length ? hypeTraps.map((c, i) => (
-              <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
-                <span className="st-rowpct" style={{ color: C_BELIEVE }}>{pct(c.pReal)}</span>
-                <span className="st-rowtxt"><b>{c.claim}</b><span>said already real · {c.sector} · {c.n} swipes</span></span>
-              </div>
-            )) : <p className="st-msg sm">Nothing here yet. Either nobody has been caught by one, or not enough people have played.</p>}
           </div>
-          <div>
-            <h3 style={{ color: C_DOUBT }}>Blind spots</h3>
-            <p className="st-sublede">Already real. We said not yet.</p>
-            <p className="st-para">
-              A blind spot is the mirror image: something that has been working for years and that
-              people still will not have. These are quieter, because nothing markets the ordinary
-              Tuesday on which a thing quietly started working, and a capability that arrives without
-              a launch event tends to arrive without anyone updating. Several of them here are
-              decades old. They are arguably the more costly of the two: while you are waiting for a
-              future to show up, somebody else is already using it.
-            </p>
-            {blindSpots.length ? blindSpots.map((c, i) => (
-              <div className="st-row" key={c.id} style={{ animationDelay: `${i * 70}ms` }}>
-                <span className="st-rowpct" style={{ color: C_DOUBT }}>{pct(1 - c.pReal)}</span>
-                <span className="st-rowtxt"><b>{c.claim}</b><span>said not yet · {c.sector} · {c.n} swipes</span></span>
+        ) : (
+          <>
+            <div className="st-plotwrap" ref={plotRef} onMouseLeave={() => setTip(null)}>
+              <div ref={plotSeenRef}>
+                <svg viewBox={`0 0 ${GW} ${GH}`} className="st-plot" role="img"
+                  aria-label="Every claim as a bar from a centre line: right means the crowd thought it had already happened when it had not, left means it doubted something already real.">
+                  {/* quadrant headers */}
+                  <text x={mid - 14} y={GP.t - 30} className="st-quad end" fill={C_DOUBT}>BLIND SPOTS</text>
+                  <text x={mid - 14} y={GP.t - 16} className="st-quadsub end">already real, we said not yet</text>
+                  <text x={mid + 14} y={GP.t - 30} className="st-quad start" fill={C_BELIEVE}>HYPE TRAPS</text>
+                  <text x={mid + 14} y={GP.t - 16} className="st-quadsub start">hasn&apos;t happened, we said it had</text>
+
+                  {[-1, -0.5, 0.5, 1].map((g) => (
+                    <line key={`g${g}`} x1={gx(g)} x2={gx(g)} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-grid" />
+                  ))}
+
+                  {/* the name of every row, not just the extremes */}
+                  {ordered.map((c, i) => (
+                    <text key={`l${c.id}`} x={GP.l - 16} y={rowY(i) + 3.5} className="st-rowlbl" textAnchor="end">
+                      {clip(c.short, 34)}
+                    </text>
+                  ))}
+
+                  <g className={`st-bars${plotSeen ? " in" : ""}`}>
+                    {ordered.map((c, i) => {
+                      const y = rowY(i);
+                      const w = Math.abs(c.gap) * half;
+                      const x = c.gap >= 0 ? mid : mid - w;
+                      return (
+                        <g key={c.id} style={{ animationDelay: `${Math.min(i * 14, 700)}ms` }}>
+                          <rect
+                            x={x} y={y - ROW / 2 + 1.5} width={Math.max(w, 1.5)} height={ROW - 3} rx={2}
+                            fill={colourOf(c.gap)} className={`st-bar2${c.gap < 0 ? " neg" : ""}`}
+                            onMouseMove={(e) => tipAt(e, plotRef.current, setTip, c.claim, [
+                              `${c.sector} · answer: ${VLABEL[c.verdict]}`,
+                              `${pct(c.pReal)} said already real · ${c.n} swipes`,
+                              c.gap > OFF ? "Hype trap: bought a thing that hasn't happened"
+                                : c.gap < -OFF ? "Blind spot: doubted a thing that has"
+                                : "Read about right",
+                            ])}
+                          >
+                            <title>{`${c.claim}, ${pct(c.pReal)} said already real (answer: ${VLABEL[c.verdict]}, ${c.n} swipes)`}</title>
+                          </rect>
+                        </g>
+                      );
+                    })}
+                  </g>
+
+                  {/* the elided middle, marked rather than silently missing */}
+                  {hidden > 0 && (
+                    <g>
+                      <line
+                        x1={GP.l - 8} x2={GW - GP.r} y1={rowY(TOP) - ROW / 2 - GAP / 2} y2={rowY(TOP) - ROW / 2 - GAP / 2}
+                        className="st-grid" strokeDasharray="3 4"
+                      />
+                      <text x={GP.l - 16} y={rowY(TOP) - ROW / 2 - GAP / 2 + 3.5} className="st-rowlbl" textAnchor="end">
+                        {hidden} closer calls hidden
+                      </text>
+                    </g>
+                  )}
+
+                  {/* the truth line, drawn over the bars so it always reads */}
+                  <line x1={mid} x2={mid} y1={GP.t - 6} y2={GH - GP.b + 6} className="st-zeroline" />
+
+                  <line x1={GP.l} x2={GW - GP.r} y1={GH - GP.b + 6} y2={GH - GP.b + 6} className="st-axis" />
+                  {[-1, -0.5, 0, 0.5, 1].map((g) => (
+                    <text key={`t${g}`} x={gx(g)} y={GH - GP.b + 24} className="st-tick mid">
+                      {g === 0 ? "right" : `${Math.abs(g) * 100}% out`}
+                    </text>
+                  ))}
+                  <text x={mid} y={GH - 22} className="st-axlbl mid">HOW FAR THE ROOM SAT FROM THE ANSWER</text>
+                </svg>
               </div>
-            )) : <p className="st-msg sm">Nothing here yet. Either we are reading these right, or not enough people have played.</p>}
-          </div>
-        </div>
+              {tip && (
+                <div className="st-tip" style={{ left: tip.x, top: tip.y }}>
+                  <b>{tip.title}</b>
+                  {tip.lines.map((l) => <span key={l}>{l}</span>)}
+                </div>
+              )}
+            </div>
+            <div className="st-underchart">
+              <p className="st-note">
+                {plotted.length} of {cards.length} claims have enough swipes to chart
+                {heldBack > 0 ? `, ${heldBack} more are still under ${MIN_N} and held back` : ""}.
+                {wellRead > 0 ? ` ${wellRead} of them the room read about right.` : ""}
+              </p>
+              <div className="st-actions">
+                {trimmed && (
+                  <button className="st-btn" onClick={() => setShowAll((v) => !v)}>
+                    {showAll ? `Show the ${TOP} worst each way` : `Show all ${orderedAll.length}`}
+                  </button>
+                )}
+                <button className="st-btn" onClick={() => downloadPng(plotRef.current, GW, GH, `reality-gap-${today()}.png`)}>Download map (PNG)</button>
+                <button className="st-btn" onClick={downloadCsv}>Download data (CSV)</button>
+              </div>
+            </div>
+          </>
+        )}
       </Reveal>
 
       <p className="st-foot">
@@ -709,9 +701,19 @@ export default function StatsView() {
   );
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ children, demo = false }: { children: React.ReactNode; demo?: boolean }) {
   return (
     <main className="st-page">
+      {demo && (
+        <div className="st-demobar" role="status">
+          <b>None of this is real.</b>
+          <span>
+            Nobody has played this deck yet, so every number on this page is invented, generated in
+            your browser so the layout can be read with a full deck behind it.
+          </span>
+          <a href="/swipe-the-future/stats/?real">Show the real tally</a>
+        </div>
+      )}
       <header className="st-head">
         <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
         <h1>What everyone <em>actually</em> thinks has happened.</h1>
@@ -727,10 +729,10 @@ function Shell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Tile({ n, k, isPct = false }: { n: number; k: string; isPct?: boolean }) {
+function Tile({ n, k, isPct = false, tone }: { n: number; k: string; isPct?: boolean; tone?: string }) {
   return (
     <div className="st-tile">
-      <span className="st-tv">
+      <span className="st-tv" style={tone ? { color: tone } : undefined}>
         {isPct
           ? <CountUp to={Math.round(n * 100)} format={(v) => `${v}%`} />
           : <CountUp to={n} />}

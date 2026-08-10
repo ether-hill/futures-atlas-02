@@ -290,6 +290,9 @@ export default function Calibration() {
                     <div className={`vo-big ${voClass}`}>{voBig}</div>
                     <div className="vo-label">{VLABEL[lastAns.card.verdict]}</div>
                     {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
+                    {/* the claim again: by the time the card flips, people have
+                        forgotten exactly what they just answered */}
+                    <p className="vo-claim"><b>You were asked</b>{lastAns.card.claim}</p>
                     <p className="vo-insight">{lastAns.card.note}</p>
                     <div className="vo-src">
                       {lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}

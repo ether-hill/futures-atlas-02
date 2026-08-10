@@ -67,13 +67,17 @@ export function SectorExplorer({
               <button className="st-sxhead" onClick={() => toggle(s.id)} aria-expanded={isOpen}>
                 <span className="st-sxchev" aria-hidden="true">{isOpen ? "▾" : "▸"}</span>
                 <span className="st-sxname">{s.name}</span>
+                {/* Deliberately worded so it cannot be read against the vote
+                    split on the rows below. Those are one claim's two shares and
+                    total 100; this is a whole sector's accuracy across every
+                    answer, and the two used to sit in the same register, which
+                    made them look like figures that ought to reconcile. */}
                 <span className="st-sxscore">
                   <span className="st-sxbar" aria-hidden="true">
                     <span style={{ width: `${s.accuracy * 100}%` }} />
                   </span>
-                  <b>{pct(s.accuracy)}</b> got it right
+                  <b>{pct(s.accuracy)}</b> of {s.n} answers correct
                 </span>
-                <span className="st-sxn">{s.n} answers</span>
               </button>
 
               {isOpen && (
@@ -88,10 +92,15 @@ export function SectorExplorer({
                           <span className="st-cbfalse" style={{ width: `${(1 - c.pReal) * 100}%` }} />
                         </div>
                         <div className="st-cmeta">
-                          <span className="st-ctrue"><b>{pct(c.pReal)}</b> said already real</span>
-                          <span className="st-cfalse"><b>{pct(1 - c.pReal)}</b> said not yet</span>
+                          {/* one unit, one denominator: the split of this claim's
+                              own swipes, which is why it is written as a pair */}
+                          <span className="st-csplit">
+                            <b style={{ color: colours.believe }}>{pct(c.pReal)}</b> already real
+                            <i>/</i>
+                            <b style={{ color: colours.doubt }}>{pct(1 - c.pReal)}</b> not yet
+                            <em>of {c.n} swipe{c.n === 1 ? "" : "s"}</em>
+                          </span>
                           <span className="st-cverdict">Answer: <b>{VLABEL[c.verdict]}</b></span>
-                          <span className="st-cn">{c.n} swipe{c.n === 1 ? "" : "s"}</span>
                           {c.n >= MIN_READ && (
                             <span className="st-cgap" style={{ color: off }}>
                               {c.gap > OFF ? "hype trap" : c.gap < -OFF ? "blind spot" : "read right"}
