@@ -307,6 +307,9 @@ export default function Calibration() {
               return (
                 <div key={`res-${pos}`} className="tcard is-result">
                   <div className="vo-body">
+                    {/* the claim first, so you re-read what you answered before
+                        being told how it went */}
+                    <p className="vo-claim">{lastAns.card.claim}</p>
                     <div className={`vo-grade ${voClass}`}>{voBig}</div>
                     <div className="vo-label">{lastAns.card.bigLabel}</div>
                     <div className="vo-bignum">{lastAns.card.big}</div>
@@ -324,9 +327,6 @@ export default function Calibration() {
                         </span>
                       </div>
                     )}
-                    {/* the claim again, quietly: by the time the card flips people
-                        have forgotten exactly what they answered */}
-                    <p className="vo-claim"><b>You were asked</b>{lastAns.card.claim}</p>
                     <div className="vo-src">
                       {lastAns.card.source.url ? <a href={lastAns.card.source.url} target="_blank" rel="noopener noreferrer">{lastAns.card.source.label} ↗</a> : lastAns.card.source.label}
                       {lastAns.card.checked && <span className="vo-checked"> · checked {lastAns.card.checked}</span>}
