@@ -1,5 +1,7 @@
 import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, RECEPTION, SOURCES } from "./encyclical";
 import { LEADERS, type Leader } from "./leaders";
+import { SCENES, HOME_SCENE } from "./scenes";
+import { mountDock, unmountDock, type Part } from "./listen";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -149,7 +151,7 @@ function leaderView(l: Leader): string {
   return `
   <main class="wrap">
     <a class="back" href="#/">&larr; All voices</a>
-    <header class="mast">
+    <header class="mast" data-hero="${esc(l.id)}">
       <span class="ld-trad">${esc(l.tradition)} · speculative document</span>
       <h1 data-reveal>${esc(l.docTitle)}</h1>
       ${l.docTitleTranslation ? `<p class="mast-tr" data-reveal>${esc(l.docTitleTranslation)}</p>` : ""}
@@ -182,15 +184,68 @@ function leaderView(l: Leader): string {
   </main>`;
 }
 
+/** Try the scene's hero loop; if the bundle carries no video, do nothing. */
+function mountHero(root: HTMLElement) {
+  const mast = root.querySelector<HTMLElement>("[data-hero]");
+  if (!mast) return;
+  const id = mast.dataset.hero!;
+  const video = document.createElement("video");
+  video.className = "hero-video";
+  video.muted = true;
+  video.loop = true;
+  video.autoplay = true;
+  video.playsInline = true;
+  video.setAttribute("aria-hidden", "true");
+  video.src = `/magnifica/media/loops/${id}.mp4`;
+  video.addEventListener("loadeddata", () => {
+    mast.classList.add("has-hero");
+    mast.prepend(video);
+    video.play().catch(() => {});
+  });
+  video.addEventListener("error", () => video.remove());
+}
+
+function homeParts(): Part[] {
+  return [
+    {
+      label: "Introduction",
+      text: `Magnifica. In May 2026, Pope Leo the Fourteenth published Magnifica humanitas — the first papal encyclical on artificial intelligence. This experience explores the real document, then asks what the equivalent might sound like from the world's other great faiths. ${ENCYCLICAL.context}`,
+    },
+    ...CHAPTERS.map((c) => ({ label: c.label, text: `${c.label}. ${c.title}. ${c.summary}` })),
+  ];
+}
+
+function leaderParts(l: Leader): Part[] {
+  return [
+    {
+      label: "A note before we begin",
+      text: `A note before we begin. The document you are about to hear does not exist. It is a research-grounded prediction of what ${l.name} might write about artificial intelligence, drafted from their real public statements. No passage is a real quote, and this is not their voice.`,
+    },
+    {
+      label: "The document",
+      text: `${l.docTitleTranslation || l.docTitle}. Imagined as ${l.docType}, by ${l.name}, ${l.office}. ${l.summary}`,
+    },
+    ...l.excerpts.map((e, i) => ({ label: `Predicted excerpt ${i + 1}`, text: e })),
+  ];
+}
+
 function render(root: HTMLElement) {
   const m = location.hash.match(/^#\/l\/([\w-]+)/);
   const leader = m ? LEADERS.find((l) => l.id === m[1]) : undefined;
+  unmountDock();
   root.innerHTML = leader ? leaderView(leader) : homeView();
   window.scrollTo(0, 0);
 
   root.querySelectorAll("[data-ch] > button").forEach((btn) => {
     btn.addEventListener("click", () => btn.parentElement?.classList.toggle("open"));
   });
+
+  if (leader) {
+    mountHero(root);
+    mountDock(root, leaderParts(leader), SCENES[leader.id] ?? HOME_SCENE);
+  } else {
+    mountDock(root, homeParts(), HOME_SCENE);
+  }
 
   observeReveals(root);
 }

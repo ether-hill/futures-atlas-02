@@ -160,6 +160,117 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 .grounding a { font: 500 12px var(--mono); word-break: break-all; }
 .voice { margin-top: 18px; color: var(--faint); font-size: 13.5px; line-height: 1.6; max-width: 72ch; font-style: italic; }
 
+/* hero video loop behind the masthead (only when the bundle carries one) */
+.mast.has-hero {
+  position: relative;
+  margin: -44px calc(-1 * var(--gutter)) 0;
+  max-width: none;
+  padding: clamp(56px, 9vh, 96px) var(--gutter) 40px;
+  overflow: hidden;
+}
+.hero-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.38;
+  z-index: -1;
+  filter: saturate(0.85);
+}
+.mast.has-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, transparent 20%, var(--bg) 96%);
+}
+
+/* listen dock */
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  padding: 10px var(--gutter);
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+}
+.dock-play {
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #05080f;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font: 700 11px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.dock-play:hover { filter: brightness(1.1); }
+.dock-part { font: 500 11px var(--mono); color: var(--muted); }
+.dock-note { font: 500 10px var(--mono); color: var(--faint); }
+.dock-spacer { flex: 1; }
+.dock-ctl { display: inline-flex; align-items: center; gap: 8px; }
+.dock-ctl > span { font: 700 9px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
+.dock-ctl select {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.dock-ctl select:hover { border-color: var(--accent); }
+.dock-sound {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 8px 15px;
+  font: 600 10px var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.dock-sound:hover { border-color: var(--accent); }
+.dock-panel {
+  position: absolute;
+  right: var(--gutter);
+  bottom: calc(100% + 10px);
+  width: min(320px, calc(100vw - 2 * var(--gutter)));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--panel);
+  padding: 16px 18px;
+  box-shadow: 0 18px 50px rgb(0 0 0 / 0.35);
+}
+.dock-panel-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.dock-amb {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: 600 9px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.dock-amb.on { color: var(--accent); border-color: var(--accent); }
+.dock-slider { display: grid; grid-template-columns: 6ch 1fr; align-items: center; gap: 12px; margin-bottom: 8px; }
+.dock-slider > span { font: 600 10px var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.dock-slider input[type="range"] { width: 100%; accent-color: var(--accent); }
+.dock-hint { margin: 12px 0 0; font-size: 11.5px; line-height: 1.5; color: var(--faint); }
+.wrap { padding-bottom: 150px; }
+
 /* about / method */
 .about { max-width: 78ch; }
 .about p { margin: 0 0 14px; color: var(--muted); font-size: 14.5px; line-height: 1.65; }
