@@ -21,6 +21,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.63.0",
     "@eslint/eslintrc": "^3",
     "@lobehub/icons-static-svg": "^1.91.0",
     "@tailwindcss/postcss": "^4",
