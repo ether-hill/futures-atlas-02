@@ -25,6 +25,7 @@ const eslintConfig = [
       "hyperscale/**",
       "trajectories/**",
       "social-composer/**",
+      "magnifica/**",
     ],
   },
 ];

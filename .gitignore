@@ -51,6 +51,10 @@
 /signal-reactor/node_modules/
 /signal-reactor/out/
 /public/quantum-spark/
+
+# Magnifica — built from magnifica/ source on every deploy
+/public/magnifica/
+/magnifica/node_modules/
 /quantum-spark/.next/
 /quantum-spark/node_modules/
 /quantum-spark/out/

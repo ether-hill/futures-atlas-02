@@ -63,6 +63,8 @@ const nextConfig: NextConfig = {
         // Quantum Spark — Next static export (inspirational insight generator;
         // its spark API runs in THIS app at /api/quantum-spark/*)
         { source: "/quantum-spark", destination: "/quantum-spark/index.html" },
+        // Magnifica — Vite bundle (one real encyclical, sixteen predicted answers)
+        { source: "/magnifica", destination: "/magnifica/index.html" },
       ],
     };
   },
