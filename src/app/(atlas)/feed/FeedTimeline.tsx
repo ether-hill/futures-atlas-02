@@ -96,8 +96,10 @@ export function FeedTimeline({
       {/* A masthead, not a bar: it scrolls away like any other page's heading,
           which lets the master nav keep its normal hide-on-scroll behaviour. */}
       <header className="px-4 pb-1 pt-8 min-[680px]:px-7 min-[680px]:pt-10">
-        <h1 className="text-[clamp(26px,3vw,40px)] font-extrabold leading-none tracking-[-0.025em] text-ink text-balance">
-          {headline}
+        <h1 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[clamp(24px,2.7vw,38px)] leading-none text-ink text-balance">
+          <span className="font-extrabold tracking-[-0.02em]">FEED</span>
+          <span aria-hidden className="font-light text-faint">&mdash;</span>
+          <span className="font-light tracking-[-0.01em] text-graphite">{headline}</span>
         </h1>
       </header>
 

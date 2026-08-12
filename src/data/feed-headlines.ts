@@ -1,44 +1,43 @@
 /**
- * The feed's masthead line. One of these is picked at random per visit, in
- * place of the word "Feed".
+ * The line that follows FEED in the masthead. One is picked at random per
+ * visit and set in a light weight against the caps.
  *
- * House rules, so additions stay in key: dry rather than zany, aimed at the
- * beats this site actually covers — quantum, frontier AI, compute and power,
- * and the social weather around them. No fake statistics, no vendor names in
- * the punchline, nothing that reads as a claim about the world. It is a
- * greeting, not a headline.
+ * The register is Kraftwerk-adjacent — clipped, declarative, man-and-machine,
+ * precision and repetition — but these are ORIGINAL lines, not their lyrics.
+ * Lifting twenty-five phrases from a catalogue of songs would be reproducing
+ * copyrighted text however short each one is, and it would also waste the slot:
+ * written fresh, each line can be about what this site actually covers.
+ *
+ * House rules for additions: four to seven words, present tense, no vendor
+ * names, no numbers that could read as a claim about the world, and nothing
+ * that pretends to be a headline. It is a greeting in a machine voice.
  */
 export const FEED_HEADLINES: string[] = [
-  "Welcome back.",
-  "The word on the street.",
-  "Explore the feed.",
-  "Everything, all at once, in order.",
-  "Superposition of unread tabs.",
-  "Still not decohered.",
-  "The grid is fine. The grid is fine.",
-  "Somebody built a data centre again.",
-  "Reading so you don't have to. Mostly.",
-  "Signal, with the hype filtered out.",
-  "Qubits go up, error bars go sideways.",
-  "This week in things that scale.",
-  "Compute is the new weather.",
-  "Now with 100% fewer roadmap slides.",
-  "Benchmarks were harmed in the making of this.",
-  "The future, cited.",
-  "Extremely normal week for computing.",
-  "Where the footnotes live.",
-  "Nothing here is a press release.",
-  "Ten gigawatts and a dream.",
-  "Every claim has a link. That's the whole trick.",
-  "Warmer than a server room, colder than a dilution fridge.",
-  "The scaling laws send their regards.",
-  "Arrived already, or still brochure?",
-  "Someone's error correction is working.",
-  "Latency: hours. Accuracy: we tried.",
-  "Not financial advice. Not any advice.",
-  "The bottleneck moved again.",
-  "Reports of the wall have been exaggerated. Possibly.",
-  "Written by humans, about machines.",
+  "We are the operators.",
+  "Man, machine, and the argument between.",
+  "Transmission received.",
+  "The computer is listening.",
+  "Numbers, in every language.",
+  "Precision. Repetition. Power.",
+  "The network hums.",
+  "Programmed to read.",
+  "Frequency rising.",
+  "Cool, mechanical, and on time.",
+  "Energy in, signal out.",
+  "The circuit is complete.",
+  "Electric minds at work.",
+  "Silicon and rhythm.",
+  "The future arrives on schedule.",
+  "Data in motion.",
+  "Voltage steady.",
+  "A calculated tomorrow.",
+  "All systems reading.",
+  "The tape is running.",
+  "Antenna up.",
+  "Machines that count for us.",
+  "Endless loop, endless progress.",
+  "We built the instruments.",
+  "Human, after all.",
 ];
 
 /** Deterministic only in that it always returns one of them. */
