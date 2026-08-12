@@ -3,6 +3,7 @@ import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience } from "./experience";
+import { experienceV1View, hasExperienceV1, mountExperienceV1 } from "./experience-v1";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -233,16 +234,43 @@ function leaderParts(l: Leader): Part[] {
 /** Torn down on every route change, so observers don't accumulate. */
 let unmountX: (() => void) | null = null;
 
+/**
+ * Routes. `#/l/<id>` is the current experience; `#/v1/<id>` keeps the previous
+ * one alive at its own URL so the two can be compared side by side rather than
+ * from memory. Leaders with no experience entry fall back to the reading view
+ * on either route.
+ */
 function render(root: HTMLElement) {
-  const m = location.hash.match(/^#\/l\/([\w-]+)/);
-  const leader = m ? LEADERS.find((l) => l.id === m[1]) : undefined;
-  const immersive = !!leader && hasExperience(leader.id);
+  const mV2 = location.hash.match(/^#\/l\/([\w-]+)/);
+  const mV1 = location.hash.match(/^#\/v1\/([\w-]+)/);
+  const id = mV2?.[1] ?? mV1?.[1];
+  const leader = id ? LEADERS.find((l) => l.id === id) : undefined;
+  const wantV1 = !!mV1;
+  const immersive = !!leader && !wantV1 && hasExperience(leader.id);
+  const immersiveV1 = !!leader && wantV1 && hasExperienceV1(leader.id);
 
   unmountDock();
   unmountX?.();
   unmountX = null;
 
-  root.innerHTML = leader ? (immersive ? experienceView(leader) : leaderView(leader)) : homeView();
+  root.innerHTML = !leader
+    ? homeView()
+    : immersive
+      ? experienceView(leader)
+      : immersiveV1
+        ? experienceV1View(leader)
+        : leaderView(leader);
+
+  if (leader && (immersive || immersiveV1)) {
+    root.insertAdjacentHTML(
+      "beforeend",
+      `<nav class="x-versions" aria-label="Design version">
+         <a href="#/v1/${leader.id}"${immersiveV1 ? ' class="on"' : ""}>v1</a>
+         <a href="#/l/${leader.id}"${immersive ? ' class="on"' : ""}>v2</a>
+       </nav>`,
+    );
+  }
+
   window.scrollTo(0, 0);
 
   root.querySelectorAll("[data-ch] > button").forEach((btn) => {
@@ -251,9 +279,10 @@ function render(root: HTMLElement) {
 
   if (leader) {
     if (immersive) unmountX = mountExperience(root);
+    else if (immersiveV1) unmountX = mountExperienceV1(root);
     else mountHero(root);
-    // The immersive script is section-aware: its parts carry the anchors the
-    // player scrolls to and the elements the read-along follows.
+    // The v2 script is section-aware: its parts carry the anchors the player
+    // scrolls to and the elements the read-along follows. v1 predates that.
     mountDock(
       root,
       immersive ? experienceParts(leader) : leaderParts(leader),
@@ -267,6 +296,22 @@ function render(root: HTMLElement) {
 }
 
 export function boot(root: HTMLElement) {
+  /*
+   * In-page section links must not touch location.hash. This is a hash-routed
+   * app, so an href of "#x-03" reads as an unknown route and falls through to
+   * the home view — which is what made the chapter rail appear to reload the
+   * page. Route links (#/…) are left alone; section links are scrolled here.
+   * Bound once on the container, since render() replaces its contents.
+   */
+  root.addEventListener("click", (e) => {
+    const a = (e.target as HTMLElement).closest?.("a[href^='#x']") as HTMLAnchorElement | null;
+    if (!a) return;
+    const target = document.getElementById(a.getAttribute("href")!.slice(1));
+    if (!target) return;
+    e.preventDefault();
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
   render(root);
   window.addEventListener("hashchange", () => render(root));
 }

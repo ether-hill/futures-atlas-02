@@ -3,9 +3,11 @@
  * than the classic reading view — the page is a projection surface, the type
  * sits on top of moving light, and the interface recedes until you need it.
  *
- * Display face is Bodoni Moda, the Atlas's own serif (see the host's
- * globals.css type system), so this stays inside the family rather than
- * inventing a palette and a voice of its own.
+ * Display face is Newsreader rather than the Atlas's Bodoni Moda. Bodoni is a
+ * Didone — extreme thick/thin contrast — so below display sizes its thin
+ * strokes thin out to hairlines and break up, which light-on-dark makes worse.
+ * Newsreader is a screen-drawn editorial serif: much lower contrast, sturdier
+ * stems, same register. Colour still comes from the palette below.
  */
 
 .x {
@@ -15,7 +17,7 @@
   --x-faint: oklch(0.58 0.014 80);
   --x-gold: oklch(0.79 0.085 78);
   --x-line: oklch(1 0 0 / 0.14);
-  --x-display: "Bodoni Moda", Georgia, "Times New Roman", serif;
+  --x-display: "Newsreader", Georgia, "Times New Roman", serif;
   --x-pad: clamp(20px, 5vw, 76px);
 
   position: relative;
@@ -94,9 +96,9 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   max-width: 1400px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.78fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr);
   align-items: center;
-  gap: clamp(24px, 5vw, 72px);
+  gap: clamp(24px, 4vw, 56px);
 }
 .x-hero-in { position: relative; text-align: left; }
 
@@ -109,8 +111,14 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   position: relative;
   margin: 0;
   justify-self: center;
-  width: min(100%, 340px);
-  padding: 15px 15px 16px;
+  /* Bounded on both axes: wide enough to carry the face, never taller than the
+     hero can hold, so the caption is not eaten by the dock on short screens. */
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 520px);
+  max-height: calc(100svh - 310px);
+  overflow: hidden;
+  padding: clamp(15px, 1.6vw, 22px) clamp(15px, 1.6vw, 22px) clamp(16px, 1.7vw, 24px);
   background: oklch(0.94 0.008 85);
   border-radius: 2px;
   box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.4);
@@ -133,7 +141,11 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   aspect-ratio: 4 / 5;
   object-fit: cover;
   background: oklch(0.8 0.01 85);
+  /* lets the print shrink inside max-height instead of overflowing it */
+  flex: 0 1 auto;
+  min-height: 0;
 }
+.x-polaroid figcaption { flex: none; }
 .x-polaroid figcaption {
   display: flex;
   flex-direction: column;
@@ -142,12 +154,16 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   text-align: left;
 }
 .x-pol-name {
-  font: 700 8.5px var(--mono);
+  font: 700 clamp(8.5px, 0.72vw, 10px) var(--mono);
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: oklch(0.55 0.02 60);
 }
-.x-pol-credit { font-size: 10.5px; line-height: 1.45; color: oklch(0.42 0.02 60); }
+.x-pol-credit {
+  font-size: clamp(10.5px, 0.92vw, 13px);
+  line-height: 1.45;
+  color: oklch(0.42 0.02 60);
+}
 .x-pol-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .x-pol-credit a:hover { color: oklch(0.3 0.06 40); }
 .x-polaroid-hero { rotate: 2.2deg; }
@@ -296,7 +312,9 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   transition: opacity 0.3s, transform 0.3s;
   white-space: nowrap;
 }
-.x-rail a:hover span, .x-rail a.on span { opacity: 1; transform: none; }
+/* Only on hover: the headline is left-aligned in v2, so a label that appeared
+   automatically for the active section sat straight on top of it. */
+.x-rail a:hover span { opacity: 1; transform: none; }
 .x-rail a.on { color: var(--x-gold); }
 .x-rail a.on i { background: var(--x-gold); border-color: var(--x-gold); }
 
@@ -617,4 +635,38 @@ body:has(.x) .dock-voice-fixed { color: oklch(0.58 0.014 80); }
   .x-bg { top: 0; height: 100%; } /* no translate, so no overscan needed */
   .x-begin-ring, .x-rail span { transition: none; }
   .x-polaroid { transform: none !important; }
+}
+
+/* ---------- version switcher ----------
+   v1 and v2 are both live at their own URLs so they can be compared directly
+   rather than from memory. Sits clear of the Atlas nav and the share button. */
+.x-versions {
+  position: fixed;
+  right: 16px;
+  top: calc(var(--fa-nav-h) + 62px);
+  z-index: 45;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: oklch(0.14 0.016 260 / 0.82);
+  border: 1px solid oklch(1 0 0 / 0.14);
+  backdrop-filter: blur(10px);
+}
+.x-versions a {
+  padding: 5px 11px;
+  border-radius: 999px;
+  font: 700 9px var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: oklch(0.66 0.014 80);
+}
+.x-versions a:hover { color: oklch(0.95 0.012 85); }
+.x-versions a.on {
+  background: oklch(0.79 0.085 78);
+  color: oklch(0.14 0.02 260);
+}
+@media (max-width: 680px) {
+  .x-versions { top: auto; bottom: 150px; right: 12px; }
 }

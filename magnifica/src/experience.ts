@@ -324,35 +324,110 @@ export function mountExperience(root: HTMLElement) {
     bg?.appendChild(video);
   }
 
-  const layers = Array.from(root.querySelectorAll<HTMLElement>("[data-par]")).map((el) => ({
-    el,
-    rate: parseFloat(el.dataset.par || "0"),
-    section: el.closest("section") as HTMLElement,
-  }));
+  /*
+   * Parallax. Two things make the naive version feel cheap, and both are
+   * avoided here:
+   *
+   *  1. Reading getBoundingClientRect() per layer per frame forces a
+   *     synchronous reflow inside the frame budget. Section geometry is
+   *     measured once instead (and on resize), and each frame reads a single
+   *     scrollY.
+   *  2. Driving transforms straight from the scroll event ties movement to
+   *     event cadence, which is coarser than the compositor during momentum
+   *     scrolling — so layers step rather than glide. Here a rAF loop eases
+   *     the current value toward the target every frame, which both smooths
+   *     the input and adds a little weight to the heavier plates.
+   *
+   * The loop idles itself when everything has settled, so a still page costs
+   * nothing.
+   */
+  interface Layer {
+    el: HTMLElement;
+    rate: number;
+    top: number;
+    height: number;
+    current: number;
+    target: number;
+  }
 
-  let ticking = false;
-  const apply = () => {
-    ticking = false;
-    const vh = window.innerHeight;
-    for (const { el, rate, section } of layers) {
-      if (!section) continue;
-      const r = section.getBoundingClientRect();
-      if (r.bottom < -vh || r.top > vh * 2) continue; // offscreen, skip the work
-      // 0 when the section's centre is at the viewport centre
-      const offset = (r.top + r.height / 2 - vh / 2) * -rate;
-      el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
+  const layers: Layer[] = Array.from(root.querySelectorAll<HTMLElement>("[data-par]"))
+    .map((el) => {
+      const section = el.closest("section") as HTMLElement | null;
+      return section
+        ? { el, rate: parseFloat(el.dataset.par || "0"), top: 0, height: 0, current: 0, target: 0 }
+        : null;
+    })
+    .filter((l): l is Layer => l !== null);
+
+  const sectionsOf = new WeakMap<HTMLElement, HTMLElement>();
+  for (const l of layers) sectionsOf.set(l.el, l.el.closest("section") as HTMLElement);
+
+  const measure = () => {
+    const y = window.scrollY;
+    for (const l of layers) {
+      const s = sectionsOf.get(l.el)!;
+      const r = s.getBoundingClientRect();
+      l.top = r.top + y;
+      l.height = r.height;
     }
   };
-  const onScroll = () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(apply);
+
+  let running = false;
+  const EASE = 0.12;      // per-frame approach to target
+  const SETTLED = 0.05;   // px below which we stop drawing
+
+  const frame = () => {
+    const y = window.scrollY;
+    const vh = window.innerHeight;
+    let moving = false;
+
+    for (const l of layers) {
+      // 0 when the section's centre sits at the viewport centre
+      l.target = (l.top + l.height / 2 - y - vh / 2) * -l.rate;
+      const delta = l.target - l.current;
+      if (Math.abs(delta) < SETTLED) {
+        l.current = l.target;
+      } else {
+        l.current += delta * EASE;
+        moving = true;
+      }
+      // only paint what is anywhere near the viewport
+      if (l.top - y < vh * 1.5 && l.top + l.height - y > -vh * 0.5) {
+        l.el.style.transform = `translate3d(0, ${l.current.toFixed(2)}px, 0)`;
+      }
+    }
+
+    if (moving) {
+      requestAnimationFrame(frame);
+    } else {
+      running = false;
+    }
+  };
+
+  const kick = () => {
+    if (running) return;
+    running = true;
+    requestAnimationFrame(frame);
+  };
+
+  const onResize = () => {
+    measure();
+    kick();
   };
 
   if (!reduce) {
-    apply();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll, { passive: true });
+    measure();
+    // settle to the correct position immediately rather than easing in from 0
+    for (const l of layers) {
+      l.current = (l.top + l.height / 2 - window.scrollY - window.innerHeight / 2) * -l.rate;
+    }
+    kick();
+    window.addEventListener("scroll", kick, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
+    // late-loading stills change section heights; re-measure when they land
+    root.querySelectorAll("img").forEach((img) => {
+      if (!img.complete) img.addEventListener("load", onResize, { once: true });
+    });
   }
 
   const first = root.querySelector<HTMLElement>("[data-x-sect]");
@@ -379,8 +454,9 @@ export function mountExperience(root: HTMLElement) {
   root.querySelectorAll("[data-x-sect]").forEach((s) => spy.observe(s));
 
   return () => {
-    window.removeEventListener("scroll", onScroll);
-    window.removeEventListener("resize", onScroll);
+    window.removeEventListener("scroll", kick);
+    window.removeEventListener("resize", onResize);
+    running = false;
     spy.disconnect();
   };
 }
