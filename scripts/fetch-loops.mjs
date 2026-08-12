@@ -44,9 +44,17 @@ for (const [id, url] of Object.entries(manifest)) {
   try {
     process.stdout.write(`${id.padEnd(28)}`);
 
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`download ${res.status}`);
-    writeFileSync(raw, Buffer.from(await res.arrayBuffer()));
+    // Manifest values may be a Higgsfield result URL or a path to a clip you
+    // produced yourself — both end up in the same encode.
+    if (/^https?:\/\//.test(url)) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`download ${res.status}`);
+      writeFileSync(raw, Buffer.from(await res.arrayBuffer()));
+    } else {
+      const src = resolve(ROOT, url);
+      if (!existsSync(src)) throw new Error(`no such file: ${url}`);
+      writeFileSync(raw, readFileSync(src));
+    }
     const before = statSync(raw).size;
 
     execFileSync(
