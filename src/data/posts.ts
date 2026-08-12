@@ -1223,6 +1223,18 @@ export const TOPIC_ORDER: PostTopic[] = [
   "Government",
 ];
 
+/**
+ * True when a post will render a picture rather than the hatched plate.
+ *
+ * Lives here, not beside PostImage: that component is "use client" (it demotes
+ * a failed hot-link on error), and a server component calling a function out of
+ * a client module is a hard RSC error, not a warning. Every post page threw on
+ * it. A pure predicate over data belongs with the data.
+ */
+export function hasImage(post: Post): boolean {
+  return Boolean(post.sourceImage || post.image);
+}
+
 export function topicsOf(list: Post[]): PostTopic[] {
   const present = new Set(list.flatMap((p) => p.topics));
   return TOPIC_ORDER.filter((t) => present.has(t));

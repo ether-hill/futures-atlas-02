@@ -47,8 +47,3 @@ export function PostImage({
     />
   );
 }
-
-/** True when a post will render something rather than the hatched plate. */
-export function hasImage(post: Post): boolean {
-  return Boolean(post.sourceImage || post.image);
-}

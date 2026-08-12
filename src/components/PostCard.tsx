@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { PostImage, hasImage } from "./PostImage";
-import { KIND_LABEL, formatPostDate, type Post, type PostKind } from "@/data/posts";
+import { PostImage } from "./PostImage";
+import { KIND_LABEL, formatPostDate, hasImage, type Post, type PostKind } from "@/data/posts";
 
 /**
  * One post, as a card. Shared by the /blog grid and the carousel, so a change

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { PostImage, hasImage } from "@/components/PostImage";
+import { PostImage } from "@/components/PostImage";
 import { YouTubeCard, youtubeId } from "@/components/feed/YouTubeCard";
 import { PollCard } from "@/components/feed/PollCard";
 import { SwipeDemoCard } from "@/components/feed/SwipeDemoCard";
@@ -12,6 +12,7 @@ import type { Project } from "@/data/projects";
 import {
   KIND_LABEL,
   formatPostDate,
+  hasImage,
   hostOf,
   type Post,
   type PostTopic,

@@ -3,11 +3,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { KindBadge } from "@/components/PostCard";
-import { PostImage, hasImage } from "@/components/PostImage";
+import { PostImage } from "@/components/PostImage";
 import { PostCarousel } from "@/components/PostCarousel";
 import {
   formatPostDate,
   getPost,
+  hasImage,
   hostOf,
   livePosts,
   posts,
