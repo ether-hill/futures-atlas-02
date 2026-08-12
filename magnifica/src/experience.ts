@@ -21,27 +21,16 @@
  */
 import type { Leader } from "./leaders";
 import type { Part } from "./listen";
+import { portraitOf, type Portrait } from "./portraits";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-
-interface Portrait {
-  /** file under /magnifica/media/portraits/ */
-  file: string;
-  alt: string;
-  /** Visible credit — required by the licence, so it is markup, not a comment. */
-  credit: string;
-  licence: string;
-  licenceUrl: string;
-  sourceUrl: string;
-}
 
 interface ExperienceSpec {
   displayName: string;
   displayTitle: string;
   /** Hero video loop id under /magnifica/media/loops/ — the only moving plate. */
   hero: string;
-  portrait: Portrait;
   /** Still ids under /magnifica/media/stills/, cycled behind the excerpt slides. */
   stills: string[];
   /** Stills used behind the reading chapters; may be empty. */
@@ -53,14 +42,6 @@ export const EXPERIENCES: Record<string, ExperienceSpec> = {
     displayName: "Tenzin Gyatso",
     displayTitle: "The Fourteenth Dalai Lama",
     hero: "dalai-lama-hero",
-    portrait: {
-      file: "dalai-lama.jpg",
-      alt: "The 14th Dalai Lama photographed in 2012",
-      credit: "Christopher Michel, 2012 — cropped",
-      licence: "CC BY-SA 4.0",
-      licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-      sourceUrl: "https://commons.wikimedia.org/wiki/File:The_Dalai_Lama_in_2012.jpg",
-    },
     stills: ["dl-monastery", "dl-lamps", "dl-night", "dl-plateau"],
     chapterStills: ["dl-library", "dl-block"],
   },
@@ -231,6 +212,7 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
 
 export function experienceView(l: Leader): string {
   const spec = EXPERIENCES[l.id];
+  const portrait = portraitOf(l.id);
   const secs = sections(l);
   const ctr = { q: 0, c: 0 };
   const body = secs.map((s) => renderSection(s, spec, ctr)).join("");
@@ -262,7 +244,7 @@ export function experienceView(l: Leader): string {
             <span class="x-begin-lbl">Begin experience</span>
           </button>
         </div>
-        ${polaroid(spec.portrait, 0.42, "x-polaroid-hero")}
+        ${portrait ? polaroid(portrait, 0.42, "x-polaroid-hero") : ""}
       </div>
       <span class="x-scroll" aria-hidden="true">Scroll to explore</span>
     </section>
@@ -274,7 +256,7 @@ export function experienceView(l: Leader): string {
         ${esc(l.name)} <i>might</i> write about artificial intelligence, drafted from
         real public statements (listed under <a href="#x-07">The real record</a>) and
         the forms this tradition actually uses. No passage here is a real quote, and
-        none of it is his voice. The photograph is real and credited; the landscapes
+        none of it is his voice. ${portrait ? "The photograph is real and credited;" : ""} the landscapes
         are generated.
       </div>
     </section>
@@ -285,8 +267,6 @@ export function experienceView(l: Leader): string {
 
     <section class="x-close" data-x-sect="end">
       <div class="x-close-in">
-        <span class="x-eyebrow" data-reveal>Voice</span>
-        ${l.voiceNotes ? `<p class="x-voice" data-reveal>${esc(l.voiceNotes)}</p>` : ""}
         <div class="x-close-actions" data-reveal>
           <button type="button" class="x-restart">Restart experience</button>
           <a class="x-all" href="#/">All sixteen voices</a>

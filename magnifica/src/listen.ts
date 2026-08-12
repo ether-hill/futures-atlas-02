@@ -32,13 +32,12 @@ export interface Part {
   highlight?: string;
 }
 
-/** One narrator for the whole project. */
-const VOICE_LABEL = "Charlotte · calm";
-
-const LANGS = [
-  { key: "en", label: "English", bcp: "en-GB" },
-  { key: "nl", label: "Nederlands", bcp: "nl-NL" },
-];
+/**
+ * One narrator, one language, neither chosen at runtime — the dock is a
+ * transport, not a settings panel. The route still accepts a lang, so Dutch
+ * remains one field away if it is ever wanted in the UI again.
+ */
+const LANG_BCP = "en-GB";
 
 interface Alignment {
   chars: string[];
@@ -367,7 +366,7 @@ class Player {
       return;
     }
     const u = new SpeechSynthesisUtterance(part.text);
-    const bcp = LANGS.find((l) => l.key === this.lang)?.bcp || "en-GB";
+    const bcp = LANG_BCP;
     u.lang = bcp;
     const v = speechSynthesis.getVoices().find((v) => v.lang.startsWith(bcp.slice(0, 2)));
     if (v) u.voice = v;
@@ -408,19 +407,12 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   const dock = document.createElement("div");
   dock.className = "dock";
   dock.innerHTML = `
-    <div class="dock-timeline">
-      <div class="dock-track"><div class="dock-fill"></div></div>
-      ${nodes}
-    </div>
     <div class="dock-row">
       <button type="button" class="dock-play" aria-label="Listen">▶&nbsp; Listen</button>
-      <span class="dock-part">${parts.length} parts</span>
-      <span class="dock-note"></span>
-      <span class="dock-spacer"></span>
-      <span class="dock-voice-fixed">${esc(VOICE_LABEL)}</span>
-      <label class="dock-ctl"><span>Lang</span>
-        <select class="dock-lang">${LANGS.map((l) => `<option value="${l.key}">${esc(l.label)}</option>`).join("")}</select>
-      </label>
+      <div class="dock-timeline">
+        <div class="dock-track"><div class="dock-fill"></div></div>
+        ${nodes}
+      </div>
       <button type="button" class="dock-sound">Soundscape</button>
     </div>
     <div class="dock-panel" hidden>
@@ -441,8 +433,6 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   root.appendChild(dock);
 
   const playBtn = dock.querySelector<HTMLButtonElement>(".dock-play")!;
-  const partEl = dock.querySelector<HTMLSpanElement>(".dock-part")!;
-  const noteEl = dock.querySelector<HTMLSpanElement>(".dock-note")!;
   const panel = dock.querySelector<HTMLDivElement>(".dock-panel")!;
   const ambBtn = dock.querySelector<HTMLButtonElement>(".dock-amb")!;
   const fill = dock.querySelector<HTMLDivElement>(".dock-fill")!;
@@ -450,8 +440,7 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
 
   player.onstate = (s) => {
     playBtn.innerHTML = s.playing ? "❚❚&nbsp; Pause" : "▶&nbsp; Listen";
-    partEl.textContent = s.label === "—" ? `${parts.length} parts` : s.label;
-    noteEl.textContent = s.note || "";
+    // The section name lives on the timeline node, so the transport stays bare.
     nodeEls.forEach((n, i) => {
       n.classList.toggle("on", i === s.index && s.playing);
       n.classList.toggle("done", i < s.index);
@@ -465,9 +454,6 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   nodeEls.forEach((n) =>
     n.addEventListener("click", () => player.goTo(Number(n.dataset.i))),
   );
-  dock.querySelector<HTMLSelectElement>(".dock-lang")!.addEventListener("change", (e) => {
-    player.lang = (e.target as HTMLSelectElement).value;
-  });
   dock.querySelector<HTMLButtonElement>(".dock-sound")!.addEventListener("click", () => {
     panel.hidden = !panel.hidden;
   });

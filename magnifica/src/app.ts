@@ -4,6 +4,7 @@ import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience } from "./experience";
 import { experienceV1View, hasExperienceV1, mountExperienceV1 } from "./experience-v1";
+import { mountDrawer, markDrawerRoute } from "./drawer";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -312,6 +313,13 @@ export function boot(root: HTMLElement) {
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
+  // Navigation, not page content — mounted once and told where it is, so it
+  // keeps focus and doesn't replay its transition on every route change.
+  mountDrawer();
+
   render(root);
-  window.addEventListener("hashchange", () => render(root));
+  window.addEventListener("hashchange", () => {
+    render(root);
+    markDrawerRoute();
+  });
 }

@@ -201,23 +201,26 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 .dock-row {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px 14px;
+  gap: 14px;
+  min-height: 52px;
 }
 
 /* ---------- playhead timeline ----------
-   Nodes are spaced by text length rather than evenly, so the gap between two
-   marks reflects how long that passage actually takes to read. */
+   Sits inline between the transport buttons, on their centre line. Nodes are
+   spaced by text length rather than evenly, so the gap between two marks
+   reflects how long that passage actually takes to read. */
 .dock-timeline {
   position: relative;
-  height: 34px;
-  margin: 0 0 4px;
+  flex: 1;
+  min-width: 0;
+  align-self: stretch;
 }
 .dock-track {
   position: absolute;
   left: 0;
   right: 0;
-  top: 21px;
+  top: 50%;
+  transform: translateY(-50%);
   height: 2px;
   border-radius: 2px;
   background: var(--line);
@@ -232,12 +235,14 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 .dock-node {
   position: absolute;
-  top: 12px;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 4px;
+  justify-content: center;
+  /* generous hit area around a small dot */
+  width: 22px;
+  height: 22px;
   padding: 0;
   background: none;
   border: 0;
@@ -254,7 +259,9 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 .dock-node span {
   position: absolute;
-  bottom: calc(100% + 6px);
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
   white-space: nowrap;
   font: 600 9px var(--mono);
   letter-spacing: 0.12em;
@@ -376,4 +383,123 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 @media (max-width: 680px) {
   :root { --gutter: 16px; }
+}
+
+/* ---------- slide-out index ----------
+   Sits below the Atlas nav on the left. Portraits are real photographs; a
+   leader without one sourced yet shows a monogram tile rather than a gap. */
+.mg-burger {
+  position: fixed;
+  left: 14px;
+  top: calc(var(--fa-nav-h) + 14px);
+  z-index: 60;
+  display: grid;
+  align-content: center;
+  gap: 4px;
+  width: 42px;
+  height: 42px;
+  padding: 0 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--panel) 82%, transparent);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+.mg-burger span {
+  display: block;
+  height: 1.5px;
+  border-radius: 2px;
+  background: var(--ink);
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1), opacity 0.2s;
+}
+.mg-burger:hover { border-color: var(--accent); }
+.open .mg-burger span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.open .mg-burger span:nth-child(2) { opacity: 0; }
+.open .mg-burger span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+
+.mg-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgb(0 0 0 / 0.5);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.open .mg-scrim { opacity: 1; }
+
+.mg-drawer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 58;
+  width: min(370px, 88vw);
+  padding: calc(var(--fa-nav-h) + 74px) 0 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: color-mix(in oklab, var(--panel) 96%, transparent);
+  backdrop-filter: blur(18px);
+  border-right: 1px solid var(--line);
+  transform: translateX(-101%);
+  transition: transform 0.34s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.open .mg-drawer { transform: none; }
+
+.mg-overview {
+  display: block;
+  margin: 0 14px 6px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.mg-overview:hover, .mg-overview.on { border-color: var(--accent); }
+.mg-over-lbl { display: block; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.mg-over-sub { display: block; margin-top: 4px; font-size: 12px; line-height: 1.45; color: var(--muted); }
+
+.mg-heading {
+  margin: 20px 20px 8px;
+  font: 700 9px var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.mg-list { margin: 0; padding: 0; list-style: none; }
+.mg-list a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 20px;
+  text-decoration: none;
+  color: var(--ink);
+  border-left: 2px solid transparent;
+}
+.mg-list a:hover { background: color-mix(in oklab, var(--accent) 10%, transparent); }
+.mg-list a.on { border-left-color: var(--accent); background: color-mix(in oklab, var(--accent) 14%, transparent); }
+.mg-thumb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--field);
+  border: 1px solid var(--line);
+}
+.mg-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
+.mg-mono { font: 600 13px var(--mono); letter-spacing: 0.04em; color: var(--faint); }
+.mg-who { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mg-who b { font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.3; }
+.mg-who em {
+  font: 600 9px var(--mono);
+  font-style: normal;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mg-drawer, .mg-scrim, .mg-burger span { transition: none; }
 }

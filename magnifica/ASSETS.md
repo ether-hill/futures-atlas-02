@@ -76,7 +76,9 @@ BY-SA 4.0**. That licence is not optional decoration:
 
 **If you restyle the print, keep the caption.** Removing it is a licence
 breach, not a design choice. Same rule for any portrait added later — record
-the source, author and licence in the `portrait` block of `EXPERIENCES`.
+the source, author and licence in `src/portraits.ts`, which is the single
+registry the hero print and the slide-out index both read from. Leaders with no
+entry there show a monogram tile instead of a broken image.
 
 [dl-src]: https://commons.wikimedia.org/wiki/File:The_Dalai_Lama_in_2012.jpg
 
