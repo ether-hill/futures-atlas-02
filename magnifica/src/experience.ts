@@ -20,6 +20,7 @@
  * real record" is built from `grounding` rather than from a life story.
  */
 import type { Leader } from "./leaders";
+import type { Part } from "./listen";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -91,6 +92,50 @@ function sections(l: Leader): Section[] {
 }
 
 const yearOf = (claim: string) => claim.match(/\b(19|20)\d{2}\b/)?.[0] ?? "";
+
+/**
+ * The narration script, one part per page section, carrying the anchor the
+ * player scrolls to and the element the read-along follows. Built from the
+ * same `sections()` call that renders the page, so the numbering cannot drift
+ * out of step with the DOM ids.
+ *
+ * Lists and the citation record get no `highlight`: their text is spread over
+ * many list items, and word-mapping a joined string onto them would land the
+ * marker in the wrong place.
+ */
+export function experienceParts(l: Leader): Part[] {
+  const parts: Part[] = [
+    {
+      label: "Before we begin",
+      text: `A note before we begin. The document you are about to hear does not exist. It is a research-grounded prediction of what ${l.name} might write about artificial intelligence, drafted from real public statements. No passage is a real quote, and this is not his voice.`,
+      anchor: "x-gate",
+      highlight: ".x-gate-in",
+    },
+  ];
+
+  for (const s of sections(l)) {
+    const anchor = `x-${s.n}`;
+    if (s.kind === "quote") {
+      parts.push({
+        label: `Excerpt ${s.index + 1}`,
+        text: s.text,
+        anchor,
+        highlight: "blockquote",
+      });
+    } else if (s.kind === "chapter") {
+      parts.push({ label: s.label, text: s.body, anchor, highlight: ".x-body" });
+    } else if (s.kind === "list") {
+      parts.push({ label: s.label, text: `${s.label}. ${s.items.join(" ")}`, anchor });
+    } else {
+      parts.push({
+        label: s.label,
+        text: `${s.label}. These are real, sourced statements. ${s.items.map((i) => i.claim).join(" ")}`,
+        anchor,
+      });
+    }
+  }
+  return parts;
+}
 
 /** A still plate. `rate` is its parallax speed relative to scroll. */
 const stillLayer = (still: string | undefined, rate = 0.18) =>
@@ -222,7 +267,7 @@ export function experienceView(l: Leader): string {
       <span class="x-scroll" aria-hidden="true">Scroll to explore</span>
     </section>
 
-    <section class="x-gate">
+    <section class="x-gate" id="x-gate">
       <div class="x-gate-in" data-reveal>
         <b>This document does not exist.</b>
         It is a research-grounded prediction — a speculative-design exercise in what

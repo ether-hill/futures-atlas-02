@@ -2,7 +2,7 @@ import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, RECEPTION, SOURCES } from "./ency
 import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, unmountDock, type Part } from "./listen";
-import { experienceView, hasExperience, mountExperience } from "./experience";
+import { experienceView, experienceParts, hasExperience, mountExperience } from "./experience";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -252,7 +252,13 @@ function render(root: HTMLElement) {
   if (leader) {
     if (immersive) unmountX = mountExperience(root);
     else mountHero(root);
-    mountDock(root, leaderParts(leader), SCENES[leader.id] ?? HOME_SCENE);
+    // The immersive script is section-aware: its parts carry the anchors the
+    // player scrolls to and the elements the read-along follows.
+    mountDock(
+      root,
+      immersive ? experienceParts(leader) : leaderParts(leader),
+      SCENES[leader.id] ?? HOME_SCENE,
+    );
   } else {
     mountDock(root, homeParts(), HOME_SCENE);
   }

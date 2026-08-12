@@ -538,13 +538,50 @@ body:has(.x) .dock-panel {
 body:has(.x) .dock-amb.on { color: var(--dock-gold); border-color: var(--dock-gold); }
 body:has(.x) .dock-slider input[type="range"] { accent-color: var(--dock-gold); }
 
+/* Timeline + read-along, in the same gold as everything else here. */
+body:has(.x) .dock-track { background: oklch(1 0 0 / 0.16); }
+body:has(.x) .dock-fill { background: var(--dock-gold); }
+body:has(.x) .dock-node { color: oklch(0.6 0.014 80); }
+body:has(.x) .dock-node i { background: oklch(0.115 0.014 260); }
+body:has(.x) .dock-node span {
+  background: oklch(0.16 0.016 260);
+  border-color: oklch(1 0 0 / 0.16);
+  color: oklch(0.9 0.012 85);
+}
+body:has(.x) .dock-node:hover i { border-color: var(--dock-gold); }
+body:has(.x) .dock-node.done,
+body:has(.x) .dock-node.on { color: var(--dock-gold); }
+body:has(.x) .dock-node.done i,
+body:has(.x) .dock-node.on i { background: var(--dock-gold); border-color: var(--dock-gold); }
+body:has(.x) .dock-node.on i { box-shadow: 0 0 0 4px oklch(0.79 0.085 78 / 0.24); }
+body:has(.x) .dock-voice-fixed { color: oklch(0.58 0.014 80); }
+
+/* A passage being read comes up to full strength; the rest of the page sits
+   back a little. The moving marker is a hairline, not a block of colour. */
+.x .is-reading { color: var(--x-ink); }
+.x [data-w] { opacity: 0.62; }
+.x [data-w].is-read { opacity: 1; }
+.x [data-w].is-now {
+  opacity: 1;
+  color: var(--x-ink);
+  border-bottom-color: var(--x-gold);
+}
+.x .x-quote blockquote [data-w].is-now { border-bottom-width: 1.5px; }
+
 @media (max-width: 680px) {
-  body:has(.x) .dock { gap: 8px 10px; padding: 8px var(--gutter); }
+  body:has(.x) .dock { padding: 0 var(--gutter) 8px; }
+  body:has(.x) .dock-row { gap: 8px 10px; }
   body:has(.x) .dock-play { padding: 8px 14px; font-size: 10px; }
-  body:has(.x) .dock-part { display: none; }
+  body:has(.x) .dock-part,
+  body:has(.x) .dock-voice-fixed { display: none; }
   body:has(.x) .dock-ctl > span { display: none; }
   body:has(.x) .dock-ctl select { padding: 6px 9px; font-size: 12px; }
   body:has(.x) .dock-sound { padding: 7px 11px; }
+  /* labels would overlap at this width; the dots still work as a scrubber */
+  body:has(.x) .dock-node span { display: none; }
+  body:has(.x) .dock-timeline { height: 26px; }
+  body:has(.x) .dock-track { top: 17px; }
+  body:has(.x) .dock-node { top: 9px; }
 }
 
 /* ---------- responsive ---------- */

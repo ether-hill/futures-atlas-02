@@ -1,13 +1,18 @@
 /**
  * POST /api/magnifica/tts — Magnifica's read-aloud pipeline.
  * The static sub-app at /magnifica calls this same-origin route; the
- * ElevenLabs key lives here and only here. For non-English requests the text
- * is first translated by Claude Haiku (translations cached in KV), then
- * spoken with an ElevenLabs multilingual narrator voice. Voices are stock
- * ElevenLabs narrators by design — never clones of the real leaders.
+ * ElevenLabs key lives here and only here. For Dutch the text is first
+ * translated by Claude Haiku (translations cached in KV), then spoken with an
+ * ElevenLabs multilingual narrator voice. The voice is a stock ElevenLabs
+ * narrator by design — never a clone of the real leader.
  *
- * Body: { text: string, lang?: LangCode, voice?: VoiceKey }
- * 200 → audio/mpeg   4xx/5xx → { ok: false, code, message }
+ * Speech comes back from the /with-timestamps endpoint, so the response
+ * carries character-level alignment as well as audio. That is what drives the
+ * read-along highlight in the dock: the timings are measured, not estimated.
+ * Because the response is now audio + data, it is JSON rather than audio/mpeg.
+ *
+ * Body: { text: string, lang?: "en" | "nl" }
+ * 200 → { ok: true, audio, spoken, alignment }   4xx/5xx → { ok: false, code, message }
  */
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
@@ -19,24 +24,12 @@ export const maxDuration = 60;
 
 const MAX_CHARS = 1600;
 
-// Stock ElevenLabs narrator voices (premade library IDs, stable across accounts).
-const VOICES = {
-  daniel: "onwK4e9ZLuTAKqWW03F9", // deep, measured British
-  george: "JBFqnCBsd6RMkjVDRZzb", // warm British storyteller
-  charlotte: "XB0fDUnXU5powFXDhCwa", // calm, luminous
-  lily: "pFZP5JQG7iQjIQuC4Bku", // clear, gentle
-} as const;
-type VoiceKey = keyof typeof VOICES;
+// One narrator, chosen for this project: a stock ElevenLabs premade voice.
+const VOICE_ID = "XB0fDUnXU5powFXDhCwa"; // Charlotte — calm
 
 const LANGS = {
   en: "English",
-  fr: "French",
-  es: "Spanish",
-  de: "German",
-  pt: "Portuguese",
-  hi: "Hindi",
-  ar: "Arabic",
-  zh: "Simplified Chinese",
+  nl: "Dutch",
 } as const;
 type LangCode = keyof typeof LANGS;
 
@@ -86,8 +79,6 @@ export async function POST(req: Request) {
   if (text.length < 2) return fail(400, "bad_text", "Nothing to read.");
 
   const lang: LangCode = typeof body.lang === "string" && body.lang in LANGS ? (body.lang as LangCode) : "en";
-  const voice: VoiceKey =
-    typeof body.voice === "string" && body.voice in VOICES ? (body.voice as VoiceKey) : "daniel";
 
   let spoken = text;
   if (lang !== "en") {
@@ -104,7 +95,7 @@ export async function POST(req: Request) {
 
   try {
     const res = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${VOICES[voice]}?output_format=mp3_44100_128`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/with-timestamps?output_format=mp3_44100_128`,
       {
         method: "POST",
         headers: {
@@ -127,13 +118,38 @@ export async function POST(req: Request) {
       if (res.status === 429) return fail(429, "rate_limited", "The narrator is busy, try again in a moment.");
       return fail(502, "upstream_error", "Voice generation failed. Try again.");
     }
-    const audio = await res.arrayBuffer();
+
+    const data = (await res.json()) as {
+      audio_base64?: string;
+      alignment?: {
+        characters: string[];
+        character_start_times_seconds: number[];
+        character_end_times_seconds: number[];
+      } | null;
+    };
+    if (!data.audio_base64) return fail(502, "upstream_error", "Voice generation returned no audio.");
+
     console.log(
-      JSON.stringify({ tool: "magnifica-tts", chars: spoken.length, lang, voice, bytes: audio.byteLength }),
+      JSON.stringify({ tool: "magnifica-tts", chars: spoken.length, lang, aligned: !!data.alignment }),
     );
-    return new NextResponse(audio, {
-      headers: { "content-type": "audio/mpeg", "cache-control": "no-store" },
-    });
+
+    return NextResponse.json(
+      {
+        ok: true,
+        audio: data.audio_base64,
+        // The client highlights against what was actually spoken, which for a
+        // translation is not the text on the page — hence returning it.
+        spoken,
+        alignment: data.alignment
+          ? {
+              chars: data.alignment.characters,
+              starts: data.alignment.character_start_times_seconds,
+              ends: data.alignment.character_end_times_seconds,
+            }
+          : null,
+      },
+      { headers: { "cache-control": "no-store" } },
+    );
   } catch (e) {
     console.error(JSON.stringify({ tool: "magnifica-tts", error: String(e) }));
     return fail(502, "upstream_error", "Voice generation failed. Try again.");

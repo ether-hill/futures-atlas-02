@@ -193,14 +193,106 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   right: 0;
   bottom: 0;
   z-index: 40;
+  padding: 0 var(--gutter) 10px;
+  background: color-mix(in oklab, var(--bg) 86%, transparent);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--line);
+}
+.dock-row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px 14px;
-  padding: 10px var(--gutter);
-  background: color-mix(in oklab, var(--bg) 86%, transparent);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid var(--line);
+}
+
+/* ---------- playhead timeline ----------
+   Nodes are spaced by text length rather than evenly, so the gap between two
+   marks reflects how long that passage actually takes to read. */
+.dock-timeline {
+  position: relative;
+  height: 34px;
+  margin: 0 0 4px;
+}
+.dock-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 21px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--line);
+  overflow: hidden;
+}
+.dock-fill {
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
+  will-change: transform;
+}
+.dock-node {
+  position: absolute;
+  top: 12px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  color: var(--faint);
+}
+.dock-node i {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  background: var(--bg);
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+.dock-node span {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  white-space: nowrap;
+  font: 600 9px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.18s;
+  pointer-events: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 4px 9px;
+}
+.dock-node:hover span, .dock-node.on span { opacity: 1; }
+.dock-node:hover i { transform: scale(1.25); border-color: var(--accent); }
+.dock-node.done { color: var(--accent); }
+.dock-node.done i { background: var(--accent); border-color: var(--accent); }
+.dock-node.on { color: var(--accent); }
+.dock-node.on i {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.35);
+  box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent);
+}
+.dock-voice-fixed { font: 500 11px var(--mono); color: var(--faint); }
+
+/* ---------- read-along ----------
+   Deliberately quiet: a passage being read lifts slightly out of the page,
+   and the current word carries a thin rule beneath it. Anything stronger
+   turns a narration into a karaoke screen. */
+.is-reading { transition: color 0.4s; }
+[data-w] {
+  transition: color 0.25s ease, opacity 0.25s ease;
+  border-bottom: 1px solid transparent;
+}
+[data-w].is-read { opacity: 1; }
+[data-w].is-now {
+  border-bottom-color: var(--accent);
+  color: var(--ink);
 }
 .dock-play {
   border: 1px solid var(--accent);
