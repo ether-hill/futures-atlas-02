@@ -21,7 +21,7 @@
   position: relative;
   background: var(--x1-bg);
   color: var(--x1-ink);
-  margin: 0 calc(-1 * var(--gutter));
+  width: 100%; /* see experience.css: no .wrap to break out of here */
   padding-bottom: 132px; /* clears the fixed dock */
   overflow-x: clip;
 }
