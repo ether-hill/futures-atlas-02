@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { formatPostDate, type Post, type PostTopic } from "@/data/posts";
+import { TOPIC_ORDER, formatPostDate, type Post, type PostTopic } from "@/data/posts";
 import type { Project } from "@/data/projects";
 
 /**
@@ -12,91 +12,118 @@ import type { Project } from "@/data/projects";
  * lower panels would otherwise sit permanently below the fold and never be
  * reachable — the right rail runs to about 1700px against a 900px window.
  *
- * Everything here is derived from data the site actually holds, or counted for
- * real. There is no "trending" in the analytics sense — this site records no
- * per-post views — so the left rail ranks by how often a topic and a source
- * actually appear in what is on screen, and says that is what it is measuring.
- * The alternative was a leaderboard of invented numbers.
+ * Everything here is derived from what the site actually holds. There is no
+ * "trending" in the analytics sense — no per-post views are recorded — so
+ * "popular" means how often something appears in the posts themselves, and the
+ * panel says so. The alternative was a leaderboard of invented numbers.
  */
+
+const STOPWORDS = new Set(
+  ("the a an and or but of to in on for with from by at as is are was were be been it its this that these those " +
+   "not no than then so if into over under about after before more most less least new now still just what which " +
+   "who whom whose how why when where all any some each every other another one two three has have had do does did " +
+   "can could will would should may might must not you your we our they their he she his her them us i me my " +
+   "up down out off again very much many few first last next own same too also here there while against between " +
+   "through during without within across per via vs mostly already yet get got make makes made say says said")
+    .split(" "),
+);
+
+/**
+ * Keywords are the words that actually recur in the titles and standfirsts —
+ * counted, not curated. Short words, digits and a stopword list are dropped;
+ * everything surviving is a word the feed genuinely keeps using.
+ */
+function keywordsOf(items: Post[], limit = 14): [string, number][] {
+  const counts = new Map<string, number>();
+  for (const p of items) {
+    const words = `${p.title} ${p.dek}`
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, " ")
+      .split(/\s+/);
+    const seen = new Set<string>(); // once per post, so one wordy post cannot dominate
+    for (const w of words) {
+      if (w.length < 4 || STOPWORDS.has(w) || /^\d+$/.test(w)) continue;
+      if (seen.has(w)) continue;
+      seen.add(w);
+      counts.set(w, (counts.get(w) ?? 0) + 1);
+    }
+  }
+  return [...counts.entries()]
+    .filter(([, n]) => n > 1)
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, limit);
+}
 
 /* ============================ left ============================ */
 
 export function LeftRail({
   items,
-  topics,
   topic,
   setTopic,
-  sources,
+  media,
+  setMedia,
 }: {
   items: Post[];
-  topics: PostTopic[];
   topic: PostTopic | null;
   setTopic: (t: PostTopic | null) => void;
-  sources: [string, number][];
+  media: boolean;
+  setMedia: (v: boolean) => void;
 }) {
-  const max = sources[0]?.[1] ?? 1;
-
   return (
-    <aside className="sticky top-[calc(var(--fa-nav-h)+100px)] hidden max-h-[calc(100dvh-var(--fa-nav-h)-100px)] w-[236px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1080px]:block [&::-webkit-scrollbar]:hidden">
-      <RailHeading>Topics</RailHeading>
-      <nav className="mt-3 flex flex-col gap-0.5">
-        <RailItem label="All" count={items.length} active={topic === null} onClick={() => setTopic(null)} />
-        {topics.map((t) => (
+    <aside className="sticky top-[calc(var(--fa-nav-h)+20px)] hidden max-h-[calc(100dvh-var(--fa-nav-h)-40px)] w-[236px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1080px]:block [&::-webkit-scrollbar]:hidden">
+      <nav className="flex flex-col gap-0.5">
+        <RailItem
+          label="All posts"
+          count={items.length}
+          active={topic === null && !media}
+          onClick={() => {
+            setTopic(null);
+            setMedia(false);
+          }}
+        />
+        <RailItem
+          label="Media"
+          count={items.filter((p) => p.kind === "video").length}
+          active={media}
+          onClick={() => {
+            setTopic(null);
+            setMedia(!media);
+          }}
+        />
+        {TOPIC_ORDER.map((t) => (
           <RailItem
             key={t}
             label={t}
             count={items.filter((p) => p.topics.includes(t)).length}
             active={topic === t}
-            onClick={() => setTopic(topic === t ? null : t)}
+            onClick={() => {
+              setMedia(false);
+              setTopic(topic === t ? null : t);
+            }}
           />
         ))}
       </nav>
-
-      <RailHeading className="mt-8">Most cited here</RailHeading>
-      <p className="mt-2 font-mono text-[9.5px] leading-[1.5] text-faint">
-        By how often a source appears in what you are looking at — this site keeps
-        no view counts.
-      </p>
-      <ul className="mt-3 flex flex-col gap-2.5">
-        {sources.map(([name, n]) => (
-          <li key={name}>
-            <span className="flex items-baseline justify-between gap-2">
-              <span className="truncate text-[12px] font-extrabold leading-tight tracking-[-0.01em] text-ink">
-                {name}
-              </span>
-              <span className="shrink-0 font-mono text-[9.5px] tabular-nums text-faint">{n}</span>
-            </span>
-            <span
-              aria-hidden
-              className="mt-1 block h-[2px] rounded-full"
-              style={{
-                width: `${Math.max(8, Math.round((n / max) * 100))}%`,
-                background: "color-mix(in oklab, var(--accent) 55%, transparent)",
-              }}
-            />
-          </li>
-        ))}
-      </ul>
-
-      <Link
-        href="/blog"
-        className="mt-8 inline-flex items-center gap-2 rounded-[2px] border-[1.5px] border-ink/25 px-4 py-2.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-ink transition-colors hover:border-ink"
-      >
-        Grid view <span aria-hidden>→</span>
-      </Link>
     </aside>
   );
 }
 
 /* ============================ right ============================ */
 
-export function RightRail({ latest, projects }: { latest: Post[]; projects: Project[] }) {
+export function RightRail({
+  latest,
+  projects,
+  all,
+}: {
+  latest: Post[];
+  projects: Project[];
+  all: Post[];
+}) {
   return (
-    <aside className="sticky top-[calc(var(--fa-nav-h)+100px)] hidden max-h-[calc(100dvh-var(--fa-nav-h)-100px)] w-[312px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1320px]:block [&::-webkit-scrollbar]:hidden">
+    <aside className="sticky top-[calc(var(--fa-nav-h)+20px)] hidden max-h-[calc(100dvh-var(--fa-nav-h)-40px)] w-[312px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1320px]:block [&::-webkit-scrollbar]:hidden">
       <JustIn latest={latest} />
       <ProjectPicks projects={projects} />
       <SignUp />
-      <LiveStats />
+      <PopularTags all={all} />
     </aside>
   );
 }
@@ -127,12 +154,26 @@ function ProjectPicks({ projects }: { projects: Project[] }) {
   if (projects.length === 0) return null;
   return (
     <Panel className="mt-5">
-      <RailHeading>From the atlas</RailHeading>
-      <ul className="mt-3 flex flex-col gap-3">
+      <RailHeading>Recent projects</RailHeading>
+      <ul className="mt-3 flex flex-col gap-4">
         {projects.map((pr) => (
           <li key={pr.id}>
             <Link href={pr.path ?? pr.url ?? "/projects"} className="group block">
-              <span className="block font-mono text-[9.5px] uppercase tracking-[0.14em] text-faint">
+              {pr.image ? (
+                <span className="block overflow-hidden rounded-[3px] border border-ink/[0.12]">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- static asset, no optimiser needed at this size */}
+                  <img
+                    src={pr.image}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="aspect-[16/9] w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                  />
+                </span>
+              ) : (
+                <span className="fa-hatch block aspect-[16/9] rounded-[3px] border border-ink/[0.12]" />
+              )}
+              <span className="mt-2 block font-mono text-[9.5px] uppercase tracking-[0.14em] text-faint">
                 {pr.field}
               </span>
               <span className="mt-0.5 block text-[13px] font-extrabold leading-tight tracking-[-0.01em] text-ink transition-colors group-hover:text-accent">
@@ -239,64 +280,48 @@ function SignUp() {
   );
 }
 
-function LiveStats() {
-  const [stats, setStats] = useState<{
-    configured: boolean;
-    views: number | null;
-    subscribers: number | null;
-  } | null>(null);
-
-  useEffect(() => {
-    // Count once per browser session, so this is views rather than renders.
-    let counted = false;
-    try {
-      counted = sessionStorage.getItem("fa-feed-counted") === "1";
-    } catch {
-      /* private mode — it just counts again */
-    }
-    let live = true;
-    fetch("/api/feed/stats", { method: counted ? "GET" : "POST" })
-      .then((r) => r.json())
-      .then((d) => {
-        if (!live) return;
-        setStats({ configured: !!d?.configured, views: d?.views ?? null, subscribers: d?.subscribers ?? null });
-        try {
-          sessionStorage.setItem("fa-feed-counted", "1");
-        } catch {
-          /* nothing to do */
-        }
-      })
-      .catch(() => live && setStats({ configured: false, views: null, subscribers: null }));
-    return () => {
-      live = false;
-    };
-  }, []);
+function PopularTags({ all }: { all: Post[] }) {
+  const tags = TOPIC_ORDER.map((t) => [t, all.filter((p) => p.topics.includes(t)).length] as const)
+    .filter(([, n]) => n > 0)
+    .sort((a, b) => b[1] - a[1]);
+  const keywords = keywordsOf(all);
+  const maxTag = tags[0]?.[1] ?? 1;
 
   return (
     <Panel className="mt-5">
-      <RailHeading>Live</RailHeading>
-      {stats?.configured ? (
-        <dl className="mt-3 flex flex-col gap-3">
-          <Stat label="Feed views" value={stats.views} />
-          <Stat label="On the list" value={stats.subscribers} />
-        </dl>
-      ) : (
-        <p className="mt-3 font-mono text-[10.5px] leading-[1.5] text-faint">
-          {stats === null ? "Counting…" : "The counter is off on this deployment."}
-        </p>
-      )}
-    </Panel>
-  );
-}
+      <RailHeading>Popular tags</RailHeading>
+      <ul className="mt-3 flex flex-wrap gap-1.5">
+        {tags.map(([t, n]) => (
+          <li key={t}>
+            <span
+              className="inline-flex items-baseline gap-1.5 rounded-[2px] px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em]"
+              style={{
+                // weight by share, so the eye sorts them before the numbers do
+                background: `color-mix(in oklab, var(--accent) ${8 + Math.round((n / maxTag) * 18)}%, transparent)`,
+                color: "var(--text)",
+              }}
+            >
+              {t}
+              <span className="tabular-nums text-faint">{n}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
 
-function Stat({ label, value }: { label: string; value: number | null }) {
-  return (
-    <div className="flex items-baseline justify-between gap-3">
-      <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-faint">{label}</dt>
-      <dd className="text-[19px] font-extrabold tabular-nums leading-none tracking-[-0.02em] text-ink">
-        {value === null ? "—" : value.toLocaleString()}
-      </dd>
-    </div>
+      <RailHeading className="mt-6">Keywords</RailHeading>
+      <p className="mt-1.5 font-mono text-[9.5px] leading-[1.5] text-faint">
+        Words the feed keeps coming back to, counted across every title and
+        standfirst.
+      </p>
+      <ul className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1.5">
+        {keywords.map(([w, n]) => (
+          <li key={w} className="font-mono text-[11px] text-graphite">
+            {w}
+            <span className="ml-1 text-[9.5px] tabular-nums text-faint">{n}</span>
+          </li>
+        ))}
+      </ul>
+    </Panel>
   );
 }
 

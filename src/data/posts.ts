@@ -26,7 +26,10 @@ export type PostTopic =
   | "Compute & energy"
   | "Safety & policy"
   | "Society"
-  | "Futures";
+  | "Futures"
+  // Added for the feed's rail. No post carries it yet, so the filter is
+  // present and empty until items are tagged — tag them here, not ad hoc.
+  | "Government";
 
 export interface Post {
   slug: string;
@@ -1205,13 +1208,19 @@ export function getPost(slug: string): Post | undefined {
 }
 
 /** Topics present in a given list, in the canonical order above. */
-const TOPIC_ORDER: PostTopic[] = [
+/**
+ * Display order for the vocabulary. `topicsOf` narrows this to what a given
+ * list actually contains; the feed rail renders the whole thing, so a topic
+ * with nothing in it yet is visible and simply reads zero.
+ */
+export const TOPIC_ORDER: PostTopic[] = [
   "AI",
   "Quantum",
   "Compute & energy",
   "Safety & policy",
   "Society",
   "Futures",
+  "Government",
 ];
 
 export function topicsOf(list: Post[]): PostTopic[] {

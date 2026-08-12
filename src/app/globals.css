@@ -103,15 +103,6 @@ html {
 body { padding-top: var(--fa-nav-h); }
 header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 
-/*
-  A page with its own bar pinned under the master must stop the master
-  auto-hiding on scroll-down, or that bar is left floating with a live gap
-  above it and the page scrolls through the gap. atlas-nav.css already does
-  exactly this for `.fa-subnav`; this is the same rule for pages whose bar is
-  their own layout rather than the slim tab row (which brings a fixed height
-  and flex layout with it). Mark such a bar `.fa-pinned-bar`.
-*/
-body:has(.fa-pinned-bar) .fa-shell.is-hidden { transform: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
