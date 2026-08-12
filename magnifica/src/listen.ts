@@ -564,8 +564,103 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   });
 }
 
+/**
+ * v3's transport: no dock. Every panel owns its own play button, and the
+ * ambience lives behind one floating icon that expands in place. Only one
+ * passage can sound at a time — the shared player enforces that by
+ * construction, since starting a part stops whatever was running.
+ */
+export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
+  player.load(parts);
+  (Object.keys(LAYER_LABELS) as LayerName[]).forEach((n) => scape.setLevel(n, scene.sound[n] ?? 0));
+
+  const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-play]"));
+
+  buttons.forEach((btn) => {
+    const i = Number(btn.dataset.play);
+    btn.addEventListener("pointerenter", () => player.warm(i), { once: true });
+    btn.addEventListener("click", () => {
+      // Clicking the panel that is already sounding pauses it; anything else
+      // takes over.
+      if (player.playing && player.i === i) player.toggle();
+      else player.goTo(i);
+    });
+  });
+
+  player.onstate = (s) => {
+    buttons.forEach((b) => {
+      const active = Number(b.dataset.play) === s.index && s.playing;
+      b.classList.toggle("on", active);
+      const lbl = b.querySelector(".x-play-lbl");
+      if (lbl) lbl.textContent = active ? "Pause" : "Listen";
+      b.setAttribute("aria-label", active ? "Pause this section" : "Listen to this section");
+    });
+  };
+  player.onprogress = () => {};
+
+  // Floating ambience control.
+  const amb = document.createElement("div");
+  amb.className = "x-amb";
+  amb.innerHTML = `
+    <button type="button" class="x-amb-btn" aria-expanded="false" aria-controls="x-amb-panel" aria-label="Soundscape">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
+           stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M3 12c2-4 4-4 6 0s4 4 6 0 4-4 6 0" />
+      </svg>
+    </button>
+    <div class="x-amb-panel" id="x-amb-panel" hidden>
+      <header>
+        <span>Soundscape</span>
+        <button type="button" class="x-amb-close" aria-label="Close soundscape">×</button>
+      </header>
+      <button type="button" class="dock-amb">ambience: off</button>
+      ${(Object.keys(LAYER_LABELS) as LayerName[])
+        .map(
+          (n) => `
+        <label class="dock-slider"><span>${LAYER_LABELS[n]}</span>
+          <input type="range" min="0" max="100" value="${Math.round((scene.sound[n] ?? 0) * 100)}" data-layer="${n}" />
+        </label>`,
+        )
+        .join("")}
+    </div>`;
+  root.appendChild(amb);
+
+  const ambBtn = amb.querySelector<HTMLButtonElement>(".x-amb-btn")!;
+  const ambPanel = amb.querySelector<HTMLDivElement>(".x-amb-panel")!;
+  const toggleBtn = amb.querySelector<HTMLButtonElement>(".dock-amb")!;
+
+  const setOpen = (open: boolean) => {
+    ambPanel.hidden = !open;
+    amb.classList.toggle("open", open);
+    ambBtn.setAttribute("aria-expanded", String(open));
+  };
+  ambBtn.addEventListener("pointerenter", () => scape.preload(true), { once: true });
+  ambBtn.addEventListener("click", () => setOpen(ambPanel.hidden));
+  amb.querySelector(".x-amb-close")!.addEventListener("click", () => setOpen(false));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !ambPanel.hidden) setOpen(false);
+  });
+
+  toggleBtn.addEventListener("click", () => {
+    const on = scape.toggle();
+    toggleBtn.textContent = `ambience: ${on ? "on" : "off"}`;
+    toggleBtn.classList.toggle("on", on);
+    amb.classList.toggle("sounding", on);
+  });
+  amb.querySelectorAll<HTMLInputElement>("input[data-layer]").forEach((input) => {
+    input.addEventListener("input", () => {
+      scape.setLevel(input.dataset.layer as LayerName, Number(input.value) / 100);
+    });
+  });
+
+  const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => void })
+    .requestIdleCallback;
+  if (idle) idle(() => scape.preload());
+  else setTimeout(() => scape.preload(), 1200);
+}
+
 /** Tear down on route change: stop speech, keep ambience running across pages. */
 export function unmountDock() {
   player.stop();
-  document.querySelectorAll(".dock").forEach((d) => d.remove());
+  document.querySelectorAll(".dock, .x-amb").forEach((d) => d.remove());
 }

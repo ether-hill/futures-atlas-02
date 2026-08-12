@@ -31,7 +31,7 @@ const esc = (s: string) =>
  * elsewhere, which is a fraction of the generation cost and far lighter to
  * ship. Keeping one code path means a change to either is a change to both.
  */
-export type Variant = "v1" | "v2";
+export type Variant = "v1" | "v2" | "v3";
 
 interface ExperienceSpec {
   displayName: string;
@@ -49,7 +49,7 @@ export const EXPERIENCES: Record<string, ExperienceSpec> = {
   "dalai-lama": {
     displayName: "Tenzin Gyatso",
     displayTitle: "The Fourteenth Dalai Lama",
-    hero: { v1: "dalai-lama", v2: "dalai-lama-hero" },
+    hero: { v1: "dalai-lama", v2: "dalai-lama-hero", v3: "dalai-lama-hero" },
     stills: ["dl-monastery", "dl-lamps", "dl-night", "dl-plateau"],
     chapterStills: ["dl-library", "dl-block"],
     videos: ["dalai-lama-02", "dalai-lama-03", "dalai-lama-04"],
@@ -171,9 +171,18 @@ function renderSection(
   spec: ExperienceSpec,
   ctr: { q: number; c: number },
   variant: Variant,
+  idx: number,
 ): string {
   const id = anchorOf(s);
   const key = s.n || "gate";
+  // v3 drops the shared transport: every panel carries its own control, so
+  // playing a passage is a property of the passage rather than of a dock.
+  const play =
+    variant === "v3"
+      ? `<button type="button" class="x-play" data-play="${idx}" aria-label="Listen to this section">
+           <span class="x-play-ico" aria-hidden="true"></span><span class="x-play-lbl">Listen</span>
+         </button>`
+      : "";
   // Number only — the section's name is the heading, and repeating "Chapter"
   // above every one of them added a word and no information.
   const num = s.n ? `<span class="x-num" data-reveal>${s.n}</span>` : "";
@@ -185,6 +194,7 @@ function renderSection(
         <span class="x-num x-num-word">Disclaimer</span>
       </div>
       <div class="x-gate-in" data-reveal>${esc(s.body)}</div>
+      ${play}
     </section>`;
   }
 
@@ -200,6 +210,7 @@ function renderSection(
         <span class="x-eyebrow" data-reveal>Predicted excerpt ${s.index + 1}</span>
         <blockquote data-reveal>${esc(s.text)}</blockquote>
         <p class="x-attrib" data-reveal>Speculative — not a real quote</p>
+        ${play}
       </div>
     </section>`;
   }
@@ -232,6 +243,7 @@ function renderSection(
           real, sourced statements — the record the prediction was built from.
         </p>
         <ol class="x-timeline">${items}</ol>
+        ${play}
       </div>
     </section>`;
   }
@@ -250,6 +262,7 @@ function renderSection(
         <h2 data-reveal>${esc(s.label)}</h2>
         <p class="x-lede" data-reveal>Read against <i>Magnifica humanitas</i>.</p>
         <ul class="x-points">${items}</ul>
+        ${play}
       </div>
     </section>`;
   }
@@ -261,6 +274,7 @@ function renderSection(
       ${num}
       <h2 data-reveal>${esc(s.label)}</h2>
       <p class="x-body" data-reveal>${esc(s.body)}</p>
+      ${play}
     </div>
   </section>`;
 }
@@ -270,7 +284,7 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
   const portrait = portraitOf(l.id);
   const secs = sections(l);
   const ctr = { q: 0, c: 0 };
-  const body = secs.map((s) => renderSection(s, spec, ctr, variant)).join("");
+  const body = secs.map((s, i) => renderSection(s, spec, ctr, variant, i)).join("");
 
   // Home first, so the rail can always take you back to the hero.
   const rail =
@@ -307,7 +321,7 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
       <span class="x-scroll" aria-hidden="true">Scroll to explore</span>
     </section>
 
-    <nav class="x-rail" aria-label="Chapters">${rail}</nav>
+    ${variant === "v3" ? "" : `<nav class="x-rail" aria-label="Chapters">${rail}</nav>`}
 
     ${body}
   </div>`;

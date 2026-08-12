@@ -1,7 +1,7 @@
 import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, RECEPTION, SOURCES } from "./encyclical";
 import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
-import { mountDock, unmountDock, type Part } from "./listen";
+import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
 import { mountDrawer, markDrawerRoute } from "./drawer";
 
@@ -243,9 +243,10 @@ let unmountX: (() => void) | null = null;
 function render(root: HTMLElement) {
   const mV2 = location.hash.match(/^#\/l\/([\w-]+)/);
   const mV1 = location.hash.match(/^#\/v1\/([\w-]+)/);
-  const id = mV2?.[1] ?? mV1?.[1];
+  const mV3 = location.hash.match(/^#\/v3\/([\w-]+)/);
+  const id = mV2?.[1] ?? mV1?.[1] ?? mV3?.[1];
   const leader = id ? LEADERS.find((l) => l.id === id) : undefined;
-  const variant: Variant = mV1 ? "v1" : "v2";
+  const variant: Variant = mV1 ? "v1" : mV3 ? "v3" : "v2";
   const immersive = !!leader && hasExperience(leader.id);
 
   unmountDock();
@@ -264,6 +265,7 @@ function render(root: HTMLElement) {
       `<nav class="x-versions" aria-label="Design version">
          <a href="#/v1/${leader.id}"${variant === "v1" ? ' class="on"' : ""}>v1</a>
          <a href="#/l/${leader.id}"${variant === "v2" ? ' class="on"' : ""}>v2</a>
+         <a href="#/v3/${leader.id}"${variant === "v3" ? ' class="on"' : ""}>v3</a>
        </nav>`,
     );
   }
@@ -279,11 +281,11 @@ function render(root: HTMLElement) {
     else mountHero(root);
     // The v2 script is section-aware: its parts carry the anchors the player
     // scrolls to and the elements the read-along follows. v1 predates that.
-    mountDock(
-      root,
-      immersive ? experienceParts(leader) : leaderParts(leader),
-      SCENES[leader.id] ?? HOME_SCENE,
-    );
+    const scene = SCENES[leader.id] ?? HOME_SCENE;
+    const script = immersive ? experienceParts(leader) : leaderParts(leader);
+    // v3 has no dock: each panel drives itself.
+    if (variant === "v3" && immersive) mountPanels(root, script, scene);
+    else mountDock(root, script, scene);
   } else {
     mountDock(root, homeParts(), HOME_SCENE);
   }
