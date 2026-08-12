@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FeedTimeline } from "./FeedTimeline";
 import { editorPosts, livePosts } from "@/data/posts";
 import { getEditor } from "@/lib/editor";
+import { liveProjects } from "@/data/projects";
 
 export const metadata: Metadata = {
   title: "Feed — Futures Atlas",
@@ -13,5 +14,13 @@ export const metadata: Metadata = {
 // out here, on the server, so a visitor's page never contains them.
 export default async function FeedPage() {
   const isEditor = Boolean(await getEditor());
-  return <FeedTimeline items={isEditor ? editorPosts : livePosts} showVisibility={isEditor} />;
+  // A couple of live projects for the right rail — newest first, never drafts.
+  const picks = [...liveProjects].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+  return (
+    <FeedTimeline
+      items={isEditor ? editorPosts : livePosts}
+      projects={picks}
+      showVisibility={isEditor}
+    />
+  );
 }

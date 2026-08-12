@@ -7,6 +7,8 @@ import { YouTubeCard, youtubeId } from "@/components/feed/YouTubeCard";
 import { PollCard } from "@/components/feed/PollCard";
 import { SwipeDemoCard } from "@/components/feed/SwipeDemoCard";
 import { POLLS } from "@/data/polls";
+import { LeftRail, RightRail } from "@/components/feed/FeedRails";
+import type { Project } from "@/data/projects";
 import {
   KIND_LABEL,
   formatPostDate,
@@ -54,9 +56,11 @@ const INTERLEAVE: Record<number, "poll-0" | "swipe" | "poll-1" | "poll-2"> = {
 
 export function FeedTimeline({
   items,
+  projects = [],
   showVisibility = false,
 }: {
   items: Post[];
+  projects?: Project[];
   showVisibility?: boolean;
 }) {
   const [tab, setTab] = useState<Tab>("latest");
@@ -137,7 +141,17 @@ export function FeedTimeline({
         </div>
       </div>
 
-      {/* ---------- the grid ---------- */}
+      {/* ---------- rails + grid ---------- */}
+      <div className="flex w-full items-start">
+        <LeftRail
+          items={items}
+          topics={topics}
+          topic={topic}
+          setTopic={setTopic}
+          sources={sources}
+        />
+
+        <main className="min-w-0 flex-1">
       {shown.length === 0 ? (
         <p className="px-4 py-24 text-center font-mono text-[13px] text-graphite">
           Nothing in the feed under that combination yet.
@@ -174,9 +188,12 @@ export function FeedTimeline({
             );
           })}
 
-          <MostCitedCard sources={sources} />
         </div>
       )}
+        </main>
+
+        <RightRail latest={items.slice(0, 5)} projects={projects} />
+      </div>
 
       <div className="border-t border-ink/[0.14] px-4 py-10 text-center">
         <Link
@@ -332,36 +349,6 @@ function AboutCard() {
           the original — the note is our read, not a substitute. Videos play here;
           polls record real answers, and say so when they cannot.
         </p>
-      </div>
-    </Cell>
-  );
-}
-
-function MostCitedCard({ sources }: { sources: [string, number][] }) {
-  if (sources.length === 0) return null;
-  return (
-    <Cell>
-      <div className="p-5">
-        <h2 className="font-mono text-[9.5px] uppercase tracking-[0.18em] text-accent-deep">
-          Most cited here
-        </h2>
-        <ul className="mt-4 flex flex-col gap-3.5">
-          {sources.map(([name, n], i) => (
-            <li key={name} className="flex items-baseline justify-between gap-3">
-              <span className="min-w-0">
-                <span className="block font-mono text-[10px] uppercase tracking-[0.16em] text-faint">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="block truncate text-[13px] font-extrabold leading-tight tracking-[-0.01em] text-ink">
-                  {name}
-                </span>
-              </span>
-              <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-graphite">
-                {n}
-              </span>
-            </li>
-          ))}
-        </ul>
       </div>
     </Cell>
   );
