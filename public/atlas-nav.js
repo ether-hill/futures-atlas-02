@@ -257,7 +257,7 @@
       document.body.appendChild(foot);
     }
 
-    // ── global Share tool, fixed bottom-left on every page, expands on click ──
+    // ── global Share tool, in the bar beside the theme toggle, expands on click ──
     // Standard share options plus "Open in Social Composer", which deep-links the
     // composer to transmutate THIS page (pull its pieces onto the canvas).
     if (!document.querySelector(".fa-share")) {
@@ -283,8 +283,14 @@
           '<a class="fa-share__opt" data-act="li" target="_blank" rel="noopener" href="#">Share to LinkedIn</a>' +
           '<a class="fa-share__opt" data-act="email" href="#">Email a link</a>' +
         "</div>" +
-        '<button class="fa-share__btn" type="button" aria-label="Share this page" aria-haspopup="menu" aria-expanded="false">' + shareIcon + '<span class="fa-share__lbl">SHARE</span></button>';
-      document.body.appendChild(sh);
+        '<button class="fa-share__btn" type="button" aria-label="Share this page" aria-haspopup="menu" aria-expanded="false">' + shareIcon + "</button>";
+      // In the bar rather than floating: a fixed button had to be nudged around
+      // whenever the bar hid on scroll, and it never belonged to anything. Falls
+      // back to the body if the bar has not been built (it always has by here).
+      var barRight = document.querySelector(".fa-shell__right");
+      var barToggle = barRight && barRight.querySelector(".fa-shell__toggle");
+      if (barToggle) barRight.insertBefore(sh, barToggle);
+      else document.body.appendChild(sh);
       var sBtn = sh.querySelector(".fa-share__btn");
       var sPanel = sh.querySelector(".fa-share__panel");
       var sCopy = sh.querySelector('[data-act="copy"]');
