@@ -354,10 +354,20 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 }
 
 /*
-  The master nav hides on scroll-down, and anything pinned an --fa-nav-h below
-  it then hangs in an empty band. The rails rise to a small padding when that
-  happens and slide rather than jump. (The share button used to need the same
-  treatment; it now lives in the bar itself.)
+  The master nav hides on scroll-down, and a rail pinned below it would then
+  hang in an empty band. It sticks at a small padding permanently and is pushed
+  down by the bar's height while the bar is there.
+
+  That push is a transform, NOT a change of `top`: animating `top` on a sticky
+  element re-runs sticky positioning and layout on every frame, which is what
+  made the rails chug while scrolling. A transform stays on the compositor and
+  leaves the stick point alone.
 */
-.fa-feed { --rail-top: calc(var(--fa-nav-h) + 20px); }
-body:has(.fa-shell.is-hidden) .fa-feed { --rail-top: 20px; }
+.fa-feed { --rail-shift: var(--fa-nav-h); }
+body:has(.fa-shell.is-hidden) .fa-feed { --rail-shift: 0px; }
+.fa-rail {
+  transform: translateY(var(--rail-shift));
+  transition: transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) { .fa-rail { transition: none; } }
