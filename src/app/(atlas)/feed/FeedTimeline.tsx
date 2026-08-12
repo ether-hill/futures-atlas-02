@@ -94,7 +94,7 @@ export function FeedTimeline({
   }, [filtered]);
 
   return (
-    <div className="bg-surface">
+    <div className="fa-feed bg-surface">
       {/* A masthead, not a bar: it scrolls away like any other page's heading,
           which lets the master nav keep its normal hide-on-scroll behaviour. */}
       <header className="px-4 pb-1 pt-8 min-[680px]:px-7 min-[680px]:pt-10">

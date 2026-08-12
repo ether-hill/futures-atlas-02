@@ -352,3 +352,14 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
   border-top: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
   margin-top: var(--space-gap-l);
 }
+
+/*
+  The master nav hides on scroll-down. Anything pinned an --fa-nav-h below it
+  then hangs in an empty band — the rails, and the injected share button, sat
+  at ~80px with nothing above them. One variable drives all of it, so they rise
+  together and slide rather than jump.
+*/
+.fa-feed { --rail-top: calc(var(--fa-nav-h) + 20px); }
+body:has(.fa-shell.is-hidden) .fa-feed { --rail-top: 20px; }
+body:has(.fa-feed) .fa-share { transition: top 0.3s cubic-bezier(0.2, 0.7, 0.2, 1); }
+body:has(.fa-feed):has(.fa-shell.is-hidden) .fa-share { top: 20px; }

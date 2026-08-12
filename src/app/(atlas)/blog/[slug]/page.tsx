@@ -11,7 +11,6 @@ import {
   hostOf,
   livePosts,
   posts,
-  relatedPosts,
   type Post,
 } from "@/data/posts";
 import { getEditor } from "@/lib/editor";
@@ -45,7 +44,9 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   if (!post) notFound();
 
   const isEditor = Boolean(await getEditor());
-  const more = relatedPosts(slug, isEditor ? posts : livePosts);
+  // Latest rather than topic-related: the foot of a post is where you go
+  // looking for what else has landed, not for more of the same subject.
+  const more = (isEditor ? posts : livePosts).filter((p) => p.slug !== slug).slice(0, 10);
   const html = renderMarkdown(post.body);
 
   return (
@@ -170,8 +171,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
       <div className="mt-[clamp(48px,7vw,110px)]">
         <PostCarousel
           posts={more}
-          title="More posts"
-          eyebrow="Keep reading"
+          title="Latest posts"
+          eyebrow="Just landed"
           showVisibility={isEditor}
         />
       </div>

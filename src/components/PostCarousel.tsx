@@ -60,8 +60,34 @@ export function PostCarousel({
     el.scrollBy({ left: dir * step, behavior: "smooth" });
   };
 
+  /**
+   * Drag to scroll, on top of the native behaviour rather than instead of it.
+   * Snap is disabled for the duration of a drag — with snap-mandatory on, every
+   * pointer move fights the snap and the rail stutters instead of following the
+   * hand. It comes back on release, so the row still settles onto a card.
+   */
+  const drag = useRef<{ x: number; left: number } | null>(null);
+  const [dragging, setDragging] = useState(false);
+
   if (posts.length === 0) return null;
   const scrollable = !atStart || !atEnd;
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    const el = track.current;
+    if (!el || e.pointerType === "touch") return; // touch already scrolls natively
+    drag.current = { x: e.clientX, left: el.scrollLeft };
+    setDragging(true);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const el = track.current;
+    if (!el || !drag.current) return;
+    el.scrollLeft = drag.current.left - (e.clientX - drag.current.x);
+  };
+  const endDrag = () => {
+    if (!drag.current) return;
+    drag.current = null;
+    setDragging(false);
+  };
 
   return (
     <section className="border-t border-ink/15 bg-surface py-[clamp(58px,9vw,130px)]">
@@ -96,6 +122,16 @@ export function PostCarousel({
       <div
         ref={track}
         onScroll={measure}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={endDrag}
+        onPointerLeave={endDrag}
+        onPointerCancel={endDrag}
+        style={{
+          scrollSnapType: dragging ? "none" : undefined,
+          cursor: scrollable ? (dragging ? "grabbing" : "grab") : undefined,
+          scrollBehavior: dragging ? "auto" : undefined,
+        }}
         // items-stretch is explicit: cards in a rail must share one bottom edge
         // however long a title runs.
         // scroll-px must mirror px, or snapping scrolls the gutter away and the

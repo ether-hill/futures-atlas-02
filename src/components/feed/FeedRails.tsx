@@ -70,7 +70,7 @@ export function LeftRail({
   setMedia: (v: boolean) => void;
 }) {
   return (
-    <aside className="sticky top-[calc(var(--fa-nav-h)+20px)] hidden max-h-[calc(100dvh-var(--fa-nav-h)-40px)] w-[236px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1080px]:block [&::-webkit-scrollbar]:hidden">
+    <aside className="sticky top-[var(--rail-top)] hidden max-h-[calc(100dvh-var(--rail-top)-24px)] transition-[top] duration-300 w-[236px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1080px]:block [&::-webkit-scrollbar]:hidden">
       <nav className="flex flex-col gap-0.5">
         <RailItem
           label="All posts"
@@ -119,7 +119,7 @@ export function RightRail({
   all: Post[];
 }) {
   return (
-    <aside className="sticky top-[calc(var(--fa-nav-h)+20px)] hidden max-h-[calc(100dvh-var(--fa-nav-h)-40px)] w-[312px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1320px]:block [&::-webkit-scrollbar]:hidden">
+    <aside className="sticky top-[var(--rail-top)] hidden max-h-[calc(100dvh-var(--rail-top)-24px)] transition-[top] duration-300 w-[312px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1320px]:block [&::-webkit-scrollbar]:hidden">
       <JustIn latest={latest} />
       <ProjectPicks projects={projects} />
       <SignUp />
