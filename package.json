@@ -14,6 +14,7 @@
     "@upstash/redis": "^1.38.0",
     "futures-atlas-core": "file:./packages/futures-atlas-core",
     "ioredis": "^5.11.1",
+    "marked": "^18.0.9",
     "next": "15.5.19",
     "node-html-parser": "^7.1.0",
     "react": "19.1.0",

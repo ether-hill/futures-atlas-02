@@ -55,6 +55,7 @@
   var LINKS = [
     { name: "Home", path: "/" },
     { name: "Projects", path: "/projects" },
+    { name: "Dispatches", path: "/dispatches" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];

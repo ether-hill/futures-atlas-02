@@ -288,3 +288,66 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
       linear-gradient(0deg, rgba(5, 6, 10, 0.95) 34%, rgba(5, 6, 10, 0.72) 62%, rgba(5, 6, 10, 0.3) 100%);
   }
 }
+
+/* ---------- .fa-prose: rendered dispatch bodies ----------
+   The only place in the app where markdown becomes HTML, so the elements can't
+   carry utility classes. Every value is a core token, same as everywhere else. */
+.fa-prose {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--text-body-size);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}
+.fa-prose > * + * { margin-top: var(--space-5); }
+.fa-prose h2,
+.fa-prose h3 {
+  font-family: var(--font-heading), system-ui, sans-serif;
+  font-weight: var(--weight-strong, 800);
+  letter-spacing: var(--track-tight, -0.02em);
+  line-height: var(--lh-tight, 1.15);
+  color: var(--text);
+}
+.fa-prose h2 { font-size: var(--text-title); margin-top: var(--space-gap-l); }
+.fa-prose h3 { font-size: var(--text-title-s); margin-top: var(--space-7); }
+.fa-prose strong { color: var(--text); font-weight: 700; }
+.fa-prose em { font-style: italic; }
+.fa-prose a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--text) 35%, transparent);
+  text-underline-offset: 4px;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+.fa-prose a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+.fa-prose ul,
+.fa-prose ol { padding-left: var(--space-6); }
+.fa-prose ul { list-style: disc; }
+.fa-prose ol { list-style: decimal; }
+.fa-prose li::marker { color: color-mix(in srgb, var(--text) 40%, transparent); }
+.fa-prose li + li { margin-top: var(--space-3); }
+.fa-prose blockquote {
+  border-left: 2px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  padding-left: var(--space-5);
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: var(--text-lead, var(--text-body-size));
+  color: var(--text);
+}
+.fa-prose code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  border-radius: 2px;
+  padding: 0.1em 0.35em;
+}
+.fa-prose pre {
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  border-radius: 3px;
+  padding: var(--space-5);
+  overflow-x: auto;
+}
+.fa-prose pre code { background: none; padding: 0; }
+.fa-prose hr {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--text) 16%, transparent);
+  margin-top: var(--space-gap-l);
+}

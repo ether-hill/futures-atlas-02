@@ -8,10 +8,11 @@
  * 2. The internal areas: /admin/*, the editor overview /editor, and the
  *    unlinked design experiments (/home-lab, /mocks).
  *
- * 3. Draft projects: every path belonging to a project marked
- *    `visibility: "draft"` in src/data/projects.ts. The public never renders
- *    one, unauthenticated requests are rewritten to the sign-in form, so the
- *    page's markup is never sent.
+ * 3. Draft projects and draft dispatches: every path belonging to a project
+ *    marked `visibility: "draft"` in src/data/projects.ts, and every
+ *    unpublished post in src/data/posts.ts. The public never renders one,
+ *    unauthenticated requests are rewritten to the sign-in form, so the page's
+ *    markup is never sent.
  *
  * All fail closed: if the relevant env var is unset the routes are locked
  * (503), they can never become public by accident. GET /api/tokens stays open
@@ -22,6 +23,7 @@ import { NextResponse, type NextRequest } from "next/server";
 // file up and resolves "@/" against its own src/, which breaks the root build.
 import { ADMIN_COOKIE, readSession } from "./lib/admin-session";
 import { isDraftPath } from "./data/projects";
+import { isDraftPostPath } from "./data/posts";
 
 // Runs on page-ish requests only: static assets, image optimisation and files
 // with an extension are skipped, so a draft bundle's own JS/CSS costs nothing
@@ -45,7 +47,7 @@ export async function middleware(req: NextRequest) {
     (base) => pathname === base || pathname.startsWith(`${base}/`),
   );
 
-  if (isInternal || isDraftPath(pathname)) return sessionGate(req);
+  if (isInternal || isDraftPath(pathname) || isDraftPostPath(pathname)) return sessionGate(req);
 
   return NextResponse.next();
 }

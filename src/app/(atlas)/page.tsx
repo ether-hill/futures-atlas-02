@@ -4,6 +4,7 @@ import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
 import { visibleProjects } from "@/data/projects";
+import { editorPosts, formatPostDate, livePosts, KIND_LABEL } from "@/data/posts";
 import { getEditor } from "@/lib/editor";
 import { LOGOS } from "@/lib/logos";
 
@@ -15,6 +16,7 @@ export default async function Home() {
   // Editors see their drafts in the recent strip too, flagged as such.
   const isEditor = Boolean(await getEditor());
   const recent = visibleProjects(isEditor).slice(0, 6);
+  const dispatches = (isEditor ? editorPosts : livePosts).slice(0, 4);
 
   return (
     <div>
@@ -67,6 +69,63 @@ export default async function Home() {
           </Reveal>
         </Container>
       </section>
+
+      {/* Dispatches, the reading log: newest four, as a scannable column */}
+      {dispatches.length > 0 && (
+        <section className="border-t border-ink/15 bg-surface py-[clamp(58px,9vw,130px)]">
+          <Container>
+            <Reveal>
+              <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
+                <div>
+                  <p className="eyebrow tick mb-6">The reading log</p>
+                  <h2 className="max-w-[22ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
+                    Dispatches
+                  </h2>
+                </div>
+                <Link
+                  href="/dispatches"
+                  className="inline-flex items-center gap-2.5 rounded-[2px] border-[1.5px] border-ink/25 px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-ink transition-colors hover:border-ink"
+                >
+                  All dispatches <span className="text-[14px]">→</span>
+                </Link>
+              </div>
+            </Reveal>
+
+            <Reveal>
+              <ul className="mt-[clamp(30px,5vw,56px)] border-t border-ink/[0.14]">
+                {dispatches.map((p) => (
+                  <li key={p.slug} className="border-b border-ink/[0.14]">
+                    <Link
+                      href={`/dispatches/${p.slug}`}
+                      className="group grid gap-x-[clamp(16px,2.4vw,40px)] gap-y-2.5 py-[clamp(18px,2.4vw,30px)] min-[860px]:grid-cols-[152px_1fr]"
+                    >
+                      <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-faint">
+                        {formatPostDate(p.posted)} · {KIND_LABEL[p.kind]}
+                      </span>
+                      <span>
+                        <span className="block max-w-[40ch] text-[clamp(17px,1.7vw,23px)] font-extrabold leading-[1.16] tracking-[-0.018em] text-ink transition-colors group-hover:text-accent text-balance">
+                          {p.title}
+                        </span>
+                        <span
+                          className="mt-2 block max-w-[64ch]"
+                          style={{
+                            fontFamily: "var(--font-mono)",
+                            fontSize: "var(--text-body-size)",
+                            lineHeight: "var(--lh-body)",
+                            color: "var(--text-body)",
+                          }}
+                        >
+                          {p.dek}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Reveal>
+          </Container>
+        </section>
+      )}
 
       {/* Tech banner, the whole band links to the About page's stack + workflow */}
       <section className="border-t border-ink/15 bg-band">

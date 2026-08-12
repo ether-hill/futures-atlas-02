@@ -90,6 +90,32 @@ unpublish, change that word and deploy — nothing else.
 - `src/components/EditorBar.tsx` — the "you are not seeing the public site" bar;
   renders nothing for the public. `/editor` is the full live-vs-draft overview.
 
+## Dispatches (`/dispatches`) — the reading log
+
+The Atlas's news-and-articles section. Every post is commentary **on someone
+else's work** and always shows the canonical `url`; it never stands in for the
+source.
+
+- `src/data/posts.ts` — the single source of truth, same shape of contract as
+  `projects.ts`. `visibility: "live" | "draft"` publishes or unpublishes one
+  post; `featured: true` lifts it to the index's lead slot. `topics` is a
+  **closed** vocabulary (`PostTopic`) because it drives the filter chips — add a
+  new one there, not ad hoc. `posted` orders the index; `published` is the
+  source's own date and may be `YYYY` or `YYYY-MM` for older work.
+- Draft posts are gated exactly like draft projects: `isDraftPostPath()` in
+  `src/middleware.ts`, `draftPostPaths` in `robots.ts`, and
+  `generateStaticParams` prerenders **live posts only**, so an unpublished
+  dispatch never exists as HTML in the build output.
+- `body` is markdown, rendered by `src/lib/markdown.ts` (`marked`) and styled by
+  the `.fa-prose` block in `globals.css`. Bodies are authored in this repo, so
+  the HTML is trusted and unsanitised — **if a body ever comes from outside this
+  repo, sanitise in `markdown.ts` first.**
+- `/dispatches` deliberately uses a list, not the three-up card grid `/projects`
+  uses; a post page puts the prose left and a sticky source/"why it matters"
+  rail right at ≥1100px.
+- The nav entry lives in `public/atlas-nav.js` (`LINKS`), and the homepage shows
+  the newest four.
+
 ## Deploy
 
 **This project is git-connected on Vercel and SHARED — push to `main` and Vercel
