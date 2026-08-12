@@ -51,10 +51,12 @@ export function isWideCard(post: Post): boolean {
 
 /** Where the interactive cards sit in the run of posts. */
 const INTERLEAVE: Record<number, "poll-0" | "swipe" | "poll-1" | "poll-2"> = {
-  3: "poll-0",
-  7: "swipe",
-  12: "poll-1",
-  18: "poll-2",
+  // The lead video (2 cols) plus a narrow card fill row one, three cards fill
+  // row two, so placing the swiper here opens row three.
+  4: "swipe",
+  8: "poll-0",
+  14: "poll-1",
+  20: "poll-2",
 };
 
 export function FeedTimeline({
@@ -135,7 +137,7 @@ export function FeedTimeline({
               <FeedCardGroup key={post.slug}>
                 <PostCardFeed post={post} showVisibility={showVisibility} />
                 {special === "swipe" && (
-                  <Cell className="min-[900px]:[grid-row:span_2]">
+                  <Cell className="min-[900px]:[grid-column:span_2]">
                     <SwipeDemoCard />
                   </Cell>
                 )}
