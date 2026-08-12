@@ -2,8 +2,7 @@ import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, RECEPTION, SOURCES } from "./ency
 import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, unmountDock, type Part } from "./listen";
-import { experienceView, experienceParts, hasExperience, mountExperience } from "./experience";
-import { experienceV1View, hasExperienceV1, mountExperienceV1 } from "./experience-v1";
+import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
 import { mountDrawer, markDrawerRoute } from "./drawer";
 
 const esc = (s: string) =>
@@ -246,9 +245,8 @@ function render(root: HTMLElement) {
   const mV1 = location.hash.match(/^#\/v1\/([\w-]+)/);
   const id = mV2?.[1] ?? mV1?.[1];
   const leader = id ? LEADERS.find((l) => l.id === id) : undefined;
-  const wantV1 = !!mV1;
-  const immersive = !!leader && !wantV1 && hasExperience(leader.id);
-  const immersiveV1 = !!leader && wantV1 && hasExperienceV1(leader.id);
+  const variant: Variant = mV1 ? "v1" : "v2";
+  const immersive = !!leader && hasExperience(leader.id);
 
   unmountDock();
   unmountX?.();
@@ -257,17 +255,15 @@ function render(root: HTMLElement) {
   root.innerHTML = !leader
     ? homeView()
     : immersive
-      ? experienceView(leader)
-      : immersiveV1
-        ? experienceV1View(leader)
-        : leaderView(leader);
+      ? experienceView(leader, variant)
+      : leaderView(leader);
 
-  if (leader && (immersive || immersiveV1)) {
+  if (leader && immersive) {
     root.insertAdjacentHTML(
       "beforeend",
       `<nav class="x-versions" aria-label="Design version">
-         <a href="#/v1/${leader.id}"${immersiveV1 ? ' class="on"' : ""}>v1</a>
-         <a href="#/l/${leader.id}"${immersive ? ' class="on"' : ""}>v2</a>
+         <a href="#/v1/${leader.id}"${variant === "v1" ? ' class="on"' : ""}>v1</a>
+         <a href="#/l/${leader.id}"${variant === "v2" ? ' class="on"' : ""}>v2</a>
        </nav>`,
     );
   }
@@ -280,7 +276,6 @@ function render(root: HTMLElement) {
 
   if (leader) {
     if (immersive) unmountX = mountExperience(root);
-    else if (immersiveV1) unmountX = mountExperienceV1(root);
     else mountHero(root);
     // The v2 script is section-aware: its parts carry the anchors the player
     // scrolls to and the elements the read-along follows. v1 predates that.

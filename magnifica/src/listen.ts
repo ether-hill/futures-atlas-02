@@ -127,6 +127,9 @@ class Player {
   private audio = new Audio();
   private queue: Part[] = [];
   private cache = new Map<string, Clip>();
+  private inflight = new Map<string, Promise<Clip | null>>();
+  private warmQueue: number[] = [];
+  private warming = false;
   private fallback = false;
   private raf = 0;
   private words: HTMLElement[] = [];
@@ -212,6 +215,7 @@ class Player {
     this.clearHighlight();
     for (const c of this.cache.values()) URL.revokeObjectURL(c.url);
     this.cache.clear();
+    this.warmQueue.length = 0; // a route change abandons any speculative work
     this.i = 0;
     this.onprogress(0);
   }
@@ -249,6 +253,16 @@ class Player {
     const k = this.key(i);
     const hit = this.cache.get(k);
     if (hit) return hit;
+    // Coalesce: hovering a node while it is already being fetched must not
+    // start a second identical request.
+    const pending = this.inflight.get(k);
+    if (pending) return pending;
+    const p = this.request(i, k).finally(() => this.inflight.delete(k));
+    this.inflight.set(k, p);
+    return p;
+  }
+
+  private async request(i: number, k: string): Promise<Clip | null> {
     const res = await fetch("/api/magnifica/tts", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -273,6 +287,38 @@ class Player {
     };
     this.cache.set(k, clip);
     return clip;
+  }
+
+  /**
+   * Fetch a part without playing it, so pressing Listen is instant. Called on
+   * intent (hover/focus) rather than on load: generating speech costs
+   * characters, and a visitor who never presses play should not spend them.
+   *
+   * Warms run strictly one at a time. The account allows three concurrent
+   * generations, and a mouse sweep across the timeline would otherwise fire one
+   * request per node and come back with 429s — which is exactly what happened.
+   * Playback's own fetch is not queued, so pressing play never waits behind a
+   * speculative prefetch.
+   */
+  warm(i: number) {
+    if (this.fallback || i < 0 || i >= this.queue.length) return;
+    if (this.cache.has(this.key(i)) || this.warmQueue.includes(i)) return;
+    this.warmQueue.push(i);
+    this.drainWarm();
+  }
+
+  private async drainWarm() {
+    if (this.warming) return;
+    this.warming = true;
+    try {
+      while (this.warmQueue.length) {
+        const i = this.warmQueue.shift()!;
+        if (this.cache.has(this.key(i))) continue;
+        await this.fetchPart(i).catch(() => {});
+      }
+    } finally {
+      this.warming = false;
+    }
   }
 
   /** Bring the section this part narrates into view. */
@@ -483,10 +529,27 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   };
 
   playBtn.addEventListener("click", () => player.toggle());
-  nodeEls.forEach((n) =>
-    n.addEventListener("click", () => player.goTo(Number(n.dataset.i))),
-  );
-  dock.querySelector<HTMLButtonElement>(".dock-sound")!.addEventListener("click", () => {
+
+  // Warm the first passage the moment the pointer reaches the button, and the
+  // loop files as soon as the browser is idle — between them, both Listen and
+  // Soundscape respond immediately rather than after a fetch.
+  const warmFirst = () => player.warm(0);
+  playBtn.addEventListener("pointerenter", warmFirst, { once: true });
+  playBtn.addEventListener("focus", warmFirst, { once: true });
+  playBtn.addEventListener("pointerdown", warmFirst, { once: true });
+
+  const soundBtn = dock.querySelector<HTMLButtonElement>(".dock-sound")!;
+  const idle = (window as Window & { requestIdleCallback?: (cb: () => void) => void })
+    .requestIdleCallback;
+  if (idle) idle(() => scape.preload());
+  else setTimeout(() => scape.preload(), 1200);
+  soundBtn.addEventListener("pointerenter", () => scape.preload(), { once: true });
+
+  nodeEls.forEach((n) => {
+    n.addEventListener("pointerenter", () => player.warm(Number(n.dataset.i)), { once: true });
+    n.addEventListener("click", () => player.goTo(Number(n.dataset.i)));
+  });
+  soundBtn.addEventListener("click", () => {
     panel.hidden = !panel.hidden;
   });
   ambBtn.addEventListener("click", () => {

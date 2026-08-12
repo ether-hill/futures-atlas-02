@@ -24,6 +24,9 @@ interface Layer {
 
 export class Soundscape {
   private ctx: AudioContext | null = null;
+  /** Loop bytes, fetched before the first toggle so it can be instant. */
+  private files = new Map<LayerName, ArrayBuffer>();
+  private preloading = false;
   private master: GainNode | null = null;
   private layers = new Map<LayerName, Layer>();
   private timers: number[] = [];
@@ -43,6 +46,32 @@ export class Soundscape {
     }
   }
 
+  /**
+   * Fetch the loop files ahead of time. Without this the first toggle pays for
+   * five downloads and five decodes before anything is audible — the whole of
+   * the lag. Only the bytes are cached here; decoding needs an AudioContext,
+   * which needs a gesture, and is fast once the network is out of the way.
+   */
+  preload(force = false): void {
+    if (this.preloading) return;
+    // The five loops are ~1.7 MB. Speculating that much is fine on a desktop
+    // connection and rude on a metered one, so a saver or a slow link waits
+    // until the button is actually approached (force).
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
+      .connection;
+    if (!force && conn && (conn.saveData || /^(slow-)?2g$|^3g$/.test(conn.effectiveType ?? ""))) return;
+    this.preloading = true;
+    (Object.keys(LAYER_LABELS) as LayerName[]).forEach(async (name) => {
+      try {
+        const res = await fetch(`/magnifica/media/sfx/${name}.mp3`);
+        const type = res.headers.get("content-type") || "";
+        if (res.ok && type.startsWith("audio")) this.files.set(name, await res.arrayBuffer());
+      } catch {
+        /* no asset — the procedural layer covers it */
+      }
+    });
+  }
+
   toggle(): boolean {
     this.on = !this.on;
     if (this.on) {
@@ -50,14 +79,16 @@ export class Soundscape {
       this.ctx?.resume();
       for (const [name, l] of this.layers) {
         if (this.levels[name] > 0 && !l.started) l.start();
+        // Short constant: 0.6 took roughly two seconds to reach level, which
+        // read as the button not having worked.
         l.gain.gain.setTargetAtTime(
           this.on ? this.levels[name] * baseLevel(name) : 0,
           this.ctx!.currentTime,
-          0.6,
+          0.12,
         );
       }
     } else if (this.ctx) {
-      for (const l of this.layers.values()) l.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.5);
+      for (const l of this.layers.values()) l.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.35);
     }
     return this.on;
   }
@@ -92,10 +123,18 @@ export class Soundscape {
   private async startLayer(name: LayerName, out: GainNode) {
     const ctx = this.ctx!;
     try {
-      const res = await fetch(`/magnifica/media/sfx/${name}.mp3`);
-      const type = res.headers.get("content-type") || "";
-      if (res.ok && type.startsWith("audio")) {
-        const buf = await ctx.decodeAudioData(await res.arrayBuffer());
+      let bytes = this.files.get(name);
+      if (!bytes) {
+        const res = await fetch(`/magnifica/media/sfx/${name}.mp3`);
+        const type = res.headers.get("content-type") || "";
+        if (res.ok && type.startsWith("audio")) {
+          bytes = await res.arrayBuffer();
+          this.files.set(name, bytes);
+        }
+      }
+      if (bytes) {
+        // decodeAudioData detaches its input, so decode a copy and keep ours
+        const buf = await ctx.decodeAudioData(bytes.slice(0));
         const src = ctx.createBufferSource();
         src.buffer = buf;
         src.loop = true;

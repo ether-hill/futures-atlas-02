@@ -1,12 +1,10 @@
 /**
- * The immersive per-leader "experience" view — v2, layered.
- *
- * v1 baked everything into one video plate per section. v2 separates the
- * layers, which buys three things: the subject is no longer wherever the model
- * happened to put it (so type can sit in clear space), depth comes from real
- * parallax rather than implication, and only the hero needs a video — every
- * other backdrop is a still, which is roughly an eighth of the generation cost
- * and a great deal lighter to ship across sixteen leaders.
+ * The immersive per-leader "experience" view, in two versions off one code
+ * path. Structure, numbering, chapter rail, transport and read-along are
+ * identical; the `Variant` decides only which media plays behind them — v1
+ * moves everywhere, v2 moves in the hero and uses stills elsewhere at roughly
+ * an eighth of the generation cost. They were briefly two modules and promptly
+ * drifted, so a change to either is now a change to both.
  *
  * The portrait is a REAL photograph under a real licence, presented as a print
  * rather than matted into the scene. That is deliberate on two counts: a busy
@@ -26,24 +24,35 @@ import { portraitOf, type Portrait } from "./portraits";
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+/**
+ * The two design versions differ in their media and nothing else — same
+ * structure, numbering, rail, transport and read-along. v1 moves: every
+ * backdrop is a video loop. v2 moves only in the hero and uses stills
+ * elsewhere, which is a fraction of the generation cost and far lighter to
+ * ship. Keeping one code path means a change to either is a change to both.
+ */
+export type Variant = "v1" | "v2";
+
 interface ExperienceSpec {
   displayName: string;
   displayTitle: string;
-  /** Hero video loop id under /magnifica/media/loops/ — the only moving plate. */
-  hero: string;
-  /** Still ids under /magnifica/media/stills/, cycled behind the excerpt slides. */
+  /** Hero loop under /magnifica/media/loops/, per version. */
+  hero: Record<Variant, string>;
+  /** v2: stills behind the excerpt slides, then behind the reading chapters. */
   stills: string[];
-  /** Stills used behind the reading chapters; may be empty. */
   chapterStills: string[];
+  /** v1: video loops, cycled behind every section. */
+  videos: string[];
 }
 
 export const EXPERIENCES: Record<string, ExperienceSpec> = {
   "dalai-lama": {
     displayName: "Tenzin Gyatso",
     displayTitle: "The Fourteenth Dalai Lama",
-    hero: "dalai-lama-hero",
+    hero: { v1: "dalai-lama", v2: "dalai-lama-hero" },
     stills: ["dl-monastery", "dl-lamps", "dl-night", "dl-plateau"],
     chapterStills: ["dl-library", "dl-block"],
+    videos: ["dalai-lama-02", "dalai-lama-03", "dalai-lama-04"],
   },
 };
 
@@ -128,13 +137,20 @@ function partOf(s: Section): Part {
  */
 export const experienceParts = (l: Leader): Part[] => sections(l).map(partOf);
 
-/** A still plate. `rate` is its parallax speed relative to scroll. */
-const stillLayer = (still: string | undefined, rate = 0.18) =>
-  still
-    ? `<div class="x-bg" aria-hidden="true" data-par="${rate}">
-         <img src="/magnifica/media/stills/${esc(still)}.jpg" alt="" loading="lazy" decoding="async" />
-       </div>`
-    : `<div class="x-bg x-bg-plain" aria-hidden="true"></div>`;
+/**
+ * A backdrop plate. `rate` is its parallax speed relative to scroll. In v1 the
+ * element only declares which loop it wants; the video itself is created when
+ * the section nears the viewport, so a page of them never decodes at once.
+ */
+function plate(variant: Variant, media: string | undefined, rate: number): string {
+  if (!media) return `<div class="x-bg x-bg-plain" aria-hidden="true"></div>`;
+  if (variant === "v1") {
+    return `<div class="x-bg" aria-hidden="true" data-par="${rate}" data-backdrop="${esc(media)}"></div>`;
+  }
+  return `<div class="x-bg" aria-hidden="true" data-par="${rate}">
+            <img src="/magnifica/media/stills/${esc(media)}.jpg" alt="" loading="lazy" decoding="async" />
+          </div>`;
+}
 
 function polaroid(p: Portrait, rate: number, extraClass = ""): string {
   return `
@@ -150,7 +166,12 @@ function polaroid(p: Portrait, rate: number, extraClass = ""): string {
   </figure>`;
 }
 
-function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: number }): string {
+function renderSection(
+  s: Section,
+  spec: ExperienceSpec,
+  ctr: { q: number; c: number },
+  variant: Variant,
+): string {
   const id = anchorOf(s);
   const key = s.n || "gate";
   // Number only — the section's name is the heading, and repeating "Chapter"
@@ -168,11 +189,12 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
   }
 
   if (s.kind === "quote") {
-    const still = spec.stills[ctr.q % Math.max(spec.stills.length, 1)];
+    const pool = variant === "v1" ? spec.videos : spec.stills;
+    const media = pool[ctr.q % Math.max(pool.length, 1)];
     ctr.q++;
     return `
     <section class="x-quote" id="${id}" data-x-sect="${key}">
-      ${stillLayer(still, 0.22)}
+      ${plate(variant, media, 0.22)}
       <div class="x-quote-in">
         ${num}
         <span class="x-eyebrow" data-reveal>Predicted excerpt ${s.index + 1}</span>
@@ -214,14 +236,15 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
     </section>`;
   }
 
-  const still = spec.chapterStills[ctr.c % Math.max(spec.chapterStills.length, 1)];
+  const cPool = variant === "v1" ? spec.videos : spec.chapterStills;
+  const cMedia = cPool[(ctr.c + 1) % Math.max(cPool.length, 1)];
   ctr.c++;
 
   if (s.kind === "list") {
     const items = s.items.map((t) => `<li data-reveal>${esc(t)}</li>`).join("");
     return `
     <section class="x-sect x-sect-bg" id="${id}" data-x-sect="${key}">
-      ${stillLayer(still, 0.14)}
+      ${plate(variant, cMedia, 0.14)}
       <div class="x-sect-in">
         ${num}
         <h2 data-reveal>${esc(s.label)}</h2>
@@ -233,7 +256,7 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
 
   return `
   <section class="x-sect x-sect-bg" id="${id}" data-x-sect="${key}">
-    ${stillLayer(still, 0.14)}
+    ${plate(variant, cMedia, 0.14)}
     <div class="x-sect-in">
       ${num}
       <h2 data-reveal>${esc(s.label)}</h2>
@@ -242,12 +265,12 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
   </section>`;
 }
 
-export function experienceView(l: Leader): string {
+export function experienceView(l: Leader, variant: Variant = "v2"): string {
   const spec = EXPERIENCES[l.id];
   const portrait = portraitOf(l.id);
   const secs = sections(l);
   const ctr = { q: 0, c: 0 };
-  const body = secs.map((s) => renderSection(s, spec, ctr)).join("");
+  const body = secs.map((s) => renderSection(s, spec, ctr, variant)).join("");
 
   // Home first, so the rail can always take you back to the hero.
   const rail =
@@ -263,7 +286,7 @@ export function experienceView(l: Leader): string {
 
   return `
   <div class="x">
-    <section class="x-hero" id="x-home" data-hero-loop="${esc(spec.hero)}" data-x-sect="home">
+    <section class="x-hero" id="x-home" data-hero-loop="${esc(spec.hero[variant])}" data-x-sect="home">
       <div class="x-bg x-bg-hero" aria-hidden="true" data-par="0.12"></div>
       <div class="x-hero-grid">
         <div class="x-hero-in">
@@ -326,6 +349,43 @@ export function mountExperience(root: HTMLElement) {
     video.addEventListener("error", () => video.remove(), { once: true });
     bg?.appendChild(video);
   }
+
+  // v1 only: section backdrops are loops. They are created as their section
+  // approaches and paused the moment it leaves — a page of simultaneously
+  // decoding videos is the difference between cinematic and a hot laptop.
+  const backdrops = Array.from(root.querySelectorAll<HTMLElement>("[data-backdrop]"));
+  const bgIo = backdrops.length
+    ? new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            const holder = e.target as HTMLElement;
+            if (!e.isIntersecting) {
+              holder.querySelector("video")?.pause();
+              continue;
+            }
+            let v = holder.querySelector("video");
+            if (!v) {
+              v = document.createElement("video");
+              v.muted = true;
+              v.loop = true;
+              v.playsInline = true;
+              v.setAttribute("aria-hidden", "true");
+              v.src = `/magnifica/media/loops/${holder.dataset.backdrop}.mp4`;
+              v.addEventListener(
+                "loadeddata",
+                () => holder.closest("section")?.classList.add("has-bg"),
+                { once: true },
+              );
+              v.addEventListener("error", () => v?.remove(), { once: true });
+              holder.appendChild(v);
+            }
+            if (!reduce) v.play().catch(() => {});
+          }
+        },
+        { rootMargin: "40% 0px" },
+      )
+    : null;
+  backdrops.forEach((h) => bgIo?.observe(h));
 
   /*
    * Parallax. Two things make the naive version feel cheap, and both are
@@ -460,6 +520,7 @@ export function mountExperience(root: HTMLElement) {
     window.removeEventListener("scroll", kick);
     window.removeEventListener("resize", onResize);
     running = false;
+    bgIo?.disconnect();
     spy.disconnect();
   };
 }

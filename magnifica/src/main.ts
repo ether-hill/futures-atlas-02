@@ -1,6 +1,5 @@
 import "./style.css";
 import "./experience.css";
-import "./experience-v1.css";
 import { boot } from "./app";
 
 // The global nav is the one shared component, loaded as /atlas-nav.js in
