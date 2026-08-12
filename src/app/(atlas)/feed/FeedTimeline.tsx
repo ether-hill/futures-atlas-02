@@ -78,7 +78,7 @@ export function FeedTimeline({
   return (
     <div className="bg-surface">
       {/* ---------- full-width sticky bar ---------- */}
-      <div className="sticky top-[var(--fa-nav-h)] z-20 border-b border-ink/[0.14] bg-surface/92 backdrop-blur-md">
+      <div className="fa-pinned-bar sticky top-[var(--fa-nav-h)] z-[56] border-b border-ink/[0.14] bg-surface backdrop-blur-md">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 pt-4 min-[680px]:px-7">
           <h1 className="text-[24px] font-extrabold leading-none tracking-[-0.02em] text-ink">Feed</h1>
           <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-faint">
