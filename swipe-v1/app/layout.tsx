@@ -4,8 +4,8 @@ import "./globals.css";
 // Type system matches the Atlas tool pages: system-ui sans + ui-monospace
 // (set in globals.css). No web fonts.
 
-const DESC = "Pick your line of work, swipe Believe or Doubt on six grounded claims about how AI and quantum reshape it, then see how far your gut sat from where the evidence actually lands. Every card cites a real source.";
-const IMG = "https://futures-atlas-02.vercel.app/projects/swipe-the-future.jpg";
+const DESC = "The first version of Swipe the Future, kept as it was: pick your line of work and swipe Believe or Doubt on six sourced claims. The current game asks a different question, and lives at /swipe-the-future.";
+const IMG = "https://futures-atlas-02.vercel.app/projects/swipe-v1.jpg";
 
 export const metadata: Metadata = {
   title: "Swipe the Future v1 — Calibration",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     siteName: "Futures Atlas",
     title: "Swipe the Future v1 — Calibration",
     description: DESC,
-    images: [IMG, "https://futures-atlas-02.vercel.app/projects/swipe-the-future-2.jpg", "https://futures-atlas-02.vercel.app/projects/swipe-the-future-3.jpg"],
+    images: [IMG],
   },
   twitter: { card: "summary_large_image", images: [IMG] },
 };

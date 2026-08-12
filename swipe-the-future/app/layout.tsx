@@ -4,7 +4,7 @@ import "./globals.css";
 // Type system matches the Atlas tool pages: system-ui sans + ui-monospace
 // (set in globals.css). No web fonts.
 
-const DESC = "Pick your line of work, swipe Believe or Doubt on six grounded claims about how AI and quantum reshape it, then see how far your gut sat from where the evidence actually lands. Every card cites a real source.";
+const DESC = "One question, forty sourced claims: has this already happened, or not yet? Automated ports since 1993, software reading smear slides since 1995, and a pile of things everyone assumes have shipped that have not. Find out which futures you buy too early.";
 const IMG = "https://futures-atlas-02.vercel.app/projects/swipe-the-future.jpg";
 
 export const metadata: Metadata = {

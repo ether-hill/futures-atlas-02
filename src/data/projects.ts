@@ -129,7 +129,7 @@ export const projects: Project[] = [
     id: "swipe-the-future",
     title: "Swipe the Future",
     tagline:
-      "A calibration game: pick your line of work, swipe Believe or Doubt on six source-checked claims about AI and quantum, then see how far your gut sat from where the evidence actually lands.",
+      "A calibration game with one question: has this already happened, or not yet? Forty sourced claims about what machines are doing in medicine, transport, work and law, half of them older than you would guess. Swipe, then see which futures everyone buys early and which ones arrived while nobody was looking.",
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
@@ -142,14 +142,14 @@ export const projects: Project[] = [
     id: "swipe-v1",
     title: "Swipe the Future v1",
     tagline:
-      "The original game, kept as it was: pick a job, swipe Believe or Doubt on six claims, get a calibration score. Frozen so the first version stays playable next to v2, which asks whether a thing has already happened rather than whether it is true.",
+      "The first version, frozen: pick a job, swipe Believe or Doubt on six claims, get a calibration score. Kept playable beside the current game, which asks whether a thing has already happened rather than whether it is true.",
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
     status: "live",
     visibility: "draft",
     path: "/swipe-v1",
-    image: "/projects/swipe-the-future.jpg",
+    image: "/projects/swipe-v1.jpg",
   },
   {
     id: "trajectories",
