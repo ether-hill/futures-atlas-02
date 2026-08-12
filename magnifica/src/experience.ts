@@ -1,41 +1,67 @@
 /**
- * The immersive per-leader "experience" view — the cinematic long-form format,
- * prototyped on the Dalai Lama and intended as the template for the rest.
+ * The immersive per-leader "experience" view — v2, layered.
  *
- * Everything rendered here comes from the Leader record; this module invents no
- * prose and asserts no biography. The section headings and connective lines are
- * Magnifica's own editorial voice, exactly as on the classic view. In
- * particular:
+ * v1 baked everything into one video plate per section. v2 separates the
+ * layers, which buys three things: the subject is no longer wherever the model
+ * happened to put it (so type can sit in clear space), depth comes from real
+ * parallax rather than implication, and only the hero needs a video — every
+ * other backdrop is a still, which is roughly an eighth of the generation cost
+ * and a great deal lighter to ship across sixteen leaders.
  *
- *   - the honesty gate sits immediately under the hero, before any excerpt, and
- *     every excerpt slide is captioned "not a real quote";
- *   - "The real record" is built from `grounding` — the only sourced, factual
- *     material in the record — so the timeline the reference design uses for
- *     biography is here used for citations instead. Years are shown only when
- *     the sourced claim itself carries one.
+ * The portrait is a REAL photograph under a real licence, presented as a print
+ * rather than matted into the scene. That is deliberate on two counts: a busy
+ * studio background mattes badly, and a photographic object laid over an
+ * imagined landscape puts the seam between the real and the speculative in
+ * plain sight — which is the argument this whole project is making.
  *
- * Leaders without an entry in EXPERIENCES keep the classic reading view.
+ * Everything rendered here still comes from the Leader record; no prose is
+ * invented and no biography is asserted. See the v1 notes that survive below:
+ * the honesty gate precedes every excerpt, excerpts are captioned, and "The
+ * real record" is built from `grounding` rather than from a life story.
  */
 import type { Leader } from "./leaders";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+interface Portrait {
+  /** file under /magnifica/media/portraits/ */
+  file: string;
+  alt: string;
+  /** Visible credit — required by the licence, so it is markup, not a comment. */
+  credit: string;
+  licence: string;
+  licenceUrl: string;
+  sourceUrl: string;
+}
+
 interface ExperienceSpec {
-  /** Display name split out of Leader.name for the hero. */
   displayName: string;
   displayTitle: string;
-  /** Loop id for the hero, then the backdrops used behind the quote slides. */
+  /** Hero video loop id under /magnifica/media/loops/ — the only moving plate. */
   hero: string;
-  backdrops: string[];
+  portrait: Portrait;
+  /** Still ids under /magnifica/media/stills/, cycled behind the excerpt slides. */
+  stills: string[];
+  /** Stills used behind the reading chapters; may be empty. */
+  chapterStills: string[];
 }
 
 export const EXPERIENCES: Record<string, ExperienceSpec> = {
   "dalai-lama": {
     displayName: "Tenzin Gyatso",
     displayTitle: "The Fourteenth Dalai Lama",
-    hero: "dalai-lama",
-    backdrops: ["dalai-lama-02", "dalai-lama-03", "dalai-lama-04", "dalai-lama-02"],
+    hero: "dalai-lama-hero",
+    portrait: {
+      file: "dalai-lama.jpg",
+      alt: "The 14th Dalai Lama photographed in 2012",
+      credit: "Christopher Michel, 2012 — cropped",
+      licence: "CC BY-SA 4.0",
+      licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+      sourceUrl: "https://commons.wikimedia.org/wiki/File:The_Dalai_Lama_in_2012.jpg",
+    },
+    stills: ["dl-monastery", "dl-lamps", "dl-night", "dl-plateau"],
+    chapterStills: ["dl-library", "dl-block"],
   },
 };
 
@@ -47,7 +73,6 @@ type Section =
   | { kind: "record"; n: string; label: string; items: { claim: string; url: string }[] }
   | { kind: "quote"; n: string; text: string; index: number };
 
-/** Interleave the argument sections with the excerpt slides. */
 function sections(l: Leader): Section[] {
   const out: Section[] = [];
   let n = 0;
@@ -65,16 +90,37 @@ function sections(l: Leader): Section[] {
   return out;
 }
 
-/** A year, only if the sourced claim states one itself. */
 const yearOf = (claim: string) => claim.match(/\b(19|20)\d{2}\b/)?.[0] ?? "";
 
-function renderSection(s: Section, spec: ExperienceSpec, qi: { i: number }): string {
+/** A still plate. `rate` is its parallax speed relative to scroll. */
+const stillLayer = (still: string | undefined, rate = 0.18) =>
+  still
+    ? `<div class="x-bg" aria-hidden="true" data-par="${rate}">
+         <img src="/magnifica/media/stills/${esc(still)}.jpg" alt="" loading="lazy" decoding="async" />
+       </div>`
+    : `<div class="x-bg x-bg-plain" aria-hidden="true"></div>`;
+
+function polaroid(p: Portrait, rate: number, extraClass = ""): string {
+  return `
+  <figure class="x-polaroid ${extraClass}" data-par="${rate}">
+    <img src="/magnifica/media/portraits/${esc(p.file)}" alt="${esc(p.alt)}" />
+    <figcaption>
+      <span class="x-pol-name">Photograph</span>
+      <span class="x-pol-credit">
+        <a href="${esc(p.sourceUrl)}" target="_blank" rel="noopener">${esc(p.credit)}</a>
+        · <a href="${esc(p.licenceUrl)}" target="_blank" rel="noopener">${esc(p.licence)}</a>
+      </span>
+    </figcaption>
+  </figure>`;
+}
+
+function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: number }): string {
   if (s.kind === "quote") {
-    const backdrop = spec.backdrops[qi.i % spec.backdrops.length];
-    qi.i++;
+    const still = spec.stills[ctr.q % Math.max(spec.stills.length, 1)];
+    ctr.q++;
     return `
-    <section class="x-quote" id="x-${s.n}" data-x-sect="${s.n}" data-backdrop="${esc(backdrop)}">
-      <div class="x-bg" aria-hidden="true"></div>
+    <section class="x-quote" id="x-${s.n}" data-x-sect="${s.n}">
+      ${stillLayer(still, 0.22)}
       <div class="x-quote-in">
         <span class="x-eyebrow" data-reveal>Predicted excerpt ${s.index + 1}</span>
         <blockquote data-reveal>${esc(s.text)}</blockquote>
@@ -110,10 +156,14 @@ function renderSection(s: Section, spec: ExperienceSpec, qi: { i: number }): str
     </section>`;
   }
 
+  const still = spec.chapterStills[ctr.c % Math.max(spec.chapterStills.length, 1)];
+  ctr.c++;
+
   if (s.kind === "list") {
     const items = s.items.map((t) => `<li data-reveal>${esc(t)}</li>`).join("");
     return `
-    <section class="x-sect" id="x-${s.n}" data-x-sect="${s.n}">
+    <section class="x-sect x-sect-bg" id="x-${s.n}" data-x-sect="${s.n}">
+      ${stillLayer(still, 0.14)}
       <div class="x-sect-in">
         <span class="x-num" data-reveal>Chapter ${s.n}</span>
         <h2 data-reveal>${esc(s.label)}</h2>
@@ -124,7 +174,8 @@ function renderSection(s: Section, spec: ExperienceSpec, qi: { i: number }): str
   }
 
   return `
-  <section class="x-sect" id="x-${s.n}" data-x-sect="${s.n}">
+  <section class="x-sect x-sect-bg" id="x-${s.n}" data-x-sect="${s.n}">
+    ${stillLayer(still, 0.14)}
     <div class="x-sect-in">
       <span class="x-num" data-reveal>Chapter ${s.n}</span>
       <h2 data-reveal>${esc(s.label)}</h2>
@@ -136,8 +187,8 @@ function renderSection(s: Section, spec: ExperienceSpec, qi: { i: number }): str
 export function experienceView(l: Leader): string {
   const spec = EXPERIENCES[l.id];
   const secs = sections(l);
-  const qi = { i: 0 };
-  const body = secs.map((s) => renderSection(s, spec, qi)).join("");
+  const ctr = { q: 0, c: 0 };
+  const body = secs.map((s) => renderSection(s, spec, ctr)).join("");
 
   const rail = secs
     .map(
@@ -148,26 +199,25 @@ export function experienceView(l: Leader): string {
     )
     .join("");
 
-  const sources = l.grounding
-    .map((g) => `<li><a href="${esc(g.url)}" target="_blank" rel="noopener">${esc(g.claim)}</a></li>`)
-    .join("");
-
   return `
   <div class="x">
-    <section class="x-hero" data-backdrop="${esc(spec.hero)}">
-      <div class="x-bg x-bg-hero" aria-hidden="true"></div>
-      <div class="x-hero-in">
-        <span class="x-eyebrow" data-reveal>${esc(l.tradition)}</span>
-        <h1 data-reveal>${esc(spec.displayName)}</h1>
-        <p class="x-hero-title" data-reveal>${esc(spec.displayTitle)}</p>
-        <p class="x-hero-doc" data-reveal>
-          <span lang="bo">${esc(l.docTitle)}</span>
-          ${l.docTitleTranslation ? `<em>${esc(l.docTitleTranslation)}</em>` : ""}
-        </p>
-        <button type="button" class="x-begin" data-reveal>
-          <span class="x-begin-ring" aria-hidden="true">▶</span>
-          <span class="x-begin-lbl">Begin experience</span>
-        </button>
+    <section class="x-hero" data-hero-loop="${esc(spec.hero)}">
+      <div class="x-bg x-bg-hero" aria-hidden="true" data-par="0.12"></div>
+      <div class="x-hero-grid">
+        <div class="x-hero-in">
+          <span class="x-eyebrow" data-reveal>${esc(l.tradition)}</span>
+          <h1 data-reveal>${esc(spec.displayName)}</h1>
+          <p class="x-hero-title" data-reveal>${esc(spec.displayTitle)}</p>
+          <p class="x-hero-doc" data-reveal>
+            <span lang="bo">${esc(l.docTitle)}</span>
+            ${l.docTitleTranslation ? `<em>${esc(l.docTitleTranslation)}</em>` : ""}
+          </p>
+          <button type="button" class="x-begin" data-reveal>
+            <span class="x-begin-ring" aria-hidden="true">▶</span>
+            <span class="x-begin-lbl">Begin experience</span>
+          </button>
+        </div>
+        ${polaroid(spec.portrait, 0.42, "x-polaroid-hero")}
       </div>
       <span class="x-scroll" aria-hidden="true">Scroll to explore</span>
     </section>
@@ -179,7 +229,8 @@ export function experienceView(l: Leader): string {
         ${esc(l.name)} <i>might</i> write about artificial intelligence, drafted from
         real public statements (listed under <a href="#x-07">The real record</a>) and
         the forms this tradition actually uses. No passage here is a real quote, and
-        none of it is his voice.
+        none of it is his voice. The photograph is real and credited; the landscapes
+        are generated.
       </div>
     </section>
 
@@ -187,12 +238,10 @@ export function experienceView(l: Leader): string {
 
     ${body}
 
-    <section class="x-close">
+    <section class="x-close" data-x-sect="end">
       <div class="x-close-in">
-        <span class="x-eyebrow" data-reveal>The document, imagined</span>
-        <p class="x-close-doc" data-reveal>${esc(l.docType)}</p>
-        ${l.voiceNotes ? `<p class="x-voice" data-reveal><b>Voice:</b> ${esc(l.voiceNotes)}</p>` : ""}
-        <ul class="x-sources" data-reveal>${sources}</ul>
+        <span class="x-eyebrow" data-reveal>Voice</span>
+        ${l.voiceNotes ? `<p class="x-voice" data-reveal>${esc(l.voiceNotes)}</p>` : ""}
         <div class="x-close-actions" data-reveal>
           <button type="button" class="x-restart">Restart experience</button>
           <a class="x-all" href="#/">All sixteen voices</a>
@@ -203,44 +252,64 @@ export function experienceView(l: Leader): string {
 }
 
 /**
- * Backdrop videos are created only as a section approaches the viewport and are
- * paused the moment it leaves — four autoplaying loops at once is the difference
- * between a cinematic page and a hot laptop. Missing files simply never appear.
+ * Parallax + the hero loop. One rAF-throttled scroll pass drives every layer;
+ * animating transform (never top/background-position) keeps it on the
+ * compositor. Motion is skipped entirely under prefers-reduced-motion, which
+ * matters — parallax is a genuine vestibular trigger, not just a preference.
  */
 export function mountExperience(root: HTMLElement) {
-  const holders = Array.from(root.querySelectorAll<HTMLElement>("[data-backdrop]"));
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const io = new IntersectionObserver(
-    (entries) => {
-      for (const e of entries) {
-        const holder = e.target as HTMLElement;
-        const bg = holder.querySelector<HTMLElement>(".x-bg");
-        if (!bg) continue;
+  // The hero is the only moving plate; everything else is a still.
+  const hero = root.querySelector<HTMLElement>("[data-hero-loop]");
+  if (hero && !reduce) {
+    const bg = hero.querySelector<HTMLElement>(".x-bg");
+    const video = document.createElement("video");
+    video.muted = true;
+    video.loop = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.setAttribute("aria-hidden", "true");
+    video.src = `/magnifica/media/loops/${hero.dataset.heroLoop}.mp4`;
+    video.addEventListener("loadeddata", () => {
+      hero.classList.add("has-bg");
+      video.play().catch(() => {});
+    }, { once: true });
+    video.addEventListener("error", () => video.remove(), { once: true });
+    bg?.appendChild(video);
+  }
 
-        if (e.isIntersecting) {
-          let video = bg.querySelector("video");
-          if (!video) {
-            video = document.createElement("video");
-            video.muted = true;
-            video.loop = true;
-            video.playsInline = true;
-            video.setAttribute("aria-hidden", "true");
-            video.src = `/magnifica/media/loops/${holder.dataset.backdrop}.mp4`;
-            video.addEventListener("loadeddata", () => holder.classList.add("has-bg"), { once: true });
-            video.addEventListener("error", () => video?.remove(), { once: true });
-            bg.appendChild(video);
-          }
-          video.play().catch(() => {});
-        } else {
-          bg.querySelector("video")?.pause();
-        }
-      }
-    },
-    { rootMargin: "40% 0px" }
-  );
-  holders.forEach((h) => io.observe(h));
+  const layers = Array.from(root.querySelectorAll<HTMLElement>("[data-par]")).map((el) => ({
+    el,
+    rate: parseFloat(el.dataset.par || "0"),
+    section: el.closest("section") as HTMLElement,
+  }));
 
-  // Hero button and the closing restart both just move the page.
+  let ticking = false;
+  const apply = () => {
+    ticking = false;
+    const vh = window.innerHeight;
+    for (const { el, rate, section } of layers) {
+      if (!section) continue;
+      const r = section.getBoundingClientRect();
+      if (r.bottom < -vh || r.top > vh * 2) continue; // offscreen, skip the work
+      // 0 when the section's centre is at the viewport centre
+      const offset = (r.top + r.height / 2 - vh / 2) * -rate;
+      el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
+    }
+  };
+  const onScroll = () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(apply);
+  };
+
+  if (!reduce) {
+    apply();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+  }
+
   const first = root.querySelector<HTMLElement>("[data-x-sect]");
   root.querySelector(".x-begin")?.addEventListener("click", () => {
     first?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -249,23 +318,24 @@ export function mountExperience(root: HTMLElement) {
     root.querySelector(".x-hero")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
-  // Rail: mark the section currently in view.
   const rail = root.querySelector(".x-rail");
-  if (rail) {
-    const links = new Map<string, Element>();
-    rail.querySelectorAll("[data-rail]").forEach((a) => links.set((a as HTMLElement).dataset.rail!, a));
-    const spy = new IntersectionObserver(
-      (entries) => {
-        for (const e of entries) {
-          if (!e.isIntersecting) continue;
-          const id = (e.target as HTMLElement).dataset.xSect!;
-          links.forEach((a, k) => a.classList.toggle("on", k === id));
-        }
-      },
-      { rootMargin: "-45% 0px -45% 0px" }
-    );
-    root.querySelectorAll("[data-x-sect]").forEach((s) => spy.observe(s));
-  }
+  const spy = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const id = (e.target as HTMLElement).dataset.xSect!;
+        rail?.querySelectorAll("[data-rail]").forEach((a) =>
+          a.classList.toggle("on", (a as HTMLElement).dataset.rail === id)
+        );
+      }
+    },
+    { rootMargin: "-45% 0px -45% 0px" }
+  );
+  root.querySelectorAll("[data-x-sect]").forEach((s) => spy.observe(s));
 
-  return () => io.disconnect();
+  return () => {
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("resize", onScroll);
+    spy.disconnect();
+  };
 }

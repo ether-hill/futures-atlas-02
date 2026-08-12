@@ -46,6 +46,40 @@ curl -s -X POST https://api.elevenlabs.io/v1/sound-generation \
   -o public/media/sfx/wind.mp3
 ```
 
+## 3 · Experience view (v2) — layered plates
+
+The immersive view (`src/experience.ts`) separates the layers, which cuts cost
+sharply: **only the hero is a video loop**. Every other backdrop is a still.
+
+- `public/media/loops/<id>-hero.mp4` — the one moving plate per leader.
+- `public/media/stills/<name>.jpg` — section backdrops, parallaxed. Generate
+  with `nano_banana_pro` at **~2 credits** each (vs ~15 for a 10s clip), 16:9,
+  and encode to 1920px wide. Do **not** pass `resolution: "2k"` — it fails.
+  Frames pulled out of an existing loop with ffmpeg are free and work fine
+  behind a heavy scrim.
+- `public/media/portraits/<leader>.jpg` — see licensing below.
+
+Rough cost per leader at this treatment: one hero loop (~15) plus two or three
+stills (~6) — call it **~21 credits**, against ~120 if every backdrop moved.
+
+### Portrait licensing — read before touching the credit line
+
+Portraits are **real photographs under real licences**, not generated. The
+Dalai Lama portrait is [Christopher Michel's 2012 photograph][dl-src], **CC
+BY-SA 4.0**. That licence is not optional decoration:
+
+- the credit and the licence link must stay **visible on the page** — they are
+  rendered inside the print itself (`.x-polaroid figcaption`), not hidden in a
+  comment or an alt attribute;
+- the crop is an adaptation, so the cropped file is itself CC BY-SA 4.0, and
+  the caption says "cropped" to satisfy the indicate-changes term.
+
+**If you restyle the print, keep the caption.** Removing it is a licence
+breach, not a design choice. Same rule for any portrait added later — record
+the source, author and licence in the `portrait` block of `EXPERIENCES`.
+
+[dl-src]: https://commons.wikimedia.org/wiki/File:The_Dalai_Lama_in_2012.jpg
+
 ## Env (host Vercel project)
 
 - `ELEVENLABS_API_KEY` — read-aloud voices (route 503s gracefully without it).

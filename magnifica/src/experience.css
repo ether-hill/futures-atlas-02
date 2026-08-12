@@ -33,21 +33,30 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
 
 /* ---------- moving backdrops ---------- */
 
+/* Plates are taller than their section so a parallax translate never exposes
+   an edge. Only transform is animated — never top or background-position. */
 .x-bg {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: -14%;
+  height: 128%;
   overflow: hidden;
   background: var(--x-bg);
+  will-change: transform;
 }
-.x-bg video {
+.x-bg-plain { background: var(--x-bg); }
+
+.x-bg video,
+.x-bg img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.4s ease;
   /* the reference's grade: crushed shadows, warm highlights, low saturation */
   filter: saturate(0.72) contrast(1.16) brightness(0.62);
 }
+.x-bg video { opacity: 0; transition: opacity 1.4s ease; }
 .has-bg .x-bg video { opacity: 1; }
 
 /* Vignette + floor fade. Documented texture over video, not a token colour. */
@@ -62,26 +71,86 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
 
 /* ---------- hero ---------- */
 
-/* Type sits in the lower third rather than dead centre: these loops put their
-   subject mid-frame, and centred type lands straight across it. */
+/* v2: the subject is its own layer now, so the type gets a column of clear
+   space rather than fighting whatever the model put mid-frame. */
 .x-hero {
   position: relative;
   min-height: 100svh;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  text-align: center;
   /* bottom clearance keeps the begin button above the fixed dock */
-  padding: calc(var(--fa-nav-h) + 40px) var(--x-pad) clamp(116px, 17vh, 168px);
+  padding: calc(var(--fa-nav-h) + 48px) var(--x-pad) clamp(104px, 15vh, 150px);
+  overflow: hidden; /* the print parallaxes; clip it at the hero edge */
 }
-/* Weight the scrim toward the floor, where the type now lives. */
+/* Scrim biased left, under the type column. */
 .x-bg-hero::after {
   background:
-    radial-gradient(120% 90% at 50% 30%, transparent 26%, rgba(4, 6, 10, 0.62) 100%),
-    linear-gradient(180deg, rgba(4, 6, 10, 0.5) 0%, transparent 26%, rgba(4, 6, 10, 0.55) 62%, var(--x-bg) 99%);
+    radial-gradient(115% 95% at 34% 45%, transparent 16%, rgba(4, 6, 10, 0.68) 100%),
+    linear-gradient(180deg, rgba(4, 6, 10, 0.52) 0%, transparent 30%, transparent 60%, var(--x-bg) 99%);
 }
-.x-hero-in { position: relative; max-width: 1100px; }
+.x-hero-grid {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.22fr) minmax(0, 0.78fr);
+  align-items: center;
+  gap: clamp(24px, 5vw, 72px);
+}
+.x-hero-in { position: relative; text-align: left; }
+
+/* ---------- the print ----------
+   A real photograph under a real licence, shown as an object rather than
+   matted into the scene: the seam between the sourced and the imagined is
+   the point, not something to hide. Credit is markup because the licence
+   requires it to be visible. */
+.x-polaroid {
+  position: relative;
+  margin: 0;
+  justify-self: center;
+  width: min(100%, 340px);
+  padding: 15px 15px 16px;
+  background: oklch(0.94 0.008 85);
+  border-radius: 2px;
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.55), 0 4px 14px rgba(0, 0, 0, 0.4);
+  transform-origin: center;
+  will-change: transform;
+}
+.x-polaroid::before {
+  /* the sheen of a print catching the room */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 2px;
+  background: linear-gradient(150deg, rgba(255, 255, 255, 0.5) 0%, transparent 38%);
+  pointer-events: none;
+}
+.x-polaroid img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: oklch(0.8 0.01 85);
+}
+.x-polaroid figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px 2px 2px;
+  text-align: left;
+}
+.x-pol-name {
+  font: 700 8.5px var(--mono);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: oklch(0.55 0.02 60);
+}
+.x-pol-credit { font-size: 10.5px; line-height: 1.45; color: oklch(0.42 0.02 60); }
+.x-pol-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.x-pol-credit a:hover { color: oklch(0.3 0.06 40); }
+.x-polaroid-hero { rotate: 2.2deg; }
 
 .x-eyebrow {
   display: block;
@@ -109,8 +178,8 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   color: var(--x-gold);
 }
 .x-hero-doc {
-  margin: clamp(18px, 3vh, 34px) auto 0;
-  max-width: 62ch;
+  margin: clamp(18px, 3vh, 34px) 0 0;
+  max-width: 52ch;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -236,8 +305,19 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
 .x-sect {
   position: relative;
   padding: clamp(88px, 15vh, 172px) var(--x-pad);
+  overflow: hidden; /* contains the parallax plate */
 }
-.x-sect-in { max-width: 780px; margin: 0 auto; }
+/* Reading sections carry a still, so they need a heavier scrim than a quote
+   slide: long-form body copy over an image is where legibility actually dies. */
+.x-sect-bg .x-bg::after {
+  background:
+    radial-gradient(90% 70% at 50% 50%, rgba(4, 6, 10, 0.62) 0%, rgba(4, 6, 10, 0.78) 100%),
+    linear-gradient(180deg, var(--x-bg) 0%, transparent 20%, transparent 80%, var(--x-bg) 100%);
+}
+/* Body copy needs more cover than a heading does. */
+.x-sect-bg .x-body,
+.x-sect-bg .x-points li { text-shadow: 0 2px 18px rgba(4, 6, 10, 0.9); }
+.x-sect-in { position: relative; max-width: 780px; margin: 0 auto; }
 .x-num {
   display: block;
   font: 600 10px var(--mono);
@@ -331,6 +411,7 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   place-items: center;
   padding: clamp(80px, 12vh, 150px) var(--x-pad);
   text-align: center;
+  overflow: hidden; /* contains the parallax plate */
 }
 /* Excerpts sit on top of architecture, which competes with the letterforms —
    so the quote slides get a heavier centre scrim than the hero does. */
@@ -468,6 +549,14 @@ body:has(.x) .dock-slider input[type="range"] { accent-color: var(--dock-gold); 
 
 /* ---------- responsive ---------- */
 
+@media (max-width: 1000px) {
+  /* Stack: print first, then the type — the photograph is the hook on a
+     phone, where a 16:9 plate crops to almost nothing anyway. */
+  .x-hero-grid { grid-template-columns: 1fr; gap: clamp(22px, 4vh, 40px); }
+  .x-hero { align-items: flex-end; }
+  .x-polaroid { order: -1; justify-self: start; width: min(60%, 230px); }
+  .x-hero-in { text-align: left; }
+}
 @media (max-width: 900px) {
   .x-rail { display: none; }
   .x-timeline li { grid-template-columns: 1fr; gap: 6px; }
@@ -475,11 +564,20 @@ body:has(.x) .dock-slider input[type="range"] { accent-color: var(--dock-gold); 
 }
 @media (max-width: 680px) {
   .x { padding-bottom: 168px; }
-  .x-hero { min-height: 92svh; }
+  /* The dock takes ~150px at this width, so anything anchored to the hero
+     floor collides with it. On a phone the page plainly scrolls, so the begin
+     button and the scroll cue are both doing less work than the collision
+     costs — drop them and let the hero size to its content. */
+  .x-hero { min-height: auto; padding-bottom: clamp(40px, 8vh, 64px); align-items: flex-start; }
+  .x-begin, .x-scroll { display: none; }
+  .x-polaroid { width: min(46%, 172px); padding: 9px 9px 10px; }
+  .x-pol-credit { font-size: 9.5px; }
   .x-quote { min-height: auto; padding-top: clamp(88px, 16vh, 140px); padding-bottom: clamp(88px, 16vh, 140px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .x-bg video { display: none; }
+  .x-bg { top: 0; height: 100%; } /* no translate, so no overscan needed */
   .x-begin-ring, .x-rail span { transition: none; }
+  .x-polaroid { transform: none !important; }
 }
