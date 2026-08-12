@@ -48,9 +48,19 @@ export interface Post {
   length: PostLength;
   /** Estimated minutes to read OUR post. */
   readMinutes: number;
-  /** Card thumbnail / post header art, served from `public/blog/`. Original
-   *  artwork only — never a scrape of the source's own images. Without one the
-   *  card falls back to a hatched plate, as an imageless project card does. */
+  /**
+   * The source's OWN preview image (og:image, or the video's thumbnail), hot-linked
+   * from wherever the publisher serves it — the same thing any link-preview card
+   * shows. Preferred over `image` when present. We keep no copy, so if the
+   * publisher changes or pulls it the card falls back on its own.
+   *
+   * Only set when the image actually says something about THIS piece: generic
+   * site logos and default share cards are deliberately left out (an arXiv logo
+   * on seven cards is worse than no image at all).
+   */
+  sourceImage?: string;
+  /** Our own cover art, in `public/blog/`. The fallback when the source has no
+   *  usable image of its own — and the fallback again if `sourceImage` 404s. */
   image?: string;
   /** An accurately-quoted sentence from the source. */
   pullQuote?: string;
@@ -72,6 +82,7 @@ export const KIND_LABEL: Record<PostKind, string> = {
 export const posts: Post[] = [
   {
     slug: "meta-ten-gas-plants-for-one-campus",
+    sourceImage: "https://fortune.com/img-assets/wp-content/uploads/2026/03/Meta-Datacenter.jpg?resize=1200,600",
     image: "/blog/meta-ten-gas-plants-for-one-campus.webp",
     title: "Meta is building ten gas plants in Louisiana so Hyperion can think",
     dek: "Entergy will build ten gas-fired plants totalling 7.5 GW — nearly $11bn, a 30%-plus increase in Louisiana's grid capacity — to serve a single Meta campus in Richland Parish.",
@@ -127,6 +138,7 @@ Two details in the report matter more than the leaderboard. First, harnesses dom
   },
   {
     slug: "the-canaries-are-mostly-women",
+    sourceImage: "https://digitaleconomy.stanford.edu/app/uploads/2025/10/CanarySquare.jpg",
     image: "/blog/the-canaries-are-mostly-women.webp",
     title: "The canaries are still singing, and now they're mostly women",
     dek: "The Stanford/ADP payroll study found a 16% relative employment decline for 22-25 year olds in the most AI-exposed jobs. The live dashboard now shows the hit falling hardest on young women.",
@@ -152,6 +164,7 @@ Two cautions. "Relative decline" is not "jobs destroyed"; this is a measure agai
   },
   {
     slug: "a-quantum-advantage-you-can-check",
+    sourceImage: "https://storage.googleapis.com/gweb-research2023-media/images/HO_previewImage1.width-800.format-jpeg.jpg",
     image: "/blog/a-quantum-advantage-you-can-check.webp",
     title: "Google's quantum advantage claim is now checkable. That, not the 13,000x, is the news",
     dek: "The Quantum Echoes result on Willow produces expectation values other machines can reproduce, which is a real change from bitstring-sampling supremacy claims.",
@@ -283,6 +296,7 @@ The authors also do something most technical papers refuse to, which is address 
   },
   {
     slug: "metr-rebuilt-the-agent-time-horizon",
+    sourceImage: "https://metr.org/assets/images/time-horizon-1-1/time-horizon-1-vs-1-1-hybrid.png",
     image: "/blog/metr-rebuilt-the-agent-time-horizon.webp",
     title: "METR rebuilt its yardstick, and the agent trend line barely moved",
     dek: "A bigger task suite, a new harness, and the same uncomfortable conclusion: the length of software tasks AI agents can finish keeps doubling, faster since 2023.",
@@ -385,6 +399,7 @@ The authors call it "cognitive surrender," which is a more dramatic phrase than 
   },
   {
     slug: "somebody-audited-the-ai-2027-model",
+    sourceImage: "https://res.cloudinary.com/lesswrong-2-0/image/upload/f_auto,q_auto/v1/mirroredImages/PAYfmG2aRbdb74mEp/wbgif0tmp7pn8ygarxwv",
     image: "/blog/somebody-audited-the-ai-2027-model.webp",
     title: "Somebody Actually Audited the AI 2027 Model",
     dek: "AI 2027 shipped its code. A pseudonymous critic read it line by line and found the timeline curve was doing the work the arguments claimed to be doing.",
@@ -453,6 +468,7 @@ Still: for a decade the standard objection to quantum computing was that nobody 
   },
   {
     slug: "classified-cyber-benchmarks-no-licences",
+    sourceImage: "https://www.whitehouse.gov/wp-content/uploads/2025/03/WH47-Presidential-Actions-Social-Share-Card.jpg",
     image: "/blog/classified-cyber-benchmarks-no-licences.webp",
     title: "Trump's frontier-model order: classified cyber benchmarks, no licences",
     dek: "Executive Order 14409 creates a classified process for benchmarking frontier models' cyber capabilities — and expressly forbids turning it into a licensing regime.",
@@ -476,6 +492,7 @@ So the US now has a national-security capability evaluation regime with no compu
   },
   {
     slug: "an-announcement-is-not-electricity",
+    sourceImage: "https://substackcdn.com/image/fetch/$s_!Feto!,w_1200,h_675,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2F696efc6a-22ac-41e3-a593-91c2302806ca_1200x900.jpeg",
     image: "/blog/an-announcement-is-not-electricity.webp",
     title: "A data centre announcement is not electricity consumption",
     dek: "David Mytton lines up the LBNL, IEA and EPRI numbers side by side and asks the useful question: which of these forecasts is a projection and which is a press release?",
@@ -503,6 +520,7 @@ The honest conclusion is that the binding constraint probably isn't demand at al
   },
   {
     slug: "the-bottleneck-moved-from-gpus-to-cpus",
+    sourceImage: "https://img.youtube.com/vi/c88l8daXiv4/maxresdefault.jpg",
     image: "/blog/the-bottleneck-moved-from-gpus-to-cpus.webp",
     title: "Dylan Patel: the 2026 bottleneck moved from GPUs to CPUs",
     dek: "Recorded at Daytona's Compute conference in San Francisco: why reinforcement learning and agent workloads are draining CPU, memory and storage supply, not just accelerators.",
@@ -548,6 +566,7 @@ One unsettling note: he expects detailed Shor-algorithm resource estimates may s
   },
   {
     slug: "are-ai-benchmarks-doomed",
+    sourceImage: "https://epoch.ai/assets/images/epoch-after-hours/are-ai-benchmarks-doomed.png",
     image: "/blog/are-ai-benchmarks-doomed.webp",
     title: "Epoch's benchmark team makes the case that saturation is not the crisis",
     dek: "An hour with the people who build the tests: why benchmarks keep getting solved, why that is mostly fine, and where the benchmark-to-reality gap actually lives.",
@@ -573,6 +592,7 @@ If you only ever read leaderboard tables, this is the corrective: an argument fo
   },
   {
     slug: "susskind-on-a-world-without-work",
+    sourceImage: "https://www.gresham.ac.uk/sites/default/files/styles/meta_facebook/public/teaser-override/2026-04-14_1800_Susskind_Orig_390x230.jpg?itok=WlbiEO1T",
     image: "/blog/susskind-on-a-world-without-work.webp",
     title: "Susskind's withering: how a world without work would actually arrive",
     dek: "A free public lecture that lays out the substitution-versus-complementation frame cleanly, then explains why the end of work would look less like a collapse and more like an erosion.",
@@ -596,6 +616,7 @@ His claim is that AI may weaken the complementing force while strengthening the 
   },
   {
     slug: "keeping-futures-open",
+    sourceImage: "https://assets.longnow.org/data/02026_johar_episode_95464a7cce.jpg",
     image: "/blog/keeping-futures-open.webp",
     title: "Indy Johar's Case for Keeping Futures Open Instead of Picking One",
     dek: "A Long Now talk arguing that the goal is not civilisational survival but civilisational optionality — keeping enough futures reachable to respond when the shocks stack up.",
@@ -619,6 +640,7 @@ An hour, watchable free. The framing survives contact with the rest of the field
   },
   {
     slug: "shors-algorithm-in-twenty-four-minutes",
+    sourceImage: "https://img.youtube.com/vi/-UrdExQW0cs/hqdefault.jpg",
     image: "/blog/shors-algorithm-in-twenty-four-minutes.webp",
     title: "Watch this before you argue about post-quantum crypto",
     dek: "Twenty-four minutes that actually explain how Shor's algorithm turns factoring into a period-finding problem, and why NIST has been in a hurry since.",
@@ -875,6 +897,7 @@ The authors are careful in the right places: "Our simulated deployments also dif
   },
   {
     slug: "geoffrey-irving-on-when-to-have-slowed-down",
+    sourceImage: "https://80000hours.org/wp-content/uploads/2026/08/Geoffrey-WP-thumb-scaled.jpg",
     title: "\"It would be a while ago in the past\": Geoffrey Irving on when we should have slowed down",
     dek: "The UK AI Security Institute's former chief scientist on why the labs' alignment plans might work, why nobody can show that they will, and what a theory-first research org is for.",
     url: "https://80000hours.org/podcast/episodes/geoffrey-irving-superintelligence-alignment-theory/",
@@ -899,6 +922,7 @@ Video is on the 80,000 Hours YouTube channel; full transcript on the episode pag
   },
   {
     slug: "cloudflares-post-quantum-finish-line",
+    sourceImage: "https://blog.cloudflare.com/_emdash/api/media/file/01KW49EDFXJ7DZAM1J2N05VH18.png",
     title: "Cloudflare just moved its post-quantum finish line to 2029",
     dek: "Over 65% of human traffic to Cloudflare is already post-quantum encrypted. Authentication is the hard half, and the deadline just got pulled forward.",
     url: "https://blog.cloudflare.com/post-quantum-roadmap/",
@@ -945,6 +969,7 @@ Fast adoption, slow labour-market consequence, at least as employers tell it. Th
   },
   {
     slug: "half-of-america-uses-chatbots",
+    sourceImage: "https://www.pewresearch.org/wp-content/uploads/sites/20/2026/06/PI_2026.06.17_Americans-and-AI_featured.jpg?w=1200&amp;h=628&amp;crop=1",
     title: "Half of America now uses chatbots and likes them less every year",
     dek: "Pew's February 2026 survey of 5,119 US adults: chatbot use is up to 49% from 33% in 2024, while 63% say AI is advancing too fast and 40% expect a net-negative society.",
     url: "https://www.pewresearch.org/internet/2026/06/17/americans-and-ai-2026-chatbots-smart-devices-and-views-on-impact/",
@@ -995,6 +1020,7 @@ Read it as a template. This is what it looks like when an institution measures i
   },
   {
     slug: "shell-lets-one-of-its-own-bets-die",
+    sourceImage: "https://www.shell.com/news-and-insights/scenarios/the-2026-energy-security-scenarios/_jcr_content/root/metadata.shellimg.jpeg/1767064506539/promo-2026-energy-security-scenarios.jpeg?imwidth=1280&impolicy=amidala-image-191x100",
     title: "Shell's 2026 Scenarios Let One of Its Own Bets Die",
     dek: "Archipelagos, Surge, Horizon: three energy futures from the team that invented modern scenario planning, and the disclaimer at the bottom is the most instructive line in it.",
     url: "https://www.shell.com/news-and-insights/scenarios/the-2026-energy-security-scenarios.html",
@@ -1043,6 +1069,7 @@ And then the detail that makes it urgent rather than academic — at least two s
   },
   {
     slug: "a-metal-enzyme-designed-from-scratch",
+    sourceImage: "https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2Fs41586-025-09746-w/MediaObjects/41586_2025_9746_Fig1_HTML.png",
     title: "The Baker Lab Designed a Metal Enzyme From Scratch and It Nearly Works Like Nature's",
     dek: "RFdiffusion2 designed zinc metallohydrolases with catalytic efficiencies orders of magnitude above previous designed enzymes — straight out of the model, before any lab evolution.",
     url: "https://www.nature.com/articles/s41586-025-09746-w",
@@ -1108,6 +1135,7 @@ CFO commentary points to "the steep ramp-up of our 2-nanometer technology". Ever
   },
   {
     slug: "qwen-3-6-open-weights-in-the-error-bars",
+    sourceImage: "https://cdn-thumbnails.huggingface.co/social-thumbnails/models/Qwen/Qwen3.6-35B-A3B.png",
     title: "Qwen3.6's 3B active parameters put open weights inside the frontier's error bars",
     dek: "An Apache-2.0 mixture-of-experts model with 3B active parameters reports 73.4 on SWE-bench Verified — the interesting number is the denominator, not the score.",
     url: "https://huggingface.co/Qwen/Qwen3.6-35B-A3B",

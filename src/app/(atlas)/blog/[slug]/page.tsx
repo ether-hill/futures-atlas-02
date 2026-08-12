@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { KindBadge } from "@/components/PostCard";
+import { PostImage, hasImage } from "@/components/PostImage";
 import { PostCarousel } from "@/components/PostCarousel";
 import {
   formatPostDate,
@@ -86,17 +87,12 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </p>
         </header>
 
-        {post.image && (
+        {hasImage(post) && (
           <div
             className="mt-[clamp(24px,3.2vw,44px)] overflow-hidden rounded-[3px]"
             style={{ border: "var(--border-hairline) solid var(--hairline)" }}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={post.image}
-              alt=""
-              className="block aspect-[16/7] w-full object-cover"
-            />
+            <PostImage post={post} priority className="block aspect-[16/7] w-full object-cover" />
           </div>
         )}
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PostImage, hasImage } from "./PostImage";
 import { KIND_LABEL, formatPostDate, type Post, type PostKind } from "@/data/posts";
 
 /**
@@ -65,18 +66,15 @@ export function PostCard({
     >
       {/* plate */}
       <div
-        className={`relative aspect-[3/2] overflow-hidden ${post.image ? "" : "fa-hatch flex items-end"}`}
+        className={`relative aspect-[3/2] overflow-hidden ${hasImage(post) ? "" : "fa-hatch flex items-end"}`}
         style={{
           borderBottom: "var(--border-hairline) solid var(--hairline)",
-          padding: post.image ? 0 : "var(--space-5)",
+          padding: hasImage(post) ? 0 : "var(--space-5)",
         }}
       >
-        {post.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={post.image}
-            alt=""
-            loading="lazy"
+        {hasImage(post) ? (
+          <PostImage
+            post={post}
             className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           />
         ) : (
@@ -93,7 +91,7 @@ export function PostCard({
         )}
 
         <span className="absolute left-0 top-0 z-[2] flex flex-wrap gap-1.5" style={{ margin: "var(--space-4)" }}>
-          <KindBadge kind={post.kind} onPlate={Boolean(post.image)} />
+          <KindBadge kind={post.kind} onPlate={hasImage(post)} />
           {showVisibility && <VisibilityTag post={post} />}
         </span>
       </div>

@@ -470,51 +470,6 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   color: var(--x-gold);
 }
 
-/* ---------- closing ---------- */
-
-.x-close {
-  position: relative;
-  padding: clamp(88px, 14vh, 160px) var(--x-pad) clamp(60px, 9vh, 100px);
-  border-top: 1px solid var(--x-line);
-}
-.x-close-in { max-width: 780px; margin: 0 auto; }
-.x-close-doc {
-  margin: 16px 0 0;
-  font-family: var(--x-display);
-  font-size: clamp(20px, 2.7vw, 30px);
-  line-height: 1.34;
-  color: var(--x-ink);
-}
-.x-sources { margin: 30px 0 0; padding: 0; list-style: none; }
-.x-sources li { border-top: 1px solid var(--x-line); }
-.x-sources li:last-child { border-bottom: 1px solid var(--x-line); }
-.x-sources a {
-  display: block;
-  padding: 15px 0;
-  color: var(--x-muted);
-  font-size: 13.5px;
-  line-height: 1.6;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-.x-sources a:hover { color: var(--x-gold); }
-
-.x-close-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 36px; }
-.x-restart, .x-all {
-  border: 1px solid var(--x-line);
-  border-radius: 999px;
-  padding: 12px 22px;
-  background: none;
-  color: var(--x-ink);
-  font: 600 10px var(--mono);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  text-decoration: none;
-  cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
-}
-.x-restart:hover, .x-all:hover { border-color: var(--x-gold); color: var(--x-gold); }
-
 /* ---------- the dock, in cinematic dress ----------
    The dock is shared with the classic view, so it is re-dressed contextually
    rather than forked: same markup and behaviour, gold instead of blue, and

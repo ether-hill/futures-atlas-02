@@ -310,15 +310,6 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
     <nav class="x-rail" aria-label="Chapters">${rail}</nav>
 
     ${body}
-
-    <section class="x-close" data-x-sect="end">
-      <div class="x-close-in">
-        <div class="x-close-actions" data-reveal>
-          <button type="button" class="x-restart">Restart experience</button>
-          <a class="x-all" href="#/">All sixteen voices</a>
-        </div>
-      </div>
-    </section>
   </div>`;
 }
 
@@ -493,12 +484,11 @@ export function mountExperience(root: HTMLElement) {
     });
   }
 
-  const first = root.querySelector<HTMLElement>("[data-x-sect]");
+  // The hero itself carries data-x-sect="home", so "first section" has to skip
+  // it — otherwise Begin scrolls you to where you already are.
+  const first = root.querySelector<HTMLElement>('[data-x-sect]:not([data-x-sect="home"])');
   root.querySelector(".x-begin")?.addEventListener("click", () => {
     first?.scrollIntoView({ behavior: "smooth", block: "start" });
-  });
-  root.querySelector(".x-restart")?.addEventListener("click", () => {
-    root.querySelector(".x-hero")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 
   const rail = root.querySelector(".x-rail");

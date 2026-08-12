@@ -56,6 +56,7 @@
     { name: "Home", path: "/" },
     { name: "Projects", path: "/projects" },
     { name: "Blog", path: "/blog" },
+    { name: "Feed", path: "/feed" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
