@@ -113,8 +113,22 @@ source.
 - `/blog` is a full-width four-column card grid; a post page puts the prose left
   and a sticky source/"why it matters" rail right at ≥1100px, with a "More
   posts" carousel at the foot.
-- The nav entry lives in `public/atlas-nav.js` (`LINKS`), and the homepage shows
-  the newest four.
+- **`/feed` is the same posts as a timeline** — a Twitter/X-shaped layout (nav
+  rail · centre column with an avatar gutter · trends rail) skinned entirely in
+  core tokens. It deliberately carries **no like/repost/view counts**: those
+  numbers don't exist for this site and inventing them would be inventing data.
+  The action row links to the post and the source, and shows the read time.
+- **Images, in priority order.** `sourceImage` — the publisher's own og:image or
+  the video's thumbnail, *hot-linked*, never copied into the repo — then our own
+  `image` cover art in `public/blog/`, then the hatched plate. `PostImage`
+  (client) does the demotion on `onError`, so a pulled or hot-link-blocked
+  source image silently falls back to the illustration.
+  Only set `sourceImage` when the image says something about *that* piece:
+  generic site logos and default share cards are deliberately excluded (the same
+  arXiv logo on seven cards is worse than no image at all).
+  `scratchpad/harvest.py` in the session notes shows how they were collected.
+- Nav entries live in `public/atlas-nav.js` (`LINKS`), and the homepage carousel
+  shows the newest ten.
 
 ## Deploy
 

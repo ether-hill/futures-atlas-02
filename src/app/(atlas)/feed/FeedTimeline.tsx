@@ -9,7 +9,6 @@ import {
   hostOf,
   topicsOf,
   type Post,
-  type PostKind,
   type PostTopic,
 } from "@/data/posts";
 
@@ -227,9 +226,12 @@ function FeedItem({ post, showVisibility }: { post: Post; showVisibility: boolea
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="text-[14px] font-extrabold tracking-[-0.01em] text-ink">Futures Atlas</span>
             <VerifiedMark />
-            <span className="font-mono text-[11.5px] text-graphite">@futuresatlas</span>
-            <span aria-hidden className="font-mono text-[11.5px] text-faint">·</span>
-            <span className="font-mono text-[11.5px] text-faint">{formatPostDate(post.posted)}</span>
+            {/* handle and date wrap together, so a narrow column never strands
+                the separator at the end of a line */}
+            <span className="whitespace-nowrap font-mono text-[11.5px] text-graphite">
+              @futuresatlas <span aria-hidden className="text-faint">·</span>{" "}
+              <span className="text-faint">{formatPostDate(post.posted)}</span>
+            </span>
             {showVisibility && post.visibility === "draft" && (
               <span
                 className="rounded-[2px] px-1.5 py-0.5 font-mono text-[9.5px] uppercase tracking-[0.14em]"
@@ -327,15 +329,16 @@ function FeedItem({ post, showVisibility }: { post: Post; showVisibility: boolea
 
 function Avatar() {
   return (
-    // paper is light in BOTH themes and the mark is ink, so the avatar reads
-    // without the invert filter the nav bar needs for its own copy of the mark.
+    // band is dark in BOTH themes, so one treatment works either way: the mark
+    // ships as dark ink, so it gets inverted onto the dark disc — the same trick
+    // atlas-nav.css uses for its own copy. (A paper disc vanished in light mode.)
     <span
       className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[var(--radius-full)] min-[520px]:h-11 min-[520px]:w-11"
-      style={{ background: "var(--paper, #f4efe4)" }}
+      style={{ background: "var(--band)" }}
       aria-hidden
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src="/fa.svg" alt="" className="h-[18px] w-auto" />
+      <img src="/fa.svg" alt="" className="h-[18px] w-auto" style={{ filter: "invert(1)" }} />
     </span>
   );
 }
