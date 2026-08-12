@@ -300,12 +300,18 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   color: var(--x-faint);
 }
 .x-rail i {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 999px;
   border: 1px solid currentColor;
   flex: none;
   transition: background 0.3s, border-color 0.3s;
+}
+.x-rail b {
+  font: 600 9.5px var(--mono);
+  letter-spacing: 0.1em;
+  min-width: 2ch;
+  transition: color 0.3s;
 }
 .x-rail span {
   font: 600 9px var(--mono);
@@ -689,3 +695,38 @@ body:has(.x) .mg-list a.on {
   background: oklch(0.79 0.085 78 / 0.14);
 }
 body:has(.x) .mg-thumb { background: oklch(0.18 0.012 260); border-color: oklch(1 0 0 / 0.14); }
+
+/* ---------- section numbers ----------
+   The number is the label. Section names live in the heading and the rail, so
+   prefixing every eyebrow with the word "Chapter" spent a line saying nothing. */
+.x-num {
+  display: block;
+  font: 600 11px var(--mono);
+  letter-spacing: 0.22em;
+  color: var(--x-gold);
+}
+.x-num-word { letter-spacing: 0.26em; text-transform: uppercase; }
+
+/* Excerpt slides carry their number too — they are sections like any other,
+   and skipping them made the sequence look like it had gaps. */
+.x-quote .x-num { margin-bottom: 10px; }
+.x-quote .x-eyebrow { color: var(--x-muted); }
+
+/* ---------- disclaimer ---------- */
+.x-gate-head {
+  max-width: 74ch;
+  margin: 0 auto 14px;
+  text-align: center;
+}
+.x-gate-head .x-num-word {
+  display: inline-block;
+  padding: 6px 14px;
+  border: 1px solid oklch(0.79 0.085 78 / 0.4);
+  border-radius: 999px;
+  font-size: 10px;
+}
+body:has(.x) .mg-burger:hover,
+body:has(.x) .open .mg-burger {
+  border-color: var(--x-gold, oklch(0.79 0.085 78));
+  color: oklch(0.79 0.085 78);
+}

@@ -35,6 +35,14 @@ function itemsHtml(): string {
   }).join("");
 }
 
+/** A sidebar/panel glyph rather than a hamburger — this opens a panel. */
+const PANEL_ICON = `
+  <svg viewBox="0 0 20 20" width="19" height="19" aria-hidden="true" focusable="false">
+    <rect x="1.6" y="3.4" width="16.8" height="13.2" rx="2.6" fill="none"
+          stroke="currentColor" stroke-width="1.5" />
+    <line x1="7.4" y1="3.4" x2="7.4" y2="16.6" stroke="currentColor" stroke-width="1.5" />
+  </svg>`;
+
 /** Reflect the current hash in the menu. */
 export function markDrawerRoute() {
   if (!root) return;
@@ -56,7 +64,7 @@ export function mountDrawer() {
   root.className = "mg-drawer-root";
   root.innerHTML = `
     <button type="button" class="mg-burger" aria-expanded="false" aria-controls="mg-drawer" aria-label="Open menu">
-      <span></span><span></span><span></span>
+      ${PANEL_ICON}
     </button>
     <div class="mg-scrim" hidden></div>
     <aside class="mg-drawer" id="mg-drawer" hidden aria-label="Contents">

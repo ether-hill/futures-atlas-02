@@ -86,25 +86,39 @@ function prepareWords(el: HTMLElement): HTMLElement[] {
   if (el.dataset.wordsReady === "1") {
     return Array.from(el.querySelectorAll<HTMLElement>("[data-w]"));
   }
-  // Rebuilding the contents would destroy any markup inside — links in the
-  // honesty gate, for one. Rich elements keep the passage-level mark only.
-  if (el.children.length > 0) return [];
-  const text = el.textContent ?? "";
-  const parts = text.split(/(\s+)/);
-  el.textContent = "";
+
+  // Walk text nodes rather than rebuilding innerHTML, so existing markup
+  // survives — links, list items, emphasis. Subtrees marked data-nospeak are
+  // skipped: they are on screen but not in the narration (year chips, "Source"
+  // links, section ledes), and counting them would desynchronise the marker.
+  const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (node.parentElement?.closest("[data-nospeak]")) return NodeFilter.FILTER_REJECT;
+      return /\S/.test(node.nodeValue ?? "") ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    },
+  });
+
+  const texts: Text[] = [];
+  for (let n = walker.nextNode(); n; n = walker.nextNode()) texts.push(n as Text);
+
   const spans: HTMLElement[] = [];
-  for (const p of parts) {
-    if (!p) continue;
-    if (/^\s+$/.test(p)) {
-      el.appendChild(document.createTextNode(p));
-    } else {
-      const s = document.createElement("span");
-      s.dataset.w = String(spans.length);
-      s.textContent = p;
-      el.appendChild(s);
-      spans.push(s);
+  for (const t of texts) {
+    const frag = document.createDocumentFragment();
+    for (const p of (t.nodeValue ?? "").split(/(\s+)/)) {
+      if (!p) continue;
+      if (/^\s+$/.test(p)) {
+        frag.appendChild(document.createTextNode(p));
+      } else {
+        const s = document.createElement("span");
+        s.dataset.w = String(spans.length);
+        s.textContent = p;
+        frag.appendChild(s);
+        spans.push(s);
+      }
     }
+    t.parentNode?.replaceChild(frag, t);
   }
+
   el.dataset.wordsReady = "1";
   return spans;
 }
@@ -118,6 +132,7 @@ class Player {
   private words: HTMLElement[] = [];
   private times: WordTimes = [];
   private lastWord = -1;
+  private lastFollow = 0;
   private target: HTMLElement | null = null;
 
   i = 0;
@@ -299,6 +314,21 @@ class Player {
     this.target = null;
   }
 
+  /**
+   * Keep the word being spoken inside a comfortable band. Only nudges when it
+   * has actually left that band, and not more than once a second, so it never
+   * fights the reader or stacks smooth-scrolls on top of each other.
+   */
+  private follow(word: HTMLElement) {
+    const now = performance.now();
+    if (now - this.lastFollow < 1000) return;
+    const r = word.getBoundingClientRect();
+    const vh = window.innerHeight;
+    if (r.top > vh * 0.3 && r.bottom < vh * 0.68) return; // already well placed
+    this.lastFollow = now;
+    window.scrollBy({ top: r.top - vh * 0.42, behavior: "smooth" });
+  }
+
   private startTracking() {
     cancelAnimationFrame(this.raf);
     const tick = () => {
@@ -315,8 +345,10 @@ class Player {
             this.words[this.lastWord]?.classList.add("is-read");
           }
           if (idx >= 0) {
-            this.words[idx]?.classList.add("is-now");
+            const w = this.words[idx];
+            w?.classList.add("is-now");
             for (let k = 0; k < idx; k++) this.words[k]?.classList.add("is-read");
+            if (w) this.follow(w);
           }
           this.lastWord = idx;
         }

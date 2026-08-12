@@ -49,74 +49,84 @@ export const EXPERIENCES: Record<string, ExperienceSpec> = {
 
 export const hasExperience = (id: string) => id in EXPERIENCES;
 
+/**
+ * Every addressable place on the page, in order. This is the single source of
+ * the numbering: the slides, the chapter rail, the narration script and the
+ * playhead nodes are all derived from it, so they cannot drift apart. The
+ * disclaimer is a section like any other — it carries a name rather than a
+ * number, because it sits before the document begins.
+ */
 type Section =
+  | { kind: "gate"; n: ""; label: "Disclaimer"; body: string }
   | { kind: "chapter"; n: string; label: string; body: string }
   | { kind: "list"; n: string; label: string; items: string[] }
   | { kind: "record"; n: string; label: string; items: { claim: string; url: string }[] }
-  | { kind: "quote"; n: string; text: string; index: number };
+  | { kind: "quote"; n: string; label: string; text: string; index: number };
+
+/** Anchor id for a section; the disclaimer is named, the rest numbered. */
+const anchorOf = (s: Section) => (s.kind === "gate" ? "x-gate" : `x-${s.n}`);
+
+/**
+ * The disclaimer, worded once and used for both the page and the narration so
+ * the read-along can map word for word. Deliberately plain text: an inline
+ * link here would put unspoken words into the middle of the passage.
+ */
+const gateText = (l: Leader) =>
+  `This document does not exist. It is a research-grounded prediction — a speculative-design ` +
+  `exercise in what ${l.name} might write about artificial intelligence, drafted from real public ` +
+  `statements and the forms this tradition actually uses. No passage here is a real quote, and ` +
+  `none of it is his voice. The photograph is real and credited; the landscapes are generated.`;
 
 function sections(l: Leader): Section[] {
   const out: Section[] = [];
   let n = 0;
   const num = () => String(++n).padStart(2, "0");
+  const excerpt = (i: number) =>
+    ({ kind: "quote", n: num(), label: `Excerpt ${i + 1}`, text: l.excerpts[i], index: i }) as const;
 
+  out.push({ kind: "gate", n: "", label: "Disclaimer", body: gateText(l) });
   out.push({ kind: "chapter", n: num(), label: "The premise", body: l.summary });
-  if (l.excerpts[0]) out.push({ kind: "quote", n: num(), text: l.excerpts[0], index: 0 });
+  if (l.excerpts[0]) out.push(excerpt(0));
   out.push({ kind: "list", n: num(), label: "Where he would agree", items: l.convergence });
-  if (l.excerpts[1]) out.push({ kind: "quote", n: num(), text: l.excerpts[1], index: 1 });
+  if (l.excerpts[1]) out.push(excerpt(1));
   out.push({ kind: "list", n: num(), label: "Where he would differ", items: l.divergence });
-  if (l.excerpts[2]) out.push({ kind: "quote", n: num(), text: l.excerpts[2], index: 2 });
+  if (l.excerpts[2]) out.push(excerpt(2));
   out.push({ kind: "record", n: num(), label: "The real record", items: l.grounding });
-  if (l.excerpts[3]) out.push({ kind: "quote", n: num(), text: l.excerpts[3], index: 3 });
+  if (l.excerpts[3]) out.push(excerpt(3));
 
   return out;
 }
 
 const yearOf = (claim: string) => claim.match(/\b(19|20)\d{2}\b/)?.[0] ?? "";
 
-/**
- * The narration script, one part per page section, carrying the anchor the
- * player scrolls to and the element the read-along follows. Built from the
- * same `sections()` call that renders the page, so the numbering cannot drift
- * out of step with the DOM ids.
- *
- * Lists and the citation record get no `highlight`: their text is spread over
- * many list items, and word-mapping a joined string onto them would land the
- * marker in the wrong place.
- */
-export function experienceParts(l: Leader): Part[] {
-  const parts: Part[] = [
-    {
-      label: "Before we begin",
-      text: `A note before we begin. The document you are about to hear does not exist. It is a research-grounded prediction of what ${l.name} might write about artificial intelligence, drafted from real public statements. No passage is a real quote, and this is not his voice.`,
-      anchor: "x-gate",
-      highlight: ".x-gate-in",
-    },
-  ];
+/** How a section reads aloud, and which element the marker follows. */
+function partOf(s: Section): Part {
+  const anchor = anchorOf(s);
+  const label = s.n ? `${s.n} · ${s.label}` : s.label;
 
-  for (const s of sections(l)) {
-    const anchor = `x-${s.n}`;
-    if (s.kind === "quote") {
-      parts.push({
-        label: `Excerpt ${s.index + 1}`,
-        text: s.text,
-        anchor,
-        highlight: "blockquote",
-      });
-    } else if (s.kind === "chapter") {
-      parts.push({ label: s.label, text: s.body, anchor, highlight: ".x-body" });
-    } else if (s.kind === "list") {
-      parts.push({ label: s.label, text: `${s.label}. ${s.items.join(" ")}`, anchor });
-    } else {
-      parts.push({
-        label: s.label,
-        text: `${s.label}. These are real, sourced statements. ${s.items.map((i) => i.claim).join(" ")}`,
-        anchor,
-      });
-    }
+  switch (s.kind) {
+    case "gate":
+      return { label, text: s.body, anchor, highlight: ".x-gate-in" };
+    case "chapter":
+      return { label, text: s.body, anchor, highlight: ".x-body" };
+    case "quote":
+      return { label, text: s.text, anchor, highlight: "blockquote" };
+    case "list":
+      // Spoken text is exactly the items, in order, so the marker can run
+      // straight across the list. Anything prefixed here would desynchronise it.
+      return { label, text: s.items.join(" "), anchor, highlight: ".x-points" };
+    case "record":
+      // The year chips and the Source links carry data-nospeak, so they are
+      // skipped by the wrapper and the claims map one-to-one.
+      return { label, text: s.items.map((i) => i.claim).join(" "), anchor, highlight: ".x-timeline" };
   }
-  return parts;
 }
+
+/**
+ * The narration script, built from the same `sections()` call that renders the
+ * page, so the numbering, the anchors and the playhead cannot drift apart.
+ */
+export const experienceParts = (l: Leader): Part[] => sections(l).map(partOf);
 
 /** A still plate. `rate` is its parallax speed relative to scroll. */
 const stillLayer = (still: string | undefined, rate = 0.18) =>
@@ -141,13 +151,30 @@ function polaroid(p: Portrait, rate: number, extraClass = ""): string {
 }
 
 function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: number }): string {
+  const id = anchorOf(s);
+  const key = s.n || "gate";
+  // Number only — the section's name is the heading, and repeating "Chapter"
+  // above every one of them added a word and no information.
+  const num = s.n ? `<span class="x-num" data-reveal>${s.n}</span>` : "";
+
+  if (s.kind === "gate") {
+    return `
+    <section class="x-gate" id="${id}" data-x-sect="${key}">
+      <div class="x-gate-head" data-reveal>
+        <span class="x-num x-num-word">Disclaimer</span>
+      </div>
+      <div class="x-gate-in" data-reveal>${esc(s.body)}</div>
+    </section>`;
+  }
+
   if (s.kind === "quote") {
     const still = spec.stills[ctr.q % Math.max(spec.stills.length, 1)];
     ctr.q++;
     return `
-    <section class="x-quote" id="x-${s.n}" data-x-sect="${s.n}">
+    <section class="x-quote" id="${id}" data-x-sect="${key}">
       ${stillLayer(still, 0.22)}
       <div class="x-quote-in">
+        ${num}
         <span class="x-eyebrow" data-reveal>Predicted excerpt ${s.index + 1}</span>
         <blockquote data-reveal>${esc(s.text)}</blockquote>
         <p class="x-attrib" data-reveal>Speculative — not a real quote</p>
@@ -159,21 +186,26 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
     const items = s.items
       .map((g) => {
         const y = yearOf(g.claim);
+        // data-nospeak: the year chip repeats a number already inside the claim,
+        // and "Source" is a control, not prose. Both are skipped by the
+        // read-along wrapper so the claims map one-to-one onto the narration.
         return `
         <li data-reveal>
-          <span class="x-year">${y || "—"}</span>
-          <span class="x-claim">${esc(g.claim)}
-            ${g.url ? `<a href="${esc(g.url)}" target="_blank" rel="noopener">Source</a>` : ""}
-          </span>
+          <span class="x-year" data-nospeak>${y || "—"}</span>
+          <span class="x-claim">${esc(g.claim)}${
+            g.url
+              ? ` <a href="${esc(g.url)}" target="_blank" rel="noopener" data-nospeak>Source</a>`
+              : ""
+          }</span>
         </li>`;
       })
       .join("");
     return `
-    <section class="x-sect x-record" id="x-${s.n}" data-x-sect="${s.n}">
+    <section class="x-sect x-record" id="${id}" data-x-sect="${key}">
       <div class="x-sect-in">
-        <span class="x-num" data-reveal>Chapter ${s.n}</span>
+        ${num}
         <h2 data-reveal>${esc(s.label)}</h2>
-        <p class="x-lede" data-reveal>
+        <p class="x-lede" data-reveal data-nospeak>
           Everything on this page except the following is speculative. These are
           real, sourced statements — the record the prediction was built from.
         </p>
@@ -188,10 +220,10 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
   if (s.kind === "list") {
     const items = s.items.map((t) => `<li data-reveal>${esc(t)}</li>`).join("");
     return `
-    <section class="x-sect x-sect-bg" id="x-${s.n}" data-x-sect="${s.n}">
+    <section class="x-sect x-sect-bg" id="${id}" data-x-sect="${key}">
       ${stillLayer(still, 0.14)}
       <div class="x-sect-in">
-        <span class="x-num" data-reveal>Chapter ${s.n}</span>
+        ${num}
         <h2 data-reveal>${esc(s.label)}</h2>
         <p class="x-lede" data-reveal>Read against <i>Magnifica humanitas</i>.</p>
         <ul class="x-points">${items}</ul>
@@ -200,10 +232,10 @@ function renderSection(s: Section, spec: ExperienceSpec, ctr: { q: number; c: nu
   }
 
   return `
-  <section class="x-sect x-sect-bg" id="x-${s.n}" data-x-sect="${s.n}">
+  <section class="x-sect x-sect-bg" id="${id}" data-x-sect="${key}">
     ${stillLayer(still, 0.14)}
     <div class="x-sect-in">
-      <span class="x-num" data-reveal>Chapter ${s.n}</span>
+      ${num}
       <h2 data-reveal>${esc(s.label)}</h2>
       <p class="x-body" data-reveal>${esc(s.body)}</p>
     </div>
@@ -217,18 +249,21 @@ export function experienceView(l: Leader): string {
   const ctr = { q: 0, c: 0 };
   const body = secs.map((s) => renderSection(s, spec, ctr)).join("");
 
-  const rail = secs
-    .map(
-      (s) =>
-        `<a href="#x-${s.n}" data-rail="${s.n}"><i></i><span>${
-          s.kind === "quote" ? "Excerpt" : esc(s.label)
-        }</span></a>`
-    )
-    .join("");
+  // Home first, so the rail can always take you back to the hero.
+  const rail =
+    `<a href="#x-home" data-rail="home"><i></i><b>—</b><span>Home</span></a>` +
+    secs
+      .map(
+        (s) =>
+          `<a href="#${anchorOf(s)}" data-rail="${s.n || "gate"}">
+             <i></i><b>${s.n || "•"}</b><span>${esc(s.label)}</span>
+           </a>`
+      )
+      .join("");
 
   return `
   <div class="x">
-    <section class="x-hero" data-hero-loop="${esc(spec.hero)}">
+    <section class="x-hero" id="x-home" data-hero-loop="${esc(spec.hero)}" data-x-sect="home">
       <div class="x-bg x-bg-hero" aria-hidden="true" data-par="0.12"></div>
       <div class="x-hero-grid">
         <div class="x-hero-in">
@@ -247,18 +282,6 @@ export function experienceView(l: Leader): string {
         ${portrait ? polaroid(portrait, 0.42, "x-polaroid-hero") : ""}
       </div>
       <span class="x-scroll" aria-hidden="true">Scroll to explore</span>
-    </section>
-
-    <section class="x-gate" id="x-gate">
-      <div class="x-gate-in" data-reveal>
-        <b>This document does not exist.</b>
-        It is a research-grounded prediction — a speculative-design exercise in what
-        ${esc(l.name)} <i>might</i> write about artificial intelligence, drafted from
-        real public statements (listed under <a href="#x-07">The real record</a>) and
-        the forms this tradition actually uses. No passage here is a real quote, and
-        none of it is his voice. ${portrait ? "The photograph is real and credited;" : ""} the landscapes
-        are generated.
-      </div>
     </section>
 
     <nav class="x-rail" aria-label="Chapters">${rail}</nav>
