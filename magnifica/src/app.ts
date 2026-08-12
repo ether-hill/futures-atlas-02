@@ -2,6 +2,7 @@ import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, RECEPTION, SOURCES } from "./ency
 import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, unmountDock, type Part } from "./listen";
+import { experienceView, hasExperience, mountExperience } from "./experience";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -229,11 +230,19 @@ function leaderParts(l: Leader): Part[] {
   ];
 }
 
+/** Torn down on every route change, so observers don't accumulate. */
+let unmountX: (() => void) | null = null;
+
 function render(root: HTMLElement) {
   const m = location.hash.match(/^#\/l\/([\w-]+)/);
   const leader = m ? LEADERS.find((l) => l.id === m[1]) : undefined;
+  const immersive = !!leader && hasExperience(leader.id);
+
   unmountDock();
-  root.innerHTML = leader ? leaderView(leader) : homeView();
+  unmountX?.();
+  unmountX = null;
+
+  root.innerHTML = leader ? (immersive ? experienceView(leader) : leaderView(leader)) : homeView();
   window.scrollTo(0, 0);
 
   root.querySelectorAll("[data-ch] > button").forEach((btn) => {
@@ -241,7 +250,8 @@ function render(root: HTMLElement) {
   });
 
   if (leader) {
-    mountHero(root);
+    if (immersive) unmountX = mountExperience(root);
+    else mountHero(root);
     mountDock(root, leaderParts(leader), SCENES[leader.id] ?? HOME_SCENE);
   } else {
     mountDock(root, homeParts(), HOME_SCENE);
