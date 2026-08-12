@@ -289,7 +289,7 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
   }
 }
 
-/* ---------- .fa-prose: rendered dispatch bodies ----------
+/* ---------- .fa-prose: rendered blog post bodies ----------
    The only place in the app where markdown becomes HTML, so the elements can't
    carry utility classes. Every value is a core token, same as everywhere else. */
 .fa-prose {

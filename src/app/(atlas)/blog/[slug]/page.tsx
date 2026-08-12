@@ -2,20 +2,21 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
-import { KindBadge } from "../DispatchesBrowser";
+import { KindBadge } from "@/components/PostCard";
+import { PostCarousel } from "@/components/PostCarousel";
 import {
   formatPostDate,
   getPost,
   hostOf,
   livePosts,
-  neighbours,
   posts,
+  relatedPosts,
   type Post,
 } from "@/data/posts";
 import { getEditor } from "@/lib/editor";
 import { renderMarkdown } from "@/lib/markdown";
 
-// Only published dispatches are prerendered, so an unpublished one never exists
+// Only published posts are prerendered, so an unpublished one never exists
 // as HTML in the build output at all. Drafts still resolve for a signed-in
 // editor — they're rendered on demand, behind the middleware gate.
 export function generateStaticParams() {
@@ -29,7 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = getPost(slug);
-  if (!post) return { title: "Dispatch not found — Futures Atlas" };
+  if (!post) return { title: "Post not found — Futures Atlas" };
   return {
     title: `${post.title} — Futures Atlas`,
     description: post.dek,
@@ -37,23 +38,23 @@ export async function generateMetadata({
   };
 }
 
-export default async function DispatchPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = getPost(slug);
   if (!post) notFound();
 
   const isEditor = Boolean(await getEditor());
-  const { prev, next } = neighbours(slug, isEditor ? posts : livePosts);
+  const more = relatedPosts(slug, isEditor ? posts : livePosts);
   const html = renderMarkdown(post.body);
 
   return (
     <article className="bg-surface py-[clamp(36px,6vw,88px)]">
       <Container>
         <Link
-          href="/dispatches"
+          href="/blog"
           className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-graphite transition-colors hover:text-ink"
         >
-          <span aria-hidden>←</span> All dispatches
+          <span aria-hidden>←</span> All posts
         </Link>
 
         {/* header */}
@@ -84,6 +85,20 @@ export default async function DispatchPage({ params }: { params: Promise<{ slug:
             {post.dek}
           </p>
         </header>
+
+        {post.image && (
+          <div
+            className="mt-[clamp(24px,3.2vw,44px)] overflow-hidden rounded-[3px]"
+            style={{ border: "var(--border-hairline) solid var(--hairline)" }}
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.image}
+              alt=""
+              className="block aspect-[16/7] w-full object-cover"
+            />
+          </div>
+        )}
 
         {/* Article left, annotation rail right. Below 1100px the rail simply
             stacks under the prose, which keeps the reading order intact. */}
@@ -154,14 +169,16 @@ export default async function DispatchPage({ params }: { params: Promise<{ slug:
           </aside>
         </div>
 
-        {/* prev / next, held to the article column so it reads as part of the piece */}
-        {(prev || next) && (
-          <nav className="mt-[clamp(48px,7vw,110px)] grid max-w-[68ch] gap-6 border-t border-ink/[0.14] pt-[clamp(24px,3vw,40px)] sm:grid-cols-2">
-            {prev ? <NeighbourLink post={prev} direction="prev" /> : <span />}
-            {next ? <NeighbourLink post={next} direction="next" /> : <span />}
-          </nav>
-        )}
       </Container>
+
+      <div className="mt-[clamp(48px,7vw,110px)]">
+        <PostCarousel
+          posts={more}
+          title="More posts"
+          eyebrow="Keep reading"
+          showVisibility={isEditor}
+        />
+      </div>
     </article>
   );
 }
@@ -195,22 +212,5 @@ function SourceCard({ post }: { post: Post }) {
         {post.sourceName} — {hostOf(post.url)} <span aria-hidden>↗</span>
       </a>
     </div>
-  );
-}
-
-function NeighbourLink({ post, direction }: { post: Post; direction: "prev" | "next" }) {
-  const isPrev = direction === "prev";
-  return (
-    <Link
-      href={`/dispatches/${post.slug}`}
-      className={`group block ${isPrev ? "" : "sm:text-right"}`}
-    >
-      <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-faint">
-        {isPrev ? "Newer" : "Older"}
-      </span>
-      <span className="mt-2 block text-[clamp(15px,1.5vw,19px)] font-extrabold leading-[1.2] tracking-[-0.015em] text-ink transition-colors group-hover:text-accent">
-        {post.title}
-      </span>
-    </Link>
   );
 }

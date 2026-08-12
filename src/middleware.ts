@@ -8,7 +8,7 @@
  * 2. The internal areas: /admin/*, the editor overview /editor, and the
  *    unlinked design experiments (/home-lab, /mocks).
  *
- * 3. Draft projects and draft dispatches: every path belonging to a project
+ * 3. Draft projects and draft posts: every path belonging to a project
  *    marked `visibility: "draft"` in src/data/projects.ts, and every
  *    unpublished post in src/data/posts.ts. The public never renders one,
  *    unauthenticated requests are rewritten to the sign-in form, so the page's

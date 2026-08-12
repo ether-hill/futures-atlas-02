@@ -69,3 +69,52 @@ export async function writeTranslation(key: string, text: string): Promise<void>
     // cache is best-effort
   }
 }
+
+/* ------------------------------------------------------------------ speech */
+
+/**
+ * Generated speech is cached too. The same passage always produces the same
+ * audio, so without this every play pays the generation wait again — around a
+ * second and a half of silence after pressing Listen — and bills the
+ * characters again. Cached, a repeat play is a single round trip.
+ */
+
+/** Anything larger than this is served but not stored; Redis is not a CDN. */
+const MAX_CACHED_BYTES = 900_000;
+
+export interface CachedSpeech {
+  audio: string; // base64 mp3
+  spoken: string;
+  alignment: { chars: string[]; starts: number[]; ends: number[] } | null;
+}
+
+export function speechKey(text: string, lang: string, voice: string): string {
+  let h = 5381;
+  for (let i = 0; i < text.length; i++) h = ((h << 5) + h + text.charCodeAt(i)) >>> 0;
+  return `magnifica:tts:${lang}:${voice}:${text.length}:${h.toString(36)}`;
+}
+
+export async function readSpeech(key: string): Promise<CachedSpeech | null> {
+  const st = store();
+  if (!st) return null;
+  try {
+    const raw = await st.get(key);
+    // Upstash parses JSON on the way out; ioredis hands back a string.
+    const val = typeof raw === "string" ? (JSON.parse(raw) as CachedSpeech) : (raw as CachedSpeech | null);
+    return val && typeof val.audio === "string" && val.audio.length > 0 ? val : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function writeSpeech(key: string, val: CachedSpeech): Promise<void> {
+  const st = store();
+  if (!st) return;
+  try {
+    const body = JSON.stringify(val);
+    if (body.length > MAX_CACHED_BYTES) return;
+    await st.set(key, body, TTL_S);
+  } catch {
+    // cache is best-effort
+  }
+}

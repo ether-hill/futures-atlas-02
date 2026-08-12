@@ -16,7 +16,14 @@
  */
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { readTranslation, translationKey, writeTranslation } from "@/lib/magnifica/store";
+import {
+  readSpeech,
+  readTranslation,
+  speechKey,
+  translationKey,
+  writeSpeech,
+  writeTranslation,
+} from "@/lib/magnifica/store";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -80,6 +87,18 @@ export async function POST(req: Request) {
 
   const lang: LangCode = typeof body.lang === "string" && body.lang in LANGS ? (body.lang as LangCode) : "en";
 
+  // Cache first: the same passage always produces the same audio, so a repeat
+  // play should not wait on generation or bill for it again. Keyed on the
+  // source text, so it survives a translation cache miss too.
+  const cacheKey = speechKey(text, lang, VOICE_ID);
+  const cached = await readSpeech(cacheKey);
+  if (cached) {
+    return NextResponse.json(
+      { ok: true, ...cached },
+      { headers: { "cache-control": "no-store", "x-magnifica-cache": "hit" } },
+    );
+  }
+
   let spoken = text;
   if (lang !== "en") {
     if (!process.env.ANTHROPIC_API_KEY) {
@@ -133,22 +152,24 @@ export async function POST(req: Request) {
       JSON.stringify({ tool: "magnifica-tts", chars: spoken.length, lang, aligned: !!data.alignment }),
     );
 
+    const payload = {
+      audio: data.audio_base64,
+      // The client highlights against what was actually spoken, which for a
+      // translation is not the text on the page — hence returning it.
+      spoken,
+      alignment: data.alignment
+        ? {
+            chars: data.alignment.characters,
+            starts: data.alignment.character_start_times_seconds,
+            ends: data.alignment.character_end_times_seconds,
+          }
+        : null,
+    };
+    await writeSpeech(cacheKey, payload);
+
     return NextResponse.json(
-      {
-        ok: true,
-        audio: data.audio_base64,
-        // The client highlights against what was actually spoken, which for a
-        // translation is not the text on the page — hence returning it.
-        spoken,
-        alignment: data.alignment
-          ? {
-              chars: data.alignment.characters,
-              starts: data.alignment.character_start_times_seconds,
-              ends: data.alignment.character_end_times_seconds,
-            }
-          : null,
-      },
-      { headers: { "cache-control": "no-store" } },
+      { ok: true, ...payload },
+      { headers: { "cache-control": "no-store", "x-magnifica-cache": "miss" } },
     );
   } catch (e) {
     console.error(JSON.stringify({ tool: "magnifica-tts", error: String(e) }));

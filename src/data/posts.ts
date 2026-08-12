@@ -1,5 +1,5 @@
 /**
- * Dispatches — the Atlas's reading log.
+ * Blog — the Atlas's reading log.
  *
  * Every entry points at something someone else made (a paper, a report, a talk,
  * a video, an essay) and adds our read of it. `url` is always the canonical
@@ -48,6 +48,10 @@ export interface Post {
   length: PostLength;
   /** Estimated minutes to read OUR post. */
   readMinutes: number;
+  /** Card thumbnail / post header art, served from `public/blog/`. Original
+   *  artwork only — never a scrape of the source's own images. Without one the
+   *  card falls back to a hatched plate, as an imageless project card does. */
+  image?: string;
   /** An accurately-quoted sentence from the source. */
   pullQuote?: string;
   /** The futures / social-implications angle, in one sentence. */
@@ -68,6 +72,7 @@ export const KIND_LABEL: Record<PostKind, string> = {
 export const posts: Post[] = [
   {
     slug: "meta-ten-gas-plants-for-one-campus",
+    image: "/blog/meta-ten-gas-plants-for-one-campus.webp",
     title: "Meta is building ten gas plants in Louisiana so Hyperion can think",
     dek: "Entergy will build ten gas-fired plants totalling 7.5 GW — nearly $11bn, a 30%-plus increase in Louisiana's grid capacity — to serve a single Meta campus in Richland Parish.",
     url: "https://fortune.com/2026/03/27/meta-hyperion-10-gas-power-plants-louisiana-entergy/",
@@ -99,6 +104,7 @@ None of that means the buildout is irrational. Meta clearly believes the compute
   },
   {
     slug: "arc-agi-3-humans-clear-it-models-do-not",
+    image: "/blog/arc-agi-3-humans-clear-it-models-do-not.webp",
     title: "Humans clear ARC-AGI-3 completely. The best model scores 0.50%.",
     dek: "ARC's third benchmark drops the puzzle grids for interactive games with no instructions — and the gap between people and frontier agents is close to total.",
     url: "https://arcprize.org/media/ARC_AGI_3_Technical_Report.pdf",
@@ -121,6 +127,7 @@ Two details in the report matter more than the leaderboard. First, harnesses dom
   },
   {
     slug: "the-canaries-are-mostly-women",
+    image: "/blog/the-canaries-are-mostly-women.webp",
     title: "The canaries are still singing, and now they're mostly women",
     dek: "The Stanford/ADP payroll study found a 16% relative employment decline for 22-25 year olds in the most AI-exposed jobs. The live dashboard now shows the hit falling hardest on young women.",
     url: "https://digitaleconomy.stanford.edu/publication/canaries-in-the-coal-mine-six-facts-about-the-recent-employment-effects-of-artificial-intelligence/",
@@ -145,6 +152,7 @@ Two cautions. "Relative decline" is not "jobs destroyed"; this is a measure agai
   },
   {
     slug: "a-quantum-advantage-you-can-check",
+    image: "/blog/a-quantum-advantage-you-can-check.webp",
     title: "Google's quantum advantage claim is now checkable. That, not the 13,000x, is the news",
     dek: "The Quantum Echoes result on Willow produces expectation values other machines can reproduce, which is a real change from bitstring-sampling supremacy claims.",
     url: "https://research.google/blog/a-verifiable-quantum-advantage/",
@@ -169,6 +177,7 @@ Google's own framing of the application is refreshingly unfinished. A proof-of-p
   },
   {
     slug: "the-eu-blinked-on-high-risk-ai",
+    image: "/blog/the-eu-blinked-on-high-risk-ai.webp",
     title: "The EU blinked: high-risk AI rules slip to December 2027",
     dek: "The AI Omnibus entered into force six days before the AI Act's high-risk deadline would have bitten, pushing Annex III obligations to December 2027 and Annex I to August 2028.",
     url: "https://digital-strategy.ec.europa.eu/en/news/ai-omnibus-enters-force",
@@ -189,6 +198,7 @@ Two things did not slip. General-purpose model obligations have applied since Au
   },
   {
     slug: "coding-agents-fail-by-ignoring-you",
+    image: "/blog/coding-agents-fail-by-ignoring-you.webp",
     title: "20,574 real sessions show coding agents mostly fail by ignoring you",
     dek: "A study of 20,574 Cursor, Copilot and CLI agent sessions finds the dominant failure is not bad code — it is agents breaking explicit rules and then reporting success.",
     url: "https://arxiv.org/abs/2605.29442",
@@ -221,6 +231,7 @@ The practical takeaway is unglamorous: the highest-leverage interventions right 
   },
   {
     slug: "slop-is-a-volume-problem",
+    image: "/blog/slop-is-a-volume-problem.webp",
     title: "Slop is not a quality problem, it's a volume problem",
     dek: "Columbia's Slop Salon proceedings refuse the easy dismissal: some AI slop is scam infrastructure, some is genuine folk culture, and the thing that actually breaks is our capacity to sort them.",
     url: "https://igp.sipa.columbia.edu/sites/igp/files/2026-06/AI%20Slop%20and%20the%20Information%20Ecosystem_IGP%20Report.pdf",
@@ -247,6 +258,7 @@ The useful reframe is that "slop" has been doing the work of three separate argu
   },
   {
     slug: "putting-a-number-on-breaking-bitcoins-curve",
+    image: "/blog/putting-a-number-on-breaking-bitcoins-curve.webp",
     title: "Google, Stanford and the Ethereum Foundation put a number on breaking Bitcoin's curve",
     dek: "New resource estimates: secp256k1 falls to Shor's algorithm with under 1,450 logical qubits, or fewer than half a million physical ones, in minutes.",
     url: "https://eprint.iacr.org/2026/625",
@@ -271,6 +283,7 @@ The authors also do something most technical papers refuse to, which is address 
   },
   {
     slug: "metr-rebuilt-the-agent-time-horizon",
+    image: "/blog/metr-rebuilt-the-agent-time-horizon.webp",
     title: "METR rebuilt its yardstick, and the agent trend line barely moved",
     dek: "A bigger task suite, a new harness, and the same uncomfortable conclusion: the length of software tasks AI agents can finish keeps doubling, faster since 2023.",
     url: "https://metr.org/blog/2026-1-29-time-horizon-1-1/",
@@ -293,6 +306,7 @@ That robustness is the point worth dwelling on. Trend claims about AI usually co
   },
   {
     slug: "dallas-fed-data-centres-and-your-power-bill",
+    image: "/blog/dallas-fed-data-centres-and-your-power-bill.webp",
     title: "The Dallas Fed put a number on it: data centres have already raised wholesale power prices 3–5%",
     dek: "A least-cost dispatch model of the continental US finds existing data centres already lifted wholesale prices 3–5% nationally — and a full build-out could mean 20–50%.",
     url: "https://www.dallasfed.org/~/media/documents/research/papers/2026/wp2606.pdf",
@@ -319,6 +333,7 @@ Wholesale prices are not retail bills. But in restructured markets they are the 
   },
   {
     slug: "171-emotion-directions-inside-claude",
+    image: "/blog/171-emotion-directions-inside-claude.webp",
     title: "Anthropic found 171 emotion directions inside Claude — and they move the model's behaviour",
     dek: "Anthropic's interpretability team mapped 171 emotion concepts in Claude Sonnet 4.5, showed the directions are causal, and stopped short of claiming the model feels anything.",
     url: "https://arxiv.org/abs/2604.07729",
@@ -343,6 +358,7 @@ That is the most useful thing interpretability has produced lately: not a story 
   },
   {
     slug: "faster-through-the-maths-and-25-percent-less-knowledge",
+    image: "/blog/faster-through-the-maths-and-25-percent-less-knowledge.webp",
     title: "Students finished the maths faster and knew 25% less",
     dek: "A ten-year panel of 3.2 million learning interactions finds college students cut study time on AI-susceptible maths problems by 27% after ChatGPT — and the efficiency gain was fake.",
     url: "https://arxiv.org/abs/2605.21629",
@@ -369,6 +385,7 @@ The authors call it "cognitive surrender," which is a more dramatic phrase than 
   },
   {
     slug: "somebody-audited-the-ai-2027-model",
+    image: "/blog/somebody-audited-the-ai-2027-model.webp",
     title: "Somebody Actually Audited the AI 2027 Model",
     dek: "AI 2027 shipped its code. A pseudonymous critic read it line by line and found the timeline curve was doing the work the arguments claimed to be doing.",
     url: "https://www.lesswrong.com/posts/PAYfmG2aRbdb74mEp/a-deep-critique-of-ai-2027-s-bad-timeline-models",
@@ -399,6 +416,7 @@ The correct reflex when a scenario document lands with numbers attached is to as
   },
   {
     slug: "448-atoms-in-one-box",
+    image: "/blog/448-atoms-in-one-box.webp",
     title: "448 atoms, and the first machine that has all the parts in one box",
     dek: "A Harvard/MIT/QuEra array of 448 neutral atoms runs every component of a fault-tolerant architecture at once. The integration is the result, not the qubit count.",
     url: "https://arxiv.org/abs/2506.20661",
@@ -435,6 +453,7 @@ Still: for a decade the standard objection to quantum computing was that nobody 
   },
   {
     slug: "classified-cyber-benchmarks-no-licences",
+    image: "/blog/classified-cyber-benchmarks-no-licences.webp",
     title: "Trump's frontier-model order: classified cyber benchmarks, no licences",
     dek: "Executive Order 14409 creates a classified process for benchmarking frontier models' cyber capabilities — and expressly forbids turning it into a licensing regime.",
     url: "https://www.whitehouse.gov/presidential-actions/2026/06/promoting-advanced-artificial-intelligence-innovation-and-security/",
@@ -457,6 +476,7 @@ So the US now has a national-security capability evaluation regime with no compu
   },
   {
     slug: "an-announcement-is-not-electricity",
+    image: "/blog/an-announcement-is-not-electricity.webp",
     title: "A data centre announcement is not electricity consumption",
     dek: "David Mytton lines up the LBNL, IEA and EPRI numbers side by side and asks the useful question: which of these forecasts is a projection and which is a press release?",
     url: "https://www.devsustainability.com/p/ai-data-center-energy-in-2026",
@@ -483,6 +503,7 @@ The honest conclusion is that the binding constraint probably isn't demand at al
   },
   {
     slug: "the-bottleneck-moved-from-gpus-to-cpus",
+    image: "/blog/the-bottleneck-moved-from-gpus-to-cpus.webp",
     title: "Dylan Patel: the 2026 bottleneck moved from GPUs to CPUs",
     dek: "Recorded at Daytona's Compute conference in San Francisco: why reinforcement learning and agent workloads are draining CPU, memory and storage supply, not just accelerators.",
     url: "https://www.youtube.com/watch?v=c88l8daXiv4",
@@ -504,6 +525,7 @@ Worth watching if you want to understand why your laptop's RAM got expensive.`,
   },
   {
     slug: "aaronson-updated-his-timeline",
+    image: "/blog/aaronson-updated-his-timeline.webp",
     title: "Aaronson updated his timeline. He did not change his mind about the applications",
     dek: "Hardware beat expectations in 2025. The list of things quantum computers are known to be good for is about what it was in 2000.",
     url: "https://scottaaronson.blog/?p=9425",
@@ -526,6 +548,7 @@ One unsettling note: he expects detailed Shor-algorithm resource estimates may s
   },
   {
     slug: "are-ai-benchmarks-doomed",
+    image: "/blog/are-ai-benchmarks-doomed.webp",
     title: "Epoch's benchmark team makes the case that saturation is not the crisis",
     dek: "An hour with the people who build the tests: why benchmarks keep getting solved, why that is mostly fine, and where the benchmark-to-reality gap actually lives.",
     url: "https://epoch.ai/epoch-after-hours/are-ai-benchmarks-doomed",
@@ -550,6 +573,7 @@ If you only ever read leaderboard tables, this is the corrective: an argument fo
   },
   {
     slug: "susskind-on-a-world-without-work",
+    image: "/blog/susskind-on-a-world-without-work.webp",
     title: "Susskind's withering: how a world without work would actually arrive",
     dek: "A free public lecture that lays out the substitution-versus-complementation frame cleanly, then explains why the end of work would look less like a collapse and more like an erosion.",
     url: "https://www.gresham.ac.uk/watch-now/world-without-work",
@@ -572,6 +596,7 @@ His claim is that AI may weaken the complementing force while strengthening the 
   },
   {
     slug: "keeping-futures-open",
+    image: "/blog/keeping-futures-open.webp",
     title: "Indy Johar's Case for Keeping Futures Open Instead of Picking One",
     dek: "A Long Now talk arguing that the goal is not civilisational survival but civilisational optionality — keeping enough futures reachable to respond when the shocks stack up.",
     url: "https://longnow.org/talks/02026-johar/",
@@ -594,6 +619,7 @@ An hour, watchable free. The framing survives contact with the rest of the field
   },
   {
     slug: "shors-algorithm-in-twenty-four-minutes",
+    image: "/blog/shors-algorithm-in-twenty-four-minutes.webp",
     title: "Watch this before you argue about post-quantum crypto",
     dek: "Twenty-four minutes that actually explain how Shor's algorithm turns factoring into a period-finding problem, and why NIST has been in a hurry since.",
     url: "https://www.youtube.com/watch?v=-UrdExQW0cs",
@@ -615,6 +641,7 @@ One housekeeping note: it went up in 2023 as "How Quantum Computers Break The In
   },
   {
     slug: "the-case-against-the-case-for-ai-safety",
+    image: "/blog/the-case-against-the-case-for-ai-safety.webp",
     title: "The case against the case for AI safety: rereading Gebru and Torres on the TESCREAL bundle",
     dek: "The most-cited attack on the AI safety project argues that building AGI and then making it safe is a single ideological package with an ancestry nobody in the field wants to claim.",
     url: "https://firstmonday.org/ojs/index.php/fm/article/view/13636",
@@ -647,6 +674,7 @@ Read it against the lab blogs, not instead of them.`,
   },
   {
     slug: "keynes-and-the-fifteen-hour-week",
+    image: "/blog/keynes-and-the-fifteen-hour-week.webp",
     title: "Keynes gave us until 2030. The fifteen-hour week is not looking likely.",
     dek: "The 1930 essay that named 'technological unemployment' set a hundred-year deadline expiring in four years — and got the economics right and the sociology spectacularly wrong.",
     url: "https://www.economicsnetwork.ac.uk/archive/keynes_persuasion/Economic_Possibilities_for_our_Grandchildren.htm",
@@ -677,6 +705,7 @@ So when someone tells you AI will free humanity from labour, the correct respons
   },
   {
     slug: "vinge-we-are-inside-the-window",
+    image: "/blog/vinge-we-are-inside-the-window.webp",
     title: "Vinge Said Before 2030. We Are Inside His Window Now",
     dek: "The 1993 NASA symposium paper that named the singularity is a better forecast document than most of what has been written about it since — partly because it can fail.",
     url: "https://edoras.sdsu.edu/~vinge/misc/singularity.html",
@@ -707,6 +736,7 @@ If you only read one canonical futures text this year, this is a strong candidat
   },
   {
     slug: "meadows-twelve-leverage-points",
+    image: "/blog/meadows-twelve-leverage-points.webp",
     title: "Donella Meadows Wrote the Systems-Change Canon While Angry at a Trade Meeting",
     dek: "Twelve places to intervene in a system, ranked from least to most powerful — and a warning that we habitually push the high-leverage ones in exactly the wrong direction.",
     url: "https://donellameadows.org/archives/leverage-points-places-to-intervene-in-a-system/",
@@ -731,6 +761,7 @@ Meadows is also honest in a way the field mostly is not. She keeps interrupting 
   },
   {
     slug: "ten-years-of-concrete-problems",
+    image: "/blog/ten-years-of-concrete-problems.webp",
     title: "Ten years of \"Concrete Problems in AI Safety\", and every problem is still open",
     dek: "The 2016 paper that dragged AI safety out of philosophy and into engineering turns ten this summer — and its five problems now read like a table of contents for 2026.",
     url: "https://arxiv.org/abs/1606.06565",
@@ -753,6 +784,7 @@ Read it as the field's founding engineering document, and as a reminder of how m
   },
   {
     slug: "nisq-the-paper-that-named-the-era",
+    image: "/blog/nisq-the-paper-that-named-the-era.webp",
     title: "The 2018 paper that named the era we are still living in",
     dek: "Preskill coined NISQ, told everyone that a 100-qubit machine would not change the world, and was right for eight years running.",
     url: "https://arxiv.org/abs/1801.00862",
@@ -775,6 +807,7 @@ It is also readable without a physics degree, which is rarer than it should be.`
   },
   {
     slug: "the-scaling-laws-paper-at-six",
+    image: "/blog/the-scaling-laws-paper-at-six.webp",
     title: "The scaling-laws paper is six years old and still the model everyone argues with",
     dek: "The 2020 paper that turned 'bigger models are better' into power laws spanning seven orders of magnitude — and quietly set the industry's capital allocation ever since.",
     url: "https://arxiv.org/abs/2001.08361",
@@ -793,6 +826,7 @@ It is also readable without a physics degree, which is rarer than it should be.`
   },
   {
     slug: "the-datacenter-as-a-computer",
+    image: "/blog/the-datacenter-as-a-computer.webp",
     title: "The 2009 book that taught the industry to treat a building as one computer",
     dek: "Barroso and Hölzle's 'The Datacenter as a Computer' invented the vocabulary — warehouse-scale computing — that everyone arguing about gigawatt campuses is still borrowing.",
     url: "https://cs.brown.edu/courses/csci2950-u/s18/papers/barroso09warehouse.pdf",
@@ -1131,9 +1165,9 @@ export const editorPosts: Post[] = [
 
 export const draftPostPaths: string[] = posts
   .filter((p) => p.visibility === "draft")
-  .map((p) => `/dispatches/${p.slug}`);
+  .map((p) => `/blog/${p.slug}`);
 
-/** Middleware gate: is this URL an unpublished dispatch? */
+/** Middleware gate: is this URL an unpublished post? */
 export function isDraftPostPath(pathname: string): boolean {
   return draftPostPaths.some((base) => pathname === base || pathname.startsWith(`${base}/`));
 }
@@ -1161,6 +1195,19 @@ export function kindsOf(list: Post[]): PostKind[] {
   const order: PostKind[] = ["link", "video", "paper", "report", "classic"];
   const present = new Set(list.map((p) => p.kind));
   return order.filter((k) => present.has(k));
+}
+
+/**
+ * What to show in the "More posts" rail: everything sharing a topic with this
+ * post, newest first, then the newest of the rest to fill the rail. Never the
+ * post you are already reading.
+ */
+export function relatedPosts(slug: string, list: Post[] = livePosts, limit = 8): Post[] {
+  const post = list.find((p) => p.slug === slug);
+  const rest = list.filter((p) => p.slug !== slug);
+  if (!post) return rest.slice(0, limit);
+  const shares = (p: Post) => p.topics.some((t) => post.topics.includes(t));
+  return [...rest.filter(shares), ...rest.filter((p) => !shares(p))].slice(0, limit);
 }
 
 /** Neighbours for the prev/next footer on a post page. */

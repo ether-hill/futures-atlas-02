@@ -90,7 +90,7 @@ unpublish, change that word and deploy — nothing else.
 - `src/components/EditorBar.tsx` — the "you are not seeing the public site" bar;
   renders nothing for the public. `/editor` is the full live-vs-draft overview.
 
-## Dispatches (`/dispatches`) — the reading log
+## Blog (`/blog`) — the reading log
 
 The Atlas's news-and-articles section. Every post is commentary **on someone
 else's work** and always shows the canonical `url`; it never stands in for the
@@ -105,14 +105,14 @@ source.
 - Draft posts are gated exactly like draft projects: `isDraftPostPath()` in
   `src/middleware.ts`, `draftPostPaths` in `robots.ts`, and
   `generateStaticParams` prerenders **live posts only**, so an unpublished
-  dispatch never exists as HTML in the build output.
+  post never exists as HTML in the build output.
 - `body` is markdown, rendered by `src/lib/markdown.ts` (`marked`) and styled by
   the `.fa-prose` block in `globals.css`. Bodies are authored in this repo, so
   the HTML is trusted and unsanitised — **if a body ever comes from outside this
   repo, sanitise in `markdown.ts` first.**
-- `/dispatches` deliberately uses a list, not the three-up card grid `/projects`
-  uses; a post page puts the prose left and a sticky source/"why it matters"
-  rail right at ≥1100px.
+- `/blog` is a full-width four-column card grid; a post page puts the prose left
+  and a sticky source/"why it matters" rail right at ≥1100px, with a "More
+  posts" carousel at the foot.
 - The nav entry lives in `public/atlas-nav.js` (`LINKS`), and the homepage shows
   the newest four.
 
