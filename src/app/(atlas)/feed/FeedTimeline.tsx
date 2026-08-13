@@ -31,7 +31,7 @@ import { HeadlineCredit } from "@/components/feed/HeadlineCredit";
  * card backfill a gap a wide one leaves.
  *
  * Four kinds of card share the grid:
- *   - posts, wide when the source gave us a real image to show;
+ *   - posts, one column with a 16:9 picture;
  *   - videos, which play in place rather than sending you to YouTube;
  *   - reader polls, whose bars are a real tally (see src/data/polls.ts);
  *   - a playable taster of Swipe the Future, linking to the full deck.
@@ -42,46 +42,17 @@ import { HeadlineCredit } from "@/components/feed/HeadlineCredit";
  */
 
 /**
- * How big a card is, and how its picture is cropped.
+ * Two columns is for one thing: a YouTube embed.
  *
- * The first version of this gave two columns to every video and one to
- * everything else. With ten videos in the feed that stopped reading as a bento
- * and started reading as a loop: a double-width video, a single beside it, a
- * row of singles, repeat, all the way down. One rule applied uniformly always
- * produces a pattern.
- *
- * So size now varies on two axes and the picture varies with it:
- *
- *   wide   two columns. Videos need it — a 16:9 player at one column is a
- *          postage stamp — and a long read with a picture earns it.
- *   tall   one column, but a portrait crop instead of the 2:1 letterbox. Costs
- *          nothing structurally and is what actually breaks the horizontal
- *          banding, because neighbouring columns stop lining up.
- *   plain  one column, letterbox picture or none.
- *
- * `runIndex` is the card's position in the rendered run, used ONLY to stop
- * several wides landing together — the size still comes from what the post is,
- * not from where it happens to sit.
+ * A 16:9 player at a single column is a postage stamp, so the embed earns the
+ * width. Nothing else does. An earlier version also promoted long reads with a
+ * picture, and varied the crop to break up the rhythm — but the rhythm problem
+ * was never the rule, it was the column COUNT (see the grid below), and once
+ * that was fixed the extra variation was just inconsistency. Every card that is
+ * not a player is one column with a 16:9 picture.
  */
-export type CardShape = "wide" | "tall" | "plain";
-
-export function cardShape(post: Post, runIndex: number): CardShape {
-  const isVideo = post.kind === "video" && youtubeId(post.url) !== null;
-  // Every third video stays at one column. Ten wide videos in a row of three
-  // columns is the loop; letting some sit narrow is what breaks it.
-  if (isVideo) return runIndex % 3 === 2 ? "plain" : "wide";
-  if (hasImage(post)) {
-    if (post.length === "long") return "wide";
-    // Alternating crop on the ordinary picture cards. Same column width, but
-    // the columns stop agreeing about where a card ends.
-    return runIndex % 2 === 0 ? "tall" : "plain";
-  }
-  return "plain";
-}
-
-/** Kept for the lead-slot logic, which only cares whether a card is double-width. */
-export function isWideCard(post: Post, runIndex = 0): boolean {
-  return cardShape(post, runIndex) === "wide";
+export function isWideCard(post: Post): boolean {
+  return post.kind === "video" && youtubeId(post.url) !== null;
 }
 
 /** Where the interactive cards sit in the run of posts. */
@@ -191,7 +162,7 @@ export function FeedTimeline({
             const special = INTERLEAVE[i];
             return (
               <FeedCardGroup key={post.slug}>
-                <PostCardFeed post={post} runIndex={i} showVisibility={showVisibility} />
+                <PostCardFeed post={post} showVisibility={showVisibility} />
                 {special === "swipe" && (
                   <Cell className="min-[1080px]:[grid-column:span_2]">
                     <SwipeDemoCard />
@@ -246,18 +217,9 @@ function Cell({
 
 /* ---------- a post ---------- */
 
-function PostCardFeed({
-  post,
-  runIndex,
-  showVisibility,
-}: {
-  post: Post;
-  runIndex: number;
-  showVisibility: boolean;
-}) {
+function PostCardFeed({ post, showVisibility }: { post: Post; showVisibility: boolean }) {
   const yt = post.kind === "video" ? youtubeId(post.url) : null;
-  const shape = cardShape(post, runIndex);
-  const wide = shape === "wide";
+  const wide = isWideCard(post);
 
   return (
     <Cell
@@ -270,11 +232,7 @@ function PostCardFeed({
         <YouTubeCard id={yt} title={post.title} />
       ) : hasImage(post) ? (
         <Link href={`/feed/${post.slug}`} className="group block">
-          <div
-            className={`relative overflow-hidden border-b border-ink/[0.12] ${
-              shape === "tall" ? "aspect-[4/5]" : "aspect-[2/1]"
-            }`}
-          >
+          <div className="relative aspect-video overflow-hidden border-b border-ink/[0.12]">
             <PostImage
               post={post}
               className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
@@ -295,7 +253,7 @@ function PostCardFeed({
          */
         <Link
           href={`/feed/${post.slug}`}
-          className="group relative block aspect-[2/1] overflow-hidden border-b border-ink/[0.12]"
+          className="group relative block aspect-video overflow-hidden border-b border-ink/[0.12]"
         >
           <span className="fa-hatch absolute inset-0" aria-hidden />
           <span className="absolute inset-0 flex items-end p-4">
