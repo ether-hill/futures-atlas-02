@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { TOPIC_ORDER, formatPostDate, type Post, type PostTopic } from "@/data/posts";
 import type { Project } from "@/data/projects";
@@ -70,7 +70,7 @@ export function LeftRail({
   setMedia: (v: boolean) => void;
 }) {
   return (
-    <aside className="fa-rail sticky top-5 hidden max-h-[calc(100dvh-44px)] w-[236px] shrink-0 self-start overflow-y-auto px-5 py-6 [scrollbar-width:none] min-[680px]:py-8 min-[1080px]:block [&::-webkit-scrollbar]:hidden">
+    <aside className="fa-rail sticky top-5 hidden max-h-[calc(100dvh-44px)] w-[300px] shrink-0 self-start overflow-y-auto px-5 py-6 [scrollbar-width:none] min-[680px]:py-8 min-[1080px]:block [&::-webkit-scrollbar]:hidden">
       <nav className="flex flex-col gap-0.5">
         <RailItem
           label="All posts"
@@ -111,6 +111,41 @@ export function LeftRail({
 
 /* ============================ right ============================ */
 
+/**
+ * Twitter's right-column behaviour: the rail scrolls away with the page until
+ * its last panel is fully in view, then pins there while the feed keeps going.
+ *
+ * `position: sticky` alone can't do it, because sticky pins at a fixed offset
+ * and this offset depends on how tall the rail is. So: when the rail is taller
+ * than the viewport, park it at a NEGATIVE top of (viewport − rail height) —
+ * the rail scrolls up by exactly its overhang and then stops with its foot on
+ * the bottom edge. When it is shorter than the viewport there is no overhang to
+ * absorb, so it simply pins near the top like the left rail.
+ */
+function useStickyFoot<T extends HTMLElement>(gap = 20) {
+  const ref = useRef<T>(null);
+  const [top, setTop] = useState(gap);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      const overhang = el.offsetHeight + gap * 2 - window.innerHeight;
+      setTop(overhang > 0 ? gap - overhang : gap);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener("resize", measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [gap]);
+
+  return { ref, top };
+}
+
 export function RightRail({
   latest,
   projects,
@@ -120,8 +155,13 @@ export function RightRail({
   projects: Project[];
   all: Post[];
 }) {
+  const { ref, top } = useStickyFoot<HTMLElement>();
   return (
-    <aside className="fa-rail-b sticky bottom-5 hidden w-[312px] shrink-0 self-start px-5 py-6 min-[680px]:py-8 min-[1320px]:block">
+    <aside
+      ref={ref}
+      style={{ top }}
+      className="fa-rail-b sticky hidden w-[300px] shrink-0 self-start px-5 py-6 min-[680px]:py-8 min-[1320px]:block"
+    >
       <JustIn latest={latest} />
       <ProjectPicks projects={projects} />
       <PopularTags all={all} />
@@ -156,7 +196,7 @@ function ProjectPicks({ projects }: { projects: Project[] }) {
   return (
     <Panel className="mt-5">
       <RailHeading>Recent projects</RailHeading>
-      <ul className="mt-3 flex flex-col gap-4">
+      <ul className="mt-3 flex flex-col gap-7">
         {projects.map((pr) => (
           <li key={pr.id}>
             <Link href={pr.path ?? pr.url ?? "/projects"} className="group block">
@@ -180,7 +220,9 @@ function ProjectPicks({ projects }: { projects: Project[] }) {
               <span className="mt-0.5 block text-[13px] font-extrabold leading-tight tracking-[-0.01em] text-ink transition-colors group-hover:text-accent">
                 {pr.title}
               </span>
-              <span className="mt-1 line-clamp-2 block font-mono text-[11px] leading-[1.5] text-graphite">
+              {/* no `block` here: line-clamp needs display:-webkit-box, and a
+                  display utility alongside it silently cancels the clamp */}
+              <span className="mt-1 line-clamp-[7] pb-1 font-mono text-[11px] leading-[1.5] text-graphite">
                 {pr.tagline}
               </span>
             </Link>
