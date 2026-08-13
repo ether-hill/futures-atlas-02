@@ -12,7 +12,7 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 type Item = { card: Card; sector: Sector };
 type Ans = { card: Card; sector: Sector; sayReal: boolean };
-type Phase = "swipe" | "flinging" | "result" | "final";
+type Phase = "swipe" | "flinging" | "result" | "leaving" | "final";
 
 // The mixed deck. `sector` here is whichever deck the card came from, so the
 // result card can still credit it.
@@ -120,7 +120,20 @@ export default function Calibration() {
     setPhase(answers[next] ? "result" : "swipe");
   }, [deck.length, answers]);
 
-  const advance = useCallback(() => goTo(pos + 1), [goTo, pos]);
+  // Next used to unmount the reveal and mount the next claim in the same frame,
+  // which reads as a jump-cut. `leaving` holds the reveal for one short exit
+  // animation first, and the incoming card fades up rather than appearing.
+  const advance = useCallback(() => {
+    if (phase === "leaving") return; // already on its way out; the timer has this
+    if (reduce.current || phase !== "result") { goTo(pos + 1); return; }
+    setPhase("leaving");
+  }, [goTo, pos, phase]);
+
+  useEffect(() => {
+    if (phase !== "leaving") return;
+    const t = setTimeout(() => goTo(pos + 1), 200);
+    return () => clearTimeout(t);
+  }, [phase, goTo, pos]);
   const goBack = useCallback(() => { if (pos > 0) goTo(pos - 1); }, [goTo, pos]);
 
   // drag the active card (swipe phase only)
@@ -309,9 +322,9 @@ export default function Calibration() {
         ) : (
           depths.map((d) => {
             const active = d === 0;
-            if (active && phase === "result" && lastAns) {
+            if (active && (phase === "result" || phase === "leaving") && lastAns) {
               return (
-                <div key={`res-${pos}`} className="tcard is-result">
+                <div key={`res-${pos}`} className={`tcard is-result${phase === "leaving" ? " leaving" : ""}`}>
                   <div className="vo-body">
                     {/* the claim first, so you re-read what you answered before
                         being told how it went */}
@@ -345,7 +358,15 @@ export default function Calibration() {
                   {/* same wrapper as the False/True row, so Next lands under your thumb */}
                   <div className="card-actions">
                     <span className="ca">
-                      <button className="round next" onClick={advance} aria-label="Next claim">→</button>
+                      <button className="round next" onClick={advance} aria-label="Next claim">
+                        {/* drawn, not typed: the "→" glyph sits below the optical
+                            centre of the circle and no amount of line-height
+                            fixes it consistently across fonts */}
+                        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M4 12h16M14 6l6 6-6 6" fill="none" stroke="currentColor"
+                            strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      </button>
                       <span className="ca-lbl">Next</span>
                     </span>
                   </div>
@@ -356,7 +377,7 @@ export default function Calibration() {
             const flung = active && phase === "flinging";
             const flingStyle = flung ? { transform: `translateX(${fling * 130}%) rotate(${fling * 18}deg)`, opacity: 0 } : undefined;
             return (
-              <div key={`claim-${pos + d}-${it.card.id}`} ref={active && phase === "swipe" ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}${it.card.attribution ? " quote" : ""}`} style={flingStyle}>
+              <div key={`claim-${pos + d}-${it.card.id}`} ref={active && phase === "swipe" ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}${it.card.attribution ? " quote" : ""}${active && phase === "swipe" ? " enter" : ""}`} style={flingStyle}>
                 {it.card.attribution && <span className="quote-mark" aria-hidden="true">&ldquo;</span>}
                 {it.sector.kind === "generated" && !it.sector.approved && <span className="draft-flag">AI-drafted · unverified</span>}
                 <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">, {it.card.attribution}</span></> : it.card.claim}</h3>
