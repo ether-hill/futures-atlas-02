@@ -1289,25 +1289,44 @@ select {
     padding: 12px 20px;
     font-size: 10px;
   }
-  /* Visible, wrapped, and small. A sideways scroller swallowed every vertical
-     swipe that started on it, which is the one thing they must not do. */
+  /* One line, swiped sideways, sitting directly under the input.
+     touch-action: pan-x is the whole trick: it tells the browser this element
+     handles horizontal panning and nothing else, so a vertical swipe that
+     starts on it scrolls the page instead of fighting it. Without that line a
+     sideways scroller eats every vertical gesture that lands on it. */
   .ivsuggest {
-    order: 3;
-    flex: 1 1 100%;
-    flex-wrap: wrap;
-    gap: 4px;
+    order: 0;
+    /* min-width: 0 is load-bearing. A flex item defaults to min-width: auto,
+       which refuses to shrink below its content, so a nowrap row of chips
+       stretched the whole page sideways instead of scrolling inside itself. */
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 5px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* Bleeds into the gutter so the row reads as continuing past the edge, and
+       fades there rather than stopping dead. */
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 1px var(--gutter) 3px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent);
   }
-  /* The chips stay small because they were asked to. A thumb is not small, so
-     the hit box grows behind them instead: same pill, forty pixels of target. */
+  .ivsuggest::-webkit-scrollbar {
+    display: none;
+  }
+  /* In a clipped scroller an invisible overhanging hit box gets clipped too, so
+     the pill itself carries the target: still small, still one line, tall
+     enough to hit. */
   .ivchip {
     flex: 0 0 auto;
     white-space: nowrap;
-    position: relative;
-  }
-  .ivchip::after {
-    content: "";
-    position: absolute;
-    inset: -9px 0;
+    padding: 6px 11px;
   }
   .segmented button {
     padding: 10px;
@@ -1318,7 +1337,7 @@ select {
     gap: 4px;
   }
   .ivopts {
-    order: 1;
+    order: 2;
     width: 100%;
     flex-wrap: wrap;
     gap: 8px;

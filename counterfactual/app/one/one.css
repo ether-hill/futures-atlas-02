@@ -899,24 +899,24 @@ html.dark .one {
     order: 2;
     margin-top: 14px;
   }
-  .one-whenrow {
+  .one-options {
     order: 3;
+  }
+  .one-whenrow {
+    order: 4;
     margin-top: 8px;
   }
   .one-verdict-line {
-    order: 4;
-  }
-  .one-figure {
     order: 5;
   }
-  .one-readwhy {
+  .one-figure {
     order: 6;
   }
-  .one-options {
+  .one-readwhy {
     order: 7;
   }
   .one-miss {
-    order: 9;
+    order: 8;
   }
 
   .one-top h1 {
@@ -963,23 +963,37 @@ html.dark .one {
   .one-when b {
     font-size: 20px;
   }
+  /* One line, swiped sideways, directly under the input. touch-action: pan-x
+     hands every vertical gesture back to the page, which is what a sideways
+     scroller otherwise swallows. */
   .one-options {
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-top: 12px;
-    overflow: visible;
+    width: 100%;
+    min-width: 0;
+    flex-wrap: nowrap;
+    gap: 5px;
+    margin-top: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    touch-action: pan-x;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin-left: calc(var(--gutter) * -1);
+    margin-right: calc(var(--gutter) * -1);
+    padding: 1px var(--gutter) 3px;
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - 34px), transparent);
   }
-  /* Small pill, thumb-sized target. */
+  .one-options::-webkit-scrollbar {
+    display: none;
+  }
+  /* In a clipped scroller an overhanging hit box is clipped too, so the pill
+     carries the target itself. */
   .one-option {
     flex: 0 0 auto;
     white-space: nowrap;
-    position: relative;
-  }
-  .one-option::after {
-    content: "";
-    position: absolute;
-    inset: -6px 0;
+    padding: 6px 12px;
   }
   /* A fixed shape rather than a share of the viewport: leftover flex height on
      a phone made the chart taller than it was wide, which is the one proportion
