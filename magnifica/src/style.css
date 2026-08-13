@@ -588,10 +588,20 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
    add no specificity, so the hide below needs the same treatment. */
 .banner .banner-print { justify-self: end; max-height: min(64vh, 540px); }
 @media (max-width: 1000px) {
-  /* Below this the copy wants the full width, and a print squeezed in beside it
-     reads as a stamp rather than an object. The loop carries the banner alone. */
-  .banner-grid { display: block; }
-  .banner .banner-print { display: none; }
+  /* Below this there is no room for a column beside the copy, so the print goes
+     above it instead of away: small, left-aligned to the text it introduces,
+     and first in the flow so the loop is the thing you meet. The banner is
+     min-height rather than height, so it simply grows to take it. */
+  .banner-grid { display: flex; flex-direction: column; align-items: stretch; }
+  .banner .banner-print {
+    display: flex;
+    order: -1;
+    align-self: start;
+    justify-self: start;
+    width: min(230px, 52vw);
+    max-height: none;
+    margin-bottom: clamp(20px, 4vw, 32px);
+  }
 }
 .banner-kick {
   display: inline-block; margin-bottom: 18px;
@@ -978,6 +988,23 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 .banner .banner-print {
   position: relative;
   z-index: 3;
-  align-self: center;
   max-height: min(72vh, 620px);
+}
+/* Guarded, because the phone layout below stacks the print ABOVE the copy and
+   needs the cross-axis for alignment, not for centring. Unguarded this rule
+   sits later in the file and quietly wins there. */
+@media (min-width: 1001px) {
+  .banner .banner-print { align-self: center; }
+}
+/* Centring a banner whose content is taller than the viewport pushes the top of
+   that content off the padding box and under the fixed bar. Only centre while
+   there is slack to centre in. */
+@media (max-width: 1000px) {
+  .banner {
+    justify-content: flex-start;
+    /* The print is now the first thing in the banner and the bar is fixed, so
+       the banner's own top padding has to clear it — on desktop the copy
+       started far enough down that it never had to. */
+    padding-top: calc(var(--fa-nav-h, 64px) + clamp(20px, 5vw, 40px));
+  }
 }
