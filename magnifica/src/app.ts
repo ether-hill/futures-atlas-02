@@ -114,14 +114,10 @@ function homeView(): string {
         <h1 class="banner-title">Hypothetica<i>Magnifica</i></h1>
         <p class="banner-lede">
           In May 2026, Pope Leo XIV published <i>Magnifica humanitas</i> \u2014 the first
-          papal encyclical on artificial intelligence, and the first time one of the
-          world\u2019s great traditions answered the question at full length.
-        </p>
-        <p class="banner-sub">
-          So this project asks the obvious next question: what would the others say?
-          Sixteen imagined documents, each extrapolated from that leader\u2019s own record
-          on technology and the forms their tradition actually uses. One document here
-          is real; the sixteen are predictions \u2014 rooted in research, not set in stone.
+          papal encyclical on artificial intelligence. This project asks: what would
+          other thought leaders say? We used AI to help imagine sixteen documents
+          extrapolated from each leader\u2019s record on technology. One is real; the rest
+          are predictions rooted in research.
         </p>
         <a class="banner-cta" href="#x-voices">
           <span class="cta-ring" aria-hidden="true">

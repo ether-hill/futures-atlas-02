@@ -1008,3 +1008,43 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
     padding-top: calc(var(--fa-nav-h, 64px) + clamp(20px, 5vw, 40px));
   }
 }
+
+/* ---------- mobile: the banner is one screen, arrow included ----------
+   The banner had a min-height of 84vh plus a display headline, a paragraph and
+   a 62px call-to-action, which on a phone pushed the arrow below the fold — so
+   the one control telling you the page continues was the one thing you could
+   not see. Everything is tuned down together until the whole thing fits inside
+   the viewport the bar leaves behind. */
+@media (max-width: 680px) {
+  .banner {
+    min-height: calc(100svh - var(--fa-nav-now, var(--fa-nav-h)));
+    padding-top: clamp(20px, 4vh, 34px);
+    padding-bottom: clamp(20px, 3vh, 30px);
+    justify-content: center;
+  }
+  .banner-kick { margin-bottom: 10px; font-size: 9px; }
+  .banner-title { font-size: clamp(34px, 12.5vw, 54px); line-height: 0.92; }
+  .banner-lede {
+    margin-top: clamp(12px, 2vh, 18px);
+    font-size: clamp(13.5px, 3.7vw, 15.5px);
+    line-height: 1.45;
+  }
+  /* A smaller ring, and the word beside it trimmed to match — at 62px the
+     control was competing with the headline for the little room left. */
+  .banner-cta { margin-top: clamp(16px, 2.6vh, 26px); gap: 12px; }
+  .cta-ring { width: 42px; height: 42px; }
+  .cta-ring svg { width: 16px; height: 16px; }
+  .cta-word { font-size: 10px; letter-spacing: 0.14em; }
+}
+
+/* The Pope loop, on a phone.
+   Below 1000px the print stacks ABOVE the copy (see the .banner-print block
+   further up), where it was starting hard against the top of the band and flush
+   with the left gutter. Both get room so it reads as a placed object rather
+   than something pinned into the corner. */
+@media (max-width: 680px) {
+  .banner .banner-print {
+    margin-top: clamp(14px, 3.5vh, 30px);
+    margin-left: clamp(10px, 4vw, 22px);
+  }
+}
