@@ -201,24 +201,39 @@ export default function InterventionBar({
           </p>
         )}
 
-        <p className="ivsummary">
-          {active ? (
-            <>
-              {active.summary}{" "}
-              <span className="ivscope">
-                {from <= 2025 ? `Rewrites history from ${from}.` : `Changes ${from} onward.`}{" "}
-                {changed} of {total} figures move.
-              </span>
-            </>
-          ) : (
-            <span className="ivhint">
-              These are the published figures, ending where the data ends. Name something and the
-              charts run on to {horizon} to show where it lands — put a year in the sentence, or
-              drag it afterwards, and an intervention dated before 2026 rewrites what happened
-              instead.
-            </span>
-          )}
+      {active ? (
+        /* The state of play, as two things you can scan rather than one
+           run-on sentence: what the intervention is, and what it did. */
+        <div className="ivstate">
+          <p className="ivsummary">{active.summary}</p>
+          <dl className="ivmeta">
+            <div>
+              <dt>{from <= 2025 ? "Rewrites from" : "Changes from"}</dt>
+              <dd>{from}</dd>
+            </div>
+            <div>
+              <dt>Figures moved</dt>
+              <dd>
+                {changed}
+                <span className="ivmeta-of">of {total}</span>
+              </dd>
+            </div>
+            <div>
+              <dt>Unmoved</dt>
+              <dd>
+                {total - changed}
+                <span className="ivmeta-of">and each says why</span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      ) : (
+        <p className="ivhint">
+          These are the published figures, ending where the data ends. Name something and the
+          charts run on to {horizon} to show where it lands. Put a year in the sentence, or drag it
+          afterwards: an intervention dated before 2026 rewrites what happened instead.
         </p>
+      )}
       </div>
     </div>
   );

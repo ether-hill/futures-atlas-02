@@ -10,6 +10,7 @@ export default function Page() {
       interventions={INTERVENTIONS}
       meta={meta}
       copy={{
+        seriesNo: "01",
         siblingHref: "/quantum",
         siblingLabel: "Quantum board →",
         title: (

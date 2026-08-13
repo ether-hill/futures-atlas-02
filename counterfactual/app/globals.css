@@ -51,7 +51,7 @@ a:hover {
 
 .eyebrow {
   margin: 0 0 var(--space-5);
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
   font-size: var(--text-label);
   letter-spacing: var(--track-label-wide);
   text-transform: uppercase;
@@ -71,6 +71,27 @@ a:hover {
   gap: var(--space-6);
   align-items: baseline;
 }
+/* The series comes before the title: three projects, one method. */
+.series {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0 0 7px;
+  font-size: var(--text-label);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label-wide);
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--paper) 62%, transparent);
+}
+.series-no {
+  font-family: var(--font-year);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
+  border-radius: var(--radius);
+}
+
 .topbar h1 {
   margin: 0;
   font-size: clamp(19px, 2vw, 26px);
@@ -80,9 +101,9 @@ a:hover {
   white-space: nowrap;
 }
 .topbar h1 em {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
+  font-style: normal;
+  font-weight: var(--weight-body);
+  color: color-mix(in srgb, var(--paper) 74%, transparent);
 }
 .topline {
   margin: 0;
@@ -303,9 +324,11 @@ a:hover {
 }
 
 .ivhint {
+  margin: var(--space-3) 0 0;
+  max-width: 100ch;
   color: var(--muted);
-  font-family: var(--font-heading);
-  font-size: 12.5px;
+  font-size: 13px;
+  line-height: var(--lh-snug);
 }
 
 .ivmiss {
@@ -315,21 +338,59 @@ a:hover {
   line-height: var(--lh-snug);
   color: var(--muted);
 }
+/* What the intervention is, and what it did: two things to scan, not one
+   sentence with statistics glued to the end of it. */
+.ivstate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) clamp(20px, 4vw, 56px);
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--hairline);
+}
 .ivsummary {
-  margin: 6px 0 0;
-  max-width: 110ch;
-  font-family: var(--font-serif);
-  font-size: 14px;
+  flex: 1 1 420px;
+  margin: 0;
+  max-width: 78ch;
+  font-size: 14.5px;
   line-height: var(--lh-snug);
   color: var(--text);
 }
-.ivscope {
-  font-family: var(--font-heading);
-  font-size: var(--text-label);
-  letter-spacing: 0.08em;
+.ivmeta {
+  display: flex;
+  gap: clamp(16px, 2.4vw, 34px);
+  margin: 0;
+  flex: 0 0 auto;
+}
+.ivmeta div {
+  min-width: 0;
+}
+.ivmeta dt {
+  font-size: var(--text-micro);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
+  color: var(--faint);
+  white-space: nowrap;
+}
+.ivmeta dd {
+  margin: 1px 0 0;
+  font-family: var(--font-year);
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text);
+  white-space: nowrap;
+}
+.ivmeta-of {
+  margin-left: 6px;
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   color: var(--muted);
-  margin-left: var(--space-3);
 }
 
 /* ----------------------------------------------------------------- the board */
@@ -402,11 +463,24 @@ a:hover {
   border-color: var(--text);
   box-shadow: 3px 3px 0 var(--haze);
 }
+/* No dimming. A figure that did not move is an answer, and a greyed-out card
+   reads as a failed one. */
 .figure.untouched {
-  opacity: 0.72;
+  border-style: dashed;
 }
-.figure.untouched:hover {
-  opacity: 1;
+.figure-delta--flat {
+  border-top-color: var(--muted);
+}
+.figure-delta--flat .delta-num {
+  color: var(--muted);
+}
+.figure-delta--flat .delta-pair b {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text);
 }
 
 .figure-head {
@@ -488,7 +562,52 @@ a:hover {
 .figure.hero .figure-source {
   font-size: 11px;
 }
-.figure.hero .figure-foot {
+.figure.hero /* The reasoning is the point of the project, so it gets a button rather than a
+   footnote-sized link in a row of housekeeping. */
+.whybtn {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  padding: 9px 16px;
+  color: var(--text);
+  background: transparent;
+  border: var(--border-emphasis) solid var(--text);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+}
+.whybtn:hover,
+.whybtn.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper);
+}
+.whybtn-n {
+  font-family: var(--font-year);
+  font-size: 12px;
+  letter-spacing: 0;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+}
+.whybtn:hover .whybtn-n,
+.whybtn.on .whybtn-n {
+  background: color-mix(in srgb, var(--paper) 24%, transparent);
+}
+.figure.hero .whybtn {
+  margin-top: var(--space-2);
+  padding: 7px 13px;
+  font-size: 11px;
+}
+
+.figure-foot {
   margin-top: auto;
   padding-top: 6px;
   margin-bottom: 0;
@@ -656,7 +775,7 @@ a:hover {
 .figure-takeaway,
 .figure-untouched {
   margin: var(--space-4) 0 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
   font-size: 14.5px;
   line-height: var(--lh-snug);
   color: var(--text-body);
@@ -664,18 +783,6 @@ a:hover {
 }
 .figure-untouched {
   color: var(--muted);
-}
-.figure-untouched .tag {
-  display: inline-block;
-  font-family: var(--font-heading);
-  font-size: var(--text-micro);
-  font-weight: var(--weight-strong);
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
-  border: 1px solid var(--hairline);
-  padding: 1px 6px;
-  margin-right: var(--space-3);
-  vertical-align: 2px;
 }
 
 /* ---------------------------------------------------------------- reasoning */
@@ -692,7 +799,7 @@ a:hover {
 }
 .why-item p {
   margin: var(--space-2) 0 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
   font-size: 14px;
   line-height: var(--lh-snug);
   color: var(--text-body);
@@ -736,7 +843,6 @@ a:hover {
 }
 .c-speculative {
   color: var(--conf-weak);
-  font-style: italic;
 }
 
 /* ------------------------------------------------------------------- tooltip */
@@ -854,9 +960,8 @@ a:hover {
 }
 .argue-claim {
   margin: 0 0 var(--space-6);
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
   font-size: var(--text-title);
-  font-style: italic;
   line-height: var(--lh-snug);
   letter-spacing: var(--track-tight);
   border-left: var(--border-rule) solid color-mix(in srgb, var(--paper) 35%, transparent);

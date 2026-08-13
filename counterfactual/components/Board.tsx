@@ -9,7 +9,11 @@ import type { Intervention } from "@/lib/interventions";
 import { PROJECTION_RULE, projectFigure } from "@/lib/project";
 import { applyIntervention } from "@/lib/transform";
 
+export const SERIES = "Manipulate the data";
+
 export type BoardCopy = {
+  /** Which of the series this board is. */
+  seriesNo: string;
   /** Route slug of the other board, for the switch in the masthead. */
   siblingHref: string;
   siblingLabel: string;
@@ -65,7 +69,13 @@ export default function Board({
     <>
       <header className="topbar">
         <div className="shell topbar-inner">
-          <h1>{copy.title}</h1>
+          <div>
+            <p className="series">
+              {SERIES}
+              <span className="series-no">{copy.seriesNo}</span>
+            </p>
+            <h1>{copy.title}</h1>
+          </div>
           <p className="topline">{copy.tagline}</p>
           <p className="provenance">
             <a href={meta.reportUrl} target="_blank" rel="noreferrer">

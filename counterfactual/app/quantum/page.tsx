@@ -16,6 +16,7 @@ export default function Page() {
       interventions={QUANTUM_INTERVENTIONS}
       meta={quantumMeta}
       copy={{
+        seriesNo: "02",
         siblingHref: "/",
         siblingLabel: "← AI board",
         title: (

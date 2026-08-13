@@ -43,12 +43,17 @@ export default function FigureCard({
      that needs a future to land in. Where it lands is the intervention's own
      business: a 2020 date rewrites history and carries the change forward, a
      2027 date only touches the projection. */
-  const base = useMemo(
+  const extended = useMemo(
     () => (intervention ? projectFigure(figure, horizon)?.figure ?? figure : figure),
     [figure, horizon, intervention]
   );
-  const projected = !!intervention && canProject(figure);
-  const cf = useMemo(() => applyIntervention(base, intervention), [base, intervention]);
+  const cf = useMemo(() => applyIntervention(extended, intervention), [extended, intervention]);
+  /* A figure the intervention never reaches keeps the published timeline. Growing
+     it a future that nothing acts on invites the reader to hunt for a change
+     that was never going to be there. */
+  const base = cf ? extended : figure;
+  const projected = !!cf;
+  const projectedFigure = canProject(figure);
   const tall = figure.kind === "hbar" || figure.kind === "groupedHBar";
   const fmt = figure.valueFormat ?? "trim2";
 
@@ -98,6 +103,23 @@ export default function FigureCard({
           {figure.chartNote ? ` | ${figure.chartNote}` : ""}
         </p>
       </header>
+
+      {/* An unmoved figure is a finding, not a failure. It gets the same slot,
+          the same scale and the same shape of statement as a moved one — a
+          dimmed card with a small tag underneath read as "this is broken". */}
+      {intervention && !cf && (
+        <p className="figure-delta figure-delta--flat">
+          <span className="delta-num">0%</span>
+          <span className="delta-what">
+            <span className="delta-pair">
+              <b>Unmoved</b>
+            </span>
+            {!projectedFigure && intervention.from > 2025
+              ? "no time axis to extend"
+              : "no lever in this intervention reaches it"}
+          </span>
+        </p>
+      )}
 
       {cf && bigChange && (
         <p className="figure-delta">
@@ -170,6 +192,18 @@ export default function FigureCard({
         </div>
       )}
 
+      {cf && (
+        <button
+          type="button"
+          className={showWhy ? "whybtn on" : "whybtn"}
+          onClick={() => setShowWhy((v) => !v)}
+          aria-expanded={showWhy}
+        >
+          {showWhy ? "Hide the reasoning" : "Why this changed"}
+          <span className="whybtn-n">{cf.effects.length}</span>
+        </button>
+      )}
+
       <figcaption className="figure-foot">
         <span className="figure-ref">
           Figure {figure.id}
@@ -179,11 +213,6 @@ export default function FigureCard({
           p.{figure.reportPage}
         </span>
         <span className="figure-actions">
-          {cf && (
-            <button type="button" onClick={() => setShowWhy((v) => !v)} aria-expanded={showWhy}>
-              {showWhy ? "Hide reasoning" : `Why (${cf.effects.length})`}
-            </button>
-          )}
           <button type="button" onClick={() => setShowData((v) => !v)} aria-expanded={showData}>
             {showData ? "Hide data" : "Data"}
           </button>
@@ -197,9 +226,8 @@ export default function FigureCard({
 
       {!cf && intervention ? (
         <p className="figure-untouched">
-          <span className="tag">Unchanged</span>
-          {!projected && intervention.from > 2025
-            ? `This figure has no continuous time axis, so it stops at the published data. An intervention dated ${intervention.from} has nothing here to act on.`
+          {!projectedFigure && intervention.from > 2025
+            ? `This figure has no continuous time axis, so it stops where the published data stops. An intervention dated ${intervention.from} has nothing here to act on.`
             : untouchedReason(figure, intervention)}
         </p>
       ) : (

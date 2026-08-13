@@ -94,7 +94,8 @@ export default function Story() {
         <header className="one-top">
           <div>
             <p className="one-eyebrow">
-              One figure · Epoch AI for the 2026 AI Index
+              Manipulate the data <span className="one-series-no">03</span> · Epoch AI for the
+              2026 AI Index
             </p>
             <h1>
               AI now draws <span className="one-hero-num">{Math.round(published)}</span> gigawatts.
@@ -141,10 +142,26 @@ export default function Story() {
             dataEndsAt={iv ? dataEndsAt : undefined}
           />
         </div>
+        {iv && cf && (
+          <a className="one-readwhy" href="#why">
+            Read why this happens
+            <span aria-hidden>↓</span>
+          </a>
+        )}
       </section>
 
       {iv && cf && (
-        <section className="one-result">
+        <section className="one-result" id="why">
+          <p className="one-story">
+            <b>{iv.prompt.replace(/\?$/, "")}</b>, from {iv.from}.{" "}
+            {here[0]?.rationale} By {HORIZON} the world&rsquo;s AI data centres draw{" "}
+            <b>{cfEnd!.toFixed(1)} GW</b> rather than {baseEnd.toFixed(1)}, a gap of{" "}
+            <b>{Math.abs(cfEnd! - baseEnd).toFixed(1)} GW</b>, about{" "}
+            {(Math.abs(cfEnd! - baseEnd) / 31).toFixed(1)} times New York State at peak.{" "}
+            {elsewhere!.moved.length} of the other {figures.length - 1} figures on the board move
+            with it, and {elsewhere!.still.length} do not. What follows is every reason, including
+            the ones against.
+          </p>
           <div className="one-cols">
             <div className="one-col">
               <h2>What you changed here</h2>
