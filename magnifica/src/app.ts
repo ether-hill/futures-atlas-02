@@ -113,10 +113,10 @@ function homeView(): string {
           world\u2019s great traditions answered the question at full length.
         </p>
         <p class="banner-sub">
-          This project holds that real document up against sixteen that do not exist.
-          Each is a research-grounded prediction of what another faith leader
-          <i>might</i> write, drafted from their own public record. One is real.
-          Sixteen are not, and say so on every page.
+          So this project asks the obvious next question: what would the others say?
+          Sixteen imagined documents, each extrapolated from that leader\u2019s own record
+          on technology and the forms their tradition actually uses. One document here
+          is real; the sixteen are predictions \u2014 rooted in research, not set in stone.
         </p>
         <div class="banner-facts">
           <span><b>1</b> real encyclical</span>
@@ -134,14 +134,15 @@ function homeView(): string {
     </header>
 
     <section class="sect" id="x-voices">
-      <span class="lbl">The voices \u2014 speculative</span>
-      <h2 class="sect-title" data-reveal>${LEADERS.length} answers that were never written</h2>
+      <span class="lbl">The voices \u2014 imagined</span>
+      <h2 class="sect-title" data-reveal>What would the others teach us?</h2>
       <p class="sect-lede" data-reveal>
-        Every leader below is real, photographed under a free licence, and everything
-        stated about them as fact is sourced on their page. The <i>documents</i> are
-        not real: titles, arguments and excerpts are extrapolated from each leader\u2019s
-        actual record on technology, in the forms their tradition uses. No excerpt is
-        a quote. Choose a voice.
+        ${LEADERS.length} traditions, ${LEADERS.length} imagined answers. Picture each leader setting down
+        what their tradition knows about being human \u2014 about work, truth, power,
+        patience and the soul \u2014 and turning it on the machines. Where would they
+        stand with Leo? Where would they break from him? Each document is a
+        prediction built from that leader\u2019s real record rather than a quotation
+        from it. Choose a voice.
       </p>
       <div class="voices">${voices}</div>
     </section>
