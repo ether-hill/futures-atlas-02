@@ -727,11 +727,14 @@ function Shell({ children, demo = false }: { children: React.ReactNode; demo?: b
         </div>
       )}
       <header className="st-head">
-        <span className="eyebrow">Futures Atlas · № 01 · Calibration</span>
+        {/* was a decorative "Futures Atlas · № 01 · Calibration" label; a way back
+            to the deck is worth more in the same slot */}
+        <a className="st-crumb" href="/swipe-the-future/">← Back to the deck</a>
         <h1>What everyone <em>actually</em> thinks has happened.</h1>
         <p className="st-intro">
-          Every swipe on Swipe the Future is one person&apos;s guess at whether a thing has already
-          happened, checked against a sourced answer. Enough of them together stop being a game and
+          Every swipe on Swipe the Future is one person&apos;s guess at whether a thing has
+          <em className="yes"> already</em> happened or <em className="no">not yet</em>, checked
+          against a sourced answer. Enough of them together stop being a game and
           start being a measurement: which futures we buy before they arrive, which ones arrived
           without us noticing, and which sectors people can read at all.
         </p>

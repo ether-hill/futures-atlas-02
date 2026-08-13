@@ -268,7 +268,7 @@ export default function Calibration() {
         <div className="bcol-l">
           <div className="stf-head">
             <h1>Swipe the <em>future.</em></h1>
-            <p className="lede">Every card is one thing a machine might be doing in the world, fact-checked and linked to its source. Has it <em>already</em> happened, or <em>not yet?</em></p>
+            <p className="lede">Every card is one thing a machine might be doing in the world, fact-checked and linked to its source. Has it <em className="yes">already</em> happened, or <em className="no">not yet?</em></p>
             <p className="stf-links">
               <a href="/swipe-the-future/stats">See what everyone else answered →</a>
             </p>
@@ -344,9 +344,6 @@ export default function Calibration() {
                   </div>
                   {/* same wrapper as the False/True row, so Next lands under your thumb */}
                   <div className="card-actions">
-                    {pos > 0 && (
-                      <button className="ca-back" onClick={goBack} aria-label="Previous claim">‹ back</button>
-                    )}
                     <span className="ca">
                       <button className="round next" onClick={advance} aria-label="Next claim">→</button>
                       <span className="ca-lbl">Next</span>
@@ -365,9 +362,6 @@ export default function Calibration() {
                 <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">, {it.card.attribution}</span></> : it.card.claim}</h3>
                 {active && phase === "swipe" && (
                   <div className="card-actions">
-                    {pos > 0 && (
-                      <button className="ca-back" onClick={goBack} aria-label="Previous claim">‹ back</button>
-                    )}
                     <span className="ca">
                       <button className="round no" onPointerDown={stop} onClick={() => decide(false)} aria-label="Not yet">✕</button>
                       <span className="ca-lbl">Not yet</span>
