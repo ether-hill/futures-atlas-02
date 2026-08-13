@@ -2,7 +2,7 @@ import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, SOURCES } from "./encyclical";
 import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
-import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
+import { experienceView, experienceParts, hasExperience, mountExperience, polaroid, type Variant } from "./experience";
 import { mountDrawer, unmountDrawer, markDrawerRoute, markPinned } from "./drawer";
 import { portraitOf, monogram } from "./portraits";
 
@@ -104,16 +104,21 @@ function homeView(): string {
     </a>`
   ).join("");
 
+  // The encyclical's author, shown on the banner as a print over the loop —
+  // the same object a voice page floats over its own scene. Absent portrait,
+  // absent print: the banner simply carries the loop.
+  const leo = portraitOf("leo-xiv");
 
   return `
   <main class="wrap home">
 
-    <header class="banner" data-reveal>
-      <div class="banner-art">
+    <header class="banner" data-reveal data-doc-loop="divine-touch">
+      <div class="banner-art" data-par="0.12">
         <img src="/magnifica/media/stills/creation-hands.jpg"
              alt="A close detail of two hands reaching toward each other in the manner of Michelangelo's Creation of Adam; the hand on the right has seven fingers."
              fetchpriority="high" decoding="async" />
       </div>
+      <div class="banner-grid">
       <div class="banner-in">
         <span class="banner-kick">Futures Atlas \u00b7 speculative design</span>
         <h1 class="banner-title">Hypothetica<i>Magnifica</i></h1>
@@ -135,6 +140,8 @@ function homeView(): string {
           </span>
           <span class="cta-word">Let\u2019s explore</span>
         </a>
+      </div>
+      ${leo ? polaroid(leo, 0.42, "x-polaroid-hero banner-print") : ""}
       </div>
     </header>
 
@@ -310,10 +317,19 @@ function leaderView(l: Leader): string {
  * trigger, not a taste — and the still plate simply stays put.
  */
 function mountDocHero(root: HTMLElement): () => void {
-  const hero = root.querySelector<HTMLElement>("[data-doc-loop]");
-  if (!hero) return () => {};
+  // Two of these now — the banner and the source-document hero — so every
+  // [data-doc-loop] gets its own loop and its own parallax pass. Querying a
+  // single one meant the first found took the video and the other went dark.
+  const heroes = Array.from(root.querySelectorAll<HTMLElement>("[data-doc-loop]"));
+  const stops = heroes.map(mountLoopHero);
+  return () => stops.forEach((stop) => stop());
+}
+
+function mountLoopHero(hero: HTMLElement): () => void {
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const bg = hero.querySelector<HTMLElement>(".doc-bg");
+  // The still inside .banner-art is the poster: it is already on screen at
+  // full priority, so the video fades in over it and there is never a gap.
+  const bg = hero.querySelector<HTMLElement>(".doc-bg, .banner-art");
 
   if (bg) {
     const video = document.createElement("video");

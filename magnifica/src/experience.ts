@@ -152,7 +152,13 @@ function plate(variant: Variant, media: string | undefined, rate: number): strin
           </div>`;
 }
 
-function polaroid(p: Portrait, rate: number, extraClass = ""): string {
+/**
+ * Exported because the overview's banner shows Leo XIV the same way a voice
+ * page shows its leader. Sharing the function rather than the markup keeps the
+ * credit + licence caption attached to the print: it is required to be visible,
+ * so it must not be something a second copy of this markup can forget.
+ */
+export function polaroid(p: Portrait, rate: number, extraClass = ""): string {
   return `
   <figure class="x-polaroid ${extraClass}" data-par="${rate}">
     <img src="/magnifica/media/portraits/${esc(p.file)}" alt="${esc(p.alt)}" />

@@ -542,12 +542,23 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   overflow: hidden;
   isolation: isolate;
 }
-.banner-art { position: absolute; inset: 0; z-index: -2; }
+/* Overscanned top and bottom so the plate can drift without ever showing an
+   edge — the same trick .doc-bg uses, for the same reason. */
+.banner-art { position: absolute; inset: -12% 0; z-index: -2; }
 /* Framed to keep BOTH hands and the gap between them: the seven-fingered hand
    only reads as wrong next to the ordinary one. The art is composed wide, so
    the crop stays gentle and the whole splayed hand survives it. */
-.banner-art img { width: 100%; height: 100%; object-fit: cover; object-position: 52% 46%; }
-@media (max-width: 860px) { .banner-art img { object-position: 64% 44%; } }
+.banner-art img,
+.banner-art video { width: 100%; height: 100%; object-fit: cover; object-position: 52% 46%; display: block; }
+/* The still is the poster. It carries the banner until the loop has decoded,
+   then the video lands on top of it — so there is never an empty plate, and a
+   browser that refuses the video keeps the artwork. */
+.banner-art video { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; }
+.banner.has-bg .banner-art video { opacity: 1; }
+@media (max-width: 860px) {
+  .banner-art img, .banner-art video { object-position: 64% 44%; }
+}
+@media (prefers-reduced-motion: reduce) { .banner-art video { transition: none; } }
 /* The fresco is warm and light; the copy is set on a scrim rather than on the
    paint, so it stays legible in both themes without tinting the artwork. */
 .banner::after {
@@ -557,7 +568,31 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
     linear-gradient(75deg, rgba(8, 6, 4, 0.94) 12%, rgba(8, 6, 4, 0.72) 46%, rgba(8, 6, 4, 0.18) 78%),
     linear-gradient(0deg, rgba(8, 6, 4, 0.9) 0%, rgba(8, 6, 4, 0) 46%);
 }
+/* Copy left, the print right — the same arrangement a voice page uses for its
+   leader (.x-hero-grid), because this banner is doing the same job for the one
+   document that is real. */
+.banner-grid {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 64px);
+}
 .banner-in { position: relative; max-width: 700px; }
+/* Qualified with .banner on purpose. These override .x-polaroid, which lives in
+   experience.css — imported AFTER this file, so at equal specificity it wins on
+   source order and a bare .banner-print rule does nothing at all. Media queries
+   add no specificity, so the hide below needs the same treatment. */
+.banner .banner-print { justify-self: end; max-height: min(64vh, 540px); }
+@media (max-width: 1000px) {
+  /* Below this the copy wants the full width, and a print squeezed in beside it
+     reads as a stamp rather than an object. The loop carries the banner alone. */
+  .banner-grid { display: block; }
+  .banner .banner-print { display: none; }
+}
 .banner-kick {
   display: inline-block; margin-bottom: 18px;
   font: 700 10px var(--mono); letter-spacing: 0.18em; text-transform: uppercase;

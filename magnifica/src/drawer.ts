@@ -155,18 +155,25 @@ export function pinFloatingControls() {
   // A resize changes the bar height and so the resting offset; without this the
   // button would hold at a margin measured for the old layout.
   window.addEventListener("resize", () => {
-    document.querySelectorAll<HTMLElement>("[data-pin-top]").forEach((el) => {
-      el.style.transform = "";
-      el.dataset.pinTop = String(Math.round(el.getBoundingClientRect().top + window.scrollY));
-    });
+    document.querySelectorAll<HTMLElement>("[data-pin-top]").forEach(markPinned);
     apply();
   }, { passive: true });
   apply();
 }
 
-/** Measure an element's resting offset once, so the pin knows its travel. */
+/**
+ * Measure an element's resting offset, so the pin knows how far it may travel.
+ *
+ * These controls are `position: fixed`, so getBoundingClientRect().top IS the
+ * resting offset — do NOT add scrollY to it. Adding it read as correct for a
+ * long time because it is only wrong when the page is already scrolled, and
+ * both controls are usually measured at the top. The drawer is not: it mounts
+ * during the route change, while the overview is still scrolled where the
+ * reader left it, so it recorded a rest of 2278 instead of 78 and allowed
+ * itself 2264px of travel — straight off the top of the screen.
+ */
 export function markPinned(el: HTMLElement | null) {
   if (!el) return;
   el.style.transform = "";
-  el.dataset.pinTop = String(Math.round(el.getBoundingClientRect().top + window.scrollY));
+  el.dataset.pinTop = String(Math.round(el.getBoundingClientRect().top));
 }
