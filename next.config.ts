@@ -4,6 +4,27 @@ const nextConfig: NextConfig = {
   // futures-atlas-core ships TSX source; Next must transpile it.
   transpilePackages: ["futures-atlas-core"],
 
+  /*
+   * Take webpack off its WebAssembly hasher.
+   *
+   * Builds were failing intermittently on Vercel with
+   *   TypeError: Cannot read properties of undefined (reading 'length')
+   *     at WasmHash._updateWithBuffer
+   * — webpack's wasm xxhash64 receiving an empty buffer while hashing modules.
+   * It is a flake, not a fault in this repo: the identical commit 90a6ec1
+   * failed, failed again on redeploy, and passed on a third attempt, and every
+   * failing commit builds cleanly here on the same Node (v24.15.0), including
+   * with public/ fully populated by the sub-app builds.
+   *
+   * sha256 is Node's own crypto rather than the wasm module, so the failure
+   * mode disappears. It costs a little build time and changes nothing about
+   * the output beyond internal chunk hashes.
+   */
+  webpack: (config) => {
+    config.output.hashFunction = "sha256";
+    return config;
+  },
+
   // Baked once per deployment — the footer's "last updated" date.
   env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString() },
 
