@@ -186,6 +186,14 @@ export function SwipeDemoCard() {
             >
               {phase === "ask" ? (
                 <>
+                  {/* names the game on the card face, so a reader meeting this
+                      mid-feed knows what they are playing before they swipe */}
+                  <span
+                    className="px-3 pb-3 text-center font-mono text-[10px] uppercase tracking-[0.18em]"
+                    style={{ color: DIM }}
+                  >
+                    Swipe the Future
+                  </span>
                   <h3
                     className="px-3 pb-16 text-center text-[clamp(16px,1.25vw,21px)] font-bold leading-[1.3] tracking-[-0.02em] text-balance"
                     style={{ color: INK }}
