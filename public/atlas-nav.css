@@ -391,8 +391,14 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
 
 /* the swap: links → hamburger at tablet width and below */
 @media (max-width: 900px) {
-  .fa-shell__nav,
-  .fa-shell__toggle, .fa-shell__profile { display: none; }
+  /* Only the link list collapses into the hamburger. The three round controls
+     stay in the bar — they are the reachable ones on a phone, so burying share
+     and sign-in behind a sheet is the wrong trade. Slightly smaller and closer
+     together so they fit beside the burger. */
+  .fa-shell__nav { display: none; }
+  .fa-shell__toggle,
+  .fa-shell__profile { width: 34px; height: 34px; margin-left: 6px; }
+  .fa-share { margin-left: 4px; }
   .fa-shell__burger { display: inline-flex; align-items: center; justify-content: center; }
   .fa-subnav { display: none; } /* Villages tabs move into the sheet */
 }
@@ -445,5 +451,6 @@ html.dark .fa-share__opt:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-share__opt--accent { color: #7fb2e6; }
 @media (max-width: 680px) { .fa-share { right: 12px; top: calc(var(--fa-nav-h, 56px) + 10px); } }
 
-
-
+@media (max-width: 900px) {
+  .fa-share__btn { width: 34px; height: 34px; }
+}
