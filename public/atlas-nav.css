@@ -452,7 +452,6 @@ html.dark .fa-share__panel { background: rgba(12, 13, 16, 0.96); border-color: r
 html.dark .fa-share__opt { color: #f3f1ec; }
 html.dark .fa-share__opt:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-share__opt--accent { color: #7fb2e6; }
-@media (max-width: 680px) { .fa-share { right: 12px; top: calc(var(--fa-nav-h, 56px) + 10px); } }
 
 @media (max-width: 900px) {
   .fa-share__btn { width: 34px; height: 34px; }
@@ -472,3 +471,10 @@ html .fa-shell.is-clear,
 .fa-shell.is-clear .fa-shell__toggle,
 .fa-shell.is-clear .fa-shell__profile,
 .fa-shell.is-clear .fa-share__btn { border-color: rgba(255, 255, 255, 0.34); }
+
+/* Left over from when the share tool was a fixed floating button: `top` and
+   `right` on what is now a RELATIVE element offset it, which pushed it exactly
+   one bar-height down and out of the row. Removed above; these keep the group
+   on one line. */
+.fa-shell__right { flex-wrap: nowrap; align-items: center; }
+.fa-share, .fa-shell__burger { flex: none; }
