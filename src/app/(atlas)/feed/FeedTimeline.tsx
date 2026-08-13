@@ -75,19 +75,35 @@ export function FeedTimeline({
   const [headline, setHeadline] = useState(FEED_HEADLINES[0]);
   useEffect(() => setHeadline(randomHeadline()), []);
 
+  // How far down the list the lead slot may reach for a video. Eight is about
+  // one screen of cards: far enough that a video usually still opens the feed,
+  // near enough that it can never outrank a genuinely newer story.
+  const LEAD_VIDEO_REACH = 8;
+
   const byKind = media ? items.filter((p) => p.kind === "video") : items;
   const filtered = topic ? byKind.filter((p) => p.topics.includes(topic)) : byKind;
 
   /**
-   * Open on a wide video, then a single-column card. Pulling both forward gives
-   * every filtered view the same opening beat instead of whatever happened to
-   * be newest — and stops two wide cards landing side by side at the top, which
-   * reads as a two-column page rather than a mixed one.
+   * Open on a wide video, then a single-column card: a mixed opening beat, and
+   * no two wide cards side by side at the top.
+   *
+   * The video is only promoted if it is ALREADY near the top by date. Without
+   * that bound the rule reached as far down the list as it had to — it was
+   * hauling a 1 July video over posts from 11 August, so the page led six weeks
+   * stale while "Just in" beside it showed the real newest. A reading log that
+   * headlines old news reads as abandoned, which is the one thing the layout
+   * must not do. No recent video, no promotion: lead with the newest post and
+   * let the video sit wherever its date puts it.
    */
   const shown = useMemo(() => {
     const rest = [...filtered];
     const vi = rest.findIndex((p) => p.kind === "video" && youtubeId(p.url));
-    const lead = vi >= 0 ? rest.splice(vi, 1)[0] : undefined;
+    const lead = vi >= 0 && vi < LEAD_VIDEO_REACH ? rest.splice(vi, 1)[0] : undefined;
+    // The narrow card exists to sit BESIDE the lead video and stop two wide
+    // cards pairing off at the top. With no video promoted there is nothing to
+    // sit beside, and pulling one anyway just pushed a second story over the
+    // newest for no reason — so in that case the order is simply the dates.
+    if (!lead) return rest;
     const ni = rest.findIndex((p) => !isWideCard(p));
     const narrow = ni >= 0 ? rest.splice(ni, 1)[0] : undefined;
     return [lead, narrow, ...rest].filter((p): p is Post => Boolean(p));

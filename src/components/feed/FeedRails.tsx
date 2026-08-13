@@ -70,7 +70,13 @@ export function LeftRail({
   setMedia: (v: boolean) => void;
 }) {
   return (
-    <aside className="fa-rail sticky top-5 hidden max-h-[calc(100dvh-44px)] w-[300px] shrink-0 self-start overflow-y-auto px-5 py-6 [scrollbar-width:none] min-[680px]:py-8 min-[1080px]:block [&::-webkit-scrollbar]:hidden">
+    // Offset from where the global bar actually IS, not from where it would be
+    // if it never hid. At a flat top-5 the bar buried this rail by 44px every
+    // time it came back on scroll-up.
+    <aside
+      style={{ top: "calc(var(--fa-nav-now, 0px) + 20px)" }}
+      className="fa-rail sticky hidden max-h-[calc(100dvh-44px)] w-[300px] shrink-0 self-start overflow-y-auto px-5 py-6 [scrollbar-width:none] min-[680px]:py-8 min-[1080px]:block [&::-webkit-scrollbar]:hidden"
+    >
       <nav className="flex flex-col gap-0.5">
         <RailItem
           label="All posts"
@@ -124,14 +130,22 @@ export function LeftRail({
  */
 function useStickyFoot<T extends HTMLElement>(gap = 20) {
   const ref = useRef<T>(null);
-  const [top, setTop] = useState(gap);
+  const [top, setTop] = useState<string>(`calc(var(--fa-nav-now, 0px) + ${gap}px)`);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const measure = () => {
       const overhang = el.offsetHeight + gap * 2 - window.innerHeight;
-      setTop(overhang > 0 ? gap - overhang : gap);
+      // Overhanging: the rail is parked by its FOOT at the bottom edge, so its
+      // head is above the viewport anyway and the bar cannot cover anything.
+      // Short enough to pin near the top: offset by the bar's live occupancy,
+      // or it gets buried the moment the bar returns.
+      setTop(
+        overhang > 0
+          ? `${gap - overhang}px`
+          : `calc(var(--fa-nav-now, 0px) + ${gap}px)`,
+      );
     };
     measure();
     const ro = new ResizeObserver(measure);

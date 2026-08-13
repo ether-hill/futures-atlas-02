@@ -133,22 +133,67 @@ export function mountDrawer() {
  * the scroll distance, capped. Transform only, one rAF, so it costs nothing.
  */
 export function pinFloatingControls() {
-  const MIN_TOP = 14;
-  let queued = false;
+  const MIN_GAP = 14;
+
+  /**
+   * How much room the Atlas bar is taking right now. It hides on scroll-down
+   * and returns on scroll-up, so this is 0 or its height — never a constant.
+   * Pinning these controls a flat 14px from the viewport top let the bar bury
+   * them by 50px every time it came back; they are 42px tall, so they vanished
+   * completely. atlas-nav.js publishes the live value.
+   */
+  const navNow = () => {
+    const v = getComputedStyle(document.documentElement).getPropertyValue("--fa-nav-now");
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : 0;
+  };
 
   const apply = () => {
-    queued = false;
     const y = window.scrollY;
+    const floor = navNow() + MIN_GAP;
     document.querySelectorAll<HTMLElement>("[data-pin-top]").forEach((el) => {
       const rest = Number(el.dataset.pinTop);
-      const shift = Math.min(y, Math.max(0, rest - MIN_TOP));
+      const shift = Math.min(y, Math.max(0, rest - floor));
       el.style.transform = `translateY(${-shift}px)`;
     });
   };
+  /*
+   * Follow --fa-nav-now until it settles, not just on scroll.
+   *
+   * Going down, the bar is driven from scrollY and the variable is exact on the
+   * same frame. Coming back UP it slides down over ~0.26s, and the nav publishes
+   * its real edge frame by frame for the whole ride — which continues after the
+   * last scroll event. A scroll-only handler therefore samples the variable at
+   * 0, parks the control at the top, and never looks again: measured, the bar
+   * then covered it by 50px of its 42px height.
+   *
+   * CSS consumers get this free, because a changing variable re-evaluates their
+   * calc(). This is JS, so it has to watch.
+   */
+  // Run for a fixed window rather than "until the value stops changing". The
+  // reveal does not begin the frame the scroll ends — the variable sits at its
+  // old value for a frame or two first — so a stop-on-stable loop quits before
+  // the bar has moved at all, which is exactly what it did. 500ms comfortably
+  // covers the 260ms slide plus that startup gap, and each frame is one
+  // getComputedStyle and a transform write on two elements.
+  const FOLLOW_MS = 500;
+  let followUntil = 0;
+  let following = false;
+  const follow = () => {
+    apply();
+    if (performance.now() >= followUntil) {
+      following = false;
+      return;
+    }
+    requestAnimationFrame(follow);
+  };
+
   const onScroll = () => {
-    if (queued) return;
-    queued = true;
-    requestAnimationFrame(apply);
+    followUntil = performance.now() + FOLLOW_MS;
+    if (!following) {
+      following = true;
+      requestAnimationFrame(follow);
+    }
   };
 
   window.addEventListener("scroll", onScroll, { passive: true });
