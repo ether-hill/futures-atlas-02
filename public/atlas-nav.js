@@ -97,6 +97,9 @@
   var MOON = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M16 11.2A6.2 6.2 0 1 1 8.8 4a4.8 4.8 0 0 0 7.2 7.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
   var SUN = '<svg width="16" height="16" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="3.6" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.2v2M10 15.8v2M2.2 10h2M15.8 10h2M4.6 4.6l1.4 1.4M14 14l1.4 1.4M15.4 4.6L14 6M6 14l-1.4 1.4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
   var mark = '<img src="/fa.svg" alt="" aria-hidden="true" style="display:block;height:20px;width:auto" />';
+  // The footer carries the brand lockup at 1.5x — its own mark rather than a
+  // CSS override, because the height is set inline here and inline wins.
+  var footMark = '<img src="/fa.svg" alt="" aria-hidden="true" style="display:block;height:30px;width:auto" />';
 
   function activeLink(path) {
     return path === "/" ? p === "/" : p.indexOf(path) === 0;
@@ -256,7 +259,7 @@
         '<div class="fa-foot__grid">' +
         '<div class="fa-foot__col">' +
         '<a class="fa-foot__home" href="/" aria-label="Futures Atlas home">' +
-        '<span class="fa-foot__mark" aria-hidden="true">' + mark + "</span>" +
+        '<span class="fa-foot__mark" aria-hidden="true">' + footMark + "</span>" +
         '<span class="fa-foot__word">Futures Atlas</span></a>' +
         '<p class="fa-foot__body">Speculative-design projects, open-source tools and research on quantum computing, emerging AI, and the organisations driving them. <b>It\u2019s meant to be used.</b></p>' +
         "</div>" +
