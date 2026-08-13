@@ -48,6 +48,37 @@ export const POLLS: Poll[] = [
       { id: "never", label: "No" },
     ],
   },
+  {
+    id: "entry-level",
+    question: "Is AI already closing the bottom rung of the career ladder?",
+    note: "Payroll records say the effect lands on hiring, not on firing — which is far harder to see.",
+    options: [
+      { id: "already", label: "Yes, it is visible now" },
+      { id: "soon", label: "Not yet, but within a few years" },
+      { id: "demand", label: "No — junior hiring tracks demand, not AI" },
+    ],
+  },
+  {
+    id: "who-pays",
+    question: "Who should pay for the grid a new data centre needs?",
+    note: "Contracts run about fifteen years. Gas plants run about forty.",
+    options: [
+      { id: "operator", label: "The operator, in full" },
+      { id: "split", label: "Split, and fix it in the contract" },
+      { id: "ratepayers", label: "Ratepayers — it is shared infrastructure" },
+      { id: "state", label: "The state, as industrial policy" },
+    ],
+  },
+  {
+    id: "agent-trust",
+    question: "How much of your own work would you hand to an autonomous agent today?",
+    options: [
+      { id: "none", label: "None of it" },
+      { id: "chores", label: "Small chores I would check anyway" },
+      { id: "reviewable", label: "Anything I can review afterwards" },
+      { id: "unsupervised", label: "Whole tasks, unsupervised" },
+    ],
+  },
 ];
 
 export const pollById = (id: string) => POLLS.find((p) => p.id === id);
