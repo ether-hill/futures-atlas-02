@@ -63,6 +63,31 @@ export function SwipeDemoCard() {
   // constant, so the dots and the counter are stable before the deal lands
   const total = Math.min(DECK, SWIPE_SAMPLE.length);
   const [given, setGiven] = useState<"already" | "notyet" | null>(null);
+  /** true while the reveal is on its way out through the top */
+  const [leaving, setLeaving] = useState(false);
+  /**
+   * Entry is driven from state rather than a CSS keyframe. A keyframe with
+   * fill-mode owns the transform until it is removed, and removing it in the
+   * same commit that sets the exit transform leaves the transition with no
+   * start value — so the exit snapped instead of easing. One inline transform,
+   * transitioned in both directions, interpolates either way.
+   */
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    if (phase !== "reveal") {
+      setShown(false);
+      return;
+    }
+    // two frames: one to commit the start value, one to move off it
+    let raf2 = 0;
+    const raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => setShown(true));
+    });
+    return () => {
+      cancelAnimationFrame(raf1);
+      cancelAnimationFrame(raf2);
+    };
+  }, [phase, i]);
 
   function decide(choice: "already" | "notyet") {
     if (!card || phase !== "ask") return;
@@ -76,28 +101,20 @@ export function SwipeDemoCard() {
     }, 240);
   }
 
+  /** Advance, after letting the reveal leave through the top of the card. */
   function next() {
-    if (i + 1 >= total) {
-      setPhase("done");
-      return;
-    }
-    setI((n) => n + 1);
-    setGiven(null);
-    setPhase("ask");
-  }
-
-  function back() {
-    if (phase === "reveal") {
-      setPhase("ask");
-      setAnswers((a) => a.slice(0, -1));
+    if (leaving) return;
+    setLeaving(true);
+    window.setTimeout(() => {
+      setLeaving(false);
+      if (i + 1 >= total) {
+        setPhase("done");
+        return;
+      }
+      setI((n) => n + 1);
       setGiven(null);
-      return;
-    }
-    if (i === 0) return;
-    setI((n) => n - 1);
-    setAnswers((a) => a.slice(0, -1));
-    setGiven(null);
-    setPhase("ask");
+      setPhase("ask");
+    }, 240);
   }
 
   function restart() {
@@ -132,9 +149,9 @@ export function SwipeDemoCard() {
 
   return (
     <div className="relative flex h-full flex-col justify-center p-5">
-      {/* progress: dots + counter, as the game shows it */}
-      {phase !== "done" && (
-        <div className="mb-3 flex items-center justify-center gap-4">
+      {/* progress: dots + counter, as the game shows it. Rendered on the score
+          slide too — hiding it there collapsed the row and jogged the card. */}
+      <div className="mb-3 flex items-center justify-center gap-4">
           <span className="flex items-center gap-1.5" aria-hidden>
             {Array.from({ length: total }, (_, n) => (
               <span
@@ -150,11 +167,10 @@ export function SwipeDemoCard() {
               />
             ))}
           </span>
-          <span className="font-mono text-[11px] tabular-nums tracking-[0.14em] text-faint">
-            {String(i + 1).padStart(2, "0")} / {total}
-          </span>
-        </div>
-      )}
+        <span className="font-mono text-[11px] tabular-nums tracking-[0.14em] text-faint">
+          {String(i + 1).padStart(2, "0")} / {total}
+        </span>
+      </div>
 
       <div className="relative mx-auto aspect-[3/4] w-full max-w-[330px] flex-none">
         {phase === "done" ? (
@@ -234,7 +250,19 @@ export function SwipeDemoCard() {
                   <Hint side="right" />
                 </>
               ) : (
-                <div className="flex h-full w-full flex-col overflow-y-auto pb-16 pr-1 text-[0.92em]">
+                <div className="h-full w-full overflow-hidden">
+                <div
+                  className="flex h-full w-full flex-col overflow-y-auto pb-16 pr-1 text-[0.92em] motion-reduce:!transform-none motion-reduce:!opacity-100 motion-reduce:!transition-none"
+                  style={{
+                    transform: leaving
+                      ? "translateY(-112%)"
+                      : shown
+                        ? "translateY(0)"
+                        : "translateY(58%)",
+                    opacity: leaving ? 0 : shown ? 1 : 0,
+                    transition: "transform .3s cubic-bezier(.2,.7,.2,1), opacity .3s",
+                  }}
+                >
                   <p className="text-[13px] leading-[1.5]" style={{ color: DIM }}>
                     {card!.claim}
                   </p>
@@ -245,14 +273,14 @@ export function SwipeDemoCard() {
                   >
                     {given === card!.verdict ? "Correct" : "Not quite"}
                   </p>
-                  <p className="mt-1.5 text-[15px] leading-tight" style={{ color: DIM }}>
-                    {card!.bigLabel}
-                  </p>
-                  <p
-                    className="mt-1 text-[clamp(34px,3.4vw,52px)] font-extrabold leading-none tracking-[-0.035em]"
-                    style={{ color: INK }}
-                  >
-                    {card!.big}
+                  {/* label and value on one line, at reading size:
+                      "Already real since 1995." */}
+                  <p className="mt-2 text-[15px] leading-snug" style={{ color: DIM }}>
+                    {card!.bigLabel}{" "}
+                    <b className="font-extrabold tabular-nums" style={{ color: INK }}>
+                      {card!.big}
+                    </b>
+                    .
                   </p>
                   <p className="mt-3 text-[14.5px] font-bold leading-[1.45]" style={{ color: INK }}>
                     {card!.lede}
@@ -275,6 +303,7 @@ export function SwipeDemoCard() {
                     · checked {SWIPE_CHECKED}
                   </p>
                 </div>
+                </div>
               )}
             </Paper>
           </>
@@ -288,14 +317,7 @@ export function SwipeDemoCard() {
       {/* actions sit ON the card, as in the game */}
       {phase !== "done" && (
         <div className="pointer-events-none absolute inset-x-0 bottom-[86px] z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-8 [&>*]:pointer-events-auto">
-          <button
-            type="button"
-            onClick={back}
-            disabled={i === 0 && phase === "ask"}
-            className="justify-self-start font-mono text-[10px] uppercase tracking-[0.16em] text-graphite transition-opacity hover:text-ink disabled:opacity-0"
-          >
-            ‹ Back
-          </button>
+          <span />
 
           {phase === "ask" ? (
             <div className="flex items-start gap-9">
