@@ -12,15 +12,6 @@ import { useState } from "react";
  * `youtube-nocookie` and `rel=0` keep the after-state as quiet as it can be.
  */
 
-/** Pull the id out of a watch URL, a short link or an embed URL. */
-export function youtubeId(url: string): string | null {
-  const m =
-    url.match(/[?&]v=([A-Za-z0-9_-]{6,})/) ??
-    url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/) ??
-    url.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/);
-  return m ? m[1] : null;
-}
-
 export function YouTubeCard({ id, title }: { id: string; title: string }) {
   const [playing, setPlaying] = useState(false);
 

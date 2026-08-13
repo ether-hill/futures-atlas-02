@@ -84,6 +84,184 @@ export const KIND_LABEL: Record<PostKind, string> = {
 
 export const posts: Post[] = [
   {
+    slug: "the-power-paradox-panel",
+    sourceImage: "https://img.youtube.com/vi/I9vU-tyTkbc/maxresdefault.jpg",
+    title: "A room full of energy people arguing about AI's power bill",
+    dek: "The Economist's AI Compute 2026 panel on the collision between datacentre demand and the energy transition — the two industries finally in the same room.",
+    url: "https://www.youtube.com/watch?v=I9vU-tyTkbc",
+    sourceName: "Economist Enterprise – Events",
+    published: "2026",
+    posted: "2026-08-13",
+    kind: "video",
+    topics: ["Compute & energy", "AI"],
+    length: "short",
+    readMinutes: 45,
+    whyItMatters:
+      "Most AI-and-energy coverage quotes one side or the other. A panel forces the two sets of assumptions to sit at the same table, where the arithmetic has to reconcile.",
+    visibility: "live",
+    body: `A panel from the Economist's AI Compute 2026 programme, titled "The power paradox: AI meets the energy transition".
+
+We link it rather than summarise it, because the value of a panel is the disagreement in the room and that does not survive being paraphrased. The framing is the familiar collision: datacentre electricity demand is climbing on a schedule set by capital expenditure, while decarbonisation targets run on a schedule set by policy, and the two do not line up.
+
+Watch it alongside [the Meta gas plants story](/feed/meta-ten-gas-plants-for-one-campus) and the [Dallas Fed's work on who pays](/feed/dallas-fed-data-centres-and-your-power-bill). Those two supply the concrete numbers this discussion is generalising from.`,
+  },
+  {
+    slug: "chain-of-thought-monitorability",
+    sourceImage: "https://img.youtube.com/vi/wa1XIJ6NmiA/maxresdefault.jpg",
+    title: "Chain-of-thought monitorability is a safety property we might lose",
+    dek: "Tomek Korbak at FAR.AI's Alignment Workshop, on why models that reason in readable English are an opportunity — and a fragile one.",
+    url: "https://www.youtube.com/watch?v=wa1XIJ6NmiA",
+    sourceName: "FAR·AI (Alignment Workshop)",
+    author: "Tomek Korbak",
+    published: "2026-01",
+    posted: "2026-08-13",
+    kind: "video",
+    topics: ["AI", "Safety & policy"],
+    length: "short",
+    readMinutes: 20,
+    whyItMatters:
+      "If a model has to think in legible language to think well, we can read its reasoning. That is an accident of current architectures, not a guarantee, and it is the kind of property that disappears quietly.",
+    visibility: "live",
+    body: `A short conference talk from FAR.AI's Alignment Workshop series.
+
+The subject is one of the more interesting bets in current safety work: today's frontier models do a lot of their hardest reasoning by writing it out, in something close to English, before answering. That makes the reasoning inspectable — you can watch a model plan, and notice when the plan is bad.
+
+The catch is that nothing guarantees this continues. It is a side effect of how these systems are built and trained, not a designed-in property, and optimisation pressure that rewards only the final answer can quietly erode it.
+
+We are linking the talk rather than reporting its conclusions second-hand. If you want the written version of the argument, the [International AI Safety Report](/feed/international-ai-safety-report-2026) covers the same territory at length.`,
+  },
+  {
+    slug: "interpretability-that-does-something",
+    sourceImage: "https://img.youtube.com/vi/SQ1ir0YT2x8/maxresdefault.jpg",
+    title: "Interpretability's real test is whether you can act on it",
+    dek: "Yonatan Belinkov at the Alignment Workshop, on moving from findings that are interesting to findings that change what you do.",
+    url: "https://www.youtube.com/watch?v=SQ1ir0YT2x8",
+    sourceName: "FAR·AI (Alignment Workshop)",
+    author: "Yonatan Belinkov",
+    published: "2026-03",
+    posted: "2026-08-12",
+    kind: "video",
+    topics: ["AI", "Safety & policy"],
+    length: "short",
+    readMinutes: 20,
+    whyItMatters:
+      "A field can produce a great deal of true, publishable work and still not change a single deployment decision. The gap between explaining a model and steering one is where interpretability either becomes engineering or stays literature.",
+    visibility: "live",
+    body: `Belinkov's talk is framed around scalability and actionability — the two things that separate an interpretability result from an interpretability tool.
+
+The honest summary of the field is that it has become very good at finding structure inside models: features, circuits, directions that correspond to recognisable concepts. What is far less settled is whether any of that survives contact with a production system, at production scale, in time to matter.
+
+Linked rather than summarised. For the concrete end of this, see [the 171 emotion directions found inside Claude](/feed/171-emotion-directions-inside-claude) — a result of exactly the kind whose usefulness this talk is interrogating.`,
+  },
+  {
+    slug: "cs2881-mechanistic-interpretability-lecture",
+    sourceImage: "https://img.youtube.com/vi/79otWC2FQlE/maxresdefault.jpg",
+    title: "A full university lecture on mechanistic interpretability, free",
+    dek: "Boaz Barak's Harvard AI-safety course, lecture ten — the teaching version of a field usually met through papers and threads.",
+    url: "https://www.youtube.com/watch?v=79otWC2FQlE",
+    sourceName: "Boaz Barak (CS 2881)",
+    author: "Boaz Barak, with guests from Google DeepMind and OpenAI",
+    published: "2025-11",
+    posted: "2026-08-10",
+    kind: "video",
+    topics: ["AI", "Safety & policy", "Society"],
+    length: "short",
+    readMinutes: 80,
+    whyItMatters:
+      "Most people meet this field through announcements. A lecture has to define its terms, and that makes it far better ground for deciding what you actually think.",
+    visibility: "live",
+    body: `Lecture ten of Harvard's CS 2881 AI-safety course, on mechanistic interpretability, posted publicly in full.
+
+The reason to flag a lecture in a reading log otherwise made of papers and reporting: teaching material is written to be understood by someone who does not already agree, which is a different and more demanding standard than a paper or a launch post. If you have been reading about interpretability for a year and still could not confidently say what a "feature" is, this is the format that fixes that.
+
+Long. Not a summary — put it on when you have the time it deserves.`,
+  },
+  {
+    slug: "state-ai-laws-halfway-through-2026",
+    title: "The states did not stop legislating, and now there is a task force",
+    dek: "Tech Policy Press counts where US state AI law actually stands halfway through 2026 — against a federal executive order built to preempt much of it.",
+    url: "https://www.techpolicy.press/where-state-ai-legislation-stands-half-way-into-2026/",
+    sourceName: "Tech Policy Press",
+    published: "2026",
+    posted: "2026-08-13",
+    kind: "link",
+    topics: ["Government", "Safety & policy", "Society"],
+    length: "medium",
+    readMinutes: 9,
+    whyItMatters:
+      "AI rules in the US are being written in fifty places at once and contested from one. Which layer wins decides whether compliance is a patchwork or a floor — and nobody knows yet.",
+    visibility: "live",
+    body: `The federal position since December 2025 has been an executive order, "Ensuring a National Policy Framework for Artificial Intelligence", designed to establish a single federal approach and preempt state laws judged inconsistent with it. It leans on funding — authorising agencies to condition discretionary grants on states not enacting or not enforcing such laws — and it set up an AI Litigation Task Force to challenge them directly. Three areas are carved out: child safety, compute and datacentre infrastructure, and state procurement of AI.
+
+What this survey adds is the other half of the picture. The states did not stop. Both Republican- and Democratic-led legislatures kept passing consumer-protection rules: professional licensing, restrictions on insurers, limits on dynamic pricing, disclosure requirements. At least six new laws restrict health insurers' use of AI, in states as different as Iowa and Washington.
+
+That is the tension worth tracking. A preemption strategy assumes the states are the exception; the count suggests they are the default, and the litigation is a bet against a very large number of statutes.`,
+  },
+  {
+    slug: "international-ai-safety-report-2026",
+    title: "The International AI Safety Report, second edition",
+    dek: "The multi-government synthesis of what is actually established about advanced AI risk — written to be cited by people who have to legislate.",
+    url: "https://arxiv.org/abs/2602.21012",
+    sourceName: "arXiv",
+    published: "2026-02",
+    posted: "2026-08-11",
+    kind: "report",
+    topics: ["Safety & policy", "Government", "AI"],
+    length: "long",
+    readMinutes: 14,
+    whyItMatters:
+      "It is the closest thing this field has to an IPCC-style consensus document: not the most exciting claims, but the ones a large body of experts will put their names to.",
+    visibility: "live",
+    body: `The value of this report is not novelty. It is standing.
+
+Individual papers make sharp claims and individual labs publish confident ones; neither is much use to a legislator who needs to know what is agreed rather than what is arguable. A synthesis backed by many governments and a large expert panel produces something different — a floor of claims that survived a lot of disagreement.
+
+Read it for the shape of the consensus and, more usefully, for where the consensus explicitly refuses to form. The gaps are the honest part, and they are where the next three years of argument will happen.`,
+  },
+  {
+    slug: "neutral-atoms-big-leap",
+    title: "Neutral atoms had the year everyone expected superconductors to have",
+    dek: "IEEE Spectrum on why the quiet qubit modality spent 2026 catching up — and in some respects passing — the incumbents.",
+    url: "https://spectrum.ieee.org/neutral-atom-quantum-computing",
+    sourceName: "IEEE Spectrum",
+    published: "2026",
+    posted: "2026-08-09",
+    kind: "link",
+    topics: ["Quantum"],
+    length: "medium",
+    readMinutes: 8,
+    whyItMatters:
+      "Timelines to useful quantum computing are quoted as if one architecture were obviously ahead. The leader keeps changing, which should widen everyone's error bars rather than narrow them.",
+    visibility: "live",
+    body: `For most of the past decade the quantum roadmap most people carried in their heads was superconducting: Google and IBM, dilution refrigerators, a qubit count that goes up every year.
+
+Neutral atoms — atoms held in optical tweezers, manipulated with lasers — were the interesting alternative that always needed a few more years. This piece is the argument that the few more years happened.
+
+The reason to care is not tribal. It is that confident public timelines for cryptographically relevant quantum computing are usually extrapolations from one architecture's trend line. When a different modality closes the gap, the honest response is to widen the uncertainty, not to redraw the same curve with a new label on it.`,
+  },
+  {
+    slug: "atom-computing-toric-code",
+    title: "Atom Computing runs the toric code, and says what it did not do",
+    dek: "An error-correction result reported with its limits attached — which is rarer, and more useful, than the result.",
+    url: "https://thequantuminsider.com/2026/06/03/atom-computing-reveals-quantum-error-correction-with-toric-code/",
+    sourceName: "The Quantum Insider",
+    published: "2026-06-03",
+    posted: "2026-08-08",
+    kind: "link",
+    topics: ["Quantum", "Futures"],
+    length: "short",
+    readMinutes: 6,
+    whyItMatters:
+      "Error correction is the whole ballgame, and it is also where the distance between a demonstration and a working machine is easiest to blur. The reporting that keeps the two apart is the reporting worth reading.",
+    visibility: "live",
+    body: `A neutral-atom demonstration of the toric code — one of the foundational error-correcting codes, and a real milestone for the modality.
+
+The reason this is here rather than in a list of announcements: read it next to any quarter's quantum press releases and notice how much work the word "demonstrated" is usually doing. A high-fidelity gate between two physical qubits is not a logical qubit. A logical qubit is not a full error-correction cycle. A cycle is not a machine running at scale.
+
+Each of those steps is genuinely hard and each is routinely collapsed into the previous one by the time it reaches a headline. Coverage that keeps them distinct is doing the reader a service, and it is the standard we would like to hold this whole section to.`,
+  },
+
+  {
     slug: "meta-ten-gas-plants-for-one-campus",
     sourceImage: "https://fortune.com/img-assets/wp-content/uploads/2026/03/Meta-Datacenter.jpg?resize=1200,600",
     image: "/feed/meta-ten-gas-plants-for-one-campus.webp",
@@ -1231,6 +1409,24 @@ export const TOPIC_ORDER: PostTopic[] = [
  * a client module is a hard RSC error, not a warning. Every post page threw on
  * it. A pure predicate over data belongs with the data.
  */
+/**
+ * The YouTube id inside a watch URL, a short link or an embed URL.
+ *
+ * Here for exactly the reason hasImage is: it used to live in YouTubeCard,
+ * which is "use client" because the facade swaps in an iframe on click. The
+ * post page is a server component and calls this to decide whether to render a
+ * player — a hard RSC error that broke EVERY video post page, while the feed
+ * index (a client component) kept working and hid it. A pure string function
+ * over data has no business in a component module.
+ */
+export function youtubeId(url: string): string | null {
+  const m =
+    url.match(/[?&]v=([A-Za-z0-9_-]{6,})/) ??
+    url.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/) ??
+    url.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/);
+  return m ? m[1] : null;
+}
+
 export function hasImage(post: Post): boolean {
   return Boolean(post.sourceImage || post.image);
 }

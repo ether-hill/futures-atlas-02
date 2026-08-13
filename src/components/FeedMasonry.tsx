@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { PostImage } from "@/components/PostImage";
-import { YouTubeCard, youtubeId } from "@/components/feed/YouTubeCard";
-import { KIND_LABEL, formatPostDate, hasImage, hostOf, type Post } from "@/data/posts";
+import { YouTubeCard } from "@/components/feed/YouTubeCard";
+import { KIND_LABEL, formatPostDate, hasImage, hostOf, youtubeId, type Post } from "@/data/posts";
 
 /**
  * The feed on the homepage: the newest posts in a masonry, videos included and

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { KindBadge } from "@/components/PostCard";
 import { PostImage } from "@/components/PostImage";
-import { YouTubeCard, youtubeId } from "@/components/feed/YouTubeCard";
+import { YouTubeCard } from "@/components/feed/YouTubeCard";
 import { PostCarousel } from "@/components/PostCarousel";
 import {
   formatPostDate,
@@ -14,6 +14,7 @@ import {
   livePosts,
   posts,
   type Post,
+  youtubeId,
 } from "@/data/posts";
 import { getEditor } from "@/lib/editor";
 import { renderMarkdown } from "@/lib/markdown";

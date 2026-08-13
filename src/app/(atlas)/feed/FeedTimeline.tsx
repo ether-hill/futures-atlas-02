@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PostImage } from "@/components/PostImage";
-import { YouTubeCard, youtubeId } from "@/components/feed/YouTubeCard";
+import { YouTubeCard } from "@/components/feed/YouTubeCard";
 import { PollCard } from "@/components/feed/PollCard";
 import { SwipeDemoCard } from "@/components/feed/SwipeDemoCard";
 import { POLLS } from "@/data/polls";
@@ -16,6 +16,7 @@ import {
   hostOf,
   type Post,
   type PostTopic,
+  youtubeId,
 } from "@/data/posts";
 import { FEED_HEADLINES, randomHeadline } from "@/data/feed-headlines";
 import { HeadlineCredit } from "@/components/feed/HeadlineCredit";
