@@ -1,19 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import {
   AXIS_MAX,
   AXIS_MIN,
   FULL_SPAN,
-  MIN_ZOOM_SPAN,
   NOW_YEAR,
-  type Span,
   clampYear,
   fractionToYear,
   ticksFor,
   yearToPercent,
-  zoomSpan,
 } from "@/lib/axis";
 
 type Props = {
@@ -29,13 +26,21 @@ type Props = {
 const HOVER_HINT = "ghost, follows the cursor";
 
 export function Axis({ value, onChange, onCommit, disabled = false }: Props) {
-  const [span, setSpan] = useState<Span>(FULL_SPAN);
+  /*
+    The scale is fixed at 1900–2060 and there is no zoom.
+
+    Zoom used to live here, per the original spec, but it works against the
+    thing that matters more: the reveal draws on this same scale so the pin can
+    slide from where it was placed to the record. Rescale the line while placing
+    and that continuity is gone. Exactness comes from the year stepper instead,
+    which is the precision the zoom was really for.
+  */
+  const span = FULL_SPAN;
   const [ghost, setGhost] = useState<number | null>(null);
   const [dragging, setDragging] = useState(false);
 
   const ref = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, number>());
-  const pinchStart = useRef<{ distance: number; span: Span } | null>(null);
 
   const yearAt = useCallback(
     (clientX: number): number => {
@@ -54,11 +59,6 @@ export function Axis({ value, onChange, onCommit, disabled = false }: Props) {
     if (disabled) return;
     pointers.current.set(e.pointerId, e.clientX);
 
-    if (pointers.current.size === 2) {
-      const [a, b] = [...pointers.current.values()];
-      pinchStart.current = { distance: Math.abs(a! - b!), span };
-      return;
-    }
 
     e.currentTarget.setPointerCapture(e.pointerId);
     setDragging(true);
@@ -76,16 +76,6 @@ export function Axis({ value, onChange, onCommit, disabled = false }: Props) {
       pointers.current.set(e.pointerId, e.clientX);
     }
 
-    if (pointers.current.size === 2 && pinchStart.current) {
-      const [a, b] = [...pointers.current.values()];
-      const distance = Math.abs(a! - b!);
-      if (distance > 0) {
-        const start = pinchStart.current;
-        const anchor = value ?? Math.round((start.span[0] + start.span[1]) / 2);
-        setSpan(zoomSpan(start.span, anchor, start.distance / distance));
-      }
-      return;
-    }
 
     if (dragging) {
       onChange(yearAt(e.clientX));
@@ -98,32 +88,9 @@ export function Axis({ value, onChange, onCommit, disabled = false }: Props) {
 
   const endPointer = (e: React.PointerEvent<HTMLDivElement>) => {
     pointers.current.delete(e.pointerId);
-    if (pointers.current.size < 2) pinchStart.current = null;
     if (pointers.current.size === 0) setDragging(false);
   };
 
-  // Wheel has to be a non-passive listener to stop the page scrolling under it.
-  useEffect(() => {
-    const el = ref.current;
-    if (!el || disabled) return;
-
-    const onWheel = (e: WheelEvent) => {
-      if (Math.abs(e.deltaY) < 1) return;
-      e.preventDefault();
-      const rect = el.getBoundingClientRect();
-      const under = clampYear(
-        fractionToYear((e.clientX - rect.left) / rect.width, span),
-        span,
-      );
-      // Magnify around the marker where there is one, otherwise the cursor.
-      setSpan((current) =>
-        zoomSpan(current, value ?? under, e.deltaY > 0 ? 1.15 : 0.87),
-      );
-    };
-
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, [span, value, disabled]);
 
   // ---- keyboard -----------------------------------------------------------
 
@@ -176,15 +143,6 @@ export function Axis({ value, onChange, onCommit, disabled = false }: Props) {
   const showGhost = ghost !== null && value === null && !dragging;
   const marker = value !== null ? value : showGhost ? ghost : null;
   const markerPct = marker !== null ? yearToPercent(marker, span) : 0;
-
-  const inView = span[1] - span[0];
-  const canZoomIn = inView > MIN_ZOOM_SPAN;
-  const canZoomOut = inView < AXIS_MAX - AXIS_MIN;
-
-  const zoom = (factor: number) =>
-    setSpan((current) =>
-      zoomSpan(current, value ?? Math.round((current[0] + current[1]) / 2), factor),
-    );
 
   return (
     <div>
@@ -298,28 +256,6 @@ export function Axis({ value, onChange, onCommit, disabled = false }: Props) {
           </button>
         </div>
 
-        <div className="ql-stepper">
-          <span className="ql-stepper__label">In view</span>
-          <button
-            type="button"
-            className="ql-step-btn"
-            aria-label="Show a wider span of years"
-            disabled={disabled || !canZoomOut}
-            onClick={() => zoom(1.6)}
-          >
-            −
-          </button>
-          <span className="ql-stepper__value">{inView} yrs</span>
-          <button
-            type="button"
-            className="ql-step-btn"
-            aria-label="Zoom in on fewer years"
-            disabled={disabled || !canZoomIn}
-            onClick={() => zoom(0.625)}
-          >
-            +
-          </button>
-        </div>
       </div>
     </div>
   );

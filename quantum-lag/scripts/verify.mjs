@@ -76,12 +76,10 @@ try {
     check("drag commits a marker", committed !== null, `aria-valuenow=${committed}`);
     check("continue enabled after a placement", await placeBtn.isEnabled());
 
-    const before = await page.locator(".ql-stepper__value").nth(1).textContent();
-    await page.mouse.move(box.x + box.width * 0.75, box.y + box.height * 0.5);
-    await page.mouse.wheel(0, -400);
-    await page.waitForTimeout(200);
-    const after = await page.locator(".ql-stepper__value").nth(1).textContent();
-    check("wheel zooms the axis", before !== after, `${before} -> ${after}`);
+    // The year stepper is the precision control; there is no zoom to test.
+    const stepper = page.locator(".ql-stepper__value").first();
+    check("the year stepper reads the placement",
+      (await stepper.textContent())?.trim() === committed, await stepper.textContent());
 
     await placeBtn.click();
     await page.waitForTimeout(1400);

@@ -15,12 +15,20 @@ html {
   overflow-x: clip;
 }
 
+/*
+  Inside the Futures Atlas a fixed master nav sits across the top of every page.
+  It publishes its height as --fa-nav-h and expects each consumer to reserve the
+  space; without this the first screenful of every claim sits under the bar.
+  Standalone the variable is unset, the fallback is 0, and nothing changes.
+*/
 body {
   min-height: 100vh;
+  padding-top: var(--fa-nav-h, 0px);
   font-family: var(--font-heading);
   font-weight: var(--weight-body);
   overflow-x: clip;
 }
+
 
 /* Spacing is set by the layout, never by a user-agent margin. */
 p,

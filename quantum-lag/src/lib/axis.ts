@@ -14,9 +14,6 @@ export const AXIS_MAX = 2060;
 /** Pinned rather than read from the clock, so server and client agree. */
 export const NOW_YEAR = 2026;
 
-/** The tightest the placement axis will zoom. */
-export const MIN_ZOOM_SPAN = 10;
-
 export type Span = readonly [number, number];
 
 export const FULL_SPAN: Span = [AXIS_MIN, AXIS_MAX];
@@ -53,30 +50,6 @@ export function ticksFor(span: Span): number[] {
   const out: number[] = [];
   for (let y = first; y <= span[1]; y += step) out.push(y);
   return out;
-}
-
-/**
- * Zoom a span around an anchor year, keeping the anchor at the same fraction of
- * the view, and clamped so the window never leaves 1900–2060.
- */
-export function zoomSpan(span: Span, anchor: number, factor: number): Span {
-  const width = span[1] - span[0];
-  const target = Math.min(
-    AXIS_MAX - AXIS_MIN,
-    Math.max(MIN_ZOOM_SPAN, width * factor),
-  );
-  const at = yearToFraction(anchor, span);
-  let lo = anchor - at * target;
-  let hi = lo + target;
-  if (lo < AXIS_MIN) {
-    lo = AXIS_MIN;
-    hi = lo + target;
-  }
-  if (hi > AXIS_MAX) {
-    hi = AXIS_MAX;
-    lo = hi - target;
-  }
-  return [Math.round(lo), Math.round(hi)];
 }
 
 /** Every year on the chart that has to be visible for a claim's reveal. */

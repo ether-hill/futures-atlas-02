@@ -31,7 +31,7 @@
     { name: "Hyperscale", path: "/hyperscale", draft: true },
     { name: "Signal Reactor", path: "/signal-reactor" },
     { name: "Quantum Spark", path: "/quantum-spark" },
-    { name: "Quantum Lag", path: "/quantum-lag", draft: true },
+    { name: "Quantum Lag", path: "/quantum-lag", theme: "dark", draft: true },
     { name: "Quantum Dominance", path: "/quantum-dominance", draft: true },
     { name: "Woodchipper Futures", path: "/woodchipper", draft: true },
     { name: "Swipe the Future", path: "/swipe-the-future" },

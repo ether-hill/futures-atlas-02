@@ -104,7 +104,7 @@
 
   The doubled class is deliberate. Core's own `html.dark` block has identical
   specificity to this one, so which of them wins is decided by the order the CSS
-  happens to be concatenated in — and a production build does not guarantee the
+  happens to be concatenated in, and a production build does not guarantee the
   import order that `dev` gives you. That is how the whole instrument shipped on
   core's warm ink (#211e18) instead of this near-black. Doubling the class makes
   the project layer win on specificity, whatever the bundler does.

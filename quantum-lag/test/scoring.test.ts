@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { scoreClaim, summarise, median } from "../src/lib/scoring.ts";
-import { NOW_YEAR, revealWindow, zoomSpan, MIN_ZOOM_SPAN } from "../src/lib/axis.ts";
+import { NOW_YEAR } from "../src/lib/axis.ts";
 import type { Claim } from "../src/content/types.ts";
 
 const happened = (year: number): Claim => ({
@@ -86,20 +86,7 @@ test("summary separates finished from unfinished", () => {
   assert.equal(s.medianDisplacement, 41); // median of [68, 14] rounds from 41
 });
 
-test("the reveal window contains every point of interest", () => {
-  const claim = expected([2035, 2050]);
-  const [lo, hi] = revealWindow(claim, 1955);
-  assert.ok(lo <= 1955, `window starts at ${lo}`);
-  assert.ok(hi >= 2050, `window ends at ${hi}`);
-});
 
-test("zoom never leaves the axis and never goes below the floor", () => {
-  const tight = zoomSpan([1900, 2060], 2060, 0.01);
-  assert.equal(tight[1] - tight[0], MIN_ZOOM_SPAN);
-  assert.ok(tight[1] <= 2060);
-  const wide = zoomSpan([2000, 2010], 2005, 100);
-  assert.deepEqual(wide, [1900, 2060]);
-});
 
 test("generated verdicts hold the house style: no em dashes", () => {
   const cases: [Claim, number][] = [

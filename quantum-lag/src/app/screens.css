@@ -1,7 +1,9 @@
 /* ---------------------------------------------------------------- shared */
 
 .ql-screen {
-  min-height: 100vh;
+  /* Less the Atlas master nav, which is fixed over the top of the page there
+     and publishes its height. Unset standalone, so this is plain 100vh. */
+  min-height: calc(100vh - var(--fa-nav-h, 0px));
   display: flex;
   flex-direction: column;
   padding-block: var(--space-section);
