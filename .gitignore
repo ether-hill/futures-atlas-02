@@ -104,3 +104,8 @@ next-env.d.ts
 # Magnifica — raw pre-compression clips (the encoded loops under
 # magnifica/public/media/loops/ are what ship)
 /magnifica/video/
+
+# Quantum Lag — built from quantum-lag/ source on every deploy
+/public/quantum-lag/
+/quantum-lag/out/
+/quantum-lag/.next/

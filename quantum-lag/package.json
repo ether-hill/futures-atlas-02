@@ -1,0 +1,26 @@
+{
+  "name": "quantum-lag",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "slop": "node scripts/slop-check.mjs",
+    "test": "node scripts/slop-check.mjs && node --test --experimental-strip-types --import ./test/register.mjs \"test/*.test.ts\""
+  },
+  "dependencies": {
+    "futures-atlas-core": "file:./packages/futures-atlas-core",
+    "next": "15.5.19",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
+}

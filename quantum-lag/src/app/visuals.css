@@ -1,0 +1,195 @@
+/*
+  The drawn figures.
+
+  Rules for all of them, because most quantum diagrams fail by being too clever:
+
+  - One idea per figure. If it needs a key to read, it is the wrong figure.
+  - Read at a glance, then reward a second look. Nobody is going to study these.
+  - Drawn from the same vocabulary as the rest of the instrument: rules, blocks,
+    hairlines, circles, Saira numerals. No icons and no illustration.
+  - Motion is slow, small and endless, or it is one short arrival. Never a
+    sequence the reader has to wait through.
+  - Colour keeps its meaning: accent for the quantum thing or the future,
+    cream for the ordinary thing or the record.
+*/
+
+.ql-fig {
+  margin: var(--story-gap) 0;
+  border-top: var(--border-hairline) solid var(--hairline);
+  padding-top: var(--space-5);
+  /* Wider than the reading measure: the figures are the interesting part, and
+     at a paragraph's width the drawings get cramped. */
+  max-width: min(100%, 720px);
+}
+
+.ql-fig__stage {
+  position: relative;
+  width: 100%;
+}
+
+.ql-fig__caption {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--faint);
+  max-width: 54ch;
+}
+
+.ql-fig svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* shared primitives inside the figures */
+.ql-fig .rule { stroke: var(--text); stroke-width: 1; opacity: 0.85; }
+.ql-fig .hair { stroke: var(--text); stroke-width: 1; opacity: 0.22; }
+.ql-fig .accent { stroke: var(--accent); }
+.ql-fig .fill-accent { fill: var(--accent); }
+.ql-fig .fill-ink { fill: var(--text); }
+.ql-fig .fill-bg { fill: var(--bg); }
+
+.ql-fig text {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  fill: var(--muted);
+}
+
+.ql-fig .num {
+  font-family: var(--font-year);
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+  fill: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.ql-fig .num--accent { fill: var(--accent); }
+.ql-fig .lbl--accent { fill: var(--accent-deep); }
+.ql-fig .lbl--faint { fill: var(--fainter); }
+
+/* ---------------------------------------------------------------- motion */
+
+@keyframes ql-fig-photon {
+  from { offset-distance: 0%; }
+  to { offset-distance: 100%; }
+}
+
+@keyframes ql-fig-pulse {
+  0%, 100% { opacity: 0.25; }
+  50% { opacity: 1; }
+}
+
+@keyframes ql-fig-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes ql-fig-flip {
+  0%, 44% { transform: scaleY(1); }
+  50%, 94% { transform: scaleY(-1); }
+  100% { transform: scaleY(1); }
+}
+
+@keyframes ql-fig-sweep {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(var(--sweep, 100px)); }
+}
+
+@keyframes ql-fig-dash {
+  to { stroke-dashoffset: -24; }
+}
+
+@keyframes ql-fig-blink {
+  0%, 62% { opacity: 0; }
+  70%, 92% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes ql-fig-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+.ql-fig .anim-pulse { animation: ql-fig-pulse 3.2s ease-in-out infinite; }
+.ql-fig .anim-bob { animation: ql-fig-bob 3.4s ease-in-out infinite; }
+.ql-fig .anim-dash { animation: ql-fig-dash 1.6s linear infinite; }
+
+/* A travelling dot. The path is set per figure with offset-path. */
+.ql-fig .travel {
+  animation: ql-fig-photon 3.6s linear infinite;
+  offset-rotate: 0deg;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ql-fig * {
+    animation: none !important;
+  }
+  /* Anything whose whole point is the animation resolves to its end state. */
+  .ql-fig .travel { offset-distance: 100% !important; }
+  .ql-fig .anim-pulse { opacity: 1 !important; }
+}
+
+/* ---------------------------------------------------------------- layouts */
+
+/* a small stack of labelled rows, used by several figures */
+.ql-fig__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ql-fig__row {
+  display: grid;
+  grid-template-columns: minmax(0, 15ch) 1fr auto;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ql-fig__row-label {
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--muted);
+}
+
+.ql-fig__track {
+  position: relative;
+  height: 14px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+.ql-fig__bar {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  background: var(--text);
+  transform-origin: left center;
+  animation: ql-fig-grow 900ms var(--ease-enter) both;
+}
+
+.ql-fig__bar--accent { background: var(--accent); }
+
+.ql-fig__row-value {
+  font-family: var(--font-year);
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ql-fig__row-value--accent { color: var(--accent); }
+
+@media (max-width: 640px) {
+  .ql-fig__row {
+    grid-template-columns: 1fr auto;
+    gap: var(--space-2) var(--space-3);
+  }
+  .ql-fig__row-label { grid-column: 1 / -1; }
+}

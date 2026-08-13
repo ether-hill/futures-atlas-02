@@ -1,0 +1,445 @@
+/*
+  The reveal chart.
+
+  One horizontal axis mapping years linearly across the block. The split at
+  "now" is load-bearing: solid means recorded, dashed means it has not happened.
+
+  Everything positioned with an offset uses the `translate` property rather than
+  `transform`, because the entrance keyframes animate `transform` and would
+  otherwise wipe the offset out for the element's whole life.
+*/
+
+/*
+  Vertical stack above the axis, measured from the line. Bands do not overlap,
+  so no two captions can ever meet however close their marks are:
+
+    -220  future field caption
+    -196  law note          (two lines, ~40px)
+    -128  pin labels        (caption + 46px numeral, down to -62)
+     -52  "Now"
+     -36  gap reading
+     -14  gap bar
+       0  the axis
+     +18  scale years
+     +56  expert bracket
+     +84  bracket caption
+*/
+.ql-chart {
+  /*
+    Both halves are set by the component. The full top reserve is only needed
+    when a law note hangs above the pin labels; without one the band is empty,
+    and on the reveal that empty band is what pushes the story off the screen.
+  */
+  --above: 150px;
+  --below: 96px;
+  --axis-y: var(--above);
+  position: relative;
+  height: calc(var(--above) + var(--below));
+  width: 100%;
+}
+
+/* ---------- the axis ---------- */
+
+.ql-chart__past {
+  position: absolute;
+  top: var(--axis-y);
+  left: 0;
+  height: var(--axis-weight);
+  background: var(--text);
+  transform-origin: left center;
+}
+
+.ql-chart__future {
+  position: absolute;
+  top: var(--axis-y);
+  height: var(--axis-weight);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--text) 0 7px,
+    transparent 7px 14px
+  );
+  opacity: 0.5;
+  transform-origin: left center;
+}
+
+.ql-chart__past-field {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% - var(--axis-y));
+  height: 88px;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--text) 5%, transparent)
+  );
+}
+
+.ql-chart__future-field {
+  position: absolute;
+  bottom: calc(100% - var(--axis-y));
+  height: 88px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 14%, transparent)
+  );
+  pointer-events: none;
+}
+
+/* ---------- scale ---------- */
+
+.ql-chart__tick {
+  position: absolute;
+  top: var(--axis-y);
+  width: var(--border-hairline);
+  height: 12px;
+  background: color-mix(in srgb, var(--text) 40%, transparent);
+}
+
+.ql-chart__tick-year {
+  position: absolute;
+  top: calc(var(--axis-y) + 18px);
+  translate: -50% 0;
+  font-family: var(--font-year);
+  font-weight: 600;
+  font-size: var(--text-year-s);
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ql-chart__now {
+  position: absolute;
+  top: calc(var(--axis-y) - 16px);
+  width: var(--border-hairline);
+  height: 34px;
+  background: color-mix(in srgb, var(--text) 45%, transparent);
+  z-index: 3;
+}
+
+/*
+  Now is a point on the graph and stays one on every claim, so it carries a ring
+  of the page ground: the gap bar runs straight through this spot on half the
+  claims, and the point has to survive that.
+*/
+.ql-chart__now-dot {
+  position: absolute;
+  top: calc(var(--axis-y) - 5px);
+  width: 13px;
+  height: 13px;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: 0 0 0 3px var(--bg);
+  translate: -6px 0;
+  z-index: 4;
+}
+
+/* ---------- drop pins ---------- */
+
+/* The box spans stem top to axis, so a label's `bottom` is measured from the
+   line rather than from nothing. */
+.ql-pin {
+  position: absolute;
+  z-index: 5;
+  top: calc(var(--axis-y) - var(--pin-stem));
+  height: var(--pin-stem);
+  width: 0;
+}
+
+.ql-pin__stem {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  height: var(--pin-stem);
+  translate: -1px 0;
+  background: currentColor;
+}
+
+.ql-pin__head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--pin-head);
+  height: var(--pin-head);
+  border-radius: var(--radius-full);
+  border: 3px solid currentColor;
+  translate: calc(var(--pin-head) / -2) 0;
+}
+
+/* Hollow for the guess, filled for the truth. */
+.ql-pin--guess .ql-pin__head {
+  background: var(--bg);
+}
+
+/*
+  The travel. A wrapper the width of the chart, so a percentage translate is a
+  percentage of the timeline rather than of the pin, which has no width.
+*/
+.ql-pin-travel {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+@keyframes ql-slidePin {
+  from { transform: translateX(var(--from, 0)); }
+  to { transform: translateX(0); }
+}
+
+/* Hollow cream leaving, filled blue landing. */
+@keyframes ql-arrive {
+  from {
+    background: var(--bg);
+    border-color: var(--text);
+  }
+  to {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
+  }
+}
+
+.ql-pin--arriving .ql-pin__head {
+  background: var(--accent-deep);
+}
+
+/* What is left behind at the year the player chose. */
+@keyframes ql-fadeGhost {
+  from { opacity: 0; }
+  to { opacity: 0.4; }
+}
+
+.ql-pin--ghost {
+  opacity: 0.4;
+  z-index: 4;
+}
+
+.ql-pin--ghost .ql-pin__head {
+  background: var(--bg);
+}
+
+.ql-pin--ghost .ql-pin__stem {
+  background-image: repeating-linear-gradient(
+    180deg,
+    currentColor 0 4px,
+    transparent 4px 8px
+  );
+  background-color: transparent;
+}
+
+.ql-pin--truth .ql-pin__head {
+  background: currentColor;
+}
+
+.ql-pin__ring {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--pin-head);
+  height: var(--pin-head);
+  border-radius: var(--radius-full);
+  border: 2px solid currentColor;
+  translate: calc(var(--pin-head) / -2) 0;
+  animation: ql-pulseRing 700ms var(--ease-enter) 1 both;
+  pointer-events: none;
+}
+
+/* Each label hangs off the outside of its own pin, so two pins one year apart
+   can never collide. */
+.ql-pin__label {
+  position: absolute;
+  bottom: calc(var(--pin-stem) - 2px);
+  white-space: nowrap;
+}
+
+.ql-pin__label--left {
+  right: 0;
+  padding-right: 18px;
+  text-align: right;
+}
+
+.ql-pin__label--right {
+  left: 0;
+  padding-left: 18px;
+  text-align: left;
+}
+
+.ql-pin__year {
+  display: block;
+  font-family: var(--font-year);
+  font-weight: 700;
+  font-size: var(--text-year-l);
+  line-height: 1;
+  color: currentColor;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- gap bar ---------- */
+
+.ql-gap {
+  position: absolute;
+  top: calc(var(--axis-y) - var(--gap-bar));
+  height: var(--gap-bar);
+  background: currentColor;
+  transform-origin: left center;
+}
+
+/* ---------- expert range ---------- */
+
+.ql-range {
+  position: absolute;
+  top: calc(var(--axis-y) + 48px);
+  height: 16px;
+  border: 2px solid var(--muted);
+  border-top: 0;
+}
+
+.ql-range__dropper {
+  position: absolute;
+  bottom: 100%;
+  width: 2px;
+  height: 48px;
+  background: var(--muted);
+  opacity: 0.28;
+}
+
+.ql-range__dropper--lo { left: -2px; }
+.ql-range__dropper--hi { right: -2px; }
+.ql-range__dropper { opacity: 0.45; }
+
+/* An expected claim with no credible date runs off the right edge instead. */
+.ql-range--open {
+  border-right: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--muted) 0 6px,
+    transparent 6px 12px
+  );
+  background-position: 0 100%;
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+  border-bottom: 0;
+}
+
+/* ---------- legal deadline ---------- */
+
+.ql-law {
+  position: absolute;
+  top: calc(var(--axis-y) - 32px);
+  display: flex;
+  gap: 4px;
+  transform-origin: bottom center;
+}
+
+.ql-law__bar {
+  width: 4px;
+  height: 64px;
+  background: var(--accent);
+}
+
+/* ---------- key ---------- */
+
+/*
+  The key replaces the sentences the chart used to carry. Marks only, drawn from
+  the same vocabulary, so nothing on the drawing needs a caption.
+*/
+.ql-chart-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-6);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: var(--border-hairline) solid var(--hairline-soft);
+}
+
+.ql-chart-key__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--muted);
+}
+
+.ql-k {
+  display: inline-block;
+  flex: 0 0 auto;
+}
+
+.ql-k--past {
+  width: 22px;
+  height: 8px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--text) 40%, transparent)
+  );
+  border-bottom: var(--axis-weight) solid var(--text);
+}
+
+.ql-k--future {
+  width: 22px;
+  height: 8px;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 40%, transparent)
+  );
+  border-bottom: var(--axis-weight) dashed
+    color-mix(in srgb, var(--text) 55%, transparent);
+}
+
+.ql-k--you {
+  width: 13px;
+  height: 13px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--text);
+  background: var(--bg);
+}
+
+.ql-k--truth {
+  width: 13px;
+  height: 13px;
+  border-radius: var(--radius-full);
+  background: var(--accent-deep);
+}
+
+.ql-k--range {
+  width: 22px;
+  height: 9px;
+  border: 2px solid var(--muted);
+  border-top: 0;
+}
+
+.ql-k--law {
+  width: 9px;
+  height: 14px;
+  background-image: linear-gradient(
+    90deg,
+    var(--accent) 0 4px,
+    transparent 4px 5px,
+    var(--accent) 5px 9px
+  );
+}
+
+/* ---------- mobile ---------- */
+
+@media (max-width: 640px) {
+  .ql-chart {
+    --above: 132px;
+    --below: 84px;
+  }
+
+  /* The year numerals stay: with one fixed scale they are the only reading on
+     the drawing, and they never collide because each hangs off its own pin. */
+  .ql-pin__year {
+    font-size: 28px;
+  }
+
+  .ql-chart-key {
+    gap: var(--space-3) var(--space-5);
+  }
+}

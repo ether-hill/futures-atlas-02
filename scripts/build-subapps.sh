@@ -103,4 +103,13 @@ cp -R "$HERE/quantum-dominance/out/." "$HERE/public/quantum-dominance/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-dominance"
 echo "✓ quantum-dominance → public/quantum-dominance (with atlas-nav)"
 
+# Quantum Lag: Next static export → out/, then copy into public/.
+echo "→ building quantum-lag"
+( cd "$HERE/quantum-lag" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/quantum-lag"
+mkdir -p "$HERE/public/quantum-lag"
+cp -R "$HERE/quantum-lag/out/." "$HERE/public/quantum-lag/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-lag"
+echo "✓ quantum-lag → public/quantum-lag (with atlas-nav)"
+
 echo "✓ all sub-apps built"

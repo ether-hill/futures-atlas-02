@@ -1,0 +1,290 @@
+/*
+  quantum-lag: base chrome, textures and the entrance keyframes.
+
+  Everything here references semantic tokens. The one exception is the two
+  hairline field textures, which are documented texture rather than a themeable
+  colour role, the same carve-out core makes for .fa-plan-grid.
+*/
+
+/* ---------- page ---------- */
+
+/* The hero's background geometry is absolutely positioned and deliberately
+   bleeds past the viewport, which would otherwise widen the document. `clip`
+   has to be on the root as well as the body or the page still scrolls sideways. */
+html {
+  overflow-x: clip;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-body);
+  overflow-x: clip;
+}
+
+/* Spacing is set by the layout, never by a user-agent margin. */
+p,
+h1,
+h2,
+h3,
+h4,
+figure {
+  margin: 0;
+}
+
+/* The fine vertical hairline field the whole page sits on. */
+.ql-field {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--text) 5.5%, transparent) 0 1px,
+    transparent 1px 9px
+  );
+}
+
+.ql-page {
+  position: relative;
+  z-index: 1;
+}
+
+.ql-shell {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ---------- type roles ---------- */
+
+.ql-label {
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--muted);
+}
+
+.ql-label--wide {
+  letter-spacing: var(--track-label-wide);
+}
+
+.ql-label--accent {
+  color: var(--accent-deep);
+}
+
+.ql-label--faint {
+  color: var(--fainter);
+}
+
+.ql-year {
+  font-family: var(--font-year);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--track-flat);
+  line-height: 1;
+}
+
+.ql-serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: var(--weight-body);
+}
+
+.ql-body {
+  font-size: var(--text-body-size);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+}
+
+.ql-lead {
+  font-size: var(--text-lead);
+  line-height: var(--lh-body);
+  color: var(--text-body);
+  max-width: 60ch;
+}
+
+.ql-rule {
+  border: 0;
+  border-top: var(--border-hairline) solid var(--hairline);
+  margin: 0;
+}
+
+/* A hairline grid: one background, 1px gaps, children paint their own surface. */
+.ql-grid {
+  display: grid;
+  gap: var(--border-hairline);
+  background: var(--hairline);
+  border: var(--border-hairline) solid var(--hairline);
+}
+
+.ql-grid > * {
+  background: var(--panel);
+}
+
+/* ---------- keyframes ---------- */
+/*
+  Named to match the handoff's choreography table. Every entrance uses
+  --ease-enter and fill-mode both; the chain resolves inside ~1.2s.
+*/
+
+@keyframes ql-growX {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes ql-growY {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes ql-fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes ql-fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ql-dropPin {
+  from { opacity: 0; transform: translateY(-38px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ql-sweep {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+
+@keyframes ql-pulseRing {
+  from { opacity: 0.7; transform: scale(1); }
+  to { opacity: 0; transform: scale(2.4); }
+}
+
+@keyframes ql-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(14px); }
+}
+
+/*
+  Elements that are both offset and animated carry the offset on `translate`,
+  never `transform`, because the keyframes own `transform` for the whole life of
+  and would otherwise wipe the offset out.
+*/
+[data-anim] {
+  animation-duration: 520ms;
+  animation-timing-function: var(--ease-enter);
+  animation-fill-mode: both;
+}
+
+[data-anim="growX"] { animation-name: ql-growX; transform-origin: left center; }
+[data-anim="growY"] { animation-name: ql-growY; transform-origin: bottom center; }
+[data-anim="fadeIn"] { animation-name: ql-fadeIn; }
+[data-anim="fadeUp"] { animation-name: ql-fadeUp; }
+[data-anim="dropPin"] { animation-name: ql-dropPin; }
+[data-anim="sweep"] { animation-name: ql-sweep; }
+
+.ql-drift {
+  animation: ql-drift 5.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+    Core's kit collapses every animation-duration to 0.001ms. Combined with
+    fill-mode both that resolves each entrance to its authored end state, but
+    only once its delay has elapsed, so the delays have to go too. Without this
+    the law marker would sit invisible for 610ms before appearing.
+  */
+  *, *::before, *::after {
+    animation-delay: 0ms !important;
+  }
+  .ql-drift { animation: none !important; }
+  /* The pin does not travel; it is simply at the record. */
+  .ql-pin-travel { transform: none !important; }
+}
+
+/* ---------- controls ---------- */
+
+.ql-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  padding: 15px 24px;
+  min-height: 44px;
+  border-radius: var(--radius);
+  border: var(--border-hairline) solid transparent;
+  text-decoration: none;
+  cursor: pointer;
+  flex: 0 0 auto;
+  white-space: nowrap;
+  transition: background 0.18s var(--ease), border-color 0.18s var(--ease),
+    color 0.18s var(--ease), opacity 0.18s var(--ease);
+}
+
+.ql-btn--primary {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+.ql-btn--primary:hover:not(:disabled) {
+  background: var(--accent-deep);
+}
+
+.ql-btn--ghost {
+  background: transparent;
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--text) 30%, transparent);
+}
+
+.ql-btn--ghost:hover:not(:disabled) {
+  border-color: var(--text);
+}
+
+.ql-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* An underlined text affordance, not a button. */
+.ql-quiet {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--fainter);
+  background: none;
+  border: 0;
+  border-bottom: var(--border-hairline) solid
+    color-mix(in srgb, var(--text) 20%, transparent);
+  padding: 0 0 3px;
+  cursor: pointer;
+}
+
+.ql-quiet:hover {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+.ql-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}

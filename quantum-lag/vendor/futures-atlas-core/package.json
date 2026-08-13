@@ -1,0 +1,21 @@
+{
+  "name": "futures-atlas-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared design system + runtime theming kit for the Futures Atlas family of projects.",
+  "type": "module",
+  "sideEffects": ["*.css"],
+  "files": ["src"],
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css",
+    "./kit.css": "./src/kit.css",
+    "./nav.css": "./src/nav.css",
+    "./style-guide": "./src/style-guide/StyleGuide.tsx"
+  },
+  "peerDependencies": {
+    "next": ">=14",
+    "react": ">=18",
+    "react-dom": ">=18"
+  }
+}

@@ -1,0 +1,259 @@
+/*
+  The placement axis. One drawing, 1900–2060, empty on load.
+
+  The block is taller than the rule so a finger can drag without covering the
+  read-out, which always sits above the marker and never beneath it.
+*/
+
+/*
+  Geometry shared with the reveal chart: 246px tall, rule at 150px. The two
+  screens draw different things but the line has to land on the same pixel, or
+  committing a claim makes the timeline jump.
+*/
+.ql-axis {
+  --rule-y: 150px;
+  position: relative;
+  height: 246px;
+  width: 100%;
+  touch-action: none;
+  cursor: crosshair;
+  user-select: none;
+}
+
+.ql-axis:focus-visible {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: 8px;
+}
+
+/* the rule itself */
+.ql-axis__rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--rule-y);
+  height: var(--border-hairline);
+  background: var(--text);
+}
+
+/* recorded history, as texture rather than as a second line */
+.ql-axis__past {
+  position: absolute;
+  left: 0;
+  top: calc(var(--rule-y) - 5px);
+  height: 5px;
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--text) 0 3px,
+    transparent 3px 7px
+  );
+  opacity: 0.55;
+}
+
+.ql-axis__tick {
+  position: absolute;
+  top: var(--rule-y);
+  width: var(--border-hairline);
+  height: 8px;
+  background: color-mix(in srgb, var(--text) 40%, transparent);
+}
+
+.ql-axis__tick-label {
+  position: absolute;
+  top: calc(var(--rule-y) + 14px);
+  transform: translateX(-50%);
+  font-family: var(--font-year);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* now */
+.ql-axis__now {
+  position: absolute;
+  top: calc(var(--rule-y) - 26px);
+  width: var(--border-hairline);
+  height: 52px;
+  background: var(--accent);
+}
+
+.ql-axis__now-label {
+  position: absolute;
+  top: calc(var(--rule-y) - 44px);
+  transform: translateX(-50%);
+  font-family: var(--font-heading);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--accent-deep);
+}
+
+/* markers */
+.ql-axis__marker {
+  position: absolute;
+  top: calc(var(--rule-y) - 48px);
+  width: 2px;
+  height: 60px;
+  background: var(--text);
+  pointer-events: none;
+}
+
+.ql-axis__marker--ghost {
+  opacity: 0.42;
+}
+
+.ql-axis__marker--placed {
+  width: 3px;
+  opacity: 1;
+}
+
+/* The read-out is a sibling of the marker, not a child, so it never inherits
+   the ghost's opacity. */
+.ql-axis__readout {
+  position: absolute;
+  top: calc(var(--rule-y) - 84px);
+  transform: translateX(-50%);
+  font-family: var(--font-year);
+  font-weight: 700;
+  font-size: 22px;
+  line-height: 1;
+  color: var(--text);
+  white-space: nowrap;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+.ql-axis__readout--ghost {
+  color: var(--muted);
+}
+
+.ql-axis__caption {
+  position: absolute;
+  top: calc(var(--rule-y) + 44px);
+  transform: translateX(-50%);
+  font-family: var(--font-heading);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--fainter);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---------- controls ---------- */
+
+.ql-axis-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-6);
+  margin-top: var(--space-5);
+}
+
+.ql-stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.ql-stepper__label {
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+  color: var(--fainter);
+  margin-right: var(--space-1);
+}
+
+.ql-stepper__value {
+  font-family: var(--font-year);
+  font-weight: 700;
+  font-size: var(--text-year-s);
+  color: var(--text);
+  min-width: 6ch;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.ql-stepper__value--muted {
+  color: var(--fainter);
+}
+
+.ql-step-btn {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: var(--border-hairline) solid var(--hairline);
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+}
+
+.ql-step-btn:hover:not(:disabled) {
+  border-color: var(--text);
+}
+
+.ql-step-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/*
+  The hero rail is the same drawing at rest, not an interactive axis, so it sits
+  in a shorter block with its own read-out offsets and never takes the mobile
+  thumb-sized treatment below.
+*/
+.ql-axis--rail {
+  --rule-y: 62px;
+  height: 112px;
+  cursor: default;
+}
+
+.ql-axis--rail .ql-axis__readout {
+  top: 0;
+  font-size: 22px;
+}
+
+.ql-axis--rail .ql-axis__marker {
+  top: calc(var(--rule-y) - 30px);
+  height: 40px;
+}
+
+.ql-axis--rail .ql-axis__now {
+  top: calc(var(--rule-y) - 18px);
+  height: 36px;
+}
+
+.ql-axis--rail .ql-axis__now-label {
+  top: calc(var(--rule-y) - 34px);
+}
+
+@media (max-width: 640px) {
+  .ql-axis {
+    --rule-y: 132px;
+    height: 216px;
+  }
+
+  /* The year reads out large above the line, well clear of the thumb. */
+  .ql-axis__readout {
+    top: calc(var(--rule-y) - 104px);
+    font-size: 52px;
+  }
+
+  .ql-axis__marker {
+    top: calc(var(--rule-y) - 40px);
+    height: 52px;
+  }
+
+  .ql-axis-controls {
+    gap: var(--space-4);
+  }
+}
