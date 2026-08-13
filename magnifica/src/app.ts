@@ -1,4 +1,4 @@
-import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, RECEPTION, SOURCES } from "./encyclical";
+import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, SOURCES } from "./encyclical";
 import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
@@ -79,7 +79,6 @@ function homeView(): string {
     </a>`;
   }).join("");
 
-  const reception = RECEPTION.map((r) => `<p data-reveal>${esc(r)}</p>`).join("");
 
   const sources = SOURCES.map(
     (s) => `
@@ -93,7 +92,6 @@ function homeView(): string {
     </a>`
   ).join("");
 
-  const pope = portraitOf("leo-xiv");
 
   return `
   <main class="wrap home">
@@ -157,17 +155,14 @@ function homeView(): string {
             <span>Published <b>${esc(ENCYCLICAL.published)}</b></span>
           </div>
         </div>
-        ${pope ? `
-        <figure class="x-polaroid doc-polaroid" data-par="0.42">
-          <img src="/magnifica/media/portraits/${esc(pope.file)}" alt="${esc(pope.alt)}" decoding="async" />
-          <figcaption>
-            <span class="x-pol-name">Photograph</span>
-            <span class="x-pol-credit">
-              <a href="${esc(pope.sourceUrl)}" target="_blank" rel="noopener">${esc(pope.credit)}</a>
-              \u00b7 <a href="${esc(pope.licenceUrl)}" target="_blank" rel="noopener">${esc(pope.licence)}</a>
-            </span>
-          </figcaption>
-        </figure>` : ""}
+        <figure class="doc-book" data-par="0.42">
+          <img
+            src="/magnifica/media/stills/magnifica-book.jpg"
+            alt="A hardcover edition of the encyclical Magnifica humanitas"
+            decoding="async"
+          />
+          <figcaption>Cover illustration — the encyclical is published as a text, not as this edition</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -186,8 +181,11 @@ function homeView(): string {
       <span class="lbl">Research, method &amp; sources</span>
       <h2 class="sect-title" data-reveal>How this was made</h2>
       <p class="lede-xl" data-reveal>
-        The factual half is the load-bearing half. If the digest of the real encyclical
-        is sloppy, the sixteen predictions are just invention with a costume on.
+        Half of this project is fact and half is invention, and the whole thing only
+        works if you can tell which is which. So the real encyclical is summarised
+        from the published text and nothing else, every leader's page shows the
+        sourced statements it was built from, and each predicted document says on
+        its face that it does not exist.
       </p>
       <div class="method-cols">
         <div data-reveal>
@@ -227,15 +225,12 @@ function homeView(): string {
         </div>
       </div>
 
-      <h3 class="sub" data-reveal>How the real one landed</h3>
-      <div class="reception">${reception}</div>
-
       <h3 class="sub" data-reveal>What we read</h3>
       <p class="sect-lede" data-reveal>
         ${SOURCES.length} sources \u2014 the primary text, the reporting, the explainers, the
         criticism and the broadcast. Every link was fetched and checked.
       </p>
-      <div class="src-rail" data-rail>${sources}</div>
+      <div class="src-masonry">${sources}</div>
     </section>
   </main>`;
 }

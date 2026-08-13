@@ -663,17 +663,29 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 
 /* Six across on a wide screen, scroll-snapped. Native scrolling does the work;
    scroll-padding mirrors the gutter so the first card lands on the margin. */
-.src-rail {
-  display: grid; grid-auto-flow: column;
-  grid-auto-columns: minmax(190px, calc((100% - 5 * 14px) / 6));
-  gap: 14px;
-  overflow-x: auto; overscroll-behavior-x: contain;
-  scroll-snap-type: x mandatory;
-  margin: 0 calc(var(--gutter) * -1); padding: 4px var(--gutter) 18px;
-  scroll-padding-inline: var(--gutter);
-  scrollbar-width: none;
+/* Full-width masonry rather than a scrolling rail: the sources are a body of
+   reading, not a shelf you slide past, and columns let cards keep whatever
+   height their title and plate need. */
+.src-masonry {
+  margin-top: clamp(20px, 3vw, 34px);
+  column-gap: 14px;
+  columns: 1;
 }
-.src-rail::-webkit-scrollbar { display: none; }
+@media (min-width: 560px) { .src-masonry { columns: 2; } }
+@media (min-width: 900px) { .src-masonry { columns: 3; } }
+@media (min-width: 1280px) { .src-masonry { columns: 4; } }
+@media (min-width: 1650px) { .src-masonry { columns: 5; } }
+.src-masonry .src-card {
+  break-inside: avoid;
+  width: 100%;
+  margin: 0 0 14px;
+}
+/* Varied plate heights give the column packing something to work with, so it
+   reads as a masonry instead of a tidy grid that happens to have gaps. */
+.src-masonry .src-card:nth-child(4n + 1) .sc-plate { aspect-ratio: 4 / 5; }
+.src-masonry .src-card:nth-child(4n + 2) .sc-plate { aspect-ratio: 16 / 9; }
+.src-masonry .src-card:nth-child(4n + 3) .sc-plate { aspect-ratio: 1 / 1; }
+.src-masonry .src-card:nth-child(4n + 4) .sc-plate { aspect-ratio: 3 / 2; }
 @media (max-width: 1100px) { .src-rail { grid-auto-columns: minmax(190px, 30vw); } }
 @media (max-width: 640px)  { .src-rail { grid-auto-columns: 70vw; } }
 .src-card {
@@ -767,3 +779,28 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 /* a print pinned slightly off-square, as on a voice page */
 .doc-polaroid { width: min(100%, 400px); max-height: none; justify-self: center; rotate: -1.4deg; }
 @media (max-width: 899px) { .doc-polaroid { rotate: 0deg; } }
+
+/* The document banner shows the encyclical as an object rather than its author.
+   Captioned as an illustration on purpose: the encyclical is real, this edition
+   of it is not, and the project's whole discipline is that you can tell which
+   is which at a glance. */
+.doc-book {
+  position: relative;
+  margin: 0;
+  justify-self: center;
+  width: min(100%, 460px);
+  will-change: transform;
+}
+.doc-book img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 34px 60px rgba(0, 0, 0, 0.55));
+}
+.doc-book figcaption {
+  margin-top: 14px;
+  text-align: center;
+  font: 500 10px var(--mono);
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
