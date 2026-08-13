@@ -18,6 +18,7 @@ import {
   type PostTopic,
 } from "@/data/posts";
 import { FEED_HEADLINES, randomHeadline } from "@/data/feed-headlines";
+import { HeadlineCredit } from "@/components/feed/HeadlineCredit";
 
 /**
  * The Feed — full width, mixed card sizes, mixed card kinds.
@@ -102,7 +103,8 @@ export function FeedTimeline({
         <h1 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[clamp(24px,2.7vw,38px)] leading-none text-ink text-balance">
           <span className="font-extrabold tracking-[-0.02em]">FEED</span>
           <span aria-hidden className="font-light text-faint">&mdash;</span>
-          <span className="font-light tracking-[-0.01em] text-graphite">{headline}</span>
+          <span className="font-light tracking-[-0.01em] text-graphite">{headline.line}</span>
+          <HeadlineCredit headline={headline} />
         </h1>
       </header>
 

@@ -1,45 +1,43 @@
 /**
- * The line that follows FEED in the masthead. One is picked at random per
- * visit and set in a light weight against the caps.
+ * The line that follows FEED in the masthead — one per visit, set light.
  *
- * The register is Kraftwerk-adjacent — clipped, declarative, man-and-machine,
- * precision and repetition — but these are ORIGINAL lines, not their lyrics.
- * Lifting twenty-five phrases from a catalogue of songs would be reproducing
- * copyrighted text however short each one is, and it would also waste the slot:
- * written fresh, each line can be about what this site actually covers.
+ * These are short Kraftwerk quotations: several are simply song or album
+ * titles, the rest are fragments of three to six words. Every one carries its
+ * album, its song and a link on the page itself, through the info control
+ * beside it. That credit is not decoration — it is the reason these can be
+ * here at all, so if the tooltip ever goes, these go with it.
  *
- * House rules for additions: four to seven words, present tense, no vendor
- * names, no numbers that could read as a claim about the world, and nothing
- * that pretends to be a headline. It is a greeting in a machine voice.
+ * `href` is a YouTube search rather than a video id on purpose: an id has to be
+ * verified to be right and rots when a channel reorganises, whereas a search
+ * for the artist and title always lands somewhere true. Swap in exact official
+ * URLs whenever you want to pin them.
  */
-export const FEED_HEADLINES: string[] = [
-  "We are the operators.",
-  "Man, machine, and the argument between.",
-  "Transmission received.",
-  "The computer is listening.",
-  "Numbers, in every language.",
-  "Precision. Repetition. Power.",
-  "The network hums.",
-  "Programmed to read.",
-  "Frequency rising.",
-  "Cool, mechanical, and on time.",
-  "Energy in, signal out.",
-  "The circuit is complete.",
-  "Electric minds at work.",
-  "Silicon and rhythm.",
-  "The future arrives on schedule.",
-  "Data in motion.",
-  "Voltage steady.",
-  "A calculated tomorrow.",
-  "All systems reading.",
-  "The tape is running.",
-  "Antenna up.",
-  "Machines that count for us.",
-  "Endless loop, endless progress.",
-  "We built the instruments.",
-  "Human, after all.",
+
+export interface Headline {
+  /** Shown in the masthead. */
+  line: string;
+  artist: string;
+  album: string;
+  song: string;
+}
+
+export const FEED_HEADLINES: Headline[] = [
+  { line: "It's more fun to compute", artist: "Kraftwerk", album: "Computer World", song: "It's More Fun to Compute" },
+  { line: "We are the robots", artist: "Kraftwerk", album: "The Man-Machine", song: "The Robots" },
+  { line: "I'm the operator", artist: "Kraftwerk", album: "Computer World", song: "Pocket Calculator" },
+  { line: "Computer love", artist: "Kraftwerk", album: "Computer World", song: "Computer Love" },
+  { line: "Planet of visions", artist: "Kraftwerk", album: "Expo 2000", song: "Expo 2000" },
+  { line: "Musique non stop", artist: "Kraftwerk", album: "Electric Café", song: "Musique Non Stop" },
+  { line: "The man-machine", artist: "Kraftwerk", album: "The Man-Machine", song: "The Man-Machine" },
+  { line: "Ohm sweet ohm", artist: "Kraftwerk", album: "Radio-Activity", song: "Ohm Sweet Ohm" },
+  { line: "I'm controlling and composing", artist: "Kraftwerk", album: "Computer World", song: "Pocket Calculator" },
+  { line: "By pressing down a special key", artist: "Kraftwerk", album: "Computer World", song: "Pocket Calculator" },
+  { line: "Control the data memory", artist: "Kraftwerk", album: "Computer World", song: "Computer World" },
 ];
 
-/** Deterministic only in that it always returns one of them. */
+/** Where the info control points. See the note above on why this is a search. */
+export const headlineHref = (h: Headline) =>
+  `https://www.youtube.com/results?search_query=${encodeURIComponent(`${h.artist} ${h.song}`)}`;
+
 export const randomHeadline = () =>
   FEED_HEADLINES[Math.floor(Math.random() * FEED_HEADLINES.length)];
