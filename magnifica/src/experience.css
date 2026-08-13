@@ -49,7 +49,9 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   height: 128%;
   overflow: hidden;
   background: var(--x-bg);
-  will-change: transform;
+  /* No will-change here: it promoted every plate on the page to its own
+     compositor layer, offscreen ones included. transform alone gets promoted
+     while it actually moves, which is when it matters. */
 }
 .x-bg-plain { background: var(--x-bg); }
 
@@ -59,9 +61,12 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* the reference's grade: crushed shadows, warm highlights, low saturation */
-  filter: saturate(0.72) contrast(1.16) brightness(0.62);
 }
+/* The grade is baked into the stills, not applied at runtime. A CSS filter on a
+   layer that moves forces the compositor to re-rasterise it every frame — with
+   a plate per section that was the whole of the parallax jank. Video keeps its
+   filter: it re-rasterises per frame regardless, and there is only one. */
+.x-bg video { filter: saturate(0.72) contrast(1.16) brightness(0.62); }
 .x-bg video { opacity: 0; transition: opacity 1.4s ease; }
 .has-bg .x-bg video { opacity: 1; }
 

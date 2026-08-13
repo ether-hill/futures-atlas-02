@@ -396,9 +396,12 @@ html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
      and sign-in behind a sheet is the wrong trade. Slightly smaller and closer
      together so they fit beside the burger. */
   .fa-shell__nav { display: none; }
+  /* Theme and sign-in move into the sheet at this width; share stays in the
+     bar, immediately left of the burger, because it acts on the page you are
+     looking at and a sheet is the wrong place for that. */
   .fa-shell__toggle,
-  .fa-shell__profile { width: 34px; height: 34px; margin-left: 6px; }
-  .fa-share { margin-left: 4px; }
+  .fa-shell__profile { display: none; }
+  .fa-share { margin-left: 4px; margin-right: 2px; }
   .fa-shell__burger { display: inline-flex; align-items: center; justify-content: center; }
   .fa-subnav { display: none; } /* Villages tabs move into the sheet */
 }

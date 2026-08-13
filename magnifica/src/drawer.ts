@@ -122,4 +122,42 @@ export function mountDrawer() {
   });
 
   markDrawerRoute();
+  markPinned(burger);
+  pinFloatingControls();
+}
+
+/**
+ * Fixed controls that ride up with the page until they reach a top margin,
+ * then hold there. They cannot be `position: sticky` — both are appended
+ * outside the content flow — so the same effect comes from translating them by
+ * the scroll distance, capped. Transform only, one rAF, so it costs nothing.
+ */
+export function pinFloatingControls() {
+  const MIN_TOP = 14;
+  let queued = false;
+
+  const apply = () => {
+    queued = false;
+    const y = window.scrollY;
+    document.querySelectorAll<HTMLElement>("[data-pin-top]").forEach((el) => {
+      const rest = Number(el.dataset.pinTop);
+      const shift = Math.min(y, Math.max(0, rest - MIN_TOP));
+      el.style.transform = `translateY(${-shift}px)`;
+    });
+  };
+  const onScroll = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(apply);
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  apply();
+}
+
+/** Measure an element's resting offset once, so the pin knows its travel. */
+export function markPinned(el: HTMLElement | null) {
+  if (!el) return;
+  el.style.transform = "";
+  el.dataset.pinTop = String(Math.round(el.getBoundingClientRect().top + window.scrollY));
 }

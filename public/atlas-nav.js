@@ -156,6 +156,7 @@
       out.push("</div>");
     }
     out.push('<button type="button" class="fa-sheet__theme" style="--i:' + (i++) + '"><span class="fa-sheet__themelabel">Theme</span><span class="fa-sheet__themeicon" aria-hidden="true"></span></button>');
+    out.push('<button type="button" class="fa-sheet__theme fa-sheet__profile" style="--i:' + (i++) + '"><span>' + (IS_EDITOR ? "Sign out" : "Sign in") + "</span></button>");
     out.push("</div>");
     return out.join("");
   }
@@ -173,9 +174,7 @@
 
     // Profile: sign in, or sign out. Logout is POST-only (it clears an httpOnly
     // cookie), so it goes as a submitted form rather than a link.
-    var profileBtn = h.querySelector(".fa-shell__profile");
-    if (profileBtn) {
-      profileBtn.addEventListener("click", function () {
+    function doProfile() {
         if (!IS_EDITOR) {
           location.href = "/admin/login?next=" + encodeURIComponent(location.pathname + location.search);
           return;
@@ -185,8 +184,12 @@
         f.action = "/api/admin/logout";
         document.body.appendChild(f);
         f.submit();
-      });
     }
+    var profileBtn = h.querySelector(".fa-shell__profile");
+    if (profileBtn) profileBtn.addEventListener("click", doProfile);
+
+    var sheetProfile = sheet.querySelector(".fa-sheet__profile");
+    if (sheetProfile) sheetProfile.addEventListener("click", function () { doProfile(); });
 
     // shared theme control (drives both the bar toggle and the sheet toggle)
     var barToggle = h.querySelector(".fa-shell__toggle");

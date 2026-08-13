@@ -3,7 +3,7 @@ import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
-import { mountDrawer, unmountDrawer, markDrawerRoute } from "./drawer";
+import { mountDrawer, unmountDrawer, markDrawerRoute, markPinned } from "./drawer";
 import { portraitOf, monogram } from "./portraits";
 
 const esc = (s: string) =>
@@ -373,6 +373,7 @@ function render(root: HTMLElement) {
   else unmountDrawer();
 
   window.scrollTo(0, 0);
+  markPinned(root.querySelector<HTMLElement>(".x-versions"));
 
   root.querySelectorAll("[data-ch] > button").forEach((btn) => {
     btn.addEventListener("click", () => btn.parentElement?.classList.toggle("open"));
