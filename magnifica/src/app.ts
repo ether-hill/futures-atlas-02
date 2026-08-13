@@ -118,19 +118,14 @@ function homeView(): string {
           on technology and the forms their tradition actually uses. One document here
           is real; the sixteen are predictions \u2014 rooted in research, not set in stone.
         </p>
-        <div class="banner-facts">
-          <span><b>1</b> real encyclical</span>
-          <span><b>${LEADERS.length}</b> predicted answers</span>
-          <span><b>245</b> paragraphs \u00b7 <b>7</b> parts</span>
-          <span><b>${SOURCES.length}</b> sources read</span>
-        </div>
-        <a class="banner-cta" href="#x-voices">Meet the ${LEADERS.length} voices <span aria-hidden="true">\u2193</span></a>
+        <a class="banner-cta" href="#x-voices">
+          <span class="cta-ring" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                 stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+          </span>
+          <span class="cta-word">Let\u2019s explore</span>
+        </a>
       </div>
-      <p class="banner-credit">
-        Hero: an AI-generated variation on Michelangelo\u2019s <i>Creation of Adam</i>
-        (public domain). Look at the right hand \u2014 it has seven fingers. The tell is
-        deliberate, and it is the whole argument of this project in one image.
-      </p>
     </header>
 
     <section class="sect" id="x-voices">

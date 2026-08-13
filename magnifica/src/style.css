@@ -544,9 +544,10 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 .banner-art { position: absolute; inset: 0; z-index: -2; }
 /* Framed to keep BOTH hands and the gap between them: the seven-fingered hand
-   only reads as wrong next to the ordinary one. */
-.banner-art img { width: 100%; height: 100%; object-fit: cover; object-position: 46% 42%; }
-@media (max-width: 860px) { .banner-art img { object-position: 62% 42%; } }
+   only reads as wrong next to the ordinary one. The art is composed wide, so
+   the crop stays gentle and the whole splayed hand survives it. */
+.banner-art img { width: 100%; height: 100%; object-fit: cover; object-position: 52% 46%; }
+@media (max-width: 860px) { .banner-art img { object-position: 64% 44%; } }
 /* The fresco is warm and light; the copy is set on a scrim rather than on the
    paint, so it stays legible in both themes without tinting the artwork. */
 .banner::after {
@@ -578,28 +579,31 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   color: rgba(255, 255, 255, 0.7);
   font-size: clamp(13px, 1.5vw, 16px); line-height: 1.65;
 }
-.banner-facts {
-  display: flex; flex-wrap: wrap; gap: 10px 26px;
-  margin: clamp(20px, 3vh, 32px) 0 0;
-  font: 500 11.5px var(--mono); letter-spacing: 0.04em;
-  color: rgba(255, 255, 255, 0.62);
-}
-.banner-facts b { color: #fff; font-weight: 700; }
+/* A ring and a word, rather than a bar: the banner is a picture first, and a
+   boxed button sat on it like a form control. */
 .banner-cta {
-  align-self: flex-start; margin-top: clamp(22px, 3vh, 34px);
-  display: inline-flex; align-items: center; gap: 10px;
-  border: 1.5px solid rgba(255, 255, 255, 0.42); border-radius: 2px;
-  padding: 13px 22px; text-decoration: none;
-  font: 700 11px var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
-  color: #fff; transition: border-color 0.18s, background 0.18s;
+  align-self: flex-start; margin-top: clamp(26px, 4vh, 42px);
+  display: inline-flex; align-items: center; gap: 16px;
+  text-decoration: none; color: #fff;
 }
-.banner-cta:hover { border-color: #fff; background: rgba(255, 255, 255, 0.1); }
-.banner-credit {
-  position: relative; margin: clamp(26px, 4vh, 44px) 0 0; max-width: 66ch;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 12px; line-height: 1.6;
+.cta-ring {
+  display: grid; place-items: center;
+  width: 62px; height: 62px; border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  transition: background 0.22s, border-color 0.22s, transform 0.22s;
 }
-.banner-credit i { color: rgba(255, 255, 255, 0.66); }
+.cta-ring svg { width: 22px; height: 22px; transition: transform 0.22s; }
+.cta-word {
+  font: 700 11.5px var(--mono); letter-spacing: 0.16em; text-transform: uppercase;
+  transition: color 0.22s;
+}
+.banner-cta:hover .cta-ring { background: rgba(255, 255, 255, 0.14); border-color: #fff; }
+.banner-cta:hover .cta-ring svg { transform: translateY(3px); }
+.banner-cta:focus-visible .cta-ring { outline: 2px solid #fff; outline-offset: 4px; }
+@media (prefers-reduced-motion: reduce) {
+  .cta-ring, .cta-ring svg { transition: none; }
+  .banner-cta:hover .cta-ring svg { transform: none; }
+}
 
 /* ---------- 2 · the voices, four up ---------- */
 .voices {
