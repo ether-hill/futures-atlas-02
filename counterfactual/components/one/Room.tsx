@@ -52,11 +52,9 @@ const PATTERN = [0.62, 0.44, 0.71, 0.38, 0.55, 0.67, 0.41, 0.58, 0.48];
 
 export default function Room({
   lit,
-  caption,
 }: {
   /** Share of the room still drawing power, 0 to 1. */
   lit: number;
-  caption: React.ReactNode;
 }) {
   /* Cabinets go dark from the back of the room forward. */
   const onCount = Math.max(1, Math.round(Math.min(1, Math.max(0, lit)) * N));
@@ -65,7 +63,7 @@ export default function Room({
   const gridLats = [-1, -0.66, -0.33, 0, 0.33, 0.66, 1].map((k) => k * AISLE);
 
   return (
-    <figure className="room">
+    <div className="room">
       <svg
         className="room-svg"
         viewBox={`0 0 ${W} ${H}`}
@@ -271,7 +269,6 @@ export default function Room({
         <rect x={0} y={0} width={W} height={H} fill="url(#room-air)" />
         <rect x={0} y={0} width={W} height={H} fill="url(#room-depth)" />
       </svg>
-      <figcaption className="room-cap">{caption}</figcaption>
-    </figure>
+    </div>
   );
 }

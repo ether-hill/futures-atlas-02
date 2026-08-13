@@ -81,13 +81,19 @@ export default function Story() {
   /* What else on the board this same intervention moves, and what it leaves. */
   const elsewhere = useMemo(() => {
     if (!iv) return null;
-    const moved: string[] = [];
+    const moved: { title: string; pct: number }[] = [];
     const still: { title: string; why: string }[] = [];
     const strip = (t: string) => t.replace(/,\s*\d{4}(–\d{2,4})?( \(part \d\))?$/, "");
     for (const f of figures) {
       if (f.id === FIG_ID) continue;
       const r = applyIntervention(projectFigure(f, HORIZON)?.figure ?? f, iv);
-      if (movesVisibly(r)) moved.push(strip(f.title));
+      if (movesVisibly(r)) {
+        const h = r!.headline!;
+        moved.push({
+          title: strip(f.title),
+          pct: h.after === 0 ? -100 : Math.max(-99, Math.round((h.ratio - 1) * 100)),
+        });
+      }
       /* Reached but flat is a third category. Telling someone no lever reaches a
          figure when one does, and simply lands too late, is a false statement
          about the model rather than a modest one. */
@@ -226,82 +232,25 @@ export default function Story() {
             )}
           </p>
 
-          <Room
-            lit={cf ? cfEnd! / baseEnd : 1}
-            caption={
-              <>
-                <b>A drawing, not a photograph.</b>{" "}
-                {cf ? (
-                  <>
-                    The lit cabinets are the {cfEnd!.toFixed(1)} GW still drawn under your
-                    intervention; the dark ones at the back are the{" "}
-                    {Math.abs(baseEnd - cfEnd!).toFixed(1)} GW it took off the trend, and they are
-                    at the back because the far racks are the ones that had not been built yet.
-                  </>
-                ) : (
-                  <>
-                    Every cabinet is lit, because this intervention takes none of them away. The
-                    room is the {baseEnd.toFixed(1)} GW the trend arrives at in {HORIZON} either
-                    way.
-                  </>
-                )}{" "}
-                Nothing here is a picture of a real building, and no real hall is laid out to match
-                a number.
-              </>
-            }
-          />
-
-          <div className="one-caveat">
-            <h2>None of the future here is data.</h2>
-            <ul className="one-caveat-tags">
-              <li>Projected</li>
-              <li>Written by a model</li>
-              <li>Contested</li>
-            </ul>
-            <p>
-              Everything left of the 2025Q4 rule is Stanford&rsquo;s published record, and you can
-              open the CSV it came from. Everything right of it is one piece of arithmetic run over
-              that record, the same rule for every figure on the board, because an intervention
-              that starts next year needs a future to land in. It is not a forecast. Nobody at
-              Epoch AI or Stanford has said the line goes to {trendEnd.toFixed(0)} GW.
-            </p>
-            <p>
-              The counterfactual laid over the top is thinner still. Each effect is{" "}
-              <b>a direction, a size and a start year, written by a language model</b> and tagged
-              with how much weight it deserves. About a third of them are marked speculative by the
-              thing that wrote them. They are arguments, not measurements, and an argument you
-              can&rsquo;t check is worth less than one you can, which is why every effect on this
-              page prints its own reasoning next to it.
-            </p>
-            <p>
-              So take the numbers with salt. Plenty of people who know this field would set the
-              magnitudes differently or point them the other way, and the strongest objection I
-              know of against this particular intervention is written out below, unprompted. If
-              yours is different, the page would rather hear it than be believed.
-            </p>
-            <a className="one-caveat-go" href="#argue">
-              Dispute it ↓
-            </a>
-          </div>
+          <Room lit={cf ? cfEnd! / baseEnd : 1} />
 
           <div className="one-cols">
             <div className="one-col">
               <h2>{cf ? "What you changed here" : "Why this figure holds"}</h2>
               {!cf && <p>{untouchedReason(figure, iv)}</p>}
               {here.map((e, i) => (
-                <p key={i}>
-                  <span className="one-op">
-                    {e.op}
-                    {e.op === "freeze" ? "" : ` ${e.magnitude}`} from {e.from}
-                  </span>
-                  {e.rationale}{" "}
-                  <em className={`one-conf c-${e.confidence}`}>{CONF[e.confidence]}</em>
-                </p>
+                <div key={i} className="one-effect">
+                  <p className="one-effect-what">{plainOp(e)}</p>
+                  <p className="one-effect-why">
+                    {e.rationale}{" "}
+                    <em className={`one-conf c-${e.confidence}`}>{CONF[e.confidence]}</em>
+                  </p>
+                </div>
               ))}
               <p className="one-note">
-                Nothing before {cf ? e0(here) : iv.from} moves at all: the counterfactual is glued to the published
-                record until the year you picked. Past 2025Q4 both readings are projection, on one
-                rule applied to every figure identically. {PROJECTION_RULE}
+                Before {cf ? e0(here) : iv.from} the two lines are the same line. History does not
+                bend to a decision taken after it, so the counterfactual is glued to the published
+                record until the year you set, then leaves it.
               </p>
             </div>
 
@@ -309,8 +258,14 @@ export default function Story() {
               <h2>What you changed elsewhere</h2>
               {elsewhere!.moved.length ? (
                 <ul className="one-moved">
-                  {elsewhere!.moved.map((t) => (
-                    <li key={t}>{t}</li>
+                  {elsewhere!.moved.map((m) => (
+                    <li key={m.title}>
+                      <span>{m.title}</span>
+                      <b className={m.pct < 0 ? "down" : "up"}>
+                        {m.pct > 0 ? "+" : ""}
+                        {m.pct}%
+                      </b>
+                    </li>
                   ))}
                 </ul>
               ) : (
@@ -332,14 +287,48 @@ export default function Story() {
             <div className="one-col">
               <h2>Not convinced?</h2>
               <p>
-                Say so. Type what you think is wrong and this page either revises the transforms
-                and redraws every number above, or refuses and tells you why. It refuses more often
-                than it agrees, which is the only way the times it agrees mean anything.
+                Say why. The page either revises the numbers or refuses and tells you which. It
+                refuses more often than it agrees.
               </p>
               <p className="one-still one-still-more">
-                <a href="#argue">The box is directly below ↓</a>
+                <a href="#argue">The box is below ↓</a>
               </p>
             </div>
+          </div>
+
+          {/* Below the account of what happened, not in front of it: you read the
+              claim first, then what it is made of. */}
+          <div className="one-caveat">
+            <h2>How much of this is real</h2>
+            <dl className="one-caveat-list">
+              <div>
+                <dt>Record</dt>
+                <dd>
+                  Left of 2025Q4. Stanford&rsquo;s published numbers, straight from their CSV.
+                </dd>
+              </div>
+              <div>
+                <dt>Projection</dt>
+                <dd>
+                  Right of it. One piece of arithmetic, run the same way on every figure. Not a
+                  forecast. Nobody at Epoch AI or Stanford said {trendEnd.toFixed(0)} GW.
+                </dd>
+              </div>
+              <div>
+                <dt>Counterfactual</dt>
+                <dd>
+                  A direction, a size and a start year per effect, guessed by a language model. A
+                  third are marked speculative by the thing that wrote them.
+                </dd>
+              </div>
+              <div>
+                <dt>The room</dt>
+                <dd>Drawn, not photographed. No real hall is laid out to match a number.</dd>
+              </div>
+            </dl>
+            <a className="one-caveat-go" href="#argue">
+              Disagree with any of it ↓
+            </a>
           </div>
 
           <div className="one-arguebox" id="argue">
@@ -387,6 +376,7 @@ function Ask({
   const [typing, setTyping] = useState<string | null>(null);
   const [miss, setMiss] = useState<string | null>(null);
   const [seenId, setSeenId] = useState<string | null>(null);
+  const [showTips, setShowTips] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   /* Adjust during render rather than in an effect: `active` is a fresh object on
@@ -473,20 +463,10 @@ function Ask({
         )}
       </form>
 
-      <div className="one-options">
-        {INTERVENTIONS.map((i) => (
-          <button
-            key={i.id}
-            type="button"
-            className={active?.id === i.id ? "one-option on" : "one-option"}
-            onClick={() => onChoose(active?.id === i.id ? null : i)}
-            title={i.summary}
-          >
-            <span>{i.short}</span>
-            <span className="one-option-year">{i.from}</span>
-          </button>
-        ))}
-        {active && (
+      {/* The date lives with the sentence it dates, not in the list of things you
+          might have said instead. */}
+      {active && (
+        <div className="one-whenrow">
           <span className="one-when">
             <label htmlFor="one-from">from</label>
             <input
@@ -500,7 +480,33 @@ function Ask({
             />
             <b>{from || active.from}</b>
           </span>
-        )}
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="ivtips one-tips"
+        onClick={() => setShowTips((v) => !v)}
+        aria-expanded={showTips}
+      >
+        {showTips ? "Hide suggestions" : `${INTERVENTIONS.length} suggestions`}
+      </button>
+      <div className={showTips ? "one-options open" : "one-options"}>
+        {INTERVENTIONS.map((i) => (
+          <button
+            key={i.id}
+            type="button"
+            className={active?.id === i.id ? "one-option on" : "one-option"}
+            onClick={() => {
+              onChoose(active?.id === i.id ? null : i);
+              setShowTips(false);
+            }}
+            title={i.summary}
+          >
+            <span>{i.short}</span>
+            <span className="one-option-year">{i.from}</span>
+          </button>
+        ))}
       </div>
 
       {miss !== null && (
@@ -511,6 +517,32 @@ function Ask({
       )}
     </div>
   );
+}
+
+/**
+ * The transform, in words. The typed name and magnitude are exact and belong in
+ * the data; they are not what a person reads a page for.
+ */
+function plainOp(e: { op: string; magnitude: number; from: number }) {
+  const pct = Math.round(Math.abs(1 - e.magnitude) * 100);
+  switch (e.op) {
+    case "growthRate":
+      return e.magnitude < 1
+        ? `From ${e.from}, it grows ${pct}% more slowly than it would have.`
+        : `From ${e.from}, it grows ${pct}% faster than it would have.`;
+    case "levelShift":
+      return e.magnitude < 1
+        ? `From ${e.from}, every value is ${pct}% lower.`
+        : `From ${e.from}, every value is ${pct}% higher.`;
+    case "cap":
+      return `From ${e.from}, it cannot pass ${e.magnitude}.`;
+    case "freeze":
+      return `From ${e.from}, it stops moving. What exists keeps running; nothing is added.`;
+    case "converge":
+      return `From ${e.from}, it drifts toward ${e.magnitude}.`;
+    default:
+      return `From ${e.from}.`;
+  }
 }
 
 /** Earliest year any effect on this figure starts. */

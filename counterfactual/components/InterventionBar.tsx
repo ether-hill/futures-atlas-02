@@ -60,6 +60,10 @@ export default function InterventionBar({
   const [typing, setTyping] = useState<string | null>(null);
   const [miss, setMiss] = useState<string | null>(null);
   const [seenId, setSeenId] = useState(active?.id ?? null);
+  /* A row of chips that scrolls sideways fights every vertical swipe on a phone.
+     On a narrow screen they are behind one line instead, and the line collapses
+     again the moment you pick one. */
+  const [showTips, setShowTips] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   /* Adjust during render rather than in an effect: `active` is a fresh object on
@@ -154,13 +158,24 @@ export default function InterventionBar({
         </form>
 
         <div className="ivrow">
-          <div className="ivsuggest">
+          <button
+            type="button"
+            className="ivtips"
+            onClick={() => setShowTips((v) => !v)}
+            aria-expanded={showTips}
+          >
+            {showTips ? "Hide suggestions" : `${interventions.length} suggestions`}
+          </button>
+          <div className={showTips ? "ivsuggest open" : "ivsuggest"}>
             {interventions.map((iv) => (
               <button
                 key={iv.id}
                 type="button"
                 className={active?.id === iv.id ? "ivchip on" : "ivchip"}
-                onClick={() => onSet(iv)}
+                onClick={() => {
+                  onSet(iv);
+                  setShowTips(false);
+                }}
                 title={iv.summary}
               >
                 {iv.short}

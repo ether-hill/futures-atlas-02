@@ -249,6 +249,13 @@ html.dark .one {
   border-color: var(--paper-1);
 }
 
+.one-tips {
+  display: none;
+}
+.one-whenrow {
+  display: flex;
+  margin-top: clamp(8px, 1.2vh, 14px);
+}
 .one-options {
   display: flex;
   flex-wrap: wrap;
@@ -300,7 +307,6 @@ html.dark .one {
   display: inline-flex;
   align-items: center;
   gap: 11px;
-  margin-left: 10px;
   padding: 5px 14px 5px 15px;
   font-size: 10px;
   font-weight: var(--weight-strong);
@@ -757,6 +763,38 @@ html.dark .one {
   font-weight: var(--weight-medium);
 }
 
+/* --------------------------------------------------------------- why columns */
+
+.one-effect {
+  margin: 0 0 var(--space-5);
+}
+.one-effect-what {
+  margin: 0 0 4px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--paper-1);
+}
+.one-effect-why {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--paper-3);
+}
+/* A list of titles says which figures moved. Nobody asked which; they asked how
+   much. */
+.one-moved li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.one-moved b {
+  font-family: var(--font-year);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--paper-1);
+}
+
 /* ------------------------------------------------------------------ the caveat */
 
 /* The most important paragraph on the page, so it is not set as a footnote. */
@@ -791,25 +829,39 @@ html.dark .one {
   color: var(--paper-1);
   font-weight: var(--weight-medium);
 }
-ul.one-caveat-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 0 0 var(--space-4);
-  list-style: none;
-  padding: 0;
+/* Four short rows you can take in at a glance, rather than three paragraphs
+   nobody finishes. */
+.one-caveat-list {
+  margin: 0;
+  display: grid;
+  gap: 10px;
 }
-ul.one-caveat-tags li {
-  font-family: var(--font-year);
+.one-caveat-list > div {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: 14px;
+  align-items: baseline;
+  padding-top: 10px;
+  border-top: 1px solid var(--one-hairline);
+}
+.one-caveat-list dt {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: var(--weight-strong);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  padding: 3px 9px;
+  color: var(--paper-3);
+}
+.one-caveat-list dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--paper-2);
-  border: 1px solid var(--one-rule);
-  border-radius: var(--radius);
-  list-style: none;
+}
+@media (max-width: 620px) {
+  .one-caveat-list > div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
 }
 .one .one-caveat-go {
   display: inline-block;
@@ -833,50 +885,111 @@ ul.one-caveat-tags li {
 @media (max-width: 720px) {
   .one-screen {
     min-height: auto;
-    padding-bottom: clamp(20px, 3vh, 30px);
+    padding-bottom: 18px;
   }
+  /* The fold is the claim and the chart. Everything else that used to sit
+     between them now sits under them. */
+  .one-ask {
+    display: contents;
+  }
+  .one-top {
+    order: 1;
+  }
+  .one-form {
+    order: 2;
+    margin-top: 14px;
+  }
+  .one-whenrow {
+    order: 3;
+    margin-top: 8px;
+  }
+  .one-verdict-line {
+    order: 4;
+  }
+  .one-figure {
+    order: 5;
+  }
+  .one-readwhy {
+    order: 6;
+  }
+  .one-tips {
+    order: 7;
+  }
+  .one-options {
+    order: 8;
+  }
+  .one-miss {
+    order: 9;
+  }
+
   .one-top h1 {
-    font-size: 26px;
+    font-size: 25px;
     max-width: none;
   }
   .one-eyebrow {
-    font-size: 10px;
-    margin-bottom: 8px;
+    font-size: 9.5px;
+    margin-bottom: 6px;
   }
   .one-lede {
-    font-size: 12.5px;
+    font-size: 12px;
     line-height: 1.5;
   }
+  /* The placeholder already asks the question. */
   .one-ask-label {
-    font-size: 15px;
-    width: 100%;
+    display: none;
   }
   .one-form {
-    gap: 8px;
+    gap: 7px;
   }
   .one-input {
     flex: 1 1 100%;
     font-size: max(16px, 16px);
-    padding: 9px 16px;
+    padding: 8px 15px;
   }
   .one-go,
   .one-reset {
     flex: 0 0 auto;
-    padding: 12px 20px;
-    font-size: 10px;
+    padding: 10px 16px;
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
   }
-  /* One swipeable row rather than five stacked ones. The chart is what the
-     page is for and it was starting below the fold. */
+  .one-when {
+    width: 100%;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 4px 12px;
+  }
+  .one-when input[type="range"] {
+    flex: 1 1 auto;
+    width: auto;
+  }
+  .one-when b {
+    font-size: 20px;
+  }
+  .one-tips {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 6px;
+    margin-top: 10px;
+    padding: 8px 0;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    background: none;
+    border: 0;
+    color: var(--paper-3);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
   .one-options {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    margin: clamp(8px, 1.2vh, 14px) calc(var(--gutter) * -1) 0;
-    padding: 0 var(--gutter) 2px;
-  }
-  .one-options::-webkit-scrollbar {
     display: none;
+    flex-wrap: wrap;
+    margin-top: 4px;
+    overflow: visible;
+  }
+  .one-options.open {
+    display: flex;
   }
   /* Small pill, thumb-sized target. */
   .one-option {
@@ -887,24 +1000,8 @@ ul.one-caveat-tags li {
   .one-option::after {
     content: "";
     position: absolute;
-    inset: -8px 0;
+    inset: -6px 0;
   }
-  .one-when {
-    order: -1;
-    margin-left: 0;
-    margin-right: 4px;
-    flex: 0 0 auto;
-    gap: 9px;
-    padding: 4px 12px;
-  }
-  .one-when input[type="range"] {
-    width: 108px;
-  }
-  .one-when b {
-    font-size: 19px;
-  }
-  /* A chart with no room to be a chart. Give it a fixed, generous slice rather
-     than whatever a flex row has left over. */
   /* A fixed shape rather than a share of the viewport: leftover flex height on
      a phone made the chart taller than it was wide, which is the one proportion
      a time series must never have. */
@@ -912,20 +1009,23 @@ ul.one-caveat-tags li {
     flex: 0 0 auto;
     height: auto;
     aspect-ratio: 4 / 3;
-    min-height: 260px;
+    min-height: 250px;
+    margin-top: 12px;
   }
   .one-verdict-line {
     gap: 10px;
+    margin-top: 12px;
   }
   .one-verdict-num {
-    font-size: 34px;
+    font-size: 30px;
   }
   .one-verdict-say {
-    font-size: 13px;
+    font-size: 12.5px;
   }
   .one-readwhy {
     width: 100%;
     justify-content: center;
+    margin-top: 12px;
   }
   .one-result {
     padding-top: clamp(22px, 3vh, 34px);
@@ -934,16 +1034,19 @@ ul.one-caveat-tags li {
     font-size: 15px;
   }
   .one-caveat {
-    padding: 18px;
+    padding: 16px 18px;
   }
   .one-caveat h2 {
-    font-size: 17px;
+    font-size: 16px;
   }
-  .one-caveat p {
+  .one-caveat-list dd {
+    font-size: 13px;
+  }
+  .one-effect-what {
     font-size: 13.5px;
   }
-  .room-cap {
-    font-size: 11.5px;
+  .one-effect-why {
+    font-size: 12.5px;
   }
   .one-arguebox {
     margin-left: calc(var(--gutter) * -1);
@@ -951,6 +1054,10 @@ ul.one-caveat-tags li {
     padding: 24px var(--gutter);
     border-radius: 0;
     scroll-margin-top: 12px;
+  }
+  .one-foot {
+    margin-top: 28px;
+    padding-top: 18px;
   }
   .one-foot p {
     font-size: 12px;

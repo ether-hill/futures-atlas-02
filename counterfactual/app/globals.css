@@ -228,6 +228,11 @@ a:hover {
   gap: 5px;
   flex: 1 1 420px;
 }
+/* On a desk there is room for the whole list, so the disclosure that holds it on
+   a phone is not rendered at all. */
+.ivtips {
+  display: none;
+}
 /* Deliberately small at every width. There are eight of them and they are a menu
    you skim, not the control the page is about; the year slider is that. */
 .ivchip {
@@ -1320,20 +1325,32 @@ select {
     font-size: 10px;
   }
   /* Eight chips is five stacked rows on a phone and most of the first screen.
-     One swipeable row costs nothing and gives the charts the fold back. */
-  .ivsuggest {
-    flex: 1 1 100%;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
-    margin: 0 calc(var(--gutter) * -1);
-    padding-left: var(--gutter);
-    padding-right: var(--gutter);
+     A sideways scroller was worse: it swallowed every vertical swipe that
+     started on it. So they hide behind one line and wrap when opened. */
+  .ivtips {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    order: 3;
+    font-family: var(--font-heading);
+    font-size: 11px;
+    font-weight: var(--weight-medium);
+    padding: 9px 0;
+    background: none;
+    border: 0;
+    color: var(--muted);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
-  .ivsuggest::-webkit-scrollbar {
+  .ivsuggest {
     display: none;
+    order: 4;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+  }
+  .ivsuggest.open {
+    display: flex;
   }
   /* The chips stay small because they were asked to. A thumb is not small, so
      the hit box grows behind them instead: same pill, forty pixels of target. */
@@ -1350,7 +1367,13 @@ select {
   .segmented button {
     padding: 10px;
   }
+  .ivrow {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
   .ivopts {
+    order: 1;
     width: 100%;
     flex-wrap: wrap;
     gap: 8px;
@@ -1364,7 +1387,12 @@ select {
   .segmented button {
     flex: 1 1 0;
   }
-  .ivhint,
+  /* The bar already carries a placeholder that asks the question and a line
+     that offers the suggestions. A four-line paragraph explaining both is what
+     was pushing the first chart off the screen. */
+  .ivhint {
+    display: none;
+  }
   .ivmiss {
     font-size: 11.5px;
     line-height: 1.45;
