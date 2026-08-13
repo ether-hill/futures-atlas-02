@@ -103,7 +103,7 @@ export function SwipeDemoCard() {
   const right = answers.filter(Boolean).length;
 
   return (
-    <div className="flex h-full flex-col p-5">
+    <div className="relative flex h-full flex-col justify-center p-5">
       {/* progress: dots + counter, as the game shows it */}
       {phase !== "done" && (
         <div className="mb-3 flex items-center justify-center gap-4">
@@ -128,7 +128,7 @@ export function SwipeDemoCard() {
         </div>
       )}
 
-      <div className="relative min-h-[420px] flex-1">
+      <div className="relative mx-auto aspect-[3/4] w-full max-w-[330px] flex-none">
         {phase === "done" ? (
           <Paper>
             <span className="font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: DIM }}>
@@ -187,7 +187,7 @@ export function SwipeDemoCard() {
               {phase === "ask" ? (
                 <>
                   <h3
-                    className="px-4 text-center text-[clamp(18px,1.65vw,26px)] font-bold leading-[1.3] tracking-[-0.02em] text-balance"
+                    className="px-3 pb-16 text-center text-[clamp(16px,1.25vw,21px)] font-bold leading-[1.3] tracking-[-0.02em] text-balance"
                     style={{ color: INK }}
                   >
                     {card!.claim}
@@ -198,7 +198,7 @@ export function SwipeDemoCard() {
                   <Hint side="right" />
                 </>
               ) : (
-                <div className="flex h-full w-full flex-col overflow-y-auto pr-1">
+                <div className="flex h-full w-full flex-col overflow-y-auto pb-16 pr-1 text-[0.92em]">
                   <p className="text-[13px] leading-[1.5]" style={{ color: DIM }}>
                     {card!.claim}
                   </p>
@@ -245,9 +245,9 @@ export function SwipeDemoCard() {
         )}
       </div>
 
-      {/* actions live under the deck, as in the game */}
+      {/* actions sit ON the card, as in the game */}
       {phase !== "done" && (
-        <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+        <div className="pointer-events-none absolute inset-x-0 bottom-[86px] z-20 grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-8 [&>*]:pointer-events-auto">
           <button
             type="button"
             onClick={back}
@@ -359,7 +359,7 @@ function Round({
         type="button"
         onClick={onClick}
         aria-label={label}
-        className="grid h-[54px] w-[54px] place-items-center rounded-full border-2 text-[23px] leading-none transition-transform active:scale-95"
+        className="grid h-[46px] w-[46px] place-items-center rounded-full border-2 bg-[rgba(244,241,234,.9)] text-[20px] leading-none backdrop-blur-sm transition-transform active:scale-95"
         style={{
           color: colour,
           borderColor: `color-mix(in srgb, ${colour} 55%, ${LINE})`,

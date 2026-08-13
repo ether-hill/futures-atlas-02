@@ -37,7 +37,7 @@ export interface Project {
 export const projects: Project[] = [
   {
     id: "magnifica",
-    title: "Magnifica",
+    title: "Hypothetica Magnifica",
     tagline:
       "In May 2026 Pope Leo XIV published the first papal encyclical on AI. Explore the real Magnifica Humanitas, then read sixteen research-grounded, clearly-labeled speculative equivalents — what the Dalai Lama, the Grand Imam of Al-Azhar, the Archbishop of Canterbury and other world faith leaders might write about artificial intelligence.",
     year: "2026",
@@ -46,6 +46,7 @@ export const projects: Project[] = [
     status: "live",
     visibility: "live",
     path: "/magnifica",
+    image: "/projects/magnifica.jpg",
   },
   {
     id: "odds-of-surviving-ai",

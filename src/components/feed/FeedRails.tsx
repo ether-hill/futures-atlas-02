@@ -70,7 +70,7 @@ export function LeftRail({
   setMedia: (v: boolean) => void;
 }) {
   return (
-    <aside className="fa-rail sticky top-5 hidden max-h-[calc(100dvh-44px)] w-[236px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1080px]:block [&::-webkit-scrollbar]:hidden">
+    <aside className="fa-rail sticky top-5 hidden max-h-[calc(100dvh-44px)] w-[236px] shrink-0 self-start overflow-y-auto px-5 py-6 [scrollbar-width:none] min-[680px]:py-8 min-[1080px]:block [&::-webkit-scrollbar]:hidden">
       <nav className="flex flex-col gap-0.5">
         <RailItem
           label="All posts"
@@ -103,6 +103,8 @@ export function LeftRail({
           />
         ))}
       </nav>
+
+      <SignUp />
     </aside>
   );
 }
@@ -119,10 +121,9 @@ export function RightRail({
   all: Post[];
 }) {
   return (
-    <aside className="fa-rail sticky top-5 hidden max-h-[calc(100dvh-44px)] w-[312px] shrink-0 self-start overflow-y-auto px-5 py-7 [scrollbar-width:none] min-[1320px]:block [&::-webkit-scrollbar]:hidden">
+    <aside className="fa-rail-b sticky bottom-5 hidden w-[312px] shrink-0 self-start px-5 py-6 min-[680px]:py-8 min-[1320px]:block">
       <JustIn latest={latest} />
       <ProjectPicks projects={projects} />
-      <SignUp />
       <PopularTags all={all} />
     </aside>
   );
@@ -229,8 +230,8 @@ function SignUp() {
   }
 
   return (
-    <Panel className="mt-5">
-      <RailHeading>Get the dispatches</RailHeading>
+    <Panel className="mt-7">
+      <RailHeading>Join us for updates</RailHeading>
       {state === "done" ? (
         <p className="mt-3 font-mono text-[11.5px] leading-[1.55] text-graphite">
           You&rsquo;re on the list. Nothing has been sent yet — this is a list of people
@@ -268,9 +269,6 @@ function SignUp() {
               {state === "sending" ? "Adding…" : "Sign up"}
             </button>
           </form>
-          <p className="mt-2 font-mono text-[9.5px] leading-[1.5] text-faint">
-            We store the address and nothing else. Ask and it comes off.
-          </p>
           {state === "error" && (
             <p className="mt-2 font-mono text-[10px] text-accent-deep">{message}</p>
           )}
