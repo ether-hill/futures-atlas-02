@@ -6,6 +6,7 @@ import {
   type Card, type Sector,
 } from "../data/sectors";
 import { SectorFilter } from "./SectorFilter";
+import { CustomDeck } from "./CustomDeck";
 
 const MIXED = 10; // length of the "surprise me" round; a sector deck runs its own length
 const pad = (n: number) => String(n).padStart(2, "0");
@@ -95,7 +96,11 @@ export default function Calibration() {
     if (locked.current || phase !== "swipe" || !item) return;
     locked.current = true;
     setAnswers((a) => [...a, { card: item.card, sector: item.sector, sayReal }]);
-    track({ cardId: item.card.id, category: item.sector.id, verdict: item.card.verdict, real: sayReal });
+    // Custom decks are local and unsourced; counting them would put made-up
+    // cards into the public tally under ids nobody else has.
+    if (item.sector.kind !== "custom") {
+      track({ cardId: item.card.id, category: item.sector.id, verdict: item.card.verdict, real: sayReal });
+    }
     setFling(sayReal ? 1 : -1);
     setPhase(reduce.current ? "result" : "flinging"); // the card swipes/fades off, then the result
   }, [phase, item]);
@@ -113,12 +118,12 @@ export default function Calibration() {
     locked.current = false; setFling(0);
     if (next >= deck.length) {
       setPhase("final");
-      if (!roundTracked.current) { roundTracked.current = true; track({ round: true }); }
+      if (!roundTracked.current && sector.kind !== "custom") { roundTracked.current = true; track({ round: true }); }
       return;
     }
     setPos(next);
     setPhase(answers[next] ? "result" : "swipe");
-  }, [deck.length, answers]);
+  }, [deck.length, answers, sector.kind]);
 
   // Next used to unmount the reveal and mount the next claim in the same frame,
   // which reads as a jump-cut. `leaving` holds the reveal for one short exit
@@ -296,6 +301,7 @@ export default function Calibration() {
             onQuery={(v) => { setCustom(v); if (gen.state === "error") setGen({ state: "idle" }); }}
             onRequest={requestSector}
           />
+          <CustomDeck active={sector.kind === "custom"} onPlay={startDeck} />
         </div>
 
         <div className="bcol-r">
@@ -337,8 +343,10 @@ export default function Calibration() {
                       </>
                     )}
                     {lastAns.card.attribution && <div className="vo-who">{lastAns.card.attribution}</div>}
-                    <p className={`vo-lede${lastAns.card.big ? "" : " solo"}`}>{lastAns.card.lede}</p>
-                    <p className="vo-insight">{lastAns.card.note}</p>
+                    {lastAns.card.lede && (
+                      <p className={`vo-lede${lastAns.card.big ? "" : " solo"}`}>{lastAns.card.lede}</p>
+                    )}
+                    {lastAns.card.note && <p className="vo-insight">{lastAns.card.note}</p>}
                     {crowd && (
                       <div className="vo-crowd">
                         <span className="vo-crowdtop">
@@ -380,6 +388,7 @@ export default function Calibration() {
               <div key={`claim-${pos + d}-${it.card.id}`} ref={active && phase === "swipe" ? cardEl : undefined} className={`tcard${d === 1 ? " b1" : d === 2 ? " b2" : ""}${it.card.attribution ? " quote" : ""}${active && phase === "swipe" ? " enter" : ""}`} style={flingStyle}>
                 {it.card.attribution && <span className="quote-mark" aria-hidden="true">&ldquo;</span>}
                 {it.sector.kind === "generated" && !it.sector.approved && <span className="draft-flag">AI-drafted · unverified</span>}
+                {it.sector.kind === "custom" && <span className="draft-flag own">Your card · unsourced</span>}
                 <h3 className="claim">{it.card.attribution ? <><span className="qtext">{it.card.claim}</span><span className="quote-by">, {it.card.attribution}</span></> : it.card.claim}</h3>
                 {active && phase === "swipe" && (
                   <div className="card-actions">
@@ -393,10 +402,6 @@ export default function Calibration() {
                     </span>
                   </div>
                 )}
-                {active && phase === "swipe" && <>
-                  <span className="ca-hint left" aria-hidden="true">←</span>
-                  <span className="ca-hint right" aria-hidden="true">→</span>
-                </>}
                 {active && (phase === "swipe" || flung) && <><span className="stamp no" aria-hidden="true" style={flung && fling < 0 ? { opacity: 1 } : undefined}>✕</span><span className="stamp yes" aria-hidden="true" style={flung && fling > 0 ? { opacity: 1 } : undefined}>✓</span></>}
               </div>
             );

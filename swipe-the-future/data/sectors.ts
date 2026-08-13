@@ -46,7 +46,9 @@
 // admin desk and never on a card.
 
 export type Verdict = "notyet" | "already";
-export type SectorKind = "sector" | "wildcard" | "generated";
+/** `custom` is a deck someone pasted in themselves: local to their browser,
+ *  unsourced, and never counted in the public tally. */
+export type SectorKind = "sector" | "wildcard" | "generated" | "custom";
 
 export interface Card {
   id: string;
