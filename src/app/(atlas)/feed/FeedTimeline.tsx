@@ -282,7 +282,28 @@ function PostCardFeed({
           </div>
         </Link>
       ) : (
-        <div className="fa-hatch aspect-[6/1] border-b border-ink/[0.12]" />
+        /*
+         * No usable picture, so the card sets one instead of leaving a hole.
+         *
+         * Some publishers ship no og:image at all (arXiv gives its own logo,
+         * which is worse than nothing — the same logo on seven cards) and some
+         * block the fetch. The old fallback was a 6:1 hatched strip, which read
+         * as a card that had failed to load rather than a card of a different
+         * kind. This is the same move Magnifica's source rail makes for the
+         * three publishers there that print no image: name the publisher, in
+         * the house mono, on the hatch.
+         */
+        <Link
+          href={`/feed/${post.slug}`}
+          className="group relative block aspect-[2/1] overflow-hidden border-b border-ink/[0.12]"
+        >
+          <span className="fa-hatch absolute inset-0" aria-hidden />
+          <span className="absolute inset-0 flex items-end p-4">
+            <span className="font-mono text-[clamp(13px,1.5vw,19px)] uppercase leading-[1.15] tracking-[0.06em] text-ink/75 transition-colors group-hover:text-accent">
+              {post.sourceName}
+            </span>
+          </span>
+        </Link>
       )}
 
       <div className="flex flex-1 flex-col p-5">

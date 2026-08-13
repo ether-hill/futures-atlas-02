@@ -178,6 +178,7 @@ Long. Not a summary — put it on when you have the time it deserves.`,
   },
   {
     slug: "state-ai-laws-halfway-through-2026",
+    sourceImage: "https://cdn.sanity.io/images/3tzzh18d/production/635986efcb1d94017581e87d214ce1e56cedba36-1200x675.png",
     title: "The states did not stop legislating, and now there is a task force",
     dek: "Tech Policy Press counts where US state AI law actually stands halfway through 2026 — against a federal executive order built to preempt much of it.",
     url: "https://www.techpolicy.press/where-state-ai-legislation-stands-half-way-into-2026/",
@@ -220,6 +221,7 @@ Read it for the shape of the consensus and, more usefully, for where the consens
   },
   {
     slug: "neutral-atoms-big-leap",
+    sourceImage: "https://spectrum.ieee.org/media-library/image.jpg?id=62609458&width=1200&height=600&coordinates=0%2C381%2C0%2C381",
     title: "Neutral atoms had the year everyone expected superconductors to have",
     dek: "IEEE Spectrum on why the quiet qubit modality spent 2026 catching up — and in some respects passing — the incumbents.",
     url: "https://spectrum.ieee.org/neutral-atom-quantum-computing",
@@ -241,6 +243,7 @@ The reason to care is not tribal. It is that confident public timelines for cryp
   },
   {
     slug: "atom-computing-toric-code",
+    sourceImage: "https://thequantuminsider.com/wp-content/uploads/2026/06/AtomComputing_Optics_3.jpg",
     title: "Atom Computing runs the toric code, and says what it did not do",
     dek: "An error-correction result reported with its limits attached — which is rarer, and more useful, than the result.",
     url: "https://thequantuminsider.com/2026/06/03/atom-computing-reveals-quantum-error-correction-with-toric-code/",
