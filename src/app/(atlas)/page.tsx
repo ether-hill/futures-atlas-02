@@ -31,7 +31,14 @@ export default async function Home() {
     <div>
       {/* Hero, an always-black stage (does not follow the light theme) with
           Generatives "Field Dynamics" flowing behind the headline */}
-      <section data-fa-hero className="relative flex min-h-[calc(100svh-64px)] items-end overflow-hidden border-b border-ink bg-black">
+      <section
+        data-fa-hero
+        /* The body reserves the bar's height on every page, so the hero has to
+           climb back over it to run full bleed — otherwise the visualisation
+           starts below a strip of page background. The inner padding already
+           clears the bar, so nothing lands underneath it. */
+        className="relative mt-[calc(-1*var(--fa-nav-h))] flex min-h-[100svh] items-end overflow-hidden border-b border-ink bg-black"
+      >
         <HeroField />
         <Container className="relative z-[1] pt-[clamp(96px,16vh,200px)] pb-[clamp(44px,7vh,84px)]">
           <Reveal>
