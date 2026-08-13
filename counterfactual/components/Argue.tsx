@@ -159,11 +159,11 @@ export default function Argue({
         </p>
       )}
 
-      <details className="argue-standard">
-        <summary>The strongest objection I know of, before you make yours</summary>
+      <div className="argue-standard">
+        <p className="argue-standard-label">The strongest objection I know of, unprompted</p>
         <blockquote className="argue-claim">{intervention.objection.claim}</blockquote>
         <p className="argue-response">{intervention.objection.response}</p>
-      </details>
+      </div>
 
       <p className="argue-note">
         Every response here is written by hand and matched on keywords. That's the honest stand-in

@@ -36,7 +36,6 @@ export default function FigureCard({
   hero?: boolean;
 }) {
   const [showData, setShowData] = useState(false);
-  const [showWhy, setShowWhy] = useState(false);
 
   /* At rest the chart is exactly the published data and stops where the data
      stops. A projection nobody asked for is just an unsourced number sitting on
@@ -224,18 +223,6 @@ export default function FigureCard({
         </div>
       )}
 
-      {cf && (
-        <button
-          type="button"
-          className={showWhy ? "whybtn on" : "whybtn"}
-          onClick={() => setShowWhy((v) => !v)}
-          aria-expanded={showWhy}
-        >
-          {showWhy ? "Hide the reasoning" : "Why this changed"}
-          <span className="whybtn-n">{cf.effects.length}</span>
-        </button>
-      )}
-
       <figcaption className="figure-foot">
         <span className="figure-ref">
           Figure {figure.id}
@@ -266,7 +253,15 @@ export default function FigureCard({
         !hero && <p className="figure-takeaway">{figure.takeaway}</p>
       )}
 
-      {cf && showWhy && (
+      {/* Always open. A counterfactual whose reasoning is behind a button is a
+          number asking to be believed, and the reasoning is the only part of
+          this that can be checked. */}
+      {cf && (
+        <>
+          <p className="why-head-label">
+            Why this changed
+            <span className="why-n">{cf.effects.length}</span>
+          </p>
         <ol className="why">
           {cf.effects.map((e, i) => (
             <li key={i} className="why-item">
@@ -283,6 +278,7 @@ export default function FigureCard({
             </li>
           ))}
         </ol>
+        </>
       )}
 
       {showData && <DataTable figure={base} cfSeries={cf?.series} />}

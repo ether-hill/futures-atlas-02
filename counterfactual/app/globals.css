@@ -60,10 +60,15 @@ a:hover {
 
 /* --------------------------------------------------------------------- topbar */
 
+/* The atlas shell bar is position:fixed and publishes its height as
+   --fa-nav-h. Nothing here was making room for it, so the masthead sat under
+   it on every screen. The padding goes inside the band rather than on the body,
+   so the dark ground still runs up behind the bar. Standalone (no shell) the
+   variable is absent and the fallback is zero. */
 .topbar {
   background: var(--band);
   color: var(--paper);
-  padding: var(--space-5) 0 var(--space-6);
+  padding: calc(var(--space-5) + var(--fa-nav-h, 0px)) 0 var(--space-6);
 }
 .topbar-inner {
   display: grid;
@@ -148,7 +153,7 @@ a:hover {
 
 .ivbar {
   position: sticky;
-  top: 0;
+  top: var(--fa-nav-now, 0px);
   z-index: 20;
   background: var(--haze);
   border-bottom: var(--border-hairline) solid var(--hairline);
@@ -228,11 +233,7 @@ a:hover {
   gap: 5px;
   flex: 1 1 420px;
 }
-/* On a desk there is room for the whole list, so the disclosure that holds it on
-   a phone is not rendered at all. */
-.ivtips {
-  display: none;
-}
+
 /* Deliberately small at every width. There are eight of them and they are a menu
    you skim, not the control the page is about; the year slider is that. */
 .ivchip {
@@ -429,28 +430,6 @@ a:hover {
   letter-spacing: 0.02em;
   color: var(--muted);
 }
-/* The invitation to argue has to sit where the result does, or nobody scrolls
-   far enough to find out the result is arguable. */
-.ivargue {
-  flex: 0 0 auto;
-  align-self: center;
-  font-family: var(--font-heading);
-  font-size: 12px;
-  font-weight: var(--weight-strong);
-  letter-spacing: 0.04em;
-  padding: 7px var(--space-4);
-  color: var(--paper);
-  background: var(--accent);
-  border-radius: var(--radius);
-  text-decoration: none;
-  white-space: nowrap;
-}
-.ivargue::after {
-  content: " ↓";
-}
-.ivargue:hover {
-  background: var(--accent-deep);
-}
 
 /* ----------------------------------------------------------------- the board */
 
@@ -621,49 +600,34 @@ a:hover {
 .figure.hero .figure-source {
   font-size: 11px;
 }
-.figure.hero /* The reasoning is the point of the project, so it gets a button rather than a
-   footnote-sized link in a row of housekeeping. */
-.whybtn {
-  display: inline-flex;
-  align-self: flex-start;
+/* The reasoning is the point of the project, so it is a heading over an open
+   list rather than a button that hides it. */
+.why-head-label {
+  display: flex;
   align-items: center;
   gap: var(--space-3);
-  margin-top: var(--space-3);
+  margin: var(--space-4) 0 0;
   font-family: var(--font-heading);
-  font-size: 12px;
+  font-size: 10px;
   font-weight: var(--weight-strong);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  padding: 9px 16px;
-  color: var(--text);
-  background: transparent;
-  border: var(--border-emphasis) solid var(--text);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: background 0.18s var(--ease), color 0.18s var(--ease), border-color 0.18s var(--ease);
+  color: var(--muted);
 }
-.whybtn:hover,
-.whybtn.on {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--paper);
+.why-head-label::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--hairline);
 }
-.whybtn-n {
+.why-n {
   font-family: var(--font-year);
-  font-size: 12px;
-  letter-spacing: 0;
-  padding: 0 6px;
-  border-radius: var(--radius-full);
-  background: color-mix(in srgb, var(--text) 12%, transparent);
-}
-.whybtn:hover .whybtn-n,
-.whybtn.on .whybtn-n {
-  background: color-mix(in srgb, var(--paper) 24%, transparent);
-}
-.figure.hero .whybtn {
-  margin-top: var(--space-2);
-  padding: 7px 13px;
   font-size: 11px;
+  letter-spacing: 0;
+  padding: 1px 6px;
+  border-radius: var(--radius-full);
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--text);
 }
 
 .figure-foot {
@@ -1280,14 +1244,15 @@ select {
    look cropped. */
 @media (max-width: 720px) {
   .topbar {
-    padding: var(--space-4) 0 var(--space-5);
+    padding: calc(var(--space-4) + var(--fa-nav-h, 0px)) 0 var(--space-5);
   }
   .topbar h1 {
     font-size: 19px;
   }
+  /* The colophon at the foot says all of this at length, and on a phone it was
+     the difference between seeing a chart on the first screen and not. */
   .topline {
-    font-size: 12.5px;
-    line-height: 1.45;
+    display: none;
   }
   .provenance {
     white-space: normal;
@@ -1324,33 +1289,13 @@ select {
     padding: 12px 20px;
     font-size: 10px;
   }
-  /* Eight chips is five stacked rows on a phone and most of the first screen.
-     A sideways scroller was worse: it swallowed every vertical swipe that
-     started on it. So they hide behind one line and wrap when opened. */
-  .ivtips {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    order: 3;
-    font-family: var(--font-heading);
-    font-size: 11px;
-    font-weight: var(--weight-medium);
-    padding: 9px 0;
-    background: none;
-    border: 0;
-    color: var(--muted);
-    cursor: pointer;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
+  /* Visible, wrapped, and small. A sideways scroller swallowed every vertical
+     swipe that started on it, which is the one thing they must not do. */
   .ivsuggest {
-    display: none;
-    order: 4;
+    order: 3;
     flex: 1 1 100%;
     flex-wrap: wrap;
-  }
-  .ivsuggest.open {
-    display: flex;
+    gap: 4px;
   }
   /* The chips stay small because they were asked to. A thumb is not small, so
      the hit box grows behind them instead: same pill, forty pixels of target. */
@@ -1415,11 +1360,6 @@ select {
   }
   .ivmeta-of {
     display: none;
-  }
-  .ivargue {
-    flex: 1 1 100%;
-    align-self: stretch;
-    text-align: center;
   }
 
   .figure {

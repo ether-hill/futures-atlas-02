@@ -284,16 +284,15 @@ export default function Story() {
               )}
             </div>
 
-            <div className="one-col">
-              <h2>Not convinced?</h2>
-              <p>
-                Say why. The page either revises the numbers or refuses and tells you which. It
-                refuses more often than it agrees.
-              </p>
-              <p className="one-still one-still-more">
-                <a href="#argue">The box is below ↓</a>
-              </p>
-            </div>
+          </div>
+
+          <div className="one-arguebox" id="argue">
+            <Argue
+              intervention={iv}
+              objections={objections}
+              onPush={(o) => setObjections((list) => [...list, o])}
+              onUndo={() => setObjections((list) => list.slice(0, -1))}
+            />
           </div>
 
           {/* Below the account of what happened, not in front of it: you read the
@@ -326,19 +325,8 @@ export default function Story() {
                 <dd>Drawn, not photographed. No real hall is laid out to match a number.</dd>
               </div>
             </dl>
-            <a className="one-caveat-go" href="#argue">
-              Disagree with any of it ↓
-            </a>
           </div>
 
-          <div className="one-arguebox" id="argue">
-            <Argue
-              intervention={iv}
-              objections={objections}
-              onPush={(o) => setObjections((list) => [...list, o])}
-              onUndo={() => setObjections((list) => list.slice(0, -1))}
-            />
-          </div>
         </section>
       )}
 
@@ -376,7 +364,6 @@ function Ask({
   const [typing, setTyping] = useState<string | null>(null);
   const [miss, setMiss] = useState<string | null>(null);
   const [seenId, setSeenId] = useState<string | null>(null);
-  const [showTips, setShowTips] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   /* Adjust during render rather than in an effect: `active` is a fresh object on
@@ -483,24 +470,13 @@ function Ask({
         </div>
       )}
 
-      <button
-        type="button"
-        className="ivtips one-tips"
-        onClick={() => setShowTips((v) => !v)}
-        aria-expanded={showTips}
-      >
-        {showTips ? "Hide suggestions" : `${INTERVENTIONS.length} suggestions`}
-      </button>
-      <div className={showTips ? "one-options open" : "one-options"}>
+      <div className="one-options">
         {INTERVENTIONS.map((i) => (
           <button
             key={i.id}
             type="button"
             className={active?.id === i.id ? "one-option on" : "one-option"}
-            onClick={() => {
-              onChoose(active?.id === i.id ? null : i);
-              setShowTips(false);
-            }}
+            onClick={() => onChoose(active?.id === i.id ? null : i)}
             title={i.summary}
           >
             <span>{i.short}</span>
