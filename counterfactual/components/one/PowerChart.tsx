@@ -101,15 +101,25 @@ export default function PowerChart({
     <div className="one-chartbox" ref={boxRef}>
       <svg className="one-chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={figure.title}>
       <defs>
+        {/* Stops come from the stylesheet so the whole figure re-lights with the
+            atlas theme instead of assuming a dark page. */}
         <linearGradient id="glow" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#73D9FF" stopOpacity="0.95" />
-          <stop offset="45%" stopColor="#1C78BA" stopOpacity="0.55" />
-          <stop offset="100%" stopColor="#172E5C" stopOpacity="0.05" />
+          <stop offset="0%" stopColor="var(--one-glow-1)" stopOpacity="var(--one-glow-o1)" />
+          <stop offset="45%" stopColor="var(--one-glow-2)" stopOpacity="var(--one-glow-o2)" />
+          <stop offset="100%" stopColor="var(--one-glow-3)" stopOpacity="var(--one-glow-o3)" />
         </linearGradient>
-        <linearGradient id="edge" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#73D9FF" />
-          <stop offset="100%" stopColor="#9CF2F2" />
-        </linearGradient>
+        {/* The difference between the two readings, hatched: it is neither
+            reading, it is the gap, and it has to say so in both directions. */}
+        <pattern
+          id="delta"
+          width={8}
+          height={8}
+          patternUnits="userSpaceOnUse"
+          patternTransform="rotate(45)"
+        >
+          <rect width={8} height={8} fill="var(--one-delta-bg)" />
+          <rect width={2.6} height={8} fill="var(--one-delta-ink)" />
+        </pattern>
       </defs>
 
       {/* the horizon lines you cross on the way up */}
@@ -137,16 +147,36 @@ export default function PowerChart({
         Gigawatts
       </text>
 
-      {/* what is coming, if nothing changes */}
+      {/* What is coming, if nothing changes. */}
       <path d={area(base)} fill="url(#glow)" className="one-shape" />
-      <path d={line(base)} fill="none" stroke="url(#edge)" strokeWidth={2.5} className="one-shape" />
 
-      {/* what you chose instead, cut out of it */}
+      {/* The gap between the readings, hatched. Cutting the counterfactual out of
+          the glow only worked while it was lower: an intervention that pushes the
+          line UP covered the published reading completely and you could not see
+          what you were being compared against. A band drawn between the two
+          curves reads the same either way. */}
+      {alt &&
+        (() => {
+          const band = `${line(base)} ${[...alt]
+            .reverse()
+            .map((v, k) => `L${x(alt.length - 1 - k).toFixed(1)},${y(v).toFixed(1)}`)
+            .join(" ")} Z`;
+          return (
+            <>
+              {/* A veil first, so the part of the glow you gave up visibly goes
+                  out. Hatch alone was legible over the page ground but not over
+                  the bright half of the gradient, which is exactly where a
+                  downward intervention puts it. */}
+              <path d={band} className="one-delta-veil one-shape" />
+              <path d={band} fill="url(#delta)" className="one-shape" />
+            </>
+          );
+        })()}
+
+      {/* Both edges, drawn last so neither can be buried by a fill. */}
+      <path d={line(base)} fill="none" className="one-base-line one-shape" strokeWidth={2.5} />
       {alt && (
-        <>
-          <path d={area(alt)} className="one-cf one-shape" />
-          <path d={line(alt)} fill="none" className="one-cf-line one-shape" strokeWidth={2.5} />
-        </>
+        <path d={line(alt)} fill="none" className="one-cf-line one-shape" strokeWidth={2.5} />
       )}
 
       {/* the countries it passes */}
