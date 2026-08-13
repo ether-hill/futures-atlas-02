@@ -55,7 +55,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
     <article className="bg-surface py-[clamp(36px,6vw,88px)]">
       <Container>
         <Link
-          href="/blog"
+          href="/feed"
           className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-graphite transition-colors hover:text-ink"
         >
           <span aria-hidden>←</span> All posts

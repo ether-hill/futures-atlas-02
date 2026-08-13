@@ -90,11 +90,17 @@ unpublish, change that word and deploy — nothing else.
 - `src/components/EditorBar.tsx` — the "you are not seeing the public site" bar;
   renders nothing for the public. `/editor` is the full live-vs-draft overview.
 
-## Blog (`/blog`) — the reading log
+## The Feed (`/feed`) — the reading log
 
 The Atlas's news-and-articles section. Every post is commentary **on someone
 else's work** and always shows the canonical `url`; it never stands in for the
 source.
+
+**There is no blog.** `/blog` and `/feed` were two views of the same posts while
+we decided between them; the feed won and the blog was deleted. Posts live at
+`/feed/<slug>`, cover art in `public/feed/`, and two permanent redirects in
+`next.config.ts` are all that survives, for links already published. Don't
+reintroduce a second listing of these posts.
 
 - `src/data/posts.ts` — the single source of truth, same shape of contract as
   `projects.ts`. `visibility: "live" | "draft"` publishes or unpublishes one
@@ -110,17 +116,19 @@ source.
   the `.fa-prose` block in `globals.css`. Bodies are authored in this repo, so
   the HTML is trusted and unsanitised — **if a body ever comes from outside this
   repo, sanitise in `markdown.ts` first.**
-- `/blog` is a full-width four-column card grid; a post page puts the prose left
-  and a sticky source/"why it matters" rail right at ≥1100px, with a "More
-  posts" carousel at the foot.
-- **`/feed` is the same posts as a timeline** — a Twitter/X-shaped layout (nav
-  rail · centre column with an avatar gutter · trends rail) skinned entirely in
-  core tokens. It deliberately carries **no like/repost/view counts**: those
-  numbers don't exist for this site and inventing them would be inventing data.
-  The action row links to the post and the source, and shows the read time.
+- `/feed` is a full-width bento grid of mixed cards — posts, video, reader
+  polls, a playable taster — with sticky rails either side. A post page
+  (`/feed/<slug>`) puts the prose left and a sticky source/"why it matters" rail
+  right at ≥1100px, with a "More posts" carousel at the foot.
+- The feed deliberately carries **no like/repost/view counts**: those numbers
+  don't exist for this site and inventing them would be inventing data. Poll
+  bars are the one exception and they are a real tally, or they say they aren't
+  being recorded.
+- **One card design.** The feed's card is the card — Magnifica's sources rail
+  mirrors it deliberately. Restyle both together; don't fork a second one.
 - **Images, in priority order.** `sourceImage` — the publisher's own og:image or
   the video's thumbnail, *hot-linked*, never copied into the repo — then our own
-  `image` cover art in `public/blog/`, then the hatched plate. `PostImage`
+  `image` cover art in `public/feed/`, then the hatched plate. `PostImage`
   (client) does the demotion on `onError`, so a pulled or hot-link-blocked
   source image silently falls back to the illustration.
   Only set `sourceImage` when the image says something about *that* piece:

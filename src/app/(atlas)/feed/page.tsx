@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "The reading log as a timeline: quantum, advanced AI, compute and the social weather around all of it, posted as it comes.",
 };
 
-// The same posts as /blog, in a timeline instead of a grid. Drafts are filtered
+// The same posts, in a timeline. Drafts are filtered
 // out here, on the server, so a visitor's page never contains them.
 export default async function FeedPage() {
   const isEditor = Boolean(await getEditor());

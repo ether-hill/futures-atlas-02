@@ -20,7 +20,7 @@ export function PostCarousel({
   posts,
   title,
   eyebrow,
-  href = "/blog",
+  href = "/feed",
   hrefLabel = "All posts",
   showVisibility = false,
 }: {

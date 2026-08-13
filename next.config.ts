@@ -85,6 +85,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/prism", destination: "/generatives", permanent: true },
+      // The blog and the feed were two views of the same posts; the feed won,
+      // so the blog is gone and its posts live at /feed/<slug>. These two rules
+      // are all that remains of it — old links are already out in the world.
+      { source: "/blog", destination: "/feed", permanent: true },
+      { source: "/blog/:slug", destination: "/feed/:slug", permanent: true },
       // Gigawatt became THE Hyperscale (the older sim was retired from the site)
       { source: "/gigawatt", destination: "/hyperscale", permanent: true },
       { source: "/gigawatt/:path*", destination: "/hyperscale/:path*", permanent: true },

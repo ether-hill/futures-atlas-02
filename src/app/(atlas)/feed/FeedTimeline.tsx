@@ -205,7 +205,7 @@ function PostCardFeed({ post, showVisibility }: { post: Post; showVisibility: bo
       {yt ? (
         <YouTubeCard id={yt} title={post.title} />
       ) : hasImage(post) ? (
-        <Link href={`/blog/${post.slug}`} className="group block">
+        <Link href={`/feed/${post.slug}`} className="group block">
           <div className="relative aspect-[2/1] overflow-hidden border-b border-ink/[0.12]">
             <PostImage
               post={post}
@@ -241,7 +241,7 @@ function PostCardFeed({ post, showVisibility }: { post: Post; showVisibility: bo
           )}
         </div>
 
-        <Link href={`/blog/${post.slug}`} className="group mt-2.5 block">
+        <Link href={`/feed/${post.slug}`} className="group mt-2.5 block">
           <h2
             className={`font-extrabold leading-[1.25] tracking-[-0.018em] text-ink transition-colors group-hover:text-accent text-balance ${
               wide ? "text-[clamp(18px,1.7vw,24px)]" : "text-[16.5px]"

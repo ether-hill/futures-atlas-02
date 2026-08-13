@@ -46,7 +46,7 @@ export function FeedMasonry({ posts, showVisibility = false }: { posts: Post[]; 
                 {yt ? (
                   <YouTubeCard id={yt} title={p.title} />
                 ) : hasImage(p) ? (
-                  <Link href={`/blog/${p.slug}`} className="group block">
+                  <Link href={`/feed/${p.slug}`} className="group block">
                     <span className="block overflow-hidden border-b border-ink/[0.12]">
                       <PostImage
                         post={p}
@@ -80,7 +80,7 @@ export function FeedMasonry({ posts, showVisibility = false }: { posts: Post[]; 
                     )}
                   </div>
 
-                  <Link href={`/blog/${p.slug}`} className="group mt-2 block">
+                  <Link href={`/feed/${p.slug}`} className="group mt-2 block">
                     <h3 className="text-[15px] font-extrabold leading-[1.28] tracking-[-0.015em] text-ink transition-colors group-hover:text-accent text-balance">
                       {p.title}
                     </h3>

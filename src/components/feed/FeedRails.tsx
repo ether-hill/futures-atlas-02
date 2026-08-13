@@ -176,7 +176,7 @@ function JustIn({ latest }: { latest: Post[] }) {
       <ul className="mt-3 flex flex-col">
         {latest.map((p, i) => (
           <li key={p.slug} className={i > 0 ? "border-t border-ink/[0.1] pt-2.5" : ""}>
-            <Link href={`/blog/${p.slug}`} className="group block pb-2.5">
+            <Link href={`/feed/${p.slug}`} className="group block pb-2.5">
               <span className="block font-mono text-[9.5px] uppercase tracking-[0.14em] text-faint">
                 {formatPostDate(p.posted)} · {p.sourceName}
               </span>

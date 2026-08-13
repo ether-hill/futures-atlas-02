@@ -3,7 +3,7 @@ import { PostImage } from "./PostImage";
 import { KIND_LABEL, formatPostDate, hasImage, type Post, type PostKind } from "@/data/posts";
 
 /**
- * One post, as a card. Shared by the /blog grid and the carousel, so a change
+ * One post, as a card. Shared by the feed and the carousel, so a change
  * here lands in both. Fully token-driven (futures-atlas-core): structural
  * utilities (grid/flex/aspect/absolute) are layout; every size, space, colour
  * and font references a semantic token.
@@ -59,7 +59,7 @@ export function PostCard({
 
   return (
     <Link
-      href={`/blog/${post.slug}`}
+      href={`/feed/${post.slug}`}
       className={`fa-card fa-card--link group h-full ${
         fixedWidth ? "w-[min(78vw,320px)] shrink-0 snap-start" : ""
       }`}
