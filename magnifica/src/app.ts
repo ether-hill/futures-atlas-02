@@ -6,6 +6,15 @@ import { experienceView, experienceParts, hasExperience, mountExperience, type V
 import { mountDrawer, unmountDrawer, markDrawerRoute, markPinned } from "./drawer";
 import { portraitOf, monogram } from "./portraits";
 
+/** Bare host for a source's footer, matching the feed's cards. */
+const hostOf = (url: string) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+};
+
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
@@ -83,12 +92,15 @@ function homeView(): string {
   const sources = SOURCES.map(
     (s) => `
     <a class="src-card${s.image ? "" : " no-img"}" href="${esc(s.url)}" target="_blank" rel="noopener">
-      <span class="sc-plate">
-        ${s.image ? `<img src="${esc(s.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />` : ""}
-        <span class="sc-kind">${esc(s.kind)}</span>
+      ${s.image ? `<span class="sc-plate"><img src="${esc(s.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" /></span>` : ""}
+      <span class="sc-body">
+        <span class="sc-meta">
+          <span class="sc-kind">${esc(s.kind)}</span>
+          <span class="sc-pub">${esc(s.publisher)}</span>
+        </span>
+        <span class="sc-label">${esc(s.label)}</span>
+        <span class="sc-foot">${esc(hostOf(s.url))} \u2197</span>
       </span>
-      <span class="sc-pub">${esc(s.publisher)}</span>
-      <span class="sc-label">${esc(s.label)}</span>
     </a>`
   ).join("");
 
@@ -157,11 +169,10 @@ function homeView(): string {
         </div>
         <figure class="doc-book" data-par="0.42">
           <img
-            src="/magnifica/media/stills/magnifica-book.jpg"
-            alt="A hardcover edition of the encyclical Magnifica humanitas"
+            src="/magnifica/media/stills/magnifica-book.webp"
+            alt="A bound edition of the encyclical Magnifica humanitas, standing upright"
             decoding="async"
           />
-          <figcaption>Cover illustration — the encyclical is published as a text, not as this edition</figcaption>
         </figure>
       </div>
     </section>

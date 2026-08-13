@@ -158,14 +158,7 @@ export function FeedTimeline({
         <RightRail latest={items.slice(0, 5)} projects={projects} all={items} />
       </div>
 
-      <div className="border-t border-ink/[0.14] px-4 py-10 text-center">
-        <Link
-          href="/blog"
-          className="inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.14em] text-graphite transition-colors hover:text-ink"
-        >
-          That&rsquo;s the whole feed — see it as a grid <span aria-hidden>→</span>
-        </Link>
-      </div>
+
     </div>
   );
 }
