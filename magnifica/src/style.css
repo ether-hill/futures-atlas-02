@@ -703,3 +703,67 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 .sc-pub { padding: 12px 13px 0; color: var(--faint); font: 500 10px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
 .sc-label { padding: 6px 13px 14px; font-size: 13px; line-height: 1.35; font-weight: 500; letter-spacing: -0.01em; }
+
+/* ---------- the source document, as a hero ----------
+   Same setup as a voice page (experience.css): a looping plate behind, the
+   licensed print floating over it, both drifting at different rates. It reuses
+   .x-polaroid rather than restyling one, so the print stays identical to the
+   one on the voice pages — including its caption, which the licence requires. */
+.doc-hero {
+  position: relative;
+  margin: clamp(48px, 6vw, 84px) calc(var(--gutter) * -1) 0;
+  padding: clamp(52px, 8vh, 104px) var(--gutter) clamp(48px, 7vh, 92px);
+  overflow: hidden;
+  isolation: isolate;
+}
+.doc-bg { position: absolute; inset: -12% 0; z-index: -2; background: var(--field); will-change: transform; }
+.doc-bg video,
+.doc-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* The print and the copy both sit on this, so the plate is dimmed hard enough
+   to carry body text at either theme. */
+.doc-hero::after {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(78deg, rgba(6, 7, 10, 0.95) 14%, rgba(6, 7, 10, 0.78) 48%, rgba(6, 7, 10, 0.42) 82%),
+    linear-gradient(0deg, rgba(6, 7, 10, 0.75) 0%, rgba(6, 7, 10, 0) 42%);
+}
+.doc-hero-grid {
+  position: relative;
+  display: grid; align-items: center;
+  gap: clamp(30px, 5vw, 76px);
+  max-width: 1320px; margin: 0 auto;
+}
+@media (min-width: 900px) { .doc-hero-grid { grid-template-columns: 1fr minmax(300px, 440px); } }
+
+.doc-eyebrow {
+  display: block; margin-bottom: 16px;
+  font: 700 10px var(--mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.doc-name {
+  margin: 0; color: #fff;
+  font-weight: 600; font-size: clamp(34px, 5.4vw, 74px); line-height: 0.98; letter-spacing: -0.03em;
+}
+.doc-name i { font-style: italic; }
+.doc-sub {
+  margin: 10px 0 0; color: rgba(255, 255, 255, 0.72);
+  font-style: italic; font-size: clamp(17px, 2.1vw, 26px); line-height: 1.25; letter-spacing: -0.015em;
+}
+.doc-strap {
+  margin: 14px 0 0; max-width: 46ch; color: rgba(255, 255, 255, 0.88);
+  font-size: clamp(14px, 1.6vw, 18px); line-height: 1.45;
+}
+.doc-body {
+  margin: 18px 0 0; max-width: 60ch; color: rgba(255, 255, 255, 0.66);
+  font-size: clamp(12.5px, 1.4vw, 15px); line-height: 1.7;
+}
+.doc-hero .doc-facts {
+  display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: clamp(20px, 3vh, 30px);
+  font: 500 11px var(--mono); letter-spacing: 0.04em; color: rgba(255, 255, 255, 0.6);
+}
+.doc-hero .doc-facts b { color: #fff; font-weight: 700; }
+
+/* a print pinned slightly off-square, as on a voice page */
+.doc-polaroid { width: min(100%, 400px); max-height: none; justify-self: center; rotate: -1.4deg; }
+@media (max-width: 899px) { .doc-polaroid { rotate: 0deg; } }

@@ -142,25 +142,36 @@ function homeView(): string {
       <div class="voices">${voices}</div>
     </section>
 
-    <section class="sect doc" id="x-doc">
-      <span class="lbl">The source document \u2014 real</span>
-      <div class="doc-head">
-        <div class="doc-fig" data-reveal>
-          ${pope ? `<img src="/magnifica/media/portraits/${esc(pope.file)}" alt="${esc(pope.alt)}" loading="lazy" decoding="async" />
-          <figcaption>${esc(pope.credit)} \u00b7 <a href="${esc(pope.licenceUrl)}" target="_blank" rel="noopener">${esc(pope.licence)}</a></figcaption>` : ""}
-        </div>
-        <div class="doc-text">
-          <h2 class="sect-title" data-reveal><i>${esc(ENCYCLICAL.title)}</i></h2>
-          <p class="doc-tr" data-reveal>${esc(ENCYCLICAL.translation)} \u2014 ${esc(ENCYCLICAL.subtitle)}</p>
-          <p class="sect-lede" data-reveal>${esc(ENCYCLICAL.context)}</p>
+    <section class="doc-hero" id="x-doc" data-doc-loop="leo-xiv">
+      <div class="doc-bg" aria-hidden="true" data-par="0.12"></div>
+      <div class="doc-hero-grid">
+        <div class="doc-hero-in">
+          <span class="doc-eyebrow" data-reveal>The source document \u2014 real</span>
+          <h2 class="doc-name" data-reveal><i>${esc(ENCYCLICAL.title)}</i></h2>
+          <p class="doc-sub" data-reveal>${esc(ENCYCLICAL.translation)}</p>
+          <p class="doc-strap" data-reveal>${esc(ENCYCLICAL.subtitle)}</p>
+          <p class="doc-body" data-reveal>${esc(ENCYCLICAL.context)}</p>
           <div class="doc-facts" data-reveal>
             <span><b>${esc(ENCYCLICAL.author)}</b> \u00b7 ${esc(ENCYCLICAL.tradition)}</span>
             <span>Signed <b>${esc(ENCYCLICAL.signed)}</b></span>
             <span>Published <b>${esc(ENCYCLICAL.published)}</b></span>
           </div>
         </div>
+        ${pope ? `
+        <figure class="x-polaroid doc-polaroid" data-par="0.42">
+          <img src="/magnifica/media/portraits/${esc(pope.file)}" alt="${esc(pope.alt)}" decoding="async" />
+          <figcaption>
+            <span class="x-pol-name">Photograph</span>
+            <span class="x-pol-credit">
+              <a href="${esc(pope.sourceUrl)}" target="_blank" rel="noopener">${esc(pope.credit)}</a>
+              \u00b7 <a href="${esc(pope.licenceUrl)}" target="_blank" rel="noopener">${esc(pope.licence)}</a>
+            </span>
+          </figcaption>
+        </figure>` : ""}
       </div>
+    </section>
 
+    <section class="sect doc">
       <h3 class="sub" data-reveal>What it says</h3>
       <div class="chapters" data-reveal>${chapters}</div>
 
@@ -283,6 +294,69 @@ function leaderView(l: Leader): string {
   </main>`;
 }
 
+/**
+ * The overview's own loop + parallax. The voice pages get this from
+ * mountExperience; the overview is not an experience view, so it carries a
+ * small version of the same idea: one video plate behind the source-document
+ * hero, and a rAF-throttled scroll pass moving [data-par] layers within it.
+ *
+ * Skipped entirely under prefers-reduced-motion — parallax is a vestibular
+ * trigger, not a taste — and the still plate simply stays put.
+ */
+function mountDocHero(root: HTMLElement): () => void {
+  const hero = root.querySelector<HTMLElement>("[data-doc-loop]");
+  if (!hero) return () => {};
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const bg = hero.querySelector<HTMLElement>(".doc-bg");
+
+  if (bg) {
+    const video = document.createElement("video");
+    video.muted = true;
+    video.loop = true;
+    video.autoplay = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.setAttribute("aria-hidden", "true");
+    video.src = `/magnifica/media/loops/${hero.dataset.docLoop}.mp4`;
+    video.addEventListener("loadeddata", () => {
+      hero.classList.add("has-bg");
+      bg.appendChild(video);
+      video.play().catch(() => {});
+    }, { once: true });
+    video.addEventListener("error", () => video.remove(), { once: true });
+  }
+
+  if (reduce) return () => {};
+
+  const layers = Array.from(hero.querySelectorAll<HTMLElement>("[data-par]")).map((el) => ({
+    el,
+    rate: parseFloat(el.dataset.par || "0"),
+  }));
+  if (layers.length === 0) return () => {};
+
+  let running = false;
+  const frame = () => {
+    running = false;
+    const r = hero.getBoundingClientRect();
+    // 0 when the hero's centre is on the viewport centre; ± as it travels past
+    const offset = r.top + r.height / 2 - window.innerHeight / 2;
+    for (const l of layers) l.el.style.transform = `translate3d(0, ${(-offset * l.rate).toFixed(2)}px, 0)`;
+  };
+  const onScroll = () => {
+    if (running) return;
+    running = true;
+    requestAnimationFrame(frame);
+  };
+
+  frame();
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", onScroll);
+  return () => {
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("resize", onScroll);
+  };
+}
+
 /** Try the scene's hero loop; if the bundle carries no video, do nothing. */
 function mountHero(root: HTMLElement) {
   const mast = root.querySelector<HTMLElement>("[data-hero]");
@@ -390,6 +464,7 @@ function render(root: HTMLElement) {
     if (variant === "v3" && immersive) mountPanels(root, script, scene);
     else mountDock(root, script, scene);
   } else {
+    unmountX = mountDocHero(root);
     mountDock(root, homeParts(), HOME_SCENE);
   }
 
