@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build:subapps": "bash scripts/build-subapps.sh",
-    "build": "bash scripts/build-subapps.sh && next build",
+    "build": "bash scripts/build-subapps.sh && bash scripts/reset-build-cache.sh && next build",
     "start": "next start",
     "lint": "eslint"
   },
