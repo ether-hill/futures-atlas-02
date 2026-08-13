@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { SWIPE_CHECKED, SWIPE_SAMPLE, type SwipeSample } from "@/data/feed-swipe";
 
@@ -16,6 +16,22 @@ import { SWIPE_CHECKED, SWIPE_SAMPLE, type SwipeSample } from "@/data/feed-swipe
  */
 
 const THRESHOLD = 72;
+/** Round length, as in the game's "surprise me" deck. */
+const DECK = 10;
+
+/**
+ * Fisher-Yates, the same shuffle the real deck uses
+ * (swipe-the-future/app/Calibration.tsx) — so a round here is dealt exactly
+ * the way a round there is, rather than replaying one fixed order.
+ */
+function shuffle<T>(a: T[]): T[] {
+  const r = [...a];
+  for (let i = r.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [r[i], r[j]] = [r[j]!, r[i]!];
+  }
+  return r;
+}
 const PAPER = "#f4f1ea";
 const INK = "#19140e";
 const DIM = "#6f675c";
@@ -26,6 +42,16 @@ const LINE = "rgba(25,20,14,.16)";
 type Phase = "ask" | "reveal" | "done";
 
 export function SwipeDemoCard() {
+  /**
+   * Dealt on mount, never during render: Math.random() at render time gives the
+   * server and the client different decks and React tears the tree down over
+   * the mismatch. The game deals in an effect for the same reason.
+   */
+  const [deck, setDeck] = useState<SwipeSample[]>([]);
+  useEffect(() => {
+    setDeck(shuffle(SWIPE_SAMPLE).slice(0, DECK));
+  }, []);
+
   const [i, setI] = useState(0);
   const [phase, setPhase] = useState<Phase>("ask");
   const [answers, setAnswers] = useState<boolean[]>([]); // correct?
@@ -33,8 +59,9 @@ export function SwipeDemoCard() {
   const [fling, setFling] = useState(0);
   const startX = useRef<number | null>(null);
 
-  const card: SwipeSample | undefined = SWIPE_SAMPLE[i];
-  const total = SWIPE_SAMPLE.length;
+  const card: SwipeSample | undefined = deck[i];
+  // constant, so the dots and the counter are stable before the deal lands
+  const total = Math.min(DECK, SWIPE_SAMPLE.length);
   const [given, setGiven] = useState<"already" | "notyet" | null>(null);
 
   function decide(choice: "already" | "notyet") {
@@ -74,6 +101,7 @@ export function SwipeDemoCard() {
   }
 
   function restart() {
+    setDeck(shuffle(SWIPE_SAMPLE).slice(0, DECK)); // a new round, newly dealt
     setI(0);
     setAnswers([]);
     setGiven(null);
@@ -108,9 +136,9 @@ export function SwipeDemoCard() {
       {phase !== "done" && (
         <div className="mb-3 flex items-center justify-center gap-4">
           <span className="flex items-center gap-1.5" aria-hidden>
-            {SWIPE_SAMPLE.map((c, n) => (
+            {Array.from({ length: total }, (_, n) => (
               <span
-                key={c.id}
+                key={n}
                 className="block rounded-full transition-all duration-300"
                 style={{
                   width: n === i ? 8 : 6,
@@ -162,9 +190,9 @@ export function SwipeDemoCard() {
               </button>
             </div>
           </Paper>
-        ) : (
+        ) : card ? (
           <>
-            {[2, 1].map((d) => (SWIPE_SAMPLE[i + d] ? <Paper key={`b${d}`} depth={d} /> : null))}
+            {[2, 1].map((d) => (deck[i + d] ? <Paper key={`b${d}`} depth={d} /> : null))}
 
             <Paper
               onPointerDown={onDown}
@@ -250,6 +278,10 @@ export function SwipeDemoCard() {
               )}
             </Paper>
           </>
+        ) : (
+          // one frame, before the effect deals: the stage keeps its aspect box
+          // so nothing in the feed grid moves
+          <Paper />
         )}
       </div>
 
