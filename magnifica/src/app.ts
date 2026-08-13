@@ -175,7 +175,7 @@ function homeView(): string {
             <span>Published <b>${esc(ENCYCLICAL.published)}</b></span>
           </div>
         </div>
-        <figure class="doc-book" data-par="0.42">
+        <figure class="doc-book" data-par="0.16">
           <img
             src="/magnifica/media/stills/magnifica-book.webp"
             alt="A bound edition of the encyclical Magnifica humanitas, standing upright"

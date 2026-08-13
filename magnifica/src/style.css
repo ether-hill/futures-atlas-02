@@ -784,10 +784,11 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   position: relative;
   margin: clamp(48px, 6vw, 84px) calc(var(--gutter) * -1) 0;
   padding: clamp(52px, 8vh, 104px) var(--gutter) clamp(48px, 7vh, 92px);
-  overflow: hidden;
+  /* NOT overflow:hidden — the print hangs past the foot of the band on
+     purpose. The plate does its own clipping instead, below. */
   isolation: isolate;
 }
-.doc-bg { position: absolute; inset: -12% 0; z-index: -2; background: var(--field); will-change: transform; }
+.doc-bg { position: absolute; inset: -12% 0; z-index: -2; overflow: hidden; background: var(--field); will-change: transform; }
 .doc-bg video,
 .doc-bg img { width: 100%; height: 100%; object-fit: cover; display: block; }
 /* The print and the copy both sit on this, so the plate is dimmed hard enough
@@ -843,22 +844,27 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
    Captioned as an illustration on purpose: the encyclical is real, this edition
    of it is not, and the project's whole discipline is that you can tell which
    is which at a glance. */
+/* The book is a cut-out with real alpha, so the shadow has to be drop-shadow
+   and not box-shadow: box-shadow would trace the element's rectangle and give
+   the thing a visible plate. Two passes — a tight contact shadow and a wide
+   soft one — are what make it read as standing in the space rather than pasted
+   onto it.
+
+   It is the top layer and hangs past the foot of the band onto the section
+   below, which is why .doc-hero cannot clip and why this carries a z-index.
+   Anchored to the foot of the row and then pulled below it: the book has to
+   clear the band's own bottom padding before it can reach the next section. */
 .doc-book {
   position: relative;
-  margin: 0;
+  z-index: 3;
+  align-self: end;
+  margin: 0 0 clamp(-210px, -15vw, -130px);
   justify-self: center;
-  /* Bounded on BOTH axes. Width alone let a tall cover run past the foot of the
-     hero and get clipped by its overflow. */
   width: min(100%, 380px);
   max-height: min(62vh, 520px);
   display: flex;
   will-change: transform;
 }
-/* The book is a cut-out with real alpha, so the shadow has to be drop-shadow
-   and not box-shadow: box-shadow would trace the element's rectangle and give
-   the thing a visible plate. Two passes — a tight contact shadow and a wide
-   soft one — are what make it read as standing in the space rather than pasted
-   onto it. */
 .doc-book img {
   display: block;
   width: 100%;
