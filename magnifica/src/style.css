@@ -965,13 +965,19 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   flex: 0 1 auto;
   min-height: 0;
 }
-/* Top layer, and it hangs past the foot of the banner onto the voices below.
-   The banner cannot clip for that to show; its art plate clips instead. */
-.banner { overflow: visible; }
+/* Full-height opening, and the print sits on the vertical centre of it rather
+   than hanging off the foot. It stays the top layer — the banner no longer
+   clips, so if the frame ever outgrows the hero it bleeds rather than being
+   cut; its art plate clips instead, since that one must never show an edge. */
+.banner {
+  overflow: visible;
+  min-height: 100svh;
+  justify-content: center;
+}
 .banner-art { overflow: hidden; }
 .banner .banner-print {
   position: relative;
   z-index: 3;
-  align-self: end;
-  margin-bottom: clamp(-150px, -10vw, -70px);
+  align-self: center;
+  max-height: min(72vh, 620px);
 }
