@@ -68,10 +68,7 @@ export function mountDrawer() {
     </button>
     <div class="mg-scrim" hidden></div>
     <aside class="mg-drawer" id="mg-drawer" hidden aria-label="Contents">
-      <a class="mg-overview" href="#/">
-        <span class="mg-over-lbl">Project Overview</span>
-        <span class="mg-over-sub">The real encyclical, and how these were made</span>
-      </a>
+      <a class="mg-overview" href="#/"><span aria-hidden="true">&larr;</span> Back to project overview</a>
       <p class="mg-heading">The voices — speculative</p>
       <ul class="mg-list">${itemsHtml()}</ul>
     </aside>`;
@@ -82,13 +79,16 @@ export function mountDrawer() {
   const scrim = root.querySelector<HTMLElement>(".mg-scrim")!;
 
   const setOpen = (open: boolean) => {
-    root!.classList.toggle("open", open);
+    if (!open) root!.classList.remove("open");
     burger.setAttribute("aria-expanded", String(open));
     burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     // hidden is removed before the transition so it can animate in
     if (open) {
       drawer.hidden = false;
       scrim.hidden = false;
+      // Unhiding and adding .open in the same frame gives the browser no start
+      // value to animate from, so it jumps. Let a frame pass first.
+      requestAnimationFrame(() => requestAnimationFrame(() => root!.classList.add("open")));
     } else {
       const done = () => {
         if (!root!.classList.contains("open")) {

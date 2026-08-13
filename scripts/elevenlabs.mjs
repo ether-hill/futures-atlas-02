@@ -30,11 +30,15 @@ const SFX_DIR = join(ROOT, "magnifica/public/media/sfx");
  *  replaces that layer's procedural Web Audio fallback. Prompts stay place-like
  *  and unmelodic so five layers can overlap without turning into a chord. */
 const LAYERS = {
-  wind: "soft steady wind through a high mountain pass, distant and continuous, smooth loopable ambience, no melody, no music",
-  drone: "a low sustained cathedral organ drone, deep and still, barely moving, smooth loopable ambience, no melody",
-  bells: "distant temple bells at irregular intervals across a wide valley, soft decay, sparse, loopable ambience",
+  village:
+    "a distant Tibetan mountain village heard from far across a valley, faint indistinct chatter of people, an occasional axe chop, a far-off dog barking, a small bell ping, everything distant and softened by air, smooth loopable ambience, no music, no melody",
+  drone:
+    "a low sustained cathedral organ drone, deep and still, barely moving, smooth loopable ambience, no melody",
+  bells:
+    "distant temple bells at irregular intervals across a wide valley, soft decay, sparse, loopable ambience",
   rain: "steady rain on stone steps and a courtyard, no thunder, even and calm, smooth loopable ambience",
-  hum: "a faint room tone of a vast empty stone basilica, air moving, almost silent, smooth loopable ambience, no melody",
+  temple:
+    "distant Tibetan monks chanting low in a stone temple, heard from outside through thick walls, deep and blurred, no words distinguishable, steady and unhurried, smooth loopable ambience, no music",
 };
 
 const SFX_SECONDS = 22; // API allows 0.5–30; long enough that the loop is not obvious

@@ -142,6 +142,11 @@ class Player {
   playing = false;
   lang = "en";
 
+  /** Narration level, 0–1. Separate from the ambience mixer. */
+  setVolume(v: number) {
+    this.audio.volume = Math.min(1, Math.max(0, v));
+  }
+
   /** Fraction 0–1 of the whole script, weighted by part length. */
   private weights: number[] = [];
   private totalWeight = 1;
@@ -491,11 +496,17 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
         <div class="dock-track"><div class="dock-fill"></div></div>
         ${nodes}
       </div>
-      <button type="button" class="dock-sound">Soundscape</button>
+      <button type="button" class="dock-sound" aria-label="Audio controls"><svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 15v4M5 5v6"/><path d="M12 9v10M12 5v0"/><path d="M19 13v6M19 5v4"/><path d="M3 11h4M10 9h4M17 13h4"/></svg></button>
     </div>
     <div class="dock-panel" hidden>
       <div class="dock-panel-head">
-        <span class="lbl">Sound board</span>
+        <span class="lbl">Audio Controls</span>
+        <button type="button" class="dock-close" aria-label="Close audio controls">×</button>
+      </div>
+      <label class="dock-slider"><span>Voice</span>
+        <input type="range" min="0" max="100" value="100" data-vol />
+      </label>
+      <div class="dock-amb-row">
         <button type="button" class="dock-amb">ambience: off</button>
       </div>
       ${(Object.keys(LAYER_LABELS) as LayerName[])
@@ -551,6 +562,12 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   });
   soundBtn.addEventListener("click", () => {
     panel.hidden = !panel.hidden;
+  });
+  dock.querySelector<HTMLButtonElement>(".dock-close")!.addEventListener("click", () => {
+    panel.hidden = true;
+  });
+  dock.querySelector<HTMLInputElement>("input[data-vol]")!.addEventListener("input", (e) => {
+    player.setVolume(Number((e.target as HTMLInputElement).value) / 100);
   });
   ambBtn.addEventListener("click", () => {
     const on = scape.toggle();
@@ -610,10 +627,13 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
     </button>
     <div class="x-amb-panel" id="x-amb-panel" hidden>
       <header>
-        <span>Soundscape</span>
-        <button type="button" class="x-amb-close" aria-label="Close soundscape">×</button>
+        <span>Audio Controls</span>
+        <button type="button" class="x-amb-close" aria-label="Close audio controls">×</button>
       </header>
-      <button type="button" class="dock-amb">ambience: off</button>
+      <label class="dock-slider"><span>Voice</span>
+        <input type="range" min="0" max="100" value="100" data-vol />
+      </label>
+      <div class="dock-amb-row"><button type="button" class="dock-amb">ambience: off</button></div>
       ${(Object.keys(LAYER_LABELS) as LayerName[])
         .map(
           (n) => `
@@ -646,6 +666,9 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
     toggleBtn.textContent = `ambience: ${on ? "on" : "off"}`;
     toggleBtn.classList.toggle("on", on);
     amb.classList.toggle("sounding", on);
+  });
+  amb.querySelector<HTMLInputElement>("input[data-vol]")!.addEventListener("input", (e) => {
+    player.setVolume(Number((e.target as HTMLInputElement).value) / 100);
   });
   amb.querySelectorAll<HTMLInputElement>("input[data-layer]").forEach((input) => {
     input.addEventListener("input", () => {

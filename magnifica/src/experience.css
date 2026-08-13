@@ -284,13 +284,12 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
 
 .x-rail {
   position: fixed;
-  left: 22px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 26px;
+  top: calc(var(--fa-nav-h) + 72px);
   z-index: 30;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 13px;
 }
 .x-rail a {
   display: flex;
@@ -644,12 +643,10 @@ body:has(.x) .mg-heading,
 body:has(.x) .mg-who em,
 body:has(.x) .mg-mono { color: oklch(0.6 0.014 80); }
 body:has(.x) .mg-list a { color: oklch(0.93 0.012 85); }
-body:has(.x) .mg-list a:hover { background: oklch(0.79 0.085 78 / 0.1); }
-body:has(.x) .mg-list a.on {
-  border-left-color: oklch(0.79 0.085 78);
-  background: oklch(0.79 0.085 78 / 0.14);
-}
-body:has(.x) .mg-thumb { background: oklch(0.18 0.012 260); border-color: oklch(1 0 0 / 0.14); }
+/* no frames or plates in the grid — the portrait is the affordance */
+body:has(.x) .mg-list a.on b { color: oklch(0.79 0.085 78); }
+body:has(.x) .mg-list a.on .mg-thumb { box-shadow: 0 0 0 2px oklch(0.79 0.085 78); }
+body:has(.x) .mg-thumb { background: oklch(0.18 0.012 260); }
 
 /* ---------- section numbers ----------
    The number is the label. Section names live in the heading and the rail, so

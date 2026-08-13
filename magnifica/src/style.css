@@ -438,17 +438,12 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 .open .mg-drawer { transform: none; }
 
 .mg-overview {
-  display: block;
-  margin: 0 14px 6px;
-  padding: 14px 16px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  text-decoration: none;
-  color: var(--ink);
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 0 20px 4px;
+  font: 600 11px var(--mono); letter-spacing: 0.13em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none;
 }
-.mg-overview:hover, .mg-overview.on { border-color: var(--accent); }
-.mg-over-lbl { display: block; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-.mg-over-sub { display: block; margin-top: 4px; font-size: 12px; line-height: 1.45; color: var(--muted); }
+.mg-overview:hover, .mg-overview.on { color: var(--accent); }
 
 .mg-heading {
   margin: 20px 20px 8px;
@@ -460,41 +455,30 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 .mg-list {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px;
+  gap: 2px;
   margin: 0;
-  padding: 0 14px;
+  padding: 0 12px;
   list-style: none;
 }
 .mg-list a {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 9px;
-  height: 100%;
-  padding: 14px 8px 16px;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  text-align: center;
-  text-decoration: none;
-  color: var(--ink);
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  height: 100%; padding: 8px 4px 12px;
+  border-radius: 10px;
+  text-align: center; text-decoration: none; color: var(--ink);
 }
-.mg-list a:hover { background: color-mix(in oklab, var(--accent) 10%, transparent); }
-.mg-list a.on { border-color: var(--accent); background: color-mix(in oklab, var(--accent) 12%, transparent); }
 .mg-thumb {
   flex: none;
-  display: grid;
-  place-items: center;
-  width: 62px;
-  height: 62px;
-  border-radius: 999px;
-  overflow: hidden;
+  display: grid; place-items: center;
+  width: 86px; height: 86px;
+  border-radius: 999px; overflow: hidden;
   background: var(--field);
-  border: 1px solid var(--line);
+  transition: transform 0.22s cubic-bezier(0.2, 0.7, 0.2, 1), box-shadow 0.2s;
 }
+.mg-list a:hover .mg-thumb { transform: scale(1.05); }
 .mg-thumb img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 22%; }
-.mg-mono { font: 600 17px var(--mono); letter-spacing: 0.04em; color: var(--faint); }
+.mg-mono { font: 600 22px var(--mono); letter-spacing: 0.04em; color: var(--faint); }
 .mg-who { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-.mg-who b { font-size: 11.5px; font-weight: 600; letter-spacing: -0.005em; line-height: 1.28; }
+.mg-who b { font-size: 11px; font-weight: 600; letter-spacing: -0.005em; line-height: 1.28; }
 .mg-who em {
   font: 600 8px var(--mono);
   font-style: normal;
@@ -506,3 +490,34 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 @media (prefers-reduced-motion: reduce) {
   .mg-drawer, .mg-scrim, .mg-burger span { transition: none; }
 }
+
+@media (max-width: 680px) {
+  /* Ten dots across a phone's width are unhittable and just visual noise; the
+     fill still reports progress and the panels are reachable by scrolling. */
+  .dock-node { display: none; }
+}
+
+/* ---------- audio controls ----------
+   The soundscape button became a circle with an equaliser glyph, and the panel
+   it opens now holds the narration level as well as the ambience mix — one
+   place for everything you can hear, rather than a mixer beside a hidden
+   volume. */
+.dock-sound {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 999px;
+}
+.dock-close {
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 19px;
+  line-height: 1;
+  padding: 0 2px;
+  cursor: pointer;
+}
+.dock-close:hover { color: var(--accent); }
+.dock-amb-row { margin: 4px 0 10px; }

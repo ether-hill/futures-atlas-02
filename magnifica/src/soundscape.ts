@@ -6,13 +6,13 @@
  * assets at all. Everything is created lazily on first user gesture.
  */
 
-export type LayerName = "wind" | "drone" | "bells" | "rain" | "hum";
+export type LayerName = "village" | "drone" | "bells" | "rain" | "temple";
 export const LAYER_LABELS: Record<LayerName, string> = {
-  wind: "Wind",
+  village: "Village",
   drone: "Drone",
   bells: "Bells",
   rain: "Rain",
-  hum: "Hum",
+  temple: "Temple",
 };
 
 interface Layer {
@@ -32,7 +32,7 @@ export class Soundscape {
   private timers: number[] = [];
   on = false;
 
-  levels: Record<LayerName, number> = { wind: 0, drone: 0, bells: 0, rain: 0, hum: 0 };
+  levels: Record<LayerName, number> = { village: 0, drone: 0, bells: 0, rain: 0, temple: 0 };
 
   setLevel(name: LayerName, v: number) {
     this.levels[name] = v;
@@ -160,7 +160,7 @@ export class Soundscape {
 
 /** Per-layer gain trim so sliders feel balanced. */
 function baseLevel(name: LayerName): number {
-  return { wind: 0.5, drone: 0.4, bells: 0.6, rain: 0.4, hum: 0.35 }[name];
+  return { village: 0.5, drone: 0.4, bells: 0.6, rain: 0.4, temple: 0.4 }[name];
 }
 
 function noiseBuffer(ctx: AudioContext, seconds = 2): AudioBuffer {
@@ -174,7 +174,7 @@ type Proc = (ctx: AudioContext, out: GainNode, timers: number[]) => void;
 
 const PROCEDURAL: Record<LayerName, Proc> = {
   // filtered noise with a slow breathing LFO
-  wind: (ctx, out) => {
+  village: (ctx, out) => {
     const src = ctx.createBufferSource();
     src.buffer = noiseBuffer(ctx, 4);
     src.loop = true;
@@ -257,7 +257,7 @@ const PROCEDURAL: Record<LayerName, Proc> = {
     lfo.start();
   },
   // a low vocal-ish hum with slow vibrato
-  hum: (ctx, out) => {
+  temple: (ctx, out) => {
     const o = ctx.createOscillator();
     o.frequency.value = 86;
     const o2 = ctx.createOscillator();
