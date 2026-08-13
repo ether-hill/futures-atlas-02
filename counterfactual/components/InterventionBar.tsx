@@ -11,14 +11,22 @@ const TYPE_SPEED = 22;
 const YEAR = /\b(19|20)\d{2}\b/;
 
 /**
- * The sentence and the slider must never disagree about the date — and a clause
+ * The sentence and the slider must never disagree about the date, and a clause
  * anchored to a particular year stops being true when the year moves, so it goes.
+ *
+ * Most prompts carry no year of their own. Those get one written in, because a
+ * slider that silently changes what the sentence means is worse than no slider:
+ * the box is meant to hold the whole intervention, date included.
  */
 function promptAt(iv: Intervention, year: number) {
-  if (!YEAR.test(iv.prompt)) return iv.prompt;
-  const line = iv.prompt.replace(YEAR, String(year));
-  if (!iv.anchor) return line;
-  return year === iv.from ? line + iv.anchor : line + "?";
+  if (YEAR.test(iv.prompt)) {
+    const line = iv.prompt.replace(YEAR, String(year));
+    if (!iv.anchor) return line;
+    return year === iv.from ? line + iv.anchor : line + "?";
+  }
+  const q = iv.prompt.trimEnd().endsWith("?");
+  const stem = iv.prompt.trimEnd().replace(/\?$/, "").trimEnd().replace(/,$/, "");
+  return `${stem}, from ${year}${q ? "?" : ""}`;
 }
 
 export default function InterventionBar({
@@ -76,7 +84,7 @@ export default function InterventionBar({
      what the box is asking for. */
   useEffect(() => {
     if (typing === null) return;
-    /* A real caret at the end of the run sells it — but only on pointer devices,
+    /* A real caret at the end of the run sells it, but only on pointer devices,
        since focusing an input on a phone throws up the keyboard. */
     if (window.matchMedia?.("(pointer: fine)").matches) inputRef.current?.focus();
     /* Driven by elapsed time rather than a tick count, so a throttled timer
@@ -108,11 +116,11 @@ export default function InterventionBar({
     setMiss(null);
   }
 
-  /* …and the connection runs the other way too: drag the slider and the year in
-     the sentence follows, so the text never contradicts the chart. */
+  /* …and the connection runs the other way too: drag the slider and the sentence
+     follows, so the text never contradicts the chart. */
   function retime(y: number) {
     onFrom(y);
-    if (!active || !YEAR.test(active.prompt)) return;
+    if (!active) return;
     /* Dragging mid-type finishes the sentence rather than racing it. */
     if (typing !== null) setTyping(null);
     setText(promptAt(active, y));
@@ -176,6 +184,10 @@ export default function InterventionBar({
                   value={from}
                   onChange={(e) => retime(Number(e.target.value))}
                 />
+                <div className="ivyear-ends">
+                  <span>{active.fromRange[0]}</span>
+                  <span>{active.fromRange[1]}</span>
+                </div>
               </div>
               <div className="segmented" role="group" aria-label="Comparison view">
                 {(["overlay", "split"] as Compare[]).map((c) => (
@@ -196,7 +208,7 @@ export default function InterventionBar({
         {miss !== null && (
           <p className="ivmiss">
             No preset matches <em>&ldquo;{miss}&rdquo;</em>. Free-text interventions need a model
-            behind them — until then, the {interventions.length} above are the ones with authored
+            behind them. Until then the {interventions.length} above are the ones with authored
             transforms.
           </p>
         )}
@@ -226,6 +238,9 @@ export default function InterventionBar({
               </dd>
             </div>
           </dl>
+          <a className="ivargue" href="#argue">
+            Think this is wrong? Argue with it
+          </a>
         </div>
       ) : (
         <p className="ivhint">

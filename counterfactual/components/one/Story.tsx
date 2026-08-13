@@ -2,11 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
+import Argue, { type Objection } from "@/components/Argue";
 import PowerChart, { type Threshold } from "@/components/one/PowerChart";
 import { type Figure, figures } from "@/lib/figures";
 import { INTERVENTIONS, type Intervention, matchFrom, yearIn } from "@/lib/interventions";
 import { PROJECTION_RULE, projectFigure } from "@/lib/project";
-import { applyIntervention, untouchedReason } from "@/lib/transform";
+import { reviseWith } from "@/lib/rebuttals";
+import { applyIntervention, movesVisibly, untouchedReason } from "@/lib/transform";
 
 const FIG_ID = "1.2.4";
 const HORIZON = 2032;
@@ -27,11 +29,18 @@ const CONF: Record<string, string> = {
   speculative: "speculative",
 };
 
+/* The slider writes its year into the sentence, including for the prompts that
+   carry none of their own. The box holds the whole intervention or it holds
+   half of one. */
 const promptAt = (iv: Intervention, year: number) => {
-  if (!YEAR.test(iv.prompt)) return iv.prompt;
-  const line = iv.prompt.replace(YEAR, String(year));
-  if (!iv.anchor) return line;
-  return year === iv.from ? line + iv.anchor : line + "?";
+  if (YEAR.test(iv.prompt)) {
+    const line = iv.prompt.replace(YEAR, String(year));
+    if (!iv.anchor) return line;
+    return year === iv.from ? line + iv.anchor : line + "?";
+  }
+  const q = iv.prompt.trimEnd().endsWith("?");
+  const stem = iv.prompt.trimEnd().replace(/\?$/, "").trimEnd().replace(/,$/, "");
+  return `${stem}, from ${year}${q ? "?" : ""}`;
 };
 
 const totalOf = (ss: Figure["series"]) =>
@@ -40,12 +49,15 @@ const totalOf = (ss: Figure["series"]) =>
 export default function Story() {
   const [active, setActive] = useState<Intervention | null>(null);
   const [from, setFrom] = useState(0);
+  const [objections, setObjections] = useState<Objection[]>([]);
 
   const figure = figures.find((f) => f.id === FIG_ID)!;
-  const iv = useMemo<Intervention | null>(
-    () => (active ? { ...active, from: from || active.from } : null),
-    [active, from]
-  );
+  const iv = useMemo<Intervention | null>(() => {
+    if (!active) return null;
+    const dated = { ...active, from: from || active.from };
+    return objections.reduce((x, o) => reviseWith(x, o.rebuttal), dated);
+  }, [active, from, objections]);
+  const argued = objections.at(-1) ?? null;
 
   const projected = useMemo(
     () => (iv ? projectFigure(figure, HORIZON)?.figure ?? figure : figure),
@@ -74,17 +86,32 @@ export default function Story() {
     for (const f of figures) {
       if (f.id === FIG_ID) continue;
       const r = applyIntervention(projectFigure(f, HORIZON)?.figure ?? f, iv);
-      if (r) moved.push(strip(f.title));
-      else still.push({ title: strip(f.title), why: untouchedReason(f, iv) });
+      if (movesVisibly(r)) moved.push(strip(f.title));
+      /* Reached but flat is a third category. Telling someone no lever reaches a
+         figure when one does, and simply lands too late, is a false statement
+         about the model rather than a modest one. */
+      else if (r?.effects.length) {
+        const y = Math.min(...r.effects.map((e) => e.from));
+        still.push({
+          title: strip(f.title),
+          why:
+            y > HORIZON
+              ? `A lever reaches it, but not until ${y}, which is past the right edge of every chart here.`
+              : "A lever reaches it and moves it by under one percent, which is not a change anyone should read off a chart.",
+        });
+      } else still.push({ title: strip(f.title), why: untouchedReason(f, iv) });
     }
     return { moved, still };
   }, [iv]);
 
   const here = cf?.effects.filter((e) => e.figureId === FIG_ID) ?? [];
 
+  /* A new intervention starts a new argument: the old objections were aimed at
+     transforms that are no longer on the page. */
   function choose(next: Intervention | null, at?: number) {
     setActive(next);
     setFrom(next ? (at ?? next.from) : 0);
+    setObjections([]);
   }
 
   return (
@@ -103,9 +130,9 @@ export default function Story() {
           </div>
           <p className="one-lede">
             In the first quarter of 2022 the world&rsquo;s AI data centres drew 0.15 GW between
-            them, about what a mid-sized hospital campus uses. By the end of 2025 they drew 29.56 GW
-            — more electricity than the Netherlands. On the present trend they pass New York State
-            at peak next year, and reach {trendEnd.toFixed(0)} GW by {HORIZON}.
+            them, about what a mid-sized hospital campus uses. By the end of 2025 they drew
+            29.56 GW, more electricity than the Netherlands. On the present trend they pass New
+            York State at peak next year, and reach {trendEnd.toFixed(0)} GW by {HORIZON}.
           </p>
         </header>
 
@@ -118,7 +145,7 @@ export default function Story() {
               {delta}%
             </span>
             <span className="one-verdict-say">
-              <b>{cfEnd!.toFixed(1)} GW</b> instead of {baseEnd.toFixed(1)} by {HORIZON} —{" "}
+              <b>{cfEnd!.toFixed(1)} GW</b> instead of {baseEnd.toFixed(1)} by {HORIZON}:{" "}
               {cfEnd! < 19
                 ? "back under the Netherlands"
                 : cfEnd! < 31
@@ -127,7 +154,7 @@ export default function Story() {
               .{" "}
               <span className="one-verdict-dim">
                 {elsewhere!.moved.length} of {figures.length - 1} other figures on the board move
-                too — read on.
+                too. Read on.
               </span>
             </span>
           </p>
@@ -159,8 +186,19 @@ export default function Story() {
             <b>{Math.abs(cfEnd! - baseEnd).toFixed(1)} GW</b>, about{" "}
             {(Math.abs(cfEnd! - baseEnd) / 31).toFixed(1)} times New York State at peak.{" "}
             {elsewhere!.moved.length} of the other {figures.length - 1} figures on the board move
-            with it, and {elsewhere!.still.length} do not. What follows is every reason, including
-            the ones against.
+            with it, and {elsewhere!.still.length} do not.{" "}
+            {argued ? (
+              <>
+                Then you said <b>&ldquo;{argued.text}&rdquo;</b>.{" "}
+                {!argued.rebuttal
+                  ? "Nothing in the engine matched it, so the numbers above are the ones it started with."
+                  : argued.rebuttal.verdict === "revised"
+                    ? `Read as ${argued.rebuttal.label}, and taken: every number above is already your version rather than the authored one.`
+                    : `Read as ${argued.rebuttal.label}, and it holds. The numbers above are unchanged by it, and the reason is at the foot of this page.`}
+              </>
+            ) : (
+              "What follows is every reason, including the ones against."
+            )}
           </p>
           <div className="one-cols">
             <div className="one-col">
@@ -178,7 +216,7 @@ export default function Story() {
               <p className="one-note">
                 Nothing before {e0(here)} moves at all: the counterfactual is glued to the published
                 record until the year you picked. Past 2025Q4 both readings are projection, on one
-                rule applied to every figure identically — {PROJECTION_RULE}
+                rule applied to every figure identically. {PROJECTION_RULE}
               </p>
             </div>
 
@@ -207,10 +245,25 @@ export default function Story() {
             </div>
 
             <div className="one-col">
-              <h2>The objection</h2>
-              <blockquote>{iv.objection.claim}</blockquote>
-              <p>{iv.objection.response}</p>
+              <h2>Not convinced?</h2>
+              <p>
+                Say so. Type what you think is wrong and this page either revises the transforms
+                and redraws every number above, or refuses and tells you why. It refuses more often
+                than it agrees, which is the only way the times it agrees mean anything.
+              </p>
+              <p className="one-still one-still-more">
+                <a href="#argue">The box is directly below ↓</a>
+              </p>
             </div>
+          </div>
+
+          <div className="one-arguebox" id="argue">
+            <Argue
+              intervention={iv}
+              objections={objections}
+              onPush={(o) => setObjections((list) => [...list, o])}
+              onUndo={() => setObjections((list) => list.slice(0, -1))}
+            />
           </div>
         </section>
       )}
@@ -301,7 +354,7 @@ function Ask({
 
   function retime(y: number) {
     onFrom(y);
-    if (!active || !YEAR.test(active.prompt)) return;
+    if (!active) return;
     if (typing !== null) setTyping(null);
     setText(promptAt(active, y));
   }
@@ -367,7 +420,7 @@ function Ask({
 
       {miss !== null && (
         <p className="one-miss">
-          No preset matches <em>&ldquo;{miss}&rdquo;</em>. Free text needs a model behind it — until
+          No preset matches <em>&ldquo;{miss}&rdquo;</em>. Free text needs a model behind it. Until
           then these {INTERVENTIONS.length} are the ones with authored transforms.
         </p>
       )}

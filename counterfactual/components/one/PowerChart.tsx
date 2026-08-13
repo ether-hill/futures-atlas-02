@@ -18,11 +18,20 @@ import type { Figure, Series } from "@/lib/figures";
  * is the same transform the board applies.
  */
 
-const W = 1200;
 /* The page gives this component whatever height is left over, so the viewBox
-   height is measured rather than fixed — otherwise a short viewport letterboxes
-   the chart and a tall one leaves a hole under it. */
-const M = { top: 46, right: 210, bottom: 56, left: 74 };
+   height is measured rather than fixed. Otherwise a short viewport letterboxes
+   the chart and a tall one leaves a hole under it.
+
+   The viewBox width is measured too, and that matters more than it sounds. An
+   SVG scaled to fit scales its type with it: a 1200-unit box on a 400px phone
+   renders every label at a third of its size, which is not small type, it is no
+   type. A narrower box on a narrow screen keeps the drawing the same and the
+   words readable. The country labels move under the plot at that size, since
+   there is no room for a 210-unit gutter beside it. */
+const W_WIDE = 1200;
+const W_NARROW = 560;
+const M_WIDE = { top: 46, right: 210, bottom: 56, left: 74 };
+const M_NARROW = { top: 34, right: 26, bottom: 46, left: 54 };
 const H_MIN = 300;
 const H_MAX = 760;
 
@@ -45,6 +54,10 @@ export default function PowerChart({
   const cats = figure.categories ?? [];
   const boxRef = useRef<HTMLDivElement>(null);
   const [H, setH] = useState(520);
+  const [narrow, setNarrow] = useState(false);
+
+  const W = narrow ? W_NARROW : W_WIDE;
+  const M = narrow ? M_NARROW : M_WIDE;
 
   useEffect(() => {
     const el = boxRef.current;
@@ -52,7 +65,10 @@ export default function PowerChart({
     const ro = new ResizeObserver(() => {
       const w = el.clientWidth || 1;
       const h = el.clientHeight || 1;
-      setH(Math.round(Math.min(H_MAX, Math.max(H_MIN, (h / w) * W))));
+      const small = w < 700;
+      setNarrow(small);
+      const box = small ? W_NARROW : W_WIDE;
+      setH(Math.round(Math.min(H_MAX, Math.max(H_MIN, (h / w) * box))));
     });
     ro.observe(el);
     return () => ro.disconnect();
@@ -78,7 +94,7 @@ export default function PowerChart({
     const x = (i: number) => M.left + (i / Math.max(1, cats.length - 1)) * plotW;
     const y = (v: number) => M.top + plotH - (v / top) * plotH;
     return { base, alt, top, plotW, plotH, x, y };
-  }, [figure, cf, cats.length, thresholds, H]);
+  }, [figure, cf, cats.length, thresholds, H, W, M.left, M.right, M.top, M.bottom]);
 
   const { base, alt, top, plotH, x, y } = geom;
 
@@ -138,8 +154,8 @@ export default function PowerChart({
         </g>
       ))}
       <text
-        transform={`rotate(-90 22 ${M.top + plotH / 2})`}
-        x={22}
+        transform={`rotate(-90 ${narrow ? 15 : 22} ${M.top + plotH / 2})`}
+        x={narrow ? 15 : 22}
         y={M.top + plotH / 2}
         className="one-axis-title"
         textAnchor="middle"
@@ -179,11 +195,22 @@ export default function PowerChart({
         <path d={line(alt)} fill="none" className="one-cf-line one-shape" strokeWidth={2.5} />
       )}
 
-      {/* the countries it passes */}
+      {/* The countries it passes. On a phone there is no gutter to write in, so
+          the label sits on top of its own line instead of beside it. */}
       {thresholds.map((t) => (
         <g key={t.label}>
-          <line x1={M.left} x2={W - M.right + 10} y1={y(t.y)} y2={y(t.y)} className="one-threshold" />
-          <text x={W - M.right + 18} y={y(t.y) + 4} className="one-threshold-label">
+          <line
+            x1={M.left}
+            x2={W - M.right + (narrow ? 0 : 10)}
+            y1={y(t.y)}
+            y2={y(t.y)}
+            className="one-threshold"
+          />
+          <text
+            x={narrow ? M.left + 6 : W - M.right + 18}
+            y={narrow ? y(t.y) - 6 : y(t.y) + 4}
+            className="one-threshold-label"
+          >
             {t.label}
           </text>
         </g>
@@ -215,13 +242,25 @@ export default function PowerChart({
       )}
 
       {/* the ends */}
-      <text x={x(base.length - 1) + 12} y={y(base.at(-1)!) + 5} className="one-end">
+      <text
+        x={narrow ? x(base.length - 1) : x(base.length - 1) + 12}
+        y={narrow ? y(base.at(-1)!) - 10 : y(base.at(-1)!) + 5}
+        textAnchor={narrow ? "end" : "start"}
+        className="one-end"
+      >
         {base.at(-1)!.toFixed(1)} GW
       </text>
       {alt && (
-        <text x={x(alt.length - 1) + 12} y={y(alt.at(-1)!) + 5} className="one-end one-end-cf">
+        <text
+          x={narrow ? x(alt.length - 1) : x(alt.length - 1) + 12}
+          y={narrow ? y(alt.at(-1)!) + 20 : y(alt.at(-1)!) + 5}
+          textAnchor={narrow ? "end" : "start"}
+          className="one-end one-end-cf"
+        >
           {alt.at(-1)!.toFixed(1)} GW
-          {interventionLabel ? <tspan className="one-end-note"> · {interventionLabel}</tspan> : null}
+          {interventionLabel && !narrow ? (
+            <tspan className="one-end-note"> · {interventionLabel}</tspan>
+          ) : null}
         </text>
       )}
 
@@ -229,7 +268,7 @@ export default function PowerChart({
         /* One label a year, on the fourth quarter. Adding the first quarter too
            printed 2022 twice. */
         c.endsWith("Q4") ? (
-          <text key={c} x={x(i)} y={H - M.bottom + 26} className="one-xtick" textAnchor="middle">
+          <text key={c} x={x(i)} y={H - M.bottom + (narrow ? 22 : 26)} className="one-xtick" textAnchor="middle">
             {c.slice(0, 4)}
           </text>
         ) : null

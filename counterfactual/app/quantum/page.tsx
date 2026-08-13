@@ -6,7 +6,7 @@ import { quantumFigures, quantumMeta } from "@/lib/quantum";
 export const metadata: Metadata = {
   title: "Counterfactual Quantum",
   description:
-    "Dutch and world quantum research, assembled from OpenAlex and Quantum Delta NL — and redrawn under decisions that were not taken.",
+    "Dutch and world quantum research, assembled from OpenAlex and Quantum Delta NL, then redrawn under decisions that were not taken.",
 };
 
 export default function Page() {
@@ -28,7 +28,7 @@ export default function Page() {
           <>
             Quantum has no AI Index, so this one is assembled: {quantumFigures.length} figures from
             OpenAlex and from Quantum Delta NL&rsquo;s own report. The Dutch programme runs out of
-            money in 2028 — say what should happen next.
+            money in 2028. Say what should happen next.
           </>
         ),
         placeholder: "What should happen to the quantum programme, and when?",
@@ -40,7 +40,7 @@ export default function Page() {
           <>
             <strong>Two sources of very different quality.</strong> The publication series come
             from the OpenAlex API, queried by topic so that the definition of &ldquo;quantum&rdquo;
-            is explicit rather than a judgement call — {quantumMeta.definition} Every response is
+            is explicit rather than a judgement call. {quantumMeta.definition} Every response is
             archived unedited in <code>data/raw/quantum/</code>. The investment and patent figures
             come from Quantum Delta NL&rsquo;s <em>State of Quantum 2025</em>, which publishes
             endpoints rather than series, so they are drawn as two points and nothing is drawn

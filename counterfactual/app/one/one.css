@@ -8,7 +8,7 @@
   The page has its own surface roles rather than borrowing the atlas's, because
   it is a full-bleed figure and needs a ground, an ink and two quieter inks. They
   are defined twice: the atlas theme decides which set applies, and the light one
-  is not a tint of the dark one — a glow that reads as light on near-black reads
+  is not a tint of the dark one. A glow that reads as light on near-black reads
   as haze on bone, so the area fill changes character, not just value.
 */
 .one {
@@ -214,19 +214,22 @@ html.dark .one {
 .one-options {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
+  gap: 5px;
   margin-top: clamp(8px, 1.2vh, 14px);
   align-items: center;
 }
+/* Small everywhere. Eight of these compete with the chart for the fold, and the
+   chart wins. */
 .one-option {
   display: inline-flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 6px;
   font-family: var(--font-heading);
-  font-size: 13.5px;
+  font-size: 11.5px;
   font-weight: var(--weight-medium);
   letter-spacing: -0.005em;
-  padding: 7px 15px;
+  line-height: 1.3;
+  padding: 4px 11px;
   color: var(--paper-2);
   background: transparent;
   border: 1px solid var(--one-rule);
@@ -245,30 +248,45 @@ html.dark .one {
 }
 .one-option-year {
   font-family: var(--font-year);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.04em;
   color: var(--paper-3);
 }
 .one-option.on .one-option-year {
   color: color-mix(in srgb, var(--paper) 70%, transparent);
 }
+/* The exception to the shrinking. Moving the date is the second half of the
+   interaction, so it gets a box of its own and a year you can read at arm's
+   length. */
 .one-when {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
-  margin-left: 8px;
-  font-size: 11px;
+  gap: 11px;
+  margin-left: 10px;
+  padding: 5px 14px 5px 15px;
+  font-size: 10px;
+  font-weight: var(--weight-strong);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--paper-3);
+  border: 1px solid var(--one-rule);
+  border-radius: var(--radius-full);
 }
 .one-when input[type="range"] {
-  width: 120px;
+  width: 168px;
+  height: 20px;
+  margin: 0;
   accent-color: var(--cool);
+  cursor: grab;
+}
+.one-when input[type="range"]:active {
+  cursor: grabbing;
 }
 .one-when b {
   font-family: var(--font-year);
-  font-size: 15px;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
   color: var(--paper-1);
 }
 .one-miss {
@@ -479,6 +497,22 @@ html.dark .one {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
+/* The argument gets its own ground, dark in both themes, because it is the one
+   part of the page that answers back and it should not read as more caption. */
+.one-arguebox {
+  margin: clamp(30px, 5vh, 64px) 0 0;
+  padding: clamp(28px, 4vw, 52px) clamp(22px, 4vw, 56px);
+  background: var(--band);
+  color: var(--paper);
+  border-radius: var(--radius);
+}
+.one-arguebox .argue-inner {
+  max-width: 84ch;
+}
+.one-arguebox a {
+  color: inherit;
+}
+
 .one-col h2 {
   margin: 0 0 var(--space-4);
   font-size: 12px;
@@ -571,4 +605,33 @@ html.dark .one {
 .one-dot {
   margin: 0 0.7em;
   color: var(--paper-3);
+}
+
+/* ------------------------------------------------------------------- narrow */
+
+@media (max-width: 720px) {
+  .one-form {
+    gap: 8px;
+  }
+  .one-input {
+    flex: 1 1 100%;
+  }
+  .one-go,
+  .one-reset {
+    flex: 1 1 auto;
+  }
+  .one-when {
+    margin-left: 0;
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+  .one-when input[type="range"] {
+    flex: 1 1 auto;
+    width: auto;
+  }
+  .one-arguebox {
+    margin-left: calc(var(--gutter) * -1);
+    margin-right: calc(var(--gutter) * -1);
+    border-radius: 0;
+  }
 }

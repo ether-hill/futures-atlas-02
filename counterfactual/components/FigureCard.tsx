@@ -38,7 +38,7 @@ export default function FigureCard({
   const [showWhy, setShowWhy] = useState(false);
 
   /* At rest the chart is exactly the published data and stops where the data
-     stops — a projection nobody asked for is just an unsourced number sitting on
+     stops. A projection nobody asked for is just an unsourced number sitting on
      a sourced chart. The timeline extends only once there is an intervention
      that needs a future to land in. Where it lands is the intervention's own
      business: a 2020 date rewrites history and carries the change forward, a
@@ -65,6 +65,11 @@ export default function FigureCard({
       : Math.max(-99, Math.round((cf.headline.ratio - 1) * 100))
     : null;
   const bigChange = delta !== null && Math.abs(delta) >= 1;
+  /* Reached by a lever and still flat. Common once an objection pushes the start
+     date out past the horizon, and it needs its own sentence: silence here reads
+     as a bug, and calling it unmoved would be a lie about which lever exists. */
+  const tooLate = !!cf && !bigChange;
+  const effectFrom = cf?.effects.length ? Math.min(...cf.effects.map((e) => e.from)) : null;
 
   /* Split view puts the two readings on one shared scale, or the comparison is
      between two different rulers and means nothing. */
@@ -105,7 +110,7 @@ export default function FigureCard({
       </header>
 
       {/* An unmoved figure is a finding, not a failure. It gets the same slot,
-          the same scale and the same shape of statement as a moved one — a
+          the same scale and the same shape of statement as a moved one: a
           dimmed card with a small tag underneath read as "this is broken". */}
       {intervention && !cf && (
         <p className="figure-delta figure-delta--flat">
@@ -117,6 +122,20 @@ export default function FigureCard({
             {!projectedFigure && intervention.from > 2025
               ? "no time axis to extend"
               : "no lever in this intervention reaches it"}
+          </span>
+        </p>
+      )}
+
+      {tooLate && (
+        <p className="figure-delta figure-delta--flat">
+          <span className="delta-num">0%</span>
+          <span className="delta-what">
+            <span className="delta-pair">
+              <b>Too late to show</b>
+            </span>
+            {effectFrom !== null && horizon !== undefined && effectFrom > horizon
+              ? `the lever lands in ${effectFrom}, past the end of this chart`
+              : "a lever reaches it, and moves it by under one percent"}
           </span>
         </p>
       )}
@@ -158,7 +177,7 @@ export default function FigureCard({
       )}
 
       {/* Hero charts carry their series key in HTML rather than a box inside the
-          plot — at this size an in-chart legend always lands on the data. */}
+          plot, since at this size an in-chart legend always lands on the data. */}
       {/* One key row. Series identity and reading identity are different jobs but
           two stacked legends cost more height than they are worth on the board. */}
       {(cf || (hero && base.series.length > 1)) && !showSplit && (

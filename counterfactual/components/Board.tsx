@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import Argue, { type Objection } from "@/components/Argue";
 import FigureCard, { type Compare } from "@/components/FigureCard";
 import InterventionBar from "@/components/InterventionBar";
 import type { Figure, FigureMeta } from "@/lib/figures";
 import type { Intervention } from "@/lib/interventions";
 import { PROJECTION_RULE, projectFigure } from "@/lib/project";
-import { applyIntervention } from "@/lib/transform";
+import { reviseWith } from "@/lib/rebuttals";
+import { applyIntervention, movesVisibly } from "@/lib/transform";
 
 export const SERIES = "Manipulate the data";
 
@@ -46,23 +48,29 @@ export default function Board({
   const [from, setFrom] = useState(0);
   const [compare, setCompare] = useState<Compare>("overlay");
   const [showRest, setShowRest] = useState(false);
+  const [objections, setObjections] = useState<Objection[]>([]);
 
-  /* The year slider edits a copy, so the preset itself stays as authored. */
-  const intervention = useMemo<Intervention | null>(
-    () => (base ? { ...base, from: from || base.from } : null),
-    [base, from]
-  );
+  /* The year slider edits a copy, so the preset itself stays as authored. Every
+     objection you win folds into the same copy, in the order you made them. */
+  const intervention = useMemo<Intervention | null>(() => {
+    if (!base) return null;
+    const dated = { ...base, from: from || base.from };
+    return objections.reduce((iv, o) => reviseWith(iv, o.rebuttal), dated);
+  }, [base, from, objections]);
 
   const changed = useMemo(() => {
     if (!intervention) return 0;
     return figures.filter(
-      (f) => !!applyIntervention(projectFigure(f, copy.horizon)?.figure ?? f, intervention)
+      (f) => movesVisibly(applyIntervention(projectFigure(f, copy.horizon)?.figure ?? f, intervention))
     ).length;
   }, [intervention, figures, copy.horizon]);
 
+  /* A new intervention starts a new argument. Carrying the old objections over
+     would silently apply a rebuttal to transforms it was never aimed at. */
   function setIntervention(iv: Intervention, at?: number) {
     setBase(iv);
     setFrom(at ?? iv.from);
+    setObjections([]);
   }
 
   return (
@@ -107,6 +115,7 @@ export default function Board({
         onClear={() => {
           setBase(null);
           setFrom(0);
+          setObjections([]);
         }}
         compare={compare}
         onCompare={setCompare}
@@ -156,29 +165,14 @@ export default function Board({
       </section>
 
       {intervention && (
-        <section className="argue">
+        <section className="argue" id="argue">
           <div className="shell">
-            <div className="argue-inner">
-              <p className="eyebrow">The standard objection</p>
-              <blockquote className="argue-claim">{intervention.objection.claim}</blockquote>
-              <p className="argue-response">{intervention.objection.response}</p>
-              <div className="argue-input">
-                <input
-                  placeholder="Disagree with any of this…"
-                  disabled
-                  aria-label="Argue with the counterfactual"
-                />
-                <button type="button" disabled>
-                  Argue
-                </button>
-              </div>
-              <p className="argue-note">
-                Arguing back needs a model: your objection has to be able to revise the transforms
-                or refuse to, and either way say why. Until then the objection above is authored,
-                not generated, and it is the strongest one against this intervention rather than
-                the easiest.
-              </p>
-            </div>
+            <Argue
+              intervention={intervention}
+              objections={objections}
+              onPush={(o) => setObjections((list) => [...list, o])}
+              onUndo={() => setObjections((list) => list.slice(0, -1))}
+            />
           </div>
         </section>
       )}
@@ -190,9 +184,10 @@ export default function Board({
             <p>{copy.provenance}</p>
             <p>
               <strong>The counterfactual is not a redrawing either.</strong> An intervention is a
-              set of typed, dated transforms over those same series — <code>growthRate</code>,{" "}
-              <code>levelShift</code>, <code>cap</code>, <code>freeze</code>, <code>converge</code>{" "}
-              — each carrying a start year, a stated reason and a confidence. Nothing generates a
+              set of typed, dated transforms over those same series: <code>growthRate</code>,{" "}
+              <code>levelShift</code>, <code>cap</code>, <code>freeze</code>,{" "}
+              <code>converge</code>. Each carries a start year, a stated reason and a confidence.
+              Nothing generates a
               data point. History is immutable: an intervention dated 2023 cannot reach back into
               2019, which is why every counterfactual is glued to the real reading until the year
               you set. Figures no lever reaches say so, and say which lever was missing.
@@ -205,7 +200,7 @@ export default function Board({
               projection is an argument disguised as a baseline. Everything right of the dashed
               rule is that rule&rsquo;s output rather than Stanford&rsquo;s, which is also why
               the faded line there is labelled <em>as things stand</em> and not{" "}
-              <em>as published</em> — past 2025 it is a trend, not a record. An intervention
+              <em>as published</em>. Past 2025 it is a trend, not a record. An intervention
               dated before 2026 rewrites the published history instead, and carries the change
               through the projection.
             </p>

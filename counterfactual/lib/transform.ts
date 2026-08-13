@@ -162,6 +162,16 @@ export function applyIntervention(figure: Figure, iv: Intervention | null): Coun
   return { series, effects: applied, headline };
 }
 
+/**
+ * Whether a counterfactual actually shows up on the chart. A lever can reach a
+ * figure and still land after the last year drawn, which is not the same thing
+ * as moving it; counting those as moved inflates every tally on the page.
+ */
+export function movesVisibly(cf: Counterfactual | null): boolean {
+  if (!cf?.headline) return false;
+  return cf.headline.after === 0 || Math.abs(Math.round((cf.headline.ratio - 1) * 100)) >= 1;
+}
+
 /** Figures this intervention deliberately leaves alone, and the reason why. */
 export function untouchedReason(figure: Figure, iv: Intervention): string {
   const overlap = figure.levers.filter((l) => iv.levers.includes(l));

@@ -20,7 +20,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
     prompt: "The Growth Fund money runs out in 2028 and nothing replaces it",
     short: "Funding stops in 2028",
     summary:
-      "The €615M National Growth Fund programme ends on schedule. No successor, no bridge — the ecosystem carries on at whatever it can raise privately.",
+      "The €615M National Growth Fund programme ends on schedule. No successor, no bridge. The ecosystem carries on at whatever it can raise privately.",
     levers: ["public-investment", "talent", "eu-coordination"],
     from: 2029,
     fromRange: [2026, 2029],
@@ -32,7 +32,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
         rampYears: 3,
         lag: 1,
         rationale:
-          "Losing a third of the programme is losing a third of the people it pays for, phased over the time it takes contracts to run out. Papers lag by a year — a PhD already started finishes.",
+          "Losing a third of the programme is losing a third of the people it pays for, phased over the time it takes contracts to run out. Papers lag by a year, because a PhD already started finishes.",
         confidence: "arguable",
       },
       {
@@ -51,7 +51,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
         magnitude: 90,
         rampYears: 3,
         rationale:
-          "Public money is the signal private money reads. Dutch quantum rounds have been raised against a state commitment as much as against a product — investment falls back toward the companies that have revenue.",
+          "Public money is the signal private money reads. Dutch quantum rounds have been raised against a state commitment as much as against a product, so investment falls back toward the companies that have revenue.",
         confidence: "arguable",
       },
       {
@@ -87,7 +87,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
       claim:
         "Research funding does not switch off like a tap. Groups have grants, chairs are permanent, and the good people were going to publish anyway.",
       response:
-        "Which is why the effect here is dated a year late and damps rather than stops. What it models is hiring, not firing — the size of the next cohort rather than the fate of the current one. The honest limit is that a five-year window cannot show the part that actually matters, which is where a 2029 PhD student ends up in 2038.",
+        "Which is why the effect here is dated a year late and damps rather than stops. What it models is hiring, not firing: the size of the next cohort rather than the fate of the current one. The honest limit is that a five-year window cannot show the part that actually matters, which is where a 2029 PhD student ends up in 2038.",
     },
   },
 
@@ -155,7 +155,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
       claim:
         "Doubling the budget of a small country's programme does not change a field where China's public commitment is an order of magnitude larger.",
       response:
-        "Correct, and the world chart shows it: the global line does not move at all. The argument for the spend was never that it changes the field. It is that a supply chain has a handful of chokepoints and the Netherlands already owns one of them in lithography — which is a claim about position, not about volume, and no chart on this board can settle it.",
+        "Correct, and the world chart shows it: the global line does not move at all. The argument for the spend was never that it changes the field. It is that a supply chain has a handful of chokepoints and the Netherlands already owns one of them in lithography. That is a claim about position, not about volume, and no chart on this board can settle it.",
     },
   },
 
@@ -218,7 +218,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
       claim:
         "In 2015 there was nothing to fund at scale. The transmon and spin-qubit results that justify this programme had not happened yet, and money arriving early mostly buys the wrong things.",
       response:
-        "The strongest objection in this set, and it is why every effect here is a damped growth multiplier rather than a level shift — the counterfactual compounds an existing trend instead of conjuring one. It is also worth noting what the chart shows about the actual history: Delft's inflection is in 2017, three years before Quantum Delta NL existed. The programme did not cause the rise it is credited with. It arrived after it.",
+        "The strongest objection in this set, and it is why every effect here is a damped growth multiplier rather than a level shift: the counterfactual compounds an existing trend instead of conjuring one. It is also worth noting what the chart shows about the actual history: Delft's inflection is in 2017, three years before Quantum Delta NL existed. The programme did not cause the rise it is credited with. It arrived after it.",
     },
   },
 
@@ -287,7 +287,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
       claim:
         "This already happened in AI and European research did not collapse. People move, collaborations persist, and co-authorship means the papers keep both affiliations.",
       response:
-        "Half right, and the transform reflects it — the US line rises by less than the Dutch line falls, because co-authored work is counted at both ends. What the AI comparison misses is scale: AI research needs a cluster you can rent, and quantum research needs a fabrication facility you cannot. Moving the person moves less of the capability in AI than it does here.",
+        "Half right, and the transform reflects it: the US line rises by less than the Dutch line falls, because co-authored work is counted at both ends. What the AI comparison misses is scale: AI research needs a cluster you can rent, and quantum research needs a fabrication facility you cannot. Moving the person moves less of the capability in AI than it does here.",
     },
   },
 
@@ -320,7 +320,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
         series: ["Netherlands"],
         lag: 2,
         rationale:
-          "A small country with a strong position gains from pooling — it buys access to facilities it could not fund alone.",
+          "A small country with a strong position gains from pooling, since it buys access to facilities it could not fund alone.",
         confidence: "speculative",
       },
       {
@@ -366,7 +366,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
     prompt: "A quantum winter: the money decides it is too early",
     short: "Quantum winter",
     summary:
-      "No breakthrough arrives, error correction stays expensive, and private capital rotates out — the pattern AI itself went through twice.",
+      "No breakthrough arrives, error correction stays expensive, and private capital rotates out, the pattern AI itself went through twice.",
     levers: ["public-investment", "talent", "hype-cycle"],
     from: 2027,
     fromRange: [2020, 2029],
@@ -387,7 +387,7 @@ export const QUANTUM_INTERVENTIONS: Intervention[] = [
         rampYears: 3,
         lag: 1,
         rationale:
-          "The literature keeps growing — it is mostly publicly funded — but the growth rate halves as the field loses its industrial tail.",
+          "The literature keeps growing, since it is mostly publicly funded, but the growth rate halves as the field loses its industrial tail.",
         confidence: "arguable",
       },
       {

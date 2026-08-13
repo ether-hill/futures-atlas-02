@@ -354,14 +354,14 @@ function CartesianChart({
 
   /* ---- marks
      Colour always follows the entity, never the scenario: the United States line
-     stays blue in both readings. What separates them is stroke and fill —
+     stays blue in both readings. What separates them is stroke and fill:
      dashed lines and hatched bars for the thing that did not happen. */
   function renderMarks(series: Series[], variant: "actual" | "ghost" | "counterfactual") {
     const ghost = variant === "ghost";
     const isCf = variant === "counterfactual";
     /* The key must not encode the variant. The reading layer switches between
        "actual" and "counterfactual" in place, and a changed key would remount the
-       element — which is exactly what kills the CSS transition. */
+       element, which is exactly what kills the CSS transition. */
     const k = ghost ? "g" : "r";
     const bw = band * 0.62;
 
@@ -599,7 +599,7 @@ function CartesianChart({
           </g>
         ))}
 
-        {/* The gap between the two readings, filled. This is the comparison —
+        {/* The gap between the two readings, filled. This is the comparison,
             two lines alone are far too easy to read past. */}
         {figure.kind === "line" &&
           figure.series.map((s, i) => {
@@ -625,7 +625,7 @@ function CartesianChart({
         {ghosted && renderMarks(figure.series, "ghost")}
         {renderMarks(drawn, cf ? "counterfactual" : "actual")}
 
-        {/* Where the published reading actually was — drawn last so it reads on top
+        {/* Where the published reading actually was, drawn last so it reads on top
             of a counterfactual bar whether the bar shrank or grew. */}
         {cf && (figure.kind === "bar" || stacked) &&
           cats.map((_c, i) => {

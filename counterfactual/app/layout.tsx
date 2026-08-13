@@ -17,7 +17,7 @@ const figtree = Figtree({ subsets: ["latin"], weight: ["400", "500", "700"], var
 export const metadata: Metadata = {
   title: "Counterfactual AI Index",
   description:
-    "The 2026 Stanford AI Index charts, rebuilt from the official data — and redrawn under interventions that never happened.",
+    "The 2026 Stanford AI Index charts, rebuilt from the official data, then redrawn under interventions that never happened.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

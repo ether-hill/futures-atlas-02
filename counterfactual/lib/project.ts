@@ -123,8 +123,8 @@ export function projectFigure(figure: Figure, horizon: number = HORIZON): Projec
     : null;
 
   const isCategory = !!figure.categories?.length;
-  /* The last x, not the number of points. A sparse series — two observations
-     placed at 2019 and 2025 on a seven-category axis — has two points and six
+  /* The last x, not the number of points. A sparse series (two observations
+     placed at 2019 and 2025 on a seven-category axis) has two points and six
      as its last index, and using the count appended the projection on top of
      its own data. */
   const lastIndex = isCategory

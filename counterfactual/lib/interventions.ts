@@ -4,13 +4,13 @@
  * Every entry here is what the model will eventually be asked to produce: a
  * typed, dated set of transforms over the published series, each with a stated
  * reason and a confidence. Nothing in this file is a data point. Hand-authored
- * for now so the interaction is real before there is an API behind it — the
+ * for now so the interaction is real before there is an API behind it. The
  * shape is the contract, and a generated intervention has to satisfy it too.
  *
  * Confidence is used honestly:
- *   well-evidenced — the transform follows from the premise almost definitionally
- *   arguable       — a mechanism you could defend in a seminar, with a real counter
- *   speculative    — a guess with a direction but no defensible magnitude
+ *   well-evidenced: the transform follows from the premise almost definitionally
+ *   arguable:       a mechanism you could defend in a seminar, with a real counter
+ *   speculative:    a guess with a direction but no defensible magnitude
  */
 
 export type Op = "growthRate" | "levelShift" | "cap" | "freeze" | "converge";
@@ -35,7 +35,7 @@ export type Effect = {
 
 export type Intervention = {
   id: string;
-  /** What someone might type to reach this one. Weak on purpose — see matchFrom. */
+  /** What someone might type to reach this one. Weak on purpose; see matchFrom. */
   keywords: string[];
   /** What you would have typed to get this. */
   prompt: string;
@@ -190,7 +190,7 @@ export const INTERVENTIONS: Intervention[] = [
     anchor: ", when the EU was still drafting the Act?",
     short: "Regulate it everywhere",
     summary:
-      "Risk tiering, conformity assessment before market, and transparency obligations — applied in every jurisdiction rather than one.",
+      "Risk tiering, conformity assessment before market, and transparency obligations, applied in every jurisdiction rather than one.",
     levers: ["regulation", "liability", "transparency", "public-opinion"],
     from: 2021,
     fromRange: [2018, 2029],
@@ -244,7 +244,7 @@ export const INTERVENTIONS: Intervention[] = [
         op: "growthRate",
         magnitude: 0.7,
         rationale:
-          "Compliance cost is a drag on corporate investment, but a smaller one than the headlines suggest — most capital here is infrastructure, which the Act barely touches.",
+          "Compliance cost is a drag on corporate investment, but a smaller one than the headlines suggest. Most capital here is infrastructure, which the Act barely touches.",
         confidence: "arguable",
       },
       {
@@ -275,7 +275,7 @@ export const INTERVENTIONS: Intervention[] = [
       claim:
         "The Act's high-risk tier covers a narrow slice of what is actually deployed. Most of what people use daily is minimal-risk and untouched by any of this.",
       response:
-        "True of the Act as written, and the transforms reflect it — adoption is damped by about a quarter, not halted, and investment barely moves. What shifts most here is lawmaking and public trust, not the economy. If you expected an economic shock, that expectation is the thing this chart is arguing with.",
+        "True of the Act as written, and the transforms reflect it: adoption is damped by about a quarter, not halted, and investment barely moves. What shifts most here is lawmaking and public trust, not the economy. If you expected an economic shock, that expectation is the thing this chart is arguing with.",
     },
   },
 
@@ -313,7 +313,7 @@ export const INTERVENTIONS: Intervention[] = [
         magnitude: 3e9,
         lag: 1,
         rationale:
-          "With capacity fixed, the largest feasible training run is fixed too — and it has to share the site with everything else the operator sells.",
+          "With capacity fixed, the largest feasible training run is fixed too, and it has to share the site with everything else the operator sells.",
         confidence: "arguable",
       },
       {
@@ -388,7 +388,7 @@ export const INTERVENTIONS: Intervention[] = [
       claim:
         "You cannot halt construction without halting inference, and halting inference means switching off products hundreds of millions of people already use.",
       response:
-        "Which is exactly why adoption here flattens rather than falls. The transform freezes new capacity; it does not demolish the 29.6 GW already standing. What it really models is a hard ceiling on how many people can be served at once — and the interesting result is that the capability curve barely notices for two years while the investment curve collapses immediately.",
+        "Which is exactly why adoption here flattens rather than falls. The transform freezes new capacity; it does not demolish the 29.6 GW already standing. What it really models is a hard ceiling on how many people can be served at once, and the interesting result is that the capability curve barely notices for two years while the investment curve collapses immediately.",
     },
   },
 
@@ -484,7 +484,7 @@ export const INTERVENTIONS: Intervention[] = [
     ],
     objection: {
       claim:
-        "This assumes export controls are the binding constraint. They are not — fabrication capacity and high-bandwidth memory supply are, and neither is set by US policy.",
+        "This assumes export controls are the binding constraint. They are not. Fabrication capacity and high-bandwidth memory supply are, and neither is set by US policy.",
       response:
         "Fair, and it is why the China investment multiplier does most of the work here while the compute distribution barely moves. If the binding constraint sits upstream of the control, then lifting the control moves money long before it moves silicon. The shape of this counterfactual is the argument: money reacts in a year, compute does not react for three.",
     },
@@ -648,7 +648,7 @@ export const INTERVENTIONS: Intervention[] = [
         op: "growthRate",
         magnitude: 0.85,
         rationale:
-          "Some private capital is crowded out where a public option exists. Not much — the public machines are not competing for the same work.",
+          "Some private capital is crowded out where a public option exists. Not much, since the public machines are not competing for the same work.",
         confidence: "speculative",
       },
       {
@@ -715,7 +715,7 @@ export const INTERVENTIONS: Intervention[] = [
       claim:
         "Public compute at frontier scale means the state operating a gigawatt data centre. No democracy has shown it can procure one of those on a five-year cycle.",
       response:
-        "That is the weakest link here, and it is why almost every effect in this intervention is marked speculative. What the transform does not assume is that public compute matches private scale — the academic line rises by a factor of a few, not a factor of a thousand, and the industry cloud above it is left exactly where it was.",
+        "That is the weakest link here, and it is why almost every effect in this intervention is marked speculative. What the transform does not assume is that public compute matches private scale. The academic line rises by a factor of a few, not a factor of a thousand, and the industry cloud above it is left exactly where it was.",
     },
   },
 
@@ -726,7 +726,7 @@ export const INTERVENTIONS: Intervention[] = [
     prompt: "Put a carbon price on every training run",
     short: "Price the carbon",
     summary:
-      "Training and serving a model costs what its emissions cost. Not a ban on anything — a bill.",
+      "Training and serving a model costs what its emissions cost. Not a ban on anything, a bill.",
     levers: ["energy", "taxation", "compute-cap", "data-centers"],
     from: 2022,
     fromRange: [2018, 2029],
@@ -914,7 +914,7 @@ export const interventionById = (id: string) => INTERVENTIONS.find((i) => i.id =
  * Deliberately weak: it looks for the words an intervention is about, scores by
  * how much of the sentence they account for, and gives up rather than returning
  * something adjacent. Each intervention carries its own keywords so a board can
- * be added without touching this function — and so nothing has to hand a
+ * be added without touching this function, and so nothing has to hand a
  * function across the server/client boundary.
  */
 export function matchFrom(list: Intervention[], text: string): Intervention | null {

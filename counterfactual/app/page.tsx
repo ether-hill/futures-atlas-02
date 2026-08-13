@@ -21,7 +21,7 @@ export default function Page() {
         tagline: (
           <>
             {figures.length} figures rebuilt from Stanford HAI&rsquo;s published CSVs. Say what you
-            would do about AI — and when — then watch what it does to them.
+            would do about AI, and when, then watch what it does to them.
           </>
         ),
         placeholder: "What would you do about AI, and when?",

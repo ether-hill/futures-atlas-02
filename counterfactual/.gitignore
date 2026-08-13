@@ -1,0 +1,4 @@
+
+# Source data lives in the ai-index-counterfactual repo; only the built
+# figures.json / quantum.json belong here.
+/data/raw/
