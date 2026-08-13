@@ -521,3 +521,181 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 .dock-close:hover { color: var(--accent); }
 .dock-amb-row { margin: 4px 0 10px; }
+
+/* ==========================================================================
+   Project overview — restructured
+   Banner → voices grid → the real document → research, method & sources.
+   The wrap's own padding is kept for the sections; the banner breaks out of it.
+   ========================================================================== */
+
+.home { padding-top: 0; }
+
+/* ---------- 1 · banner ---------- */
+.banner {
+  position: relative;
+  margin: 0 calc(var(--gutter) * -1);
+  padding: clamp(40px, 8vh, 96px) var(--gutter) clamp(28px, 4vh, 48px);
+  min-height: min(84vh, 780px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  isolation: isolate;
+}
+.banner-art { position: absolute; inset: 0; z-index: -2; }
+/* Framed to keep BOTH hands and the gap between them: the seven-fingered hand
+   only reads as wrong next to the ordinary one. */
+.banner-art img { width: 100%; height: 100%; object-fit: cover; object-position: 46% 42%; }
+@media (max-width: 860px) { .banner-art img { object-position: 62% 42%; } }
+/* The fresco is warm and light; the copy is set on a scrim rather than on the
+   paint, so it stays legible in both themes without tinting the artwork. */
+.banner::after {
+  content: "";
+  position: absolute; inset: 0; z-index: -1;
+  background:
+    linear-gradient(75deg, rgba(8, 6, 4, 0.94) 12%, rgba(8, 6, 4, 0.72) 46%, rgba(8, 6, 4, 0.18) 78%),
+    linear-gradient(0deg, rgba(8, 6, 4, 0.9) 0%, rgba(8, 6, 4, 0) 46%);
+}
+.banner-in { position: relative; max-width: 700px; }
+.banner-kick {
+  display: inline-block; margin-bottom: 18px;
+  font: 700 10px var(--mono); letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.62);
+}
+.banner-title {
+  margin: 0; color: #fff;
+  font-weight: 600; font-size: clamp(40px, 7.4vw, 108px);
+  line-height: 0.88; letter-spacing: -0.04em;
+}
+.banner-title i { display: block; font-style: italic; color: rgba(255, 255, 255, 0.78); }
+.banner-lede {
+  margin: clamp(18px, 2.6vh, 30px) 0 0; max-width: 60ch;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: clamp(16px, 1.9vw, 22px); line-height: 1.5;
+}
+.banner-sub {
+  margin: 14px 0 0; max-width: 62ch;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: clamp(13px, 1.5vw, 16px); line-height: 1.65;
+}
+.banner-facts {
+  display: flex; flex-wrap: wrap; gap: 10px 26px;
+  margin: clamp(20px, 3vh, 32px) 0 0;
+  font: 500 11.5px var(--mono); letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.62);
+}
+.banner-facts b { color: #fff; font-weight: 700; }
+.banner-cta {
+  align-self: flex-start; margin-top: clamp(22px, 3vh, 34px);
+  display: inline-flex; align-items: center; gap: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.42); border-radius: 2px;
+  padding: 13px 22px; text-decoration: none;
+  font: 700 11px var(--mono); letter-spacing: 0.14em; text-transform: uppercase;
+  color: #fff; transition: border-color 0.18s, background 0.18s;
+}
+.banner-cta:hover { border-color: #fff; background: rgba(255, 255, 255, 0.1); }
+.banner-credit {
+  position: relative; margin: clamp(26px, 4vh, 44px) 0 0; max-width: 66ch;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 12px; line-height: 1.6;
+}
+.banner-credit i { color: rgba(255, 255, 255, 0.66); }
+
+/* ---------- 2 · the voices, four up ---------- */
+.voices {
+  display: grid; gap: clamp(14px, 1.4vw, 22px);
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+}
+@media (min-width: 1080px) { .voices { grid-template-columns: repeat(4, 1fr); } }
+.voice {
+  display: flex; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--line);
+  text-decoration: none; color: inherit;
+  transition: border-color 0.18s, transform 0.18s;
+}
+.voice:hover { border-color: var(--accent); transform: translateY(-2px); }
+.v-plate { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--field); }
+.v-plate img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.04); transition: filter 0.35s, transform 0.5s; }
+.voice:hover .v-plate img { filter: grayscale(0) contrast(1); transform: scale(1.03); }
+.v-plate.is-mono { display: grid; place-items: center; }
+.v-mono { font: 600 40px var(--sans); letter-spacing: -0.03em; color: var(--faint); }
+.v-trad {
+  position: absolute; left: 10px; bottom: 10px;
+  background: rgba(10, 10, 12, 0.82); color: #fff;
+  padding: 5px 9px; border-radius: 2px;
+  font: 700 9.5px var(--mono); letter-spacing: 0.13em; text-transform: uppercase;
+}
+.v-body { display: flex; flex-direction: column; gap: 5px; padding: 15px 15px 12px; flex: 1; }
+.v-name { font-weight: 600; font-size: 15.5px; line-height: 1.25; letter-spacing: -0.015em; }
+.v-office { color: var(--muted); font-size: 12px; line-height: 1.45; }
+.v-doc { margin-top: 5px; font-size: 13px; line-height: 1.4; color: var(--ink); }
+.v-type { margin-top: auto; padding-top: 10px; color: var(--faint); font: 500 10px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
+/* Licence attribution — rendered, never hidden. See portraits.ts. */
+.v-credit { padding: 0 15px 13px; color: var(--faint); font-size: 10px; line-height: 1.4; }
+
+/* ---------- 3 · the real document ---------- */
+.doc-head { display: grid; gap: clamp(20px, 3vw, 44px); align-items: start; margin-bottom: clamp(28px, 4vw, 48px); }
+@media (min-width: 860px) { .doc-head { grid-template-columns: minmax(220px, 300px) 1fr; } }
+.doc-fig { margin: 0; }
+.doc-fig img { width: 100%; display: block; border: 1px solid var(--line); background: var(--field); }
+.doc-fig figcaption { margin-top: 8px; color: var(--faint); font-size: 10.5px; line-height: 1.5; }
+.doc-tr { margin: 0 0 14px; color: var(--muted); font-size: clamp(14px, 1.6vw, 17px); line-height: 1.5; }
+.sub {
+  margin: clamp(34px, 4.5vw, 56px) 0 16px;
+  font-weight: 600; font-size: clamp(17px, 1.8vw, 21px); letter-spacing: -0.02em;
+}
+
+/* ---------- 4 · research, method & sources ---------- */
+.lede-xl {
+  margin: 0 0 clamp(26px, 3.4vw, 40px); max-width: 30ch;
+  font-size: clamp(21px, 2.9vw, 34px); line-height: 1.24; letter-spacing: -0.025em;
+  font-weight: 500;
+}
+.method-cols { display: grid; gap: clamp(18px, 2.2vw, 30px); grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.method-cols h4 { margin: 0 0 8px; font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; }
+.method-cols p { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.65; }
+.method-cols > div { border-top: 2px solid var(--ink); padding-top: 13px; }
+.reception p { margin: 0 0 12px; color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 74ch; }
+
+/* Six across on a wide screen, scroll-snapped. Native scrolling does the work;
+   scroll-padding mirrors the gutter so the first card lands on the margin. */
+.src-rail {
+  display: grid; grid-auto-flow: column;
+  grid-auto-columns: minmax(190px, calc((100% - 5 * 14px) / 6));
+  gap: 14px;
+  overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  margin: 0 calc(var(--gutter) * -1); padding: 4px var(--gutter) 18px;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+}
+.src-rail::-webkit-scrollbar { display: none; }
+@media (max-width: 1100px) { .src-rail { grid-auto-columns: minmax(190px, 30vw); } }
+@media (max-width: 640px)  { .src-rail { grid-auto-columns: 70vw; } }
+.src-card {
+  scroll-snap-align: start;
+  display: flex; flex-direction: column;
+  background: var(--panel); border: 1px solid var(--line);
+  text-decoration: none; color: inherit;
+  transition: border-color 0.18s, transform 0.18s;
+}
+.src-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.sc-plate { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; background: var(--field); border-bottom: 1px solid var(--line); }
+.sc-plate img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Three sources publish no preview image. Rather than leave an empty plate —
+   which reads as a broken image — those cards drop the plate entirely and lead
+   on the kind badge, set inline. */
+.src-card.no-img .sc-plate {
+  aspect-ratio: auto; background: none; border-bottom: 0;
+  position: static; padding: 13px 13px 0;
+}
+.src-card.no-img .sc-kind { position: static; display: inline-block; }
+.src-card.no-img .sc-pub { padding-top: 14px; }
+.sc-kind {
+  position: absolute; left: 8px; top: 8px;
+  background: rgba(10, 10, 12, 0.82); color: #fff;
+  padding: 4px 8px; border-radius: 2px;
+  font: 700 9px var(--mono); letter-spacing: 0.13em; text-transform: uppercase;
+}
+.sc-pub { padding: 12px 13px 0; color: var(--faint); font: 500 10px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
+.sc-label { padding: 6px 13px 14px; font-size: 13px; line-height: 1.35; font-weight: 500; letter-spacing: -0.01em; }

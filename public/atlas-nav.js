@@ -23,7 +23,7 @@
   // faking it here reveals nothing. Mirror src/data/projects.ts when you flip a
   // project between live and draft.
   var FA_PROJECTS = [
-    { name: "Magnifica", path: "/magnifica" },
+    { name: "Hypothetica Magnifica", path: "/magnifica" },
     { name: "Trajectories", path: "/trajectories", draft: true },
     { name: "Hyperscale", path: "/hyperscale", draft: true },
     { name: "Signal Reactor", path: "/signal-reactor" },

@@ -142,10 +142,169 @@ export const RECEPTION: string[] = [
   "The Vatican followed through: a Commission on Artificial Intelligence spanning seven curial departments, an extraordinary consistory of cardinals, and grassroots pastoral resources.",
 ];
 
-export const SOURCES: { label: string; url: string }[] = [
-  { label: "Magnifica humanitas — Wikipedia", url: "https://en.wikipedia.org/wiki/Magnifica_humanitas" },
-  { label: "Vatican News — 'AI must serve humanity'", url: "https://www.vaticannews.va/en/pope/news/2026-05/pope-leo-xiv-encyclical-magnifica-humanitas-ai.html" },
-  { label: "TIME — Pope Leo warns about dangers of AI", url: "https://time.com/article/2026/05/25/pope-leo-encyclical-ai-magnifica-humanitas/" },
-  { label: "Full text (EWTN)", url: "https://www.ewtnnews.com/vatican/full-text-of-magnifica-humanitas-read-pope-leo-xiv-s-first-encyclical" },
-  { label: "Georgetown — Leo XIV's vision for AI", url: "https://www.georgetown.edu/news/pope-leo-xiv-laid-out-his-vision-for-ai-what-is-it-and-what-happens-next/" },
+export type SourceKind = "primary" | "article" | "analysis" | "explainer" | "reference" | "video";
+
+export interface Source {
+  id: string;
+  label: string;
+  publisher: string;
+  kind: SourceKind;
+  url: string;
+  /**
+   * The publisher's own preview image (og:image) or the video's thumbnail,
+   * hot-linked rather than copied — the same thing any link card shows. Three
+   * entries have none; those render as typographic cards, which is why the
+   * carousel never assumes an image is there.
+   */
+  image?: string;
+}
+
+/**
+ * Everything written about the real encyclical that this project actually read.
+ * Every URL was fetched and checked, and the list deliberately mixes the
+ * primary text, news, explainers, criticism and broadcast — the speculative
+ * half of this project is only defensible if the factual half is this legible.
+ */
+export const SOURCES: Source[] = [
+  {
+    id: "vatican-full-text",
+    label: "Encyclical Letter Magnifica Humanitas",
+    publisher: "The Holy See",
+    kind: "primary",
+    url: "https://www.vatican.va/content/leo-xiv/en/encyclicals/documents/20260515-magnifica-humanitas.html",
+  },
+  {
+    id: "vatican-news",
+    label: "AI must serve humanity, not concentrate power",
+    publisher: "Vatican News",
+    kind: "article",
+    url: "https://www.vaticannews.va/en/pope/news/2026-05/pope-leo-xiv-encyclical-magnifica-humanitas-ai.html",
+    image: "https://www.vaticannews.va/content/dam/vaticannews/agenzie/images/srv/2026/05/25/2026-05-15-firma-enciclica--magnifica-humanitas-/1779693363479.JPG/_jcr_content/renditions/cq5dam.thumbnail.cropped.1500.844.jpeg",
+  },
+  {
+    id: "wikipedia",
+    label: "Magnifica humanitas",
+    publisher: "Wikipedia",
+    kind: "reference",
+    url: "https://en.wikipedia.org/wiki/Magnifica_humanitas",
+  },
+  {
+    id: "time",
+    label: "Pope Leo uses first major papal text to warn about AI",
+    publisher: "TIME",
+    kind: "article",
+    url: "https://time.com/article/2026/05/25/pope-leo-encyclical-ai-magnifica-humanitas/",
+    image: "https://static.time.com/v3/assets/bltea6093859af6183b/bltd056b16e323d9ec1/6a14b732f78d6ba720e8188f/pope-leo-encyclical-ai-magnifica-humanitas.jpg?branch=production&amp;width=3840&amp;quality=75&amp;auto=webp&amp;crop=16:9",
+  },
+  {
+    id: "ncregister",
+    label: "Full text of Magnifica Humanitas",
+    publisher: "National Catholic Register",
+    kind: "primary",
+    url: "https://www.ncregister.com/cna/full-text-magnifica-humanitas",
+    image: "https://publisher-ncreg.s3.us-east-2.amazonaws.com/pb-ncregister/swp/hv9hms/media/2026052610050_176e231a-c9f2-4907-8a90-20556a46a745.jpg",
+  },
+  {
+    id: "usccb",
+    label: "Magnifica Humanitas resources",
+    publisher: "USCCB",
+    kind: "reference",
+    url: "https://www.usccb.org/magnifica-humanitas",
+    image: "https://www.usccb.org/sites/default/files/usccb_logo_text_2025.png",
+  },
+  {
+    id: "dicastery",
+    label: "Magnifica Humanitas",
+    publisher: "Dicastery for Integral Human Development",
+    kind: "primary",
+    url: "https://www.humandevelopment.va/en/magnifica-humanitas.html",
+  },
+  {
+    id: "georgetown",
+    label: "Leo XIV laid out his vision for AI. What happens next?",
+    publisher: "Georgetown University",
+    kind: "article",
+    url: "https://www.georgetown.edu/news/pope-leo-xiv-laid-out-his-vision-for-ai-what-is-it-and-what-happens-next/",
+    image: "https://www.georgetown.edu/wp-content/uploads/2026/06/GettyImages-174878998-scaled-e1780598426195.jpg",
+  },
+  {
+    id: "ascension",
+    label: "A complete guide to Pope Leo's first encyclical",
+    publisher: "Ascension",
+    kind: "explainer",
+    url: "https://ascensionpress.com/blogs/articles/a-complete-guide-to-pope-leo-s-encyclical-magnificent-humanitas",
+    image: "http://ascensionpress.com/cdn/shop/articles/Pope_Leo_-_Waving_Election_d381e7cb-ee9e-4c61-ad61-2dc2052ab4da.webp?v=1781949934",
+  },
+  {
+    id: "cafod",
+    label: "Magnifica Humanitas explained",
+    publisher: "CAFOD",
+    kind: "explainer",
+    url: "https://cafod.org.uk/pray/magnifica-humanitas-explained",
+    image: "https://images.ctfassets.net/vy3axnuecuwj/RWMDjimKgsbG8R8gYEQ4c/725346fbd87cea5210df7905de34bbe8/17_March_Pope_Leo.jpg",
+  },
+  {
+    id: "scu",
+    label: "What it means for business leaders",
+    publisher: "Santa Clara University",
+    kind: "analysis",
+    url: "https://www.scu.edu/business/blog/leadership-ethics/magnifica-humanitas-ai-ethics-business-leaders/",
+    image: "https://www.scu.edu/media/leavey-school-of-business/stories/magnifica-humanitas-ai-ethics-business-leaders.jpg",
+  },
+  {
+    id: "angelus",
+    label: "Silicon Valley has been largely silent",
+    publisher: "Angelus News",
+    kind: "analysis",
+    url: "https://angelusnews.com/faith/silicon-valley-magnifica-humanitas/",
+    image: "https://angelusnews.com/wp-content/uploads/2026/06/20260526T1022-MAGNIFICA-HUMANITAS-AI-CALL-TO-ACTION-1820439-scaled-e1780361371762-1024x577.jpg",
+  },
+  {
+    id: "catholic-outlook",
+    label: "Receiving Magnifica Humanitas: theology of reception",
+    publisher: "Catholic Outlook",
+    kind: "analysis",
+    url: "https://catholicoutlook.org/receiving-magnifica-humanitas-notes-on-the-theology-of-reception-in-the-age-of-the-digital-encyclical/",
+    image: "https://catholicoutlook.org/wp-content/uploads/2025/06/Pope-Leo-General-Audience-4-June-AA.jpg",
+  },
+  {
+    id: "ewtn-nightly",
+    label: "Pope Leo XIV releases first encyclical on AI",
+    publisher: "EWTN News Nightly",
+    kind: "video",
+    url: "https://www.youtube.com/watch?v=bTWYkIZsyuI",
+    image: "https://img.youtube.com/vi/bTWYkIZsyuI/maxresdefault.jpg",
+  },
+  {
+    id: "full-address",
+    label: "FULL ADDRESS: Pope Leo XIV presents Magnifica Humanitas",
+    publisher: "YouTube",
+    kind: "video",
+    url: "https://www.youtube.com/watch?v=c41idPquxrE",
+    image: "https://img.youtube.com/vi/c41idPquxrE/maxresdefault.jpg",
+  },
+  {
+    id: "pine-explainer",
+    label: "Pope Leo XIV's AI encyclical explained, with Fr. Gregory Pine",
+    publisher: "YouTube",
+    kind: "video",
+    url: "https://www.youtube.com/watch?v=cpptgvohfZc",
+    image: "https://img.youtube.com/vi/cpptgvohfZc/maxresdefault.jpg",
+  },
+  {
+    id: "signing",
+    label: "Pope Leo XIV signs the encyclical, calling for AI regulation",
+    publisher: "YouTube",
+    kind: "video",
+    url: "https://www.youtube.com/watch?v=tcnbVp_O5yI",
+    image: "https://img.youtube.com/vi/tcnbVp_O5yI/maxresdefault.jpg",
+  },
+  {
+    id: "viral",
+    label: "Why the first encyclical went viral",
+    publisher: "YouTube",
+    kind: "video",
+    url: "https://www.youtube.com/watch?v=qZ0Tt49KDXk",
+    image: "https://img.youtube.com/vi/qZ0Tt49KDXk/maxresdefault.jpg",
+  },
 ];

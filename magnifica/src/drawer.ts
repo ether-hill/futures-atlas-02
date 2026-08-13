@@ -54,6 +54,17 @@ export function markDrawerRoute() {
   });
 }
 
+/**
+ * Taken down when the reader leaves a voice for the project overview. The
+ * overview is not "inside" the collection — it *is* the contents page, so a
+ * contents drawer over the top of it is a second copy of the same navigation.
+ * Moving between voices keeps the same instance (mountDrawer early-returns).
+ */
+export function unmountDrawer() {
+  root?.remove();
+  root = null;
+}
+
 export function mountDrawer() {
   if (root) {
     markDrawerRoute();

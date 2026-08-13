@@ -130,6 +130,29 @@ source.
 - Nav entries live in `public/atlas-nav.js` (`LINKS`), and the homepage carousel
   shows the newest ten.
 
+## Hypothetica Magnifica (`/magnifica`)
+
+Renamed from "Magnifica" (display title only — the slug, URLs and build paths
+stay `/magnifica`, since the name still contains it and the project is live).
+
+- The overview (`homeView` in `magnifica/src/app.ts`) runs banner → voices grid
+  (4-up) → the real document → research, method & sources. The slide-out index
+  belongs to the **voice pages only**: the overview *is* the contents page, so
+  `render()` mounts the drawer for a leader route and unmounts it otherwise.
+- **`magnifica/src/portraits.ts` is the licence registry, and its rules are hard.**
+  ASSETS.md forbids generated likenesses of real people — the project's own
+  content documents leaders objecting to deepfakes of themselves. Every portrait
+  is a real Wikimedia photograph under a free licence, cropped to one 4:5 frame
+  so the grid reads as a set, and **`credit` + `licence` are rendered on screen**.
+  Removing a caption is a licence breach, not a design tidy-up.
+  The house look comes from a CSS greyscale treatment, not from generation.
+- The hero (`media/stills/creation-hands.jpg`) IS generated — it is a variation
+  on Michelangelo's public-domain *Creation of Adam*, no living person involved.
+  The right hand has seven fingers on purpose; the caption says so.
+- `SOURCES` in `magnifica/src/encyclical.ts` carries the source rail: every URL
+  fetched and checked, `image` hot-linked from the publisher's own og:image or
+  video thumbnail. Three publish none and render as typographic cards.
+
 ## Deploy
 
 **This project is git-connected on Vercel and SHARED — push to `main` and Vercel

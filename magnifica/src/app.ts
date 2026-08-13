@@ -3,7 +3,8 @@ import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
-import { mountDrawer, markDrawerRoute } from "./drawer";
+import { mountDrawer, unmountDrawer, markDrawerRoute } from "./drawer";
+import { portraitOf, monogram } from "./portraits";
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -52,82 +53,182 @@ function homeView(): string {
   ).join("");
 
   const quotes = QUOTES.map(
-    (q) => `<blockquote class="q" data-reveal>“${esc(q.text)}”<footer>${esc(q.ref)}</footer></blockquote>`
+    (q) => `<blockquote class="q" data-reveal>\u201c${esc(q.text)}\u201d<footer>${esc(q.ref)}</footer></blockquote>`
   ).join("");
 
-  const leaders = LEADERS.map(
-    (l) => `
-    <a class="leader" href="#/l/${l.id}" data-reveal>
-      <span class="ld-trad">${esc(l.tradition)}</span>
-      <span class="ld-name">${esc(l.name)}</span>
-      <span class="ld-office">${esc(l.office)}</span>
-      <span class="ld-doc">${esc(l.docTitle)}</span>
+  // The voice cards carry the leader's real, licensed portrait. The credit line
+  // is rendered, not hidden: CC BY-SA requires visible attribution.
+  const voices = LEADERS.map((l, i) => {
+    const p = portraitOf(l.id);
+    const plate = p
+      ? `<img src="/magnifica/media/portraits/${esc(p.file)}" alt="${esc(p.alt)}" loading="${i < 8 ? "eager" : "lazy"}" decoding="async" />`
+      : `<span class="v-mono" aria-hidden="true">${esc(monogram(l.name))}</span>`;
+    return `
+    <a class="voice" href="#/l/${esc(l.id)}" data-reveal>
+      <span class="v-plate${p ? "" : " is-mono"}">
+        ${plate}
+        <span class="v-trad">${esc(l.tradition)}</span>
+      </span>
+      <span class="v-body">
+        <span class="v-name">${esc(l.name)}</span>
+        <span class="v-office">${esc(l.office)}</span>
+        <span class="v-doc"><i>${esc(l.docTitle)}</i></span>
+        <span class="v-type">${esc(l.docType)} \u00b7 predicted</span>
+      </span>
+      ${p ? `<span class="v-credit">${esc(p.credit)} \u00b7 ${esc(p.licence)}</span>` : ""}
+    </a>`;
+  }).join("");
+
+  const reception = RECEPTION.map((r) => `<p data-reveal>${esc(r)}</p>`).join("");
+
+  const sources = SOURCES.map(
+    (s) => `
+    <a class="src-card${s.image ? "" : " no-img"}" href="${esc(s.url)}" target="_blank" rel="noopener">
+      <span class="sc-plate">
+        ${s.image ? `<img src="${esc(s.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" />` : ""}
+        <span class="sc-kind">${esc(s.kind)}</span>
+      </span>
+      <span class="sc-pub">${esc(s.publisher)}</span>
+      <span class="sc-label">${esc(s.label)}</span>
     </a>`
   ).join("");
 
-  const reception = RECEPTION.map((r) => `<p>${esc(r)}</p>`).join("");
-  const sources = SOURCES.map(
-    (s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.label)}</a></li>`
-  ).join("");
+  const pope = portraitOf("leo-xiv");
 
   return `
-  <main class="wrap">
-    <header class="head">
-      <h1 class="title" data-reveal>Magnifica</h1>
-      <p class="intro" data-reveal>
-        In May 2026, Pope Leo XIV published <i>Magnifica humanitas</i> — the first
-        papal encyclical on artificial intelligence. One tradition has now spoken
-        at full length. What would the equivalent document look like from the
-        world's other great faiths? Explore the real encyclical below, then choose
-        a leader and read a carefully grounded prediction of their answer.
+  <main class="wrap home">
+
+    <header class="banner" data-reveal>
+      <div class="banner-art">
+        <img src="/magnifica/media/stills/creation-hands.jpg"
+             alt="A close detail of two hands reaching toward each other in the manner of Michelangelo's Creation of Adam; the hand on the right has seven fingers."
+             fetchpriority="high" decoding="async" />
+      </div>
+      <div class="banner-in">
+        <span class="banner-kick">Futures Atlas \u00b7 speculative design</span>
+        <h1 class="banner-title">Hypothetica<i>Magnifica</i></h1>
+        <p class="banner-lede">
+          In May 2026, Pope Leo XIV published <i>Magnifica humanitas</i> \u2014 the first
+          papal encyclical on artificial intelligence, and the first time one of the
+          world\u2019s great traditions answered the question at full length.
+        </p>
+        <p class="banner-sub">
+          This project holds that real document up against sixteen that do not exist.
+          Each is a research-grounded prediction of what another faith leader
+          <i>might</i> write, drafted from their own public record. One is real.
+          Sixteen are not, and say so on every page.
+        </p>
+        <div class="banner-facts">
+          <span><b>1</b> real encyclical</span>
+          <span><b>${LEADERS.length}</b> predicted answers</span>
+          <span><b>245</b> paragraphs \u00b7 <b>7</b> parts</span>
+          <span><b>${SOURCES.length}</b> sources read</span>
+        </div>
+        <a class="banner-cta" href="#x-voices">Meet the ${LEADERS.length} voices <span aria-hidden="true">\u2193</span></a>
+      </div>
+      <p class="banner-credit">
+        Hero: an AI-generated variation on Michelangelo\u2019s <i>Creation of Adam</i>
+        (public domain). Look at the right hand \u2014 it has seven fingers. The tell is
+        deliberate, and it is the whole argument of this project in one image.
       </p>
-      <span class="spec-note" data-reveal><i></i>1 real document · ${LEADERS.length} research-grounded predictions</span>
     </header>
 
-    <section class="sect" id="encyclical">
-      <span class="lbl">The source document — real</span>
-      <h2 class="sect-title" data-reveal><i>${esc(ENCYCLICAL.title)}</i> (${esc(ENCYCLICAL.translation)})</h2>
-      <p class="sect-lede" data-reveal>${esc(ENCYCLICAL.subtitle)}. ${esc(ENCYCLICAL.context)}</p>
-      <div class="doc-facts" data-reveal>
-        <span><b>${esc(ENCYCLICAL.author)}</b> · ${esc(ENCYCLICAL.tradition)}</span>
-        <span>Signed <b>${esc(ENCYCLICAL.signed)}</b></span>
-        <span>Published <b>${esc(ENCYCLICAL.published)}</b></span>
-        <span><b>245</b> paragraphs · <b>7</b> parts</span>
-      </div>
-      <div class="chapters" data-reveal>${chapters}</div>
+    <section class="sect" id="x-voices">
+      <span class="lbl">The voices \u2014 speculative</span>
+      <h2 class="sect-title" data-reveal>${LEADERS.length} answers that were never written</h2>
+      <p class="sect-lede" data-reveal>
+        Every leader below is real, photographed under a free licence, and everything
+        stated about them as fact is sourced on their page. The <i>documents</i> are
+        not real: titles, arguments and excerpts are extrapolated from each leader\u2019s
+        actual record on technology, in the forms their tradition uses. No excerpt is
+        a quote. Choose a voice.
+      </p>
+      <div class="voices">${voices}</div>
     </section>
 
-    <section class="sect">
-      <span class="lbl">What it argues</span>
+    <section class="sect doc" id="x-doc">
+      <span class="lbl">The source document \u2014 real</span>
+      <div class="doc-head">
+        <div class="doc-fig" data-reveal>
+          ${pope ? `<img src="/magnifica/media/portraits/${esc(pope.file)}" alt="${esc(pope.alt)}" loading="lazy" decoding="async" />
+          <figcaption>${esc(pope.credit)} \u00b7 <a href="${esc(pope.licenceUrl)}" target="_blank" rel="noopener">${esc(pope.licence)}</a></figcaption>` : ""}
+        </div>
+        <div class="doc-text">
+          <h2 class="sect-title" data-reveal><i>${esc(ENCYCLICAL.title)}</i></h2>
+          <p class="doc-tr" data-reveal>${esc(ENCYCLICAL.translation)} \u2014 ${esc(ENCYCLICAL.subtitle)}</p>
+          <p class="sect-lede" data-reveal>${esc(ENCYCLICAL.context)}</p>
+          <div class="doc-facts" data-reveal>
+            <span><b>${esc(ENCYCLICAL.author)}</b> \u00b7 ${esc(ENCYCLICAL.tradition)}</span>
+            <span>Signed <b>${esc(ENCYCLICAL.signed)}</b></span>
+            <span>Published <b>${esc(ENCYCLICAL.published)}</b></span>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="sub" data-reveal>What it says</h3>
+      <div class="chapters" data-reveal>${chapters}</div>
+
+      <h3 class="sub" data-reveal>Why it matters</h3>
       <div class="theme-grid">${themes}</div>
+
+      <h3 class="sub" data-reveal>Key take-aways</h3>
       <div class="quote-strip">${quotes}</div>
     </section>
 
-    <section class="sect" id="voices">
-      <span class="lbl">The voices — speculative</span>
-      <h2 class="sect-title" data-reveal>Sixteen other answers</h2>
-      <p class="sect-lede" data-reveal>
-        Each leader below is real, and everything attributed to them as fact is
-        sourced. The <i>documents</i> are not real: they are predictive fiction —
-        titles, arguments and excerpts extrapolated from each leader's actual
-        record on technology, in the forms their tradition uses. Choose a voice.
+    <section class="sect research" id="x-method">
+      <span class="lbl">Research, method &amp; sources</span>
+      <h2 class="sect-title" data-reveal>How this was made</h2>
+      <p class="lede-xl" data-reveal>
+        The factual half is the load-bearing half. If the digest of the real encyclical
+        is sloppy, the sixteen predictions are just invention with a costume on.
       </p>
-      <div class="leaders">${leaders}</div>
-    </section>
+      <div class="method-cols">
+        <div data-reveal>
+          <h4>The real document</h4>
+          <p>
+            The digest of <i>Magnifica humanitas</i> is drawn from the published text and
+            its coverage \u2014 the Vatican\u2019s own release, the full text, and the reporting
+            and analysis listed below. Direct quotations are short, attributed excerpts.
+          </p>
+        </div>
+        <div data-reveal>
+          <h4>The sixteen predictions</h4>
+          <p>
+            For each leader we gathered their verified public statements on AI and
+            technology, the concepts their tradition actually reaches for, and the
+            written forms it actually uses \u2014 then drafted what an equivalent document
+            might say, marked speculative throughout.
+          </p>
+        </div>
+        <div data-reveal>
+          <h4>Where the record is thin</h4>
+          <p>
+            Some leaders have said a great deal about AI; others almost nothing. Where
+            the record is thin the prediction leans on the tradition\u2019s broader teaching
+            and is correspondingly more cautious \u2014 and each page shows the sourced
+            statements it was built from, so you can judge the reach for yourself.
+          </p>
+        </div>
+        <div data-reveal>
+          <h4>Portraits and likeness</h4>
+          <p>
+            No likeness here is generated. Every portrait is a real photograph under a
+            free licence, credited on the card. This project documents leaders objecting
+            to synthetic images of themselves; producing exactly that would answer the
+            argument by proving it.
+          </p>
+        </div>
+      </div>
 
-    <section class="sect about">
-      <span class="lbl">Method &amp; sources</span>
-      <p data-reveal>
-        The encyclical digest is factual, drawn from the published text and its
-        coverage. The fifteen equivalents were produced by researching each
-        leader's verified public statements on AI and technology, their
-        tradition's relevant concepts, and their characteristic written forms —
-        then drafting what an equivalent document might say, marked speculative
-        throughout. Where a leader has said little about AI, the prediction leans
-        on their tradition's broader teaching and is correspondingly more cautious.
+      <h3 class="sub" data-reveal>How the real one landed</h3>
+      <div class="reception">${reception}</div>
+
+      <h3 class="sub" data-reveal>What we read</h3>
+      <p class="sect-lede" data-reveal>
+        ${SOURCES.length} sources \u2014 the primary text, the reporting, the explainers, the
+        criticism and the broadcast. Every link was fetched and checked.
       </p>
-      <div data-reveal>${reception}</div>
-      <ul class="src-list" data-reveal>${sources}</ul>
+      <div class="src-rail" data-rail>${sources}</div>
     </section>
   </main>`;
 }
@@ -270,6 +371,11 @@ function render(root: HTMLElement) {
     );
   }
 
+  // The slide-out index belongs to the voices, not to the overview that lists
+  // them. Navigation, not page content: kept across voice-to-voice moves.
+  if (leader) mountDrawer();
+  else unmountDrawer();
+
   window.scrollTo(0, 0);
 
   root.querySelectorAll("[data-ch] > button").forEach((btn) => {
@@ -309,10 +415,6 @@ export function boot(root: HTMLElement) {
     e.preventDefault();
     target.scrollIntoView({ behavior: "smooth", block: "start" });
   });
-
-  // Navigation, not page content — mounted once and told where it is, so it
-  // keeps focus and doesn't replay its transition on every route change.
-  mountDrawer();
 
   render(root);
   window.addEventListener("hashchange", () => {

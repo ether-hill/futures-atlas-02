@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Futures Atlas — Magnifica. Explore Pope Leo XIV's encyclical on AI, then read grounded speculative equivalents from fifteen other world faith leaders.",
+  "description": "Futures Atlas — Hypothetica Magnifica. Explore Pope Leo XIV's encyclical on AI, then read grounded speculative equivalents from fifteen other world faith leaders.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
