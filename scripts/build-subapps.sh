@@ -45,6 +45,18 @@ cp -R "$HERE/hollow-villages/out/." "$HERE/public/village-oracle/"
 node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/village-oracle"
 echo "✓ hollow-villages → public/village-oracle (with atlas-nav)"
 
+# The Counterfactual Index: Next static export → out/, then copy into public/.
+# One bundle carries all three views (/counterfactual, …/quantum, …/one); they
+# are three atlas entries but one codebase, sharing a data layer and a transform
+# engine.
+echo "→ building counterfactual"
+( cd "$HERE/counterfactual" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/counterfactual"
+mkdir -p "$HERE/public/counterfactual"
+cp -R "$HERE/counterfactual/out/." "$HERE/public/counterfactual/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/counterfactual"
+echo "✓ counterfactual → public/counterfactual (with atlas-nav)"
+
 # Swipe the Future: Next static export → out/, then copy into public/.
 echo "→ building swipe-the-future"
 ( cd "$HERE/swipe-the-future" && npm install --include=dev --no-audit --no-fund && npm run build )

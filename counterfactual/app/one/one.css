@@ -1,0 +1,473 @@
+/*
+  A different room. The boards are bone paper and black axes because they are
+  reproducing a printed report; this page has no such obligation, so it is dark,
+  wide, and typeset like an essay with one picture in it.
+*/
+
+.one {
+  --ink: #0b0a09;
+  --ink-2: #14120f;
+  --paper-1: #f4efe4;
+  --paper-2: #d5cdbd;
+  --paper-3: #8d8577;
+  --cool: #73d9ff;
+  --cool-2: #1c78ba;
+
+  background: var(--ink);
+  color: var(--paper-1);
+  min-height: 100vh;
+  padding-bottom: var(--space-section);
+}
+
+.one a {
+  color: var(--cool);
+  border-bottom-color: color-mix(in srgb, var(--cool) 35%, transparent);
+}
+
+/* ---------------------------------------------------------------- one screen */
+
+/* Everything needed to use the page fits the first viewport: the claim, the
+   input, the suggestions, and the chart. The written account of what changed
+   lives below the fold, because it is reading rather than doing. */
+.one-screen {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(18px, 2.6vh, 34px) var(--gutter) clamp(14px, 2vh, 26px);
+  max-width: var(--container-max);
+  margin: 0 auto;
+  width: 100%;
+}
+
+.one-top {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(10px, 1.6vw, 30px);
+  align-items: end;
+}
+@media (min-width: 1100px) {
+  .one-top {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  }
+}
+.one-eyebrow {
+  margin: 0 0 clamp(8px, 1.2vh, 16px);
+  font-family: var(--font-serif);
+  font-size: 11px;
+  letter-spacing: var(--track-label-wide);
+  text-transform: uppercase;
+  color: var(--paper-3);
+}
+.one-top h1 {
+  margin: 0;
+  font-size: clamp(30px, 3.6vw, 56px);
+  font-weight: var(--weight-black);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+}
+.one-hero-num {
+  font-family: var(--font-year);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  background: linear-gradient(96deg, #9cf2f2 0%, #73d9ff 40%, #1c78ba 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.one-lede {
+  margin: 0;
+  max-width: 62ch;
+  font-family: var(--font-serif);
+  font-size: clamp(13.5px, 1.05vw, 16.5px);
+  line-height: 1.5;
+  color: var(--paper-2);
+}
+
+/* ------------------------------------------------------------------- change */
+
+.one-ask {
+  margin-top: clamp(14px, 2.4vh, 30px);
+}
+.one-form {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.one-ask-label {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(17px, 1.7vw, 24px);
+  color: var(--paper-2);
+  white-space: nowrap;
+}
+.one-input {
+  flex: 1 1 380px;
+  min-width: 0;
+  font-family: var(--font-heading);
+  font-size: max(16px, 17px);
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.01em;
+  color: var(--paper-1);
+  background: color-mix(in srgb, var(--paper-1) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--paper-1) 24%, transparent);
+  border-radius: var(--radius-full);
+  padding: 11px 20px;
+  caret-color: var(--cool);
+}
+.one-input::placeholder {
+  color: var(--paper-3);
+  font-weight: 400;
+}
+.one-input:focus {
+  outline: none;
+  border-color: var(--cool);
+  background: color-mix(in srgb, var(--cool) 8%, transparent);
+}
+.one-go,
+.one-reset {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  padding: 12px 22px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.one-go {
+  background: var(--paper-1);
+  color: var(--ink);
+  border: 1px solid var(--paper-1);
+}
+.one-go:hover {
+  background: var(--cool);
+  border-color: var(--cool);
+}
+.one-reset {
+  background: transparent;
+  color: var(--paper-3);
+  border: 1px solid color-mix(in srgb, var(--paper-1) 20%, transparent);
+}
+.one-reset:hover {
+  color: var(--paper-1);
+  border-color: var(--paper-1);
+}
+
+.one-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: clamp(8px, 1.2vh, 14px);
+  align-items: center;
+}
+.one-option {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 13.5px;
+  font-weight: var(--weight-medium);
+  letter-spacing: -0.005em;
+  padding: 7px 15px;
+  color: var(--paper-2);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--paper-1) 20%, transparent);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: border-color 180ms var(--ease), color 180ms var(--ease), background 180ms var(--ease);
+}
+.one-option:hover {
+  color: var(--paper-1);
+  border-color: color-mix(in srgb, var(--paper-1) 55%, transparent);
+}
+.one-option.on {
+  background: var(--paper-1);
+  border-color: var(--paper-1);
+  color: var(--ink);
+}
+.one-option-year {
+  font-family: var(--font-year);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--paper-3);
+}
+.one-option.on .one-option-year {
+  color: color-mix(in srgb, var(--ink) 55%, transparent);
+}
+.one-when {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: 8px;
+  font-size: 11px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--paper-3);
+}
+.one-when input[type="range"] {
+  width: 120px;
+  accent-color: var(--cool);
+}
+.one-when b {
+  font-family: var(--font-year);
+  font-size: 15px;
+  color: var(--paper-1);
+}
+.one-miss {
+  margin: 10px 0 0;
+  font-size: 13px;
+  color: var(--paper-3);
+  max-width: 80ch;
+}
+
+/* ------------------------------------------------------------- the one line */
+
+.one-verdict-line {
+  display: flex;
+  align-items: baseline;
+  gap: clamp(14px, 1.6vw, 26px);
+  margin: clamp(10px, 1.6vh, 18px) 0 0;
+  padding-top: clamp(10px, 1.4vh, 16px);
+  border-top: 1px solid color-mix(in srgb, var(--paper-1) 16%, transparent);
+}
+.one-verdict-num {
+  font-family: var(--font-year);
+  font-size: clamp(30px, 3.2vw, 50px);
+  font-weight: 700;
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  color: var(--paper-1);
+  white-space: nowrap;
+}
+.one-verdict-say {
+  font-family: var(--font-serif);
+  font-size: clamp(14px, 1.1vw, 17px);
+  line-height: 1.45;
+  color: var(--paper-2);
+  max-width: 90ch;
+}
+.one-verdict-say b {
+  font-family: var(--font-year);
+  color: var(--paper-1);
+}
+.one-verdict-dim {
+  color: var(--paper-3);
+}
+
+/* -------------------------------------------------------------------- chart */
+
+.one-figure {
+  flex: 1 1 0;
+  min-height: 240px;
+  margin-top: clamp(6px, 1.2vh, 14px);
+}
+.one-chartbox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.one-chart {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  font-family: var(--font-heading);
+}
+.one-chart .one-shape {
+  transition: d 720ms var(--ease);
+}
+.one-grid {
+  stroke: color-mix(in srgb, var(--paper-1) 8%, transparent);
+  stroke-width: 1;
+}
+.one-ytick,
+.one-xtick {
+  fill: var(--paper-3);
+  font-size: 13px;
+  font-family: var(--font-year);
+  letter-spacing: 0.04em;
+}
+.one-ytick {
+  text-anchor: end;
+}
+.one-axis-title {
+  fill: var(--paper-3);
+  font-size: 12px;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+.one-threshold {
+  stroke: color-mix(in srgb, var(--paper-1) 26%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+}
+.one-threshold-label {
+  fill: var(--paper-2);
+  font-size: 13px;
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+.one-cross {
+  fill: var(--paper-1);
+}
+.one-cross-label {
+  fill: var(--paper-1);
+  font-size: 12px;
+  font-family: var(--font-year);
+  letter-spacing: 0.06em;
+}
+/* the counterfactual is cut out of the glow, not drawn beside it */
+.one-cf {
+  fill: var(--ink-2);
+}
+.one-cf-line {
+  stroke: var(--paper-1);
+  stroke-dasharray: 9 6;
+  fill: none;
+}
+.one-projected {
+  fill: color-mix(in srgb, var(--paper-1) 4%, transparent);
+}
+.one-boundary {
+  stroke: color-mix(in srgb, var(--paper-1) 30%, transparent);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+.one-projected-label {
+  fill: var(--paper-3);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+.one-end {
+  fill: var(--cool);
+  font-family: var(--font-year);
+  font-size: 17px;
+  font-weight: 700;
+}
+.one-end-cf {
+  fill: var(--paper-1);
+}
+.one-end-note {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: 400;
+  fill: var(--paper-3);
+}
+
+/* ------------------------------------------------------------------ verdict */
+
+.one-result {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: clamp(30px, 5vh, 64px) var(--gutter) 0;
+  border-top: 1px solid color-mix(in srgb, var(--paper-1) 12%, transparent);
+}
+.one-cols {
+  display: grid;
+  gap: clamp(24px, 4vw, 56px);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 980px) {
+  .one-cols {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.one-col h2 {
+  margin: 0 0 var(--space-4);
+  font-size: 12px;
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--paper-3);
+}
+.one-h2-b {
+  margin-top: var(--space-6) !important;
+}
+.one-col p {
+  margin: 0 0 var(--space-4);
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--paper-2);
+}
+.one-op {
+  display: block;
+  font-family: var(--font-year);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cool);
+  margin-bottom: 3px;
+}
+.one-conf {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--paper-3);
+}
+.one-conf.c-well-evidenced {
+  color: var(--paper-1);
+}
+.one-note,
+.one-still-more {
+  color: var(--paper-3) !important;
+  font-size: 13px !important;
+}
+.one-moved {
+  margin: 0 0 var(--space-4);
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: 1.45;
+  color: var(--paper-2);
+}
+.one-moved li {
+  padding: 5px 0 5px 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--paper-1) 10%, transparent);
+  position: relative;
+}
+.one-moved li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 13px;
+  width: 6px;
+  height: 6px;
+  background: var(--cool);
+}
+.one-still b {
+  color: var(--paper-1);
+  font-weight: 500;
+}
+.one-col blockquote {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-5);
+  border-left: 2px solid color-mix(in srgb, var(--paper-1) 30%, transparent);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--paper-1);
+}
+
+/* ------------------------------------------------------------------- footer */
+
+.one-foot {
+  max-width: 80ch;
+  margin: clamp(48px, 9vh, 110px) auto 0;
+  padding: var(--space-7) var(--gutter) 0;
+  border-top: 1px solid color-mix(in srgb, var(--paper-1) 14%, transparent);
+}
+.one-foot p {
+  margin: 0 0 var(--space-4);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--paper-3);
+}
+.one-dot {
+  margin: 0 0.7em;
+  color: var(--paper-3);
+}

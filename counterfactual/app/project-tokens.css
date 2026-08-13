@@ -1,0 +1,28 @@
+/*
+  Everything this project needs on top of futures-atlas-core's tokens.
+
+  The token defaults themselves come from the real package
+  (`futures-atlas-core/tokens.css`), vendored alongside — not from a copy in
+  this repo. Only the additions live here, because the chart surface is a
+  parameter the atlas has never needed: the AI Index's plots have to look
+  published, which means white paper and pure-black axes regardless of what the
+  rest of the page is doing.
+*/
+
+:root {
+  --chart-paper: #ffffff;
+  --chart-ink: #000000;
+  --chart-grid: #f5f5f5;
+  --chart-muted: #808080;
+
+  /* confidence, borrowed from the atlas ink ramp rather than a status palette */
+  --conf-strong: var(--fa-ink);
+  --conf-mid: var(--fa-graphite);
+  --conf-weak: var(--fa-faint);
+}
+
+html.dark {
+  --conf-strong: var(--fa-ink-d);
+  --conf-mid: var(--fa-graphite-d);
+  --conf-weak: var(--fa-faint-d);
+}

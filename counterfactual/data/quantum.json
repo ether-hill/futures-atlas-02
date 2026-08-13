@@ -1,0 +1,996 @@
+{
+ "meta": {
+  "report": "Quantum information science, assembled",
+  "publisher": "OpenAlex; Quantum Delta NL",
+  "published": "2026-08-13",
+  "reportUrl": "https://quantumdelta.nl",
+  "pdfUrl": "https://openalex.org/",
+  "dataUrl": "https://docs.openalex.org/",
+  "licence": "OpenAlex CC0; report figures cited",
+  "chartNote": "Chart: Counterfactual AI Index",
+  "palette": [
+   "#1C78BA",
+   "#EAADFF",
+   "#0D6B70",
+   "#73D9FF",
+   "#872996",
+   "#9CF2F2",
+   "#172E5C",
+   "#C75CD6",
+   "#1CC4BA",
+   "#4D1F52",
+   "#29A6FF"
+  ],
+  "generatedFrom": "data/raw/quantum/*.json (OpenAlex API responses, archived verbatim)",
+  "definition": "Quantum here means two OpenAlex topics: Quantum Information and Cryptography (T10020) and Quantum Computing Algorithms and Architecture (T10682).",
+  "cutoff": "OpenAlex dates many preprints and early-view records into the current and following year, so 2025–26 read as a spike rather than a count."
+ },
+ "figures": [
+  {
+   "id": "Q1",
+   "slug": "quantum-papers-worldwide",
+   "chapter": {
+    "n": 1,
+    "name": "Science"
+   },
+   "section": "Published research",
+   "reportPage": 0,
+   "hero": true,
+   "title": "Quantum information papers worldwide, 2012–2024",
+   "source": "OpenAlex, 2026",
+   "kind": "bar",
+   "categories": [
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024"
+   ],
+   "xAxis": {
+    "label": null,
+    "type": "category"
+   },
+   "yAxis": {
+    "label": "Papers published",
+    "shortLabel": "Papers",
+    "scale": "linear"
+   },
+   "labelLast": true,
+   "valueFormat": "int",
+   "series": [
+    {
+     "key": "world",
+     "label": "Quantum information papers worldwide",
+     "color": "#1C78BA",
+     "points": [
+      [
+       0,
+       9600
+      ],
+      [
+       1,
+       10157
+      ],
+      [
+       2,
+       10488
+      ],
+      [
+       3,
+       10280
+      ],
+      [
+       4,
+       10973
+      ],
+      [
+       5,
+       11136
+      ],
+      [
+       6,
+       11670
+      ],
+      [
+       7,
+       13511
+      ],
+      [
+       8,
+       14657
+      ],
+      [
+       9,
+       17177
+      ],
+      [
+       10,
+       18585
+      ],
+      [
+       11,
+       21441
+      ],
+      [
+       12,
+       20493
+      ]
+     ]
+    }
+   ],
+   "takeaway": "The field roughly doubled in a decade. Almost none of that growth is Dutch, and the Dutch share is the figure worth watching.",
+   "levers": [
+    "public-investment",
+    "talent",
+    "regulation",
+    "open-science"
+   ],
+   "chartNote": "Chart: Counterfactual AI Index",
+   "csvFile": "",
+   "csvUrl": "https://openalex.org/"
+  },
+  {
+   "id": "Q2",
+   "slug": "delft-quantum-papers",
+   "chapter": {
+    "n": 1,
+    "name": "Science"
+   },
+   "section": "Published research",
+   "reportPage": 0,
+   "hero": true,
+   "title": "TU Delft quantum information papers, 2012–2024",
+   "source": "OpenAlex, 2026",
+   "kind": "bar",
+   "categories": [
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024"
+   ],
+   "xAxis": {
+    "label": null,
+    "type": "category"
+   },
+   "yAxis": {
+    "label": "Papers published",
+    "shortLabel": "Papers",
+    "scale": "linear"
+   },
+   "labelLast": true,
+   "valueFormat": "int",
+   "series": [
+    {
+     "key": "delft",
+     "label": "TU Delft",
+     "color": "#0D6B70",
+     "points": [
+      [
+       0,
+       21
+      ],
+      [
+       1,
+       23
+      ],
+      [
+       2,
+       19
+      ],
+      [
+       3,
+       27
+      ],
+      [
+       4,
+       35
+      ],
+      [
+       5,
+       61
+      ],
+      [
+       6,
+       68
+      ],
+      [
+       7,
+       84
+      ],
+      [
+       8,
+       97
+      ],
+      [
+       9,
+       96
+      ],
+      [
+       10,
+       91
+      ],
+      [
+       11,
+       160
+      ],
+      [
+       12,
+       106
+      ]
+     ]
+    }
+   ],
+   "takeaway": "Delft's output roughly quintupled over the decade, and the inflection lands around 2017 — three years before Quantum Delta NL existed.",
+   "levers": [
+    "public-investment",
+    "talent",
+    "open-science"
+   ],
+   "chartNote": "Chart: Counterfactual AI Index",
+   "csvFile": "",
+   "csvUrl": "https://openalex.org/"
+  },
+  {
+   "id": "Q3",
+   "slug": "quantum-papers-by-country",
+   "chapter": {
+    "n": 1,
+    "name": "Science"
+   },
+   "section": "Published research",
+   "reportPage": 0,
+   "title": "Quantum information papers by country, 2012–2024",
+   "source": "OpenAlex, 2026",
+   "kind": "line",
+   "xAxis": {
+    "label": null,
+    "type": "year",
+    "tickStep": 1
+   },
+   "yAxis": {
+    "label": "Papers published",
+    "shortLabel": "Papers",
+    "scale": "linear"
+   },
+   "endLabels": true,
+   "valueFormat": "int",
+   "series": [
+    {
+     "key": "United States",
+     "label": "United States",
+     "color": "#1C78BA",
+     "points": [
+      [
+       2012,
+       1328
+      ],
+      [
+       2013,
+       1560
+      ],
+      [
+       2014,
+       1458
+      ],
+      [
+       2015,
+       1429
+      ],
+      [
+       2016,
+       1582
+      ],
+      [
+       2017,
+       1616
+      ],
+      [
+       2018,
+       1672
+      ],
+      [
+       2019,
+       2108
+      ],
+      [
+       2020,
+       2467
+      ],
+      [
+       2021,
+       2817
+      ],
+      [
+       2022,
+       3058
+      ],
+      [
+       2023,
+       3700
+      ],
+      [
+       2024,
+       3333
+      ]
+     ]
+    },
+    {
+     "key": "China",
+     "label": "China",
+     "color": "#EAADFF",
+     "points": [
+      [
+       2012,
+       1457
+      ],
+      [
+       2013,
+       1565
+      ],
+      [
+       2014,
+       1661
+      ],
+      [
+       2015,
+       1625
+      ],
+      [
+       2016,
+       1610
+      ],
+      [
+       2017,
+       1686
+      ],
+      [
+       2018,
+       1938
+      ],
+      [
+       2019,
+       2278
+      ],
+      [
+       2020,
+       2339
+      ],
+      [
+       2021,
+       2499
+      ],
+      [
+       2022,
+       2939
+      ],
+      [
+       2023,
+       3071
+      ],
+      [
+       2024,
+       3111
+      ]
+     ]
+    },
+    {
+     "key": "Germany",
+     "label": "Germany",
+     "color": "#0D6B70",
+     "points": [
+      [
+       2012,
+       664
+      ],
+      [
+       2013,
+       683
+      ],
+      [
+       2014,
+       692
+      ],
+      [
+       2015,
+       693
+      ],
+      [
+       2016,
+       797
+      ],
+      [
+       2017,
+       809
+      ],
+      [
+       2018,
+       760
+      ],
+      [
+       2019,
+       863
+      ],
+      [
+       2020,
+       977
+      ],
+      [
+       2021,
+       1108
+      ],
+      [
+       2022,
+       1168
+      ],
+      [
+       2023,
+       1588
+      ],
+      [
+       2024,
+       1339
+      ]
+     ]
+    },
+    {
+     "key": "United Kingdom",
+     "label": "United Kingdom",
+     "color": "#73D9FF",
+     "points": [
+      [
+       2012,
+       544
+      ],
+      [
+       2013,
+       586
+      ],
+      [
+       2014,
+       643
+      ],
+      [
+       2015,
+       573
+      ],
+      [
+       2016,
+       678
+      ],
+      [
+       2017,
+       780
+      ],
+      [
+       2018,
+       728
+      ],
+      [
+       2019,
+       834
+      ],
+      [
+       2020,
+       885
+      ],
+      [
+       2021,
+       969
+      ],
+      [
+       2022,
+       932
+      ],
+      [
+       2023,
+       989
+      ],
+      [
+       2024,
+       854
+      ]
+     ]
+    },
+    {
+     "key": "Netherlands",
+     "label": "Netherlands",
+     "color": "#872996",
+     "points": [
+      [
+       2012,
+       83
+      ],
+      [
+       2013,
+       97
+      ],
+      [
+       2014,
+       84
+      ],
+      [
+       2015,
+       87
+      ],
+      [
+       2016,
+       111
+      ],
+      [
+       2017,
+       149
+      ],
+      [
+       2018,
+       149
+      ],
+      [
+       2019,
+       185
+      ],
+      [
+       2020,
+       219
+      ],
+      [
+       2021,
+       285
+      ],
+      [
+       2022,
+       244
+      ],
+      [
+       2023,
+       362
+      ],
+      [
+       2024,
+       288
+      ]
+     ]
+    }
+   ],
+   "takeaway": "China passed everyone in the mid-2010s and did not stop. The Netherlands is a rounding error on this axis, which is the point of the next chart.",
+   "levers": [
+    "public-investment",
+    "talent",
+    "export-controls",
+    "open-science"
+   ],
+   "chartNote": "Chart: Counterfactual AI Index",
+   "csvFile": "",
+   "csvUrl": "https://openalex.org/"
+  },
+  {
+   "id": "Q4",
+   "slug": "dutch-share-of-quantum-output",
+   "chapter": {
+    "n": 1,
+    "name": "Science"
+   },
+   "section": "Published research",
+   "reportPage": 0,
+   "hero": true,
+   "title": "Dutch share of world quantum information output, 2012–2024",
+   "source": "OpenAlex, 2026; share computed",
+   "kind": "line",
+   "xAxis": {
+    "label": null,
+    "type": "year",
+    "tickStep": 1
+   },
+   "yAxis": {
+    "label": "% of world papers",
+    "shortLabel": "% of world",
+    "scale": "linear",
+    "format": "pct2"
+   },
+   "endLabels": true,
+   "valueFormat": "pct2",
+   "series": [
+    {
+     "key": "Netherlands",
+     "label": "Netherlands",
+     "color": "#1C78BA",
+     "points": [
+      [
+       2012,
+       0.008645833333333333
+      ],
+      [
+       2013,
+       0.009550063995274196
+      ],
+      [
+       2014,
+       0.008009153318077803
+      ],
+      [
+       2015,
+       0.008463035019455252
+      ],
+      [
+       2016,
+       0.010115738631185638
+      ],
+      [
+       2017,
+       0.013380028735632184
+      ],
+      [
+       2018,
+       0.01276778063410454
+      ],
+      [
+       2019,
+       0.01369254681370735
+      ],
+      [
+       2020,
+       0.014941666098110118
+      ],
+      [
+       2021,
+       0.01659195435757117
+      ],
+      [
+       2022,
+       0.013128867366155502
+      ],
+      [
+       2023,
+       0.01688354087962315
+      ],
+      [
+       2024,
+       0.014053579270970576
+      ]
+     ]
+    },
+    {
+     "key": "TU Delft",
+     "label": "TU Delft alone",
+     "color": "#0D6B70",
+     "points": [
+      [
+       2012,
+       0.0021875
+      ],
+      [
+       2013,
+       0.002264448163827902
+      ],
+      [
+       2014,
+       0.0018115942028985507
+      ],
+      [
+       2015,
+       0.002626459143968872
+      ],
+      [
+       2016,
+       0.0031896473161396152
+      ],
+      [
+       2017,
+       0.0054777298850574715
+      ],
+      [
+       2018,
+       0.005826906598114824
+      ],
+      [
+       2019,
+       0.006217156391088743
+      ],
+      [
+       2020,
+       0.006617998226103568
+      ],
+      [
+       2021,
+       0.0055888688362344995
+      ],
+      [
+       2022,
+       0.004896421845574388
+      ],
+      [
+       2023,
+       0.007462338510330675
+      ],
+      [
+       2024,
+       0.0051724979261211146
+      ]
+     ]
+    }
+   ],
+   "takeaway": "A country of 18 million holds around 1% of the world's quantum literature, and a single university in Delft holds roughly half of that.",
+   "levers": [
+    "public-investment",
+    "talent",
+    "open-science",
+    "eu-coordination"
+   ],
+   "chartNote": "Chart: Counterfactual AI Index",
+   "csvFile": "",
+   "csvUrl": "https://openalex.org/"
+  },
+  {
+   "id": "Q5",
+   "slug": "top-quantum-institutions",
+   "chapter": {
+    "n": 1,
+    "name": "Science"
+   },
+   "section": "Published research",
+   "reportPage": 0,
+   "title": "Quantum information papers by institution, 2020–2024",
+   "source": "OpenAlex, 2026",
+   "kind": "hbar",
+   "categories": [
+    "Centre National de la Recherche Scientifique",
+    "University of Science and Technology of China",
+    "Chinese Academy of Sciences",
+    "Massachusetts Institute of Technology",
+    "Tsinghua University",
+    "National University of Singapore",
+    "University of Chicago",
+    "University of Maryland, College Park",
+    "University of Waterloo",
+    "University of Tokyo",
+    "University of Oxford",
+    "University of Chinese Academy of Sciences",
+    "Centre for Quantum Technologies",
+    "California Institute of Technology",
+    "Beijing University of Posts and Telecommunications",
+    "Delft University of Technology"
+   ],
+   "xAxis": {
+    "label": "Papers published",
+    "type": "linear",
+    "domain": [
+     0,
+     2000
+    ],
+    "tickStep": 250
+   },
+   "yAxis": {
+    "label": null,
+    "type": "category"
+   },
+   "valueFormat": "int",
+   "labelAll": true,
+   "series": [
+    {
+     "key": "papers",
+     "label": "Papers, 2020–2024",
+     "color": "#1C78BA",
+     "points": [
+      [
+       0,
+       1712
+      ],
+      [
+       1,
+       1312
+      ],
+      [
+       2,
+       879
+      ],
+      [
+       3,
+       843
+      ],
+      [
+       4,
+       827
+      ],
+      [
+       5,
+       724
+      ],
+      [
+       6,
+       707
+      ],
+      [
+       7,
+       703
+      ],
+      [
+       8,
+       668
+      ],
+      [
+       9,
+       661
+      ],
+      [
+       10,
+       651
+      ],
+      [
+       11,
+       627
+      ],
+      [
+       12,
+       599
+      ],
+      [
+       13,
+       593
+      ],
+      [
+       14,
+       591
+      ],
+      [
+       15,
+       550
+      ]
+     ]
+    }
+   ],
+   "takeaway": "Delft is not in the top fifteen by volume. Its claim is that the papers matter more than the count, which is exactly the claim a volume chart cannot settle.",
+   "levers": [
+    "public-investment",
+    "talent"
+   ],
+   "chartNote": "Chart: Counterfactual AI Index",
+   "csvFile": "",
+   "csvUrl": "https://openalex.org/"
+  },
+  {
+   "id": "Q6",
+   "slug": "dutch-private-quantum-investment",
+   "chapter": {
+    "n": 2,
+    "name": "Money"
+   },
+   "section": "The State of Quantum 2025",
+   "reportPage": 0,
+   "hero": true,
+   "title": "Private investment in Dutch quantum companies, 2019 and 2025",
+   "source": "Quantum Delta NL, 2025",
+   "kind": "bar",
+   "categories": [
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ],
+   "xAxis": {
+    "label": null,
+    "type": "category"
+   },
+   "yAxis": {
+    "label": "€ millions",
+    "shortLabel": "€ millions",
+    "scale": "linear",
+    "domain": [
+     0,
+     200
+    ],
+    "tickStep": 50
+   },
+   "labelLast": true,
+   "valueFormat": "int",
+   "series": [
+    {
+     "key": "investment",
+     "label": "Private investment",
+     "color": "#1C78BA",
+     "points": [
+      [
+       0,
+       10
+      ],
+      [
+       6,
+       160
+      ]
+     ]
+    }
+   ],
+   "takeaway": "Sixteenfold in six years — and two data points, because the report publishes endpoints rather than a series. The gap between those bars is not a trend line, it is a gap.",
+   "levers": [
+    "public-investment",
+    "regulation",
+    "talent",
+    "eu-coordination"
+   ],
+   "chartNote": "Chart: Counterfactual AI Index",
+   "csvFile": "",
+   "csvUrl": "https://quantumdelta.nl/news/press_release_en_netherlands-2-worldwide"
+  },
+  {
+   "id": "Q7",
+   "slug": "dutch-quantum-patents",
+   "chapter": {
+    "n": 2,
+    "name": "Money"
+   },
+   "section": "The State of Quantum 2025",
+   "reportPage": 0,
+   "title": "Quantum patent applications in the Netherlands, 2020 and 2025",
+   "source": "Quantum Delta NL, 2025",
+   "kind": "bar",
+   "categories": [
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ],
+   "xAxis": {
+    "label": null,
+    "type": "category"
+   },
+   "yAxis": {
+    "label": "Applications filed",
+    "shortLabel": "Applications",
+    "scale": "linear",
+    "domain": [
+     0,
+     70
+    ],
+    "tickStep": 10
+   },
+   "labelLast": true,
+   "valueFormat": "int",
+   "series": [
+    {
+     "key": "patents",
+     "label": "Patent applications",
+     "color": "#0D6B70",
+     "points": [
+      [
+       0,
+       11
+      ],
+      [
+       5,
+       60
+      ]
+     ]
+    }
+   ],
+   "takeaway": "Eleven to sixty in five years. Also two points, and also the only two the report gives.",
+   "levers": [
+    "public-investment",
+    "regulation",
+    "eu-coordination"
+   ],
+   "chartNote": "Chart: Counterfactual AI Index",
+   "csvFile": "",
+   "csvUrl": "https://quantumdelta.nl/news/press_release_en_netherlands-2-worldwide"
+  }
+ ]
+}

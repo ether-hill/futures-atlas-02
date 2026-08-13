@@ -1,0 +1,957 @@
+/*
+  Everything outside the plot area is Futures Atlas: bone paper, ink type,
+  2px radii, hairline rules, letterspaced labels. Everything inside the plot
+  area is the AI Index, because that half has to look published.
+*/
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-heading);
+  font-size: var(--text-body-size);
+  font-weight: var(--weight-body);
+  line-height: var(--lh-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--text);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline);
+}
+a:hover {
+  border-bottom-color: currentColor;
+}
+
+.shell {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter);
+}
+
+.dot {
+  margin: 0 0.5em;
+  color: var(--faint);
+}
+.sep {
+  margin: 0 0.6em;
+  color: var(--faint);
+}
+
+.eyebrow {
+  margin: 0 0 var(--space-5);
+  font-family: var(--font-serif);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label-wide);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------- topbar */
+
+.topbar {
+  background: var(--band);
+  color: var(--paper);
+  padding: var(--space-5) 0 var(--space-6);
+}
+.topbar-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-6);
+  align-items: baseline;
+}
+.topbar h1 {
+  margin: 0;
+  font-size: clamp(19px, 2vw, 26px);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--track-display);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.topbar h1 em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+}
+.topline {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: var(--lh-snug);
+  max-width: 66ch;
+  color: color-mix(in srgb, var(--paper) 72%, transparent);
+}
+.provenance {
+  margin: 0;
+  font-size: var(--text-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--paper) 45%, transparent);
+}
+.provenance a {
+  color: color-mix(in srgb, var(--paper) 80%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--paper) 30%, transparent);
+}
+.provenance a.swap {
+  color: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--paper) 35%, transparent);
+  border-radius: var(--radius);
+  padding: 3px 9px;
+  margin-left: 4px;
+}
+.provenance a.swap:hover {
+  background: color-mix(in srgb, var(--paper) 14%, transparent);
+}
+@media (max-width: 900px) {
+  .topbar-inner {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .topbar h1 {
+    white-space: normal;
+  }
+}
+
+/* --------------------------------------------------------------- intervention */
+
+.ivbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--haze);
+  border-bottom: var(--border-hairline) solid var(--hairline);
+  padding: var(--space-3) 0;
+}
+.ivform {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+.ivinput {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-heading);
+  font-size: max(16px, 17px);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-tight);
+  color: var(--text);
+  background: var(--panel);
+  border: var(--border-emphasis) solid var(--text);
+  border-radius: var(--radius);
+  padding: var(--space-3) var(--space-4);
+}
+.ivinput::placeholder {
+  color: var(--faint);
+  font-weight: var(--weight-body);
+}
+.ivinput:focus {
+  outline: var(--focus-ring) solid var(--accent);
+  outline-offset: 1px;
+}
+.ivgo,
+.ivclear {
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius);
+  cursor: pointer;
+  white-space: nowrap;
+}
+/* The colour pair core's own .fa-btn--primary uses: accent behind, `--paper`
+   (always light) in front. `--text` on `--paper` was light-mode-only thinking —
+   in the atlas's dark theme both are light and the button went blank. */
+.ivgo {
+  background: var(--accent);
+  color: var(--paper);
+  border: var(--border-emphasis) solid var(--accent);
+}
+.ivgo:hover {
+  background: var(--accent-deep);
+  border-color: var(--accent-deep);
+}
+.ivclear {
+  background: transparent;
+  color: var(--muted);
+  border: var(--border-hairline) solid var(--hairline);
+}
+.ivclear:hover {
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.ivrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--space-2);
+}
+.ivsuggest {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.ivchip {
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: var(--weight-medium);
+  padding: 5px var(--space-4);
+  background: var(--panel);
+  color: var(--text-body);
+  border: var(--border-hairline) solid var(--hairline);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.ivchip:hover {
+  border-color: var(--text);
+  color: var(--text);
+}
+.ivchip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--paper);
+}
+/* The year is the second half of the proposal, not a footnote to it. */
+.chipyear {
+  margin-left: 7px;
+  font-family: var(--font-year);
+  font-size: 11px;
+  letter-spacing: 0.03em;
+  color: var(--faint);
+}
+.ivchip.on .chipyear {
+  color: color-mix(in srgb, var(--paper) 70%, transparent);
+}
+.ivchip:hover .chipyear {
+  color: var(--muted);
+}
+
+/* While a suggestion types itself out, the caret is the point. */
+.ivinput.istyping {
+  caret-color: var(--accent);
+}
+
+.ivopts {
+  display: flex;
+  gap: var(--space-6);
+  align-items: center;
+}
+.ivyear {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.ivyear label {
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ivyear .yr {
+  font-family: var(--font-year);
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--text);
+}
+.ivyear input[type="range"] {
+  width: 128px;
+  accent-color: var(--text);
+}
+
+.segmented {
+  display: flex;
+  border: var(--border-hairline) solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.segmented button {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  font-weight: var(--weight-strong);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px var(--space-4);
+  background: var(--panel);
+  color: var(--muted);
+  border: 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.segmented button + button {
+  border-left: var(--border-hairline) solid var(--hairline);
+}
+.segmented button.on {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+.ivhint {
+  color: var(--muted);
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+}
+
+.ivmiss {
+  margin: var(--space-3) 0 0;
+  max-width: 80ch;
+  font-size: 13px;
+  line-height: var(--lh-snug);
+  color: var(--muted);
+}
+.ivsummary {
+  margin: 6px 0 0;
+  max-width: 110ch;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: var(--lh-snug);
+  color: var(--text);
+}
+.ivscope {
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-left: var(--space-3);
+}
+
+/* ----------------------------------------------------------------- the board */
+
+.board {
+  padding: var(--space-4) 0 var(--space-5);
+}
+.boardgrid {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1100px) {
+  .boardgrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  /* Side by side needs the whole row: two panels at quarter-width read as
+     thumbnails, not as a comparison. */
+  .board.split .boardgrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rest {
+  padding: 0 0 var(--space-section);
+}
+.restToggle {
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-6);
+  background: transparent;
+  color: var(--text);
+  border: var(--border-hairline) solid var(--hairline);
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.restToggle:hover {
+  border-color: var(--text);
+}
+.restgrid {
+  margin-top: var(--space-5);
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 1400px) {
+  .restgrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .restgrid .figure.tall,
+  .restgrid .figure.split {
+    grid-column: 1 / -1;
+  }
+}
+
+/* --------------------------------------------------------------------- figure */
+
+.figure {
+  margin: 0;
+  background: var(--panel);
+  border: var(--border-hairline) solid var(--hairline);
+  border-radius: var(--radius);
+  padding: var(--space-card);
+}
+.figure.changed {
+  border-color: var(--text);
+  box-shadow: 3px 3px 0 var(--haze);
+}
+.figure.untouched {
+  opacity: 0.72;
+}
+.figure.untouched:hover {
+  opacity: 1;
+}
+
+.figure-head {
+  margin-bottom: var(--space-3);
+}
+.figure-title {
+  margin: 0 0 3px;
+  font-size: var(--text-title-s);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-tight);
+  line-height: var(--lh-tight);
+  color: var(--text);
+}
+.figure-source {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+/* The headline. On a dashboard this is what people actually read, so it carries
+   both numbers rather than making them decode the chart. */
+.figure-delta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) 0;
+  border-top: var(--border-strong) solid var(--text);
+  border-bottom: 1px solid var(--hairline);
+}
+.delta-num {
+  font-family: var(--font-year);
+  font-size: clamp(26px, 2.6vw, 38px);
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  white-space: nowrap;
+}
+.delta-what {
+  font-size: 12px;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.delta-pair {
+  display: block;
+  font-family: var(--font-year);
+  font-size: 17px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--text);
+}
+.delta-pair s {
+  color: var(--faint);
+}
+.delta-pair em {
+  font-style: normal;
+  color: var(--faint);
+  margin: 0 0.35em;
+}
+.delta-pair b {
+  font-weight: 700;
+}
+.delta-proj {
+  color: var(--faint);
+}
+
+/* ----------------------------------------------------------------- hero cards */
+
+.figure.hero {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-3) var(--space-4) var(--space-2);
+}
+.figure.hero .figure-title {
+  font-size: clamp(15px, 1.3vw, 17px);
+}
+.figure.hero .figure-source {
+  font-size: 11px;
+}
+.figure.hero .figure-foot {
+  margin-top: auto;
+  padding-top: 6px;
+  margin-bottom: 0;
+  font-size: 10.5px;
+  gap: var(--space-2);
+}
+.figure.hero .figure-head {
+  margin-bottom: 0;
+}
+.figure.hero .figure-delta {
+  margin-top: 6px;
+  padding: 4px 0 6px;
+  gap: var(--space-3);
+}
+.figure.hero .delta-num {
+  font-size: clamp(24px, 2.2vw, 32px);
+}
+.figure.hero .delta-pair {
+  font-size: 15px;
+}
+.figure.hero .cf-key {
+  margin-top: 5px;
+}
+.figure.hero .figure-takeaway,
+.figure.hero .figure-untouched {
+  margin-top: var(--space-2);
+  font-size: 13px;
+}
+.figure.hero .chart {
+  padding-top: var(--space-2);
+}
+
+/* ------------------------------------------------------------------- side by side */
+
+.splitwrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  margin-top: var(--space-3);
+}
+@media (max-width: 900px) {
+  .splitwrap {
+    grid-template-columns: 1fr;
+  }
+}
+.splitpane {
+  min-width: 0;
+}
+.splitlabel {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-label);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--hairline);
+}
+.cfpane .splitlabel {
+  color: var(--text);
+  border-bottom-color: var(--text);
+}
+
+/* the plot itself keeps the AI Index surface */
+.chart {
+  background: var(--chart-paper);
+  padding: var(--space-3) 0 0;
+}
+.chart svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.chart text {
+  font-family: var(--font-chart), "Helvetica Neue", Arial, sans-serif;
+}
+
+/* The transition is the message: you watch the same chart move rather than
+   getting handed a different one. Geometry properties on SVG are animatable in
+   CSS, which beats re-rendering 60 times a second in React. */
+.chart .mark {
+  transition:
+    d 640ms var(--ease),
+    x 640ms var(--ease),
+    y 640ms var(--ease),
+    width 640ms var(--ease),
+    height 640ms var(--ease),
+    cx 640ms var(--ease),
+    cy 640ms var(--ease),
+    r 640ms var(--ease),
+    transform 640ms var(--ease),
+    opacity 320ms linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chart .mark {
+    transition: none;
+  }
+}
+
+.cf-key {
+  display: flex;
+  gap: var(--space-5);
+  margin-top: var(--space-2);
+  font-size: var(--text-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cf-key-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.serieskey {
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  color: var(--text-body);
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 11.5px;
+}
+
+.figure-foot {
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.figure-ref {
+  font-family: var(--font-year);
+  letter-spacing: 0.06em;
+}
+.figure-actions {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+.figure-actions button,
+.figure-actions a {
+  font-family: var(--font-heading);
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 0;
+  border-bottom: 1px solid var(--hairline);
+  background: none;
+  padding: 0;
+  color: var(--text-body);
+  cursor: pointer;
+}
+.figure-actions button:hover,
+.figure-actions a:hover {
+  border-bottom-color: currentColor;
+}
+
+.figure-takeaway,
+.figure-untouched {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: var(--lh-snug);
+  color: var(--text-body);
+  max-width: 78ch;
+}
+.figure-untouched {
+  color: var(--muted);
+}
+.figure-untouched .tag {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-size: var(--text-micro);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  border: 1px solid var(--hairline);
+  padding: 1px 6px;
+  margin-right: var(--space-3);
+  vertical-align: 2px;
+}
+
+/* ---------------------------------------------------------------- reasoning */
+
+.why {
+  margin: var(--space-4) 0 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--hairline);
+}
+.why-item {
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--hairline);
+}
+.why-item p {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: var(--lh-snug);
+  color: var(--text-body);
+  max-width: 76ch;
+}
+.why-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  align-items: center;
+  font-size: var(--text-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.why-op {
+  font-family: var(--font-year);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  background: var(--haze);
+  padding: 2px 7px;
+  color: var(--text);
+}
+.why-from,
+.why-scope {
+  color: var(--muted);
+}
+.why-scope::before {
+  content: "→ ";
+}
+.why-conf {
+  margin-left: auto;
+  font-weight: var(--weight-strong);
+  padding: 2px 7px;
+  border: 1px solid currentColor;
+}
+.c-well-evidenced {
+  color: var(--conf-strong);
+}
+.c-arguable {
+  color: var(--conf-mid);
+}
+.c-speculative {
+  color: var(--conf-weak);
+  font-style: italic;
+}
+
+/* ------------------------------------------------------------------- tooltip */
+
+.tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  background: var(--panel);
+  border: 1px solid var(--text);
+  border-radius: var(--radius);
+  padding: var(--space-2) var(--space-3);
+  font-size: 12.5px;
+  line-height: 1.35;
+  min-width: 140px;
+  max-width: 340px;
+  box-shadow: var(--shadow-menu);
+}
+.tooltip-title {
+  font-weight: var(--weight-strong);
+  margin-bottom: 5px;
+  font-family: var(--font-year);
+  letter-spacing: 0.03em;
+}
+.tooltip-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.tooltip-swatch {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  transform: translateY(1px);
+}
+.tooltip-label {
+  flex: 1 1 auto;
+  color: var(--text-body);
+}
+.tooltip-was {
+  color: var(--faint);
+  text-decoration: line-through;
+  font-family: var(--font-year);
+}
+.tooltip-value {
+  font-weight: var(--weight-strong);
+  font-family: var(--font-year);
+}
+
+/* ----------------------------------------------------------------- data table */
+
+.datatable-wrap {
+  margin-top: var(--space-4);
+  max-height: 340px;
+  overflow: auto;
+  border: 1px solid var(--hairline);
+}
+.datatable {
+  border-collapse: collapse;
+  width: 100%;
+  font-family: var(--font-year);
+  font-size: 13px;
+  letter-spacing: 0.02em;
+}
+.datatable th,
+.datatable td {
+  padding: 5px var(--space-3);
+  text-align: right;
+  border-bottom: 1px solid var(--hairline);
+  white-space: nowrap;
+}
+.datatable thead th {
+  position: sticky;
+  top: 0;
+  background: var(--panel);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: var(--weight-strong);
+}
+.datatable tbody th,
+.datatable thead th:first-child {
+  text-align: left;
+  font-weight: var(--weight-medium);
+}
+.datatable .sw {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 5px;
+}
+.datatable .was {
+  color: var(--faint);
+  text-decoration: line-through;
+  margin-right: 7px;
+}
+.datatable .cfcell {
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* --------------------------------------------------------------------- argue */
+
+.argue {
+  background: var(--band);
+  color: var(--paper);
+  padding: var(--space-section) 0;
+}
+.argue .eyebrow {
+  color: color-mix(in srgb, var(--paper) 55%, transparent);
+}
+.argue-inner {
+  max-width: 84ch;
+}
+.argue-claim {
+  margin: 0 0 var(--space-6);
+  font-family: var(--font-serif);
+  font-size: var(--text-title);
+  font-style: italic;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--track-tight);
+  border-left: var(--border-rule) solid color-mix(in srgb, var(--paper) 35%, transparent);
+  padding-left: var(--space-6);
+}
+.argue-response {
+  margin: 0 0 var(--space-7);
+  font-size: var(--text-lead);
+  line-height: var(--lh-snug);
+  color: color-mix(in srgb, var(--paper) 85%, transparent);
+}
+.argue-input {
+  display: flex;
+  gap: var(--space-3);
+  align-items: stretch;
+  max-width: 640px;
+}
+.argue-input input {
+  flex: 1 1 auto;
+  font-family: var(--font-heading);
+  font-size: max(16px, 15px);
+  background: transparent;
+  color: var(--paper);
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--paper) 30%, transparent);
+  padding: var(--space-2) 0;
+}
+.argue-input input::placeholder {
+  color: color-mix(in srgb, var(--paper) 35%, transparent);
+}
+.argue-input button {
+  font-family: var(--font-heading);
+  font-size: var(--text-label);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  padding: var(--space-3) var(--space-5);
+  background: transparent;
+  color: color-mix(in srgb, var(--paper) 45%, transparent);
+  border: 1px solid color-mix(in srgb, var(--paper) 25%, transparent);
+  border-radius: var(--radius);
+}
+.argue-input input:disabled,
+.argue-input button:disabled {
+  cursor: not-allowed;
+}
+.argue-note {
+  margin: var(--space-5) 0 0;
+  max-width: 72ch;
+  font-size: 13px;
+  line-height: var(--lh-snug);
+  color: color-mix(in srgb, var(--paper) 50%, transparent);
+}
+
+/* ------------------------------------------------------------------ colophon */
+
+.colophon {
+  background: var(--panel);
+  border-top: 1px solid var(--hairline);
+  padding: var(--space-section) 0;
+}
+.colophon-inner {
+  max-width: 80ch;
+}
+.colophon h2 {
+  margin: 0 0 var(--space-6);
+  font-size: var(--text-title);
+  font-weight: var(--weight-strong);
+  letter-spacing: var(--track-tight);
+}
+.colophon p {
+  margin: 0 0 var(--space-5);
+  font-size: 15px;
+  line-height: var(--lh-snug);
+  color: var(--text-body);
+}
+.colophon strong {
+  font-weight: var(--weight-strong);
+  color: var(--text);
+}
+.colophon code {
+  font-family: var(--font-year);
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  background: var(--haze);
+  padding: 1px 5px;
+}
+.fineprint {
+  font-size: 12.5px !important;
+  color: var(--faint) !important;
+}
+
+/* Inputs never zoom on mobile. */
+input,
+textarea,
+select {
+  font-size: max(16px, 1em);
+}

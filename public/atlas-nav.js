@@ -25,6 +25,9 @@
   var FA_PROJECTS = [
     { name: "Hypothetica Magnifica", path: "/magnifica" },
     { name: "Trajectories", path: "/trajectories", draft: true },
+    { name: "The Counterfactual Index", path: "/counterfactual", draft: true },
+    { name: "Counterfactual Quantum", path: "/counterfactual/quantum", draft: true },
+    { name: "One Figure: The Power", path: "/counterfactual/one", draft: true },
     { name: "Hyperscale", path: "/hyperscale", draft: true },
     { name: "Signal Reactor", path: "/signal-reactor" },
     { name: "Quantum Spark", path: "/quantum-spark" },
@@ -312,9 +315,14 @@
       // In the bar rather than floating: a fixed button had to be nudged around
       // whenever the bar hid on scroll, and it never belonged to anything. Falls
       // back to the body if the bar has not been built (it always has by here).
+      // Anchor on whatever is actually there. Theme-locked projects (The Odds, Hollow Villages…)
+      // delete .fa-shell__toggle above, and anchoring on it alone dropped the share button onto
+      // <body>, where it rendered off the bottom of the page — invisible on every locked project.
       var barRight = document.querySelector(".fa-shell__right");
-      var barToggle = barRight && barRight.querySelector(".fa-shell__toggle");
-      if (barToggle) barRight.insertBefore(sh, barToggle);
+      var shareAnchor = barRight && (barRight.querySelector(".fa-shell__toggle") ||
+        barRight.querySelector(".fa-shell__profile") || barRight.querySelector(".fa-shell__burger"));
+      if (shareAnchor) barRight.insertBefore(sh, shareAnchor);
+      else if (barRight) barRight.appendChild(sh);
       else document.body.appendChild(sh);
       var sBtn = sh.querySelector(".fa-share__btn");
       var sPanel = sh.querySelector(".fa-share__panel");

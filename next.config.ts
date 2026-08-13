@@ -70,6 +70,11 @@ const nextConfig: NextConfig = {
         { source: "/social-composer/about", destination: "/social-composer/about/index.html" },
         { source: "/social-composer/village-oracle", destination: "/social-composer/village-oracle/index.html" },
         // Swipe the Future — Next static export (basePath baked in, trailingSlash)
+        // The Counterfactual Index — one static bundle, three atlas entries.
+        { source: "/counterfactual", destination: "/counterfactual/index.html" },
+        { source: "/counterfactual/quantum", destination: "/counterfactual/quantum/index.html" },
+        { source: "/counterfactual/one", destination: "/counterfactual/one/index.html" },
+
         { source: "/swipe-the-future", destination: "/swipe-the-future/index.html" },
         { source: "/swipe-the-future/stats", destination: "/swipe-the-future/stats/index.html" },
         // Swipe the Future v1 — the original game, frozen. Draft-gated.
