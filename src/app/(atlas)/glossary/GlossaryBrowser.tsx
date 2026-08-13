@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@/components/Container";
 import { DOMAIN_ORDER, type GlossaryDomain, type GlossaryEntry } from "@/data/glossary";
 
@@ -23,6 +23,9 @@ const letterOf = (t: string) => {
 export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
   const [q, setQ] = useState("");
   const [domain, setDomain] = useState<GlossaryDomain | null>(null);
+  /** the letter section currently under the sticky rail */
+  const [active, setActive] = useState<string | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const sorted = useMemo(
     () => [...entries].sort((a, b) => a.term.localeCompare(b.term, "en")),
@@ -56,6 +59,47 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
     for (const e of entries) m.set(e.domain, (m.get(e.domain) ?? 0) + 1);
     return m;
   }, [entries]);
+
+  /*
+   * Mark the current letter: the last section whose top has passed the reading
+   * line, which sits below the bar and the rail so a heading counts as current
+   * when it is actually visible rather than when it touches the viewport edge
+   * and is still behind the chrome. One rAF-throttled scroll pass, no observer
+   * — the sections move together, so this is a single cheap read per frame.
+   */
+  useEffect(() => {
+    const root = listRef.current;
+    if (!root) return;
+    const sections = [...root.querySelectorAll<HTMLElement>("section[data-letter]")];
+    if (sections.length === 0) {
+      setActive(null);
+      return;
+    }
+
+    const LINE = 140;
+    let queued = false;
+    const measure = () => {
+      queued = false;
+      let current = sections[0]?.dataset.letter ?? null;
+      for (const s of sections) {
+        if (s.getBoundingClientRect().top <= LINE) current = s.dataset.letter ?? current;
+      }
+      setActive(current);
+    };
+    const onScroll = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(measure);
+    };
+
+    measure();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [filtered.length]);
 
   return (
     <div className="min-h-[70vh] bg-surface py-[clamp(48px,8vw,110px)]">
@@ -115,13 +159,31 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
         </div>
 
         {/* A–Z rail */}
-        <nav aria-label="Jump to letter" className="mt-5 flex flex-wrap gap-x-1 gap-y-1.5">
+        {/*
+          The alphabet is the sticky nav. It sits directly under the global bar,
+          spans the gutter with its own ground so entries don't scroll visibly
+          behind it, and stays one row — 27 targets wrap to three lines on a
+          phone, which would eat a third of the screen, so it scrolls sideways
+          instead. The current letter is marked as you scroll, which is why the
+          per-letter headings below no longer need to stick as well.
+        */}
+        <nav
+          aria-label="Jump to letter"
+          className="sticky z-20 -mx-4 mt-5 flex gap-x-1 overflow-x-auto border-y border-ink/[0.14] bg-surface/95 px-4 py-2 backdrop-blur-md [scrollbar-width:none] min-[680px]:-mx-7 min-[680px]:px-7 [&::-webkit-scrollbar]:hidden"
+          style={{ top: "var(--fa-nav-h)" }}
+        >
           {LETTERS.map((l) =>
             present.has(l) ? (
               <a
                 key={l}
                 href={`#letter-${l}`}
-                className="grid h-7 w-7 place-items-center rounded-[2px] font-mono text-[11px] text-ink/70 transition-colors hover:bg-band hover:text-paper"
+                aria-current={active === l ? "true" : undefined}
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-[2px] font-mono text-[11px] transition-colors"
+                style={
+                  active === l
+                    ? { background: "var(--accent)", color: "var(--paper, #fff)" }
+                    : { color: "color-mix(in srgb, var(--text) 70%, transparent)" }
+                }
               >
                 {l}
               </a>
@@ -129,7 +191,7 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
               <span
                 key={l}
                 aria-hidden
-                className="grid h-7 w-7 place-items-center font-mono text-[11px] text-ink/15"
+                className="grid h-7 w-7 shrink-0 place-items-center font-mono text-[11px] text-ink/15"
               >
                 {l}
               </span>
@@ -142,10 +204,16 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
             Nothing matches “{q}”{domain ? ` in ${domain}` : ""}.
           </p>
         ) : (
-          <div className="mt-[clamp(32px,5vw,60px)]">
+          <div ref={listRef} className="mt-[clamp(32px,5vw,60px)]">
             {[...groups.entries()].map(([letter, items]) => (
-              <section key={letter} id={`letter-${letter}`} className="scroll-mt-24">
-                <h2 className="sticky top-[var(--fa-nav-h)] z-10 -mx-1 bg-surface/95 px-1 py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-accent-deep backdrop-blur-sm">
+              <section
+                key={letter}
+                id={`letter-${letter}`}
+                data-letter={letter}
+                // clears the global bar AND the sticky alphabet under it
+                style={{ scrollMarginTop: "calc(var(--fa-nav-h) + 68px)" }}
+              >
+                <h2 className="py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-accent-deep">
                   {letter}
                 </h2>
                 <dl className="border-t border-ink/[0.14]">
@@ -167,7 +235,8 @@ function Entry({ entry }: { entry: GlossaryEntry }) {
   return (
     <div
       id={id}
-      className="grid scroll-mt-28 gap-x-[clamp(16px,2.4vw,40px)] gap-y-1.5 border-b border-ink/[0.14] py-[clamp(16px,2vw,24px)] min-[860px]:grid-cols-[minmax(200px,260px)_1fr]"
+      style={{ scrollMarginTop: "calc(var(--fa-nav-h) + 68px)" }}
+      className="grid gap-x-[clamp(16px,2.4vw,40px)] gap-y-1.5 border-b border-ink/[0.14] py-[clamp(16px,2vw,24px)] min-[860px]:grid-cols-[minmax(200px,260px)_1fr]"
     >
       <dt className="min-w-0">
         <a
