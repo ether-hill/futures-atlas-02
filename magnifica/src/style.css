@@ -876,3 +876,102 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
     drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55))
     drop-shadow(0 40px 64px rgba(0, 0, 0, 0.5));
 }
+
+/* ---------- the method, as a flow line ----------
+   Five stages along a rule on wide screens; the same rule turned vertical on a
+   phone, running down the left of the column. One list, one set of nodes — the
+   line is drawn from the steps themselves rather than as a separate element, so
+   it cannot fall out of step with them. */
+.flow-line {
+  list-style: none;
+  margin: clamp(28px, 4vw, 48px) 0 0;
+  padding: 0;
+  display: grid;
+  gap: clamp(26px, 3vw, 30px);
+}
+@media (min-width: 900px) {
+  .flow-line { grid-template-columns: repeat(5, 1fr); gap: clamp(20px, 2.4vw, 34px); }
+}
+
+.flow-step { position: relative; padding-left: 34px; }
+@media (min-width: 900px) { .flow-step { padding-left: 0; padding-top: 34px; } }
+
+/* the rule. On mobile it runs down the left; on desktop across the top. The
+   last step stops it, so the line ends on the final node instead of running
+   off into nothing. */
+.flow-step::before {
+  content: "";
+  position: absolute;
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
+  left: 5px;
+  top: 12px;
+  width: 1px;
+  height: calc(100% + clamp(26px, 3vw, 30px));
+}
+.flow-step:last-child::before { height: 0; }
+@media (min-width: 900px) {
+  .flow-step::before {
+    left: 0;
+    top: 5px;
+    width: calc(100% + clamp(20px, 2.4vw, 34px));
+    height: 1px;
+  }
+  .flow-step:last-child::before { width: 0; }
+}
+
+/* the node */
+.flow-step::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--bg);
+}
+@media (min-width: 900px) { .flow-step::after { top: 0; } }
+
+.flow-num {
+  display: block;
+  margin-bottom: 10px;
+  font: 700 11px var(--mono);
+  letter-spacing: 0.16em;
+  color: var(--accent);
+}
+.flow-h {
+  margin: 0 0 8px;
+  font-size: clamp(15px, 1.5vw, 17px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+.flow-p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* the banner print now holds a loop rather than a still */
+.x-polaroid video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  background: oklch(0.8 0.01 85);
+  flex: 0 1 auto;
+  min-height: 0;
+}
+/* Top layer, and it hangs past the foot of the banner onto the voices below.
+   The banner cannot clip for that to show; its art plate clips instead. */
+.banner { overflow: visible; }
+.banner-art { overflow: hidden; }
+.banner .banner-print {
+  position: relative;
+  z-index: 3;
+  align-self: end;
+  margin-bottom: clamp(-150px, -10vw, -70px);
+}

@@ -1,20 +1,11 @@
-import { ENCYCLICAL, CHAPTERS, THEMES, QUOTES, SOURCES } from "./encyclical";
+import { ENCYCLICAL, CHAPTERS } from "./encyclical";
 import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
-import { experienceView, experienceParts, hasExperience, mountExperience, polaroid, type Variant } from "./experience";
+import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
 import { experience4View, mountExperience4 } from "./experience4";
 import { mountDrawer, unmountDrawer, markDrawerRoute, markPinned } from "./drawer";
 import { portraitOf, monogram } from "./portraits";
-
-/** Bare host for a source's footer, matching the feed's cards. */
-const hostOf = (url: string) => {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-};
 
 const esc = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -45,27 +36,40 @@ const SPEC_BANNER = `
     their tradition actually uses. No excerpt here is a real quote.
   </div>`;
 
+/**
+ * The method, as five stages. Kept here rather than in the markup so the flow
+ * line is a list of content and not a wall of nested spans — and so the wording
+ * has one home if it needs to change.
+ */
+const FLOW: { title: string; body: string }[] = [
+  {
+    title: "Source the record",
+    body:
+      "Collect what the leader has actually said about technology, science and the human person \u2014 addresses, encyclicals, rulings, sermons, interviews, institutional statements. Only material that can be cited and linked; anything unsourceable is left out rather than paraphrased.",
+  },
+  {
+    title: "Read the tradition",
+    body:
+      "Establish the concepts that tradition reaches for when it argues about being human, and the written forms it actually uses. An encyclical, a directive from a seat of authority, a dharma talk and a pastoral letter are different instruments, and they carry an argument differently.",
+  },
+  {
+    title: "Find the seams",
+    body:
+      "Read that record against Magnifica humanitas. Where would this leader stand with Leo, where would they break from him, and what would they raise that he never mentions? The disagreements are the useful part; agreement is cheap.",
+  },
+  {
+    title: "Draft in form",
+    body:
+      "Write the document as that tradition would write it \u2014 its structure, register, length and way of reasoning \u2014 rather than summarising the leader's views in our voice. Where the record is thin the draft leans on the tradition's broader teaching and stays correspondingly cautious.",
+  },
+  {
+    title: "Mark it, and show the workings",
+    body:
+      "Every predicted document says on its face that it does not exist, every excerpt is labelled as not a quote, and each page lists the sourced statements it was extrapolated from. The reader should never have to guess which half they are reading.",
+  },
+];
+
 function homeView(): string {
-  const chapters = CHAPTERS.map(
-    (c, i) => `
-    <div class="chapter${i === 0 ? " open" : ""}" data-ch>
-      <button type="button">
-        <span class="ch-l">${esc(c.label)}</span>
-        <span class="ch-t">${esc(c.title)}</span>
-        <span class="ch-r">${esc(c.range)}</span>
-      </button>
-      <p class="ch-body">${esc(c.summary)}</p>
-    </div>`
-  ).join("");
-
-  const themes = THEMES.map(
-    (t) => `<div class="theme" data-reveal><h4>${esc(t.title)}</h4><p>${esc(t.body)}</p></div>`
-  ).join("");
-
-  const quotes = QUOTES.map(
-    (q) => `<blockquote class="q" data-reveal>\u201c${esc(q.text)}\u201d<footer>${esc(q.ref)}</footer></blockquote>`
-  ).join("");
-
   // The voice cards carry the leader's real, licensed portrait. The credit line
   // is rendered, not hidden: CC BY-SA requires visible attribution.
   const voices = LEADERS.map((l, i) => {
@@ -89,21 +93,6 @@ function homeView(): string {
     </a>`;
   }).join("");
 
-
-  const sources = SOURCES.map(
-    (s) => `
-    <a class="src-card${s.image ? "" : " no-img"}" href="${esc(s.url)}" target="_blank" rel="noopener">
-      ${s.image ? `<span class="sc-plate"><img src="${esc(s.image)}" alt="" loading="lazy" decoding="async" referrerpolicy="no-referrer" /></span>` : ""}
-      <span class="sc-body">
-        <span class="sc-meta">
-          <span class="sc-kind">${esc(s.kind)}</span>
-          <span class="sc-pub">${esc(s.publisher)}</span>
-        </span>
-        <span class="sc-label">${esc(s.label)}</span>
-        <span class="sc-foot">${esc(hostOf(s.url))} \u2197</span>
-      </span>
-    </a>`
-  ).join("");
 
   // The encyclical's author, shown on the banner as a print over the loop —
   // the same object a voice page floats over its own scene. Absent portrait,
@@ -142,7 +131,12 @@ function homeView(): string {
           <span class="cta-word">Let\u2019s explore</span>
         </a>
       </div>
-      ${leo ? polaroid(leo, 0.42, "x-polaroid-hero banner-print") : ""}
+      ${leo ? `
+      <figure class="x-polaroid x-polaroid-hero banner-print" data-par="0.18">
+        <video src="/magnifica/media/loops/pope-leo.mp4"
+               autoplay muted loop playsinline preload="metadata"
+               aria-label="${esc(leo.alt)}"></video>
+      </figure>` : ""}
       </div>
     </header>
 
@@ -160,96 +154,24 @@ function homeView(): string {
       <div class="voices">${voices}</div>
     </section>
 
-    <section class="doc-hero" id="x-doc" data-doc-loop="leo-xiv">
-      <div class="doc-bg" aria-hidden="true" data-par="0.12"></div>
-      <div class="doc-hero-grid">
-        <div class="doc-hero-in">
-          <span class="doc-eyebrow" data-reveal>The source document \u2014 real</span>
-          <h2 class="doc-name" data-reveal><i>${esc(ENCYCLICAL.title)}</i></h2>
-          <p class="doc-sub" data-reveal>${esc(ENCYCLICAL.translation)}</p>
-          <p class="doc-strap" data-reveal>${esc(ENCYCLICAL.subtitle)}</p>
-          <p class="doc-body" data-reveal>${esc(ENCYCLICAL.context)}</p>
-          <div class="doc-facts" data-reveal>
-            <span><b>${esc(ENCYCLICAL.author)}</b> \u00b7 ${esc(ENCYCLICAL.tradition)}</span>
-            <span>Signed <b>${esc(ENCYCLICAL.signed)}</b></span>
-            <span>Published <b>${esc(ENCYCLICAL.published)}</b></span>
-          </div>
-        </div>
-        <figure class="doc-book" data-par="0.16">
-          <img
-            src="/magnifica/media/stills/magnifica-book.webp"
-            alt="A bound edition of the encyclical Magnifica humanitas, standing upright"
-            decoding="async"
-          />
-        </figure>
-      </div>
-    </section>
-
-    <section class="sect doc">
-      <h3 class="sub" data-reveal>What it says</h3>
-      <div class="chapters" data-reveal>${chapters}</div>
-
-      <h3 class="sub" data-reveal>Why it matters</h3>
-      <div class="theme-grid">${themes}</div>
-
-      <h3 class="sub" data-reveal>Key take-aways</h3>
-      <div class="quote-strip">${quotes}</div>
-    </section>
-
-    <section class="sect research" id="x-method">
-      <span class="lbl">Research, method &amp; sources</span>
-      <h2 class="sect-title" data-reveal>How this was made</h2>
-      <p class="lede-xl" data-reveal>
-        Half of this project is fact and half is invention, and the whole thing only
-        works if you can tell which is which. So the real encyclical is summarised
-        from the published text and nothing else, every leader's page shows the
-        sourced statements it was built from, and each predicted document says on
-        its face that it does not exist.
-      </p>
-      <div class="method-cols">
-        <div data-reveal>
-          <h4>The real document</h4>
-          <p>
-            The digest of <i>Magnifica humanitas</i> is drawn from the published text and
-            its coverage \u2014 the Vatican\u2019s own release, the full text, and the reporting
-            and analysis listed below. Direct quotations are short, attributed excerpts.
-          </p>
-        </div>
-        <div data-reveal>
-          <h4>The sixteen predictions</h4>
-          <p>
-            For each leader we gathered their verified public statements on AI and
-            technology, the concepts their tradition actually reaches for, and the
-            written forms it actually uses \u2014 then drafted what an equivalent document
-            might say, marked speculative throughout.
-          </p>
-        </div>
-        <div data-reveal>
-          <h4>Where the record is thin</h4>
-          <p>
-            Some leaders have said a great deal about AI; others almost nothing. Where
-            the record is thin the prediction leans on the tradition\u2019s broader teaching
-            and is correspondingly more cautious \u2014 and each page shows the sourced
-            statements it was built from, so you can judge the reach for yourself.
-          </p>
-        </div>
-        <div data-reveal>
-          <h4>Portraits and likeness</h4>
-          <p>
-            No likeness here is generated. Every portrait is a real photograph under a
-            free licence, credited on the card. This project documents leaders objecting
-            to synthetic images of themselves; producing exactly that would answer the
-            argument by proving it.
-          </p>
-        </div>
-      </div>
-
-      <h3 class="sub" data-reveal>What we read</h3>
+    <section class="sect flow" id="x-method">
+      <span class="lbl">Method</span>
+      <h2 class="sect-title" data-reveal>How the ${LEADERS.length} were predicted</h2>
       <p class="sect-lede" data-reveal>
-        ${SOURCES.length} sources \u2014 the primary text, the reporting, the explainers, the
-        criticism and the broadcast. Every link was fetched and checked.
+        Half of this project is fact and half is invention, and it only works if you
+        can tell which is which. Five stages, in order \u2014 the first three are
+        research, the fourth is the writing, and the fifth is what keeps the two
+        halves apart.
       </p>
-      <div class="src-masonry">${sources}</div>
+
+      <ol class="flow-line">
+        ${FLOW.map((f, n) => `
+        <li class="flow-step" data-reveal>
+          <span class="flow-num">${String(n + 1).padStart(2, "0")}</span>
+          <h3 class="flow-h">${esc(f.title)}</h3>
+          <p class="flow-p">${esc(f.body)}</p>
+        </li>`).join("")}
+      </ol>
     </section>
   </main>`;
 }
