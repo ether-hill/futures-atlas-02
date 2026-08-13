@@ -31,7 +31,7 @@ const esc = (s: string) =>
  * elsewhere, which is a fraction of the generation cost and far lighter to
  * ship. Keeping one code path means a change to either is a change to both.
  */
-export type Variant = "v1" | "v2" | "v3";
+export type Variant = "v1" | "v2" | "v3" | "v4";
 
 interface ExperienceSpec {
   displayName: string;
@@ -49,7 +49,8 @@ export const EXPERIENCES: Record<string, ExperienceSpec> = {
   "dalai-lama": {
     displayName: "Tenzin Gyatso",
     displayTitle: "The Fourteenth Dalai Lama",
-    hero: { v1: "dalai-lama", v2: "dalai-lama-hero", v3: "dalai-lama-hero" },
+    // v4 is typographic and plays no backdrop; the key exists to keep the record complete.
+    hero: { v1: "dalai-lama", v2: "dalai-lama-hero", v3: "dalai-lama-hero", v4: "" },
     stills: ["dl-monastery", "dl-lamps", "dl-night", "dl-plateau"],
     chapterStills: ["dl-library", "dl-block"],
     videos: ["dalai-lama-02", "dalai-lama-03", "dalai-lama-04"],
@@ -65,7 +66,7 @@ export const hasExperience = (id: string) => id in EXPERIENCES;
  * disclaimer is a section like any other — it carries a name rather than a
  * number, because it sits before the document begins.
  */
-type Section =
+export type Section =
   | { kind: "gate"; n: ""; label: "Disclaimer"; body: string }
   | { kind: "chapter"; n: string; label: string; body: string }
   | { kind: "list"; n: string; label: string; items: string[] }
@@ -73,7 +74,7 @@ type Section =
   | { kind: "quote"; n: string; label: string; text: string; index: number };
 
 /** Anchor id for a section; the disclaimer is named, the rest numbered. */
-const anchorOf = (s: Section) => (s.kind === "gate" ? "x-gate" : `x-${s.n}`);
+export const anchorOf = (s: Section) => (s.kind === "gate" ? "x-gate" : `x-${s.n}`);
 
 /**
  * The disclaimer, worded once and used for both the page and the narration so
@@ -86,7 +87,11 @@ const gateText = (l: Leader) =>
   `statements and the forms this tradition actually uses. No passage here is a real quote, and ` +
   `none of it is his voice. The photograph is real and credited; the landscapes are generated.`;
 
-function sections(l: Leader): Section[] {
+/**
+ * Exported so v4 renders from the SAME list as v1–v3. The numbering, the
+ * anchors and the narration all come from here; a second copy would drift.
+ */
+export function sections(l: Leader): Section[] {
   const out: Section[] = [];
   let n = 0;
   const num = () => String(++n).padStart(2, "0");

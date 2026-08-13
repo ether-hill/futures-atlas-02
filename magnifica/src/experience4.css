@@ -1,0 +1,312 @@
+/*
+  v4 — paper, not cinema.
+
+  v1–v3 are dark, vertical and full of landscape. This is the same document with
+  the pictures taken away: a warm paper ground, one statement per screen, and a
+  track that runs sideways. The type IS the design here, so the display sizes go
+  much larger than anywhere else in the project and everything else gets out of
+  the way.
+
+  The ground is deliberately light in BOTH themes. Every other view of this
+  project is dark, and a version that merely re-tinted would not be a different
+  reading of the material — it would be the same page with a filter on. Paper is
+  the point: this is the document as a document.
+*/
+
+.x4 {
+  --p4-paper: oklch(0.972 0.006 85);
+  --p4-ink: oklch(0.19 0.012 60);
+  --p4-soft: oklch(0.47 0.014 60);
+  --p4-rule: oklch(0.19 0.012 60 / 0.16);
+  --p4-accent: oklch(0.52 0.13 42);
+
+  /* In normal flow, sized to the viewport — NOT position: fixed. Fixed took it
+     out of the document, so the Atlas footer painted straight over the top of
+     it and the opening line was cut in half. In flow, the footer sits after the
+     experience where it belongs and the panels own the first screen. */
+  position: relative;
+  height: calc(100svh - var(--fa-nav-now, 0px));
+  min-height: 520px;
+  background: var(--p4-paper);
+  color: var(--p4-ink);
+  overflow: hidden;
+}
+
+/* ---------- the track ---------- */
+.x4-track {
+  display: flex;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  outline: none;
+}
+.x4-track::-webkit-scrollbar { display: none; }
+
+.p4 {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  display: grid;
+  align-content: center;
+  padding: clamp(28px, 6vw, 110px);
+  padding-bottom: clamp(128px, 18vh, 190px); /* clears the HUD and the transport */
+  overflow-y: auto;
+}
+.p4-in { width: 100%; max-width: 1180px; margin: 0 auto; }
+
+/* ---------- type ---------- */
+.p4-kick {
+  margin: 0 0 clamp(20px, 3vh, 34px);
+  font: 700 11px var(--mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--p4-soft);
+}
+.p4-hero {
+  margin: 0;
+  font-family: var(--display, "Bodoni Moda", Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(44px, 8.6vw, 148px);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.p4-hero--end { font-size: clamp(40px, 7vw, 120px); }
+.p4-stand {
+  margin: clamp(24px, 3.4vh, 40px) 0 0;
+  max-width: 56ch;
+  font-size: clamp(15px, 1.5vw, 21px);
+  line-height: 1.55;
+  color: var(--p4-soft);
+}
+
+.p4-label {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 clamp(18px, 2.6vh, 30px);
+  font: 700 11px var(--mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--p4-soft);
+}
+.p4-num { color: var(--p4-accent); }
+
+.p4-body {
+  margin: 0;
+  max-width: 46ch;
+  font-family: var(--display, "Bodoni Moda", Georgia, serif);
+  font-size: clamp(22px, 3.1vw, 46px);
+  line-height: 1.32;
+  letter-spacing: -0.015em;
+}
+
+/* the gate: plain, early, and unavoidable — it is panel two */
+.p4--gate .p4-in { max-width: 900px; }
+.p4-gate {
+  margin: 0;
+  font-size: clamp(17px, 2vw, 27px);
+  line-height: 1.5;
+  max-width: 44ch;
+}
+.p4--gate { background: var(--p4-ink); color: var(--p4-paper); }
+.p4--gate .p4-label { color: oklch(0.972 0.006 85 / 0.6); }
+
+/* excerpts — the big pull-quote, and the caption that keeps it honest */
+.p4-quote {
+  margin: 0;
+  font-family: var(--display, "Bodoni Moda", Georgia, serif);
+  font-size: clamp(26px, 4.4vw, 66px);
+  line-height: 1.2;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+  max-width: 20ch;
+}
+.p4-quote::before { content: "“"; }
+.p4-quote::after { content: "”"; }
+/* Set at heading weight, not in small print. A disclaimer that has to be
+   hunted for is decoration; this project's whole claim is that you can tell
+   the invented from the real at a glance. */
+.p4-notquote {
+  margin: clamp(22px, 3vh, 36px) 0 0;
+  font: 700 clamp(11px, 1.15vw, 14px) var(--mono);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--p4-accent);
+}
+
+.p4-points { margin: 0; padding: 0; list-style: none; max-width: 40ch; }
+.p4-points li {
+  padding: clamp(12px, 1.6vh, 18px) 0;
+  border-top: 1px solid var(--p4-rule);
+  font-family: var(--display, "Bodoni Moda", Georgia, serif);
+  font-size: clamp(19px, 2.4vw, 34px);
+  line-height: 1.3;
+}
+.p4-points li:last-child { border-bottom: 1px solid var(--p4-rule); }
+
+/* the record — the sourced half, and it looks it */
+.p4-real {
+  margin: -10px 0 clamp(18px, 2.4vh, 26px);
+  font: 700 11px var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--p4-accent);
+}
+.p4-timeline { margin: 0; padding: 0; list-style: none; max-width: 74ch; }
+.p4-timeline li {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: baseline;
+  padding: clamp(11px, 1.5vh, 16px) 0;
+  border-top: 1px solid var(--p4-rule);
+}
+.p4-timeline li:last-child { border-bottom: 1px solid var(--p4-rule); }
+.p4-year { font: 700 12px var(--mono); color: var(--p4-accent); }
+.p4-claim { font-size: clamp(14px, 1.4vw, 18px); line-height: 1.45; }
+.p4-src {
+  font: 700 10.5px var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--p4-soft);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.p4-src:hover { color: var(--p4-accent); }
+
+/* who — name, one line, and the real photograph */
+.p4--who .p4-in {
+  display: grid;
+  gap: clamp(24px, 4vw, 64px);
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 900px) {
+  .p4--who .p4-in { grid-template-columns: minmax(0, 1fr) minmax(0, 0.62fr); }
+}
+.p4-name {
+  margin: 0;
+  font-family: var(--display, "Bodoni Moda", Georgia, serif);
+  font-weight: 500;
+  font-size: clamp(46px, 8vw, 132px);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+.p4-who {
+  margin: clamp(14px, 2vh, 22px) 0 0;
+  font-size: clamp(16px, 1.8vw, 24px);
+  color: var(--p4-soft);
+}
+.p4-print { margin: 0; }
+.p4-print img {
+  display: block;
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: oklch(0.86 0.01 85);
+}
+.p4-print figcaption { display: block; margin-top: 12px; max-width: 420px; }
+.p4-print-lbl {
+  display: block;
+  font: 700 10px var(--mono);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--p4-accent);
+}
+/* Credit + licence are rendered because the licence requires it to be visible.
+   See portraits.ts — removing this is a licence breach, not a design tidy-up. */
+.p4-print-credit { display: block; margin-top: 5px; font-size: 12px; line-height: 1.5; color: var(--p4-soft); }
+.p4-print-credit a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* listen */
+.p4-invite {
+  margin: 0;
+  font-family: var(--display, "Bodoni Moda", Georgia, serif);
+  font-size: clamp(24px, 3.6vw, 54px);
+  line-height: 1.28;
+  letter-spacing: -0.02em;
+  max-width: 22ch;
+}
+.p4-listen {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-right: 8px;
+  padding: 0.2em 0.62em 0.26em 0.5em;
+  border: 1px solid var(--p4-rule);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  vertical-align: baseline;
+}
+.p4-listen:hover { background: oklch(0.19 0.012 60 / 0.06); border-color: var(--p4-ink); }
+.p4-dot { width: 0.5em; height: 0.5em; border-radius: 50%; background: var(--p4-ink); }
+.p4-note { margin: clamp(20px, 3vh, 30px) 0 0; max-width: 46ch; font-size: 13.5px; line-height: 1.6; color: var(--p4-soft); }
+
+.p4-outlinks { display: flex; flex-wrap: wrap; gap: 22px; margin: clamp(26px, 4vh, 40px) 0 0; }
+.p4-outlinks a {
+  font: 700 11px var(--mono);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--p4-ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--p4-rule);
+  padding-bottom: 4px;
+}
+.p4-outlinks a:hover { color: var(--p4-accent); border-color: currentColor; }
+
+/* ---------- HUD ---------- */
+.x4-hud {
+  position: absolute;
+  left: clamp(28px, 6vw, 110px);
+  right: clamp(28px, 6vw, 110px);
+  /* clears the shared transport, which is pinned to the foot of the window */
+  bottom: clamp(76px, 10vh, 104px);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.x4-bar { position: relative; flex: 1; height: 1px; background: var(--p4-rule); }
+.x4-bar-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--p4-ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+.x4-count { font: 700 10.5px var(--mono); letter-spacing: 0.16em; color: var(--p4-soft); }
+.x4-count b { color: var(--p4-ink); }
+
+.x4-nudge {
+  position: absolute;
+  right: clamp(28px, 6vw, 110px);
+  bottom: clamp(112px, 15vh, 152px);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border: 1px solid var(--p4-rule);
+  border-radius: 999px;
+  background: var(--p4-paper);
+  color: var(--p4-ink);
+  font: 700 11px var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.3s, background 0.2s;
+}
+.x4-nudge svg { width: 15px; height: 15px; }
+.x4-nudge:hover { background: oklch(0.19 0.012 60 / 0.06); }
+.x4.is-started .x4-nudge { opacity: 0; pointer-events: none; }
+
+@media (max-width: 680px) {
+  .p4-timeline li { grid-template-columns: 46px minmax(0, 1fr); }
+  .p4-src { grid-column: 2; justify-self: start; }
+  .x4-nudge { display: none; }
+}

@@ -3,6 +3,7 @@ import { LEADERS, type Leader } from "./leaders";
 import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience, polaroid, type Variant } from "./experience";
+import { experience4View, mountExperience4 } from "./experience4";
 import { mountDrawer, unmountDrawer, markDrawerRoute, markPinned } from "./drawer";
 import { portraitOf, monogram } from "./portraits";
 
@@ -467,9 +468,10 @@ function render(root: HTMLElement) {
   const mV2 = location.hash.match(/^#\/l\/([\w-]+)/);
   const mV1 = location.hash.match(/^#\/v1\/([\w-]+)/);
   const mV3 = location.hash.match(/^#\/v3\/([\w-]+)/);
-  const id = mV2?.[1] ?? mV1?.[1] ?? mV3?.[1];
+  const mV4 = location.hash.match(/^#\/v4\/([\w-]+)/);
+  const id = mV2?.[1] ?? mV1?.[1] ?? mV3?.[1] ?? mV4?.[1];
   const leader = id ? LEADERS.find((l) => l.id === id) : undefined;
-  const variant: Variant = mV1 ? "v1" : mV3 ? "v3" : "v2";
+  const variant: Variant = mV1 ? "v1" : mV3 ? "v3" : mV4 ? "v4" : "v2";
   const immersive = !!leader && hasExperience(leader.id);
 
   unmountDock();
@@ -479,7 +481,9 @@ function render(root: HTMLElement) {
   root.innerHTML = !leader
     ? homeView()
     : immersive
-      ? experienceView(leader, variant)
+      ? variant === "v4"
+        ? experience4View(leader)
+        : experienceView(leader, variant)
       : leaderView(leader);
 
   if (leader && immersive) {
@@ -489,6 +493,7 @@ function render(root: HTMLElement) {
          <a href="#/v1/${leader.id}"${variant === "v1" ? ' class="on"' : ""}>v1</a>
          <a href="#/l/${leader.id}"${variant === "v2" ? ' class="on"' : ""}>v2</a>
          <a href="#/v3/${leader.id}"${variant === "v3" ? ' class="on"' : ""}>v3</a>
+         <a href="#/v4/${leader.id}"${variant === "v4" ? ' class="on"' : ""}>v4</a>
        </nav>`,
     );
   }
@@ -506,7 +511,7 @@ function render(root: HTMLElement) {
   });
 
   if (leader) {
-    if (immersive) unmountX = mountExperience(root);
+    if (immersive) unmountX = variant === "v4" ? mountExperience4(root) : mountExperience(root);
     else mountHero(root);
     // The v2 script is section-aware: its parts carry the anchors the player
     // scrolls to and the elements the read-along follows. v1 predates that.
