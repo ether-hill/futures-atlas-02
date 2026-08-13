@@ -334,26 +334,56 @@ function mountDocHero(root: HTMLElement): () => void {
   }));
   if (layers.length === 0) return () => {};
 
-  let running = false;
-  const frame = () => {
-    running = false;
+  // Geometry once, not per frame: getBoundingClientRect() inside the frame
+  // forces a synchronous reflow, which is what made this motion clunky.
+  let top = 0;
+  let height = 0;
+  const measure = () => {
     const r = hero.getBoundingClientRect();
-    // 0 when the hero's centre is on the viewport centre; ± as it travels past
-    const offset = r.top + r.height / 2 - window.innerHeight / 2;
-    for (const l of layers) l.el.style.transform = `translate3d(0, ${(-offset * l.rate).toFixed(2)}px, 0)`;
+    top = r.top + window.scrollY;
+    height = r.height;
   };
-  const onScroll = () => {
-    if (running) return;
-    running = true;
+  measure();
+
+  let running = false;
+  let lastY = -1;
+  let idle = 0;
+
+  const frame = () => {
+    const y = window.scrollY;
+    if (y !== lastY) {
+      lastY = y;
+      idle = 0;
+      const vh = window.innerHeight;
+      const offset = top + height / 2 - y - vh / 2;
+      for (const l of layers) {
+        l.el.style.transform = `translate3d(0, ${(offset * -l.rate).toFixed(2)}px, 0)`;
+      }
+    } else if (++idle > 4) {
+      running = false;
+      return;
+    }
     requestAnimationFrame(frame);
   };
 
-  frame();
-  window.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", onScroll);
+  const kick = () => {
+    if (running) return;
+    running = true;
+    idle = 0;
+    requestAnimationFrame(frame);
+  };
+  const onResize = () => {
+    measure();
+    kick();
+  };
+
+  kick();
+  window.addEventListener("scroll", kick, { passive: true });
+  window.addEventListener("resize", onResize, { passive: true });
   return () => {
-    window.removeEventListener("scroll", onScroll);
-    window.removeEventListener("resize", onScroll);
+    window.removeEventListener("scroll", kick);
+    window.removeEventListener("resize", onResize);
+    running = false;
   };
 }
 
@@ -465,7 +495,8 @@ function render(root: HTMLElement) {
     else mountDock(root, script, scene);
   } else {
     unmountX = mountDocHero(root);
-    mountDock(root, homeParts(), HOME_SCENE);
+    // The overview is a contents page, not a reading: no transport here.
+    void homeParts;
   }
 
   observeReveals(root);

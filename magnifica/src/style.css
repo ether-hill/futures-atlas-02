@@ -110,7 +110,7 @@ a.leader {
   padding: 18px; text-decoration: none; color: var(--ink);
   transition: border-color 0.18s, transform 0.18s;
 }
-a.leader:hover { border-color: var(--accent); transform: translateY(-2px); }
+a.leader:hover { transform: translateY(-2px); }
 .ld-trad { font: 600 10px var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--faint); }
 .ld-name { font-size: 19px; font-weight: 600; letter-spacing: -0.02em; }
 .ld-office { color: var(--muted); font-size: 13px; line-height: 1.45; }
@@ -619,8 +619,8 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 .voice:hover { border-color: var(--accent); transform: translateY(-2px); }
 .v-plate { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--field); }
-.v-plate img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(1) contrast(1.04); transition: filter 0.35s, transform 0.5s; }
-.voice:hover .v-plate img { filter: grayscale(0) contrast(1); transform: scale(1.03); }
+.v-plate img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s; }
+.voice:hover .v-plate img { transform: scale(1.03); }
 .v-plate.is-mono { display: grid; place-items: center; }
 .v-mono { font: 600 40px var(--sans); letter-spacing: -0.03em; color: var(--faint); }
 .v-trad {
