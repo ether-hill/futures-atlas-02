@@ -170,7 +170,10 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
         <nav
           aria-label="Jump to letter"
           className="sticky z-20 -mx-4 mt-5 flex gap-x-1 overflow-x-auto border-y border-ink/[0.14] bg-surface/95 px-4 py-2 backdrop-blur-md [scrollbar-width:none] min-[680px]:-mx-7 min-[680px]:px-7 [&::-webkit-scrollbar]:hidden"
-          style={{ top: "var(--fa-nav-h)" }}
+          // --fa-nav-now, not --fa-nav-h: the bar hides on scroll-down, and a
+          // constant offset left this floating above a 64px band of nothing
+          // with entries sliding through it.
+          style={{ top: "var(--fa-nav-now, var(--fa-nav-h))" }}
         >
           {LETTERS.map((l) =>
             present.has(l) ? (
@@ -178,14 +181,23 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
                 key={l}
                 href={`#letter-${l}`}
                 aria-current={active === l ? "true" : undefined}
-                className="grid h-7 w-7 shrink-0 place-items-center rounded-[2px] font-mono text-[11px] transition-colors"
+                className="relative grid h-7 w-7 shrink-0 place-items-center rounded-[2px] font-mono text-[11px] transition-colors"
                 style={
                   active === l
-                    ? { background: "var(--accent)", color: "var(--paper, #fff)" }
+                    ? { background: "var(--accent)", color: "var(--paper, #fff)", fontWeight: 700 }
                     : { color: "color-mix(in srgb, var(--text) 70%, transparent)" }
                 }
               >
                 {l}
+                {/* a tab-style marker on the rail's own bottom edge, so the
+                    current letter reads as a position rather than a hover */}
+                {active === l && (
+                  <span
+                    aria-hidden
+                    className="absolute inset-x-0 -bottom-2 h-[2px]"
+                    style={{ background: "var(--accent)" }}
+                  />
+                )}
               </a>
             ) : (
               <span
@@ -213,10 +225,20 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
                 // clears the global bar AND the sticky alphabet under it
                 style={{ scrollMarginTop: "calc(var(--fa-nav-h) + 68px)" }}
               >
-                <h2 className="py-3 font-mono text-[11px] uppercase tracking-[0.2em] text-accent-deep">
+                {/* double the old 11px: these are what the eye is scanning
+                    for on the way down, and the rule carries it across */}
+                <h2 className="flex items-center gap-4 border-t border-ink/[0.14] py-4 font-mono text-[22px] font-bold uppercase leading-none tracking-[0.18em] text-accent-deep">
                   {letter}
+                  <span aria-hidden className="h-px flex-1 bg-ink/[0.12]" />
                 </h2>
-                <dl className="border-t border-ink/[0.14]">
+                {/*
+                  Four columns of cards rather than a two-column definition
+                  list. Grid, not CSS columns: a letter's entries read across
+                  in alphabetical order, and columns would run them down one
+                  column and back up the next. align-start so a long definition
+                  doesn't stretch the three cards beside it.
+                */}
+                <dl className="grid grid-cols-1 items-start gap-x-[clamp(16px,1.8vw,28px)] gap-y-[clamp(16px,1.8vw,28px)] min-[560px]:grid-cols-2 min-[980px]:grid-cols-3 min-[1280px]:grid-cols-4">
                   {items.map((e) => (
                     <Entry key={e.term} entry={e} />
                   ))}
@@ -235,8 +257,11 @@ function Entry({ entry }: { entry: GlossaryEntry }) {
   return (
     <div
       id={id}
+      // --fa-nav-h here, not --fa-nav-now: a jump target should clear the bar
+      // even if the bar happens to be hidden at the moment of the jump, since
+      // scrolling up to read brings it straight back over the heading.
       style={{ scrollMarginTop: "calc(var(--fa-nav-h) + 68px)" }}
-      className="grid gap-x-[clamp(16px,2.4vw,40px)] gap-y-1.5 border-b border-ink/[0.14] py-[clamp(16px,2vw,24px)] min-[860px]:grid-cols-[minmax(200px,260px)_1fr]"
+      className="flex h-full flex-col rounded-[3px] border border-ink/[0.14] p-[clamp(14px,1.5vw,20px)] transition-colors hover:border-ink/35"
     >
       <dt className="min-w-0">
         <a
@@ -260,9 +285,8 @@ function Entry({ entry }: { entry: GlossaryEntry }) {
           {entry.domain}
         </span>
       </dt>
-      <dd className="m-0 min-w-0">
+      <dd className="m-0 mt-2.5 min-w-0 border-t border-ink/[0.1] pt-2.5">
         <p
-          className="max-w-[70ch]"
           style={{
             fontFamily: "var(--font-mono)",
             fontSize: "var(--text-body-size)",
