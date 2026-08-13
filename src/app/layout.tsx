@@ -6,7 +6,6 @@ import "futures-atlas-core/kit.css";
 import "futures-atlas-core/nav.css";
 import "./globals.css";
 import { buildOverrideCss } from "futures-atlas-core";
-import { EditorBar } from "@/components/EditorBar";
 import { readOverrides } from "@/lib/store";
 
 const archivo = Archivo({
@@ -85,15 +84,14 @@ export default async function RootLayout({
             self-inject) so the bar + mobile sheet are fully styled at first
             paint, otherwise the unstyled sheet/burger flash on every load.
             atlas-nav.js sees this data-fa-nav-css link and skips re-injecting. */}
-        <link rel="stylesheet" href="/atlas-nav.css?v=9" data-fa-nav-css />
-        <script src="/atlas-nav.js?v=9" defer />
+        <link rel="stylesheet" href="/atlas-nav.css?v=10" data-fa-nav-css />
+        <script src="/atlas-nav.js?v=10" defer />
         {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
       </head>
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
       >
         {/* Renders nothing unless an editor is signed in. */}
-        <EditorBar />
         {children}
       </body>
     </html>

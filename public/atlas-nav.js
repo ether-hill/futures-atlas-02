@@ -132,6 +132,10 @@
     '<nav class="fa-shell__right" aria-label="Primary">' +
       '<div class="fa-shell__nav">' + navlinks + "</div>" +
       '<button type="button" class="fa-shell__toggle" aria-label="Toggle theme"></button>' +
+      '<button type="button" class="fa-shell__profile" aria-label="' + (IS_EDITOR ? "Sign out" : "Sign in") + '">' +
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
+          '<circle cx="12" cy="8" r="3.4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>' +
+        "</svg></button>" +
       '<button type="button" class="fa-shell__burger" aria-label="Open menu" aria-expanded="false" aria-controls="fa-sheet"><span></span><span></span><span></span></button></nav>';
 
   // build the mobile sheet contents (primary links + this project's pages + theme)
@@ -166,6 +170,23 @@
     sheet.setAttribute("aria-hidden", "true");
     sheet.innerHTML = buildSheet();
     document.body.appendChild(sheet);
+
+    // Profile: sign in, or sign out. Logout is POST-only (it clears an httpOnly
+    // cookie), so it goes as a submitted form rather than a link.
+    var profileBtn = h.querySelector(".fa-shell__profile");
+    if (profileBtn) {
+      profileBtn.addEventListener("click", function () {
+        if (!IS_EDITOR) {
+          location.href = "/admin/login?next=" + encodeURIComponent(location.pathname + location.search);
+          return;
+        }
+        var f = document.createElement("form");
+        f.method = "POST";
+        f.action = "/api/admin/logout";
+        document.body.appendChild(f);
+        f.submit();
+      });
+    }
 
     // shared theme control (drives both the bar toggle and the sheet toggle)
     var barToggle = h.querySelector(".fa-shell__toggle");
