@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { headlineHref, type Headline } from "@/data/feed-headlines";
+import { headlineHref, hasDirectVideo, type Headline } from "@/data/feed-headlines";
 
 /**
  * The credit beside the masthead line: an (i) that opens a micro card naming
@@ -122,7 +122,11 @@ export function HeadlineCredit({ headline }: { headline: Headline }) {
             rel="noopener noreferrer"
             className="mt-2 inline-block font-mono text-[10px] uppercase tracking-[0.14em] text-accent hover:text-ink"
           >
-            Listen on YouTube ↗
+            {/* The label says which it is. Four songs have a verified upload
+                from the label's own channel and go straight there; the rest
+                have no official one we could confirm, and promising "listen"
+                for a search result is a small lie the card does not need. */}
+            {hasDirectVideo(headline) ? "Listen on YouTube ↗" : "Find it on YouTube ↗"}
           </a>
         </span>
         </span>

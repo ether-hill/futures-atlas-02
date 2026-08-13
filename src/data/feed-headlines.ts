@@ -36,8 +36,36 @@ export const FEED_HEADLINES: Headline[] = [
 ];
 
 /** Where the info control points. See the note above on why this is a search. */
-export const headlineHref = (h: Headline) =>
-  `https://www.youtube.com/results?search_query=${encodeURIComponent(`${h.artist} ${h.song}`)}`;
+/**
+ * Video ids for the songs we can link directly, keyed by `song`.
+ *
+ * Every one of these is from "Kraftwerk - Topic" — the channel the label
+ * itself supplies — and every id was confirmed through YouTube's oEmbed
+ * endpoint, which returns the real title and channel for an id. That check is
+ * the point: an id is eleven opaque characters, and a wrong or invented one
+ * still looks exactly like a right one until someone clicks it.
+ *
+ * Songs are absent from this map when no official upload could be verified.
+ * Plenty of fan uploads exist for the rest, and they are deliberately not used:
+ * they are not the rights holder's, and they disappear. Those fall back to a
+ * search, which always lands somewhere useful and never lands somewhere wrong.
+ */
+const SONG_VIDEO: Record<string, string> = {
+  "The Robots": "68d8GRgiec4",
+  "Computer Love": "uNBGWenPlGo",
+  "Pocket Calculator": "oD7rJ4ufciM",
+  "The Man-Machine": "zHIsGqJaXXw",
+};
+
+/** True when the credit can point at the track itself rather than a search. */
+export const hasDirectVideo = (h: Headline) => Boolean(SONG_VIDEO[h.song]);
+
+export const headlineHref = (h: Headline) => {
+  const id = SONG_VIDEO[h.song];
+  return id
+    ? `https://www.youtube.com/watch?v=${id}`
+    : `https://www.youtube.com/results?search_query=${encodeURIComponent(`${h.artist} ${h.song}`)}`;
+};
 
 export const randomHeadline = () =>
   FEED_HEADLINES[Math.floor(Math.random() * FEED_HEADLINES.length)];
