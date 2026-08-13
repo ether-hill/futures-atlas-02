@@ -152,6 +152,15 @@ export function pinFloatingControls() {
   };
 
   window.addEventListener("scroll", onScroll, { passive: true });
+  // A resize changes the bar height and so the resting offset; without this the
+  // button would hold at a margin measured for the old layout.
+  window.addEventListener("resize", () => {
+    document.querySelectorAll<HTMLElement>("[data-pin-top]").forEach((el) => {
+      el.style.transform = "";
+      el.dataset.pinTop = String(Math.round(el.getBoundingClientRect().top + window.scrollY));
+    });
+    apply();
+  }, { passive: true });
   apply();
 }
 

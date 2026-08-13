@@ -362,9 +362,22 @@
     }
 
     // hide on scroll-down, reveal on scroll-up
+    var hero = document.querySelector("[data-fa-hero]");
     var lastY = window.scrollY;
+    // Evaluate once on load: the handler only fires on scroll, so without this
+    // the bar arrives opaque over a hero it is supposed to be clear of.
+    function paintHero() {
+      if (!hero) return;
+      var past = window.scrollY > hero.offsetTop + hero.offsetHeight - h.offsetHeight - 8;
+      h.classList.toggle("is-clear", !past);
+    }
+    paintHero();
     window.addEventListener("scroll", function () {
       var y = window.scrollY;
+      // Over a full-bleed hero the bar is transparent so the visualisation can
+      // run to the top edge; it takes its background back the moment the hero
+      // has passed, which is also when there is real content behind it.
+      paintHero();
       if (y > lastY && y > 90) h.classList.add("is-hidden");
       else h.classList.remove("is-hidden");
       lastY = y;

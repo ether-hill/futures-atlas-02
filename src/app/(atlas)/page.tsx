@@ -4,7 +4,7 @@ import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
 import { visibleProjects } from "@/data/projects";
-import { PostCarousel } from "@/components/PostCarousel";
+import { FeedMasonry } from "@/components/FeedMasonry";
 import { editorPosts, livePosts } from "@/data/posts";
 import { getEditor } from "@/lib/editor";
 import { LOGOS } from "@/lib/logos";
@@ -17,13 +17,21 @@ export default async function Home() {
   // Editors see their drafts in the recent strip too, flagged as such.
   const isEditor = Boolean(await getEditor());
   const recent = visibleProjects(isEditor).slice(0, 6);
-  const latestPosts = (isEditor ? editorPosts : livePosts).slice(0, 10);
+  // Newest fifteen, but never a set with no video in it: the masonry plays them
+  // in place, and chronology alone can leave every one of them just out of range.
+  const source = isEditor ? editorPosts : livePosts;
+  const latestPosts = (() => {
+    const head = source.slice(0, 15);
+    if (head.some((p) => p.kind === "video")) return head;
+    const vid = source.find((p) => p.kind === "video");
+    return vid ? [...head.slice(0, 14), vid] : head;
+  })();
 
   return (
     <div>
       {/* Hero, an always-black stage (does not follow the light theme) with
           Generatives "Field Dynamics" flowing behind the headline */}
-      <section className="relative flex min-h-[calc(100svh-64px)] items-end overflow-hidden border-b border-ink bg-black">
+      <section data-fa-hero className="relative flex min-h-[calc(100svh-64px)] items-end overflow-hidden border-b border-ink bg-black">
         <HeroField />
         <Container className="relative z-[1] pt-[clamp(96px,16vh,200px)] pb-[clamp(44px,7vh,84px)]">
           <Reveal>
@@ -71,14 +79,8 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* The blog, as a swipeable rail of the newest posts */}
-      <PostCarousel
-        posts={latestPosts}
-        title="Blog"
-        eyebrow="The reading log"
-        hrefLabel="All posts"
-        showVisibility={isEditor}
-      />
+      {/* The feed, as a masonry of the newest posts — videos play in place */}
+      <FeedMasonry posts={latestPosts} showVisibility={isEditor} />
 
       {/* Tech banner, the whole band links to the About page's stack + workflow */}
       <section className="border-t border-ink/15 bg-band">

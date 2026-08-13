@@ -457,3 +457,18 @@ html.dark .fa-share__opt--accent { color: #7fb2e6; }
 @media (max-width: 900px) {
   .fa-share__btn { width: 34px; height: 34px; }
 }
+
+/* Transparent over a full-bleed hero — see atlas-nav.js. The bar keeps its
+   text colour (heroes here are dark stages) and loses only its plate, so the
+   visualisation can reach the top edge. */
+html .fa-shell.is-clear,
+.fa-shell.is-clear {
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: transparent;
+  color: #f3f1ec;
+}
+.fa-shell.is-clear .fa-shell__toggle,
+.fa-shell.is-clear .fa-shell__profile,
+.fa-shell.is-clear .fa-share__btn { border-color: rgba(255, 255, 255, 0.34); }

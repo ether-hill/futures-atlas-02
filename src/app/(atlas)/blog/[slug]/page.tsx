@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { KindBadge } from "@/components/PostCard";
 import { PostImage } from "@/components/PostImage";
+import { YouTubeCard, youtubeId } from "@/components/feed/YouTubeCard";
 import { PostCarousel } from "@/components/PostCarousel";
 import {
   formatPostDate,
@@ -89,14 +90,29 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           </p>
         </header>
 
-        {hasImage(post) && (
-          <div
-            className="mt-[clamp(24px,3.2vw,44px)] overflow-hidden rounded-[3px]"
-            style={{ border: "var(--border-hairline) solid var(--hairline)" }}
-          >
-            <PostImage post={post} priority className="block aspect-[16/7] w-full object-cover" />
-          </div>
-        )}
+        {/* A video post gets the player itself, at full width — showing its
+            thumbnail and making the reader leave for it was the wrong hero. */}
+        {(() => {
+          const yt = post.kind === "video" ? youtubeId(post.url) : null;
+          if (yt) {
+            return (
+              <div
+                className="mt-[clamp(24px,3.2vw,44px)] overflow-hidden rounded-[3px]"
+                style={{ border: "var(--border-hairline) solid var(--hairline)" }}
+              >
+                <YouTubeCard id={yt} title={post.title} />
+              </div>
+            );
+          }
+          return hasImage(post) ? (
+            <div
+              className="mt-[clamp(24px,3.2vw,44px)] overflow-hidden rounded-[3px]"
+              style={{ border: "var(--border-hairline) solid var(--hairline)" }}
+            >
+              <PostImage post={post} priority className="block aspect-[16/7] w-full object-cover" />
+            </div>
+          ) : null;
+        })()}
 
         {/* Article left, annotation rail right. Below 1100px the rail simply
             stacks under the prose, which keeps the reading order intact. */}
