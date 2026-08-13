@@ -19,6 +19,12 @@ const SURFACE = "var(--chart-paper)";
 const MUTED = "var(--chart-muted)";
 
 const VB_W = 1008;
+/* On a phone the card is about 350 CSS px wide, and a 1008-unit box scaled into
+   it renders a 13-unit label at four and a half pixels: not small type, no type.
+   The drawing does not change, the box around it does. Font sizes and the
+   margins derived from them stay in absolute units, so shrinking the box is
+   exactly the same thing as giving the labels more of it. */
+const VB_W_COMPACT = 620;
 
 const FS_BASE = { tick: 13, axisTitle: 13, endLabel: 14, legend: 14, annotation: 13, value: 13 };
 /* Hero cards are half-width but carry the argument, so their type runs larger
@@ -183,13 +189,16 @@ function CartesianChart({
   figure,
   cf,
   hero,
+  compact,
   forceDomain,
 }: {
   figure: Figure;
   cf?: Series[] | null;
   hero?: boolean;
+  compact?: boolean;
   forceDomain?: [number, number];
 }) {
+  const VB = compact ? VB_W_COMPACT : VB_W;
   const [hover, setHover] = useState<Hover>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -291,9 +300,24 @@ function CartesianChart({
     const rotated = figure.xAxis.rotate ? 62 : 0;
     const mBottom = 28 + rotated + (figure.xAxis.label ? 28 : 0) + legendH;
 
-    const plotH = hero ? 132 : figure.kind === "scatter" ? 470 : 440;
+    const plotH = compact
+      ? hero
+        ? 170
+        : 300
+      : hero
+        ? 132
+        : figure.kind === "scatter"
+          ? 470
+          : 440;
     const height = mTop + plotH + mBottom;
-    const plotW = VB_W - mLeft - mRight;
+    /* Margins are text and text does not shrink, so on a narrow box they can
+       add up to more than the box. Clamping the plot instead would push the
+       drawing out past the viewBox, and an SVG with overflow visible paints it
+       right across the card. So the box grows to hold what has to fit, and the
+       chart simply renders a little smaller inside the same card. */
+    const minPlot = compact ? 190 : 260;
+    const vbW = Math.max(VB, mLeft + mRight + minPlot);
+    const plotW = vbW - mLeft - mRight;
 
     /* Rounded so server and client serialise identically - full float precision
        stringifies differently in Node and the browser and trips hydration. */
@@ -307,14 +331,14 @@ function CartesianChart({
     const band = isCategory ? plotW / cats.length : 0;
 
     return {
-      mLeft, mRight, mTop, mBottom, plotW, plotH, height,
+      mLeft, mRight, mTop, mBottom, plotW, plotH, height, vbW,
       xDomain, yDomain, xTicks, yTicks, yTickLabels, xOf, yOf, band, cats, endTexts, endText, legendBelow, legendH, fmt, yTitle,
     };
-  }, [figure, cf, isCategory, stacked, logY, hero, forceDomain, FS]);
+  }, [figure, cf, isCategory, stacked, logY, hero, compact, forceDomain, FS, VB]);
 
   const {
-    mLeft, mTop, plotW, plotH, height, yDomain, xTicks, yTicks, yTickLabels, xOf, yOf, band, cats,
-    endText, legendBelow, legendH, fmt, yTitle,
+    mLeft, mTop, plotW, plotH, height, vbW, yDomain, xTicks, yTicks, yTickLabels, xOf, yOf, band,
+    cats, endText, legendBelow, legendH, fmt, yTitle,
   } = geom;
 
   const plotRight = mLeft + plotW;
@@ -452,7 +476,7 @@ function CartesianChart({
     const svg = svgRef.current;
     if (!svg) return;
     const r = svg.getBoundingClientRect();
-    const vx = ((e.clientX - r.left) / r.width) * VB_W;
+    const vx = ((e.clientX - r.left) / r.width) * vbW;
     const vy = ((e.clientY - r.top) / r.height) * height;
     if (vx < mLeft - 4 || vx > plotRight + 4 || vy < mTop || vy > plotBottom) {
       setHover(null);
@@ -516,7 +540,7 @@ function CartesianChart({
     <div className="chart" style={{ position: "relative" }}>
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${VB_W} ${height}`}
+        viewBox={`0 0 ${vbW} ${height}`}
         role="img"
         aria-label={figure.title}
         onPointerMove={onMove}
@@ -556,17 +580,29 @@ function CartesianChart({
                   opacity={0.035}
                 />
                 <line x1={bx} x2={bx} y1={mTop} y2={plotBottom} stroke={INK} strokeWidth={1} strokeDasharray="4 4" opacity={0.5} />
-                <text
-                  x={bx + 7}
-                  /* Lines crowd the top of a saturating chart; bars crowd the
-                     bottom. Put the marker wherever the marks are not. */
-                  y={figure.kind === "line" ? plotBottom - 6 : mTop + FS.annotation + 2}
-                  fontSize={FS.annotation}
-                  fill={MUTED}
-                  letterSpacing="0.08em"
-                >
-                  {figure.projection.label.toUpperCase()}
-                </text>
+                {(() => {
+                  /* The label starts at the boundary and runs right, which is
+                     fine until the projected half is narrower than the words.
+                     Then it hangs off the chart, so it flips and hangs back
+                     inside instead. */
+                  const label = figure.projection.label.toUpperCase();
+                  const w = textWidth(label, FS.annotation) * 1.18;
+                  const flip = bx + 7 + w > plotRight;
+                  return (
+                    <text
+                      x={flip ? plotRight - 6 : bx + 7}
+                      textAnchor={flip ? "end" : "start"}
+                      /* Lines crowd the top of a saturating chart; bars crowd
+                         the bottom. Put the marker wherever the marks are not. */
+                      y={figure.kind === "line" ? plotBottom - 6 : mTop + FS.annotation + 2}
+                      fontSize={FS.annotation}
+                      fill={MUTED}
+                      letterSpacing="0.08em"
+                    >
+                      {label}
+                    </text>
+                  );
+                })()}
               </g>
             );
           })()}
@@ -833,7 +869,7 @@ function CartesianChart({
       </svg>
 
       {hover && (
-        <Tooltip hover={hover} vbW={VB_W} vbH={height} />
+        <Tooltip hover={hover} vbW={vbW} vbH={height} />
       )}
     </div>
   );
@@ -841,7 +877,16 @@ function CartesianChart({
 
 /* --------------------------------------------------------- horizontal bar charts */
 
-function HorizontalChart({ figure, cf }: { figure: Figure; cf?: Series[] | null }) {
+function HorizontalChart({
+  figure,
+  cf,
+  compact,
+}: {
+  figure: Figure;
+  cf?: Series[] | null;
+  compact?: boolean;
+}) {
+  const VB = compact ? VB_W_COMPACT : VB_W;
   const [hover, setHover] = useState<Hover>(null);
   const svgRef = useRef<SVGSVGElement>(null);
 
@@ -859,7 +904,9 @@ function HorizontalChart({ figure, cf }: { figure: Figure; cf?: Series[] | null 
   const mRight = 70;
   const mTop = 14;
   const mBottom = 56;
-  const plotW = VB_W - mLeft - mRight;
+  const minPlot = compact ? 170 : 240;
+  const vbW = Math.max(VB, mLeft + mRight + minPlot);
+  const plotW = vbW - mLeft - mRight;
   const plotH = rowH * cats.length;
   const height = mTop + plotH + mBottom + (figure.legend?.position === "bottom-right" ? 0 : 0);
 
@@ -875,7 +922,7 @@ function HorizontalChart({ figure, cf }: { figure: Figure; cf?: Series[] | null 
     <div className="chart" style={{ position: "relative" }}>
       <svg
         ref={svgRef}
-        viewBox={`0 0 ${VB_W} ${height}`}
+        viewBox={`0 0 ${vbW} ${height}`}
         role="img"
         aria-label={figure.title}
         onPointerLeave={() => setHover(null)}
@@ -997,7 +1044,7 @@ function HorizontalChart({ figure, cf }: { figure: Figure; cf?: Series[] | null 
           />
         )}
       </svg>
-      {hover && <Tooltip hover={hover} vbW={VB_W} vbH={height} />}
+      {hover && <Tooltip hover={hover} vbW={vbW} vbH={height} />}
     </div>
   );
 }
@@ -1036,16 +1083,19 @@ export default function Chart({
   figure,
   cf,
   hero,
+  compact,
   forceDomain,
 }: {
   figure: Figure;
   cf?: Series[] | null;
   hero?: boolean;
+  /** The card is phone-width, so the drawing gets a smaller box to fill. */
+  compact?: boolean;
   forceDomain?: [number, number];
 }) {
   return figure.kind === "hbar" || figure.kind === "groupedHBar" ? (
-    <HorizontalChart figure={figure} cf={cf} />
+    <HorizontalChart figure={figure} cf={cf} compact={compact} />
   ) : (
-    <CartesianChart figure={figure} cf={cf} hero={hero} forceDomain={forceDomain} />
+    <CartesianChart figure={figure} cf={cf} hero={hero} compact={compact} forceDomain={forceDomain} />
   );
 }

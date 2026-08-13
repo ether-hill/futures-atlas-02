@@ -729,6 +729,10 @@ a:hover {
 .chart {
   background: var(--chart-paper);
   padding: var(--space-3) 0 0;
+  /* A backstop. The SVG is allowed to paint a little outside its viewBox so a
+     tick label can overhang, but it must never be able to paint across the card
+     and out of the page. */
+  overflow-x: clip;
 }
 .chart svg {
   display: block;
@@ -1270,6 +1274,16 @@ select {
    lines, which set a scroll width wider than the screen and make every card
    look cropped. */
 @media (max-width: 720px) {
+  .topbar {
+    padding: var(--space-4) 0 var(--space-5);
+  }
+  .topbar h1 {
+    font-size: 19px;
+  }
+  .topline {
+    font-size: 12.5px;
+    line-height: 1.45;
+  }
   .provenance {
     white-space: normal;
     line-height: 2.2;
@@ -1278,33 +1292,125 @@ select {
     display: inline-block;
     margin: 2px 4px 2px 0;
   }
+
+  /* A sticky bar that holds an input, eight chips, a slider and a three-column
+     readout is most of a phone screen. It stops sticking here: on a short
+     viewport the thing it was pinning is the thing it was hiding, including the
+     argue box it links to. */
+  .ivbar {
+    position: static;
+    padding: 8px 0;
+  }
+  /* The input takes the row it needs. The buttons take the row they need, which
+     is a short one: at 44px tall and auto width they are still comfortably
+     bigger than a thumb, and a full-bleed blue slab was reading as the subject
+     of the page rather than a control on it. */
   .ivform {
     flex-wrap: wrap;
+    gap: 8px;
   }
   .ivinput {
     flex: 1 1 100%;
+    padding: 9px 12px;
   }
   .ivgo,
   .ivclear {
-    flex: 1 1 auto;
-    padding: var(--space-3) var(--space-5);
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    font-size: 10px;
   }
+  /* Eight chips is five stacked rows on a phone and most of the first screen.
+     One swipeable row costs nothing and gives the charts the fold back. */
   .ivsuggest {
     flex: 1 1 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+    margin: 0 calc(var(--gutter) * -1);
+    padding-left: var(--gutter);
+    padding-right: var(--gutter);
+  }
+  .ivsuggest::-webkit-scrollbar {
+    display: none;
+  }
+  /* The chips stay small because they were asked to. A thumb is not small, so
+     the hit box grows behind them instead: same pill, forty pixels of target. */
+  .ivchip {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    position: relative;
+  }
+  .ivchip::after {
+    content: "";
+    position: absolute;
+    inset: -9px 0;
+  }
+  .segmented button {
+    padding: 10px;
   }
   .ivopts {
     width: 100%;
     flex-wrap: wrap;
+    gap: 8px;
   }
   .ivyear {
     flex: 1 1 100%;
   }
+  .segmented {
+    flex: 1 1 100%;
+  }
+  .segmented button {
+    flex: 1 1 0;
+  }
+  .ivhint,
+  .ivmiss {
+    font-size: 11.5px;
+    line-height: 1.45;
+  }
   .ivstate {
-    gap: var(--space-4);
+    gap: 10px;
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+  .ivsummary {
+    flex: 1 1 100%;
+    font-size: 13px;
+  }
+  .ivmeta {
+    flex: 1 1 100%;
+    gap: 16px;
+  }
+  .ivmeta dd {
+    font-size: 17px;
+  }
+  .ivmeta-of {
+    display: none;
   }
   .ivargue {
+    flex: 1 1 100%;
     align-self: stretch;
     text-align: center;
+  }
+
+  .figure {
+    padding: var(--space-4);
+  }
+  .figure-title {
+    font-size: 15px;
+  }
+  .restgrid {
+    gap: var(--space-4);
+  }
+
+  .argue {
+    padding: var(--space-header) 0;
+    scroll-margin-top: 8px;
+  }
+  .argue-lead {
+    max-width: none;
+    font-size: 19px;
   }
   .argue-input {
     flex-wrap: wrap;
@@ -1312,7 +1418,21 @@ select {
   .argue-input button {
     flex: 1 1 auto;
   }
+  .argue-said {
+    font-size: 16px;
+  }
+  .argue-response {
+    font-size: 14px;
+  }
   .argue-turn {
     padding-left: var(--space-4);
+  }
+}
+
+/* Between a phone and a desk the sticky bar is shorter, so the anchor offset
+   that clears it is smaller too. */
+@media (min-width: 721px) and (max-width: 1099px) {
+  .argue {
+    scroll-margin-top: 160px;
   }
 }

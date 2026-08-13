@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
+import { useBox } from "@/lib/use-box";
 import type { Figure, Series } from "@/lib/figures";
 
 /**
@@ -35,7 +36,7 @@ const M_NARROW = { top: 34, right: 26, bottom: 46, left: 54 };
 const H_MIN = 300;
 const H_MAX = 760;
 
-export type Threshold = { y: number; label: string };
+export type Threshold = { y: number; label: string; short?: string };
 
 export default function PowerChart({
   figure,
@@ -52,27 +53,14 @@ export default function PowerChart({
   dataEndsAt?: number;
 }) {
   const cats = figure.categories ?? [];
-  const boxRef = useRef<HTMLDivElement>(null);
-  const [H, setH] = useState(520);
-  const [narrow, setNarrow] = useState(false);
+  const [boxRef, box] = useBox<HTMLDivElement>();
 
+  const narrow = (box?.w ?? 1200) < 700;
   const W = narrow ? W_NARROW : W_WIDE;
   const M = narrow ? M_NARROW : M_WIDE;
-
-  useEffect(() => {
-    const el = boxRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
-    const ro = new ResizeObserver(() => {
-      const w = el.clientWidth || 1;
-      const h = el.clientHeight || 1;
-      const small = w < 700;
-      setNarrow(small);
-      const box = small ? W_NARROW : W_WIDE;
-      setH(Math.round(Math.min(H_MAX, Math.max(H_MIN, (h / w) * box))));
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  const H = box
+    ? Math.round(Math.min(H_MAX, Math.max(H_MIN, (box.h / Math.max(1, box.w)) * W)))
+    : 520;
 
   const geom = useMemo(() => {
     const total = (ss: Series[]) =>
@@ -196,31 +184,45 @@ export default function PowerChart({
       )}
 
       {/* The countries it passes. On a phone there is no gutter to write in, so
-          the label sits on top of its own line instead of beside it. */}
-      {thresholds.map((t) => (
-        <g key={t.label}>
-          <line
-            x1={M.left}
-            x2={W - M.right + (narrow ? 0 : 10)}
-            y1={y(t.y)}
-            y2={y(t.y)}
-            className="one-threshold"
-          />
-          <text
-            x={narrow ? M.left + 6 : W - M.right + 18}
-            y={narrow ? y(t.y) - 6 : y(t.y) + 4}
-            className="one-threshold-label"
-          >
-            {t.label}
-          </text>
-        </g>
-      ))}
+          the label sits on top of its own line instead of beside it, which means
+          two thresholds close together would print on top of each other. When
+          the axis is tall enough to crush them, the lower one keeps its line and
+          loses its words. */}
+      {thresholds.map((t, i) => {
+        const prev = thresholds[i - 1];
+        const crowded = narrow && prev !== undefined && Math.abs(y(t.y) - y(prev.y)) < 26;
+        return (
+          <g key={t.label}>
+            <line
+              x1={M.left}
+              x2={W - M.right + (narrow ? 0 : 10)}
+              y1={y(t.y)}
+              y2={y(t.y)}
+              className="one-threshold"
+            />
+            {!crowded && (
+              <text
+                x={narrow ? M.left + 6 : W - M.right + 18}
+                y={narrow ? y(t.y) - 6 : y(t.y) + 4}
+                className="one-threshold-label"
+              >
+                {narrow ? (t.short ?? t.label) : t.label}
+              </text>
+            )}
+          </g>
+        );
+      })}
+      {/* The dot stays at every size; the quarter it happened in does not. On a
+          narrow box the threshold label already sits above the line, and a
+          second label there lands on top of it. */}
       {crossings.map((c) => (
         <g key={`x${c.label}`}>
-          <circle cx={x(c.i)} cy={y(c.y)} r={4} className="one-cross" />
-          <text x={x(c.i)} y={y(c.y) - 14} className="one-cross-label" textAnchor="middle">
-            {cats[c.i]}
-          </text>
+          <circle cx={x(c.i)} cy={y(c.y)} r={narrow ? 3.5 : 4} className="one-cross" />
+          {!narrow && (
+            <text x={x(c.i)} y={y(c.y) - 14} className="one-cross-label" textAnchor="middle">
+              {cats[c.i]}
+            </text>
+          )}
         </g>
       ))}
 

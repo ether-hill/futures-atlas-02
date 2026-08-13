@@ -31,7 +31,7 @@ export default function Page() {
             money in 2028. Say what should happen next.
           </>
         ),
-        placeholder: "What should happen to the quantum programme, and when?",
+        placeholder: "What should happen next, and when?",
         restLabel: "figures",
         /* The whole Dutch argument is about what happens after 2028, so this
            board needs enough runway past that date for the answer to show. */

@@ -5,6 +5,7 @@ import Chart from "@/components/Chart";
 import { type Figure, formatValue } from "@/lib/figures";
 import type { Intervention } from "@/lib/interventions";
 import { canProject, projectFigure } from "@/lib/project";
+import { useBox } from "@/lib/use-box";
 import { applyIntervention, untouchedReason } from "@/lib/transform";
 
 export type Compare = "overlay" | "split";
@@ -88,8 +89,15 @@ export default function FigureCard({
 
   const showSplit = compare === "split" && !!cf;
 
+  /* The card measures itself rather than trusting a media query: on the board a
+     card is full width on a phone and half width on a desk, but in split view it
+     is half of that again, and only the element knows which. */
+  const [cardRef, cardBox] = useBox<HTMLElement>();
+  const compact = (cardBox?.w ?? 900) < 560;
+
   return (
     <figure
+      ref={cardRef}
       className={[
         "figure",
         hero ? "hero" : "",
@@ -162,18 +170,23 @@ export default function FigureCard({
         <div className="splitwrap">
           <div className="splitpane">
             <p className="splitlabel">As things stand</p>
-            <Chart figure={base} hero={hero} forceDomain={splitDomain} />
+            <Chart figure={base} hero={hero} compact={compact} forceDomain={splitDomain} />
           </div>
           <div className="splitpane cfpane">
             <p className="splitlabel">
               {intervention?.short}
               {intervention ? `, from ${intervention.from}` : ""}
             </p>
-            <Chart figure={{ ...base, series: cf!.series }} hero={hero} forceDomain={splitDomain} />
+            <Chart
+              figure={{ ...base, series: cf!.series }}
+              hero={hero}
+              compact={compact}
+              forceDomain={splitDomain}
+            />
           </div>
         </div>
       ) : (
-        <Chart figure={base} cf={cf?.series} hero={hero} />
+        <Chart figure={base} cf={cf?.series} hero={hero} compact={compact} />
       )}
 
       {/* Hero charts carry their series key in HTML rather than a box inside the

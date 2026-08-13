@@ -35,6 +35,26 @@
   --one-hairline: color-mix(in srgb, var(--text) 12%, transparent);
   --one-rule: color-mix(in srgb, var(--text) 28%, transparent);
 
+  /* The room. Cabinets stay near-black in both themes, because a data hall is
+     near-black in both; what changes is the air around them. */
+  --room-ground: #0e1416;
+  --room-floor: #cfd4d6;
+  --room-tile: #9aa3a6;
+  --room-ceil: #151b1e;
+  --room-face: #1a2023;
+  --room-face-off: #0f1315;
+  --room-edge: #333c40;
+  --room-cable: #2fc6cf;
+  --room-cable-alt: #7fdfe4;
+  --room-lamp: #f6f3e8;
+  --room-led: #6ef0a0;
+  --room-led-amber: #f2b23c;
+  --room-back: #0a0e10;
+  --room-door: #cfe9ef;
+  --room-glass: #b9d6dc;
+  --room-haze: #dff0f5;
+  --room-far: #05080a;
+
   background: var(--ink);
   color: var(--paper-1);
   min-height: 100vh;
@@ -63,6 +83,24 @@ html.dark .one {
 
   --one-hairline: color-mix(in srgb, #f4efe4 12%, transparent);
   --one-rule: color-mix(in srgb, #f4efe4 28%, transparent);
+
+  --room-ground: #07090a;
+  --room-floor: #1b2225;
+  --room-tile: #303a3d;
+  --room-ceil: #0a0e0f;
+  --room-face: #12171a;
+  --room-face-off: #0a0d0e;
+  --room-edge: #29464b;
+  --room-cable: #29b7c1;
+  --room-cable-alt: #73d9ff;
+  --room-lamp: #dff6fb;
+  --room-led: #5be08f;
+  --room-led-amber: #e0a233;
+  --room-back: #050708;
+  --room-door: #9fd4e2;
+  --room-glass: #6f9aa4;
+  --room-haze: #9fe4f2;
+  --room-far: #04070a;
 }
 
 .one a {
@@ -609,29 +647,312 @@ html.dark .one {
 
 /* ------------------------------------------------------------------- narrow */
 
+.one-verdict-flat .one-verdict-num {
+  color: var(--paper-3);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+/* ------------------------------------------------------------------- the room */
+
+.room {
+  margin: clamp(22px, 3.4vh, 40px) 0 0;
+}
+.room-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+.room-tile {
+  stroke: var(--room-tile);
+  stroke-width: 1;
+  opacity: 0.4;
+}
+.room-tray {
+  stroke: var(--room-edge);
+  stroke-width: 3;
+}
+.room-bundle {
+  stroke: var(--room-cable);
+  stroke-width: 4;
+  opacity: 0.72;
+  stroke-linecap: round;
+}
+.room-rung {
+  stroke: var(--room-edge);
+  stroke-width: 1.4;
+  opacity: 0.7;
+}
+.room-lamp {
+  fill: var(--room-lamp);
+  opacity: 0.92;
+  transition: opacity 620ms var(--ease), fill 620ms var(--ease);
+}
+.room-lamp.off {
+  fill: var(--room-edge);
+  opacity: 0.3;
+}
+.room-face {
+  fill: var(--room-face);
+  transition: fill 620ms var(--ease);
+}
+.room-bay.off .room-face {
+  fill: var(--room-face-off);
+}
+.room-cable {
+  fill: var(--room-cable);
+  transition: fill 620ms var(--ease), opacity 620ms var(--ease);
+}
+.room-cable.alt {
+  fill: var(--room-cable-alt);
+}
+/* A cabinet with no power still has its cables in it. They just stop being the
+   brightest thing in the room. */
+.room-bay.off .room-cable {
+  fill: var(--room-edge);
+  opacity: 0.5;
+}
+.room-edge {
+  stroke: var(--room-edge);
+  stroke-width: 1.6;
+}
+.room-led {
+  fill: var(--room-led);
+  transition: fill 620ms var(--ease), opacity 620ms var(--ease);
+}
+.room-led.amber {
+  fill: var(--room-led-amber);
+}
+.room-bay.off .room-led {
+  fill: var(--room-edge);
+  opacity: 0.55;
+}
+.room-glass polygon {
+  fill: var(--room-glass);
+  opacity: 0.09;
+  stroke: var(--room-glass);
+  stroke-width: 1.4;
+}
+.room-back {
+  fill: var(--room-back);
+}
+.room-door {
+  fill: var(--room-door);
+  opacity: 0.45;
+  transition: opacity 620ms var(--ease);
+}
+.room-door.off {
+  opacity: 0.07;
+}
+.room-cap {
+  margin: 10px 0 0;
+  max-width: 88ch;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--paper-3);
+}
+.room-cap b {
+  color: var(--paper-2);
+  font-weight: var(--weight-medium);
+}
+
+/* ------------------------------------------------------------------ the caveat */
+
+/* The most important paragraph on the page, so it is not set as a footnote. */
+.one-caveat {
+  margin: clamp(22px, 3.4vh, 40px) 0 0;
+  padding: clamp(20px, 2.6vw, 30px) clamp(20px, 2.8vw, 34px);
+  border: 1px solid var(--one-rule);
+  border-left: var(--border-rule) solid var(--cool);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--cool) 6%, transparent);
+}
+.one-caveat h2 {
+  margin: 0 0 var(--space-4);
+  font-size: clamp(17px, 1.7vw, 23px);
+  font-weight: var(--weight-black);
+  letter-spacing: var(--track-tight);
+  line-height: 1.15;
+  color: var(--paper-1);
+  text-transform: none;
+}
+.one-caveat p {
+  margin: 0 0 var(--space-3);
+  max-width: 84ch;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--paper-2);
+}
+.one-caveat p:last-of-type {
+  margin-bottom: 0;
+}
+.one-caveat b {
+  color: var(--paper-1);
+  font-weight: var(--weight-medium);
+}
+ul.one-caveat-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0 0 var(--space-4);
+  list-style: none;
+  padding: 0;
+}
+ul.one-caveat-tags li {
+  font-family: var(--font-year);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  padding: 3px 9px;
+  color: var(--paper-2);
+  border: 1px solid var(--one-rule);
+  border-radius: var(--radius);
+  list-style: none;
+}
+.one .one-caveat-go {
+  display: inline-block;
+  margin-top: var(--space-4);
+  font-family: var(--font-heading);
+  font-size: 12px;
+  font-weight: var(--weight-strong);
+  letter-spacing: 0.04em;
+  padding: 9px 18px;
+  background: var(--accent);
+  color: var(--paper);
+  border-radius: var(--radius);
+  border: 0;
+  text-decoration: none;
+}
+.one .one-caveat-go:hover {
+  background: var(--accent-deep);
+  color: var(--paper);
+}
+
 @media (max-width: 720px) {
+  .one-screen {
+    min-height: auto;
+    padding-bottom: clamp(20px, 3vh, 30px);
+  }
+  .one-top h1 {
+    font-size: 26px;
+    max-width: none;
+  }
+  .one-eyebrow {
+    font-size: 10px;
+    margin-bottom: 8px;
+  }
+  .one-lede {
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+  .one-ask-label {
+    font-size: 15px;
+    width: 100%;
+  }
   .one-form {
     gap: 8px;
   }
   .one-input {
     flex: 1 1 100%;
+    font-size: max(16px, 16px);
+    padding: 9px 16px;
   }
   .one-go,
   .one-reset {
-    flex: 1 1 auto;
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    font-size: 10px;
+  }
+  /* One swipeable row rather than five stacked ones. The chart is what the
+     page is for and it was starting below the fold. */
+  .one-options {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    margin: clamp(8px, 1.2vh, 14px) calc(var(--gutter) * -1) 0;
+    padding: 0 var(--gutter) 2px;
+  }
+  .one-options::-webkit-scrollbar {
+    display: none;
+  }
+  /* Small pill, thumb-sized target. */
+  .one-option {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    position: relative;
+  }
+  .one-option::after {
+    content: "";
+    position: absolute;
+    inset: -8px 0;
   }
   .one-when {
+    order: -1;
     margin-left: 0;
-    flex: 1 1 100%;
-    justify-content: space-between;
+    margin-right: 4px;
+    flex: 0 0 auto;
+    gap: 9px;
+    padding: 4px 12px;
   }
   .one-when input[type="range"] {
-    flex: 1 1 auto;
-    width: auto;
+    width: 108px;
+  }
+  .one-when b {
+    font-size: 19px;
+  }
+  /* A chart with no room to be a chart. Give it a fixed, generous slice rather
+     than whatever a flex row has left over. */
+  /* A fixed shape rather than a share of the viewport: leftover flex height on
+     a phone made the chart taller than it was wide, which is the one proportion
+     a time series must never have. */
+  .one-figure {
+    flex: 0 0 auto;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    min-height: 260px;
+  }
+  .one-verdict-line {
+    gap: 10px;
+  }
+  .one-verdict-num {
+    font-size: 34px;
+  }
+  .one-verdict-say {
+    font-size: 13px;
+  }
+  .one-readwhy {
+    width: 100%;
+    justify-content: center;
+  }
+  .one-result {
+    padding-top: clamp(22px, 3vh, 34px);
+  }
+  .one-story {
+    font-size: 15px;
+  }
+  .one-caveat {
+    padding: 18px;
+  }
+  .one-caveat h2 {
+    font-size: 17px;
+  }
+  .one-caveat p {
+    font-size: 13.5px;
+  }
+  .room-cap {
+    font-size: 11.5px;
   }
   .one-arguebox {
     margin-left: calc(var(--gutter) * -1);
     margin-right: calc(var(--gutter) * -1);
+    padding: 24px var(--gutter);
     border-radius: 0;
+    scroll-margin-top: 12px;
+  }
+  .one-foot p {
+    font-size: 12px;
   }
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Argue, { type Objection } from "@/components/Argue";
 import PowerChart, { type Threshold } from "@/components/one/PowerChart";
+import Room from "@/components/one/Room";
 import { type Figure, figures } from "@/lib/figures";
 import { INTERVENTIONS, type Intervention, matchFrom, yearIn } from "@/lib/interventions";
 import { PROJECTION_RULE, projectFigure } from "@/lib/project";
@@ -18,9 +19,9 @@ const YEAR = /\b(19|20)\d{2}\b/;
 /* The three the AI Index itself prints on this figure. Keeping them is the
    difference between a number and a fact you can feel. */
 const THRESHOLDS: Threshold[] = [
-  { y: 7, label: "New Zealand ≈ 7 GW" },
-  { y: 19, label: "the Netherlands ≈ 19 GW" },
-  { y: 31, label: "New York State, peak ≈ 31 GW" },
+  { y: 7, label: "New Zealand ≈ 7 GW", short: "NZ 7" },
+  { y: 19, label: "the Netherlands ≈ 19 GW", short: "Netherlands 19" },
+  { y: 31, label: "New York State, peak ≈ 31 GW", short: "NY State 31" },
 ];
 
 const CONF: Record<string, string> = {
@@ -160,6 +161,21 @@ export default function Story() {
           </p>
         )}
 
+        {/* An intervention that never reaches this figure is a result, not a
+            dead page. It gets the same slot the verdict would have had. */}
+        {iv && !cf && (
+          <p className="one-verdict-line one-verdict-flat">
+            <span className="one-verdict-num">0%</span>
+            <span className="one-verdict-say">
+              <b>This one does not touch the power.</b> {untouchedReason(figure, iv)}{" "}
+              <span className="one-verdict-dim">
+                It still moves {elsewhere!.moved.length} of the other {figures.length - 1} figures
+                on the board, and you can still argue with it.
+              </span>
+            </span>
+          </p>
+        )}
+
         <div className="one-figure">
           <PowerChart
             figure={projected}
@@ -169,22 +185,31 @@ export default function Story() {
             dataEndsAt={iv ? dataEndsAt : undefined}
           />
         </div>
-        {iv && cf && (
+        {iv && (
           <a className="one-readwhy" href="#why">
-            Read why this happens
+            {cf ? "Read why this happens" : "Read why nothing happened"}
             <span aria-hidden>↓</span>
           </a>
         )}
       </section>
 
-      {iv && cf && (
+      {iv && (
         <section className="one-result" id="why">
           <p className="one-story">
             <b>{iv.prompt.replace(/\?$/, "")}</b>, from {iv.from}.{" "}
-            {here[0]?.rationale} By {HORIZON} the world&rsquo;s AI data centres draw{" "}
-            <b>{cfEnd!.toFixed(1)} GW</b> rather than {baseEnd.toFixed(1)}, a gap of{" "}
-            <b>{Math.abs(cfEnd! - baseEnd).toFixed(1)} GW</b>, about{" "}
-            {(Math.abs(cfEnd! - baseEnd) / 31).toFixed(1)} times New York State at peak.{" "}
+            {cf ? (
+              <>
+                {here[0]?.rationale} By {HORIZON} the world&rsquo;s AI data centres draw{" "}
+                <b>{cfEnd!.toFixed(1)} GW</b> rather than {baseEnd.toFixed(1)}, a gap of{" "}
+                <b>{Math.abs(cfEnd! - baseEnd).toFixed(1)} GW</b>, about{" "}
+                {(Math.abs(cfEnd! - baseEnd) / 31).toFixed(1)} times New York State at peak.{" "}
+              </>
+            ) : (
+              <>
+                {untouchedReason(figure, iv)} The line above is the published record and the trend
+                that follows it, unchanged, which is the answer to the question you asked.{" "}
+              </>
+            )}
             {elsewhere!.moved.length} of the other {figures.length - 1} figures on the board move
             with it, and {elsewhere!.still.length} do not.{" "}
             {argued ? (
@@ -200,9 +225,69 @@ export default function Story() {
               "What follows is every reason, including the ones against."
             )}
           </p>
+
+          <Room
+            lit={cf ? cfEnd! / baseEnd : 1}
+            caption={
+              <>
+                <b>A drawing, not a photograph.</b>{" "}
+                {cf ? (
+                  <>
+                    The lit cabinets are the {cfEnd!.toFixed(1)} GW still drawn under your
+                    intervention; the dark ones at the back are the{" "}
+                    {Math.abs(baseEnd - cfEnd!).toFixed(1)} GW it took off the trend, and they are
+                    at the back because the far racks are the ones that had not been built yet.
+                  </>
+                ) : (
+                  <>
+                    Every cabinet is lit, because this intervention takes none of them away. The
+                    room is the {baseEnd.toFixed(1)} GW the trend arrives at in {HORIZON} either
+                    way.
+                  </>
+                )}{" "}
+                Nothing here is a picture of a real building, and no real hall is laid out to match
+                a number.
+              </>
+            }
+          />
+
+          <div className="one-caveat">
+            <h2>None of the future here is data.</h2>
+            <ul className="one-caveat-tags">
+              <li>Projected</li>
+              <li>Written by a model</li>
+              <li>Contested</li>
+            </ul>
+            <p>
+              Everything left of the 2025Q4 rule is Stanford&rsquo;s published record, and you can
+              open the CSV it came from. Everything right of it is one piece of arithmetic run over
+              that record, the same rule for every figure on the board, because an intervention
+              that starts next year needs a future to land in. It is not a forecast. Nobody at
+              Epoch AI or Stanford has said the line goes to {trendEnd.toFixed(0)} GW.
+            </p>
+            <p>
+              The counterfactual laid over the top is thinner still. Each effect is{" "}
+              <b>a direction, a size and a start year, written by a language model</b> and tagged
+              with how much weight it deserves. About a third of them are marked speculative by the
+              thing that wrote them. They are arguments, not measurements, and an argument you
+              can&rsquo;t check is worth less than one you can, which is why every effect on this
+              page prints its own reasoning next to it.
+            </p>
+            <p>
+              So take the numbers with salt. Plenty of people who know this field would set the
+              magnitudes differently or point them the other way, and the strongest objection I
+              know of against this particular intervention is written out below, unprompted. If
+              yours is different, the page would rather hear it than be believed.
+            </p>
+            <a className="one-caveat-go" href="#argue">
+              Dispute it ↓
+            </a>
+          </div>
+
           <div className="one-cols">
             <div className="one-col">
-              <h2>What you changed here</h2>
+              <h2>{cf ? "What you changed here" : "Why this figure holds"}</h2>
+              {!cf && <p>{untouchedReason(figure, iv)}</p>}
               {here.map((e, i) => (
                 <p key={i}>
                   <span className="one-op">
@@ -214,7 +299,7 @@ export default function Story() {
                 </p>
               ))}
               <p className="one-note">
-                Nothing before {e0(here)} moves at all: the counterfactual is glued to the published
+                Nothing before {cf ? e0(here) : iv.from} moves at all: the counterfactual is glued to the published
                 record until the year you picked. Past 2025Q4 both readings are projection, on one
                 rule applied to every figure identically. {PROJECTION_RULE}
               </p>
