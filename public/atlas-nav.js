@@ -370,9 +370,23 @@
       document.addEventListener("keydown", function (e) { if (e.key === "Escape") setOpen(false); });
     }
 
-    // hide on scroll-down, reveal on scroll-up
+    /*
+     * The bar travels with the page going down, and slides back on the way up.
+     *
+     * Scrolling DOWN it is moved by exactly the distance scrolled, with no
+     * transition — so it leaves at the speed of the page and reads as part of
+     * it. Scrolling UP it animates back to rest. The old behaviour animated it
+     * away on a 0.55s curve, which is what made every sticky offset on the site
+     * lag behind the bar and left the glossary alphabet hanging in space.
+     *
+     * Pages with a sub-nav opt out: their slim tab row sits directly under the
+     * bar and would float with a gap above it.
+     */
     var hero = document.querySelector("[data-fa-hero]");
-    var lastY = window.scrollY;
+    var pinned = !!document.querySelector(".fa-subnav");
+    var lastY = Math.max(0, window.scrollY);
+    var hiddenBy = 0; // px of the bar currently pushed off the top
+
     // Evaluate once on load: the handler only fires on scroll, so without this
     // the bar arrives opaque over a hero it is supposed to be clear of.
     function paintHero() {
@@ -380,17 +394,98 @@
       var past = window.scrollY > hero.offsetTop + hero.offsetHeight - h.offsetHeight - 8;
       h.classList.toggle("is-clear", !past);
     }
+
+    /*
+     * Publish how many pixels of the bar are on screen, as --fa-nav-now.
+     *
+     * --fa-nav-h is the height and never changes, which is the wrong number for
+     * anything sticky: pin to a constant 64 and you get a dead band the moment
+     * the bar leaves; pin to 0 and the bar buries your element when it returns.
+     * Both were live here — the glossary alphabet did the first, Magnifica's
+     * floating controls and the feed rails the second. Because the bar is now
+     * driven from scrollY rather than animated, this is exact on every frame
+     * and needs no transition to smooth it over.
+     */
+    function publishOccupancy(px) {
+      document.documentElement.style.setProperty(
+        "--fa-nav-now",
+        Math.max(0, px === undefined ? h.offsetHeight - hiddenBy : px) + "px",
+      );
+    }
+
+    /*
+     * While the bar is sliding back down, publish where its bottom edge ACTUALLY
+     * is, frame by frame, rather than jumping straight to its resting height.
+     *
+     * Going down the bar is driven from scrollY, so hiddenBy is exact and no
+     * loop is needed. Coming back it is a CSS transition, and announcing the
+     * final number up front would drop every sticky consumer into place ~180ms
+     * before the bar arrived — a band of bare page above the glossary alphabet
+     * for the length of the animation. Reading the rect keeps the contract the
+     * variable's name makes: pixels on screen right now.
+     */
+    var tracking = false;
+    function trackReveal() {
+      if (tracking) return;
+      tracking = true;
+      var tick = function () {
+        var bottom = h.getBoundingClientRect().bottom;
+        publishOccupancy(bottom);
+        if (bottom < h.offsetHeight - 0.5 && h.classList.contains("is-revealing")) {
+          requestAnimationFrame(tick);
+        } else {
+          tracking = false;
+          publishOccupancy();
+        }
+      };
+      requestAnimationFrame(tick);
+    }
+
     paintHero();
-    window.addEventListener("scroll", function () {
-      var y = window.scrollY;
-      // Over a full-bleed hero the bar is transparent so the visualisation can
-      // run to the top edge; it takes its background back the moment the hero
-      // has passed, which is also when there is real content behind it.
-      paintHero();
-      if (y > lastY && y > 90) h.classList.add("is-hidden");
-      else h.classList.remove("is-hidden");
-      lastY = y;
-    }, { passive: true });
+    publishOccupancy();
+    window.addEventListener("resize", publishOccupancy, { passive: true });
+
+    if (!pinned) {
+      var queued = false;
+      var frame = function () {
+        queued = false;
+        var y = Math.max(0, window.scrollY);
+        var dy = y - lastY;
+        var navH = h.offsetHeight;
+
+        if (y <= 0) {
+          // back at the top: at rest, and no slide needed to get there
+          hiddenBy = 0;
+          h.classList.remove("is-revealing");
+        } else if (dy > 0) {
+          // down: move with the page, one pixel per pixel, no animation
+          h.classList.remove("is-revealing");
+          hiddenBy = Math.min(navH, hiddenBy + dy);
+        } else if (dy < 0) {
+          // up: slide the whole bar back down
+          if (hiddenBy > 0) {
+            h.classList.add("is-revealing");
+            hiddenBy = 0;
+            h.style.transform = "translateY(0)";
+            trackReveal(); // publish the real edge while it travels
+            lastY = y;
+            return;
+          }
+          hiddenBy = 0;
+        }
+
+        h.style.transform = hiddenBy ? "translateY(-" + hiddenBy + "px)" : "translateY(0)";
+        if (!tracking) publishOccupancy();
+        lastY = y;
+      };
+
+      window.addEventListener("scroll", function () {
+        paintHero();
+        if (queued) return;
+        queued = true;
+        requestAnimationFrame(frame);
+      }, { passive: true });
+    }
   }
   if (document.body) mount();
   else document.addEventListener("DOMContentLoaded", mount);

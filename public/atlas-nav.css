@@ -1,18 +1,37 @@
 /*
   The one standard global nav, modelled on frond-studio.vercel.app:
   • position: fixed, full-bleed, frosted glass (translucent + backdrop-blur)
-  • hides on scroll-down, reveals on scroll-up (the `.is-hidden` transform)
+  • travels UP with the page as you scroll down — 1:1 with the scroll, no
+    animation, so it reads as part of the page — then SLIDES back down as
+    soon as you scroll up (the `.is-revealing` transition)
   • light by default, dark under `html.dark` (the toggle flips that class)
   Left: brand mark + "Futures Atlas" (+ project breadcrumb dropdown on a project
   page). Right: uppercase links + circular theme toggle. Self-contained colours
   so it renders identically across host, React and vanilla project apps.
   Consumers offset their content by --fa-nav-h (64px).
 */
-:root { --fa-nav-h: 64px; }
+/*
+ * --fa-nav-h  the bar's height. Constant. Use it to reserve layout space.
+ * --fa-nav-now  how many pixels of the bar are ON SCREEN right now: its full
+ *   height at rest, 0 once it has travelled away, and every value in between
+ *   while it moves. Anything sticky or pinned must offset from THIS one, never
+ *   from --fa-nav-h, or it either floats above a dead band when the bar leaves
+ *   or gets buried when it returns.
+ *
+ *   It carries NO transition, deliberately. It used to, to cover a bar that
+ *   animated away on a 0.55s curve — which meant every sticky offset on the
+ *   site lagged half a second behind the thing it was supposed to sit under,
+ *   and the glossary alphabet visibly detached from the bar. The bar now moves
+ *   with the scroll instead of animating, so the exact number is available on
+ *   every frame and nothing has to be interpolated.
+ */
+:root { --fa-nav-h: 64px; --fa-nav-now: 64px; }
 
 .fa-shell {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 60;
   height: var(--fa-nav-h);
   display: flex;
@@ -26,10 +45,20 @@
   color: #141518;
   border-bottom: 1px solid rgba(20, 21, 24, 0.12);
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.5s, border-color 0.5s, color 0.5s;
+  /* No transform transition at rest: on the way up the bar is driven directly
+     from scrollY, and interpolating would make it lag the page it is meant to
+     be part of. The transition is added only for the ride back down. */
+  transition: background-color 0.5s, border-color 0.5s, color 0.5s;
   transform: translateY(0);
+  will-change: transform;
 }
-.fa-shell.is-hidden { transform: translateY(-100%); }
+.fa-shell.is-revealing {
+  transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 0.5s, border-color 0.5s, color 0.5s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fa-shell.is-revealing { transition: background-color 0.5s, border-color 0.5s, color 0.5s; }
+}
 
 .fa-shell__left { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .fa-shell__right { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
@@ -248,9 +277,10 @@ html.dark .fa-foot__tag { color: rgba(243, 241, 236, 0.5); }
 .fa-subnav__link.is-active { opacity: 1; color: #b4541e; }
 html.dark .fa-subnav { background: rgba(12, 13, 16, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
 html.dark .fa-subnav__link.is-active { color: #7fb2e6; }
-/* On pages with a sub-nav, keep the master pinned (don't hide on scroll) so the
-   slim tab row never floats with a gap above it. */
-body:has(.fa-subnav) .fa-shell.is-hidden { transform: none !important; }
+/* On pages with a sub-nav, keep the master bar put (it never travels) so the
+   slim tab row never floats with a gap above it. atlas-nav.js skips the scroll
+   handling entirely on these pages, and this backs it up. */
+body:has(.fa-subnav) .fa-shell { transform: none !important; }
 
 /* ── Hamburger + mobile sheet ───────────────────────────────────────────────
    On tablet/mobile the primary links collapse into a hamburger that opens a
