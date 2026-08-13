@@ -126,6 +126,19 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
     text-rendering: optimizeLegibility;
   }
 
+  /*
+    Tailwind v4's preflight defers to the browser default for buttons, which is
+    an arrow — v3 used to set `cursor: pointer`. Upgrading therefore made every
+    unstyled button on the site stop looking clickable (25 of them on /feed
+    alone: the tabs, the topic filters, the poll options, the swipe controls).
+    Restored here rather than per-component. `:not(:disabled)` keeps a disabled
+    control on the arrow, and being in @layer base means a `cursor-*` utility
+    still wins wherever a component wants something else.
+  */
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  summary { cursor: pointer; }
+
   /* headings use the display face by default — no per-element class needed */
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display), system-ui, sans-serif;
