@@ -117,9 +117,9 @@ export const projects: Project[] = [
   },
   {
     id: "manipulate-ai-gigawatts",
-    title: "One Figure: The Power",
+    title: "AI Gigawatts",
     tagline:
-      "Global AI data centre power capacity as a rising field of light, with the countries it passes on the way up (New Zealand, the Netherlands, New York State at peak) and the quarter each one is crossed. Pick a decision and the counterfactual is cut out of the glow as a solid shape, so the gap between them is the subject rather than something to infer from two lines. Underneath: what you changed, what you changed elsewhere, and what you left alone.",
+      "Global AI data centre power capacity as a rising field of light, marking the countries it passes on the way up: New Zealand, the Netherlands, New York State at peak. Pick a decision and the counterfactual is cut from the glow as a solid shape, so the gap is the subject rather than two lines to compare.",
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
