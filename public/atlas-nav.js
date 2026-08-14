@@ -51,7 +51,7 @@
       { name: "Oracle", path: "/village-oracle/oracle" },
       { name: "Research", path: "/village-oracle/research" },
     ] },
-    { name: "Actually Hard Questions", path: "/actually-hard-questions", theme: "dark", pages: [
+    { name: "Actually Hard Questions", path: "/actually-hard-questions", pages: [
       { name: "Map", path: "/actually-hard-questions#map" },
       { name: "Grid", path: "/actually-hard-questions#grid" },
       { name: "Ask", path: "/actually-hard-questions#session" },
