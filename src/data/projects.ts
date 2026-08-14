@@ -124,7 +124,7 @@ export const projects: Project[] = [
     date: "2026-08-13",
     field: "Manipulate the data",
     status: "live",
-    visibility: "draft",
+    visibility: "live",
     path: "/manipulate-the-data/ai-gigawatts",
     image: "/projects/manipulate-ai-gigawatts.jpg",
   },
