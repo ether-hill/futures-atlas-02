@@ -244,6 +244,19 @@ export const projects: Project[] = [
     image: "/projects/woodchipper.jpg",
   },
   {
+    id: "actually-hard-questions",
+    title: "Actually Hard Questions",
+    tagline:
+      "A parody of Anthropic's own homepage banner, hiding a workshop tool: hang a room's hardest AI questions on Anthropic's five real headings, next to what Anthropic has actually published there.",
+    year: "2026",
+    date: "2026-08-13",
+    field: "Public engagement",
+    status: "live",
+    visibility: "draft",
+    path: "/actually-hard-questions", // hand-authored static bundle, served within this site
+    image: "/projects/actually-hard-questions.jpg",
+  },
+  {
     id: "underground-intelligence",
     title: "Underground Intelligence",
     tagline:

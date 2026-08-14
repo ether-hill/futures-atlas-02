@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Actually Hard Questions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,400;0,500;1,400&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --dark:#141413;
+    --cream:#F0EEE6;
+    --clay:#CC785C;          /* Anthropic's accent, used for their side */
+    --ours:oklch(0.64 0.13 245);       /* Futures Atlas accent, on dark */
+    --ours-deep:oklch(0.55 0.13 245);  /* the same blue, for filled buttons */
+    --green:#3F6B57;
+    --serif:"Newsreader",Georgia,"Times New Roman",serif;
+    --line:rgba(20,20,19,.22);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:var(--dark)}
+  body{font-family:var(--serif);color:var(--dark);-webkit-font-smoothing:antialiased;overflow:hidden}
+  body.scrolls{overflow:auto}
+  button,select,textarea,input{font-family:var(--serif)}
+
+  /* ========================= hero: their banner, marked up ========================= */
+  #hero{position:fixed;inset:0;z-index:20;background:#141413;overflow:hidden;
+        transition:opacity .8s ease,transform .8s ease}
+  #hero.gone{opacity:0;transform:scale(1.05);pointer-events:none;visibility:hidden}
+  #kb{position:absolute;inset:0;animation:kenburns 48s ease-in-out infinite alternate}
+  @keyframes kenburns{from{transform:scale(1.02) translate(0,0)}to{transform:scale(1.1) translate(-1.4%,-1.1%)}}
+  /* fixed 1600x748 plate space, cover-scaled: annotations use these coordinates */
+  #plate{position:absolute;left:50%;top:50%;width:1600px;height:748px;transform-origin:50% 50%;overflow:hidden}
+  #plate img{position:absolute;left:0;top:0;width:1600px;height:748px;display:block;object-fit:cover;object-position:0 0}
+  #plate .fade{position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse 78% 68% at 50% 44%,rgba(20,20,19,0) 0%,rgba(20,20,19,.3) 68%,rgba(20,20,19,.72) 100%)}
+  #ourLine{position:absolute;left:0;right:0;top:258px;text-align:center;color:var(--cream);
+    font-family:var(--serif);font-size:73px;line-height:1;letter-spacing:-.015em;white-space:nowrap}
+  #ourLine #swap{color:var(--ours)}
+  #ourAside{position:absolute;left:0;right:0;top:414px;text-align:center;color:var(--ours);
+    font-family:var(--serif);font-size:27px;letter-spacing:-.01em;opacity:0;transition:opacity .6s ease}
+  #ourAside.on{opacity:1}
+  #ourLine .caret{display:inline-block;width:3px;height:.72em;background:var(--ours);
+    vertical-align:-.02em;margin-left:2px;animation:blink 1s steps(1) infinite}
+  #choose{position:absolute;left:0;right:0;top:64%;z-index:22;text-align:center;padding:0 20px;
+          opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+  #choose.on{opacity:1;transform:none}
+  .joinline{margin-top:18px;font-size:13px;color:rgba(240,238,230,.5)}
+  .joinline button{border:0;background:none;font-family:var(--serif);font-size:13px;cursor:pointer;
+    color:rgba(240,238,230,.9);text-decoration:underline;text-underline-offset:3px;padding:0}
+  .joinline button:hover{color:#fff}
+  .doors{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .door{font-size:15px;line-height:1.25;text-align:left;display:inline-flex;align-items:center;gap:13px;
+    max-width:340px;padding:14px 20px;border-radius:999px;cursor:pointer;border:1px solid transparent;
+    transition:transform .2s ease,background .2s ease,border-color .2s ease;text-decoration:none}
+  .door small{display:block;font-size:11.5px;opacity:.62;margin-top:3px}
+  .door em{font-style:normal;color:var(--clay)}
+  .door.tame{background:rgba(204,120,92,.1);border-color:rgba(204,120,92,.55);color:var(--cream)}
+  .door.tame .arrow{color:var(--clay);opacity:1}
+  .door.tame small{color:rgba(204,120,92,.85);opacity:1}
+  .door.tame:hover{background:rgba(204,120,92,.2);transform:translateY(-2px)}
+  .door.hard{background:rgba(240,238,230,.92);color:var(--dark)}
+  .door.hard:hover{background:#fff;transform:translateY(-2px)}
+  .door.room{background:var(--ours-deep);color:#fff}
+  .door.room small{opacity:.75}
+  .door.room:hover{transform:translateY(-2px);filter:brightness(1.06)}
+  .door .arrow{font-size:17px;opacity:.75}
+
+  @keyframes blink{0%,45%{opacity:1}55%,100%{opacity:.15}}
+  #grain{position:absolute;inset:0;z-index:21;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence baseFrequency='.85' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>")}
+
+  /* ================================== map ================================== */
+  #stage{position:fixed;inset:0;background:var(--cream)}
+  #graph{width:100%;height:100%;display:block;cursor:grab}
+  #graph.grabbing{cursor:grabbing}
+  .link{stroke:rgba(20,20,19,.17);stroke-width:1;fill:none}
+  .link.x{stroke:rgba(20,20,19,.1)}
+  .link.wl{stroke:rgba(20,20,19,.14)}
+  .node{cursor:pointer}
+  .node .lab{font-size:14px;fill:var(--dark);text-anchor:middle;opacity:.72;pointer-events:none;
+             transition:opacity .25s ease}
+  #graph.far .node .lab{opacity:.5}
+  .node:hover .lab{opacity:1}
+  #graph.sparse .node .lab{font-size:15.5px}
+  #graph.sparse .hub .h{font-size:30px}
+  #graph.sparse .hub .s{font-size:13px}
+  .node .tile{transition:transform .25s cubic-bezier(.2,.8,.3,1)}
+  .node:hover .tile{transform:scale(1.16)}
+  .node.mine .lab{fill:var(--clay);opacity:1}
+  .node.pop{animation:pop .8s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes pop{from{opacity:0;transform:scale(.3)}to{opacity:1}}
+  .word{font-size:100px;fill:var(--dark);opacity:.9;pointer-events:none;letter-spacing:-.02em}
+  #graph.sparse .word{font-size:92px}
+  .hub{cursor:pointer}
+  .hub .h{font-size:26px;fill:var(--dark);text-anchor:middle;pointer-events:none}
+  .hub .s{font-size:11.5px;fill:var(--dark);text-anchor:middle;opacity:.6;pointer-events:none}
+  .node,.hub{transition:opacity .25s ease}
+  .faded{opacity:.16}
+
+  .chrome{position:fixed;z-index:15;display:none}
+  body.s-map .chrome{display:block}
+  body.s-map #hint,body.s-map #zoom{display:flex}
+  .pill{font-size:13.5px;color:var(--dark);background:rgba(255,255,255,.72);border:1px solid var(--line);
+        border-radius:9px;padding:10px 15px;cursor:pointer;backdrop-filter:blur(6px);
+        transition:background .2s ease,border-color .2s ease}
+  .pill:hover{background:#fff;border-color:rgba(20,20,19,.45)}
+  .pill.on{background:var(--dark);color:var(--cream);border-color:var(--dark)}
+  .pill:disabled{opacity:.35;cursor:default}
+  #hint{left:calc(22px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));
+        flex-direction:column;gap:10px;align-items:flex-start}
+  #hint .tip{font-size:12.5px;opacity:.55;max-width:26em}
+  #zoom{right:calc(22px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));
+        gap:8px;align-items:center;font-size:13px;opacity:.85}
+  #zoom .pill{width:38px;padding:10px 0;text-align:center}
+  .seg{display:inline-flex;background:rgba(255,255,255,.72);border:1px solid var(--line);
+       border-radius:999px;padding:3px;backdrop-filter:blur(6px)}
+  .seg button{border:0;background:none;font-family:var(--serif);font-size:13.5px;color:var(--dark);
+    padding:8px 18px;border-radius:999px;cursor:pointer;opacity:.6;transition:opacity .15s ease}
+  .seg button:hover{opacity:1}
+  .seg button.on{background:var(--dark);color:var(--cream);opacity:1}
+  /* the one nav bar, present on every screen so banner/ask/map/grid are always one tap away */
+  #nav{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translateX(-50%);z-index:27}
+  #nav .seg button{padding:8px 14px}
+
+  #grid{position:fixed;inset:0;z-index:26;background:var(--cream);overflow-y:auto;display:none}
+  body.s-grid #grid{display:block}
+  .gsec{margin-bottom:38px}
+  .gsec h2{font-size:clamp(22px,3vw,30px);font-weight:400;margin:0;letter-spacing:-.01em;
+           padding-left:14px;border-left:5px solid var(--gc,var(--dark))}
+  .gsec .meta{padding-left:19px;font-size:13px;opacity:.55;margin:6px 0 16px;line-height:1.5}
+  .gsec .meta a{color:inherit}
+  .gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:12px}
+  .gcard{background:#fff;border:1px solid rgba(20,20,19,.12);border-left:4px solid var(--gc,var(--dark));
+         border-radius:14px;padding:16px 18px;cursor:pointer}
+  .gcard p{margin:0;font-size:17px;line-height:1.35}
+  .gcard span{display:block;font-size:12.5px;opacity:.45;margin-top:8px}
+  .gcard .hardness{display:inline-block;font-size:11.5px;letter-spacing:.04em;opacity:.6;
+    background:rgba(20,20,19,.06);border-radius:999px;padding:3px 9px;margin:9px 6px 0 0}
+  .gempty{border:1px dashed rgba(20,20,19,.22);border-radius:14px;padding:20px;font-size:14px;opacity:.5}
+  #mapEmpty{left:50%;top:46%;transform:translateX(-50%);font-size:15px;opacity:.45;text-align:center}
+  body.s-map #mapEmpty{display:block}
+
+  #card{position:fixed;right:22px;top:22px;width:min(400px,calc(100vw - 44px));z-index:30;
+        max-height:calc(100vh - 44px);overflow-y:auto;
+        background:#fff;border:1px solid rgba(20,20,19,.14);border-radius:14px;padding:26px 26px 22px;
+        box-shadow:0 20px 60px rgba(20,20,19,.18);opacity:0;transform:translateY(-10px);
+        pointer-events:none;transition:opacity .25s ease,transform .25s ease}
+  #card.on{opacity:1;transform:none;pointer-events:auto}
+  #card .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.5}
+  #card .q{font-size:24px;line-height:1.25;margin:12px 0 0;letter-spacing:-.01em}
+  #card .soft{margin:18px 0 0;font-size:13.5px;line-height:1.5;opacity:.66;
+              border-top:1px solid rgba(20,20,19,.12);padding-top:14px}
+  #card .soft em{font-style:normal;display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:5px}
+  #card .soft .g{margin:0 0 16px;font-size:14px;line-height:1.5;opacity:.9}
+  #card .soft ul.arts{margin:0;padding-left:17px;font-size:13.5px;line-height:1.45}
+  #card .soft ul.arts li{margin-bottom:7px}
+  #card .soft ul.arts a{color:inherit;text-decoration-color:rgba(20,20,19,.35);text-underline-offset:2px}
+  #card .soft ul.arts a:hover{text-decoration-color:var(--dark)}
+  #card .soft ul.arts.room{list-style:none;padding-left:0}
+  #card .soft ul.arts.room li{padding-left:12px;border-left:2px solid var(--clay);margin-bottom:10px}
+  #card .soft ul.arts.room .who{display:block;font-size:11.5px;opacity:.55;margin-top:3px}
+  #card .soft .more{margin:8px 0 0;font-size:12.5px;opacity:.7;line-height:1.45}
+  #card .x{position:absolute;right:12px;top:9px;border:0;background:none;font-size:22px;cursor:pointer;opacity:.4;line-height:1}
+  #card .x:hover{opacity:1}
+
+  /* ============================ session + score ============================ */
+  #session,#score{position:fixed;inset:0;z-index:26;background:var(--cream);overflow-y:auto;display:none}
+  body.s-session #session{display:block}
+  .wrap{max-width:1080px;margin:0 auto;padding:calc(78px + env(safe-area-inset-top)) 26px 90px}
+  .top{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+  .top h1{font-size:23px;font-weight:400;margin:0;letter-spacing:-.01em}
+  .top h1 span{display:block;font-size:12.5px;opacity:.55}
+  .top .sp{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .dots{display:flex;gap:6px;align-items:center}
+  .dots i{width:26px;height:4px;border-radius:2px;background:rgba(20,20,19,.16);display:block}
+  .dots i.done{background:var(--green)}
+  .dots i.now{background:var(--clay)}
+
+  .shead{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+  .shead #sesName{font-size:23px;border:0;border-bottom:1px dashed rgba(20,20,19,.25);background:none;
+    padding:0 0 3px;width:min(12em, 60vw);color:var(--dark)}
+  .shead #sesName::placeholder{color:rgba(20,20,19,.35)}
+  .shead .step{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.45;margin-top:7px}
+  .shead .dots{margin-left:auto}
+  .dots i{width:30px;height:4px;border-radius:2px;background:rgba(20,20,19,.14);display:block}
+  .dots i.done{background:var(--green)}
+  .dots i.now{background:var(--accent,var(--dark))}
+
+  .theirs{background:var(--dark);color:var(--cream);border-radius:18px;padding:30px 32px;margin-bottom:16px;
+          border-left:6px solid var(--accent,var(--cream))}
+  .theirs .badge{font-size:11px;letter-spacing:.16em;text-transform:uppercase;opacity:.45}
+  .theirs h2{font-size:clamp(28px,4.4vw,46px);font-weight:400;margin:10px 0 10px;letter-spacing:-.018em;line-height:1.05}
+  .theirs p{margin:0;font-size:15.5px;line-height:1.55;opacity:.7;max-width:46em}
+
+  .ask{background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:18px;padding:22px}
+  .ask textarea{width:100%;font-family:var(--serif);font-size:20px;line-height:1.4;min-height:104px;resize:vertical;
+    border:0;background:none;padding:6px 4px;color:var(--dark);outline:none}
+  .ask textarea::placeholder{color:rgba(20,20,19,.3)}
+  .ask .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+    border-top:1px solid rgba(20,20,19,.1);padding-top:14px;margin-top:6px}
+  .ask input[type=text]{font-size:16px;padding:10px 13px;border:1px solid rgba(20,20,19,.18);
+    border-radius:10px;background:rgba(20,20,19,.02);width:190px;color:var(--dark)}
+  .ask .hintk{font-size:12px;opacity:.35}
+  .btn{background:var(--dark);color:var(--cream);border:0;border-radius:999px;padding:12px 22px;font-size:15px;cursor:pointer}
+  .btn.ghost{background:none;color:var(--dark);border:1px solid var(--line)}
+  .btn.ours{background:var(--ours-deep);color:#fff}
+  .btn.clay{background:var(--clay);color:#fff}
+  .btn:disabled{opacity:.3;cursor:default}
+  .linkbtn{border:0;background:none;font-family:var(--serif);font-size:13px;opacity:.5;cursor:pointer;
+    color:var(--dark);text-decoration:underline;text-underline-offset:3px}
+  .linkbtn:hover{opacity:.9}
+  .grow{flex:1}
+
+  .qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px;margin-top:16px}
+  .qcard{position:relative;background:#fff;border:1px solid rgba(20,20,19,.12);
+    border-left:4px solid var(--accent,var(--dark));border-radius:14px;padding:16px 34px 14px 18px;
+    animation:cardIn .45s cubic-bezier(.2,.9,.3,1)}
+  @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .qcard p{margin:0;font-size:16.5px;line-height:1.35}
+  .qcard .who{display:block;font-size:12.5px;opacity:.45;margin-top:8px}
+  .qcard .del{position:absolute;right:9px;top:7px;border:0;background:none;font-size:17px;
+    line-height:1;opacity:.25;cursor:pointer;color:inherit}
+  .qcard .del:hover{opacity:1}
+  .qempty{grid-column:1/-1;border:1px dashed rgba(20,20,19,.22);border-radius:14px;padding:22px;
+    font-size:14.5px;opacity:.5;text-align:center}
+  .navrow{display:flex;gap:10px;align-items:center;margin-top:26px;flex-wrap:wrap}
+
+  .qlist{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:10px}
+  .qlist li{display:flex;gap:13px;align-items:flex-start;padding:13px 15px;border:1px solid rgba(20,20,19,.12);
+            border-radius:12px;background:rgba(20,20,19,.02)}
+  .qlist .txt{flex:1;font-size:16px;line-height:1.35}
+  .qlist .who{display:block;font-size:12px;opacity:.5;margin-top:3px}
+  .meter{display:flex;gap:3px;align-items:center;margin-top:7px}
+  .meter i{width:12px;height:5px;border-radius:2px;background:rgba(20,20,19,.14)}
+  .meter i.f{background:var(--green)}
+  .meter b{font-weight:400;font-size:11px;opacity:.5;margin-left:6px}
+
+  /* score */
+  .verdict{background:var(--dark);color:var(--cream);border-radius:18px;padding:32px 34px;margin-bottom:22px}
+  .verdict h2{font-size:clamp(26px,4vw,42px);font-weight:400;margin:0 0 10px;letter-spacing:-.018em;line-height:1.1}
+  .verdict h2 em{font-style:normal;color:var(--clay)}
+  .verdict p{margin:0;font-size:15.5px;line-height:1.6;opacity:.75;max-width:52em}
+  .cols{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px}
+  .col{background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:14px;padding:18px 20px}
+  .col h4{margin:0 0 2px;font-size:15px;font-weight:500}
+  .col .n{font-size:34px;letter-spacing:-.02em;margin:8px 0 0}
+  .col .n small{font-size:13px;opacity:.45;letter-spacing:0}
+  .col .meta{font-size:12px;opacity:.55;line-height:1.45;margin-top:6px}
+  .col.room{border-color:var(--clay)}
+
+  table.axes{width:100%;border-collapse:collapse;background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:14px;overflow:hidden}
+  table.axes td,table.axes th{padding:13px 16px;border-bottom:1px solid rgba(20,20,19,.08);vertical-align:top;text-align:left}
+  table.axes tr:last-child td{border-bottom:0}
+  table.axes th{font-weight:500;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.55}
+  table.axes .name{font-size:16px}
+  table.axes .name small{display:block;font-size:12.5px;opacity:.55;line-height:1.45;margin-top:3px;max-width:34em}
+  .bar{display:flex;align-items:center;gap:8px;font-size:13px}
+  .bar .track{width:78px;height:7px;border-radius:4px;background:rgba(20,20,19,.1);overflow:hidden}
+  .bar .fillv{height:100%;background:var(--dark)}
+  .bar.room .fillv{background:var(--clay)}
+  .bar.ours .fillv{background:var(--green)}
+  .win{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--clay)}
+
+  .panel{background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:14px;padding:22px 24px;margin-top:18px}
+  .panel h3{margin:0 0 12px;font-size:18px;font-weight:400}
+  .panel ul{margin:0;padding-left:18px}
+  .panel li{margin-bottom:9px;font-size:15px;line-height:1.5}
+  .panel li b{font-weight:500}
+  .quote{font-size:17px;line-height:1.4;margin:6px 0 0}
+  .quote span{display:block;font-size:12px;opacity:.5;margin-top:4px}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  details summary{cursor:pointer;font-size:14px;opacity:.7}
+  .adj{display:flex;gap:6px;align-items:center;margin-left:auto}
+  .adj button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:14px}
+  .adj span{font-size:11.5px;opacity:.5;min-width:58px;text-align:center}
+
+  /* join bar + phone screens */
+  .joinbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:#fff;
+    border:1px solid rgba(20,20,19,.13);border-radius:14px;padding:14px 18px;margin-bottom:18px}
+  .joinbar span{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.5}
+  .joinbar b{font-size:19px;font-weight:500;letter-spacing:.02em;overflow-wrap:anywhere}
+  .joinbar .jb-url{max-width:100%}
+  .joinbar .jb-code b{font-size:26px;letter-spacing:.14em;color:var(--clay)}
+  .joinbar .jb-n{margin-left:auto;font-size:13px;opacity:.6}
+  .joinbar.off{background:rgba(20,20,19,.04)}
+  .joinbar.off .jb-code b{color:var(--dark)}
+  #joinChip{right:22px;top:20px;background:rgba(255,255,255,.72);border:1px solid var(--line);
+    border-radius:10px;padding:9px 13px;backdrop-filter:blur(6px);font-size:12px;line-height:1.35;
+    text-align:right;cursor:pointer}
+  #joinChip:hover{background:#fff}
+  #joinChip b{display:block;font-size:17px;letter-spacing:.14em;color:var(--clay)}
+  #joinChip span{opacity:.55}
+  #qrOverlay{position:fixed;inset:0;z-index:40;background:rgba(20,20,19,.86);display:none;
+             align-items:center;justify-content:center;cursor:pointer}
+  #qrOverlay.on{display:flex}
+  .qrbox{background:#fff;border-radius:20px;padding:34px 34px 28px;text-align:center;max-width:92vw}
+  .qrbox svg{display:block;margin:0 auto;border-radius:8px}
+  .qrbox b{display:block;font-size:34px;letter-spacing:.2em;margin:18px 0 4px;color:var(--clay)}
+  .qrbox span{display:block;font-size:15px;opacity:.7}
+  .qrbox small{display:block;font-size:12.5px;opacity:.5;margin-top:12px}
+  .jb-qr svg{display:block;border-radius:6px}
+  body.s-map #joinChip{display:block}
+
+  #join,#room{position:fixed;inset:0;z-index:27;background:var(--cream);overflow-y:auto;display:none}
+  body.s-join #join,body.s-room #room{display:block}
+  .wrap.narrow{max-width:580px;padding:38px 22px 80px}
+  .big-h{font-size:clamp(28px,7vw,40px);font-weight:400;margin:0 0 8px;letter-spacing:-.015em}
+  .lede{margin:0 0 26px;font-size:16px;line-height:1.5;opacity:.65}
+  .fld{display:block;margin-bottom:16px}
+  .fld span{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;margin-bottom:7px}
+  .fld input{width:100%;font-size:19px;padding:14px 16px;border:1px solid rgba(20,20,19,.2);
+    border-radius:12px;background:#fff;color:var(--dark)}
+  #joinCode{letter-spacing:.3em;text-transform:uppercase;font-size:26px;text-align:center}
+  .btn.wide{width:100%;padding:16px;font-size:17px}
+  .err{color:var(--clay);font-size:14px;min-height:20px;margin:10px 0 0}
+  .roomtop{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .roomtop b{font-size:17px;font-weight:500}
+  .roomtop span{display:block;font-size:12.5px;opacity:.55}
+  .roomtop .pill{margin-left:auto}
+  .theirs.compact{padding:20px 22px;margin-bottom:14px}
+  .theirs.compact h2{font-size:clamp(22px,5.5vw,30px);margin:7px 0 6px}
+  .theirs.compact .gloss{font-size:15px;margin-top:8px}
+  #roomPick{width:100%;font-size:16px;padding:12px 14px;border:1px solid rgba(20,20,19,.2);
+    border-radius:12px;background:#fff;margin-bottom:12px;color:var(--dark);appearance:none}
+  #roomText{width:100%;font-size:17px;line-height:1.4;min-height:120px;padding:14px 16px;
+    border:1px solid rgba(20,20,19,.2);border-radius:12px;background:#fff;color:var(--dark);resize:vertical}
+  .mine-h{font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin:26px 0 10px}
+  .pick-h{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin:0 0 7px}
+
+  @media (max-width:820px){
+    .cols,.two{grid-template-columns:1fr}
+    #choose{top:auto;bottom:5vh}
+    .door{font-size:14px;padding:12px 16px}
+    #card{top:auto;bottom:calc(82px + env(safe-area-inset-bottom));right:calc(12px + env(safe-area-inset-right))}
+    #hint{left:calc(12px + env(safe-area-inset-left));bottom:calc(12px + env(safe-area-inset-bottom))}
+    #zoom{right:calc(12px + env(safe-area-inset-right));bottom:calc(12px + env(safe-area-inset-bottom))}
+    #nav{top:calc(10px + env(safe-area-inset-top))}
+    #nav .seg button{padding:7px 10px;font-size:12px}
+    /* the join chip's full URL is wide enough to sit under the centered nav bar;
+       on phones just the code (still tap-to-QR), pushed below the nav so nothing collides */
+    #joinChip{top:calc(56px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));
+      padding:7px 11px}
+    #joinChip span{display:none}
+    /* hint text and the zoom pills both anchor to the bottom corners; cap the hint's
+       width so a long tip can't run under the zoom buttons on a narrow phone */
+    #hint{max-width:44vw}
+    #hint .tip{font-size:11.5px;max-width:none}
+  }
+</style>
+<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
+<style id="fa-nav-unify">
+/* The master /atlas-nav.js fa-shell is the one global bar. This app's own #nav
+   (Banner/Ask/Map/Grid) stays — it's the app's internal navigation, not a
+   duplicate of the atlas chrome — just pushed below the master bar, offset
+   from --fa-nav-now (not the constant --fa-nav-h) so it tracks the bar's
+   scroll-reveal position exactly. */
+#nav{top:calc(var(--fa-nav-now,64px) + 14px + env(safe-area-inset-top))}
+#joinChip{top:calc(var(--fa-nav-now,64px) + 20px + env(safe-area-inset-top))}
+.wrap{padding-top:calc(var(--fa-nav-now,64px) + 78px + env(safe-area-inset-top))}
+@media(max-width:820px){
+  #nav{top:calc(var(--fa-nav-now,64px) + 10px + env(safe-area-inset-top))}
+  #joinChip{top:calc(var(--fa-nav-now,64px) + 56px + env(safe-area-inset-top))}
+}
+</style>
+<script src="/atlas-nav.js" defer></script></head>
+<body class="s-hero">
+
+<!-- ================================ the map ================================ -->
+<div id="stage"><svg id="graph"></svg></div>
+
+<nav id="nav">
+  <div class="seg">
+    <button data-screen="hero">Banner</button>
+    <button data-screen="session">Ask</button>
+    <button data-screen="map">Map</button>
+    <button data-screen="grid">Grid</button>
+  </div>
+</nav>
+
+<div id="mapEmpty" class="chrome">Nothing on the map yet. Open the session and ask something.</div>
+
+<div id="hint" class="chrome">
+  <span class="tip">Tap a question, or one of Anthropic's headings. Drag to pan, pinch or scroll to zoom.</span>
+</div>
+
+<div id="joinChip" class="chrome" title="Show the join code big">
+  <b id="chipCode">&mdash;</b><span id="chipUrl"></span>
+</div>
+<div id="qrOverlay">
+  <div class="qrbox">
+    <div id="qrHold"></div>
+    <b id="qrCode"></b>
+    <span id="qrUrl"></span>
+    <small>Point a phone camera at the code, or type the address and the five characters.</small>
+  </div>
+</div>
+
+<div id="zoom" class="chrome">
+  <span>Zoom</span>
+  <button class="pill" id="zin">+</button>
+  <button class="pill" id="zout">&minus;</button>
+  <button class="pill" id="zfit" style="width:auto;padding:10px 13px">Fit</button>
+</div>
+
+<div id="card">
+  <button class="x" id="cardX">&times;</button>
+  <div class="tag" id="cardTag"></div>
+  <p class="q" id="cardQ"></p>
+  <div class="soft" id="cardSoft"></div>
+</div>
+
+<!-- ============================== the banner ============================== -->
+<div id="hero">
+  <div id="kb">
+    <div id="plate">
+      <img src="assets/anthropic-banner.png" alt="Screen grab of the Anthropic homepage banner">
+      <div class="fade"></div>
+      <div style="position:absolute;left:0;right:0;bottom:0;height:26px;background:#141413"></div>
+
+      <div style="position:absolute;left:690px;top:408px;width:220px;height:76px;background:#141413"></div>
+      <div style="position:absolute;left:212px;top:36px;width:72px;height:76px;background:#141413"></div>
+      <div style="position:absolute;left:470px;top:261px;width:660px;height:84px;background:#141413"></div>
+      <div id="ourLine">on <span id="swap"></span><i class="caret"></i> questions.</div>
+      <div id="ourAside">(without answering any of them 🙃)</div>
+    </div>
+  </div>
+  <div id="grain"></div>
+
+  <div id="choose">
+    <div class="doors">
+      <button class="door room" id="doorRoom">
+        <span>Start asking
+          <small>On your own, or with a group</small></span>
+        <span class="arrow">&rarr;</span>
+      </button>
+    </div>
+    <div class="joinline">Someone gave you a code? <button id="doorJoin">Join their session</button>
+      &nbsp;·&nbsp; <a href="https://www.anthropic.com/path-to-hope" target="_blank" rel="noopener">Anthropic's own page &#8599;</a></div>
+  </div>
+</div>
+
+<!-- ============================== the session ============================== -->
+<div id="session">
+  <div class="wrap">
+    <header class="shead">
+      <div class="who-we-are">
+        <input type="text" id="sesName" placeholder="Name this session" maxlength="60">
+        <span class="step" id="sesStep"></span>
+      </div>
+      <div class="dots" id="sesDots"></div>
+      <button class="pill" id="sesExit">Leave</button>
+    </header>
+
+    <div class="joinbar" id="joinBar">
+      <div class="jb-qr" id="jbQR"></div>
+      <div class="jb-code"><span>Session code</span><b id="jbCode">&mdash;</b></div>
+      <div class="jb-url"><span>Join from a phone</span><b id="jbUrl">&mdash;</b></div>
+      <div class="jb-n" id="jbN"></div>
+      <button class="pill" id="jbNew">New session</button>
+    </div>
+
+    <div class="theirs">
+      <div class="badge">Anthropic&rsquo;s heading</div>
+      <h2 id="topQ">How does AI work?</h2>
+      <p class="gloss" id="topGloss"></p>
+    </div>
+
+    <div class="ask">
+      <textarea id="sesText" placeholder="Write a harder question&hellip;" maxlength="240"></textarea>
+      <div class="row">
+        <input type="text" id="sesWho" placeholder="Who&rsquo;s asking" maxlength="40">
+        <button class="btn" id="sesAdd">Add to the map</button>
+        <span class="hintk">or press &#8984;&#8629;</span>
+      </div>
+    </div>
+
+    <div class="qgrid" id="sesList"></div>
+
+    <div class="navrow">
+      <button class="btn ghost" id="sesPrev">&larr; Previous</button>
+      <button class="btn" id="sesNext">Next heading &rarr;</button>
+      <button class="btn ours" id="sesDone">See the map the room made &rarr;</button>
+      <span class="grow"></span>
+      <button class="linkbtn" id="sesSamples">Add sample questions</button>
+    </div>
+  </div>
+</div>
+
+<div id="grid">
+  <div class="wrap">
+    <div class="top">
+      <h1 id="gridTitle">The room's questions<span id="gridSub"></span></h1>
+      <div class="sp">
+        <div class="seg">
+          <button data-screen="map">Map</button>
+          <button data-screen="grid" class="on">Grid</button>
+        </div>
+        <button class="pill" id="gridSession">Session</button>
+      </div>
+    </div>
+    <div id="gridBody"></div>
+  </div>
+</div>
+
+<!-- ============================ join, from a phone ============================ -->
+<div id="join">
+  <div class="wrap narrow">
+    <h1 class="big-h">Join the session</h1>
+    <p class="lede">Type the code on the screen in the room. Your questions land on the map as you send them.</p>
+    <label class="fld"><span>Session code</span>
+      <input id="joinCode" autocapitalize="characters" autocorrect="off" autocomplete="off" placeholder="ABCDE" maxlength="6"></label>
+    <label class="fld"><span>Your name, if you want it on there</span>
+      <input id="joinName" maxlength="40" placeholder=""></label>
+    <button class="btn clay wide" id="joinGo">Join</button>
+    <p class="err" id="joinErr"></p>
+  </div>
+</div>
+
+<div id="room">
+  <div class="wrap narrow">
+    <div class="roomtop">
+      <div><b id="roomName">The session</b><span id="roomMeta"></span></div>
+      <button class="pill" id="roomLeave">Leave</button>
+    </div>
+    <div class="theirs compact">
+      <div class="badge">Their heading</div>
+      <h2 id="roomQ"></h2>
+      <p class="gloss" id="roomGloss"></p>
+    </div>
+    <p class="pick-h">Asking about</p>
+    <select id="roomPick"></select>
+    <textarea id="roomText" placeholder="Your question..." maxlength="240"></textarea>
+    <button class="btn clay wide" id="roomAdd" style="margin-top:12px">Send it to the map</button>
+    <p class="err" id="roomErr"></p>
+    <h3 class="mine-h">Yours</h3>
+    <ul class="qlist" id="roomList"></ul>
+  </div>
+</div>
+
+
+<script src="assets/d3.v7.min.js"></script>
+<script>
+/* ===================== QR code: byte mode, ECC level M, versions 1-10 =====================
+   Every module checked against a reference encoder, all 8 masks, versions 1 to 10. */
+
+const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
+(() => { let x = 1;
+  for (let i = 0; i < 255; i++){ EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 0x100) x ^= 0x11D }
+  for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255];
+})();
+const mul = (a, b) => (a && b) ? EXP[LOG[a] + LOG[b]] : 0;
+
+function rsGen(n){
+  let g = [1];
+  for (let i = 0; i < n; i++){
+    const ng = new Array(g.length + 1).fill(0);
+    for (let j = 0; j < g.length; j++){ ng[j] ^= mul(g[j], EXP[i]); ng[j + 1] ^= g[j] }
+    g = ng;
+  }
+  return g.reverse();          // index 0 = leading coefficient
+}
+function rsEncode(data, ecLen){
+  const gen = rsGen(ecLen);
+  const res = new Array(ecLen).fill(0);
+  for (const b of data){
+    const factor = b ^ res[0];
+    res.shift(); res.push(0);
+    if (factor) for (let i = 0; i < ecLen; i++) res[i] ^= mul(gen[i + 1], factor);
+  }
+  return res;
+}
+
+/* [ecPerBlock, group1Blocks, group1Data, group2Blocks, group2Data] for level M */
+const ECM = [null,
+  [10,1,16,0,0], [16,1,28,0,0], [26,1,44,0,0], [18,2,32,0,0], [24,2,43,0,0],
+  [16,4,27,0,0], [18,4,31,0,0], [22,2,38,2,39], [22,3,36,2,37], [26,4,43,1,44]];
+const ALIGN = [null, [], [6,18], [6,22], [6,26], [6,30], [6,34],
+  [6,22,38], [6,24,42], [6,26,46], [6,28,50]];
+const dataCW = v => ECM[v][1] * ECM[v][2] + ECM[v][3] * ECM[v][4];
+
+function qrModules(text, forceMask){
+  const bytes = new TextEncoder().encode(text);
+  let version = 0;
+  for (let v = 1; v <= 10; v++){
+    const bits = 4 + (v < 10 ? 8 : 16) + bytes.length * 8;
+    if (bits <= dataCW(v) * 8){ version = v; break }
+  }
+  if (!version) throw new Error('too long for version 10');
+
+  /* ---- bit stream ---- */
+  const bits = [];
+  const push = (val, len) => { for (let i = len - 1; i >= 0; i--) bits.push((val >>> i) & 1) };
+  push(0b0100, 4);
+  push(bytes.length, version < 10 ? 8 : 16);
+  for (const b of bytes) push(b, 8);
+  const cap = dataCW(version) * 8;
+  for (let i = 0; i < 4 && bits.length < cap; i++) bits.push(0);
+  while (bits.length % 8) bits.push(0);
+  const words = [];
+  for (let i = 0; i < bits.length; i += 8) words.push(parseInt(bits.slice(i, i + 8).join(''), 2));
+  const PAD = [0xEC, 0x11];
+  for (let i = 0; words.length < dataCW(version); i++) words.push(PAD[i % 2]);
+
+  /* ---- blocks + interleave ---- */
+  const [ecLen, g1, d1, g2, d2] = ECM[version];
+  const blocks = [], ecBlocks = [];
+  let pos = 0;
+  for (let i = 0; i < g1 + g2; i++){
+    const n = i < g1 ? d1 : d2;
+    const block = words.slice(pos, pos + n); pos += n;
+    blocks.push(block);
+    ecBlocks.push(rsEncode(block, ecLen));
+  }
+  const out = [];
+  for (let i = 0; i < Math.max(d1, d2); i++)
+    for (const b of blocks) if (i < b.length) out.push(b[i]);
+  for (let i = 0; i < ecLen; i++)
+    for (const b of ecBlocks) out.push(b[i]);
+
+  /* ---- matrix ---- */
+  const size = version * 4 + 17;
+  const mod = Array.from({length:size}, () => new Array(size).fill(false));
+  const fn  = Array.from({length:size}, () => new Array(size).fill(false));
+  const set = (x, y, dark) => { mod[y][x] = dark; fn[y][x] = true };
+
+  const finder = (cx, cy) => {
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++){
+      const d = Math.max(Math.abs(dx), Math.abs(dy)), x = cx + dx, y = cy + dy;
+      if (x >= 0 && x < size && y >= 0 && y < size) set(x, y, d !== 2 && d !== 4);
+    }
+  };
+  finder(3, 3); finder(size - 4, 3); finder(3, size - 4);
+
+  for (let i = 0; i < size; i++){
+    if (!fn[6][i]) set(i, 6, i % 2 === 0);
+    if (!fn[i][6]) set(6, i, i % 2 === 0);
+  }
+  const al = ALIGN[version];
+  for (const cy of al) for (const cx of al){
+    if ((cx === 6 && cy === 6) || (cx === 6 && cy === size - 7) || (cx === size - 7 && cy === 6)) continue;
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++)
+      set(cx + dx, cy + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+  }
+  /* reserve format + version areas */
+  for (let i = 0; i <= 8; i++){ if (!fn[8][i]) set(i, 8, false); if (!fn[i][8]) set(8, i, false) }
+  for (let i = 0; i < 8; i++){ set(size - 1 - i, 8, false); set(8, size - 1 - i, false) }
+  set(8, size - 8, true);
+  if (version >= 7){
+    let rem = version;
+    for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1F25);
+    const vb = (version << 12) | rem;
+    for (let i = 0; i < 18; i++){
+      const bit = ((vb >>> i) & 1) === 1, a = size - 11 + i % 3, b = Math.floor(i / 3);
+      set(a, b, bit); set(b, a, bit);
+    }
+  }
+
+  /* ---- data placement ---- */
+  let bi = 0;
+  for (let right = size - 1; right >= 1; right -= 2){
+    if (right === 6) right = 5;
+    for (let vert = 0; vert < size; vert++){
+      for (let j = 0; j < 2; j++){
+        const x = right - j;
+        const upward = ((right + 1) & 2) === 0;
+        const y = upward ? size - 1 - vert : vert;
+        if (!fn[y][x] && bi < out.length * 8){
+          mod[y][x] = ((out[bi >>> 3] >>> (7 - (bi & 7))) & 1) === 1;
+          bi++;
+        }
+      }
+    }
+  }
+
+  /* ---- mask + format ---- */
+  const MASKS = [
+    (x,y) => (x + y) % 2 === 0,
+    (x,y) => y % 2 === 0,
+    (x,y) => x % 3 === 0,
+    (x,y) => (x + y) % 3 === 0,
+    (x,y) => (Math.floor(y / 2) + Math.floor(x / 3)) % 2 === 0,
+    (x,y) => (x * y) % 2 + (x * y) % 3 === 0,
+    (x,y) => ((x * y) % 2 + (x * y) % 3) % 2 === 0,
+    (x,y) => ((x + y) % 2 + (x * y) % 3) % 2 === 0
+  ];
+  const drawFormat = (m, mask) => {
+    let data = (0 << 3) | mask;           // level M = 0
+    let rem = data;
+    for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+    const f = ((data << 10) | rem) ^ 0x5412;
+    const bit = i => ((f >>> i) & 1) === 1;
+    for (let i = 0; i <= 5; i++) m[i][8] = bit(i);
+    m[7][8] = bit(6); m[8][8] = bit(7); m[8][7] = bit(8);
+    for (let i = 9; i < 15; i++) m[8][14 - i] = bit(i);
+    for (let i = 0; i < 8; i++) m[8][size - 1 - i] = bit(i);
+    for (let i = 8; i < 15; i++) m[size - 15 + i][8] = bit(i);
+    m[size - 8][8] = true;
+  };
+  const penalty = m => {
+    let p = 0;
+    for (let y = 0; y < size; y++){
+      let run = 1;
+      for (let x = 1; x < size; x++){
+        if (m[y][x] === m[y][x-1]) { run++; if (run === 5) p += 3; else if (run > 5) p++ }
+        else run = 1;
+      }
+    }
+    for (let x = 0; x < size; x++){
+      let run = 1;
+      for (let y = 1; y < size; y++){
+        if (m[y][x] === m[y-1][x]) { run++; if (run === 5) p += 3; else if (run > 5) p++ }
+        else run = 1;
+      }
+    }
+    for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++)
+      if (m[y][x] === m[y][x+1] && m[y][x] === m[y+1][x] && m[y][x] === m[y+1][x+1]) p += 3;
+    const PAT = [true,false,true,true,true,false,true,false,false,false,false];
+    const match = (get) => {
+      let n = 0;
+      for (let i = 0; i + 11 <= size; i++){
+        let ok = true, ok2 = true;
+        for (let k = 0; k < 11; k++){
+          if (get(i + k) !== PAT[k]) ok = false;
+          if (get(i + k) !== PAT[10 - k]) ok2 = false;
+        }
+        if (ok) n++;
+        if (ok2) n++;
+      }
+      return n;
+    };
+    for (let y = 0; y < size; y++) p += 40 * match(i => m[y][i]);
+    for (let x = 0; x < size; x++) p += 40 * match(i => m[i][x]);
+    let dark = 0;
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) if (m[y][x]) dark++;
+    const pct = dark * 100 / (size * size);
+    p += Math.floor(Math.abs(pct - 50) / 5) * 10;
+    return p;
+  };
+
+  let best = null, bestScore = Infinity, bestMask = 0;
+  for (let mask = 0; mask < 8; mask++){
+    if (forceMask !== undefined && mask !== forceMask) continue;
+    const m = mod.map(r => r.slice());
+    for (let y = 0; y < size; y++) for (let x = 0; x < size; x++)
+      if (!fn[y][x] && MASKS[mask](x, y)) m[y][x] = !m[y][x];
+    drawFormat(m, mask);
+    const sc = penalty(m);
+    if (sc < bestScore){ bestScore = sc; best = m; bestMask = mask }
+  }
+  best.mask = bestMask; best.version = version;
+  return best;
+}
+
+function qrSVG(text, px){
+  const m = qrModules(text), n = m.length, quiet = 4, total = n + quiet * 2;
+  let rects = '';
+  for (let y = 0; y < n; y++){
+    let x = 0;
+    while (x < n){
+      if (!m[y][x]){ x++; continue }
+      let w = 1;
+      while (x + w < n && m[y][x + w]) w++;
+      rects += `<rect x="${x + quiet}" y="${y + quiet}" width="${w}" height="1"/>`;
+      x += w;
+    }
+  }
+  return `<svg width="${px}" height="${px}" viewBox="0 0 ${total} ${total}" shape-rendering="crispEdges" role="img" aria-label="QR code">`
+       + `<rect width="${total}" height="${total}" fill="#fff"/><g fill="#141413">${rects}</g></svg>`;
+}
+
+/* What Anthropic files under each of their five headings. Pulled from anthropic.com/path-to-hope
+   on 13 August 2026: 69 pieces, some filed under more than one heading. */
+const ARTICLES = [
+  { t:"econ", title:"Anthropic Economic Index report: Learning curves", url:"/research/economic-index-march-2026-report", kind:"news" },
+  { t:"econ", title:"Anthropic Economic Index: AI\u2019s impact on software development", url:"/research/impact-software-development", kind:"research" },
+  { t:"econ", title:"Anthropic Economic Index: New building blocks for understanding AI use", url:"/research/economic-index-primitives", kind:"research" },
+  { t:"econ", title:"Anthropic Economic Index: Tracking AI\u2019s role in the US and global economy", url:"/research/economic-index-geography", kind:"research" },
+  { t:"econ", title:"Estimating AI productivity gains from Claude conversations", url:"/research/estimating-productivity-gains", kind:"research" },
+  { t:"econ", title:"Introducing Anthropic Interviewer: What 1,250 professionals told us about working with AI", url:"/research/anthropic-interviewer", kind:"research" },
+  { t:"econ", title:"Labor market impacts of AI: A new measure and early evidence", url:"/research/labor-market-impacts", kind:"research" },
+  { t:"econ", title:"Machines of Loving Grace", url:"https://darioamodei.com/essay/machines-of-loving-grace", kind:"news" },
+  { t:"econ", title:"Policy on the AI Exponential", url:"/policy-on-the-ai-exponential", kind:"research" },
+  { t:"econ", title:"Policy on the AI exponential", url:"https://darioamodei.com/post/policy-on-the-ai-exponential", kind:"news" },
+  { t:"econ", title:"Preparing for AI\u2019s economic impact: exploring policy responses", url:"/research/economic-policy-responses", kind:"education" },
+  { t:"econ", title:"Project Deal", url:"https://www.anthropic.com/features/project-deal", kind:"research" },
+  { t:"econ", title:"Project Vend: Phase two", url:"/research/project-vend-2", kind:"research" },
+  { t:"econ", title:"The Adolescence of Technology", url:"https://darioamodei.com/essay/the-adolescence-of-technology", kind:"news" },
+  { t:"econ", title:"The Anthropic Economic Index", url:"https://www.anthropic.com/economic-index", kind:"hub" },
+  { t:"gov", title:"2028: Two scenarios for global AI leadership", url:"/research/2028-ai-leadership", kind:"news" },
+  { t:"gov", title:"Anthropic\u2019s Responsible Scaling Policy: Version 3.0", url:"/news/responsible-scaling-policy-v3", kind:"news" },
+  { t:"gov", title:"Build AI in America", url:"/news/build-ai-in-america", kind:"news" },
+  { t:"gov", title:"Charting a path to AI accountability", url:"/news/charting-a-path-to-ai-accountability", kind:"news" },
+  { t:"gov", title:"Core views on AI safety: When, why, what, and how", url:"/news/core-views-on-ai-safety", kind:"news" },
+  { t:"gov", title:"Our framework for developing safe and trustworthy agents", url:"/news/our-framework-for-developing-safe-and-trustworthy-agents", kind:"news" },
+  { t:"gov", title:"Policy on the AI Exponential", url:"/policy-on-the-ai-exponential", kind:"research" },
+  { t:"gov", title:"Policy on the AI exponential", url:"https://darioamodei.com/post/policy-on-the-ai-exponential", kind:"news" },
+  { t:"gov", title:"Preparing for AI\u2019s economic impact: exploring policy responses", url:"/research/economic-policy-responses", kind:"education" },
+  { t:"gov", title:"The Adolescence of Technology", url:"https://darioamodei.com/essay/the-adolescence-of-technology", kind:"news" },
+  { t:"gov", title:"The Urgency of Interpretability", url:"https://darioamodei.com/post/the-urgency-of-interpretability", kind:"news" },
+  { t:"gov", title:"The case for targeted regulation", url:"/news/the-case-for-targeted-regulation", kind:"news" },
+  { t:"gov", title:"The need for transparency in Frontier AI", url:"/news/the-need-for-transparency-in-frontier-ai", kind:"news" },
+  { t:"gov", title:"Third-party testing as a key ingredient of AI policy", url:"/news/third-party-testing", kind:"news" },
+  { t:"society", title:"Anthropic Education Report: How educators use Claude", url:"/news/anthropic-education-report-how-educators-use-claude", kind:"education" },
+  { t:"society", title:"Anthropic Education Report: How university students use Claude", url:"/news/anthropic-education-report-how-university-students-use-claude", kind:"education" },
+  { t:"society", title:"Building AI for cyber defenders", url:"/research/building-ai-cyber-defenders", kind:"news" },
+  { t:"society", title:"Constitutional Classifiers: Defending against universal jailbreaks", url:"/research/constitutional-classifiers", kind:"research" },
+  { t:"society", title:"Detecting and countering malicious uses of Claude: March 2025", url:"/news/detecting-and-countering-malicious-uses-of-claude-march-2025", kind:"news" },
+  { t:"society", title:"Detecting and countering misuse of AI: August 2025", url:"/news/detecting-countering-misuse-aug-2025", kind:"news" },
+  { t:"society", title:"Disempowerment patterns in real-world AI usage", url:"/research/disempowerment-patterns", kind:"research" },
+  { t:"society", title:"Disrupting the first reported AI-orchestrated cyber espionage campaign", url:"/news/disrupting-AI-espionage", kind:"news" },
+  { t:"society", title:"Frontier threats red teaming for AI safety", url:"/news/frontier-threats-red-teaming-for-ai-safety", kind:"research" },
+  { t:"society", title:"How AI assistance impacts the formation of coding skills", url:"/research/AI-assistance-coding-skills", kind:"research" },
+  { t:"society", title:"How people ask Claude for personal guidance", url:"/research/claude-personal-guidance", kind:"research" },
+  { t:"society", title:"How people use Claude for support, advice, and companionship", url:"/news/how-people-use-claude-for-support-advice-and-companionship", kind:"news" },
+  { t:"society", title:"How scientists are using Claude to accelerate research and discovery", url:"/news/accelerating-scientific-research", kind:"news" },
+  { t:"society", title:"Introducing Anthropic Interviewer: What 1,250 professionals told us about working with AI", url:"/research/anthropic-interviewer", kind:"research" },
+  { t:"society", title:"Machines of Loving Grace", url:"https://darioamodei.com/essay/machines-of-loving-grace", kind:"news" },
+  { t:"society", title:"Measuring political bias in Claude", url:"/news/political-even-handedness", kind:"research" },
+  { t:"society", title:"Measuring the persuasiveness of language models", url:"/research/measuring-model-persuasiveness", kind:"research" },
+  { t:"society", title:"Progress from our Frontier Red Team", url:"/news/strategic-warning-for-ai-risk-progress-and-insights-from-our-frontier-red-team", kind:"news" },
+  { t:"society", title:"Project Deal", url:"https://www.anthropic.com/features/project-deal", kind:"research" },
+  { t:"society", title:"Project Vend: Phase two", url:"/research/project-vend-2", kind:"research" },
+  { t:"society", title:"Results from the first Anthropic Public Record", url:"/news/anthropic-public-record", kind:"news" },
+  { t:"society", title:"Values in the wild: Discovering and analyzing values in real-world language model interactions", url:"/research/values-wild", kind:"research" },
+  { t:"society", title:"What 81,000 people want from AI", url:"https://www.anthropic.com/features/81k-interviews", kind:"research" },
+  { t:"society", title:"What we learned mapping a year\u2019s worth of AI-enabled cyber threats", url:"/news/AI-enabled-cyber-threats-mitre-attack", kind:"news" },
+  { t:"society", title:"Why do we take LLMs seriously as a potential source of biorisk?", url:"/research/biorisk", kind:"research" },
+  { t:"use", title:"AI capabilities and limitations", url:"https://anthropic.skilljar.com/ai-capabilities-and-limitations", kind:"education" },
+  { t:"use", title:"AI fluency: Framework and foundations", url:"https://anthropic.skilljar.com/ai-fluency-framework-foundations", kind:"education" },
+  { t:"use", title:"Anthropic Education Report: How educators use Claude", url:"/news/anthropic-education-report-how-educators-use-claude", kind:"education" },
+  { t:"use", title:"Anthropic Education Report: How university students use Claude", url:"/news/anthropic-education-report-how-university-students-use-claude", kind:"education" },
+  { t:"use", title:"Anthropic Education Report: The AI Fluency Index", url:"/research/AI-fluency-index", kind:"education" },
+  { t:"use", title:"Best practices for prompt engineering", url:"https://claude.com/blog/best-practices-for-prompt-engineering", kind:"education" },
+  { t:"use", title:"Claude 101", url:"https://anthropic.skilljar.com/claude-101", kind:"education" },
+  { t:"use", title:"Getting good at Claude: A research-backed curriculum", url:"https://claude.com/resources/tutorials/getting-good-at-claude-a-research-backed-curriculum", kind:"education" },
+  { t:"use", title:"How people ask Claude for personal guidance", url:"/research/claude-personal-guidance", kind:"research" },
+  { t:"use", title:"How people use Claude for support, advice, and companionship", url:"/news/how-people-use-claude-for-support-advice-and-companionship", kind:"news" },
+  { t:"use", title:"The 4 Ds of AI fluency", url:"https://claude.com/resources/tutorials/the-4-ds-of-ai-fluency-behavioral-indicators", kind:"education" },
+  { t:"use", title:"The four properties of AI", url:"https://claude.com/resources/tutorials/the-4-properties-of-ai", kind:"education" },
+  { t:"use", title:"What is sycophancy in AI models?", url:"https://claude.com/resources/tutorials/what-is-sycophancy-in-ai-models", kind:"education" },
+  { t:"use", title:"Why do AI models hallucinate?", url:"https://claude.com/resources/tutorials/why-do-ai-models-hallucinate", kind:"education" },
+  { t:"use", title:"Why does bias exist in AI models?", url:"https://claude.com/resources/tutorials/why-does-bias-exist-in-ai-models", kind:"education" },
+  { t:"work", title:"Agentic misalignment: How LLMs could be insider threats", url:"/research/agentic-misalignment", kind:"research" },
+  { t:"work", title:"Alignment faking in large language models", url:"/research/alignment-faking", kind:"research" },
+  { t:"work", title:"Claude's Constitution", url:"https://www.anthropic.com/constitution", kind:"news" },
+  { t:"work", title:"Core views on AI safety: When, why, what, and how", url:"/news/core-views-on-ai-safety", kind:"news" },
+  { t:"work", title:"Emotion concepts and their function in a large language model", url:"/research/emotion-concepts-function", kind:"research" },
+  { t:"work", title:"From shortcuts to sabotage: natural emergent misalignment from reward hacking", url:"/research/emergent-misalignment-reward-hacking", kind:"research" },
+  { t:"work", title:"Golden Gate Claude", url:"/news/golden-gate-claude", kind:"news" },
+  { t:"work", title:"Mapping the mind of a large language model", url:"/research/mapping-mind-language-model", kind:"research" },
+  { t:"work", title:"Persona vectors: Monitoring and controlling character traits in language models", url:"/research/persona-vectors", kind:"research" },
+  { t:"work", title:"Signs of introspection in large language models", url:"/research/introspection", kind:"research" },
+  { t:"work", title:"The assistant axis: situating and stabilizing the character of large language models", url:"/research/assistant-axis", kind:"research" },
+  { t:"work", title:"The persona selection model", url:"/research/persona-selection-model", kind:"research" },
+  { t:"work", title:"Tracing the thoughts of a large language model", url:"/research/tracing-thoughts-language-model", kind:"research" }
+];
+
+/* ============================ Anthropic's own five ============================ */
+const TOPICS = [
+  { id:'work', q:'How does AI work?',
+    sub:'Research exploring what happens inside the “minds” of AI models.',
+    gloss:'What is actually going on inside the thing. The honest answer is that nobody fully knows, including the people who built it.',
+    ax:-130, ay:-650, pal:['#7B8F6E','#B9C4AC','#3F4A38','#E4E0D4'] },
+  { id:'gov', q:'Who should govern AI?',
+    sub:'Policy positions, safety frameworks, and transparency commitments.',
+    gloss:'Who writes the rules and who has to follow them. So far, mostly the same people.',
+    ax:150, ay:-320, pal:['#6B5A8E','#C0B4D6','#2A2438','#E6E1EF'] },
+  { id:'use', q:'How should I use AI?',
+    sub:'Educational resources on working with AI models like Claude.',
+    gloss:'What you are doing when you use it, and what it does to you. Their version of this question is tutorials.',
+    ax:-160, ay:30, pal:['#3F6B57','#A9CBBA','#22332B','#E2EDE6'] },
+  { id:'econ', q:'How does AI affect the economy?',
+    sub:'Economic research, labor market data, and policies and programs for the future of work.',
+    gloss:'Jobs, wages, and where the money ends up.',
+    ax:140, ay:390, pal:['#B98A3C','#E8CFA0','#3B2F1D','#F0E6D2'] },
+  { id:'society', q:"What is AI's impact on society?",
+    sub:'Public surveys, safety research, and investigations of real-world impacts.',
+    gloss:'Everything that happens to people who never chose to use it.',
+    ax:-130, ay:680, pal:['#8B4A3F','#D8A08F','#2E2A28','#EBD9CF'] }
+];
+const TOPIC = Object.fromEntries(TOPICS.map(t => [t.id, t]));
+
+/* ============================== hardness rubric ============================== */
+const AXES = [
+  { key:'specific', label:'Names something real', phrase:'naming something real',
+    line:'A number, a place, a document, a job title. Something you can check.' },
+  { key:'answerable', label:'Can be answered', phrase:'being answerable',
+    line:'Someone could answer it with a fact or a promise. If they dodge it, everyone in the room can see.' },
+  { key:'addressed', label:'Aimed at someone', phrase:'being aimed at someone',
+    line:'A question aimed at nobody in particular is a question nobody has to answer.' },
+  { key:'costly', label:'Includes the asker', phrase:'including the asker',
+    line:'It puts the person asking in the picture too, not only the other side.' },
+  { key:'upside', label:'Admits the good parts', phrase:'admitting the good parts',
+    line:'It grants that the thing is useful and still bites. Assuming the worst is the easy version.' },
+  { key:'open', label:'Really a question', phrase:'staying a real question',
+    line:'The answer could surprise you. A question with its answer already inside it is a statement.' },
+  { key:'reach', label:'Still matters later', phrase:'still mattering later',
+    line:'It holds up next year, and for more than one company.' }
+];
+const MAXTOT = AXES.length * 3;
+
+const CONCRETE = /\b(contract|contracts|board meeting|board|budget|deal|deals|customer|customers|agency|agencies|staff|launch|quarter|week|month|policy|policies|framework|evaluation|evaluations|commitment|county|counties|substation|grid|brownout|brownouts|uptime|water|water table|certificates|emissions|abatement|data ?centers?|datacent\w+|wage|wages|salary|hour|hours|dollars?|pounds?|euros?|training data|dataset|ladder|rung|profession|kill chain|target|targets|family|incident|report|veto|war|weapons|military|militaries|immigration|enforcement|tab|kid|kids|job|jobs|boss|payroll|share|productivity|retraining|body count|acceptable use|scaling|preparedness|alignment|schedule|town|village|houses?|executives?|ceo|comms|invoice|tax|taxes|price|headcount|layoffs?|school|schools|teacher|teachers|classroom|classrooms|essay|homework|exam|exams|coursework|heating|rent|landlord|council|library|hospital|doctor|nurse|brother|sister|parents|phone|laptop|bus|shop|farm|degree|tuition|fees|benefits|training|apprenticeship|internship)\b/g;
+
+const LOADED = [
+  /\bsecretly\b/, /\bobviously\b/, /\bjust admit\b/, /\bdon'?t you\b/, /\breally think\b/,
+  /\bsurely\b/, /\bwhy (don'?t|aren'?t|isn'?t|doesn'?t|do) (you|they|the|we)\b/, /\bwhy does every\b/,
+  /"[^"]{3,}"/, /\bof course\b/, /\badmit it\b/
+];
+const clamp = n => Math.max(0, Math.min(3, n));
+
+function scoreQ(text){
+  const t = ' ' + String(text).toLowerCase().replace(/[“”„]/g, '"').replace(/[’]/g, "'") + ' ';
+  const s = {};
+
+  let specific = 0;
+  if (/\d/.test(t) || /\$/.test(t)) specific += 1;
+  if (/\b(which|whose|how many|how much|what share|where|name it|name a)\b/.test(t)) specific += 1;
+  const conc = new Set(t.match(CONCRETE) || []);
+  specific += conc.size >= 3 ? 2 : conc.size >= 1 ? 1 : 0;
+  s.specific = clamp(specific);
+
+  let answerable = 1;
+  if (/\b(which|how many|how much|who|whose|has any|have you|did you|do you|does it|would you|will you|what share|what is the)\b/.test(t)) answerable += 1;
+  if (/\b(name it|out loud|write it down|specifically|exactly|by name|with the country in it|before you see it)\b/.test(t)) answerable += 1;
+  if (/\b(nature of|meaning of|what does it mean|essence of|the future of humanity)\b/.test(t)) answerable -= 1;
+  s.answerable = clamp(answerable);
+
+  let addressed = 0;
+  if (/\b(you|your|yours)\b/.test(t)) addressed += 2;
+  if (/\b(board|executives?|ceo|comms|lab|labs|the company|companies|government|governments|agency|agencies|customers|shareholders?|investors?)\b/.test(t)) addressed += 1;
+  s.addressed = clamp(addressed);
+
+  let costly = 0;
+  if (/\b(i|me|my|myself)\b/.test(t)) costly += 2;
+  if (/\b(we|us|our|ourselves)\b/.test(t)) costly += 1;
+  s.costly = clamp(costly);
+
+  let upside = 0;
+  if (/\b(even if|even when|given that|while|although|though|worth it|worth|trade-?off|benefit|benefits|gain|still|as well as|in exchange|and also)\b/.test(t)) upside += 2;
+  if (/\b(what would|under what|at what point|when would|what exactly would|how much .* before)\b/.test(t)) upside += 1;
+  s.upside = clamp(upside);
+
+  let open = 3;
+  LOADED.forEach(re => { if (re.test(t)) open -= 1 });
+  s.open = clamp(open);
+
+  let reach = 0;
+  if (/\b(industry|every|any lab|labs|companies|governments?|society|economy|profession|humanity|anyone|people|the public|the world|everyone)\b/.test(t)) reach += 1;
+  if (!/\b(i|me|my|myself)\b/.test(t)) reach += 1;
+  if (!/\b(you|your|yours)\b/.test(t)) reach += 1;
+  s.reach = clamp(reach);
+
+  s.total = AXES.reduce((a, x) => a + s[x.key], 0);
+  return s;
+}
+const meanOf = (set, key) => set.length ? set.reduce((a, q) => a + scoreQ(q.q)[key], 0) / set.length : 0;
+const meanTotal = set => set.length
+  ? set.reduce((a, q) => a + scoreQ(q.q).total + (q.adj || 0), 0) / set.length : 0;
+
+/* ================================== session ================================== */
+/* Sessions live on the small node server (server.mjs) so phones on the same wifi can join.
+   With no server behind it, everything still works on one device via localStorage. */
+const NET = { on:false, lan:'', timer:null, v:-1 };
+let session = { id:'', name:'', created:Date.now(), topicIdx:0, qs:[], v:0 };
+let topicIdx = 0;
+let joiner = JSON.parse(localStorage.getItem('ahq.joined') || 'null');   // set on phones
+
+async function api(path, opts = {}){
+  const r = await fetch('/api' + path, { headers:{'content-type':'application/json'}, ...opts });
+  if (!r.ok) throw new Error('http ' + r.status);
+  return r.json();
+}
+async function netInit(){
+  try { const h = await api('/health'); NET.on = true; NET.lan = h.lan }
+  catch { NET.on = false; NET.lan = '' }
+}
+const live = () => NET.on && session.id && session.id !== 'LOCAL';
+const isScreen = n => document.body.className.split(' ')[0] === 's-' + n;
+const saveLocal = () => { if (!live()) localStorage.setItem('ahq.local', JSON.stringify(session)) };
+
+async function attach(id){
+  const s = await api('/sessions/' + encodeURIComponent(id));
+  session = s; topicIdx = s.topicIdx || 0; NET.v = s.v;
+  localStorage.setItem('ahq.sid', s.id);
+  startPoll(); paintJoin();
+  return s;
+}
+async function createSession(){
+  const s = await api('/sessions', { method:'POST', body:JSON.stringify({ name:'' }) });
+  session = s; topicIdx = 0; NET.v = s.v;
+  localStorage.setItem('ahq.sid', s.id);
+  startPoll(); paintJoin();
+  return s;
+}
+async function ensureSession(){
+  if (!NET.on){
+    session = JSON.parse(localStorage.getItem('ahq.local') || 'null')
+      || { id:'LOCAL', name:'', created:Date.now(), topicIdx:0, qs:[], v:0 };
+    paintJoin();
+    return session;
+  }
+  if (session.id) return session;
+  const want = (new URL(location.href).searchParams.get('s') || localStorage.getItem('ahq.sid') || '').toUpperCase();
+  if (want){ try { return await attach(want) } catch {} }
+  return createSession();
+}
+
+async function addQ(t, q, who){
+  if (live()){
+    const r = await api(`/sessions/${session.id}/questions`, { method:'POST', body:JSON.stringify({ t, q, who }) });
+    session.qs.push(r.question); NET.v = r.v;
+    return r.question;
+  }
+  const item = { id:'q' + Date.now().toString(36), t, q, who, adj:0, at:Date.now() };
+  session.qs.push(item); saveLocal();
+  return item;
+}
+async function delQ(id){
+  session.qs = session.qs.filter(q => q.id !== id);
+  if (live()){ const r = await api(`/sessions/${session.id}/questions/${id}`, { method:'DELETE' }); NET.v = r.v }
+  else saveLocal();
+}
+async function setTopic(i){
+  topicIdx = i; session.topicIdx = i;
+  if (live()){ const r = await api(`/sessions/${session.id}/topic`, { method:'POST', body:JSON.stringify({ topicIdx:i }) }); NET.v = r.v }
+  else saveLocal();
+}
+async function setAdj(id, adj){
+  const q = session.qs.find(x => x.id === id); if (!q) return;
+  q.adj = adj;
+  if (live()){ const r = await api(`/sessions/${session.id}/adj`, { method:'POST', body:JSON.stringify({ id, adj }) }); NET.v = r.v }
+  else saveLocal();
+}
+async function setName(n){
+  session.name = n;
+  if (live()){ const r = await api(`/sessions/${session.id}/name`, { method:'POST', body:JSON.stringify({ name:n }) }); NET.v = r.v }
+  else saveLocal();
+}
+async function addBulk(list){
+  if (live()){
+    await api(`/sessions/${session.id}/bulk`, { method:'POST', body:JSON.stringify({ questions:list }) });
+    NET.v = -1; await refresh(); return;
+  }
+  list.forEach(x => session.qs.push({ id:'q' + Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+                                      t:x.t, q:x.q, who:x.who || '', adj:0, at:Date.now() }));
+  saveLocal();
+}
+async function refresh(){
+  if (!live()) return;
+  const s = await api('/sessions/' + session.id);
+  const seen = new Set(session.qs.map(q => q.id));
+  const fresh = s.qs.filter(q => !seen.has(q.id));
+  session = s; NET.v = s.v;
+  if (!isScreen('room')) topicIdx = s.topicIdx;
+  if (isScreen('map')) fresh.forEach(addRoomNode);
+  if (isScreen('session')) renderSession();
+  if (isScreen('room')) renderRoom();
+  if (isScreen('grid')) renderGrid();
+  paintJoin();
+}
+function startPoll(){
+  clearInterval(NET.timer);
+  if (!live()) return;
+  NET.timer = setInterval(async () => {
+    try { const head = await api(`/sessions/${session.id}/v`); if (head.v !== NET.v) await refresh() }
+    catch {}
+  }, 2200);
+}
+function joinURL(){ return (NET.lan || location.origin) + '/?s=' + session.id + '#join' }
+function paintJoin(){
+  const url = live() ? joinURL() : (NET.lan || location.origin) + '/#join';
+  const code = live() ? session.id : 'one device';
+  const bar = document.getElementById('joinBar');
+  if (bar) bar.classList.toggle('off', !live());
+  const set = (id, v) => { const e = document.getElementById(id); if (e) e.textContent = v };
+  set('jbCode', code);
+  set('jbUrl', live() ? url.replace(/^https?:\/\//, '') : 'no server running');
+  set('jbN', session.qs.length ? session.qs.length + ' question' + (session.qs.length === 1 ? '' : 's') + ' so far' : 'no questions yet');
+  set('chipCode', live() ? session.id : '');
+  set('chipUrl', live() ? url.replace(/^https?:\/\//, '') : '');
+  const chip = document.getElementById('joinChip');
+  if (chip) chip.style.display = live() && isScreen('map') ? '' : 'none';
+  const hold = document.getElementById('jbQR');
+  if (hold) hold.innerHTML = live() ? qrSVG(joinURL(), 92) : '';
+}
+function showQR(){
+  if (!live()) return;
+  document.getElementById('qrHold').innerHTML = qrSVG(joinURL(), Math.min(360, innerWidth * .6));
+  document.getElementById('qrCode').textContent = session.id;
+  document.getElementById('qrUrl').textContent = joinURL().replace(/^https?:\/\//, '');
+  document.getElementById('qrOverlay').classList.add('on');
+}
+
+/* sample questions, so an empty room still shows what the map looks like */
+const SAMPLES = [
+  { t:'work', who:'Yara', q:"If nobody actually knows how it works, how can anyone promise it is safe?" },
+  { t:'work', who:'Tom',  q:"Where do the answers actually come from? Whose words am I reading?" },
+  { t:'work', who:'Ines', q:"Does it know when it is wrong, or does it just sound the same either way?" },
+  { t:'work', who:'Noor', q:"Why does it sound so sure when it is guessing?" },
+  { t:'work', who:'Sam',  q:"Can anyone actually check what it was trained on?" },
+  { t:'work', who:'Lea',  q:"Who decided what it is allowed to refuse to say?" },
+  { t:'work', who:'Yara', q:"What happens to the things I type in after I close the tab?" },
+  { t:'work', who:'Tom',  q:"If it learned from us, why does it not sound like anyone I know?" },
+
+  { t:'gov',  who:'Sam',  q:"Who do I complain to when it says something about me that is not true?" },
+  { t:'gov',  who:'Lea',  q:"Why do the same few companies get to decide this for everyone?" },
+  { t:'gov',  who:'Tom',  q:"If my country bans something, does that change anything at all?" },
+  { t:'gov',  who:'Noor', q:"Why are the safety rules written by the people selling it?" },
+  { t:'gov',  who:'Ines', q:"Who can switch it off, and have they ever?" },
+  { t:'gov',  who:'Yara', q:"If it breaks a law, who goes to court?" },
+  { t:'gov',  who:'Sam',  q:"Who is in the room when these decisions get made, and who is not?" },
+  { t:'gov',  who:'Lea',  q:"What actually happens to my complaint after I send it?" },
+
+  { t:'use',  who:'Ines', q:"Is it cheating if my teacher uses it to mark my essay?" },
+  { t:'use',  who:'Yara', q:"Am I still learning anything if it writes the first draft?" },
+  { t:'use',  who:'Lea',  q:"What should I tell my little brother about using it for homework?" },
+  { t:'use',  who:'Sam',  q:"If everyone in my class uses it, am I allowed not to?" },
+  { t:'use',  who:'Tom',  q:"What do I do when it is confidently wrong in front of my teacher?" },
+  { t:'use',  who:'Noor', q:"Is it fair that some of us can pay for the better version?" },
+  { t:'use',  who:'Ines', q:"Should I have to say when I used it?" },
+  { t:'use',  who:'Yara', q:"Does using it make me worse at the thing I am trying to learn?" },
+
+  { t:'econ', who:'Sam',  q:"Will there be a job left for me by the time I finish studying?" },
+  { t:'econ', who:'Tom',  q:"Who is making money from the things I type into it?" },
+  { t:'econ', who:'Ines', q:"If it makes my work twice as fast, why would anyone pay me for the hours it saves?" },
+  { t:'econ', who:'Yara', q:"Which jobs in my town does this actually replace?" },
+  { t:'econ', who:'Lea',  q:"Who pays for the electricity it uses while I am asleep?" },
+  { t:'econ', who:'Noor', q:"Does anyone get paid when it uses their work?" },
+  { t:'econ', who:'Tom',  q:"Why is it free for me and not for my school?" },
+  { t:'econ', who:'Sam',  q:"If it does half my job, do I get half the day back or half the pay?" },
+
+  { t:'society', who:'Lea',  q:"What happens to people who cannot pay for the good version?" },
+  { t:'society', who:'Yara', q:"Why is my school buying this while the heating is still broken?" },
+  { t:'society', who:'Sam',  q:"Who checks it before it gets used on people who never asked for it?" },
+  { t:'society', who:'Ines', q:"Who does it get wrong most often?" },
+  { t:'society', who:'Noor', q:"If it decides something about someone's benefits, who fixes the mistake?" },
+  { t:'society', who:'Tom',  q:"Why is it being used on people who never agreed to it?" },
+  { t:'society', who:'Lea',  q:"Who is looking after the people it makes decisions about?" },
+  { t:'society', who:'Yara', q:"What happens to the people who cannot read what it writes?" }
+];
+
+
+/* ================================ plate fit ================================= */
+const plate = document.getElementById('plate');
+/* the redaction patches and the tagline live inside x:212-1130 of the 1600-wide plate.
+   a pure cover-fit crops that away on tall phones (visible width can drop under 350px),
+   which leaks Anthropic's real logo/copy through the gap. never crop narrower than this. */
+const PLATE_SAFE_W = 1300;
+function fitPlate(){
+  const coverS = Math.max(window.innerWidth / 1600, window.innerHeight / 748);
+  const safeS = window.innerWidth / PLATE_SAFE_W;
+  const s = Math.min(coverS, safeS);
+  plate.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+fitPlate();
+addEventListener('resize', fitPlate);
+
+/* ============================= hero annotations ============================= */
+const SWAPS = ['hard','kinda tame','safe to ask','pre-cleared','already answered','hard-ish'];
+(function typeLoop(){
+  const el = document.getElementById('swap');
+  const caret = document.querySelector('#ourLine .caret');
+  let word = 0, i = 0, deleting = false;
+  const paint = () => {
+    const c = word === 0 ? 'var(--cream)' : 'var(--ours)';
+    el.style.color = c;
+    if (caret) caret.style.background = c;
+  };
+  paint();
+  const step = () => {
+    const w = SWAPS[word];
+    if (!deleting){
+      i++;
+      el.textContent = w.slice(0, i);
+      if (i >= w.length){ deleting = true; return setTimeout(step, word === 0 ? 1500 : 2400) }
+      return setTimeout(step, 58);
+    }
+    i--;
+    el.textContent = w.slice(0, i);
+    if (i <= 0){ deleting = false; word = (word + 1) % SWAPS.length; paint(); return setTimeout(step, 420) }
+    setTimeout(step, 32);
+  };
+  setTimeout(step, 900);
+})();
+setTimeout(() => document.getElementById('ourAside').classList.add('on'), 1200);
+setTimeout(() => document.getElementById('choose').classList.add('on'), 1400);
+
+/* =================================== graph =================================== */
+const NS = 'http://www.w3.org/2000/svg';
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function wrap(text,max){
+  const words=String(text).split(' '),lines=[];let cur='';
+  for(const w of words){ if((cur+' '+w).trim().length>max){lines.push(cur.trim());cur=w} else cur+=' '+w }
+  if(cur.trim())lines.push(cur.trim());
+  return lines;
+}
+function paintTile(g, pal, seed, w, h){
+  const r = rng(seed*9973+17), cid = 'clip'+seed;
+  const mk = (t,a) => { const e = document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); return e };
+  const cp = mk('clipPath',{id:cid});
+  cp.appendChild(mk('rect',{x:-w/2,y:-h/2,width:w,height:h}));
+  g.appendChild(cp);
+  g.appendChild(mk('rect',{x:-w/2,y:-h/2,width:w,height:h,fill:pal[Math.floor(r()*pal.length)]}));
+  const inner = mk('g',{'clip-path':`url(#${cid})`});
+  const n = 2 + Math.floor(r()*3);
+  for(let i=0;i<n;i++){
+    const c = pal[Math.floor(r()*pal.length)], k = r();
+    if(k<0.32) inner.appendChild(mk('rect',{x:-w/2+r()*w*.7,y:-h/2+r()*h*.7,width:6+r()*w*.55,height:5+r()*h*.6,fill:c,opacity:.88}));
+    else if(k<0.58) inner.appendChild(mk('circle',{cx:-w/2+r()*w,cy:-h/2+r()*h,r:3+r()*h*.34,fill:c,opacity:.88}));
+    else if(k<0.8){ const p=()=>`${-w/2+r()*w} ${-h/2+r()*h}`; inner.appendChild(mk('path',{d:`M${p()} L${p()} L${p()} Z`,fill:c,opacity:.9})) }
+    else for(let j=0;j<4;j++) inner.appendChild(mk('line',{x1:-w/2,y1:-h/2+j*(h/4)+r()*5,x2:w/2,y2:-h/2+j*(h/4)+r()*6,stroke:c,'stroke-width':.9+r()*1.6,opacity:.8}));
+  }
+  g.appendChild(inner);
+  g.appendChild(mk('rect',{x:-w/2,y:-h/2,width:w,height:h,fill:'none',stroke:'rgba(20,20,19,.14)'}));
+}
+
+const svg = d3.select('#graph');
+const root = svg.append('g');
+const gWords = root.append('g').attr('class','words');
+const wordA = gWords.append('text').attr('class','word').attr('text-anchor','start').text('Keep asking');
+const wordB = gWords.append('text').attr('class','word').attr('text-anchor','end').text('hard questions.');
+const gWordLink = root.append('g');
+const gLink = root.append('g'), gHub = root.append('g'), gNode = root.append('g');
+let wordLinks = [], wlSel = null;
+let nodes = [], links = [], xlinks = [], sim = null, uid = 0;
+let T = 0;                     /* clock for the slow drift */
+const IDLE = 0.035;            /* the simulation is never allowed to settle */
+/* a tiny wandering push, so the map breathes instead of freezing */
+function drift(){
+  for (const n of nodes){
+    const a = n.isHub ? 0.004 : 0.03;
+    n.vx += Math.cos(T * n.w1 + n.p1) * a;
+    n.vy += Math.sin(T * n.w1 * .82 + n.p1 * 1.3) * a;
+  }
+}
+let linkSel, xlinkSel, hubSel, nodeSel;
+
+function buildGraph(){
+  nodes = []; links = []; xlinks = []; uid = 0;
+  const items = session.qs.slice();
+  const dens = Math.max(.5, Math.min(1, items.length / 40));
+  document.getElementById('graph').classList.toggle('sparse', items.length < 30);
+
+  const hubById = {};
+  TOPICS.forEach(t => {
+    const hub = { id:'h-' + t.id, isHub:true, ax:Math.round(t.ax * dens), ay:Math.round(t.ay * dens),
+                  lines:wrap(t.q, 20), subLines:wrap(t.sub, 34), pal:t.pal,
+                  w1:0.07, p1:TOPICS.indexOf(t) * 1.3, amp:5 };
+    hub.x = hub.ax; hub.y = hub.ay;
+    hubById[hub.id] = hub; nodes.push(hub);
+  });
+  items.forEach(it => {
+    const seed = ++uid, hub = hubById['h-' + it.t] || nodes[0];
+    const a = (seed / Math.max(items.length, 1)) * Math.PI * 2;
+    nodes.push({
+      id:it.id, seed, q:it.q, who:it.who || '', mine:true, pal:hub.pal, t:it.t,
+      lines:wrap(it.q, 25).slice(0, 5),
+      dist:150 + (seed % 7) * 32,
+      w1:0.10 + (seed % 9) * 0.022, p1:seed * 1.7, amp:11 + (seed % 5) * 5,
+      x:hub.ax + Math.cos(a) * 230, y:hub.ay + Math.sin(a) * 230, ax:hub.ax, ay:hub.ay,
+      tw:48 + (seed % 8) * 12, th:42 + ((seed * 5) % 6) * 15
+    });
+    links.push({ source:it.id, target:hub.id });
+  });
+
+  /* threads between questions that share a word, or share the person who asked them.
+     drawn only, never simulated, so they web the map without dragging the layout about. */
+  const qs = nodes.filter(n => !n.isHub);
+  const STOP = new Set(('what who why how when where which whose is it the a an if and or to of in on for do does did my me we you your they them this that are be am not no can will would should could about from with any all more than then there here their its our one two get got make makes made use uses used still just even so out up down over under after before while because was were has have had by at as but into off again same other some most many much very really actually anyone anything someone something nobody nothing everyone').split(' '));
+  qs.forEach(n => n._w = new Set(String(n.q).toLowerCase().replace(/[^a-z\s]/g, ' ').split(/\s+/)
+    .filter(w => w.length > 3 && !STOP.has(w))));
+  const seenPair = new Set(), threadCount = {};
+  const addThread = (a, b) => {
+    const key = a.id < b.id ? a.id + b.id : b.id + a.id;
+    if (seenPair.has(key)) return;
+    if ((threadCount[a.id] || 0) >= 3 || (threadCount[b.id] || 0) >= 3) return;
+    seenPair.add(key);
+    threadCount[a.id] = (threadCount[a.id] || 0) + 1;
+    threadCount[b.id] = (threadCount[b.id] || 0) + 1;
+    xlinks.push({ source:a, target:b });
+  };
+  for (let i = 0; i < qs.length; i++)
+    for (let j = i + 1; j < qs.length; j++){
+      let shared = 0;
+      for (const w of qs[i]._w) if (qs[j]._w.has(w)) shared++;
+      if (shared >= 2 || (shared === 1 && qs[i].ax !== qs[j].ax)) addThread(qs[i], qs[j]);
+    }
+  const byWho = {};
+  qs.forEach(n => { if (n.who) (byWho[n.who] = byWho[n.who] || []).push(n) });
+  Object.values(byWho).forEach(list => {
+    for (let i = 0; i + 1 < list.length; i += 2) addThread(list[i], list[i + 1]);
+  });
+
+  if (sim) sim.stop();
+  gLink.selectAll('*').remove(); gHub.selectAll('*').remove(); gNode.selectAll('*').remove();
+  sim = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d => d.id)
+      .distance(l => (l.source.dist || 220) * (items.length < 30 ? 1.15 : 1)).strength(.55))
+    .force('charge', d3.forceManyBody().strength(d => d.isHub ? -900 : -230))
+    .force('collide', d3.forceCollide()
+      .radius(d => d.isHub ? 172 : 68 + d.lines.length * 11)
+      .iterations(3))
+    .force('x', d3.forceX(d => d.ax).strength(d => d.isHub ? .7 : .11))
+    .force('y', d3.forceY(d => d.ay).strength(d => d.isHub ? .7 : .11))
+    .force('drift', drift)
+    .alphaDecay(.02)
+    .on('tick', tick);
+  render();
+  for (let i = 0; i < 400; i++) { T += 0.016; sim.tick() }
+  sim.alphaTarget(IDLE).restart();
+  tick();
+  fit(0);
+  const empty = document.getElementById('mapEmpty');
+  if (empty) empty.style.display = items.length ? 'none' : '';
+}
+
+function addRoomNode(q){
+  if (!sim) return;
+  if (nodes.some(n => n.id === q.id)) return;
+  const hub = nodes.find(n => n.isHub && n.id === 'h-' + q.t);
+  if (!hub) return;
+  const seed = ++uid;
+  nodes.push({ id:q.id, seed, q:q.q, who:q.who || '', mine:true, pop:true, pal:hub.pal, t:q.t,
+    lines:wrap(q.q, 26).slice(0, 6),
+    x:hub.x + (Math.random()-.5)*140, y:hub.y + (Math.random()-.5)*140, ax:hub.ax, ay:hub.ay,
+    dist:150 + (seed % 7) * 32,
+    w1:0.10 + (seed % 9) * 0.022, p1:seed * 1.7, amp:11 + (seed % 5) * 5,
+    tw:48 + (seed % 8) * 12, th:42 + ((seed * 5) % 6) * 15 });
+  links.push({ source:q.id, target:hub.id });
+  sim.nodes(nodes);
+  sim.force('link').links(links);
+  render();
+  sim.alpha(.5).restart();
+  const empty = document.getElementById('mapEmpty');
+  if (empty) empty.style.display = 'none';
+  clearTimeout(addRoomNode.refit);
+  addRoomNode.refit = setTimeout(() => fit(900), 1400);
+}
+
+function render(){
+  xlinkSel = gLink.selectAll('line.x').data(xlinks).join('line').attr('class','link x');
+  linkSel  = gLink.selectAll('line.n').data(links).join('line').attr('class','link n');
+
+  hubSel = gHub.selectAll('g.hub').data(nodes.filter(d => d.isHub), d => d.id)
+    .join(enter => enter.append('g').attr('class','hub').each(function(d){
+      const el = d3.select(this);
+      const h = d.lines.length * 30 + d.subLines.length * 15 + 40;
+      el.append('rect').attr('class','hit').attr('x', -175).attr('y', -32)
+        .attr('width', 350).attr('height', h).attr('fill', 'transparent');
+      d.lines.forEach((ln,i) => el.append('text').attr('class','h').attr('y', i*30).text(ln));
+      d.subLines.forEach((ln,i) => el.append('text').attr('class','s').attr('y', d.lines.length*30 + 4 + i*15).text(ln));
+    }).on('click', (e,d) => { e.stopPropagation(); openHub(d) }));
+
+  nodeSel = gNode.selectAll('g.node').data(nodes.filter(d => !d.isHub), d => d.id)
+    .join(enter => {
+      const g = enter.append('g').attr('class', d => 'node' + (d.mine ? ' mine' : '') + (d.pop ? ' pop' : ''));
+      g.each(function(d){
+        const el = d3.select(this);
+        paintTile(el.append('g').attr('class','tile').node(), d.pal, d.seed, d.tw, d.th);
+        d.lines.forEach((ln,i) => el.append('text').attr('class','lab').attr('y', d.th/2 + 15 + i*13).text(ln));
+      });
+      g.on('click', (e,d) => { e.stopPropagation(); openCard(d) })
+       .on('pointerenter', (e,d) => highlight(d.ax + ',' + d.ay))
+       .on('pointerleave', () => highlight(null))
+       .call(d3.drag()
+        .on('start', (e,d) => { if(!e.active) sim.alphaTarget(.2).restart(); d.fx=d.x; d.fy=d.y })
+        .on('drag',  (e,d) => { d.fx=e.x; d.fy=e.y })
+        .on('end',   (e,d) => { if(!e.active) sim.alphaTarget(IDLE); d.fx=null; d.fy=null }));
+      return g;
+    });
+}
+/* every node owns a box: tile plus its text. lines stop at the box edge. */
+function box(n){
+  if (n.isHub) return { l:-172, r:172, t:-34, b:n.lines.length*30 + n.subLines.length*15 + 12 };
+  return { l:-n.tw/2 - 8, r:n.tw/2 + 8, t:-n.th/2 - 8, b:n.th/2 + 19 + n.lines.length*16 };
+}
+/* where the line from `from` meets the edge of node `n`'s box */
+function edge(n, from){
+  const b = box(n), dx = from.x - n.x, dy = from.y - n.y;
+  if (!dx && !dy) return { x:n.x, y:n.y };
+  const tx = dx > 0 ? b.r / dx : dx < 0 ? b.l / dx : Infinity;
+  const ty = dy > 0 ? b.b / dy : dy < 0 ? b.t / dy : Infinity;
+  const t = Math.min(Math.abs(tx), Math.abs(ty));
+  return { x:n.x + dx * t, y:n.y + dy * t };
+}
+function tick(){
+  T += 0.016;
+  if (!linkSel) return;
+  if (wlSel) wlSel.each(function(d){
+    const e = edge(d.n, d.p);
+    d3.select(this).attr('x1', d.p.x).attr('y1', d.p.y).attr('x2', e.x).attr('y2', e.y);
+  });
+  const both = sel => sel.each(function(d){
+    const a = edge(d.source, d.target), b = edge(d.target, d.source);
+    d3.select(this).attr('x1', a.x).attr('y1', a.y).attr('x2', b.x).attr('y2', b.y);
+  });
+  both(linkSel);
+  both(xlinkSel);
+  hubSel.attr('transform', d => `translate(${d.x},${d.y})`);
+  nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+}
+function highlight(key){
+  if (document.body.className !== 's-map') return;
+  nodeSel.classed('faded', d => key && (d.ax + ',' + d.ay) !== key);
+  hubSel.classed('faded', d => key && (d.ax + ',' + d.ay) !== key);
+  linkSel.style('opacity', d => !key ? 1 : ((d.source.ax + ',' + d.source.ay) === key ? 1 : .1));
+  xlinkSel.style('opacity', key ? .08 : 1);
+}
+
+/* ==================================== zoom ==================================== */
+const zoom = d3.zoom().scaleExtent([.2, 3.2])
+  .on('start', () => document.getElementById('graph').classList.add('grabbing'))
+  .on('zoom', e => {
+    root.attr('transform', e.transform);
+    document.getElementById('graph').classList.toggle('far', e.transform.k < .5);
+  })
+  .on('end', () => document.getElementById('graph').classList.remove('grabbing'));
+svg.call(zoom).on('dblclick.zoom', null);
+svg.on('click', () => closeCard());
+let fitK = .6;
+/* the point of the map is the shape of the whole room at a glance, so the default
+   view always fits everything on screen; labels dim (see #graph.far) instead of
+   forcing a crop, and tapping or pinching in gets you to reading size. */
+function fit(ms = 700){
+  if (!nodes.length) return;
+  const pad = nodes.length < 24 ? 150 : 200;
+  const x0 = d3.min(nodes, n => n.x) - pad, x1 = d3.max(nodes, n => n.x) + pad;
+  const y0 = d3.min(nodes, n => n.y) - pad, y1 = d3.max(nodes, n => n.y) + pad;
+  /* the two big words sit just outside the questions, in opposite corners */
+  wordA.attr('x', x0 + 130).attr('y', y0 - 40);
+  wordB.attr('x', x1 - 130).attr('y', y1 + 104);
+  const bx0 = x0 - 110, bx1 = x1 + 110, by0 = y0 - 185, by1 = y1 + 195;
+  const qs = nodes.filter(n => !n.isHub);
+  if (qs.length){
+    const la = wordA.node().getComputedTextLength(), lb = wordB.node().getComputedTextLength();
+    const pA = { x: x0 + la * .62, y: y0 - 22 };
+    const pB = { x: x1 - lb * .62, y: y1 + 80 };
+    const near = (p, k) => qs.slice()
+      .sort((m,n) => Math.hypot(m.x-p.x, m.y-p.y) - Math.hypot(n.x-p.x, n.y-p.y))
+      .slice(0, Math.min(k, qs.length));
+    wordLinks = [...near(pA, 2).map(n => ({ p:pA, n })), ...near(pB, 2).map(n => ({ p:pB, n }))];
+    wlSel = gWordLink.selectAll('line').data(wordLinks).join('line').attr('class','link wl');
+  }
+  const k = Math.max(.15, Math.min(innerWidth/(bx1-bx0), innerHeight/(by1-by0), 1.3));
+  fitK = k;
+  /* the whole map is the world: no dragging off into the cream */
+  zoom.scaleExtent([k, Math.max(k * 3.2, 1.6)])
+      .translateExtent([[bx0, by0], [bx1, by1]]);
+  svg.transition().duration(ms).call(zoom.transform,
+    d3.zoomIdentity.translate(innerWidth/2 - k*(bx0+bx1)/2, innerHeight/2 - k*(by0+by1)/2).scale(k));
+}
+function focusOn(n, k = .95){
+  svg.transition().duration(900).call(zoom.transform,
+    d3.zoomIdentity.translate(innerWidth/2 - k*n.x, innerHeight/2 - k*n.y).scale(k));
+}
+addEventListener('resize', () => { if (document.body.className === 's-map') fit(0) });
+document.getElementById('zin').onclick  = () => svg.transition().duration(300).call(zoom.scaleBy, 1.35);
+document.getElementById('zout').onclick = () => svg.transition().duration(300).call(zoom.scaleBy, 1/1.35);
+document.getElementById('zfit').onclick = () => fit();
+document.getElementById('joinChip').onclick = showQR;
+document.getElementById('jbQR').onclick = showQR;
+document.getElementById('qrOverlay').onclick = () => document.getElementById('qrOverlay').classList.remove('on');
+
+/* ==================================== card ==================================== */
+const card = document.getElementById('card');
+function openCard(n){
+  document.getElementById('cardTag').textContent = n.mine ? (n.who ? 'Asked by ' + n.who : 'From the room') : n.tag;
+  document.getElementById('cardQ').textContent = n.q;
+  const s = document.getElementById('cardSoft');
+  const sc = scoreQ(n.q);
+  const dots = AXES.map(a => `<span style="opacity:${.25 + .25*sc[a.key]}" title="${esc(a.label)} ${sc[a.key]}/3">&#9679;</span>`).join(' ');
+  const strong = AXES.filter(a => sc[a.key] >= 2);
+  const why = strong.length
+    ? `Scores well on ${strong.map(a => a.phrase).join(', ')}.`
+    : `Doesn’t lean hard on any one trait — sometimes the plainest question is the one nobody answers.`;
+  const t = n.t && TOPIC[n.t];
+  const arts = t ? ARTICLES.filter(a => a.t === t.id) : [];
+  const artHtml = arts.length
+    ? `<em style="margin-top:16px">Anthropic’s pieces under “${esc(t.q)}”</em>`
+      + `<ul class="arts">${arts.slice(0,3).map(a =>
+          `<li><a href="https://www.anthropic.com${a.url}" target="_blank" rel="noopener">${esc(a.title)}</a></li>`).join('')}</ul>`
+      + (arts.length > 3 ? `<p class="more">and ${arts.length - 3} more on their page</p>` : '')
+    : '';
+  if (n.soft) s.innerHTML = '<em>The version that made the homepage</em>' + n.soft;
+  else s.innerHTML = `<em>Hardness read</em>${sc.total}/${MAXTOT} &nbsp; ${dots}<p class="g" style="margin-top:10px">${why}</p>${artHtml}`;
+  s.style.display = '';
+  card.classList.add('on');
+  const chip = document.getElementById('joinChip');
+  if (chip) chip.style.display = 'none';
+}
+function openHub(d){
+  const t = TOPICS.find(x => 'h-' + x.id === d.id);
+  if (!t) return;
+  const mine = session.qs.filter(q => q.t === t.id);
+  const arts = ARTICLES.filter(a => a.t === t.id);
+  const top = arts.slice(0, 5).map(a =>
+    `<li><a href="https://www.anthropic.com${a.url}" target="_blank" rel="noopener">${esc(a.title)}</a></li>`).join('');
+  const hardest = mine.slice().sort((a,b) => scoreQ(b.q).total - scoreQ(a.q).total)[0];
+  document.getElementById('cardTag').textContent = 'Anthropic’s heading';
+  document.getElementById('cardQ').textContent = t.q;
+  const mineTop = mine.slice(0, 5).map(q =>
+    `<li>${esc(q.q)}${q.who ? `<span class="who">${esc(q.who)}</span>` : ''}</li>`).join('');
+  document.getElementById('cardSoft').innerHTML =
+      `<p class="g">${t.gloss}</p>`
+    + `<em>Anthropic answers it with ${arts.length} piece${arts.length === 1 ? '' : 's'}</em>`
+    + `<ul class="arts">${top}</ul>`
+    + (arts.length > 5 ? `<p class="more">and ${arts.length - 5} more on their page</p>` : '')
+    + `<em style="margin-top:18px">Your session put ${mine.length} question${mine.length === 1 ? '' : 's'} here</em>`
+    + (mine.length
+        ? `<ul class="arts room">${mineTop}</ul>`
+          + (mine.length > 5 ? `<p class="more">and ${mine.length - 5} more</p>` : '')
+        : `<p class="more">Nothing yet.</p>`);
+  document.getElementById('cardSoft').style.display = '';
+  card.classList.add('on');
+  const chip = document.getElementById('joinChip');
+  if (chip) chip.style.display = 'none';
+}
+function closeCard(){ card.classList.remove('on'); paintJoin() }
+document.getElementById('cardX').onclick = closeCard;
+card.addEventListener('click', e => e.stopPropagation());
+
+/* =================================== screens =================================== */
+const hero = document.getElementById('hero');
+function show(name){
+  document.body.className = 's-' + name + (['session','join','room','grid'].includes(name) ? ' scrolls' : '');
+  if (name === 'hero') hero.classList.remove('gone'); else hero.classList.add('gone');
+  if (name === 'map') setTimeout(() => fit(600), 60);
+  if (name === 'session') renderSession();
+  if (name === 'grid') renderGrid();
+  document.querySelectorAll('.seg button[data-screen]').forEach(b =>
+    b.classList.toggle('on', b.dataset.screen === name));
+  if (name !== 'map') closeCard();
+  if (name === 'room') renderRoom();
+  paintJoin();
+  ['session','join','room','grid'].forEach(k => { const el = document.getElementById(k); if (el) el.scrollTop = 0 });
+  window.scrollTo(0,0);
+}
+document.getElementById('doorRoom').onclick = () => show('session');
+document.getElementById('doorJoin').onclick = () => show('join');
+document.getElementById('sesExit').onclick = () => { buildGraph(); show('map') };
+document.getElementById('gridSession').onclick = () => show('session');
+document.querySelectorAll('.seg button[data-screen]').forEach(b =>
+  b.onclick = () => { if (b.dataset.screen === 'map') buildGraph(); show(b.dataset.screen) });
+
+/* ================================ session screen ================================ */
+const $ = id => document.getElementById(id);
+
+$('sesName').addEventListener('input', e => setName(e.target.value));
+
+function renderSession(){
+  const t = TOPICS[topicIdx];
+  if (document.activeElement !== $('sesName')) $('sesName').value = session.name || '';
+  document.getElementById('session').style.setProperty('--accent', t.pal[0]);
+  $('topQ').textContent = t.q;
+  $('topGloss').textContent = t.gloss;
+  $('sesStep').textContent = `Heading ${topicIdx + 1} of ${TOPICS.length}`;
+  $('sesDots').innerHTML = TOPICS.map((x,i) => {
+    const has = session.qs.some(q => q.t === x.id);
+    return `<i class="${i === topicIdx ? 'now' : has ? 'done' : ''}" title="${esc(x.q)}"></i>`;
+  }).join('');
+
+  const list = session.qs.filter(q => q.t === t.id).slice().reverse();
+  $('sesList').innerHTML = list.map(q => `
+    <div class="qcard">
+      <button class="del" data-id="${q.id}" title="Remove">&times;</button>
+      <p>${esc(q.q)}</p>
+      ${q.who ? `<span class="who">${esc(q.who)}</span>` : ''}
+    </div>`).join('')
+    || `<div class="qempty">Nothing under this heading yet. Anything sent from a phone lands here.</div>`;
+  $('sesList').querySelectorAll('.del').forEach(b => b.onclick = () => delQ(b.dataset.id).then(renderSession));
+
+  $('sesPrev').disabled = topicIdx === 0;
+  $('sesNext').disabled = topicIdx === TOPICS.length - 1;
+  $('sesDone').disabled = !session.qs.length;
+  $('sesDone').textContent = session.qs.length
+    ? `See the map the room made (${session.qs.length}) \u2192`
+    : 'See the map the room made \u2192';
+  $('sesSamples').textContent = session.qs.length ? 'Add sample questions' : 'Fill it with sample questions';
+  paintJoin();
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+async function addFromForm(){
+  const txt = $('sesText').value.trim();
+  if (!txt) return $('sesText').focus();
+  $('sesText').value = '';
+  await addQ(TOPICS[topicIdx].id, txt, $('sesWho').value.trim());
+  $('sesText').focus();
+  renderSession(); paintJoin();
+}
+$('sesAdd').onclick = addFromForm;
+$('sesText').addEventListener('keydown', e => { if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') addFromForm() });
+$('sesPrev').onclick = () => { setTopic(Math.max(0, topicIdx-1)); renderSession(); window.scrollTo(0,0) };
+$('sesNext').onclick = () => { setTopic(Math.min(TOPICS.length-1, topicIdx+1)); renderSession(); window.scrollTo(0,0) };
+$('sesSamples').onclick = async () => {
+  $('sesSamples').disabled = true;
+  await addBulk(SAMPLES);
+  renderSession(); paintJoin();
+  $('sesSamples').disabled = false;
+};
+$('jbNew').onclick = async () => {
+  if (!NET.on) return;
+  clearInterval(NET.timer);
+  session = { id:'', name:'', created:Date.now(), topicIdx:0, qs:[], v:0 };
+  localStorage.removeItem('ahq.sid');
+  await createSession();
+  topicIdx = 0; renderSession();
+};
+$('sesDone').onclick = () => { buildGraph(); show('map') };
+
+function renderGrid(){
+  const total = session.qs.length;
+  $('gridSub').textContent = total
+    ? `${total} question${total === 1 ? '' : 's'}, under Anthropic's five headings`
+    : 'Nothing yet. Open the session and ask something.';
+  $('gridBody').innerHTML = TOPICS.map(t => {
+    const mine = session.qs.filter(q => q.t === t.id);
+    const arts = ARTICLES.filter(a => a.t === t.id).length;
+    return `<section class="gsec" style="--gc:${t.pal[0]}">
+      <h2>${esc(t.q)}</h2>
+      <p class="meta">${mine.length} question${mine.length === 1 ? '' : 's'} from the room ·
+        Anthropic has ${arts} piece${arts === 1 ? '' : 's'} on this heading ·
+        <a href="https://www.anthropic.com/path-to-hope" target="_blank" rel="noopener">their page &#8599;</a></p>
+      ${mine.length ? `<div class="gcards">${mine.map(q => `
+        <div class="gcard" data-id="${q.id}"><p>${esc(q.q)}</p>
+          <span class="hardness" title="Hardness read">${scoreQ(q.q).total}/${MAXTOT}</span>
+          ${q.who ? `<span>${esc(q.who)}</span>` : ''}</div>`).join('')}</div>`
+        : `<div class="gempty">Nobody asked anything under this heading.</div>`}
+    </section>`;
+  }).join('');
+  $('gridBody').querySelectorAll('.gcard').forEach(el => el.onclick = () => {
+    const q = session.qs.find(x => x.id === el.dataset.id);
+    if (q) openCard({...q, mine:true});
+  });
+}
+
+/* ============================== phone: join + add ============================== */
+let roomTopic = null;          // null = follow whatever heading the room is on
+function renderRoom(){
+  const t = TOPICS[roomTopic === null ? (session.topicIdx || 0) : roomTopic];
+  $('roomName').textContent = session.name || 'The session';
+  $('roomMeta').textContent = `code ${session.id} · ${session.qs.length} question${session.qs.length === 1 ? '' : 's'} in the room`;
+  document.getElementById('room').style.setProperty('--accent', t.pal[0]);
+  $('roomQ').textContent = t.q;
+  $('roomGloss').textContent = t.gloss;
+  if (!$('roomPick').options.length)
+    TOPICS.forEach((x,i) => { const o = document.createElement('option'); o.value = i; o.textContent = x.q; $('roomPick').appendChild(o) });
+  $('roomPick').value = String(TOPICS.indexOf(t));
+  const who = (joiner && joiner.name) || '';
+  const mine = who ? session.qs.filter(q => q.who === who) : [];
+  $('roomList').innerHTML = mine.map(q =>
+      `<li><div class="txt">${esc(q.q)}<span class="who">${esc(TOPICS.find(x => x.id === q.t).q)}</span></div></li>`).join('')
+    || '<li style="opacity:.5;border-style:dashed">Nothing from you yet.</li>';
+}
+$('roomPick').onchange = e => { roomTopic = Number(e.target.value); renderRoom() };
+$('roomAdd').onclick = async () => {
+  const txt = $('roomText').value.trim();
+  if (!txt) return $('roomText').focus();
+  const t = TOPICS[roomTopic === null ? (session.topicIdx || 0) : roomTopic];
+  $('roomAdd').disabled = true;
+  try {
+    await addQ(t.id, txt, (joiner && joiner.name) || '');
+    $('roomText').value = '';
+    $('roomErr').textContent = 'Sent. It is on the map.';
+    setTimeout(() => $('roomErr').textContent = '', 2500);
+  } catch (e){ $('roomErr').textContent = 'Could not send. Still on the wifi?' }
+  $('roomAdd').disabled = false;
+  renderRoom();
+};
+$('roomLeave').onclick = () => {
+  localStorage.removeItem('ahq.joined');
+  joiner = null; roomTopic = null;
+  clearInterval(NET.timer);
+  session = { id:'', name:'', created:Date.now(), topicIdx:0, qs:[], v:0 };
+  show('join');
+};
+$('joinGo').onclick = async () => {
+  const code = $('joinCode').value.trim().toUpperCase();
+  const name = $('joinName').value.trim();
+  if (code.length < 4){ $('joinErr').textContent = 'That code looks too short.'; return }
+  $('joinErr').textContent = 'Joining...';
+  try {
+    await attach(code);
+    joiner = { id:code, name };
+    localStorage.setItem('ahq.joined', JSON.stringify(joiner));
+    $('joinErr').textContent = '';
+    show('room');
+  } catch (e){ $('joinErr').textContent = 'No session with that code. Check the screen in the room.' }
+};
+$('joinCode').addEventListener('keydown', e => { if (e.key === 'Enter') $('joinGo').click() });
+
+async function boot(){
+  await netInit();
+  const hash = location.hash;
+  const param = (new URL(location.href).searchParams.get('s') || '').toUpperCase();
+
+  /* a phone landing on /#join */
+  if (hash === '#join' || (joiner && !param && hash !== '#session' && hash !== '#map')){
+    if (joiner && NET.on){
+      try { await attach(joiner.id); $('joinName').value = joiner.name || ''; show('room'); return }
+      catch { localStorage.removeItem('ahq.joined'); joiner = null }
+    }
+    if (hash === '#join'){
+      if (param){ $('joinCode').value = param; try { await attach(param) } catch {} }
+      show('join'); return;
+    }
+  }
+
+  await ensureSession();
+  renderSession();
+  buildGraph();
+  if (hash === '#session') show('session');
+  else if (hash === '#grid') show('grid');
+  else if (hash === '#map') show('map');
+  paintJoin();
+}
+boot();
+</script>
+</body>
+</html>

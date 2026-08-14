@@ -55,6 +55,7 @@ const nextConfig: NextConfig = {
         { source: "/theodds/elon-musk", destination: "/odds-of-surviving-ai/p/elon-musk.html" },
         { source: "/theodds/max-tegmark", destination: "/odds-of-surviving-ai/p/max-tegmark.html" },
         { source: "/theodds/research", destination: "/odds-of-surviving-ai/research.html" },
+        { source: "/theodds/stats", destination: "/odds-of-surviving-ai/stats.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
         // Generatives — Vite static app; the dashboard + a separate embed.html player
@@ -65,6 +66,8 @@ const nextConfig: NextConfig = {
         { source: "/hyperscale", destination: "/hyperscale/index.html" },
         // Trajectories — Vite static app (generative filament sphere)
         { source: "/trajectories", destination: "/trajectories/index.html" },
+        // Actually Hard Questions — hand-authored static bundle (hash-routed single page)
+        { source: "/actually-hard-questions", destination: "/actually-hard-questions/index.html" },
         // Social Composer — Next static export (basePath baked in, trailingSlash)
         { source: "/social-composer", destination: "/social-composer/index.html" },
         { source: "/social-composer/about", destination: "/social-composer/about/index.html" },
