@@ -202,8 +202,10 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-photo{flex:0 0 32%!important;height:auto!important;min-height:0;
     display:flex!important;flex-direction:row;align-items:stretch;gap:0;padding:0!important;background:#08080a;overflow:hidden}
   .od-photo-scrim{display:none!important}
-  /* portrait = left 40%; the video portraits (Elon/Dario) match the photo layout instead of going full-bleed */
-  .od-hero-img,.od-portrait-vid{position:relative!important;inset:auto!important;height:100%!important;width:auto!important;
+  /* portrait = left 40%; the video portraits (Elon/Dario) match the photo layout instead of going full-bleed.
+     .od-portrait-loop must match: it's the loop clip swapped in once the one-shot doom video ends, over the
+     same box — without it here it falls back to its inline full-bleed style and the panel jumps to 100vw. */
+  .od-hero-img,.od-portrait-vid,.od-portrait-loop{position:relative!important;inset:auto!important;height:100%!important;width:auto!important;
     aspect-ratio:3/4;max-width:40vw;flex:none!important;border-radius:0!important;object-fit:cover!important;object-position:50% 18%!important;background:#08080a}
   /* info = right 60%, on black with a red glow. The glow is tucked into the TOP-right corner and dies
      out before the bottom edge — down there the band meets the game panel's blue sky, and a warm
@@ -246,7 +248,7 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-result{gap:4px!important}
   .od-key{margin-bottom:5px!important}
   .od-key--drawn{display:none!important}   /* card is face-up: give its description the room */
-  .od-key-labels{font-size:8.5px!important;gap:12px;letter-spacing:0.04em!important}
+  .od-key-labels{font-size:10.5px!important;gap:12px;letter-spacing:0.03em!important}
   .od-key-labels span{flex:1 1 0;min-width:0}                         /* let the long "REALLY, REALLY BAD" wrap, not clip */
   .od-key-labels span:last-child{text-align:right}
   .od-rhead{font-size:clamp(15px,2.2vh,19px)!important}
@@ -280,8 +282,10 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-landing{height:calc(100dvh - var(--fa-nav-h, 56px));overflow:hidden;display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse 70% 75% at 50% 14%, #3a1016 0%, #1c0a0f 38%, #0c0a0d 70%, #08080a 100%);background-size:175% 175%;background-repeat:no-repeat;animation:odBgDrift 26s ease-in-out infinite;padding:clamp(16px,3vh,30px) 28px clamp(18px,3.2vh,32px)}
 @keyframes odBgDrift{0%{background-position:30% 16%}25%{background-position:64% 30%}50%{background-position:74% 12%}75%{background-position:40% 36%}100%{background-position:30% 16%}}
 .od-land-wrap{width:100%;max-width:none;height:100%;display:flex;flex-direction:column}
-.od-land-head{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(236,234,230,0.62)}
+.od-land-head{display:flex;justify-content:space-between;align-items:baseline;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(236,234,230,0.62)}
 .od-land-head .od-mark{color:#E0481B}
+.od-stats-link{display:none;color:rgba(236,234,230,0.5);text-decoration:none;font-size:10px;letter-spacing:0.18em}
+.od-stats-link:hover{color:#ECEAE6}
 .od-eyebrow{margin-top:clamp(14px,3vh,28px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.26em;color:#E0481B}
 .od-headline{margin-top:12px;max-width:820px;font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:clamp(26px,calc(3.4vw + 0.9vh),44px);line-height:0.98;letter-spacing:-0.025em;color:#F4EFE4}
 .od-intro{margin-top:14px;max-width:680px;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.1vh,22px);line-height:1.45;color:rgba(236,234,230,0.78)}
@@ -316,6 +320,7 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-intro{display:none}
   .od-pcard-teaser{font-size:12px}
   .od-land-cta{align-self:stretch;text-align:center;margin-top:14px}
+  .od-stats-link{display:inline-block}
 }
 @media(max-width:680px){ .od-landing{padding-left:14px;padding-right:14px} }
 
@@ -336,6 +341,7 @@ body.od-menu-open .od-extinctions{display:none!important}
   <div class="od-land-wrap">
     <div class="od-land-head">
       <span><span class="od-mark">◆</span> THE ODDS</span>
+      <a href="/theodds/stats" class="od-stats-link">STATS</a>
     </div>
     <h1 class="od-headline" style="margin-top:clamp(18px,3.5vh,34px)">The people who build and study AI think it might end us.</h1>
     <p class="od-intro">Their own estimates of catastrophe are alarmingly high. Choose whose future you trust. Or distrust. Play the odds.</p>
@@ -441,7 +447,7 @@ body.od-menu-open .od-extinctions{display:none!important}
 
     <!-- TEST ONLY: force the next roll/spin/pick outcome (applies once). Remove before ship. -->
     <sc-if value="{{ isPlay }}">
-      <sc-if value="{{ notCards }}">
+      <sc-if value="{{ showTest }}">
         <div class="od-forcetest">
           <span>TEST</span>
           <button onClick="{{ forceGood }}" class="od-forcebtn {{ forceGoodCls }}">GOOD</button>
@@ -629,12 +635,15 @@ class Component extends DCLogic {
     extinctions: (function(){ try { return parseInt(localStorage.getItem('theodds_extinctions'), 10) || 0; } catch (e) { return 0; } })(),
   };
 
+  // TEST good/bad buttons: everywhere except the live production domain (local, staging previews, drafts all show them)
+  isLive = (function(){ try { return location.hostname === 'futures-atlas-02.vercel.app'; } catch (e) { return false; } })();
+
   order = ['amodei', 'musk', 'tegmark'];
 
   players = {
     amodei: {
       short: 'Dario', name: 'Dario Amodei', role: 'Co-founder & CEO, Anthropic',
-      photo: '/odds-of-surviving-ai/research/dario-amodei.jpg',
+      photo: '/odds-of-surviving-ai/research/dario-first.jpg',   // same still as portraitPoster/video first frame → seamless
       credit: 'Photo: TechCrunch, CC BY 2.0',
       teaser: 'A 25% chance things go really, really badly.', teaserNum: '25%',
       oddsBig: '25%', oddsCaption: 'CHANCE IT GOES REALLY, REALLY BADLY', oddsCap: 'REALLY BADLY',
@@ -1299,8 +1308,13 @@ class Component extends DCLogic {
     }
     this.setState({ extinctions: n });
   }
+  // fire-and-forget: one real tally, shared across everyone who plays — /theodds/stats reads it back
+  recordPlay(isDoom) {
+    try { fetch('/api/theodds/stats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ outcome: isDoom ? 'doom' : 'survive' }), keepalive: true }); } catch (e) {}
+  }
 
   resolve(isDoom, p, card) {
+    this.recordPlay(isDoom);
     if (isDoom) { this.doomTone(); this.bumpExtinctions(); } else this.survive();
     if (this.state.mode === 'gauntlet') {
       const results = this.state.gResults.concat(!isDoom);
@@ -1470,6 +1484,7 @@ class Component extends DCLogic {
       extinctions: String(s.extinctions), showExt: !isLanding && !s.menuOpen,
 
       isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards', notCards: p.mechanic !== 'cards',
+      showTest: p.mechanic !== 'cards' && !this.isLive,
       reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
       dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0', dieEncaseMs: String(p.doomClipMs || 5000),
       wheelGradient, wheelTicks, wheelRot: s.wheelRot.toFixed(1),
