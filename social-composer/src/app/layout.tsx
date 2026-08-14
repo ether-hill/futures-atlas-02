@@ -50,6 +50,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   // No data-fa-no-footer: this app used to opt out of the shared footer and
   // render its own copy of an older one, which is how the site ended up with
   // two. atlas-nav.js injects THE footer here like everywhere else.
+  //
+  // A plain comment, not {/* … */}. A JSX comment sits at expression position,
+  // so placing one before <html> inside `return (` makes two expressions where
+  // one is allowed and the file stops parsing.
   return (
     <html
       lang="en"

@@ -61,11 +61,13 @@
   var IS_EDITOR = /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
   // What the switcher offers: drafts only once signed in.
   var FA_LISTED = FA_PROJECTS.filter(function (x) { return IS_EDITOR || !x.draft; });
+  // Glossary is deliberately NOT here. It lives in the footer's Explore column
+  // (scripts/gen-footer.mjs), which is where reference material belongs — the
+  // bar is for the places you go, not the things you look up.
   var LINKS = [
     { name: "Home", path: "/" },
     { name: "Projects", path: "/projects" },
     { name: "Feed", path: "/feed" },
-    { name: "Glossary", path: "/glossary" },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
   ];
