@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FINDINGS, TIMELINE, DROPPED, countByTier } from "@/data/hegemony";
+import { FINDINGS, TIMELINE, DROPPED, PRESS, VIDEOS, countByTier } from "@/data/hegemony";
 
 /**
  * The feed's card for a deep-dive report of our own.
@@ -17,6 +17,7 @@ export function ReportCard() {
     { n: FINDINGS.length, l: "findings" },
     { n: countByTier("documented"), l: "peer-reviewed" },
     { n: TIMELINE.length, l: "dated events" },
+    { n: VIDEOS.length + PRESS.length, l: "watch & read" },
     { n: DROPPED.length, l: "rejected" },
   ];
 
