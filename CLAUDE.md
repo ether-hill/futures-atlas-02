@@ -165,6 +165,17 @@ stay `/magnifica`, since the name still contains it and the project is live).
 - The hero (`media/stills/creation-hands.jpg`) IS generated — it is a variation
   on Michelangelo's public-domain *Creation of Adam*, no living person involved.
   The right hand has seven fingers on purpose; the caption says so.
+- **Parallax lives in `magnifica/src/parallax.ts` and nowhere else** — the
+  overview hero and the voice pages share it. Travel is **bounded**: `±120 ×
+  rate` px across a section's whole pass through the viewport, never scaled to
+  the section's height. That bound is the smoothness: an earlier version moved
+  full-height plates ~400px, so a single dropped frame was a visible ~9px jump.
+  Depth comes from `data-par-scale` (a slow push-in), not from distance. The
+  dial for the experience view is `PAR` at the top of `experience.ts`.
+  Two rules follow: the scrim is a **sibling** of the plate (`.x-scrim`), never
+  a child, or it repaints with every frame of the motion; and nothing fixed and
+  permanently on screen may carry `backdrop-filter`, because it re-blurs its
+  backdrop on every frame of every scroll. Open-only panels may.
 - `SOURCES` in `magnifica/src/encyclical.ts` carries the source rail: every URL
   fetched and checked, `image` hot-linked from the publisher's own og:image or
   video thumbnail. Three publish none and render as typographic cards.

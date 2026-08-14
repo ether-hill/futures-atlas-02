@@ -19,6 +19,7 @@
  */
 import type { Leader } from "./leaders";
 import type { Part } from "./listen";
+import { mountParallax, readLayers, type ParLayer } from "./parallax";
 import { portraitOf, type Portrait } from "./portraits";
 
 const esc = (s: string) =>
@@ -58,6 +59,27 @@ export const EXPERIENCES: Record<string, ExperienceSpec> = {
 };
 
 export const hasExperience = (id: string) => id in EXPERIENCES;
+
+/**
+ * The parallax dial, in one place so the whole page can be tuned as a set.
+ *
+ * `par` is travel: ±120 × par px across the section's pass through the
+ * viewport (see parallax.ts — the bound is the point). `scale` is a slow
+ * push-in over the same pass, which is where the depth now comes from: a plate
+ * that drifts 24px and zooms 16% reads deeper than one that slid 400px, and it
+ * cannot stutter, because a dropped frame costs a fraction of a pixel.
+ *
+ * The print is the exception. It is a foreground object rather than a backdrop,
+ * so it is allowed real travel — and it never scales: a photographic print
+ * pushing in would read as a zoom on the photograph, which is exactly the
+ * blurring of real and imagined this project refuses elsewhere.
+ */
+const PAR = {
+  hero: { par: 0.12, scale: 0.14 },
+  quote: { par: 0.1, scale: 0.16 },
+  chapter: { par: 0.09, scale: 0.14 },
+  print: 0.75,
+} as const;
 
 /**
  * Every addressable place on the page, in order. This is the single source of
@@ -143,18 +165,28 @@ function partOf(s: Section): Part {
 export const experienceParts = (l: Leader): Part[] => sections(l).map(partOf);
 
 /**
- * A backdrop plate. `rate` is its parallax speed relative to scroll. In v1 the
- * element only declares which loop it wants; the video itself is created when
- * the section nears the viewport, so a page of them never decodes at once.
+ * A backdrop plate, plus the scrim that sits over it. In v1 the element only
+ * declares which loop it wants; the video itself is created when the section
+ * nears the viewport, so a page of them never decodes at once.
+ *
+ * The scrim is a **sibling, not a child**. It used to be `.x-bg::after`, which
+ * meant every repaint of the moving layer also rasterised a section-sized
+ * radial and linear gradient — roughly doubling the paint content of the one
+ * element on the page that has to be cheap — and it made the vignette drift
+ * against its own section. Out here it is a static layer the compositor can
+ * ignore, and it lines up with the section edges. It has to precede the
+ * content, which is `position: relative`, so the copy still paints on top.
  */
-function plate(variant: Variant, media: string | undefined, rate: number): string {
-  if (!media) return `<div class="x-bg x-bg-plain" aria-hidden="true"></div>`;
+function plate(variant: Variant, media: string | undefined, dial: { par: number; scale: number }): string {
+  const scrim = `<div class="x-scrim" aria-hidden="true"></div>`;
+  const par = `data-par="${dial.par}" data-par-scale="${dial.scale}"`;
+  if (!media) return `<div class="x-bg x-bg-plain" aria-hidden="true"></div>${scrim}`;
   if (variant === "v1") {
-    return `<div class="x-bg" aria-hidden="true" data-par="${rate}" data-backdrop="${esc(media)}"></div>`;
+    return `<div class="x-bg" aria-hidden="true" ${par} data-backdrop="${esc(media)}"></div>${scrim}`;
   }
-  return `<div class="x-bg" aria-hidden="true" data-par="${rate}">
+  return `<div class="x-bg" aria-hidden="true" ${par}>
             <img src="/magnifica/media/stills/${esc(media)}.jpg" alt="" loading="lazy" decoding="async" />
-          </div>`;
+          </div>${scrim}`;
 }
 
 /**
@@ -215,7 +247,7 @@ function renderSection(
     ctr.q++;
     return `
     <section class="x-quote" id="${id}" data-x-sect="${key}">
-      ${plate(variant, media, 0.22)}
+      ${plate(variant, media, PAR.quote)}
       <div class="x-quote-in">
         ${num}
         <span class="x-eyebrow" data-reveal>Predicted excerpt ${s.index + 1}</span>
@@ -267,7 +299,7 @@ function renderSection(
     const items = s.items.map((t) => `<li data-reveal>${esc(t)}</li>`).join("");
     return `
     <section class="x-sect x-sect-bg" id="${id}" data-x-sect="${key}">
-      ${plate(variant, cMedia, 0.14)}
+      ${plate(variant, cMedia, PAR.chapter)}
       <div class="x-sect-in">
         ${num}
         <h2 data-reveal>${esc(s.label)}</h2>
@@ -280,7 +312,7 @@ function renderSection(
 
   return `
   <section class="x-sect x-sect-bg" id="${id}" data-x-sect="${key}">
-    ${plate(variant, cMedia, 0.14)}
+    ${plate(variant, cMedia, PAR.chapter)}
     <div class="x-sect-in">
       ${num}
       <h2 data-reveal>${esc(s.label)}</h2>
@@ -312,7 +344,8 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
   return `
   <div class="x">
     <section class="x-hero" id="x-home" data-hero-loop="${esc(spec.hero[variant])}" data-x-sect="home">
-      <div class="x-bg x-bg-hero" aria-hidden="true" data-par="0.12"></div>
+      <div class="x-bg x-bg-hero" aria-hidden="true" data-par="${PAR.hero.par}" data-par-scale="${PAR.hero.scale}"></div>
+      <div class="x-scrim x-scrim-hero" aria-hidden="true"></div>
       <div class="x-hero-grid">
         <div class="x-hero-in">
           <span class="x-eyebrow" data-reveal>${esc(l.tradition)}</span>
@@ -327,7 +360,7 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
             <span class="x-begin-lbl">Begin experience</span>
           </button>
         </div>
-        ${portrait ? polaroid(portrait, 0.42, "x-polaroid-hero") : ""}
+        ${portrait ? polaroid(portrait, PAR.print, "x-polaroid-hero") : ""}
       </div>
       <span class="x-scroll" aria-hidden="true">Scroll to explore</span>
     </section>
@@ -404,101 +437,19 @@ export function mountExperience(root: HTMLElement) {
   backdrops.forEach((h) => bgIo?.observe(h));
 
   /*
-   * Parallax. Two things make the naive version feel cheap, and both are
-   * avoided here:
-   *
-   *  1. Reading getBoundingClientRect() per layer per frame forces a
-   *     synchronous reflow inside the frame budget. Section geometry is
-   *     measured once instead (and on resize), and each frame reads a single
-   *     scrollY.
-   *  2. Driving transforms straight from the scroll event ties movement to
-   *     event cadence, which is coarser than the compositor during momentum
-   *     scrolling — so layers step rather than glide. A rAF loop reads scrollY
-   *     once per frame instead.
-   *
-   * The plates track the scroll position exactly, with no easing toward it. An
-   * earlier version eased, which looked smooth in isolation and felt broken in
-   * the hand: the image visibly lagged the page and kept drifting after you
-   * stopped. Position is not the place for smoothing — the frame cadence
-   * already provides it.
+   * Parallax lives in parallax.ts, shared with the overview's hero so the two
+   * cannot drift apart again. Each plate is driven by its own section's pass
+   * through the viewport; the rates and push-ins come from PAR at the top of
+   * this file.
    */
-  interface Layer {
-    el: HTMLElement;
-    rate: number;
-    top: number;
-    height: number;
-  }
-
-  const layers: Layer[] = Array.from(root.querySelectorAll<HTMLElement>("[data-par]"))
-    .map((el) => {
-      const section = el.closest("section") as HTMLElement | null;
-      return section
-        ? { el, rate: parseFloat(el.dataset.par || "0"), top: 0, height: 0 }
-        : null;
-    })
-    .filter((l): l is Layer => l !== null);
-
-  const sectionsOf = new WeakMap<HTMLElement, HTMLElement>();
-  for (const l of layers) sectionsOf.set(l.el, l.el.closest("section") as HTMLElement);
-
-  const measure = () => {
-    const y = window.scrollY;
-    for (const l of layers) {
-      const s = sectionsOf.get(l.el)!;
-      const r = s.getBoundingClientRect();
-      l.top = r.top + y;
-      l.height = r.height;
-    }
-  };
-
-  let running = false;
-  let lastY = -1;
-  let idleFrames = 0;
-
-  const frame = () => {
-    const y = window.scrollY;
-    const vh = window.innerHeight;
-
-    if (y !== lastY) {
-      lastY = y;
-      idleFrames = 0;
-      for (const l of layers) {
-        // 0 when the section's centre sits at the viewport centre
-        const offset = (l.top + l.height / 2 - y - vh / 2) * -l.rate;
-        // only paint what is anywhere near the viewport
-        if (l.top - y < vh * 1.5 && l.top + l.height - y > -vh * 0.5) {
-          l.el.style.transform = `translate3d(0, ${offset.toFixed(2)}px, 0)`;
-        }
-      }
-    } else if (++idleFrames > 4) {
-      // nothing has moved for a few frames; stop until the next scroll
-      running = false;
-      return;
-    }
-
-    requestAnimationFrame(frame);
-  };
-
-  const kick = () => {
-    if (running) return;
-    running = true;
-    idleFrames = 0;
-    requestAnimationFrame(frame);
-  };
-
-  const onResize = () => {
-    measure();
-    kick();
-  };
-
+  let par: ReturnType<typeof mountParallax> | null = null;
   if (!reduce) {
-    measure();
-    kick();
-    window.addEventListener("scroll", kick, { passive: true });
-    window.addEventListener("resize", onResize, { passive: true });
-    // late-loading stills change section heights; re-measure when they land
+    const layers: ParLayer[] = readLayers(root, (el) => el.closest("section"));
+    par = mountParallax(layers);
+    // Late-loading stills change section heights, which moves every plate below
+    // them; re-measure when they land rather than leaving the page mis-registered.
     root.querySelectorAll("img").forEach((img) => {
-      if (!img.complete) img.addEventListener("load", onResize, { once: true });
+      if (!img.complete) img.addEventListener("load", () => par?.measure(), { once: true });
     });
   }
 
@@ -525,9 +476,7 @@ export function mountExperience(root: HTMLElement) {
   root.querySelectorAll("[data-x-sect]").forEach((s) => spy.observe(s));
 
   return () => {
-    window.removeEventListener("scroll", kick);
-    window.removeEventListener("resize", onResize);
-    running = false;
+    par?.destroy();
     bgIo?.disconnect();
     spy.disconnect();
   };

@@ -194,8 +194,11 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   bottom: 0;
   z-index: 40;
   padding: 0 var(--gutter) 10px;
-  background: color-mix(in oklab, var(--bg) 86%, transparent);
-  backdrop-filter: blur(12px);
+  background: color-mix(in oklab, var(--bg) 97%, transparent);
+  /* No backdrop-filter. It is fixed over a page whose backdrop moves, so the
+     compositor re-reads and re-blurs the region behind it on every frame of
+     every scroll — four of these together were a large part of the chug.
+     An opaque-enough panel reads the same and costs nothing. */
   border-top: 1px solid var(--line);
 }
 .dock-row {
@@ -400,8 +403,11 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: color-mix(in oklab, var(--panel) 82%, transparent);
-  backdrop-filter: blur(10px);
+  background: color-mix(in oklab, var(--panel) 95%, transparent);
+  /* No backdrop-filter. It is fixed over a page whose backdrop moves, so the
+     compositor re-reads and re-blurs the region behind it on every frame of
+     every scroll — four of these together were a large part of the chug.
+     An opaque-enough panel reads the same and costs nothing. */
   color: var(--ink);
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;

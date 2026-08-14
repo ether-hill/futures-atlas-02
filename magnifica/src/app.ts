@@ -5,6 +5,7 @@ import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
 import { experience4View, mountExperience4 } from "./experience4";
 import { mountDrawer, unmountDrawer, markDrawerRoute, markPinned } from "./drawer";
+import { mountParallax, readLayers } from "./parallax";
 import { portraitOf, monogram } from "./portraits";
 
 const esc = (s: string) =>
@@ -104,7 +105,7 @@ function homeView(): string {
 
     <header class="banner" data-reveal data-doc-loop="divine-touch">
       <div class="banner-art">
-      <div class="banner-plate" data-par="0.12">
+      <div class="banner-plate" data-par="0.12" data-par-scale="0.12">
         <img src="/magnifica/media/stills/creation-hands.jpg"
              alt="A close detail of two hands reaching toward each other in the manner of Michelangelo's Creation of Adam; the hand on the right has seven fingers."
              fetchpriority="high" decoding="async" />
@@ -130,7 +131,7 @@ function homeView(): string {
         </a>
       </div>
       ${leo ? `
-      <figure class="x-polaroid x-polaroid-hero banner-print" data-par="0.18">
+      <figure class="x-polaroid x-polaroid-hero banner-print" data-par="0.7">
         <video src="/magnifica/media/loops/pope-leo.mp4"
                autoplay muted loop playsinline preload="metadata"
                aria-label="${esc(leo.alt)}"></video>
@@ -271,10 +272,7 @@ function mountLoopHero(hero: HTMLElement): () => void {
 
   if (reduce) return () => {};
 
-  const all = Array.from(hero.querySelectorAll<HTMLElement>("[data-par]")).map((el) => ({
-    el,
-    rate: parseFloat(el.dataset.par || "0"),
-  }));
+  const all = readLayers(hero, () => hero);
   if (all.length === 0) return () => {};
 
   /*
@@ -284,75 +282,20 @@ function mountLoopHero(hero: HTMLElement): () => void {
    * it is no longer a plate hanging in a scene — it is the first thing in the
    * column, and sliding it against the text underneath reads as a glitch
    * rather than as depth. The backdrop still moves; only the print is held.
-   * Re-evaluated on resize, and its transform is cleared as it drops out so it
-   * cannot be stranded mid-drift at whatever offset it had.
+   * Re-evaluated on resize, and refresh() clears the transform of anything it
+   * drops, so the print cannot be stranded mid-drift at whatever offset it had.
    */
   const stacked = window.matchMedia("(max-width: 1000px)");
-  let layers = all;
-  const pickLayers = () => {
-    const held = stacked.matches;
-    layers = held ? all.filter((l) => !l.el.classList.contains("banner-print")) : all;
-    if (held) {
-      for (const l of all) {
-        if (l.el.classList.contains("banner-print")) l.el.style.transform = "";
-      }
-    }
-  };
-  pickLayers();
+  const pick = () =>
+    stacked.matches ? all.filter((l) => !l.el.classList.contains("banner-print")) : all;
 
-  // Geometry once, not per frame: getBoundingClientRect() inside the frame
-  // forces a synchronous reflow, which is what made this motion clunky.
-  let top = 0;
-  let height = 0;
-  const measure = () => {
-    const r = hero.getBoundingClientRect();
-    top = r.top + window.scrollY;
-    height = r.height;
-  };
-  measure();
+  const par = mountParallax(pick());
+  const onPick = () => par.refresh(pick());
+  stacked.addEventListener("change", onPick);
 
-  let running = false;
-  let lastY = -1;
-  let idle = 0;
-
-  const frame = () => {
-    const y = window.scrollY;
-    if (y !== lastY) {
-      lastY = y;
-      idle = 0;
-      const vh = window.innerHeight;
-      const offset = top + height / 2 - y - vh / 2;
-      for (const l of layers) {
-        l.el.style.transform = `translate3d(0, ${(offset * -l.rate).toFixed(2)}px, 0)`;
-      }
-    } else if (++idle > 4) {
-      running = false;
-      return;
-    }
-    requestAnimationFrame(frame);
-  };
-
-  const kick = () => {
-    if (running) return;
-    running = true;
-    idle = 0;
-    requestAnimationFrame(frame);
-  };
-  const onResize = () => {
-    pickLayers();
-    measure();
-    kick();
-  };
-
-  kick();
-  window.addEventListener("scroll", kick, { passive: true });
-  window.addEventListener("resize", onResize, { passive: true });
-  stacked.addEventListener("change", onResize);
   return () => {
-    window.removeEventListener("scroll", kick);
-    window.removeEventListener("resize", onResize);
-    stacked.removeEventListener("change", onResize);
-    running = false;
+    stacked.removeEventListener("change", onPick);
+    par.destroy();
   };
 }
 

@@ -49,9 +49,14 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   height: 128%;
   overflow: hidden;
   background: var(--x-bg);
-  /* No will-change here: it promoted every plate on the page to its own
-     compositor layer, offscreen ones included. transform alone gets promoted
-     while it actually moves, which is when it matters. */
+  /* will-change is set by parallax.ts on the plates near the viewport and
+     removed as they leave: composited while it matters, without promoting
+     every plate on the page at once. It cannot live here as a blanket rule
+     (that promotes all of them) and it cannot be left out either — writing a
+     3D transform from JS stopped being a compositing trigger under
+     CompositeAfterPaint, so without the hint this repaints a full-viewport
+     image on the main thread every frame, which is what made it chug. */
+  transform-origin: 50% 50%;
 }
 .x-bg-plain { background: var(--x-bg); }
 
@@ -70,11 +75,15 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
 .x-bg video { opacity: 0; transition: opacity 1.4s ease; }
 .has-bg .x-bg video { opacity: 1; }
 
-/* Vignette + floor fade. Documented texture over video, not a token colour. */
-.x-bg::after {
-  content: "";
+/* Vignette + floor fade. Documented texture over video, not a token colour.
+   A SIBLING of the plate, not a child of it: as `.x-bg::after` this gradient
+   was repainted with every frame of the parallax and drifted against its own
+   section. Static, it costs one rasterisation and lines up with the section
+   edges. It precedes the copy, which is positioned, so the copy paints above. */
+.x-scrim {
   position: absolute;
   inset: 0;
+  pointer-events: none;
   background:
     radial-gradient(120% 90% at 50% 35%, transparent 30%, rgba(4, 6, 10, 0.72) 100%),
     linear-gradient(180deg, rgba(4, 6, 10, 0.55) 0%, transparent 28%, transparent 55%, var(--x-bg) 97%);
@@ -94,7 +103,7 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   overflow: hidden; /* the print parallaxes; clip it at the hero edge */
 }
 /* Scrim biased left, under the type column. */
-.x-bg-hero::after {
+.x-scrim-hero {
   background:
     radial-gradient(115% 95% at 34% 45%, transparent 16%, rgba(4, 6, 10, 0.68) 100%),
     linear-gradient(180deg, rgba(4, 6, 10, 0.52) 0%, transparent 30%, transparent 60%, var(--x-bg) 99%);
@@ -235,7 +244,7 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
   border-radius: 999px;
   font-size: 15px;
   color: var(--x-ink);
-  backdrop-filter: blur(3px);
+  background: oklch(0.14 0.016 260 / 0.4);
   transition: border-color 0.3s, transform 0.3s, background 0.3s;
 }
 .x-begin:hover .x-begin-ring {
@@ -341,7 +350,7 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
 }
 /* Reading sections carry a still, so they need a heavier scrim than a quote
    slide: long-form body copy over an image is where legibility actually dies. */
-.x-sect-bg .x-bg::after {
+.x-sect-bg .x-scrim {
   background:
     radial-gradient(90% 70% at 50% 50%, rgba(4, 6, 10, 0.62) 0%, rgba(4, 6, 10, 0.78) 100%),
     linear-gradient(180deg, var(--x-bg) 0%, transparent 20%, transparent 80%, var(--x-bg) 100%);
@@ -447,7 +456,7 @@ body:has(.x) { background: oklch(0.115 0.014 260); }
 }
 /* Excerpts sit on top of architecture, which competes with the letterforms —
    so the quote slides get a heavier centre scrim than the hero does. */
-.x-quote .x-bg::after {
+.x-quote .x-scrim {
   background:
     radial-gradient(95% 75% at 50% 50%, rgba(4, 6, 10, 0.72) 0%, rgba(4, 6, 10, 0.6) 45%, rgba(4, 6, 10, 0.82) 100%),
     linear-gradient(180deg, var(--x-bg) 0%, transparent 22%, transparent 78%, var(--x-bg) 100%);
@@ -610,9 +619,12 @@ body:has(.x) .dock-voice-fixed { color: oklch(0.58 0.014 80); }
   gap: 2px;
   padding: 3px;
   border-radius: 999px;
-  background: oklch(0.14 0.016 260 / 0.82);
+  background: oklch(0.14 0.016 260 / 0.94);
   border: 1px solid oklch(1 0 0 / 0.14);
-  backdrop-filter: blur(10px);
+  /* No backdrop-filter. It is fixed over a page whose backdrop moves, so the
+     compositor re-reads and re-blurs the region behind it on every frame of
+     every scroll — four of these together were a large part of the chug.
+     An opaque-enough panel reads the same and costs nothing. */
 }
 .x-versions a {
   padding: 5px 11px;
@@ -700,13 +712,13 @@ body:has(.x) .open .mg-burger {
   padding: 9px 18px 9px 12px;
   border: 1px solid var(--x-line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.04);
+  background: oklch(0.16 0.016 260 / 0.55);
   color: var(--x-muted);
   font: 600 10px var(--mono);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   cursor: pointer;
-  backdrop-filter: blur(4px);
+  /* see .x-versions: no backdrop-filter over a moving plate */
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 .x-play:hover { border-color: var(--x-gold); color: var(--x-ink); }
@@ -757,8 +769,11 @@ body:has(.x) .open .mg-burger {
   height: 50px;
   border: 1px solid oklch(1 0 0 / 0.16);
   border-radius: 999px;
-  background: oklch(0.14 0.016 260 / 0.86);
-  backdrop-filter: blur(12px);
+  background: oklch(0.14 0.016 260 / 0.95);
+  /* No backdrop-filter. It is fixed over a page whose backdrop moves, so the
+     compositor re-reads and re-blurs the region behind it on every frame of
+     every scroll — four of these together were a large part of the chug.
+     An opaque-enough panel reads the same and costs nothing. */
   color: oklch(0.9 0.012 85);
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
