@@ -15,7 +15,10 @@ export const metadata: Metadata = {
 export default async function FeedPage() {
   const isEditor = Boolean(await getEditor());
   // A couple of live projects for the right rail — newest first, never drafts.
-  const picks = [...liveProjects].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3);
+  // liveProjects is already newest-first (see projects.ts) — this used to sort
+  // again here, which is a second copy of the ordering rule and the kind that
+  // drifts from the first.
+  const picks = liveProjects.slice(0, 3);
   return (
     <FeedTimeline
       items={isEditor ? editorPosts : livePosts}

@@ -21,7 +21,7 @@ import { formatPostDate } from "@/data/posts";
 
 export function ReportCard() {
   return (
-    <article className="relative isolate col-span-full overflow-hidden border border-accent/40 bg-band">
+    <article className="fa-reportcard relative isolate col-span-full overflow-hidden border border-accent/40 bg-band">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         {/* Four rows is plenty behind a card this short, and the wall is the
             same one the report's hero uses. */}
@@ -32,28 +32,28 @@ export function ReportCard() {
 
       <Link href="/feed/ai-hegemony" className="group relative block p-6 min-[680px]:p-8">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="border border-accent/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-accent-deep">
+          <span className="border border-accent/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] fa-rc-accent">
             Report
           </span>
           {/* The date, in place of the old "Atlas original · long read" —
               same position, and it actually tells you something. */}
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-paper/50">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] fa-rc-dim">
             Published {formatPostDate(PUBLISHED)}
           </span>
         </div>
 
-        <h2 className="mt-5 max-w-[16ch] text-[clamp(28px,4.2vw,52px)] font-medium leading-[1.02] tracking-[-0.035em] text-paper transition-colors group-hover:text-accent-deep">
+        <h2 className="mt-5 max-w-[16ch] text-[clamp(28px,4.2vw,52px)] font-medium leading-[1.02] tracking-[-0.035em] transition-colors">
           Whose common sense?
         </h2>
 
-        <p className="mt-5 max-w-[54ch] text-[15px] leading-[1.7] text-paper/75">
+        <p className="mt-5 max-w-[54ch] text-[15px] leading-[1.7] fa-rc-body">
           The open web is about 41% English. GPT-3&rsquo;s training mix was
           92.6%. That gap isn&rsquo;t the web &mdash; it&rsquo;s filtering. A
           report on how Western assumptions get into AI systems, what is
           actually documented, and what is being built in response.
         </p>
 
-        <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.16em] text-accent-deep">
+        <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.16em] fa-rc-accent">
           Read the report →
         </p>
       </Link>

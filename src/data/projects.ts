@@ -312,8 +312,25 @@ export const projects: Project[] = [
   },
 ];
 
-// Display order is curated by the owner, the array order above IS the order.
-export const projectsOrdered: Project[] = [...projects];
+/**
+ * Display order: newest first, everywhere.
+ *
+ * This used to be the array order above, curated by hand — which drifted, as a
+ * hand-kept order does. The Odds (February) had ended up second while three
+ * projects from August sat below it, so the listing no longer answered the
+ * question a visitor actually asks first: what is new here?
+ *
+ * Sorted by `date`, descending. Array.prototype.sort is stable, so projects
+ * sharing a date keep the curated order above as their tiebreak — five carry
+ * 2026-08-13, and that is what decides between them.
+ *
+ * Everything downstream derives from this: liveProjects, draftProjects,
+ * visibleProjects, editorOrdered, the /projects grid, the homepage strip and
+ * the project switcher. Change the order here, not at a call site.
+ */
+export const projectsOrdered: Project[] = [...projects].sort((a, b) =>
+  b.date.localeCompare(a.date),
+);
 
 /** Everything the public may see. */
 export const liveProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "live");

@@ -377,3 +377,24 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 /* The right rail is taller than the window, so it travels with the page and
    sticks only once its foot arrives — sticking to `top` would have pinned it
    immediately and stranded everything below the fold. */
+
+/* ---------- the report card keeps its own light type ----------
+   This card holds its dark ground in BOTH themes (a scrim over photographs only
+   works one way round), so its type has to stay light in both — everything else
+   on the feed flips.
+
+   It was doing that by accident, not by rule. The `text-paper` utility emits no
+   CSS here, so the title was simply inheriting the global `h1..h6 { color:
+   var(--text) }`. In dark mode --text is light and it looked correct; in light
+   mode it flips to ink and the title rendered #17181b on a #17181b ground —
+   the same value as its own background, so it disappeared entirely rather than
+   merely losing contrast.
+
+   --paper is the on-dark token and does not flip, so these are stated
+   explicitly. --accent rather than --accent-deep: deep is tuned for light
+   grounds and goes murky on black. */
+.fa-reportcard h2 { color: var(--paper); }
+.fa-reportcard .fa-rc-body { color: color-mix(in oklab, var(--paper) 78%, transparent); }
+.fa-reportcard .fa-rc-dim { color: color-mix(in oklab, var(--paper) 55%, transparent); }
+.fa-reportcard .fa-rc-accent { color: var(--accent); }
+.fa-reportcard a:hover h2 { color: var(--accent); }
