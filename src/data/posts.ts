@@ -84,6 +84,113 @@ export const KIND_LABEL: Record<PostKind, string> = {
 
 export const posts: Post[] = [
   {
+    slug: "a-quantum-chip-that-moves",
+    sourceImage: "https://img.youtube.com/vi/C5aYlYke1iY/maxresdefault.jpg",
+    title: "A quantum chip that moves",
+    dek: "QuTech's own lab film on shuttling qubits around a chip rather than wiring every one of them out.",
+    url: "https://www.youtube.com/watch?v=C5aYlYke1iY",
+    sourceName: "QuTech",
+    published: "2026",
+    posted: "2026-08-13",
+    kind: "video",
+    topics: ["Quantum", "Futures"],
+    length: "short",
+    readMinutes: 6,
+    whyItMatters:
+      "The wiring is the wall. Every qubit that needs its own control line puts a ceiling on the chip, so moving qubits instead of addressing them is one of the few routes past it.",
+    visibility: "live",
+    body: `From the Delft lab itself rather than from a press release about it.
+
+The problem this addresses is unglamorous and decisive: scaling a chip means scaling the control wiring, and at some point the fridge runs out of room for cables. Shuttling qubits across the chip is a way of reusing control hardware instead of multiplying it.
+
+Sits with the rest of the Delft material here — [Tuna-5 on Quantum Inspire](/feed/tuna-5-open-architecture) and [Europe's 100-qubit target](/feed/europe-100-qubit-target) — as the research end of the same programme.`,
+  },
+  {
+    slug: "why-ai-tokens-are-expensive",
+    sourceImage: "https://img.youtube.com/vi/-0HRzXk8vlk/maxresdefault.jpg",
+    title: "Why AI tokens are so expensive",
+    dek: "Computerphile on what you are actually paying for when you pay per token — and why the number does not fall the way software costs usually do.",
+    url: "https://www.youtube.com/watch?v=-0HRzXk8vlk",
+    sourceName: "Computerphile",
+    published: "2026",
+    posted: "2026-08-12",
+    kind: "video",
+    topics: ["Compute & energy", "AI"],
+    length: "short",
+    readMinutes: 12,
+    whyItMatters:
+      "Every forecast about agents doing more work rests on inference getting cheaper. This is the mechanism underneath that assumption, which is worth understanding before trusting anything built on top of it.",
+    visibility: "live",
+    body: `Token pricing is the join between the technical story and the economic one, and it is usually discussed as though it were a billing detail.
+
+It is not. Agentic workloads consume tokens at a rate that ordinary chat does not, so whether long-horizon autonomy is affordable is a question about this curve rather than about capability.
+
+Read with [the bottleneck moving from GPUs to CPUs](/feed/the-bottleneck-moved-from-gpus-to-cpus), which is the same cost pressure showing up in the supply chain instead of on the invoice.`,
+  },
+  {
+    slug: "rebuilding-the-grid-for-ai",
+    sourceImage: "https://img.youtube.com/vi/8KOYyfZbPzo/maxresdefault.jpg",
+    title: "How the electrical grid is being rebuilt for AI",
+    dek: "Bloomberg Originals on the physical build — substations, transmission, interconnection queues — behind the datacentre announcements.",
+    url: "https://www.youtube.com/watch?v=8KOYyfZbPzo",
+    sourceName: "Bloomberg Originals",
+    published: "2026",
+    posted: "2026-08-11",
+    kind: "video",
+    topics: ["Compute & energy", "Society", "Government"],
+    length: "medium",
+    readMinutes: 18,
+    whyItMatters:
+      "A campus is announced in a quarter and connected over a decade. Almost all the difficulty, cost and politics lives in that gap, and almost none of the coverage does.",
+    visibility: "live",
+    body: `Filmed reporting on the grid side of the AI build — the part that is concrete, copper and permitting rather than parameters.
+
+This is the visual companion to the written pieces here: [the Meta campus in Louisiana](/feed/meta-ten-gas-plants-for-one-campus), [the Dallas Fed on who pays](/feed/dallas-fed-data-centres-and-your-power-bill), and [an announcement is not electricity](/feed/an-announcement-is-not-electricity), which is the whole argument in one line.`,
+  },
+  {
+    slug: "hossenfelder-on-the-quantum-chip-claim",
+    sourceImage: "https://img.youtube.com/vi/XAYh7HRjzs0/maxresdefault.jpg",
+    title: "A physicist reads the quantum chip announcement carefully",
+    dek: "Sabine Hossenfelder on what a headline breakthrough claim does and does not establish.",
+    url: "https://www.youtube.com/watch?v=XAYh7HRjzs0",
+    sourceName: "Sabine Hossenfelder",
+    published: "2026",
+    posted: "2026-08-10",
+    kind: "video",
+    topics: ["Quantum", "Society"],
+    length: "short",
+    readMinutes: 11,
+    whyItMatters:
+      "Quantum announcements are graded almost entirely on the press release. A sceptical read of the actual claim is the scarcer and more useful document.",
+    visibility: "live",
+    body: `Included as a counterweight, deliberately. This feed carries a good deal of quantum progress — [the toric code result](/feed/atom-computing-toric-code), [neutral atoms' year](/feed/neutral-atoms-big-leap), [Tuna-5](/feed/tuna-5-open-architecture) — and a reading log made only of advances is a marketing channel.
+
+Hossenfelder's position is not that the field is worthless; it is that the distance between a demonstration and a machine is routinely collapsed in the telling. That is the same distinction [the toric code post](/feed/atom-computing-toric-code) is built around.`,
+  },
+  {
+    slug: "quantum-computing-2026-update",
+    sourceImage: "https://img.youtube.com/vi/lnJCJslcoNg/maxresdefault.jpg",
+    title: "Where quantum computing actually stands, mid-2026",
+    dek: "ExplainingComputers' annual survey — modalities, qubit counts, and what changed this year, without the launch-day framing.",
+    url: "https://www.youtube.com/watch?v=lnJCJslcoNg",
+    sourceName: "ExplainingComputers",
+    published: "2026",
+    posted: "2026-08-09",
+    kind: "video",
+    topics: ["Quantum", "Futures"],
+    length: "medium",
+    readMinutes: 20,
+    whyItMatters:
+      "A yearly survey by the same person is one of the few places the field can be compared with itself over time, rather than announcement by announcement.",
+    visibility: "live",
+    body: `A stocktake rather than a story: which modalities exist, where the counts are, what moved since last year.
+
+The value is the format. Each vendor's claim is calibrated against its own previous claim, which is the comparison press coverage almost never makes and the one that shows whether a roadmap is being met or quietly rewritten.
+
+Good background before the specifics elsewhere in the feed.`,
+  },
+
+  {
     slug: "tuna-5-open-architecture",
     title: "Delft put an open-architecture quantum computer on a public cloud",
     dek: "Tuna-5, released through Quantum Inspire — QuTech and TNO with four Dutch startups, assembled from parts that are not all from one vendor.",
@@ -106,6 +213,7 @@ Worth holding against the American announcements in this feed — [Atom Computin
   },
   {
     slug: "europe-100-qubit-target",
+    sourceImage: "https://physicsworld.com/wp-content/uploads/2024/04/15-04-24-QuTech-small.jpg",
     title: "Europe's 100-qubit target, and Delft as one of three demonstrators",
     dek: "OpenSuperQPlus under the EU Quantum Flagship set September 2026 as the date. Public money, public machine, public deadline.",
     url: "https://physicsworld.com/a/europe-plans-to-build-100-qubit-quantum-computer-by-2026/",
@@ -170,6 +278,7 @@ Read it next to [are AI benchmarks doomed](/feed/are-ai-benchmarks-doomed) and [
   },
   {
     slug: "post-quantum-migration-timelines",
+    sourceImage: "https://thequantuminsider.com/wp-content/uploads/2026/08/2026-08-07_19-24.png",
     title: "Post-quantum migration has a date on it now",
     dek: "Federal mandates land in 2030 and 2031, and the hybrid key exchange is already shipping in the browsers and messengers you use.",
     url: "https://thequantuminsider.com/2026/08/07/post-quantum-cryptography-timelines/",
@@ -191,6 +300,7 @@ Read with [Cloudflare moving its own finish line to 2029](/feed/cloudflare-just-
   },
   {
     slug: "vista-user-simulation",
+    image: "/feed/vista-user-simulation.webp",
     title: "You cannot evaluate an agent without simulating the person it argues with",
     dek: "VISTA: a toolkit for interactive user simulation, aimed at the part of agent evaluation that static benchmarks cannot reach.",
     url: "https://arxiv.org/abs/2606.11079",
@@ -211,51 +321,6 @@ This is a toolkit for putting a simulated user on the other side of the conversa
 It belongs beside [the 20,574-session study of coding agents](/feed/coding-agents-fail-by-ignoring-you), which found the dominant failure mode in the wild was agents ignoring what the user told them — precisely the failure a single-turn benchmark is structurally unable to detect.`,
   },
 
-  {
-    slug: "data-colonialism-native-land",
-    sourceImage: "https://img.youtube.com/vi/Ac0-fBK0LVQ/maxresdefault.jpg",
-    title: "Data colonialism: the campus goes where the objection is cheapest",
-    dek: "Native communities organising against AI data centres sited on and beside Indigenous land.",
-    url: "https://www.youtube.com/watch?v=Ac0-fBK0LVQ",
-    sourceName: "Democracy Now!",
-    published: "2026",
-    posted: "2026-08-10",
-    kind: "video",
-    topics: ["Government", "Compute & energy", "Society"],
-    length: "medium",
-    readMinutes: 15,
-    whyItMatters:
-      "Siting decisions follow the path of least resistance, and least resistance is a political fact about who can be overruled. That is a different question from how much power a campus draws, and it is the one the load forecasts never contain.",
-    visibility: "live",
-    body: `Compute has to be somewhere. Which somewhere is a question about land, water and who has standing to object — and the answer has a pattern.
-
-This sits with the other siting stories in the feed — [the Meta campus in Louisiana](/feed/meta-ten-gas-plants-for-one-campus), [the Dallas Fed on who pays](/feed/dallas-fed-data-centres-and-your-power-bill), [the Kansas governor's race](/feed/kansas-data-center-fight) — but it is the one that names the variable the others leave out. The build is not distributed by demand alone. It is distributed by resistance, and resistance is not evenly available.
-
-Linked, not summarised.`,
-  },
-  {
-    slug: "empire-of-ai-karen-hao",
-    sourceImage: "https://img.youtube.com/vi/Xa6JuimHoEA/maxresdefault.jpg",
-    title: "Karen Hao on the empire model of AI",
-    dek: "The reporter who covered OpenAI from the inside, on concentration, extraction, and what it costs the places supplying the inputs.",
-    url: "https://www.youtube.com/watch?v=Xa6JuimHoEA",
-    sourceName: "Democracy Now!",
-    author: "Karen Hao",
-    published: "2026",
-    posted: "2026-08-09",
-    kind: "video",
-    topics: ["AI", "Society", "Government"],
-    length: "medium",
-    readMinutes: 18,
-    whyItMatters:
-      "Most coverage treats the labs as engineering organisations that happen to be large. The empire framing asks a different question — what is extracted, from where, and who is left holding the externality — and it changes which facts count as relevant.",
-    visibility: "live",
-    body: `Hao reported on OpenAI at close range for years, and her argument is structural rather than technical: that the shape of the industry — a handful of firms, enormous capital, inputs drawn from labour and land far from the headquarters — is better described as an imperial arrangement than as a market.
-
-Worth reading against [the hegemony material](/feed/state-ai-laws-halfway-through-2026) and the datacentre siting stories, which are the same argument arriving as electricity bills and planning applications.
-
-Linked, not summarised.`,
-  },
 
   {
     slug: "anatomy-of-an-ai-kill-chain",
@@ -300,75 +365,6 @@ We are linking it rather than summarising it — the argument is the interview, 
     body: `Gebru founded the Distributed AI Research Institute after being forced out of Google in 2020 over a paper warning about the risks built into large language models.
 
 Read it against [the case against the case for AI safety](/feed/the-case-against-the-case-for-ai-safety), which is the written form of the same argument: that the safety agenda is not a neutral response to a technical hazard but a specific tradition with specific blind spots, and that what counts as a harm is decided upstream of any benchmark.
-
-Linked, not summarised.`,
-  },
-  {
-    slug: "kansas-data-center-fight",
-    title: "A governor's race with a data centre at the centre of it",
-    dek: "Cindy Holscher, Kansas Democratic nominee, on affordability and the fight over what a campus costs the people next to it.",
-    sourceImage: "https://img.youtube.com/vi/RCWsj2MyJb0/maxresdefault.jpg",
-    url: "https://www.youtube.com/watch?v=RCWsj2MyJb0",
-    sourceName: "Democracy Now!",
-    author: "Cindy Holscher",
-    published: "2026-08-07",
-    posted: "2026-08-13",
-    kind: "video",
-    topics: ["Government", "Compute & energy", "Society"],
-    length: "short",
-    readMinutes: 9,
-    whyItMatters:
-      "Compute siting has stopped being an infrastructure story and become an electoral one. That is the point at which the numbers in the interconnection queue start meeting a constituency.",
-    visibility: "live",
-    body: `A candidate for state governor talking about data centres as a cost-of-living issue rather than an investment announcement.
-
-This is the political end of the same arithmetic as [the Meta gas plants](/feed/meta-ten-gas-plants-for-one-campus) and [the Dallas Fed on who pays](/feed/dallas-fed-data-centres-and-your-power-bill). Those establish that somebody's bill absorbs the build. This is what happens when the people holding that bill get a vote on it.
-
-Worth watching for how the argument is actually made to voters, which is not how it is made in a filing.`,
-  },
-  {
-    slug: "naomi-klein-digital-doppelgangers",
-    title: "Naomi Klein corrects a quote she never said",
-    dek: "A widely-shared line attributed to Klein turned out to be AI-generated — and the programme that aired it had her on to say so.",
-    sourceImage: "https://img.youtube.com/vi/BbcC-hp687M/maxresdefault.jpg",
-    url: "https://www.youtube.com/watch?v=BbcC-hp687M",
-    sourceName: "Democracy Now!",
-    author: "Naomi Klein",
-    published: "2026-07-31",
-    posted: "2026-08-12",
-    kind: "video",
-    topics: ["Society", "AI"],
-    length: "short",
-    readMinutes: 8,
-    whyItMatters:
-      "The failure mode is not a convincing fake of something outrageous. It is an unremarkable sentence that sounds like the person, travels because it sounds like them, and is never checked because nothing about it invites checking.",
-    visibility: "live",
-    body: `Democracy Now! shared a quote attributed to Naomi Klein. It was AI-generated. They brought her on to correct it on air.
-
-The correction is the story. A fabricated quotation that is *plausible* — in register, in politics, in vocabulary — has no tell, and the ordinary defences all assume there will be one. It spread because it sounded exactly like something she would say.
-
-There is a reason this sits in the Atlas. [Hypothetica Magnifica](/magnifica) is a project built entirely out of invented text attributed to real living people, and everything in its design — the gate before any excerpt, the caption on every passage, the sourced record kept separate — exists because of precisely this failure. The difference between that and what happened here is labelling, and labelling is the whole of it.`,
-  },
-  {
-    slug: "less-regulated-than-sandwiches",
-    title: "Less regulated than sandwiches",
-    dek: "Max Tegmark on oversight, after an OpenAI agent was reported hacking other companies' systems.",
-    sourceImage: "https://img.youtube.com/vi/4CTtlpi7Lic/maxresdefault.jpg",
-    url: "https://www.youtube.com/watch?v=4CTtlpi7Lic",
-    sourceName: "Democracy Now!",
-    author: "Max Tegmark, MIT",
-    published: "2026-07-30",
-    posted: "2026-08-11",
-    kind: "video",
-    topics: ["Safety & policy", "AI", "Government"],
-    length: "short",
-    readMinutes: 10,
-    whyItMatters:
-      "Agentic capability is arriving in products faster than any oversight regime is arriving in law, and the gap is widest exactly where the actions have consequences outside the lab.",
-    visibility: "live",
-    body: `Tegmark's line is that a sandwich shop faces more binding oversight than a company shipping autonomous agents — made in the wake of reporting that an OpenAI agent had reached into other firms' systems.
-
-He is also one of the three forecasters in the Atlas's own [The Odds](/theodds), which sets his public estimates beside Amodei's and Musk's. Useful to hear the argument in full rather than as a number on a chart.
 
 Linked, not summarised.`,
   },
