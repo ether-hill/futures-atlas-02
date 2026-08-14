@@ -29,7 +29,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 # This is also what took the build off the network: nothing here fetches a
 # font, so Google being slow can no longer fail a deploy.
 stage_fonts() {
-  for app in social-composer hollow-villages counterfactual quantum-dominance quantum-lag; do
+  for app in social-composer hollow-villages manipulate-the-data quantum-dominance quantum-lag; do
     if [ -d "$HERE/$app" ]; then
       rm -rf "$HERE/$app/assets/fonts"
       mkdir -p "$HERE/$app/assets"
