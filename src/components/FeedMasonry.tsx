@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PostImage } from "@/components/PostImage";
 import { YouTubeCard } from "@/components/feed/YouTubeCard";
 import { KIND_LABEL, formatPostDate, hasImage, hostOf, youtubeId, type Post } from "@/data/posts";
+import { ReportCard } from "@/components/feed/ReportCard";
 
 /**
  * The feed on the homepage: the newest posts in a masonry, videos included and
@@ -32,6 +33,17 @@ export function FeedMasonry({ posts, showVisibility = false }: { posts: Post[]; 
           >
             View all <span className="text-[14px]">→</span>
           </Link>
+        </div>
+
+        {/* The report leads, ABOVE the columns rather than inside them.
+            It is not a Post — it is the Atlas's own long-form work, and its
+            card is built to span the full width. CSS columns have no spanning
+            element, so a card designed to run edge to edge would be squeezed
+            into a single 5th-width column and lose the masthead wall it
+            carries. Above the grid it reads as the lead item, which is what
+            it is. */}
+        <div className="mb-4">
+          <ReportCard />
         </div>
 
         <div className="[column-gap:16px] [columns:1] min-[560px]:[columns:2] min-[900px]:[columns:3] min-[1200px]:[columns:4] min-[1500px]:[columns:5]">

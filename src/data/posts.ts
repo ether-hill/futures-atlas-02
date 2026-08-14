@@ -524,7 +524,6 @@ Each of those steps is genuinely hard and each is routinely collapsed into the p
     pullQuote: "We've been working closely with Entergy since early on-site planning to ensure our power needs are met and, importantly, so that Entergy's other consumers aren't paying our costs.",
     whyItMatters: "It is a live test of whether a single private company's compute ambitions can be bolted onto a public utility system without socialising the downside a decade later.",
     visibility: "live",
-    featured: true,
     body: `There is a version of the AI story told entirely in parameter counts. Here is the other version, told in turbines.
 
 To serve Meta's Hyperion campus in Richland Parish, Louisiana, Entergy is now building ten gas-fired power plants: three approved in 2025, seven more announced in March 2026. Together they come to 7.5 gigawatts at a cost of nearly $11 billion, alongside up to 2.5 GW of renewables paired with battery storage. Fortune's Jordan Blum notes what that means at state scale — more than a 30% increase in Louisiana's entire grid capacity, for one customer.
