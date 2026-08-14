@@ -28,6 +28,38 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 #
 # This is also what took the build off the network: nothing here fetches a
 # font, so Google being slow can no longer fail a deploy.
+
+# ── skip a sub-app whose source has not moved ────────────────────────────────
+#
+# All thirteen were rebuilt on every deploy, even when only host code changed —
+# about 3.5 of the ~4 minutes. Each app is fingerprinted from its own tracked
+# source; if the fingerprint matches the one stored from its last successful
+# build AND its output is still in public/, the build is skipped.
+#
+# The fingerprint is git's own hash of the app's tracked files, so it moves when
+# any of them do and is not fooled by touched mtimes. Untracked working-tree
+# edits do not move it — a local build after editing without committing should
+# pass FORCE_SUBAPPS=1, which the deploy path never needs since Vercel builds
+# from a clean checkout.
+FP_DIR="$HERE/.next/cache/subapps"
+mkdir -p "$FP_DIR"
+
+fingerprint() {  # $1 = app dir
+  ( cd "$HERE" && git ls-files -s "$1" 2>/dev/null | git hash-object --stdin ) || echo "no-git"
+}
+
+should_skip() {  # $1 = app dir, $2 = output dir under public/
+  [ -n "${FORCE_SUBAPPS:-}" ] && return 1
+  local fp stored
+  fp="$(fingerprint "$1")"
+  [ "$fp" = "no-git" ] && return 1
+  [ -d "$HERE/public/$2" ] || return 1
+  stored="$(cat "$FP_DIR/$1" 2>/dev/null || true)"
+  [ "$fp" = "$stored" ]
+}
+
+mark_built() { fingerprint "$1" > "$FP_DIR/$1"; }
+
 stage_fonts() {
   for app in social-composer hollow-villages manipulate-the-data quantum-dominance quantum-lag; do
     if [ -d "$HERE/$app" ]; then
@@ -42,109 +74,169 @@ stage_fonts
 
 # Vite apps build straight into public/<slug> via their vite.config outDir.
 for app in generatives quantum-sandbox literal-frequency gigawatt trajectories magnifica; do
+  # Most of these write to public/<app>, but gigawatt is the source of
+  # /hyperscale — its directory name and its URL differ, and the skip check
+  # needs the OUTPUT name or it looks for a directory that never exists and
+  # rebuilds the app every single time.
+  case "$app" in
+    gigawatt) out="hyperscale" ;;
+    *)        out="$app" ;;
+  esac
+  if should_skip "$app" "$out"; then echo "↷ $app unchanged, skipping"; continue; fi
   echo "→ building $app"
   ( cd "$HERE/$app" && npm install --include=dev --no-audit --no-fund && npm run build )
-  echo "✓ $app → public/$app"
+  echo "✓ $app → public/$out"
+  mark_built "$app"
 done
 
 # Social Composer: Next static export → out/, then copy into public/.
-echo "→ building social-composer"
-( cd "$HERE/social-composer" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/social-composer"
-mkdir -p "$HERE/public/social-composer"
-cp -R "$HERE/social-composer/out/." "$HERE/public/social-composer/"
-echo "✓ social-composer → public/social-composer"
+if should_skip "social-composer" "social-composer"; then echo "↷ social-composer unchanged, skipping"; else
+  echo "→ building social-composer"
+  ( cd "$HERE/social-composer" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/social-composer"
+  mkdir -p "$HERE/public/social-composer"
+  cp -R "$HERE/social-composer/out/." "$HERE/public/social-composer/"
+  echo "✓ social-composer → public/social-composer"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "social-composer"
+fi
 
 # Hollow Villages: Next static export → out/, then copy into public/.
-echo "→ building hollow-villages"
-( cd "$HERE/hollow-villages" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/village-oracle"
-mkdir -p "$HERE/public/village-oracle"
-cp -R "$HERE/hollow-villages/out/." "$HERE/public/village-oracle/"
-# Re-inject the shared master nav (atlas-nav) into every built page, matching the
-# other zone bundles (underground-intelligence / odds-of-surviving-ai carry the
-# same two tags). Idempotent; node is always present in the Vercel build.
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/village-oracle"
-echo "✓ hollow-villages → public/village-oracle (with atlas-nav)"
+if should_skip "hollow-villages" "village-oracle"; then echo "↷ hollow-villages unchanged, skipping"; else
+  echo "→ building hollow-villages"
+  ( cd "$HERE/hollow-villages" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/village-oracle"
+  mkdir -p "$HERE/public/village-oracle"
+  cp -R "$HERE/hollow-villages/out/." "$HERE/public/village-oracle/"
+  # Re-inject the shared master nav (atlas-nav) into every built page, matching the
+  # other zone bundles (underground-intelligence / odds-of-surviving-ai carry the
+  # same two tags). Idempotent; node is always present in the Vercel build.
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/village-oracle"
+  echo "✓ hollow-villages → public/village-oracle (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "hollow-villages"
+fi
 
 # The Counterfactual Index: Next static export → out/, then copy into public/.
 # One bundle carries all three views (/manipulate-the-data, …/quantum,
 # …/ai-gigawatts); they
 # are three atlas entries but one codebase, sharing a data layer and a transform
 # engine.
-echo "→ building manipulate-the-data"
-( cd "$HERE/manipulate-the-data" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/manipulate-the-data"
-mkdir -p "$HERE/public/manipulate-the-data"
-cp -R "$HERE/manipulate-the-data/out/." "$HERE/public/manipulate-the-data/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/manipulate-the-data"
-echo "✓ manipulate-the-data → public/manipulate-the-data (with atlas-nav)"
+if should_skip "manipulate-the-data" "manipulate-the-data"; then echo "↷ manipulate-the-data unchanged, skipping"; else
+  echo "→ building manipulate-the-data"
+  ( cd "$HERE/manipulate-the-data" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/manipulate-the-data"
+  mkdir -p "$HERE/public/manipulate-the-data"
+  cp -R "$HERE/manipulate-the-data/out/." "$HERE/public/manipulate-the-data/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/manipulate-the-data"
+  echo "✓ manipulate-the-data → public/manipulate-the-data (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "manipulate-the-data"
+fi
 
 # Swipe the Future: Next static export → out/, then copy into public/.
-echo "→ building swipe-the-future"
-( cd "$HERE/swipe-the-future" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/swipe-the-future"
-mkdir -p "$HERE/public/swipe-the-future"
-cp -R "$HERE/swipe-the-future/out/." "$HERE/public/swipe-the-future/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-the-future"
-echo "✓ swipe-the-future → public/swipe-the-future (with atlas-nav)"
+if should_skip "swipe-the-future" "swipe-the-future"; then echo "↷ swipe-the-future unchanged, skipping"; else
+  echo "→ building swipe-the-future"
+  ( cd "$HERE/swipe-the-future" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/swipe-the-future"
+  mkdir -p "$HERE/public/swipe-the-future"
+  cp -R "$HERE/swipe-the-future/out/." "$HERE/public/swipe-the-future/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-the-future"
+  echo "✓ swipe-the-future → public/swipe-the-future (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "swipe-the-future"
+fi
 
 # Swipe the Future v1: the original game, frozen at commit 772ebf5 and kept as a
 # draft so the first version stays playable next to v2, which asks a different
 # question. Same build shape, its own basePath.
-echo "→ building swipe-v1"
-( cd "$HERE/swipe-v1" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/swipe-v1"
-mkdir -p "$HERE/public/swipe-v1"
-cp -R "$HERE/swipe-v1/out/." "$HERE/public/swipe-v1/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-v1"
-echo "✓ swipe-v1 → public/swipe-v1 (with atlas-nav)"
+if should_skip "swipe-v1" "swipe-v1"; then echo "↷ swipe-v1 unchanged, skipping"; else
+  echo "→ building swipe-v1"
+  ( cd "$HERE/swipe-v1" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/swipe-v1"
+  mkdir -p "$HERE/public/swipe-v1"
+  cp -R "$HERE/swipe-v1/out/." "$HERE/public/swipe-v1/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/swipe-v1"
+  echo "✓ swipe-v1 → public/swipe-v1 (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "swipe-v1"
+fi
 
 # Woodchipper Futures: Next static export → out/, then copy into public/.
-echo "→ building woodchipper"
-( cd "$HERE/woodchipper" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/woodchipper"
-mkdir -p "$HERE/public/woodchipper"
-cp -R "$HERE/woodchipper/out/." "$HERE/public/woodchipper/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/woodchipper"
-echo "✓ woodchipper → public/woodchipper (with atlas-nav)"
+if should_skip "woodchipper" "woodchipper"; then echo "↷ woodchipper unchanged, skipping"; else
+  echo "→ building woodchipper"
+  ( cd "$HERE/woodchipper" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/woodchipper"
+  mkdir -p "$HERE/public/woodchipper"
+  cp -R "$HERE/woodchipper/out/." "$HERE/public/woodchipper/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/woodchipper"
+  echo "✓ woodchipper → public/woodchipper (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "woodchipper"
+fi
 
 # Quantum Spark: Next static export → out/, then copy into public/.
 # (Its generation API lives in the HOST app at /api/quantum-spark/*.)
-echo "→ building quantum-spark"
-( cd "$HERE/quantum-spark" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/quantum-spark"
-mkdir -p "$HERE/public/quantum-spark"
-cp -R "$HERE/quantum-spark/out/." "$HERE/public/quantum-spark/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-spark"
-echo "✓ quantum-spark → public/quantum-spark (with atlas-nav)"
+if should_skip "quantum-spark" "quantum-spark"; then echo "↷ quantum-spark unchanged, skipping"; else
+  echo "→ building quantum-spark"
+  ( cd "$HERE/quantum-spark" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/quantum-spark"
+  mkdir -p "$HERE/public/quantum-spark"
+  cp -R "$HERE/quantum-spark/out/." "$HERE/public/quantum-spark/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-spark"
+  echo "✓ quantum-spark → public/quantum-spark (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "quantum-spark"
+fi
 
 # Signal Reactor: Next static export → out/, then copy into public/.
 # (Its generation API lives in the HOST app at /api/signal-reactor/*.)
-echo "→ building signal-reactor"
-( cd "$HERE/signal-reactor" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/signal-reactor"
-mkdir -p "$HERE/public/signal-reactor"
-cp -R "$HERE/signal-reactor/out/." "$HERE/public/signal-reactor/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/signal-reactor"
-echo "✓ signal-reactor → public/signal-reactor (with atlas-nav)"
+if should_skip "signal-reactor" "signal-reactor"; then echo "↷ signal-reactor unchanged, skipping"; else
+  echo "→ building signal-reactor"
+  ( cd "$HERE/signal-reactor" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/signal-reactor"
+  mkdir -p "$HERE/public/signal-reactor"
+  cp -R "$HERE/signal-reactor/out/." "$HERE/public/signal-reactor/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/signal-reactor"
+  echo "✓ signal-reactor → public/signal-reactor (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "signal-reactor"
+fi
 
 # Quantum Dominance: Next static export → out/, then copy into public/.
-echo "→ building quantum-dominance"
-( cd "$HERE/quantum-dominance" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/quantum-dominance"
-mkdir -p "$HERE/public/quantum-dominance"
-cp -R "$HERE/quantum-dominance/out/." "$HERE/public/quantum-dominance/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-dominance"
-echo "✓ quantum-dominance → public/quantum-dominance (with atlas-nav)"
+if should_skip "quantum-dominance" "quantum-dominance"; then echo "↷ quantum-dominance unchanged, skipping"; else
+  echo "→ building quantum-dominance"
+  ( cd "$HERE/quantum-dominance" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/quantum-dominance"
+  mkdir -p "$HERE/public/quantum-dominance"
+  cp -R "$HERE/quantum-dominance/out/." "$HERE/public/quantum-dominance/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-dominance"
+  echo "✓ quantum-dominance → public/quantum-dominance (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "quantum-dominance"
+fi
 
 # Quantum Lag: Next static export → out/, then copy into public/.
-echo "→ building quantum-lag"
-( cd "$HERE/quantum-lag" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/quantum-lag"
-mkdir -p "$HERE/public/quantum-lag"
-cp -R "$HERE/quantum-lag/out/." "$HERE/public/quantum-lag/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-lag"
-echo "✓ quantum-lag → public/quantum-lag (with atlas-nav)"
+if should_skip "quantum-lag" "quantum-lag"; then echo "↷ quantum-lag unchanged, skipping"; else
+  echo "→ building quantum-lag"
+  ( cd "$HERE/quantum-lag" && npm install --include=dev --no-audit --no-fund && npm run build )
+  rm -rf "$HERE/public/quantum-lag"
+  mkdir -p "$HERE/public/quantum-lag"
+  cp -R "$HERE/quantum-lag/out/." "$HERE/public/quantum-lag/"
+  node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/quantum-lag"
+  echo "✓ quantum-lag → public/quantum-lag (with atlas-nav)"
+  # only now: a fingerprint written before the copy would make the next
+  # build skip an app whose output never landed
+  mark_built "quantum-lag"
+fi
 
 echo "✓ all sub-apps built"

@@ -75,6 +75,8 @@ export function FeedTimeline({
 }) {
   const [topic, setTopic] = useState<PostTopic | null>(null);
   const [media, setMedia] = useState(false);
+  // The Atlas's own long-form reports — not posts, so a third mode.
+  const [reports, setReports] = useState(false);
   // Picked after mount: choosing on the server too would hydrate a different
   // line than it rendered.
   const [headline, setHeadline] = useState(FEED_HEADLINES[0]);
@@ -85,7 +87,10 @@ export function FeedTimeline({
   // near enough that it can never outrank a genuinely newer story.
   const LEAD_VIDEO_REACH = 8;
 
-  const byKind = media ? items.filter((p) => p.kind === "video") : items;
+  // Reports mode shows the Atlas's own long-form work only — the posts are a
+  // different kind of thing and mixing them under that heading would misfile
+  // both.
+  const byKind = reports ? [] : media ? items.filter((p) => p.kind === "video") : items;
   const filtered = topic ? byKind.filter((p) => p.topics.includes(topic)) : byKind;
 
   /**
@@ -135,10 +140,13 @@ export function FeedTimeline({
           setTopic={setTopic}
           media={media}
           setMedia={setMedia}
+          reports={reports}
+          setReports={setReports}
+          reportCount={1}
         />
 
         <main className="min-w-0 flex-1">
-      {shown.length === 0 ? (
+      {shown.length === 0 && !reports ? (
         <p className="px-4 py-24 text-center font-mono text-[13px] text-graphite">
           Nothing in the feed under that combination yet.
         </p>
@@ -162,7 +170,7 @@ export function FeedTimeline({
           {/* The report is not a Post and is not in `items`, so it leads the
               grid only in the unfiltered view — under a topic or media filter
               it would sit above results it is not part of. */}
-          {topic === null && !media && <ReportCard />}
+          {(reports || (topic === null && !media)) && <ReportCard />}
           {shown.map((post, i) => {
             const special = INTERLEAVE[i];
             return (

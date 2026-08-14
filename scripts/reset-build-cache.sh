@@ -23,8 +23,14 @@
 set -euo pipefail
 
 if [ -n "${VERCEL:-}" ]; then
-  rm -rf .next/cache
-  echo "→ dropped the restored .next/cache (shared-branch poisoning guard)"
+  # Everything EXCEPT .next/cache/subapps. The poisoning lives in webpack's
+  # persistent module cache; the subapps directory is our own build-fingerprint
+  # store (see build-subapps.sh) and is the only thing that makes skipping an
+  # unchanged sub-app possible across deploys. Wiping it would be correct but
+  # would also mean rebuilding all thirteen every time, which is the four
+  # minutes we are trying to get back.
+  find .next/cache -mindepth 1 -maxdepth 1 ! -name subapps -exec rm -rf {} + 2>/dev/null || true
+  echo "→ dropped the restored .next/cache, kept the sub-app fingerprints"
 else
   echo "→ local build, keeping .next/cache"
 fi

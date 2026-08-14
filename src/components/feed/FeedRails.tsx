@@ -62,12 +62,21 @@ export function LeftRail({
   setTopic,
   media,
   setMedia,
+  reports,
+  setReports,
+  reportCount,
 }: {
   items: Post[];
   topic: PostTopic | null;
   setTopic: (t: PostTopic | null) => void;
   media: boolean;
   setMedia: (v: boolean) => void;
+  /* Reports are the Atlas's OWN long-form work, so they are a third mode
+     rather than a PostTopic: they are not in `items` and carry no source
+     link, which is the one thing every post must have. */
+  reports: boolean;
+  setReports: (v: boolean) => void;
+  reportCount: number;
 }) {
   return (
     // Offset from where the global bar actually IS, not from where it would be
@@ -81,10 +90,11 @@ export function LeftRail({
         <RailItem
           label="All posts"
           count={items.length}
-          active={topic === null && !media}
+          active={topic === null && !media && !reports}
           onClick={() => {
             setTopic(null);
             setMedia(false);
+            setReports(false);
           }}
         />
         <RailItem
@@ -93,7 +103,18 @@ export function LeftRail({
           active={media}
           onClick={() => {
             setTopic(null);
+            setReports(false);
             setMedia(!media);
+          }}
+        />
+        <RailItem
+          label="Reports"
+          count={reportCount}
+          active={reports}
+          onClick={() => {
+            setTopic(null);
+            setMedia(false);
+            setReports(!reports);
           }}
         />
         {TOPIC_ORDER.map((t) => (
@@ -104,6 +125,7 @@ export function LeftRail({
             active={topic === t}
             onClick={() => {
               setMedia(false);
+              setReports(false);
               setTopic(topic === t ? null : t);
             }}
           />
