@@ -22,9 +22,14 @@ export function FeedMasonry({ posts, showVisibility = false }: { posts: Post[]; 
       <div className="px-4 py-[clamp(48px,7vw,96px)] min-[680px]:px-7">
         <div className="mb-[clamp(24px,3vw,44px)] flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="eyebrow tick mb-3">Posted as it comes</p>
-            <h2 className="text-[clamp(26px,3.6vw,46px)] font-extrabold leading-none tracking-[-0.025em] text-ink">
-              Feed
+            {/* The feed page's masthead shape — bold word, rule, light line —
+                but the line is fixed here rather than one of the rotating
+                credited quotations. Those carry an attribution tooltip; this is
+                our own strapline and needs none. */}
+            <h2 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[clamp(26px,3.6vw,46px)] leading-none text-ink text-balance">
+              <span className="font-extrabold tracking-[-0.025em]">Feed</span>
+              <span aria-hidden className="font-light text-faint">&mdash;</span>
+              <span className="font-light tracking-[-0.01em] text-graphite">All things compute</span>
             </h2>
           </div>
           <Link

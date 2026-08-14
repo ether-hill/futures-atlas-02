@@ -125,7 +125,7 @@ export function FeedTimeline({
           which lets the master nav keep its normal hide-on-scroll behaviour. */}
       <header className="px-4 pb-1 pt-8 min-[680px]:px-7 min-[680px]:pt-10">
         <h1 className="flex flex-wrap items-baseline gap-x-3 gap-y-1 text-[clamp(24px,2.7vw,38px)] leading-none text-ink text-balance">
-          <span className="font-extrabold tracking-[-0.02em]">FEED</span>
+          <span className="font-extrabold tracking-[-0.02em]">Feed</span>
           <span aria-hidden className="font-light text-faint">&mdash;</span>
           <span className="font-light tracking-[-0.01em] text-graphite">{headline.line}</span>
           <HeadlineCredit headline={headline} />
