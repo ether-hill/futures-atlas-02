@@ -4,11 +4,16 @@ import { Container } from "@/components/Container";
 import { FindingCard } from "@/components/hegemony/FindingCard";
 import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
 import { FeedbackTimeline } from "@/components/hegemony/FeedbackTimeline";
+import { HeroMosaic } from "@/components/hegemony/HeroMosaic";
+import { PressCard } from "@/components/hegemony/PressCard";
+import { VideoCard } from "@/components/hegemony/VideoCard";
 import {
   DROPPED,
   FINDINGS,
+  PRESS,
   TIER_MEANING,
   TIMELINE,
+  VIDEOS,
   countByTier,
   findingsIn,
 } from "@/data/hegemony";
@@ -49,6 +54,37 @@ const Section = ({
   </section>
 );
 
+/**
+ * The same section furniture, on the dark coverage band.
+ *
+ * A near-copy of Section rather than a `dark` prop on it: the two live on
+ * opposite grounds and every colour in them differs, so one component with a
+ * branch in every className is harder to read than two that each say what they
+ * are. If a third ground ever appears, that is the moment to merge them.
+ */
+const BandSection = ({
+  label,
+  title,
+  lede,
+  children,
+}: {
+  label: string;
+  title: string;
+  lede: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <section>
+    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">{label}</p>
+    <h2 className="mt-4 max-w-[24ch] text-[clamp(28px,4vw,46px)] font-medium leading-[1.05] tracking-[-0.03em] text-paper">
+      {title}
+    </h2>
+    <div className="mt-5 max-w-[68ch] text-[15px] leading-[1.75] text-paper/65">{lede}</div>
+    <div className="mt-9 grid gap-x-6 gap-y-10 min-[720px]:grid-cols-2 xl:grid-cols-3">
+      {children}
+    </div>
+  </section>
+);
+
 const Grid = ({ strand }: { strand: Parameters<typeof findingsIn>[0] }) => (
   <div className="mt-9 grid gap-4 min-[720px]:grid-cols-2 xl:grid-cols-3">
     {findingsIn(strand).map((f) => (
@@ -59,35 +95,48 @@ const Grid = ({ strand }: { strand: Parameters<typeof findingsIn>[0] }) => (
 
 export default function AiHegemonyPage() {
   return (
-    <main className="pb-[clamp(60px,9vw,120px)] pt-[clamp(28px,4vw,56px)]">
-      <Container>
-        {/* ── masthead ─────────────────────────────────────────────────── */}
-        <header className="max-w-[46ch]">
-          <Link
-            href="/feed"
-            className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink/55 underline-offset-4 hover:text-accent-deep hover:underline"
-          >
-            ← The feed
-          </Link>
-          <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">
-            Investigation
+    <main className="pb-[clamp(60px,9vw,120px)]">
+      {/* ── masthead ───────────────────────────────────────────────────────
+          The title sits on a wall built from the coverage itself — see
+          HeroMosaic. Dark in both themes (bg-band), because a scrim over
+          photographs only works one way round. */}
+      <section className="relative isolate overflow-hidden bg-band">
+        <HeroMosaic />
+        <Container className="relative pb-[clamp(40px,7vw,88px)] pt-[clamp(28px,4vw,56px)]">
+          <header className="max-w-[46ch]">
+            <Link
+              href="/feed"
+              className="font-mono text-[11px] uppercase tracking-[0.16em] text-paper/60 underline-offset-4 hover:text-paper hover:underline"
+            >
+              ← The feed
+            </Link>
+            <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">
+              Investigation
+            </p>
+            <h1 className="mt-4 text-[clamp(40px,7.5vw,86px)] font-medium leading-[0.95] tracking-[-0.04em] text-paper">
+              Whose common sense?
+            </h1>
+          </header>
+
+          <p className="mt-8 max-w-[62ch] text-[clamp(17px,2.1vw,21px)] leading-[1.55] tracking-[-0.01em] text-paper">
+            AI systems don&rsquo;t simply inherit a view of the world. They
+            compress one, and then hand it back as though it were neutral. The
+            question this report asks is narrower and answerable:{" "}
+            <span className="text-accent-deep">
+              which parts of that are documented, and which parts are just
+              repeated?
+            </span>
           </p>
-          <h1 className="mt-4 text-[clamp(40px,7.5vw,86px)] font-medium leading-[0.95] tracking-[-0.04em] text-ink">
-            Whose common sense?
-          </h1>
-        </header>
 
-        <p className="mt-8 max-w-[62ch] text-[clamp(17px,2.1vw,21px)] leading-[1.55] tracking-[-0.01em] text-ink">
-          AI systems don&rsquo;t simply inherit a view of the world. They
-          compress one, and then hand it back as though it were neutral. The
-          question this report asks is narrower and answerable:{" "}
-          <span className="text-accent-deep">
-            which parts of that are documented, and which parts are just
-            repeated?
-          </span>
-        </p>
+          <p className="mt-7 font-mono text-[11px] uppercase leading-[1.6] tracking-[0.12em] text-paper/45">
+            {VIDEOS.length} broadcasts and {PRESS.length} published pieces behind
+            this masthead &mdash; every one credited and linked below
+          </p>
+        </Container>
+      </section>
 
-        <div className="mt-6 max-w-[68ch] space-y-4 text-[15px] leading-[1.75] text-ink/75">
+      <Container className="pt-[clamp(36px,5vw,64px)]">
+        <div className="max-w-[68ch] space-y-4 text-[15px] leading-[1.75] text-ink/75">
           <p>
             Every claim below carries the dataset, model and year it actually
             covers. That sounds like pedantry until you notice how much of the
@@ -215,10 +264,59 @@ export default function AiHegemonyPage() {
           >
             <Grid strand="resistance" />
           </Section>
+        </div>
+      </Container>
 
+      {/* ── coverage ───────────────────────────────────────────────────────
+          Two sections on one dark band, tying back to the masthead they
+          supply the pictures for. They sit AFTER the findings and BEFORE the
+          method on purpose: this is who else has looked, not what we measured,
+          and putting a documentary before the evidence would let it stand in
+          for the evidence. Nothing here is tiered, for the same reason. */}
+      <section className="mt-[clamp(48px,7vw,96px)] bg-band py-[clamp(52px,8vw,104px)]">
+        <Container className="space-y-[clamp(52px,8vw,104px)]">
+          <BandSection
+            label="07 · Watch"
+            title="The corpus, the labour, the answer"
+            lede={
+              <p>
+                Nine broadcasts on the same subject, from a Nairobi
+                documentary to an investor&rsquo;s pitch for sovereign models.
+                Press play and the video loads here; nothing from YouTube
+                reaches your browser until you do.
+              </p>
+            }
+          >
+            {VIDEOS.map((v) => (
+              <VideoCard key={v.id} video={v} />
+            ))}
+          </BandSection>
+
+          <BandSection
+            label="08 · In the press"
+            title="Selected coverage"
+            lede={
+              <p>
+                Reporting we read while building this report, and did not use
+                as evidence for any claim above. Every card shows the
+                publisher&rsquo;s own picture and goes to the publisher&rsquo;s
+                own page &mdash; this section is an index of other
+                people&rsquo;s work, never a substitute for it.
+              </p>
+            }
+          >
+            {PRESS.map((p) => (
+              <PressCard key={p.id} item={p} />
+            ))}
+          </BandSection>
+        </Container>
+      </section>
+
+      <Container className="pt-[clamp(48px,7vw,96px)]">
+        <div>
           {/* ── methodology ───────────────────────────────────────────── */}
           <Section
-            label="07 · Method"
+            label="09 · Method"
             title="How to read the tiers, and what we threw away"
             lede={
               <p>

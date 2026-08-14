@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo, Bodoni_Moda, Saira_Condensed } from "next/font/google";
+import localFont from "next/font/local";
 
 import { Rise } from "@/components/Rise";
 
@@ -12,24 +12,30 @@ import "./chart.css";
 import "./screens.css";
 import "./visuals.css";
 
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "800", "900"],
+const archivo = localFont({
+  src: [
+    { path: "../../assets/fonts/archivo.woff2", weight: "400 900", style: "normal" },
+  ],
   variable: "--font-archivo",
   display: "swap",
 });
 
-const bodoni = Bodoni_Moda({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  style: ["italic", "normal"],
+const bodoni = localFont({
+  src: [
+    { path: "../../assets/fonts/bodoni-moda-1.woff2", weight: "400 900", style: "normal" },
+    { path: "../../assets/fonts/bodoni-moda-italic-0.woff2", weight: "400 900", style: "italic" },
+  ],
   variable: "--font-bodoni",
   display: "swap",
 });
 
-const saira = Saira_Condensed({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const saira = localFont({
+  src: [
+    { path: "../../assets/fonts/saira-condensed-0.woff2", weight: "400", style: "normal" },
+    { path: "../../assets/fonts/saira-condensed-1.woff2", weight: "500", style: "normal" },
+    { path: "../../assets/fonts/saira-condensed-2.woff2", weight: "600", style: "normal" },
+    { path: "../../assets/fonts/saira-condensed-3.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-saira",
   display: "swap",
 });

@@ -1,29 +1,33 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Archivo, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Footer } from "./footer";
 
 // Futures Atlas type system: Archivo 800 display, Bodoni Moda serif voice,
 // IBM Plex Mono data/labels/body.
-const script = Bodoni_Moda({
+const script = localFont({
+  src: [
+    { path: "../../assets/fonts/bodoni-moda-1.woff2", weight: "400 900", style: "normal" },
+    { path: "../../assets/fonts/bodoni-moda-italic-0.woff2", weight: "400 900", style: "italic" },
+  ],
   variable: "--ff-script",
-  subsets: ["latin", "latin-ext"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
   display: "swap",
 });
-const display = Archivo({
+const display = localFont({
+  src: [
+    { path: "../../assets/fonts/archivo.woff2", weight: "400 900", style: "normal" },
+  ],
   variable: "--ff-display",
-  subsets: ["latin"],
-  weight: ["500", "700", "800"],
-  style: ["normal"],
   display: "swap",
 });
-const plex = IBM_Plex_Mono({
+const plex = localFont({
+  src: [
+    { path: "../../assets/fonts/ibm-plex-mono-0.woff2", weight: "300", style: "normal" },
+    { path: "../../assets/fonts/ibm-plex-mono-1.woff2", weight: "400", style: "normal" },
+    { path: "../../assets/fonts/ibm-plex-mono-2.woff2", weight: "500", style: "normal" },
+    { path: "../../assets/fonts/ibm-plex-mono-3.woff2", weight: "600", style: "normal" },
+  ],
   variable: "--ff-docket",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 

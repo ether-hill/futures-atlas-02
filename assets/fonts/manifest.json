@@ -1,0 +1,72 @@
+[
+  {
+    "file": "archivo.woff2",
+    "weight": "400 900",
+    "style": "normal"
+  },
+  {
+    "file": "bodoni-moda-italic-0.woff2",
+    "weight": "400 900",
+    "style": "italic"
+  },
+  {
+    "file": "bodoni-moda-1.woff2",
+    "weight": "400 900",
+    "style": "normal"
+  },
+  {
+    "file": "jetbrains-mono.woff2",
+    "weight": "100 800",
+    "style": "normal"
+  },
+  {
+    "file": "figtree.woff2",
+    "weight": "300 900",
+    "style": "normal"
+  },
+  {
+    "file": "saira-condensed-0.woff2",
+    "weight": "400",
+    "style": "normal"
+  },
+  {
+    "file": "saira-condensed-1.woff2",
+    "weight": "500",
+    "style": "normal"
+  },
+  {
+    "file": "saira-condensed-2.woff2",
+    "weight": "600",
+    "style": "normal"
+  },
+  {
+    "file": "saira-condensed-3.woff2",
+    "weight": "700",
+    "style": "normal"
+  },
+  {
+    "file": "ibm-plex-mono-0.woff2",
+    "weight": "300",
+    "style": "normal"
+  },
+  {
+    "file": "ibm-plex-mono-1.woff2",
+    "weight": "400",
+    "style": "normal"
+  },
+  {
+    "file": "ibm-plex-mono-2.woff2",
+    "weight": "500",
+    "style": "normal"
+  },
+  {
+    "file": "ibm-plex-mono-3.woff2",
+    "weight": "600",
+    "style": "normal"
+  },
+  {
+    "file": "anton.woff2",
+    "weight": "400",
+    "style": "normal"
+  }
+]

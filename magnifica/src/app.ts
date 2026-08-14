@@ -103,10 +103,12 @@ function homeView(): string {
   <main class="wrap home">
 
     <header class="banner" data-reveal data-doc-loop="divine-touch">
-      <div class="banner-art" data-par="0.12">
+      <div class="banner-art">
+      <div class="banner-plate" data-par="0.12">
         <img src="/magnifica/media/stills/creation-hands.jpg"
              alt="A close detail of two hands reaching toward each other in the manner of Michelangelo's Creation of Adam; the hand on the right has seven fingers."
              fetchpriority="high" decoding="async" />
+      </div>
       </div>
       <div class="banner-grid">
       <div class="banner-in">
@@ -248,7 +250,7 @@ function mountLoopHero(hero: HTMLElement): () => void {
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   // The still inside .banner-art is the poster: it is already on screen at
   // full priority, so the video fades in over it and there is never a gap.
-  const bg = hero.querySelector<HTMLElement>(".doc-bg, .banner-art");
+  const bg = hero.querySelector<HTMLElement>(".doc-bg, .banner-plate");
 
   if (bg) {
     const video = document.createElement("video");
@@ -269,11 +271,34 @@ function mountLoopHero(hero: HTMLElement): () => void {
 
   if (reduce) return () => {};
 
-  const layers = Array.from(hero.querySelectorAll<HTMLElement>("[data-par]")).map((el) => ({
+  const all = Array.from(hero.querySelectorAll<HTMLElement>("[data-par]")).map((el) => ({
     el,
     rate: parseFloat(el.dataset.par || "0"),
   }));
-  if (layers.length === 0) return () => {};
+  if (all.length === 0) return () => {};
+
+  /*
+   * The print does not drift on a phone or a tablet.
+   *
+   * Below 1000px the layout stacks it ABOVE the copy instead of beside it, so
+   * it is no longer a plate hanging in a scene — it is the first thing in the
+   * column, and sliding it against the text underneath reads as a glitch
+   * rather than as depth. The backdrop still moves; only the print is held.
+   * Re-evaluated on resize, and its transform is cleared as it drops out so it
+   * cannot be stranded mid-drift at whatever offset it had.
+   */
+  const stacked = window.matchMedia("(max-width: 1000px)");
+  let layers = all;
+  const pickLayers = () => {
+    const held = stacked.matches;
+    layers = held ? all.filter((l) => !l.el.classList.contains("banner-print")) : all;
+    if (held) {
+      for (const l of all) {
+        if (l.el.classList.contains("banner-print")) l.el.style.transform = "";
+      }
+    }
+  };
+  pickLayers();
 
   // Geometry once, not per frame: getBoundingClientRect() inside the frame
   // forces a synchronous reflow, which is what made this motion clunky.
@@ -314,6 +339,7 @@ function mountLoopHero(hero: HTMLElement): () => void {
     requestAnimationFrame(frame);
   };
   const onResize = () => {
+    pickLayers();
     measure();
     kick();
   };
@@ -321,9 +347,11 @@ function mountLoopHero(hero: HTMLElement): () => void {
   kick();
   window.addEventListener("scroll", kick, { passive: true });
   window.addEventListener("resize", onResize, { passive: true });
+  stacked.addEventListener("change", onResize);
   return () => {
     window.removeEventListener("scroll", kick);
     window.removeEventListener("resize", onResize);
+    stacked.removeEventListener("change", onResize);
     running = false;
   };
 }

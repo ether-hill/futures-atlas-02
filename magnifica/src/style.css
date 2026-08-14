@@ -542,23 +542,29 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   overflow: hidden;
   isolation: isolate;
 }
-/* Overscanned top and bottom so the plate can drift without ever showing an
-   edge — the same trick .doc-bg uses, for the same reason. */
-.banner-art { position: absolute; inset: -12% 0; z-index: -2; }
+/* Two elements, deliberately. .banner-art is a STATIC frame pinned to the band
+   and clipping it; .banner-plate is the overscanned layer inside that actually
+   moves. They used to be one element, overscanned AND transformed — which was
+   fine only while .banner clipped it. The moment .banner went overflow:visible
+   so the print could hang past the foot, that same rule let 12% of the video
+   hang out too, straight into the section below. A clip on the moving element
+   cannot fix it, because the clip travels with it. */
+.banner-art { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+.banner-plate { position: absolute; inset: -12% 0; }
 /* Framed to keep BOTH hands and the gap between them: the seven-fingered hand
    only reads as wrong next to the ordinary one. The art is composed wide, so
    the crop stays gentle and the whole splayed hand survives it. */
-.banner-art img,
-.banner-art video { width: 100%; height: 100%; object-fit: cover; object-position: 52% 46%; display: block; }
+.banner-plate img,
+.banner-plate video { width: 100%; height: 100%; object-fit: cover; object-position: 52% 46%; display: block; }
 /* The still is the poster. It carries the banner until the loop has decoded,
    then the video lands on top of it — so there is never an empty plate, and a
    browser that refuses the video keeps the artwork. */
-.banner-art video { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; }
-.banner.has-bg .banner-art video { opacity: 1; }
+.banner-plate video { position: absolute; inset: 0; opacity: 0; transition: opacity 0.6s ease; }
+.banner.has-bg .banner-plate video { opacity: 1; }
 @media (max-width: 860px) {
-  .banner-art img, .banner-art video { object-position: 64% 44%; }
+  .banner-plate img, .banner-plate video { object-position: 64% 44%; }
 }
-@media (prefers-reduced-motion: reduce) { .banner-art video { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .banner-plate video { transition: none; } }
 /* The fresco is warm and light; the copy is set on a scrim rather than on the
    paint, so it stays legible in both themes without tinting the artwork. */
 .banner::after {
@@ -984,6 +990,7 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   min-height: 100svh;
   justify-content: center;
 }
+/* the frame already clips; kept explicit so it survives a refactor */
 .banner-art { overflow: hidden; }
 .banner .banner-print {
   position: relative;

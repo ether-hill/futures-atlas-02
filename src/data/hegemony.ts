@@ -1714,3 +1714,259 @@ export const DROPPED: Dropped[] = [
 
 export const findingsIn = (s: Strand) => FINDINGS.filter((f) => f.strand === s);
 export const countByTier = (t: Tier) => FINDINGS.filter((f) => f.tier === t).length;
+
+/* ══ COVERAGE ═══════════════════════════════════════════════════════════════
+ *
+ * The findings above are the evidence. This is the reporting *around* it —
+ * what other people have broadcast and published on the same subject.
+ *
+ * It is kept separate from FINDINGS on purpose. Nothing here is cited as
+ * proof of a claim: a documentary is a piece of journalism, not a measurement,
+ * and folding it into the tiers would let a well-made film do the work of a
+ * methodology. These sections say "here is who else has looked", and they
+ * always send you to the original.
+ *
+ * EVERY item was fetched and checked, exactly like a Source:
+ *   • videos — verified through YouTube's oEmbed endpoint, so `title` and
+ *     `channel` are the platform's own strings, not ours. `thumb` is the
+ *     largest still that actually returned 200 for that id; maxresdefault does
+ *     not exist for every upload, so it is recorded per video rather than
+ *     assembled and hoped for.
+ *   • press — `image` is the publisher's own og:image, read off the page and
+ *     re-fetched to confirm it resolves.
+ *
+ * Both are HOT-LINKED, never copied into the repo — the same rule the Feed
+ * follows for sourceImage, and for the same reason: the publisher's picture
+ * stays the publisher's, and if they pull it, it disappears here too. The
+ * cards degrade to a typographic plate when that happens.
+ */
+
+export interface Video {
+  /** YouTube id. The canonical URL is built from it, so it cannot disagree. */
+  id: string;
+  /** The channel's own name, as YouTube returns it. */
+  channel: string;
+  /** The upload's own title, as YouTube returns it. */
+  title: string;
+  /** Upload date, `YYYY-MM-DD`, read from the watch page. */
+  published: string;
+  /** Our one line on why it is here — what it covers, not what it proves. */
+  blurb: string;
+  /**
+   * Full still URL. Recorded rather than assembled: maxresdefault is missing
+   * for plenty of uploads and a guessed URL is a broken image.
+   */
+  thumb: string;
+}
+
+export const VIDEOS: Video[] = [
+  {
+    id: "ehkECk2KJjY",
+    channel: "DW Documentary",
+    title: "How big AI companies exploit data workers in Kenya",
+    published: "2024-12-08",
+    blurb:
+      "DW's documentary on the Nairobi labelling and moderation workforce that cleans the data behind large AI systems.",
+    thumb: "https://i.ytimg.com/vi/ehkECk2KJjY/maxresdefault.jpg",
+  },
+  {
+    id: "qZS50KXjAX0",
+    channel: "60 Minutes",
+    title: "Training AI takes heavy toll on Kenyans working for $2 an hour",
+    published: "2024-11-24",
+    blurb:
+      "60 Minutes with the Kenyan digital workers paid around two dollars an hour to make model output presentable.",
+    thumb: "https://i.ytimg.com/vi/qZS50KXjAX0/maxresdefault.jpg",
+  },
+  {
+    id: "Xa6JuimHoEA",
+    channel: "Democracy Now!",
+    title:
+      "“Empire of AI”: Karen Hao on How AI Is Threatening Democracy & Creating a New Colonial World",
+    published: "2026-01-01",
+    blurb:
+      "Karen Hao on the argument of Empire of AI: that the industry is organised along the lines of an imperial one.",
+    thumb: "https://i.ytimg.com/vi/Xa6JuimHoEA/maxresdefault.jpg",
+  },
+  {
+    id: "N5c2X8vhfBE",
+    channel: "The Alan Turing Institute",
+    title: "On the dangers of stochastic parrots: Can language models be too big?",
+    published: "2021-07-13",
+    blurb:
+      "The Turing Institute's recording of the Stochastic Parrots paper — the 2021 argument that scale itself carries a cost, and that who is in the corpus is part of it.",
+    thumb: "https://i.ytimg.com/vi/N5c2X8vhfBE/maxresdefault.jpg",
+  },
+  {
+    id: "P6r3Rtf-F24",
+    channel: "Algorithmic Justice League",
+    title: "How AI Uses your Data Against You with Dr. Abeba Birhane",
+    published: "2025-04-27",
+    blurb:
+      "Abeba Birhane, who audits training sets for a living, on what is actually inside the datasets models are built from.",
+    thumb: "https://i.ytimg.com/vi/P6r3Rtf-F24/maxresdefault.jpg",
+  },
+  {
+    id: "LoVhdsAObBk",
+    channel: "Cohere",
+    title: "NLP for Under-resourced African Languages — David Ìfẹ́olúwa Adélání",
+    published: "2023-04-06",
+    blurb:
+      "Why African-language NLP is a data problem before it is a model problem, from one of the researchers building the benchmarks.",
+    thumb: "https://i.ytimg.com/vi/LoVhdsAObBk/maxresdefault.jpg",
+  },
+  {
+    id: "cOx728E110U",
+    channel: "Columbia Data Science Institute",
+    title: "DSI Distinguished Series: Masakhane Group",
+    published: "2021-10-26",
+    blurb:
+      "Masakhane on building African-language NLP as a distributed, community-led project rather than a lab deliverable.",
+    thumb: "https://i.ytimg.com/vi/cOx728E110U/maxresdefault.jpg",
+  },
+  {
+    id: "Bdn6UAs6b70",
+    channel: "Firstpost",
+    title: "India's Sovereign AI Push: Sarvam Takes on Gemini and ChatGPT",
+    published: "2026-02-09",
+    blurb:
+      "Firstpost's Vantage on India's sovereign AI programme and the Indic model built under it.",
+    thumb: "https://i.ytimg.com/vi/Bdn6UAs6b70/maxresdefault.jpg",
+  },
+  {
+    id: "Vw0XjhfAWis",
+    channel: "a16z",
+    title: "Sovereign AI: Why Nations Are Building Their Own Models",
+    published: "2025-05-24",
+    blurb:
+      "The investor case for sovereign AI. Included deliberately as the industry's own framing of the trend section 06 examines — a16z is an investor in this market, not an observer of it.",
+    thumb: "https://i.ytimg.com/vi/Vw0XjhfAWis/maxresdefault.jpg",
+  },
+];
+
+export interface PressItem {
+  id: string;
+  /** Masthead, as the publisher writes it. Also the read-at link label. */
+  publisher: string;
+  /** The piece's own headline. */
+  title: string;
+  /** Publication date, `YYYY-MM-DD`. */
+  published: string;
+  /** Our one line on what the piece reports. */
+  blurb: string;
+  url: string;
+  /** The publisher's own og:image, hot-linked. Confirmed to resolve. */
+  image: string;
+}
+
+export const PRESS: PressItem[] = [
+  {
+    id: "mit-colonial-order",
+    publisher: "MIT Technology Review",
+    title: "Artificial intelligence is creating a new colonial world order",
+    published: "2022-04-19",
+    blurb:
+      "The opening of MIT Technology Review's four-part AI Colonialism series, reported across four countries.",
+    url: "https://www.technologyreview.com/2022/04/19/1049592/artificial-intelligence-colonialism/",
+    image:
+      "https://wp.technologyreview.com/wp-content/uploads/2022/04/MIT-1-social.jpeg?resize=1200,600",
+  },
+  {
+    id: "time-two-dollar",
+    publisher: "TIME",
+    title: "Exclusive: The $2 Per Hour Workers Who Made ChatGPT Safer",
+    published: "2023-01-18",
+    blurb:
+      "The investigation into the Kenyan labellers contracted through Sama to detoxify ChatGPT's output, and what the work cost them.",
+    url: "https://time.com/6247678/openai-chatgpt-kenya-workers/",
+    image:
+      "https://static.time.com/v3/assets/bltea6093859af6183b/blt1b258b5a3f7503f1/698a398716d8843144c3b782/DALL%C2%B7E-2023-01-09-18.12.05-a-seemingly-endless-view-african-workers-at-desks-in-front-of-computer-screens-in-a-printmaking-style.jpg?branch=production&width=1600&quality=75&auto=webp&crop=16:9",
+  },
+  {
+    id: "row-ai-divide",
+    publisher: "Rest of World",
+    title: "The Great AI Divide: Navigating U.S. and Chinese dominance",
+    published: "2026-06-09",
+    blurb:
+      "What it means for everyone else that the frontier is built, funded and powered in two countries.",
+    url: "https://restofworld.org/2026/ai-divide-america-china-world/",
+    image:
+      "https://restofworld.org/wp-content/uploads/2026/06/illo_AI_divide_sketch_v2-1600x900.jpg",
+  },
+  {
+    id: "nature-nllb",
+    publisher: "Nature",
+    title: "Scaling neural machine translation to 200 languages",
+    published: "2024-06-05",
+    blurb:
+      "The No Language Left Behind paper: translation extended to 200 languages, with the human-translated evaluation set built to check it.",
+    url: "https://www.nature.com/articles/s41586-024-07335-x",
+    image:
+      "https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2Fs41586-024-07335-x/MediaObjects/41586_2024_7335_Fig1_HTML.png",
+  },
+  {
+    id: "row-scale-ai",
+    publisher: "Rest of World",
+    title: "Scale AI is on a hiring spree for speakers of under-represented languages",
+    published: "2023-08-29",
+    blurb:
+      "The market for the languages models are worst at — and the gap between what each one pays.",
+    url: "https://restofworld.org/2023/scale-ai-language-training-hiring/",
+    image: "https://restofworld.org/wp-content/uploads/2023/08/Photo-AlexandrWang-1600x900.jpg",
+  },
+  {
+    id: "mit-for-the-people",
+    publisher: "MIT Technology Review",
+    title: "A new vision of artificial intelligence for the people",
+    published: "2022-04-22",
+    blurb:
+      "The close of the same series, from Te Hiku Media — the Māori station that built its own speech recognition and kept the data under its own licence.",
+    url: "https://www.technologyreview.com/2022/04/22/1050394/artificial-intelligence-for-the-people/",
+    image:
+      "https://wp.technologyreview.com/wp-content/uploads/2022/04/MIT-5-3-1.jpeg?resize=1200,600",
+  },
+  {
+    id: "carnegie-speaking-in-code",
+    publisher: "Carnegie Endowment",
+    title: "Speaking in Code: Contextualizing Large Language Models in Southeast Asia",
+    published: "2025-01-06",
+    blurb:
+      "How the region's languages and contexts fare in general-purpose models, and where localisation is actually happening.",
+    url: "https://carnegieendowment.org/research/2025/01/speaking-in-code-contextualizing-large-language-models-in-southeast-asia",
+    image:
+      "https://assets.carnegieendowment.org/_/eyJrZXkiOiJzdGF0aWMvbWVkaWEvaW1hZ2VzL2FpLWxsbS10ZWNobm9sb2d5LWFic3RyYWN0LWlTdG9jay0xOTM0NTUzODEzLmpwZyJ9",
+  },
+  {
+    id: "row-india-bhashini",
+    publisher: "Rest of World",
+    title: "India is testing an alternative to Silicon Valley's AI playbook",
+    published: "2026-07-02",
+    blurb:
+      "Bhashini, and an open-source, offline-first approach aimed at the languages the frontier labs skip.",
+    url: "https://restofworld.org/2026/india-bhashini-open-source-offline-ai-hackathon/",
+    image: "https://restofworld.org/wp-content/uploads/2026/06/India-AI-Hackathon-Final.jpg",
+  },
+  {
+    id: "time-sweatshop-data",
+    publisher: "TIME",
+    title: "Is 'Sweatshop Data' Really Over?",
+    published: "2025-07-29",
+    blurb:
+      "Two years on from the ChatGPT story: whether the shift to expert annotation changed the economics for the people doing it.",
+    url: "https://time.com/7306153/ai-sweatshop-data-over/",
+    image:
+      "https://static.time.com/v3/assets/bltea6093859af6183b/blt790ecf980cd79d1a/6998c8a866d4e3d4b3cbcb13/sweatshop-data.jpg?branch=production&width=1600&quality=75&auto=webp&crop=16:9",
+  },
+];
+
+/**
+ * Every preview image on the page, in one list, for the masthead mosaic.
+ *
+ * Derived rather than typed out, so the wall behind the title is literally the
+ * coverage below it — add a video or an article and it appears up there too,
+ * and it can never show a picture the page does not also credit.
+ */
+export const MOSAIC: string[] = [
+  ...VIDEOS.map((v) => v.thumb),
+  ...PRESS.map((p) => p.image),
+];

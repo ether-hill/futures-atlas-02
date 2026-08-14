@@ -18,6 +18,28 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Stage the self-hosted fonts into every sub-app that needs them.
+#
+# next/font/local resolves relative to the importing file and refuses to leave
+# its own project root — each sub-app IS a separate root, so a shared path like
+# ../../assets from the repo root is rejected outright by Turbopack. The fonts
+# therefore live once in assets/fonts (committed) and are copied in here, so
+# there is still exactly one set of files under version control.
+#
+# This is also what took the build off the network: nothing here fetches a
+# font, so Google being slow can no longer fail a deploy.
+stage_fonts() {
+  for app in social-composer hollow-villages counterfactual quantum-dominance quantum-lag; do
+    if [ -d "$HERE/$app" ]; then
+      rm -rf "$HERE/$app/assets/fonts"
+      mkdir -p "$HERE/$app/assets"
+      cp -R "$HERE/assets/fonts" "$HERE/$app/assets/fonts"
+    fi
+  done
+  echo "→ staged self-hosted fonts into 5 sub-apps"
+}
+stage_fonts
+
 # Vite apps build straight into public/<slug> via their vite.config outDir.
 for app in generatives quantum-sandbox literal-frequency gigawatt trajectories magnifica; do
   echo "→ building $app"
