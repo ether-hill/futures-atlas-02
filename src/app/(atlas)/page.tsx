@@ -3,7 +3,7 @@ import { Container } from "@/components/Container";
 import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
-import { visibleProjects } from "@/data/projects";
+import { liveProjects } from "@/data/projects";
 import { FeedMasonry } from "@/components/FeedMasonry";
 import { editorPosts, livePosts } from "@/data/posts";
 import { getEditor } from "@/lib/editor";
@@ -14,9 +14,10 @@ import { LOGOS } from "@/lib/logos";
 const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "veo", "nextjs", "react", "threejs", "p5js", "tailwindcss", "vercel", "huggingface", "mistral", "deepseek"];
 
 export default async function Home() {
-  // Editors see their drafts in the recent strip too, flagged as such.
+  // The homepage strip is public-facing: always live projects only, even for a
+  // signed-in editor. Drafts are visible on /projects, not here.
   const isEditor = Boolean(await getEditor());
-  const recent = visibleProjects(isEditor).slice(0, 6);
+  const recent = liveProjects.slice(0, 6);
   // Newest fifteen, but never a set with no video in it: the masonry plays them
   // in place, and chronology alone can leave every one of them just out of range.
   const source = isEditor ? editorPosts : livePosts;
