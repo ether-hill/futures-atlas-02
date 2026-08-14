@@ -25,9 +25,9 @@
   var FA_PROJECTS = [
     { name: "Hypothetica Magnifica", path: "/magnifica" },
     { name: "Trajectories", path: "/trajectories", draft: true },
-    { name: "The Counterfactual Index", path: "/counterfactual", draft: true },
-    { name: "Counterfactual Quantum", path: "/counterfactual/quantum", draft: true },
-    { name: "One Figure: The Power", path: "/counterfactual/one", draft: true },
+    { name: "The Counterfactual Index", path: "/manipulate-the-data", draft: true },
+    { name: "Counterfactual Quantum", path: "/manipulate-the-data/quantum", draft: true },
+    { name: "One Figure: The Power", path: "/manipulate-the-data/ai-gigawatts", draft: true },
     { name: "Hyperscale", path: "/hyperscale", draft: true },
     { name: "Signal Reactor", path: "/signal-reactor" },
     { name: "Quantum Spark", path: "/quantum-spark" },

@@ -94,6 +94,13 @@ button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color
 @keyframes odEmber{0%{transform:translateY(0) scale(1);opacity:0}15%{opacity:1}100%{transform:translateY(-46px) scale(0.2);opacity:0}}
 /* Dario doom: the glass museum vitrine is built inside the die's Three.js scene (see dario-die.js), not in CSS */
 .od-anim{opacity:0;animation:odUp .6s cubic-bezier(.2,.7,.2,1) both}
+/* Nobody copies a button label. On touch, press-and-hold is exactly the gesture that arms the
+   charge AND the one iOS reads as "select this text / show the callout", so the spin button would
+   come back with its own label highlighted. Kill selection, the long-press callout and the tap
+   flash on every control; text elsewhere on the page stays selectable. */
+button,.od-roll,.od-pill,.od-tile,.od-pcard,.od-land-cta,.od-link{
+  -webkit-user-select:none;-moz-user-select:none;user-select:none;
+  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
 .od-roll{transition:transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, letter-spacing .22s ease, background .22s ease}
 .od-roll:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 16px 36px rgba(0,0,0,0.45), 0 0 0 4px rgba(251,239,255,0.16);letter-spacing:0.2em;background:#fff}
 .od-roll:active{transform:translateY(-1px) scale(0.99)}
@@ -110,10 +117,6 @@ body.od-menu-open .fa-share{display:none!important}
 .od-forcetest>span{color:rgba(251,239,255,0.32)}
 .od-forcebtn{border:1px solid rgba(255,255,255,0.22);background:rgba(18,17,15,0.72);color:rgba(251,239,255,0.62);border-radius:5px;padding:3px 8px;cursor:pointer;font:inherit;letter-spacing:0.12em}
 .od-forcebtn.is-on{background:#E0481B;border-color:#E0481B;color:#fff}
-/* TEST-ONLY Tegmark card picker */
-.od-cardtest{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 92px);z-index:60;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.od-cardtest>span{color:rgba(251,239,255,0.32);font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em}
-.od-cardsel{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.03em;color:rgba(251,239,255,0.78);background:rgba(18,17,15,0.88);border:1px solid rgba(255,255,255,0.22);border-radius:5px;padding:4px 6px;max-width:190px;cursor:pointer}
 @media (max-width:680px){.od-extinctions{right:12px;top:calc(var(--fa-nav-h,56px) + 60px)}}
 body.od-menu-open .od-extinctions{display:none!important}
 .od-ext-counter{position:fixed;top:calc(var(--fa-nav-h,56px) + 20px);left:50%;transform:translateX(-50%);z-index:55;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:center;white-space:nowrap;pointer-events:none}
@@ -141,6 +144,10 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-teg-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px}
 .od-stage{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
 .od-photo{position:relative;overflow:hidden;background:#08080A;height:320px;flex:none}
+/* the disintegration's void = the doom sky the globe hangs in, so the two panels read as one space.
+   Side-by-side the panels are the same size, so the game gradient's centre (50% of that panel) sits
+   at 150% of this one — literally the same ramp continuing across the seam, nothing eyeballed. */
+.od-shatter{background:radial-gradient(ellipse 90% 78% at 150% 40%, rgba(46,66,138,0.34) 0%, rgba(9,15,38,0.94) 46%, #04060e 78%), #04060e}
 .od-game{position:relative;flex:1;min-height:560px;display:flex;flex-direction:column;background:radial-gradient(circle at 24% 16%, rgba(255,93,162,0.2), transparent 46%), radial-gradient(circle at 82% 84%, rgba(52,229,196,0.16), transparent 48%), #1A0B2E}
 .od-stage-area{position:relative;flex:2;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;overflow:visible}
 /* annihilation: wheel gone, globe canvas expands to fill the stage so the dead planet
@@ -198,18 +205,26 @@ body.od-menu-open .od-extinctions{display:none!important}
   /* portrait = left 40%; the video portraits (Elon/Dario) match the photo layout instead of going full-bleed */
   .od-hero-img,.od-portrait-vid{position:relative!important;inset:auto!important;height:100%!important;width:auto!important;
     aspect-ratio:3/4;max-width:40vw;flex:none!important;border-radius:0!important;object-fit:cover!important;object-position:50% 18%!important;background:#08080a}
-  /* info = right 60%, on black with a red glow */
+  /* info = right 60%, on black with a red glow. The glow is tucked into the TOP-right corner and dies
+     out before the bottom edge — down there the band meets the game panel's blue sky, and a warm
+     tinge running into it is exactly what breaks the blend. */
   .od-photo-info{position:relative!important;inset:auto!important;flex:1 1 0!important;min-width:0;
     justify-content:center!important;gap:3px!important;padding:0 15px!important;
-    background:radial-gradient(ellipse 95% 130% at 118% 50%, rgba(224,72,27,0.34) 0%, rgba(224,72,27,0.08) 40%, transparent 68%)!important}
+    background:radial-gradient(ellipse 90% 72% at 116% -8%, rgba(224,72,27,0.34) 0%, rgba(224,72,27,0.09) 38%, transparent 66%)!important}
+  /* stacked, not side-by-side: the game band is BELOW, so the void meets its sky downwards.
+     #080D21 is what that gradient evaluates to at its own top edge. */
+  .od-shatter{background:linear-gradient(180deg,#04060e 0%,#060a1a 52%,#080D21 100%)!important}
   .od-odds-line,.od-quote-ctx,.od-photo-src,.od-photo-top{display:none!important}  /* big %, eyebrow, attribution, on-photo pill — gone */
   .od-photo-info .od-name{font-size:clamp(17px,2.7vh,22px)!important;line-height:1.04!important}
   .od-photo-info .od-quote{display:-webkit-box!important;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;
     font-size:11px!important;line-height:1.34!important;max-width:none!important;margin:2px 0 0!important}
 
-  /* --- controls: Choose Player + Sound stacked at the top-left of the game band --- */
-  .od-game-choose{display:inline-flex!important}
-  .od-sound{top:46px!important;left:14px!important;font-size:9px!important}
+  /* --- controls --- */
+  /* Choose Player rides UNDER the quote, in the copy column, rather than floating over the top-left
+     of the game band where it sat on top of the play area. .od-game-choose is its old home. */
+  .od-choose-inline{display:inline-flex!important;margin-top:7px}
+  .od-game-choose{display:none!important}
+  .od-sound{top:10px!important;left:14px!important;font-size:9px!important}
 
   /* --- band 2: game (62% of .od-game ≈ 42% screen) --- */
   .od-game{min-height:0!important;flex:1 1 0!important}
@@ -230,6 +245,7 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-center{gap:9px!important}
   .od-result{gap:4px!important}
   .od-key{margin-bottom:5px!important}
+  .od-key--drawn{display:none!important}   /* card is face-up: give its description the room */
   .od-key-labels{font-size:8.5px!important;gap:12px;letter-spacing:0.04em!important}
   .od-key-labels span{flex:1 1 0;min-width:0}                         /* let the long "REALLY, REALLY BAD" wrap, not clip */
   .od-key-labels span:last-child{text-align:right}
@@ -357,6 +373,12 @@ body.od-menu-open .od-extinctions{display:none!important}
       <!-- the portrait IS the video, shown paused on its first frame; it plays only when doom is rolled -->
       <video class="od-portrait-vid" src="{{ portraitVid }}" poster="{{ portraitPoster }}" muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ portraitPos }};background:#08080A"></video>
     </sc-if>
+    <sc-if value="{{ hasPortraitLoop }}">
+      <!-- the loop half of the doom clip, stacked directly over the one-shot with identical framing.
+           It is preloaded and revealed the instant the first clip ends; because its opening frame IS
+           that clip's closing frame, the cut is invisible and there is no reload flash. -->
+      <video class="od-portrait-loop" src="{{ portraitLoopVid }}" muted playsinline webkit-playsinline preload="auto" loop style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ portraitPos }};background:#08080A;opacity:0;pointer-events:none"></video>
+    </sc-if>
     <sc-if value="{{ showDoomVid }}">
       <video class="od-doom-vid {{ doomVidFlipCls }}" src="{{ doomVid }}" autoplay muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ doomVidPos }};background:#000;animation:odFade .35s ease both"></video>
     </sc-if>
@@ -398,6 +420,15 @@ body.od-menu-open .od-extinctions{display:none!important}
       </sc-if>
       <p class="od-anim od-quote" style="animation-delay:.5s;max-width:450px">“{{ p.quote }}”</p>
       <div class="od-anim od-photo-src" style="animation-delay:.58s;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.05em;color:rgba(236,234,230,0.45)">{{ p.source }} · {{ p.credit }}</div>
+      <!-- MOBILE ONLY: the way back to the chooser sits under the quote, in the same column as the
+           copy, instead of floating over the top-left of the game band. Desktop keeps the pill up in
+           .od-photo-top, so this stays hidden there. -->
+      <sc-if value="{{ notGauntlet }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openMenu }}" class="od-anim od-pill od-choose-inline" style="animation-delay:.62s;align-self:flex-start;display:none;align-items:center;gap:7px;height:27px;padding:0 12px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;background:rgba(18,17,15,0.92);color:#f3f1ec;cursor:pointer;font:600 9.5px/1 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0.08em">
+          <span style="display:flex;gap:3px"><i style="width:3px;height:3px;border-radius:50%;background:#E0481B;display:block"></i><i style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i><i style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i></span>
+          CHOOSE PLAYER
+        </button>
+      </sc-if>
     </div>
   </div>
 
@@ -417,17 +448,6 @@ body.od-menu-open .od-extinctions{display:none!important}
           <button onClick="{{ forceBad }}" class="od-forcebtn {{ forceBadCls }}">BAD</button>
         </div>
       </sc-if>
-      <sc-if value="{{ isCards }}">
-        <div class="od-cardtest">
-          <span>PULL A CARD</span>
-          <select class="od-cardsel">
-            <option value="">— pick a card —</option>
-            <sc-for list="{{ cardPreviews }}" as="c" hint-placeholder-count="12">
-              <option value="{{ c.i }}">{{ c.label }}</option>
-            </sc-for>
-          </select>
-        </div>
-      </sc-if>
     </sc-if>
 
     <!-- mobile-only Choose Player, sits top-left of the game band (desktop uses the one on the photo) -->
@@ -440,7 +460,7 @@ body.od-menu-open .od-extinctions{display:none!important}
     <div class="od-anim od-stage-area" style="animation-delay:.46s">
 
       <sc-if value="{{ isDie }}">
-        <x-import component-from-global-scope="dario-die" from="./dario-die.js?v=10" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" encase="{{ dieEncase }}" class="od-die-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
+        <x-import component-from-global-scope="dario-die" from="./dario-die.js?v=11" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" encase="{{ dieEncase }}" encasems="{{ dieEncaseMs }}" class="od-die-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
       </sc-if>
 
       <sc-if value="{{ isWheel }}">
@@ -503,7 +523,7 @@ body.od-menu-open .od-extinctions{display:none!important}
     <div class="od-panel">
       <!-- KEY: split odds bar (pinned top) — hidden on the doom-end screens -->
       <sc-if value="{{ showKey }}">
-      <div class="od-key">
+      <div class="od-key {{ keyClass }}">
         <div class="od-key-labels"><span>{{ keyGood }}</span><span>{{ keyBad }}</span></div>
         <div class="od-key-bar"><span style="flex:0 0 {{ goodPct }}%;background:{{ goodColor }}"></span><span style="flex:1;background:{{ badColor }}"></span></div>
       </div>
@@ -624,7 +644,13 @@ class Component extends DCLogic {
       source: 'Axios AI+ DC Summit \u00B7 17 Sept 2025',
       mechanic: 'die', mechLabel: 'D12 · ROLL',
       slug: 'dario-amodei', initials: 'DA', mechTag: 'DIE', accent: '#9B7BFF', accentTint: 'rgba(155,123,255,0.10)', cta: 'Roll the dice', objpos: '50% 30%', flip: true,
-      portraitVideo: '/odds-of-surviving-ai/media/dario-museum-02.mp4', portraitPoster: '/odds-of-surviving-ai/research/dario-first.jpg', portraitPos: '50% 36%',
+      // Doom is TWO clips. p1 is the one-shot morph: he talks, then sets into the museum vitrine —
+      // and the die's mat->glass-case animation runs across exactly its length (doomClipMs), so the
+      // die lands boxed on the same frame he does. p2 picks up on p1's final frame (they are the
+      // same image) and loops forever, keeping the archive alive under the verdict.
+      portraitVideo: '/odds-of-surviving-ai/media/dario-doom-p1.mp4', portraitVideoLoop: '/odds-of-surviving-ai/media/dario-doom-p2.mp4',
+      doomClipMs: 5040,
+      portraitPoster: '/odds-of-surviving-ai/research/dario-first.jpg', portraitPos: '50% 36%',
     },
     musk: {
       short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
@@ -718,7 +744,7 @@ class Component extends DCLogic {
           const wheel = pl.mechanic === 'wheel';
           if (v) {
             v.muted = true; v.playsInline = true; try { v.currentTime = 0; } catch (e) {}
-            const fire = wheel ? () => this._doomFinale(v) : () => this._dieFinale();
+            const fire = wheel ? () => this._doomFinale(v) : () => { this._startPortraitLoop(); this._dieFinale(); };
             v.onended = fire;
             const secs = (v.duration && isFinite(v.duration)) ? v.duration : (wheel ? 9 : 5.2);
             this._finaleTimer = setTimeout(fire, secs * 1000 + (wheel ? 120 : 200));   // fallback if 'ended' never fires
@@ -744,8 +770,15 @@ class Component extends DCLogic {
       if (this._finaleTimer) { clearTimeout(this._finaleTimer); this._finaleTimer = null; }
       if (this._revealTimer) { clearTimeout(this._revealTimer); this._revealTimer = null; }
       try { document.querySelectorAll('.od-shatter').forEach((c) => c.remove()); } catch (e) {}
+      // put the panel's own scrims back (the finale fades them out / swaps them for navy ones)
+      try {
+        document.querySelectorAll('.od-scrim-space').forEach((c) => c.remove());
+        document.querySelectorAll('.od-photo-scrim').forEach((c) => { c.style.opacity = ''; c.style.transition = ''; });
+      } catch (e) {}
       try { const h = document.querySelector('.od-hero-img'); if (h) h.style.visibility = ''; } catch (e) {}
       try { const pv = document.querySelector('.od-portrait-vid'); if (pv) { pv.pause(); pv.currentTime = 0; pv.style.visibility = ''; } } catch (e) {}
+      // stop the archive looping in the background and put it back behind the one-shot
+      try { const lv = document.querySelector('.od-portrait-loop'); if (lv) { lv.pause(); lv.currentTime = 0; lv.style.opacity = '0'; } } catch (e) {}
     }
   }
   // the moment the doom clip ends: detonate the rocket (via the globe) and shatter the portrait into particles
@@ -759,6 +792,19 @@ class Component extends DCLogic {
     if (this._revealTimer) clearTimeout(this._revealTimer);
     this._revealTimer = setTimeout(() => this.setState({ finaleReveal: true }), 1600);
   }
+  // Hand the portrait over to the looping half of the doom clip. The one-shot is left paused on its
+  // last frame underneath rather than hidden: the loop opens on that very frame, so even if it needs
+  // a moment to start there is never a gap, a flash, or a jump.
+  _startPortraitLoop() {
+    try {
+      const lv = document.querySelector('.od-portrait-loop');
+      if (!lv) return;
+      lv.muted = true; lv.playsInline = true; lv.loop = true;
+      try { lv.currentTime = 0; } catch (e) {}
+      lv.style.opacity = '1';
+      const pr = lv.play(); if (pr && pr.catch) pr.catch(() => {});
+    } catch (e) {}
+  }
   // Dario: the portrait clip has finished — build the museum vitrine around the die, then reveal the verdict
   _dieFinale() {
     if (this._finaleDone) return; this._finaleDone = true;
@@ -771,16 +817,53 @@ class Component extends DCLogic {
     const Wc = panel.clientWidth, Hc = panel.clientHeight;
     if (!Wc || !Hc) return;
     const rw = Math.min(Wc, 480) | 0, rh = Math.round(Hc * rw / Wc) | 0;   // fine working res
+    const hero = panel.querySelector('.od-hero-img');
+    // The canvas spans the whole panel (so the dust has room to blow clear of him), but the portrait
+    // only OWNS the whole panel on desktop. On mobile .od-photo is a flex row — portrait ~26% on the
+    // left, name/quote filling the rest — so snapshot the frame into the media's own sub-rect instead
+    // of stretching a 3:4 video across a 3:1 band. On desktop the sub-rect IS the panel, unchanged.
+    const media = video || hero;
+    let pmx = 0, pmy = 0, pmw = rw, pmh = rh;
+    if (media) {
+      const mr = media.getBoundingClientRect(), pr = panel.getBoundingClientRect();
+      if (mr.width && mr.height) {
+        const k = rw / Wc;
+        pmx = (mr.left - pr.left) * k; pmy = (mr.top - pr.top) * k;
+        pmw = mr.width * k; pmh = mr.height * k;
+      }
+    }
     // snapshot the video's last frame, cover-fit (object-position 50% 28%), into a source canvas
     const src = document.createElement('canvas'); src.width = rw; src.height = rh;
     const sctx = src.getContext('2d');
-    const vw = (video && video.videoWidth) || Wc, vh = (video && video.videoHeight) || Hc;
-    const cover = Math.max(rw / vw, rh / vh), dw = vw * cover, dh = vh * cover;
-    try { sctx.drawImage(video, (rw - dw) / 2, (rh - dh) * 0.28, dw, dh); } catch (e) { return; }
+    const vw = (video && video.videoWidth) || pmw, vh = (video && video.videoHeight) || pmh;
+    const cover = Math.max(pmw / vw, pmh / vh), dw = vw * cover, dh = vh * cover;
+    try {
+      sctx.save(); sctx.beginPath(); sctx.rect(pmx, pmy, pmw, pmh); sctx.clip();   // nothing bleeds outside the portrait
+      sctx.drawImage(video, pmx + (pmw - dw) / 2, pmy + (pmh - dh) * 0.28, dw, dh);
+      sctx.restore();
+    } catch (e) { return; }
     const S = sctx.getImageData(0, 0, rw, rh).data;
-    const hero = panel.querySelector('.od-hero-img');
     const cv = document.createElement('canvas'); cv.className = 'od-shatter'; cv.width = rw; cv.height = rh;
-    cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;background:#08080A';
+    // the void he blows into is the game side's night sky — see the .od-shatter rules in the stylesheet
+    // (desktop continues that panel's gradient sideways; mobile meets it downwards)
+    cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
+    // The panel's two scrims are neutral black (rgba(8,8,10,…)). Over the new sky they grey it out,
+    // and the 90deg one lays 45% black across exactly the seam we're trying to hide. Fade that one
+    // out and cross-fade the bottom one (which the name/quote still needs) to the same navy, on the
+    // same 0.9s ramp as the dust, so nothing pops at the handoff from the video.
+    try {
+      const scrims = panel.querySelectorAll('.od-photo-scrim');
+      if (scrims[0]) {
+        const navy = scrims[0].cloneNode(false);
+        navy.classList.add('od-scrim-space');
+        navy.style.background = 'linear-gradient(180deg,rgba(6,9,22,0.5) 0%,rgba(6,9,22,0) 26%,rgba(7,11,27,0.08) 48%,rgba(6,9,22,0.78) 78%,rgba(4,7,17,0.97) 100%)';
+        navy.style.opacity = '0'; navy.style.transition = 'opacity 900ms linear';
+        scrims[0].insertAdjacentElement('afterend', navy);
+        scrims[0].style.transition = 'opacity 900ms linear';
+        requestAnimationFrame(() => { navy.style.opacity = '1'; scrims[0].style.opacity = '0'; });
+      }
+      if (scrims[1]) { scrims[1].style.transition = 'opacity 900ms linear'; requestAnimationFrame(() => { scrims[1].style.opacity = '0'; }); }
+    } catch (e) {}
     // sit right after the portrait media → BELOW the scrims + name/quote text (panel overflow:hidden keeps it in frame)
     const anchor = video || hero;
     if (anchor) anchor.insertAdjacentElement('afterend', cv); else panel.appendChild(cv);
@@ -792,9 +875,32 @@ class Component extends DCLogic {
     // Thanos-style disintegration: the man stays intact and clear on the left and crumbles from the
     // RIGHT into super-fine dust that blows up-and-right (away from the name/quote) and then lingers,
     // gently floating. A solid layer erodes along a noise front; fine dust particles peel off it.
+    // two recolours of the last frame, precomputed once (per-pixel work per tick is too costly):
+    //  ST — the frame with only its near-black surround sunk into the sky, so the intact man keeps his
+    //       own warm skin while the black around him merges with the space on the game side
+    //  SP — the frame remapped onto a blue dust ramp: dark pixels settle into the sky, bright ones become
+    //       pale motes. This is what the flying particles are drawn with, so the dust IS the night sky.
+    const SKY_R = 11, SKY_G = 17, SKY_B = 40;                     // the doom sky's rgba(9,15,38), opaque
+    const DUST_R = 150, DUST_G = 168, DUST_B = 205;               // the pale blue top of the dust ramp
+    const TINT_IN = 0.9;                                          // seconds to ease the blue in (keeps the video handoff seamless)
+    const SOLID_COOL = 0.45;                                      // how far the surviving solid follows the dust into the sky palette
+    const ST = new Uint8ClampedArray(S.length), SP = new Uint8ClampedArray(S.length);
+    for (let i = 0; i < S.length; i += 4) {
+      const r0 = S[i], g0 = S[i + 1], b0 = S[i + 2];
+      const L = (r0 * 0.299 + g0 * 0.587 + b0 * 0.114) / 255;
+      const w = (1 - L) * (1 - L) * 0.92;                          // weighted to the darks only
+      const rL = r0 + (SKY_R - r0) * w, gL = g0 + (SKY_G - g0) * w, bL = b0 + (SKY_B - b0) * w;
+      const rB = SKY_R + L * (DUST_R - SKY_R), gB = SKY_G + L * (DUST_G - SKY_G), bB = SKY_B + L * (DUST_B - SKY_B);
+      ST[i] = rL + (rB - rL) * SOLID_COOL; ST[i + 1] = gL + (gB - gL) * SOLID_COOL; ST[i + 2] = bL + (bB - bL) * SOLID_COOL; ST[i + 3] = S[i + 3];
+      SP[i] = rB; SP[i + 1] = gB; SP[i + 2] = bB; SP[i + 3] = S[i + 3];
+    }
     const N = rw * rh, th = new Float32Array(N), emitted = new Uint8Array(N);
+    // the erosion front sweeps across HIM, not across the canvas — on mobile the portrait is a narrow
+    // column in a wide band, and a canvas-space sweep would spend most of its run over empty sky
+    const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
     for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) {
-      const grad = (1 - x / rw) * 0.62 + (1 - y / rh) * 0.18;       // dissolves from the top-right first
+      const gx = c01((x - pmx) / pmw), gy = c01((y - pmy) / pmh);
+      const grad = (1 - gx) * 0.62 + (1 - gy) * 0.18;               // dissolves from the top-right first
       th[y * rw + x] = Math.random() * 0.44 + grad * 0.72;
     }
     const CAP = Math.min(90000, (N * 0.28) | 0);
@@ -817,6 +923,11 @@ class Component extends DCLogic {
     const smp = (u, v) => { u -= Math.floor(u); v -= Math.floor(v); const fx = u * TS, fy = v * TS, ix = fx | 0, iy = fy | 0, ux = fx - ix, uy = fy - iy, i2 = (ix + 1) % TS, j2 = (iy + 1) % TS, a = stex[iy * TS + ix], b = stex[iy * TS + i2], c = stex[j2 * TS + ix], d = stex[j2 * TS + i2]; return (a * (1 - ux) + b * ux) * (1 - uy) + (c * (1 - ux) + d * ux) * uy; };
     const sstep = (a, b, x) => { if (x <= a) return 0; if (x >= b) return 1; const t = (x - a) / (b - a); return t * t * (3 - 2 * t); };
     const SWARP = 0.6, SDSC = 2.0, SLO = 0.4, SHI = 0.85, SOP = 0.72, SCOV = 0.55;   // warp, density scale, wisp threshold, opacity, coverage
+    // Smoke belongs where he is. On desktop the portrait IS the canvas, so this is a flat 1 and
+    // nothing changes; on mobile it keeps the wisps over his column and lets them thin out across
+    // the name/quote rather than hazing the whole band.
+    const smokeHW = new Float32Array(rw);
+    for (let i = 0; i < rw; i++) smokeHW[i] = 1 - sstep(0, 1, (i - (pmx + pmw)) / (pmw * 0.9));
     const t0 = performance.now(); let lastDraw = t0;
     const step = (now) => {
       if (!this.state.doomVideo) { cv.remove(); return; }
@@ -824,6 +935,7 @@ class Component extends DCLogic {
       if (now - lastDraw < 50) return;
       const dt = Math.min((now - lastDraw) / 1000, 0.06); lastDraw = now;
       const el = (now - t0) / 1000, tau = Math.min(TAU_MAX, el / DISSOLVE * (TAU_MAX + 0.05));
+      const mix = Math.min(1, el / TINT_IN);   // 0 = the video's own colours, 1 = fully in the night sky
       // particles: fly off, decelerate, then settle to a gentle lingering float
       for (let j = 0; j < CAP; j++) {
         if (pa[j] <= 0) continue;
@@ -836,6 +948,7 @@ class Component extends DCLogic {
       if (!solidReady) {
         for (let i = 0; i < N; i++) if (!emitted[i] && th[i] < tau) {
           emitted[i] = 1;
+          if (S[(i << 2) + 3] < 8) continue;                        // empty sky outside the portrait — don't spend dust on it
           if (Math.random() < EMIT) {
             const k = pn++ % CAP; pci[k] = i << 2; pa[k] = 1;
             ppx[k] = i % rw; ppy[k] = (i / rw) | 0;
@@ -843,32 +956,34 @@ class Component extends DCLogic {
             pvy[k] = WY * (0.4 + Math.random()) - Math.random() * 30;
           }
         }
-        if (tau >= TAU_MAX) { // dissolve complete → cache the surviving solid part
-          for (let i = 0; i < N; i++) { const o = i << 2; if (th[i] > tau) { solidBuf[o] = S[o]; solidBuf[o + 1] = S[o + 1]; solidBuf[o + 2] = S[o + 2]; solidBuf[o + 3] = S[o + 3]; } else solidBuf[o + 3] = 0; }
+        if (tau >= TAU_MAX) { // dissolve complete → cache the surviving solid part (TINT_IN has fully run by now)
+          for (let i = 0; i < N; i++) { const o = i << 2; if (th[i] > tau) { solidBuf[o] = ST[o]; solidBuf[o + 1] = ST[o + 1]; solidBuf[o + 2] = ST[o + 2]; solidBuf[o + 3] = ST[o + 3]; } else solidBuf[o + 3] = 0; }
           solidReady = true;
         }
       }
       // compose: solid remnant + floating dust
       if (solidReady) { O.set(solidBuf); }
-      else { O.fill(0); for (let i = 0; i < N; i++) if (th[i] > tau) { const o = i << 2; O[o] = S[o]; O[o + 1] = S[o + 1]; O[o + 2] = S[o + 2]; O[o + 3] = S[o + 3]; } }
+      else { O.fill(0); for (let i = 0; i < N; i++) if (th[i] > tau) { const o = i << 2; O[o] = S[o] + (ST[o] - S[o]) * mix; O[o + 1] = S[o + 1] + (ST[o + 1] - S[o + 1]) * mix; O[o + 2] = S[o + 2] + (ST[o + 2] - S[o + 2]) * mix; O[o + 3] = S[o + 3]; } }
       for (let j = 0; j < CAP; j++) {
         if (pa[j] <= 0.02) continue;
         const X = ppx[j] | 0, Y = ppy[j] | 0; if (X < 0 || X >= rw || Y < 0 || Y >= rh) continue;
-        const c = pci[j], o = (Y * rw + X) << 2; O[o] = S[c]; O[o + 1] = S[c + 1]; O[o + 2] = S[c + 2]; O[o + 3] = (pa[j] * S[c + 3]) | 0;
+        const c = pci[j], o = (Y * rw + X) << 2;
+        O[o] = S[c] + (SP[c] - S[c]) * mix; O[o + 1] = S[c + 1] + (SP[c + 1] - S[c + 1]) * mix; O[o + 2] = S[c + 2] + (SP[c + 2] - S[c + 2]) * mix; O[o + 3] = (pa[j] * S[c + 3]) | 0;
       }
       // wispy smoke: domain-warped noise → curling tendrils that drift and evolve slowly, top-weighted
       const sws = el * 0.01, sds = el * 0.02;                                        // slow drift/evolution
       for (let sy2 = 0; sy2 < rh; sy2 += 2) {
         const fall = sstep(0, 0.14, 1 - sy2 / (rh * SCOV)); if (fall <= 0.001) continue;   // concentrated at the top
         for (let sx2 = 0; sx2 < rw; sx2 += 2) {
+          const hw = smokeHW[sx2]; if (hw <= 0.004) continue;
           const wu = sx2 / rw * 0.9 + sws, wv = sy2 / rh * 1.1 - sws;                 // warp field (low-freq)
           const wx = (smp(wu, wv) - 0.5) * SWARP, wy = (smp(wu + 3.7, wv + 1.3) - 0.5) * SWARP;
           const dc = smp(sx2 / rw * SDSC + wx + sds * 0.5, sy2 / rh * SDSC * 1.5 + wy - sds);
-          let aw = sstep(SLO, SHI, dc) * fall * SOP; if (aw < 0.004) continue; if (aw > 0.9) aw = 0.9;
+          let aw = sstep(SLO, SHI, dc) * fall * hw * SOP; if (aw < 0.004) continue; if (aw > 0.9) aw = 0.9;
           const ia = 1 - aw, av = (aw * 255) | 0;
           for (let yy = 0; yy < 2; yy++) { const Yr = sy2 + yy; if (Yr >= rh) continue; const base = (Yr * rw) << 2;
             for (let xx = 0; xx < 2; xx++) { const Xr = sx2 + xx; if (Xr >= rw) continue; const o = base + (Xr << 2);
-              O[o] = 200 * aw + O[o] * ia; O[o + 1] = 198 * aw + O[o + 1] * ia; O[o + 2] = 194 * aw + O[o + 2] * ia; if (O[o + 3] < av) O[o + 3] = av; } }
+              O[o] = 184 * aw + O[o] * ia; O[o + 1] = 194 * aw + O[o + 1] * ia; O[o + 2] = 214 * aw + O[o + 2] * ia; if (O[o + 3] < av) O[o + 3] = av; } }
         }
       }
       ctx.putImageData(out, 0, 0);
@@ -884,9 +999,6 @@ class Component extends DCLogic {
       // blur the portrait video in exactly ONCE per player selection (keyed on player id, not the
       // element — so re-renders/element recreation during play can't re-trigger it and glitch)
       if (pv) { const pid = this.state.playerId; if (this._pBlurFor !== pid) { this._pBlurFor = pid; pv.classList.remove('od-vidblurin'); void pv.offsetWidth; pv.classList.add('od-vidblurin'); } }
-      // TEST: wire the Tegmark card-picker dropdown (native listener — independent of the template's event binding)
-      const sel = document.querySelector('.od-cardsel');
-      if (sel && !sel._wired) { sel._wired = true; sel.addEventListener('change', () => { const v = sel.value; if (v === '') return; this.previewCard(parseInt(v, 10)); setTimeout(() => { try { sel.value = ''; } catch (e) {} }, 0); }); }
       const tiles = document.querySelectorAll('.od-tile-img');
       tiles.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); if (pl.objpos) im.style.objectPosition = pl.objpos; im.classList.toggle('od-flip', !!pl.flip); } });
       const pcards = document.querySelectorAll('.od-pcard-img');
@@ -1177,20 +1289,6 @@ class Component extends DCLogic {
     });
   }
   // TEST: draw a specific card by index and reveal it (Tegmark card picker)
-  previewCard(idx) {
-    const p = this.players[this.state.playerId];
-    if (!p || p.mechanic !== 'cards') return;
-    this.clearTimers();
-    this.ensureAudio(); this.cardPick();
-    const card = this.deck[idx];
-    this.setState({ phase: 'rolling', drawn: true, drawnIdx: idx, cardFlip: 0, pickedPos: 0 });
-    const ease = x => 1 - Math.pow(1 - x, 3);
-    this.tween(760, (pr) => { this.setState({ cardFlip: 180 * ease(pr) }); }, () => {
-      this.setState({ cardFlip: 180 });
-      this.resolve(card.doom, p, card);
-    });
-  }
-
   bumpExtinctions() {
     let n = 0;
     try {
@@ -1268,7 +1366,6 @@ class Component extends DCLogic {
     const cardFrontBg = cardDoom ? 'linear-gradient(160deg,#3a1020,#26060f)' : 'linear-gradient(160deg,#10322c,#0a221d)';
     const cardAccent = cardDoom ? this.wheelDoomCol : this.wheelGood1;
     const tegmarkList = this.deck.map(c => ({ name: c.name, dot: c.doom ? this.wheelDoomCol : this.wheelGood1 }));
-    const cardPreviews = this.deck.map((c, i) => ({ i: String(i), label: (i + 1) + '. ' + c.name }));   // TEST picker (dropdown wired in applyPhotos)
 
     const roster = this.order.map((id, i) => {
       const pl = this.players[id];
@@ -1374,17 +1471,18 @@ class Component extends DCLogic {
 
       isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards', notCards: p.mechanic !== 'cards',
       reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
-      dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0',
+      dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0', dieEncaseMs: String(p.doomClipMs || 5000),
       wheelGradient, wheelTicks, wheelRot: s.wheelRot.toFixed(1),
       wheelGoodColor: this.wheelGood1, wheelDoomColor: this.wheelDoomCol,
       earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, earthBurnFlag: s.earthBurn ? '1' : '0', showWheel: !s.earthBurn, deadCls: s.earthBurn ? 'is-dead' : '', embers, wheelSpinToken: String(s.wheelSpinToken), doomVideo: s.doomVideo,
       doomVid: p.doomVid || '', doomVidFlipCls: p.doomVidFlip ? 'od-flip' : '', doomVidPos: p.doomVidPos || '50% 50%',
       hasPortraitVid: !!p.portraitVideo, noPortraitVid: !p.portraitVideo, portraitVid: p.portraitVideo || '', portraitPoster: p.portraitPoster || p.photo || '', portraitPos: p.portraitPos || '50% 18%', showDoomVid: s.doomVideo && !p.portraitVideo,
+      hasPortraitLoop: !!p.portraitVideoLoop, portraitLoopVid: p.portraitVideoLoop || '',
       globeScale: s.earthBurn ? '1' : '0.5',
       wheelRingScale: s.earthBurn ? '0.16' : '1',
       wheelRingOpacity: s.earthBurn ? '0' : '1',
       fanCards, showFan: !s.drawn, drawn: s.drawn, cardFlip: s.cardFlip.toFixed(1),
-      drawnCard, cardFrontBg, cardFrontAccent: cardAccent, tegmarkList, cardPreviews,
+      drawnCard, cardFrontBg, cardFrontAccent: cardAccent, tegmarkList,
 
       rolling: s.phase === 'rolling',
       showRollButton: (s.phase === 'ready' || s.phase === 'rolling') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
@@ -1402,6 +1500,9 @@ class Component extends DCLogic {
       verdictTag: inGauntlet ? ('STEP ' + (s.gIndex + 1) + ' OF 3') : (isCardsResult ? (isDoomOut ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE') : 'THE RESULT'),
       verdictColor, verdictKicker, replayLabel, primaryAction: endGame ? this.openMenu : this.replay,
       keyGood, keyBad, goodPct: String(goodPct), goodColor: this.wheelGood1, badColor: this.wheelDoomCol,
+      // once a card is face-up its own copy states the odds — on mobile the bar is just repeating
+      // itself in space the card's description needs (CSS hides it below 860px only)
+      keyClass: isCardsResult ? 'od-key--drawn' : '',
       pickHint: '\u2191 PICK ANY CARD ABOVE', replayRedo: !inGauntlet && !endGame,
 
       clearedCount, isFaceEnd: s.faceEnd, faceEndHead, faceEndSub, faceEndColor,

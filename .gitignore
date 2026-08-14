@@ -38,10 +38,10 @@
 
 # Counterfactual Index — built from source by scripts/build-subapps.sh, so the
 # bundle is never committed (two people can't clobber each other's build).
-/public/counterfactual/
-/counterfactual/.next/
-/counterfactual/node_modules/
-/counterfactual/out/
+/public/manipulate-the-data/
+/manipulate-the-data/.next/
+/manipulate-the-data/node_modules/
+/manipulate-the-data/out/
 /swipe-v1/.next/
 /swipe-v1/node_modules/
 /swipe-v1/out/

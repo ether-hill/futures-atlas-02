@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prism · Generative Visual Lab · Futures Atlas</title>
+    <meta
+      name="description"
+      content="A smorgasbord of animated, embeddable generative visuals — the visual language of a quantum-computing futures project."
+    />
+    <script>
+      // default the global nav to dark, before first paint (no flash)
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
+    <!-- the one shared global nav (+ its styles) -->
+    <link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css />
+    <script src="/atlas-nav.js" defer></script>
+    <script type="module" crossorigin src="/prism/assets/main-DfsMThg6.js"></script>
+    <link rel="modulepreload" crossorigin href="/prism/assets/config-mFdNywyY.js">
+    <link rel="stylesheet" crossorigin href="/prism/assets/main-BkPBizAx.css">
+  </head>
+  <body>
+    <div id="app"></div>
+  </body>
+</html>

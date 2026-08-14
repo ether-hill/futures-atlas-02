@@ -46,16 +46,17 @@ node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/village-oracle"
 echo "✓ hollow-villages → public/village-oracle (with atlas-nav)"
 
 # The Counterfactual Index: Next static export → out/, then copy into public/.
-# One bundle carries all three views (/counterfactual, …/quantum, …/one); they
+# One bundle carries all three views (/manipulate-the-data, …/quantum,
+# …/ai-gigawatts); they
 # are three atlas entries but one codebase, sharing a data layer and a transform
 # engine.
-echo "→ building counterfactual"
-( cd "$HERE/counterfactual" && npm install --include=dev --no-audit --no-fund && npm run build )
-rm -rf "$HERE/public/counterfactual"
-mkdir -p "$HERE/public/counterfactual"
-cp -R "$HERE/counterfactual/out/." "$HERE/public/counterfactual/"
-node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/counterfactual"
-echo "✓ counterfactual → public/counterfactual (with atlas-nav)"
+echo "→ building manipulate-the-data"
+( cd "$HERE/manipulate-the-data" && npm install --include=dev --no-audit --no-fund && npm run build )
+rm -rf "$HERE/public/manipulate-the-data"
+mkdir -p "$HERE/public/manipulate-the-data"
+cp -R "$HERE/manipulate-the-data/out/." "$HERE/public/manipulate-the-data/"
+node "$HERE/scripts/inject-atlas-nav.mjs" "$HERE/public/manipulate-the-data"
+echo "✓ manipulate-the-data → public/manipulate-the-data (with atlas-nav)"
 
 # Swipe the Future: Next static export → out/, then copy into public/.
 echo "→ building swipe-the-future"

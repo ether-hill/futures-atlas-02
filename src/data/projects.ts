@@ -88,7 +88,7 @@ export const projects: Project[] = [
     image: "/projects/quantum-spark-2.jpg",
   },
   {
-    id: "counterfactual-ai-index",
+    id: "manipulate-ai-index",
     title: "The Counterfactual Index",
     tagline:
       "The 2026 Stanford AI Index, rebuilt from the report's own published CSVs so the numbers are theirs rather than an approximation of theirs, then redrawn under decisions nobody took. Say what you would do about AI and when: sixteen figures move, or say plainly that they don't and name the lever that was missing. An intervention never invents a data point. It emits a typed, dated transform over the real series, carrying a stated reason and a confidence you can argue with.",
@@ -97,11 +97,11 @@ export const projects: Project[] = [
     field: "Manipulate the data",
     status: "live",
     visibility: "draft",
-    path: "/counterfactual", // static bundle served within this site
-    image: "/projects/counterfactual-ai-index.jpg",
+    path: "/manipulate-the-data", // static bundle served within this site
+    image: "/projects/manipulate-ai-index.jpg",
   },
   {
-    id: "counterfactual-quantum",
+    id: "manipulate-quantum",
     title: "Counterfactual Quantum",
     tagline:
       "Quantum has no AI Index, so this board is assembled: publication counts pulled from OpenAlex and queried by topic, next to the two endpoints Quantum Delta NL's own report actually publishes. The Dutch programme runs out of Growth Fund money in 2028 and that report ends by asking what happens next, so four of the six interventions are versions of that question. Delft's output inflected in 2017, three years before the programme existed.",
@@ -110,11 +110,11 @@ export const projects: Project[] = [
     field: "Manipulate the data",
     status: "live",
     visibility: "draft",
-    path: "/counterfactual/quantum",
-    image: "/projects/counterfactual-quantum.jpg",
+    path: "/manipulate-the-data/quantum",
+    image: "/projects/manipulate-quantum.jpg",
   },
   {
-    id: "counterfactual-one",
+    id: "manipulate-ai-gigawatts",
     title: "One Figure: The Power",
     tagline:
       "Global AI data centre power capacity as a rising field of light, with the countries it passes on the way up (New Zealand, the Netherlands, New York State at peak) and the quarter each one is crossed. Pick a decision and the counterfactual is cut out of the glow as a solid shape, so the gap between them is the subject rather than something to infer from two lines. Underneath: what you changed, what you changed elsewhere, and what you left alone.",
@@ -123,8 +123,8 @@ export const projects: Project[] = [
     field: "Manipulate the data",
     status: "live",
     visibility: "draft",
-    path: "/counterfactual/one",
-    image: "/projects/counterfactual-one.jpg",
+    path: "/manipulate-the-data/ai-gigawatts",
+    image: "/projects/manipulate-ai-gigawatts.jpg",
   },
   {
     id: "hyperscale",

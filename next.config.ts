@@ -71,9 +71,15 @@ const nextConfig: NextConfig = {
         { source: "/social-composer/village-oracle", destination: "/social-composer/village-oracle/index.html" },
         // Swipe the Future — Next static export (basePath baked in, trailingSlash)
         // The Counterfactual Index — one static bundle, three atlas entries.
-        { source: "/counterfactual", destination: "/counterfactual/index.html" },
-        { source: "/counterfactual/quantum", destination: "/counterfactual/quantum/index.html" },
-        { source: "/counterfactual/one", destination: "/counterfactual/one/index.html" },
+        { source: "/manipulate-the-data", destination: "/manipulate-the-data/index.html" },
+        {
+          source: "/manipulate-the-data/quantum",
+          destination: "/manipulate-the-data/quantum/index.html",
+        },
+        {
+          source: "/manipulate-the-data/ai-gigawatts",
+          destination: "/manipulate-the-data/ai-gigawatts/index.html",
+        },
 
         { source: "/swipe-the-future", destination: "/swipe-the-future/index.html" },
         { source: "/swipe-the-future/stats", destination: "/swipe-the-future/stats/index.html" },
@@ -111,6 +117,20 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/prism", destination: "/generatives", permanent: true },
+      // The Counterfactual Index became Manipulate the data, and its
+      // single-figure story stopped being called /one. The old paths were only
+      // ever shared as previews, so these are cheap insurance on a bookmark.
+      {
+        source: "/counterfactual/one",
+        destination: "/manipulate-the-data/ai-gigawatts",
+        permanent: true,
+      },
+      { source: "/counterfactual", destination: "/manipulate-the-data", permanent: true },
+      {
+        source: "/counterfactual/:path*",
+        destination: "/manipulate-the-data/:path*",
+        permanent: true,
+      },
       // The blog and the feed were two views of the same posts; the feed won,
       // so the blog is gone and its posts live at /feed/<slug>. These two rules
       // are all that remains of it — old links are already out in the world.

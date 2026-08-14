@@ -15,7 +15,7 @@
   const IPHI = 1 / PHI;
 
   class DarioDie extends HTMLElement {
-    static get observedAttributes() { return ['facecolor', 'numcolor', 'rolltoken', 'reduced', 'encase']; }
+    static get observedAttributes() { return ['facecolor', 'numcolor', 'rolltoken', 'reduced', 'encase', 'encasems']; }
     connectedCallback() {
       if (this._booted) return;
       this._booted = true;
@@ -34,6 +34,10 @@
       if (this._renderer) this._renderer.dispose && this._renderer.dispose();
     }
     attributeChangedCallback(name, oldV, newV) {
+      // how long the mat->glass-case animation runs. Read before the ready guard: it is set from the
+      // markup on first render, long before the scene boots, and it must be in hand by the time
+      // 'encase' flips. Kept as data rather than a constant so it tracks the doom clip's real length.
+      if (name === 'encasems') { const ms = parseFloat(newV); if (!isNaN(ms) && ms > 0) this._encaseMs = ms; return; }
       if (!this._ready) return;
       if (name === 'rolltoken') { if (newV && newV !== oldV) { const pw = parseFloat(String(newV).split(':')[1]); this._rollPower = isNaN(pw) ? 0.6 : Math.max(0, Math.min(1, pw)); this._roll(); } }
       else if (name === 'encase') { this._setEncase(newV === '1'); }
@@ -523,7 +527,7 @@
         this._reflected = false;
         this._vitrine.visible = true;
       }
-      this._encaseOn = !!on; this._encaseDur = 5000;   // match the doom video length so mat->case runs across the whole clip
+      this._encaseOn = !!on; this._encaseDur = this._encaseMs || 5000;   // the doom clip's length, so mat->case runs across exactly the whole clip
       // start from the current progress so a reverse mid-flight is smooth
       const cur = this._encaseProg || 0;
       this._encaseT0 = performance.now() - (on ? cur : (1 - cur)) * this._encaseDur;
