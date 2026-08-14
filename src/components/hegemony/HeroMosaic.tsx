@@ -23,7 +23,7 @@ export function HeroMosaic() {
           left edge at the text block's own height. Narrow: the text spans the
           full width, so there is no side to protect and a top-weighted wash
           does the job instead. */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.84)_0%,rgba(0,0,0,0.74)_58%,rgba(0,0,0,0.5)_100%)] min-[720px]:bg-[radial-gradient(92%_118%_at_-10%_42%,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.92)_32%,rgba(0,0,0,0.72)_52%,rgba(0,0,0,0.22)_76%,rgba(0,0,0,0)_92%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.84)_0%,rgba(0,0,0,0.74)_58%,rgba(0,0,0,0.5)_100%)] min-[720px]:bg-[radial-gradient(96%_140%_at_-10%_44%,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.93)_34%,rgba(0,0,0,0.76)_54%,rgba(0,0,0,0.26)_78%,rgba(0,0,0,0)_93%)]" />
 
       {/* the hand-off into the page below */}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0)_74%,rgba(0,0,0,0.42)_100%)]" />

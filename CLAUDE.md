@@ -138,7 +138,7 @@ reintroduce a second listing of these posts.
 - Nav entries live in `public/atlas-nav.js` (`LINKS`), and the homepage carousel
   shows the newest ten.
 - **The AI Hegemony report has two live designs.** `/feed/ai-hegemony` is v1,
-  the complete record (all 57 findings, all 27 rejects); `/feed/ai-hegemony/v2`
+  the complete record (every finding, every reject); `/feed/ai-hegemony/v2`
   is a short EDIT of the same `src/data/hegemony.ts` — 8 findings at full size
   (`HEADLINE_IDS`), the timeline sized by event type, coverage six at a time.
   Both carry `VersionSwitch` so they can be compared directly. v2 is `noindex`

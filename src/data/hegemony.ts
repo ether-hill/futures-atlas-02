@@ -1154,6 +1154,67 @@ export const FINDINGS: Finding[] = [
       url: "https://www.storybench.org/how-the-washington-post-uncovered-the-sources-that-make-ai-chatbots-sound-so-smart/",
     },
   },
+
+  // ── who wrote the corpus, and who works in the field ──────────────────────
+  // Added because the report kept saying "Western" and letting the reader fill
+  // in the rest. Who actually typed the text, and who is in the room, are
+  // measurable — so they are measured here rather than gestured at. The limit
+  // is stated hard in every scope line: none of this is a measurement of any
+  // named model's corpus, because no lab discloses one (see no-disclosure).
+  {
+    id: "wikipedia-editors",
+    strand: "composition",
+    claim:
+      "Wikipedia — the reference layer under nearly every model — was written by an editor base about six in seven male, and that is the corrected figure.",
+    detail:
+      "Hill and Shaw re-analysed the 2008 Wikimedia/UNU-MERIT contributor survey, whose opt-in design under-counts women, by propensity-score weighting it against a nationally representative Pew sample of American adults. The raw survey put women at 12.7% of all editors and 17.8% of US adult editors; the corrected estimates are 16.1% and 22.7%. The correction makes the gap smaller and still leaves it enormous.",
+    figure: "16.1% women, corrected",
+    scope:
+      "The 2008 contributor survey, corrected against a December 2008 Pew sample; the global figure extends a US-derived adjustment, which the authors flag. It describes Wikipedia's editor base in 2008, not today's, and it is not a measurement of any model's corpus — no lab has published Wikipedia's share of one.",
+    tier: "documented",
+    source: {
+      name: "PLOS ONE 8(6), e65782",
+      author: "Benjamin Mako Hill & Aaron Shaw",
+      published: "2013-06-26",
+      url: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065782",
+    },
+  },
+  {
+    id: "reddit-skew",
+    strand: "composition",
+    claim:
+      "71% of Reddit's news users are men, and 59% are aged 18 to 29.",
+    detail:
+      "Pew's survey of Reddit as a news source found its news-using population overwhelmingly young and male. Reddit matters here because outbound Reddit links were the seed for WebText, the corpus behind GPT-2, and Reddit has since licensed its archive to model developers — but what share of any current model it accounts for has never been published.",
+    figure: "71% men · 59% under 30",
+    scope:
+      "US adults who use Reddit for news, surveyed 2015. It describes that population at that moment — not Reddit's whole user base, not Reddit today, and not the demographics of any training corpus.",
+    tier: "documented",
+    source: {
+      name: "Pew Research Center",
+      author: "Barthel, Stocking, Holcomb & Mitchell",
+      published: "2016-02-25",
+      url: "https://www.pewresearch.org/journalism/2016/02/25/reddit-news-users-more-likely-to-be-male-young-and-digital-in-their-news-preferences/",
+    },
+  },
+  {
+    id: "who-builds-it",
+    strand: "geopolitics",
+    claim:
+      "Women are under 19% of North American AI and computer science PhDs over a decade, and 16% of tenure-track CS faculty.",
+    detail:
+      "The AI Index's diversity chapter found the composition of the field essentially unmoved across ten years of rapid growth in everything else. It is the pipeline into the labs that choose the filters, write the labelling instructions and decide what counts as a good answer.",
+    figure: "<19% of PhDs · 16% of faculty",
+    scope:
+      "North America, AI and CS doctorates over the decade to 2021; the faculty figure comes from 17 of the 18 universities that responded. It describes the academic pipeline, not the staff of any particular lab, and not the annotation workforce — which is a different population again (see labour-geography).",
+    tier: "documented",
+    source: {
+      name: "Stanford HAI — AI Index diversity chapter",
+      author: "Stanford Institute for Human-Centered AI",
+      published: "2021-03",
+      url: "https://hai.stanford.edu/news/ai-index-diversity-report-unmoving-needle",
+    },
+  },
 ];
 
 /**
@@ -1711,6 +1772,13 @@ export const DROPPED: Dropped[] = [
       "Not gathered, and not inventable. The Atlas does not publish numbers it cannot source, so none appear.",
   },
 ];
+
+/**
+ * When this report went out. Rendered at the top of the masthead, in place of
+ * the section label — a report's date is part of its claim, because every
+ * figure in it is a measurement of a moment.
+ */
+export const PUBLISHED = "2026-08-13";
 
 export const findingsIn = (s: Strand) => FINDINGS.filter((f) => f.strand === s);
 export const countByTier = (t: Tier) => FINDINGS.filter((f) => f.tier === t).length;

@@ -12,33 +12,36 @@ import {
   FINDINGS,
   HEADLINE_FINDINGS,
   PRESS,
+  PUBLISHED,
   TIMELINE,
   VIDEOS,
   countByTier,
 } from "@/data/hegemony";
+import { formatPostDate } from "@/data/posts";
 
 /**
- * The AI Hegemony investigation, second design.
+ * The AI Hegemony report, second design.
  *
- * v1 is the complete record: all fifty-seven findings, all twenty-seven
- * rejects, every event. It is also, as a page, one long grid — a hundred-odd
- * bordered boxes at the same size, and by the third section the reader has
- * stopped distinguishing between them.
+ * v1 is the complete record: every finding, every reject, every event. It is
+ * also, as a page, one long grid — a hundred-odd bordered boxes at the same
+ * size, and by the third section the reader has stopped distinguishing between
+ * them.
  *
  * v2 is an EDIT, not a rewrite. Same data file, same claims, same sources; it
  * simply refuses to show them all at once:
  *
- *   • eight findings at full size instead of fifty-seven in a grid, chosen in
- *     HEADLINE_IDS, each with its scope inline rather than behind a click;
+ *   • the HEADLINE_IDS findings at full size instead of the whole set in a
+ *     grid, each with its scope inline rather than behind a click;
  *   • the timeline sized by what each event is, so scale means something;
  *   • six videos and six articles, the rest on request;
  *   • the method and the rejects compressed to their numbers, with v1 one
  *     click away for anyone who wants the whole thing.
  *
- * Every tally on this page still counts the FULL set — 57, 27, 25 — precisely
- * because the page is showing you a fraction of it. A short edit that also
- * shrank its own numbers would be misrepresenting the evidence base, which is
- * the exact failure this report was written about.
+ * Every tally on this page still counts the FULL set, and is counted from the
+ * data rather than typed, precisely because the page is showing you a fraction
+ * of it. A short edit that also shrank its own numbers would be
+ * misrepresenting the evidence base, which is the exact failure this report
+ * was written about.
  *
  * Both versions stay live at their own URLs (see VersionSwitch) so they can be
  * compared directly rather than from memory.
@@ -46,8 +49,7 @@ import {
 
 export const metadata: Metadata = {
   title: "Whose Common Sense? (v2) — Futures Atlas",
-  description:
-    "The short edit: eight findings at full size, the timeline sized by what each event is, and the coverage six at a time. The complete 57-finding report is at /feed/ai-hegemony.",
+  description: `The short edit: ${HEADLINE_FINDINGS.length} findings at full size, the timeline sized by what each event is, and the coverage six at a time. The complete ${FINDINGS.length}-finding report is at /feed/ai-hegemony.`,
   // Two designs of one report is a duplicate-content problem for a crawler;
   // v1 is the canonical, complete one.
   alternates: { canonical: "/feed/ai-hegemony" },
@@ -71,14 +73,31 @@ export default function AiHegemonyV2Page() {
               ← The feed
             </Link>
             <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">
-              Investigation · the short edit
+              Published {formatPostDate(PUBLISHED)} · the short edit
             </p>
             <h1 className="mt-4 max-w-[13ch] text-[clamp(36px,5.2vw,64px)] font-medium leading-[1.0] tracking-[-0.035em] text-paper">
               Whose common sense?
             </h1>
+
+            {/* Same standfirst as v1 — it is the report's opening argument, not
+                a piece of this design, so the two must not diverge. */}
             <p className="mt-6 max-w-[46ch] text-[clamp(15px,1.6vw,18px)] leading-[1.6] tracking-[-0.005em] text-paper/90">
-              Eight findings, in full. The other {FINDINGS.length - HEADLINE_FINDINGS.length} are
-              in the{" "}
+              Training data is not the world. GPT-3&rsquo;s mix was 92.6%
+              English. The &ldquo;clean&rdquo; filter that made it respectable
+              deleted African American English seven times more often than
+              white American English. Wikipedia, the reference layer under
+              nearly every model, was written by an editor base about six in
+              seven male.{" "}
+              <span className="text-accent-deep">
+                What comes back is one culture&rsquo;s defaults in the voice of
+                no culture at all &mdash; and clinics, courts and benefits
+                offices are already deferring to it.
+              </span>
+            </p>
+
+            <p className="mt-6 max-w-[46ch] text-[14px] leading-[1.7] text-paper/60">
+              {HEADLINE_FINDINGS.length} findings here, in full. The other{" "}
+              {FINDINGS.length - HEADLINE_FINDINGS.length} are in the{" "}
               <Link href="/feed/ai-hegemony" className="text-accent-deep underline underline-offset-4">
                 complete report
               </Link>

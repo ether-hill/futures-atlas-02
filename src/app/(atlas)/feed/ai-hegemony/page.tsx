@@ -12,15 +12,17 @@ import {
   DROPPED,
   FINDINGS,
   PRESS,
+  PUBLISHED,
   TIER_MEANING,
   TIMELINE,
   VIDEOS,
   countByTier,
   findingsIn,
 } from "@/data/hegemony";
+import { formatPostDate } from "@/data/posts";
 
 /**
- * The AI Hegemony investigation.
+ * The AI Hegemony report.
  *
  * A static segment under /feed, so it takes precedence over [slug] and the
  * feed stays the index while the report is a real page. It is not a post:
@@ -30,8 +32,9 @@ import {
 
 export const metadata: Metadata = {
   title: "Whose Common Sense? — Futures Atlas",
-  description:
-    "How Western assumptions get into AI systems, what is actually documented, and what is being built in response. 57 findings, every one scoped to the dataset, model and year it covers.",
+  // Counted, not typed: this description said "57 findings" for exactly as
+  // long as it took to add three more.
+  description: `How Western assumptions get into AI systems, what is actually documented, and what is being built in response. ${FINDINGS.length} findings, every one scoped to the dataset, model and year it covers.`,
 };
 
 const Section = ({
@@ -117,27 +120,31 @@ export default function AiHegemonyPage() {
             >
               ← The feed
             </Link>
+            {/* The date, not a section label. Every figure below is a
+                measurement of a moment, so when this went out is part of the
+                claim rather than furniture. */}
             <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">
-              Investigation
+              Published {formatPostDate(PUBLISHED)}
             </p>
             <h1 className="mt-4 max-w-[13ch] text-[clamp(36px,5.2vw,64px)] font-medium leading-[1.0] tracking-[-0.035em] text-paper">
               Whose common sense?
             </h1>
 
+            {/* Every clause here is a finding below, and nothing in it is
+                stated wider than the evidence — on a page whose whole argument
+                is that people do exactly that. */}
             <p className="mt-6 max-w-[46ch] text-[clamp(15px,1.6vw,18px)] leading-[1.6] tracking-[-0.005em] text-paper/90">
-              AI systems don&rsquo;t simply inherit a view of the world. They
-              compress one, and then hand it back as though it were neutral.
-              The question this report asks is narrower and answerable:{" "}
+              Training data is not the world. GPT-3&rsquo;s mix was 92.6%
+              English. The &ldquo;clean&rdquo; filter that made it respectable
+              deleted African American English seven times more often than
+              white American English. Wikipedia, the reference layer under
+              nearly every model, was written by an editor base about six in
+              seven male.{" "}
               <span className="text-accent-deep">
-                which parts of that are documented, and which parts are just
-                repeated?
+                What comes back is one culture&rsquo;s defaults in the voice of
+                no culture at all &mdash; and clinics, courts and benefits
+                offices are already deferring to it.
               </span>
-            </p>
-
-            <p className="mt-7 font-mono text-[11px] uppercase leading-[1.6] tracking-[0.12em] text-paper/55">
-              {FINDINGS.length} findings &middot; {VIDEOS.length} broadcasts
-              &middot; {PRESS.length} published pieces &mdash; the wall behind
-              this is all of them
             </p>
           </div>
         </Container>
