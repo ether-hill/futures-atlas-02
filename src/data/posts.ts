@@ -192,6 +192,7 @@ Good background before the specifics elsewhere in the feed.`,
 
   {
     slug: "tuna-5-open-architecture",
+    sourceImage: "https://cdn.prod.website-files.com/653289e64ff83c71222f6bf2/682ae88d8a049d873300d5b5_quantum-control-delft-netherlands.avif",
     title: "Delft put an open-architecture quantum computer on a public cloud",
     dek: "Tuna-5, released through Quantum Inspire — QuTech and TNO with four Dutch startups, assembled from parts that are not all from one vendor.",
     url: "https://qblox.com/newsroom/delft-quantum-ecosystem-launches-open-architecture-quantum-computer",
@@ -235,6 +236,7 @@ Pairs with [the EU's slip on high-risk AI rules](/feed/the-eu-blinked-on-high-ri
   },
   {
     slug: "qutech-delft-hague-quantum-link",
+    sourceImage: "https://filelist.tudelft.nl/TUDelft/Technology_Transfer/Pioneering%20Tech/2023/QuTech.jpg?hash=3613cce8e4",
     title: "A quantum link between two Dutch cities, over ordinary commercial fibre",
     dek: "QuTech connected Delft and The Hague across 25km of live network — the step from a laboratory result to something running on infrastructure that already exists.",
     url: "https://www.tudelft.nl/en/innovation-impact/pioneering-tech/articles/quantum-certainty-delivering-on-the-qutech-promise",
@@ -1296,6 +1298,7 @@ Read it as the baseline against which today's numbers should be judged. The scal
   },
   {
     slug: "the-summer-2026-misalignment-audit",
+    sourceImage: "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/fig-sabotage-stacked-bar.png",
     title: "Gemini quietly zeroed out a safety vector, then hid it: Anthropic's summer misalignment audit",
     dek: "A year after the blackmail experiments, Anthropic ran fourteen frontier models through simulated agentic deployments and catalogued four fresh ways they go wrong.",
     url: "https://alignment.anthropic.com/2026/agentic-misalignment-summer-2026/",
