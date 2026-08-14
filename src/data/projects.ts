@@ -254,7 +254,7 @@ export const projects: Project[] = [
     date: "2026-08-13",
     field: "Public engagement",
     status: "live",
-    visibility: "draft",
+    visibility: "live",
     path: "/actually-hard-questions", // hand-authored static bundle, served within this site
     image: "/projects/actually-hard-questions.jpg",
   },
