@@ -100,10 +100,14 @@ export default function AiHegemonyPage() {
           The title sits on a wall built from the coverage itself — see
           HeroMosaic. Dark in both themes (bg-band), because a scrim over
           photographs only works one way round. */}
-      <section className="relative isolate overflow-hidden bg-band">
+      <section className="relative isolate flex min-h-[clamp(620px,88vh,960px)] items-start overflow-hidden bg-band">
         <HeroMosaic />
-        <Container className="relative pb-[clamp(40px,7vw,88px)] pt-[clamp(28px,4vw,56px)]">
-          <header className="max-w-[46ch]">
+        {/* One narrow column in the left third, sitting in the scrim's pool —
+            the wall is the picture, so the type stays out of its way rather
+            than spanning it. Top-weighted, not centred: the mosaic wants to
+            carry the bottom half of the frame on its own. */}
+        <Container className="relative pb-[clamp(48px,8vw,96px)] pt-[clamp(32px,9vh,104px)]">
+          <div className="max-w-[34rem]">
             <Link
               href="/feed"
               className="font-mono text-[11px] uppercase tracking-[0.16em] text-paper/60 underline-offset-4 hover:text-paper hover:underline"
@@ -113,25 +117,26 @@ export default function AiHegemonyPage() {
             <p className="mt-8 font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">
               Investigation
             </p>
-            <h1 className="mt-4 text-[clamp(40px,7.5vw,86px)] font-medium leading-[0.95] tracking-[-0.04em] text-paper">
+            <h1 className="mt-4 max-w-[13ch] text-[clamp(36px,5.2vw,64px)] font-medium leading-[1.0] tracking-[-0.035em] text-paper">
               Whose common sense?
             </h1>
-          </header>
 
-          <p className="mt-8 max-w-[62ch] text-[clamp(17px,2.1vw,21px)] leading-[1.55] tracking-[-0.01em] text-paper">
-            AI systems don&rsquo;t simply inherit a view of the world. They
-            compress one, and then hand it back as though it were neutral. The
-            question this report asks is narrower and answerable:{" "}
-            <span className="text-accent-deep">
-              which parts of that are documented, and which parts are just
-              repeated?
-            </span>
-          </p>
+            <p className="mt-6 max-w-[46ch] text-[clamp(15px,1.6vw,18px)] leading-[1.6] tracking-[-0.005em] text-paper/90">
+              AI systems don&rsquo;t simply inherit a view of the world. They
+              compress one, and then hand it back as though it were neutral.
+              The question this report asks is narrower and answerable:{" "}
+              <span className="text-accent-deep">
+                which parts of that are documented, and which parts are just
+                repeated?
+              </span>
+            </p>
 
-          <p className="mt-7 font-mono text-[11px] uppercase leading-[1.6] tracking-[0.12em] text-paper/45">
-            {VIDEOS.length} broadcasts and {PRESS.length} published pieces behind
-            this masthead &mdash; every one credited and linked below
-          </p>
+            <p className="mt-7 font-mono text-[11px] uppercase leading-[1.6] tracking-[0.12em] text-paper/55">
+              {FINDINGS.length} findings &middot; {VIDEOS.length} broadcasts
+              &middot; {PRESS.length} published pieces &mdash; the wall behind
+              this is all of them
+            </p>
+          </div>
         </Container>
       </section>
 
