@@ -74,7 +74,7 @@ const html = `<div class="fa-foot__inner">
 <div class="fa-foot__grid">
 <div class="fa-foot__col">
 <a class="fa-foot__home" href="/" aria-label="Futures Atlas home"><span class="fa-foot__mark" aria-hidden="true"><img src="/fa.svg" alt="" width="22" height="22"></span><span class="fa-foot__word">Futures Atlas</span></a>
-<p class="fa-foot__body">Speculative-design projects, open-source tools and research on quantum computing, emerging AI, and the organisations driving them. <b>It&rsquo;s meant to be used.</b></p>
+<p class="fa-foot__body">Speculative-design projects and open-source frameworks for exploring Compute futures. We build tools for foresight on quantum systems, AI, and institutional power.</p>
 <p class="fa-foot__body"><a class="fa-foot__a" href="https://github.com/ether-hill" target="_blank" rel="noopener">GitHub &#8599;</a> &middot; <a class="fa-foot__a" href="/about">License</a> &middot; <a class="fa-foot__a" href="/contact">Contact</a></p>
 </div>
 <div class="fa-foot__col">

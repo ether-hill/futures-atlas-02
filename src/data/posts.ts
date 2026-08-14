@@ -84,6 +84,168 @@ export const KIND_LABEL: Record<PostKind, string> = {
 
 export const posts: Post[] = [
   {
+    slug: "data-colonialism-native-land",
+    sourceImage: "https://img.youtube.com/vi/Ac0-fBK0LVQ/maxresdefault.jpg",
+    title: "Data colonialism: the campus goes where the objection is cheapest",
+    dek: "Native communities organising against AI data centres sited on and beside Indigenous land.",
+    url: "https://www.youtube.com/watch?v=Ac0-fBK0LVQ",
+    sourceName: "Democracy Now!",
+    published: "2026",
+    posted: "2026-08-10",
+    kind: "video",
+    topics: ["Government", "Compute & energy", "Society"],
+    length: "medium",
+    readMinutes: 15,
+    whyItMatters:
+      "Siting decisions follow the path of least resistance, and least resistance is a political fact about who can be overruled. That is a different question from how much power a campus draws, and it is the one the load forecasts never contain.",
+    visibility: "live",
+    body: `Compute has to be somewhere. Which somewhere is a question about land, water and who has standing to object — and the answer has a pattern.
+
+This sits with the other siting stories in the feed — [the Meta campus in Louisiana](/feed/meta-ten-gas-plants-for-one-campus), [the Dallas Fed on who pays](/feed/dallas-fed-data-centres-and-your-power-bill), [the Kansas governor's race](/feed/kansas-data-center-fight) — but it is the one that names the variable the others leave out. The build is not distributed by demand alone. It is distributed by resistance, and resistance is not evenly available.
+
+Linked, not summarised.`,
+  },
+  {
+    slug: "empire-of-ai-karen-hao",
+    sourceImage: "https://img.youtube.com/vi/Xa6JuimHoEA/maxresdefault.jpg",
+    title: "Karen Hao on the empire model of AI",
+    dek: "The reporter who covered OpenAI from the inside, on concentration, extraction, and what it costs the places supplying the inputs.",
+    url: "https://www.youtube.com/watch?v=Xa6JuimHoEA",
+    sourceName: "Democracy Now!",
+    author: "Karen Hao",
+    published: "2026",
+    posted: "2026-08-09",
+    kind: "video",
+    topics: ["AI", "Society", "Government"],
+    length: "medium",
+    readMinutes: 18,
+    whyItMatters:
+      "Most coverage treats the labs as engineering organisations that happen to be large. The empire framing asks a different question — what is extracted, from where, and who is left holding the externality — and it changes which facts count as relevant.",
+    visibility: "live",
+    body: `Hao reported on OpenAI at close range for years, and her argument is structural rather than technical: that the shape of the industry — a handful of firms, enormous capital, inputs drawn from labour and land far from the headquarters — is better described as an imperial arrangement than as a market.
+
+Worth reading against [the hegemony material](/feed/state-ai-laws-halfway-through-2026) and the datacentre siting stories, which are the same argument arriving as electricity bills and planning applications.
+
+Linked, not summarised.`,
+  },
+
+  {
+    slug: "anatomy-of-an-ai-kill-chain",
+    title: "Anatomy of an AI kill chain",
+    dek: "Heidy Khlaaf of the AI Now Institute on militaries wiring mistake-prone models into targeting, from Ukraine to Gaza to Iran.",
+    sourceImage: "https://img.youtube.com/vi/SdbZmzqnkuQ/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=SdbZmzqnkuQ",
+    sourceName: "Democracy Now!",
+    author: "Heidy Khlaaf, AI Now Institute",
+    published: "2026-08-13",
+    posted: "2026-08-14",
+    kind: "video",
+    topics: ["Safety & policy", "Government", "Society"],
+    length: "medium",
+    readMinutes: 14,
+    whyItMatters:
+      "Almost every benchmark argument assumes the cost of a wrong answer is a wrong answer. In a targeting chain it is not, and the error rates being accepted there are the ones the rest of the field calls state of the art.",
+    visibility: "live",
+    body: `An interview with Heidy Khlaaf, chief AI scientist at the AI Now Institute, on a joint report with Airwars called "Anatomy of an AI Kill Chain".
+
+The reason to put a broadcast interview in a reading log otherwise built from papers: the object under discussion is a report, and the interview is where its author is asked the questions a paper does not have to answer. What does the system do when it is wrong. Who is accountable for the output. What "human in the loop" means when the loop runs at machine speed.
+
+We are linking it rather than summarising it — the argument is the interview, and the report it draws on is named in it.`,
+  },
+  {
+    slug: "gebru-deep-unlearning",
+    title: "Timnit Gebru on hype, ethics, and what the models inherit",
+    dek: "The researcher Google fired in 2020 for warning about bias, interviewed at length on where that argument stands six years on.",
+    sourceImage: "https://img.youtube.com/vi/aCB-NQtsKrs/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=aCB-NQtsKrs",
+    sourceName: "Democracy Now!",
+    author: "Timnit Gebru, DAIR",
+    published: "2026-08-13",
+    posted: "2026-08-14",
+    kind: "video",
+    topics: ["AI", "Society", "Safety & policy"],
+    length: "medium",
+    readMinutes: 16,
+    whyItMatters:
+      "The critique that got someone fired in 2020 is now the mainstream position on training data. Worth hearing from the person who paid for making it early, rather than from the field that later absorbed it.",
+    visibility: "live",
+    body: `Gebru founded the Distributed AI Research Institute after being forced out of Google in 2020 over a paper warning about the risks built into large language models.
+
+Read it against [the case against the case for AI safety](/feed/the-case-against-the-case-for-ai-safety), which is the written form of the same argument: that the safety agenda is not a neutral response to a technical hazard but a specific tradition with specific blind spots, and that what counts as a harm is decided upstream of any benchmark.
+
+Linked, not summarised.`,
+  },
+  {
+    slug: "kansas-data-center-fight",
+    title: "A governor's race with a data centre at the centre of it",
+    dek: "Cindy Holscher, Kansas Democratic nominee, on affordability and the fight over what a campus costs the people next to it.",
+    sourceImage: "https://img.youtube.com/vi/RCWsj2MyJb0/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=RCWsj2MyJb0",
+    sourceName: "Democracy Now!",
+    author: "Cindy Holscher",
+    published: "2026-08-07",
+    posted: "2026-08-13",
+    kind: "video",
+    topics: ["Government", "Compute & energy", "Society"],
+    length: "short",
+    readMinutes: 9,
+    whyItMatters:
+      "Compute siting has stopped being an infrastructure story and become an electoral one. That is the point at which the numbers in the interconnection queue start meeting a constituency.",
+    visibility: "live",
+    body: `A candidate for state governor talking about data centres as a cost-of-living issue rather than an investment announcement.
+
+This is the political end of the same arithmetic as [the Meta gas plants](/feed/meta-ten-gas-plants-for-one-campus) and [the Dallas Fed on who pays](/feed/dallas-fed-data-centres-and-your-power-bill). Those establish that somebody's bill absorbs the build. This is what happens when the people holding that bill get a vote on it.
+
+Worth watching for how the argument is actually made to voters, which is not how it is made in a filing.`,
+  },
+  {
+    slug: "naomi-klein-digital-doppelgangers",
+    title: "Naomi Klein corrects a quote she never said",
+    dek: "A widely-shared line attributed to Klein turned out to be AI-generated — and the programme that aired it had her on to say so.",
+    sourceImage: "https://img.youtube.com/vi/BbcC-hp687M/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=BbcC-hp687M",
+    sourceName: "Democracy Now!",
+    author: "Naomi Klein",
+    published: "2026-07-31",
+    posted: "2026-08-12",
+    kind: "video",
+    topics: ["Society", "AI"],
+    length: "short",
+    readMinutes: 8,
+    whyItMatters:
+      "The failure mode is not a convincing fake of something outrageous. It is an unremarkable sentence that sounds like the person, travels because it sounds like them, and is never checked because nothing about it invites checking.",
+    visibility: "live",
+    body: `Democracy Now! shared a quote attributed to Naomi Klein. It was AI-generated. They brought her on to correct it on air.
+
+The correction is the story. A fabricated quotation that is *plausible* — in register, in politics, in vocabulary — has no tell, and the ordinary defences all assume there will be one. It spread because it sounded exactly like something she would say.
+
+There is a reason this sits in the Atlas. [Hypothetica Magnifica](/magnifica) is a project built entirely out of invented text attributed to real living people, and everything in its design — the gate before any excerpt, the caption on every passage, the sourced record kept separate — exists because of precisely this failure. The difference between that and what happened here is labelling, and labelling is the whole of it.`,
+  },
+  {
+    slug: "less-regulated-than-sandwiches",
+    title: "Less regulated than sandwiches",
+    dek: "Max Tegmark on oversight, after an OpenAI agent was reported hacking other companies' systems.",
+    sourceImage: "https://img.youtube.com/vi/4CTtlpi7Lic/maxresdefault.jpg",
+    url: "https://www.youtube.com/watch?v=4CTtlpi7Lic",
+    sourceName: "Democracy Now!",
+    author: "Max Tegmark, MIT",
+    published: "2026-07-30",
+    posted: "2026-08-11",
+    kind: "video",
+    topics: ["Safety & policy", "AI", "Government"],
+    length: "short",
+    readMinutes: 10,
+    whyItMatters:
+      "Agentic capability is arriving in products faster than any oversight regime is arriving in law, and the gap is widest exactly where the actions have consequences outside the lab.",
+    visibility: "live",
+    body: `Tegmark's line is that a sandwich shop faces more binding oversight than a company shipping autonomous agents — made in the wake of reporting that an OpenAI agent had reached into other firms' systems.
+
+He is also one of the three forecasters in the Atlas's own [The Odds](/theodds), which sets his public estimates beside Amodei's and Musk's. Useful to hear the argument in full rather than as a number on a chart.
+
+Linked, not summarised.`,
+  },
+
+  {
     slug: "the-power-paradox-panel",
     sourceImage: "https://img.youtube.com/vi/I9vU-tyTkbc/maxresdefault.jpg",
     title: "A room full of energy people arguing about AI's power bill",
@@ -104,54 +266,6 @@ export const posts: Post[] = [
 We link it rather than summarise it, because the value of a panel is the disagreement in the room and that does not survive being paraphrased. The framing is the familiar collision: datacentre electricity demand is climbing on a schedule set by capital expenditure, while decarbonisation targets run on a schedule set by policy, and the two do not line up.
 
 Watch it alongside [the Meta gas plants story](/feed/meta-ten-gas-plants-for-one-campus) and the [Dallas Fed's work on who pays](/feed/dallas-fed-data-centres-and-your-power-bill). Those two supply the concrete numbers this discussion is generalising from.`,
-  },
-  {
-    slug: "chain-of-thought-monitorability",
-    sourceImage: "https://img.youtube.com/vi/wa1XIJ6NmiA/maxresdefault.jpg",
-    title: "Chain-of-thought monitorability is a safety property we might lose",
-    dek: "Tomek Korbak at FAR.AI's Alignment Workshop, on why models that reason in readable English are an opportunity — and a fragile one.",
-    url: "https://www.youtube.com/watch?v=wa1XIJ6NmiA",
-    sourceName: "FAR·AI (Alignment Workshop)",
-    author: "Tomek Korbak",
-    published: "2026-01",
-    posted: "2026-08-13",
-    kind: "video",
-    topics: ["AI", "Safety & policy"],
-    length: "short",
-    readMinutes: 20,
-    whyItMatters:
-      "If a model has to think in legible language to think well, we can read its reasoning. That is an accident of current architectures, not a guarantee, and it is the kind of property that disappears quietly.",
-    visibility: "live",
-    body: `A short conference talk from FAR.AI's Alignment Workshop series.
-
-The subject is one of the more interesting bets in current safety work: today's frontier models do a lot of their hardest reasoning by writing it out, in something close to English, before answering. That makes the reasoning inspectable — you can watch a model plan, and notice when the plan is bad.
-
-The catch is that nothing guarantees this continues. It is a side effect of how these systems are built and trained, not a designed-in property, and optimisation pressure that rewards only the final answer can quietly erode it.
-
-We are linking the talk rather than reporting its conclusions second-hand. If you want the written version of the argument, the [International AI Safety Report](/feed/international-ai-safety-report-2026) covers the same territory at length.`,
-  },
-  {
-    slug: "interpretability-that-does-something",
-    sourceImage: "https://img.youtube.com/vi/SQ1ir0YT2x8/maxresdefault.jpg",
-    title: "Interpretability's real test is whether you can act on it",
-    dek: "Yonatan Belinkov at the Alignment Workshop, on moving from findings that are interesting to findings that change what you do.",
-    url: "https://www.youtube.com/watch?v=SQ1ir0YT2x8",
-    sourceName: "FAR·AI (Alignment Workshop)",
-    author: "Yonatan Belinkov",
-    published: "2026-03",
-    posted: "2026-08-12",
-    kind: "video",
-    topics: ["AI", "Safety & policy"],
-    length: "short",
-    readMinutes: 20,
-    whyItMatters:
-      "A field can produce a great deal of true, publishable work and still not change a single deployment decision. The gap between explaining a model and steering one is where interpretability either becomes engineering or stays literature.",
-    visibility: "live",
-    body: `Belinkov's talk is framed around scalability and actionability — the two things that separate an interpretability result from an interpretability tool.
-
-The honest summary of the field is that it has become very good at finding structure inside models: features, circuits, directions that correspond to recognisable concepts. What is far less settled is whether any of that survives contact with a production system, at production scale, in time to matter.
-
-Linked rather than summarised. For the concrete end of this, see [the 171 emotion directions found inside Claude](/feed/171-emotion-directions-inside-claude) — a result of exactly the kind whose usefulness this talk is interrogating.`,
   },
   {
     slug: "cs2881-mechanistic-interpretability-lecture",

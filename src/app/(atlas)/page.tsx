@@ -46,10 +46,9 @@ export default async function Home() {
               Mapping foresight
             </h1>
             <p className="mt-7 max-w-[620px] font-mono text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-paper/70">
-              A growing collection of speculative-design projects, prototypes,
-              open-source tools, and research, built to raise awareness of
-              quantum computing, emerging AI, and the organisations driving the
-              future.
+              Speculative-design projects and open-source frameworks for
+              exploring Compute futures. We build tools for foresight on
+              quantum systems, AI, and institutional power.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Link
