@@ -116,3 +116,6 @@ next-env.d.ts
 /public/quantum-lag/
 /quantum-lag/out/
 /quantum-lag/.next/
+
+# staged copies of assets/fonts (see scripts/build-subapps.sh); the source is committed
+*/assets/fonts/

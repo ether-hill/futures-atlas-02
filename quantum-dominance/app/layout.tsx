@@ -1,12 +1,30 @@
 import type { Metadata } from "next";
-import { Anton, Archivo, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
 // Deliberate graphic-novel identity (per the brief — NOT the Atlas base type system):
 // Anton (impact slabs), Archivo (body), JetBrains Mono (HUD/labels).
-const anton = Anton({ variable: "--font-anton", subsets: ["latin"], weight: ["400"], display: "swap" });
-const archivo = Archivo({ variable: "--font-archivo", subsets: ["latin"], weight: ["400", "500", "600"], display: "swap" });
-const jb = JetBrains_Mono({ variable: "--font-jbmono", subsets: ["latin"], weight: ["400", "500"], display: "swap" });
+const anton = localFont({
+  src: [
+    { path: "../assets/fonts/anton.woff2", weight: "400", style: "normal" },
+  ],
+  variable: "--font-anton",
+  display: "swap",
+});
+const archivo = localFont({
+  src: [
+    { path: "../assets/fonts/archivo.woff2", weight: "400 900", style: "normal" },
+  ],
+  variable: "--font-archivo",
+  display: "swap",
+});
+const jb = localFont({
+  src: [
+    { path: "../assets/fonts/jetbrains-mono.woff2", weight: "100 800", style: "normal" },
+  ],
+  variable: "--font-jbmono",
+  display: "swap",
+});
 
 const DESC = "Speculative satire: one official 'quantum dominance' post, two lenses. Pick The Dystopia (it works for him) or The Backfire (the machine turns transparent the other way), and explore randomized futures — each anchored to something on the record.";
 const IMG = "https://futures-atlas-02.vercel.app/projects/quantum-dominance.jpg";

@@ -1,40 +1,49 @@
 import type { Metadata } from "next";
-import { Archivo, Bodoni_Moda, Saira_Condensed, IBM_Plex_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "futures-atlas-core/tokens.css";
 import "futures-atlas-core/nav.css";
 import "./globals.css";
 
 // Display / headings
-const archivo = Archivo({
+const archivo = localFont({
+  src: [
+    { path: "../../assets/fonts/archivo.woff2", weight: "400 900", style: "normal" },
+  ],
   variable: "--font-archivo",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
 // Letters / oracle quotes
-const bodoni = Bodoni_Moda({
+const bodoni = localFont({
+  src: [
+    { path: "../../assets/fonts/bodoni-moda-1.woff2", weight: "400 900", style: "normal" },
+    { path: "../../assets/fonts/bodoni-moda-italic-0.woff2", weight: "400 900", style: "italic" },
+  ],
   variable: "--font-bodoni",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
 // Year markers
-const saira = Saira_Condensed({
+const saira = localFont({
+  src: [
+    { path: "../../assets/fonts/saira-condensed-0.woff2", weight: "400", style: "normal" },
+    { path: "../../assets/fonts/saira-condensed-1.woff2", weight: "500", style: "normal" },
+    { path: "../../assets/fonts/saira-condensed-2.woff2", weight: "600", style: "normal" },
+    { path: "../../assets/fonts/saira-condensed-3.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-saira",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 // Labels, data, captions, body
-const plexMono = IBM_Plex_Mono({
+const plexMono = localFont({
+  src: [
+    { path: "../../assets/fonts/ibm-plex-mono-0.woff2", weight: "300", style: "normal" },
+    { path: "../../assets/fonts/ibm-plex-mono-1.woff2", weight: "400", style: "normal" },
+    { path: "../../assets/fonts/ibm-plex-mono-2.woff2", weight: "500", style: "normal" },
+    { path: "../../assets/fonts/ibm-plex-mono-3.woff2", weight: "600", style: "normal" },
+  ],
   variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
