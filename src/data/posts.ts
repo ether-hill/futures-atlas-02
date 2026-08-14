@@ -84,6 +84,134 @@ export const KIND_LABEL: Record<PostKind, string> = {
 
 export const posts: Post[] = [
   {
+    slug: "tuna-5-open-architecture",
+    title: "Delft put an open-architecture quantum computer on a public cloud",
+    dek: "Tuna-5, released through Quantum Inspire — QuTech and TNO with four Dutch startups, assembled from parts that are not all from one vendor.",
+    url: "https://qblox.com/newsroom/delft-quantum-ecosystem-launches-open-architecture-quantum-computer",
+    sourceName: "Qblox",
+    published: "2026",
+    posted: "2026-08-14",
+    kind: "link",
+    topics: ["Quantum", "Compute & energy", "Futures"],
+    length: "medium",
+    readMinutes: 9,
+    whyItMatters:
+      "Almost every quantum machine you can name is one company's stack top to bottom. An open architecture is a bet that the field's second decade looks like an industry with suppliers rather than a set of rival monoliths.",
+    visibility: "live",
+    body: `Tuna-5 comes out of HectoQubit/2 — QuTech and TNO with QuantWare, Qblox, Orange Quantum Systems and Delft Circuits — and is reachable through the Quantum Inspire public cloud.
+
+The interesting claim is architectural rather than a qubit count. The control electronics, the chip and the wiring come from different organisations and are meant to be swappable, which is how a supply chain forms and how the cost curve eventually bends. Vertically integrated machines get to optimise everything and have to build everything.
+
+Worth holding against the American announcements in this feed — [Atom Computing's toric code](/feed/atom-computing-toric-code) and [the neutral-atom year](/feed/neutral-atoms-big-leap) — which are advances in capability. This is an advance in structure, and it is the sort that is easy to under-read.`,
+  },
+  {
+    slug: "europe-100-qubit-target",
+    title: "Europe's 100-qubit target, and Delft as one of three demonstrators",
+    dek: "OpenSuperQPlus under the EU Quantum Flagship set September 2026 as the date. Public money, public machine, public deadline.",
+    url: "https://physicsworld.com/a/europe-plans-to-build-100-qubit-quantum-computer-by-2026/",
+    sourceName: "Physics World",
+    published: "2026",
+    posted: "2026-08-12",
+    kind: "link",
+    topics: ["Quantum", "Government", "Futures"],
+    length: "short",
+    readMinutes: 7,
+    whyItMatters:
+      "A publicly funded target with a published date is falsifiable in a way a corporate roadmap is not. Whether it lands on time is itself the useful signal about European technological sovereignty.",
+    visibility: "live",
+    body: `The EU Quantum Flagship's OpenSuperQPlus project aims at a 100-qubit superconducting machine, with Delft among three European demonstrator sites and the result intended to be publicly available.
+
+Two things make this worth tracking rather than filing. The first is sovereignty: Europe buying quantum capability versus building it is the same argument now running about compute, and the answers may differ. The second is accountability — a date set in public can be missed in public, which is more than most roadmaps offer.
+
+Pairs with [the EU's slip on high-risk AI rules](/feed/the-eu-blinked-on-high-risk-ai) as the other half of the European picture: ambitious on building, slower on governing.`,
+  },
+  {
+    slug: "qutech-delft-hague-quantum-link",
+    title: "A quantum link between two Dutch cities, over ordinary commercial fibre",
+    dek: "QuTech connected Delft and The Hague across 25km of live network — the step from a laboratory result to something running on infrastructure that already exists.",
+    url: "https://www.tudelft.nl/en/innovation-impact/pioneering-tech/articles/quantum-certainty-delivering-on-the-qutech-promise",
+    sourceName: "TU Delft",
+    published: "2026",
+    posted: "2026-08-10",
+    kind: "link",
+    topics: ["Quantum", "Futures", "Compute & energy"],
+    length: "medium",
+    readMinutes: 10,
+    whyItMatters:
+      "A quantum internet built only on dedicated dark fibre is a demonstration. One that runs on deployed commercial fibre is a plan. The difference is most of the engineering.",
+    visibility: "live",
+    body: `QuTech's Delft–Hague link ran entanglement over about 25km of operational commercial fibre rather than a dedicated laboratory run.
+
+The distinction matters more than the distance. Working on installed infrastructure means contending with everything a real network does — shared conduit, ambient noise, temperature drift — and it is the difference between a physics result and a roadmap.
+
+Useful background for the post-quantum material in this feed: the migration to new cryptography assumes the threat is a machine that breaks keys. A functioning quantum network is the other branch of the same technology, and the one with far less coverage.`,
+  },
+
+  {
+    slug: "every-eval-ever",
+    title: "22,000 models, 2,200 benchmarks, and no agreed way to write any of it down",
+    dek: "A unifying schema and community repository for evaluation results — an attempt to make the field's numbers comparable at all.",
+    url: "https://arxiv.org/abs/2606.14516",
+    sourceName: "arXiv",
+    published: "2026-06-12",
+    posted: "2026-08-13",
+    kind: "paper",
+    topics: ["AI", "Safety & policy"],
+    length: "medium",
+    readMinutes: 10,
+    whyItMatters:
+      "Every argument about whether models are improving rests on numbers that were never written down in a common format. Fixing the plumbing is unglamorous and changes what the whole field is able to claim.",
+    visibility: "live",
+    body: `The problem is not that AI evaluation is hard. It is that results are recorded in whatever shape the framework that produced them happened to use, so two numbers about the same capability frequently cannot be placed side by side.
+
+This proposes a JSON schema for evaluation results, automatic converters from existing formats, and a crowdsourced repository — which already holds results from over 22,000 models across more than 2,200 benchmarks.
+
+Read it next to [are AI benchmarks doomed](/feed/are-ai-benchmarks-doomed) and [the ARC-AGI-3 result](/feed/arc-agi-3-humans-clear-it-models-do-not). Those ask whether the measurements mean anything; this asks the prior question of whether they can even be compared.`,
+  },
+  {
+    slug: "post-quantum-migration-timelines",
+    title: "Post-quantum migration has a date on it now",
+    dek: "Federal mandates land in 2030 and 2031, and the hybrid key exchange is already shipping in the browsers and messengers you use.",
+    url: "https://thequantuminsider.com/2026/08/07/post-quantum-cryptography-timelines/",
+    sourceName: "The Quantum Insider",
+    published: "2026-08-07",
+    posted: "2026-08-12",
+    kind: "link",
+    topics: ["Quantum", "Government", "Safety & policy"],
+    length: "medium",
+    readMinutes: 9,
+    whyItMatters:
+      "The interesting part of the quantum threat is no longer the machine. It is the migration schedule, which is a procurement and inventory problem running years ahead of any working attack.",
+    visibility: "live",
+    body: `Most quantum-risk coverage argues about when a cryptographically relevant machine arrives. The operational answer has quietly stopped depending on that.
+
+Hybrid ML-KEM key exchange is deployed in TLS 1.3 across the major browsers and CDNs, in Apple's iMessage and iCloud, in Signal's PQXDH, and in OpenSSH. The remaining work is not cryptography, it is knowing what you run and on which algorithms — with federal deadlines attached.
+
+Read with [Cloudflare moving its own finish line to 2029](/feed/cloudflare-just-moved-its-post-quantum-finish-line-to-2029) and [store-now-decrypt-later](/glossary#store-now-decrypt-later), which is the reason none of this waits for a working attack.`,
+  },
+  {
+    slug: "vista-user-simulation",
+    title: "You cannot evaluate an agent without simulating the person it argues with",
+    dek: "VISTA: a toolkit for interactive user simulation, aimed at the part of agent evaluation that static benchmarks cannot reach.",
+    url: "https://arxiv.org/abs/2606.11079",
+    sourceName: "arXiv",
+    published: "2026",
+    posted: "2026-08-11",
+    kind: "paper",
+    topics: ["AI", "Futures"],
+    length: "short",
+    readMinutes: 8,
+    whyItMatters:
+      "Agent failures in the wild are mostly interaction failures — misread intent, bad assumptions held across turns. A benchmark of fixed prompts cannot see any of that, which is why deployed performance keeps diverging from the leaderboard.",
+    visibility: "live",
+    body: `A static benchmark asks a question and grades the answer. A real user changes their mind, gives partial information, and gets impatient.
+
+This is a toolkit for putting a simulated user on the other side of the conversation, so an agent can be evaluated on the thing it actually does rather than on single-turn recall.
+
+It belongs beside [the 20,574-session study of coding agents](/feed/coding-agents-fail-by-ignoring-you), which found the dominant failure mode in the wild was agents ignoring what the user told them — precisely the failure a single-turn benchmark is structurally unable to detect.`,
+  },
+
+  {
     slug: "data-colonialism-native-land",
     sourceImage: "https://img.youtube.com/vi/Ac0-fBK0LVQ/maxresdefault.jpg",
     title: "Data colonialism: the campus goes where the objection is cheapest",
