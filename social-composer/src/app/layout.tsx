@@ -47,10 +47,10 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // No data-fa-no-footer: this app used to opt out of the shared footer and
+  // render its own copy of an older one, which is how the site ended up with
+  // two. atlas-nav.js injects THE footer here like everywhere else.
   return (
-    {/* No data-fa-no-footer: this app used to opt out of the shared footer and
-        render its own copy of an older one, which is how the site ended up with
-        two. atlas-nav.js injects THE footer here like everywhere else. */}
     <html
       lang="en"
       className={`${script.variable} ${display.variable} ${plex.variable} h-full antialiased`}
