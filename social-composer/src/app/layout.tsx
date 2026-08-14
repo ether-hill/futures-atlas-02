@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Footer } from "./footer";
 
 // Futures Atlas type system: Archivo 800 display, Bodoni Moda serif voice,
 // IBM Plex Mono data/labels/body.
@@ -49,9 +48,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
+    {/* No data-fa-no-footer: this app used to opt out of the shared footer and
+        render its own copy of an older one, which is how the site ended up with
+        two. atlas-nav.js injects THE footer here like everywhere else. */}
     <html
       lang="en"
-      data-fa-no-footer
       className={`${script.variable} ${display.variable} ${plex.variable} h-full antialiased`}
     >
       <head>
@@ -68,7 +69,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       </head>
       <body className="min-h-full bg-bone text-ink font-docket">
         {children}
-        <Footer />
       </body>
     </html>
   );

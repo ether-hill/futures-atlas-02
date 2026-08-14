@@ -22,6 +22,7 @@
   --color-surface: var(--c-surface);
   --color-band: var(--c-band);
   --color-paper: var(--paper);       /* always light: on-dark text, veils, chips */
+  --color-brand: var(--brand);       /* always blue: the footer band, both themes */
   --color-panel: var(--c-panel);
   --color-bone: var(--c-panel);      /* legacy alias -> panel */
   --color-mist: var(--c-panel);      /* legacy alias -> panel */

@@ -56,6 +56,13 @@
   --haze: var(--fa-haze);
   --band: var(--fa-ink);
   --paper: #f4efe4; /* ALWAYS light: text/veils on dark — single value */
+  /* The sign-off band. Like --paper, ONE value in both themes and deliberately
+     so: the footer is the same block of brand at the bottom of every page,
+     rather than another surface that follows the toggle. Written as a literal
+     because public/atlas-nav.css carries the same colour and is self-contained
+     by design — the vanilla sub-apps load it WITHOUT this sheet and still have
+     to render the identical footer. Change one, change the other. */
+  --brand: oklch(0.42 0.11 245);
   --text: var(--fa-ink);
   --text-body: var(--fa-ink-body);
   --muted: var(--fa-graphite);

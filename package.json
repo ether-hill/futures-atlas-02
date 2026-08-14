@@ -3,9 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "gen:footer": "node scripts/gen-footer.mjs",
+    "predev": "node scripts/gen-footer.mjs",
     "dev": "next dev",
     "build:subapps": "bash scripts/build-subapps.sh",
-    "build": "bash scripts/build-subapps.sh && bash scripts/reset-build-cache.sh && next build",
+    "build": "node scripts/gen-footer.mjs && bash scripts/build-subapps.sh && bash scripts/reset-build-cache.sh && next build",
     "start": "next start",
     "lint": "eslint"
   },

@@ -25,7 +25,10 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  // Baked once per deployment — the footer's "last updated" date.
+  // Baked once per deployment. No longer the footer's "last updated" date —
+  // that is generated into the footer markup itself by scripts/gen-footer.mjs,
+  // so the host and every sub-app quote the same one. Kept because it is a
+  // deploy stamp anything else can read.
   env: { NEXT_PUBLIC_BUILD_DATE: new Date().toISOString() },
 
   // Both sub-projects are served from THIS deployment as self-contained static
@@ -111,6 +114,15 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/atlas-nav.:ext(js|css)",
+        headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
+      },
+      // The shared footer, fetched by atlas-nav.js on every sub-app page. Same
+      // rule and the same reason as the nav bundle above: it is referenced by a
+      // fixed path from bundles that deploy on their own schedule, so a cached
+      // copy means a sub-app keeps showing last week's footer — which is how
+      // the site ends up looking like it has two of them again.
+      {
+        source: "/atlas-footer.html",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
       },
     ];

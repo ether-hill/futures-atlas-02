@@ -233,7 +233,9 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 /* The ground is blue in both themes now, so the dark mark is always inverted. */
 .fa-foot .fa-foot__mark img { filter: invert(1); }
 
-html.dark .fa-foot { background: oklch(0.36 0.10 245); color: #f3f1ec; }
+/* No dark variant: the footer band is ONE blue in both themes, the same as
+   --brand in the core tokens and the same as the host footer. A toggle-following
+   footer was the reason the two did not match. */
 @media (max-width: 680px) {
   .fa-foot { padding-top: clamp(40px, 12vw, 70px); }
   .fa-foot__inner { padding: 0 16px; } /* match the page gutter at this breakpoint */
@@ -511,3 +513,15 @@ html .fa-shell.is-clear,
    on one line. */
 .fa-shell__right { flex-wrap: nowrap; align-items: center; }
 .fa-share, .fa-shell__burger { flex: none; }
+
+/* the shared footer's extra pieces — the host used to style these with Tailwind
+   utilities, but there is one footer now and one stylesheet for it, loaded by
+   host and sub-app alike */
+.fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.6; }
+.fa-foot__split { display: grid; gap: 32px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4.5vw, 56px); border-top: 1px solid rgba(243, 241, 236, 0.18); padding-top: clamp(28px, 4vw, 44px); }
+@media (min-width: 640px) { .fa-foot__split { grid-template-columns: 1fr 1fr; } }
+.fa-foot__post { display: block; text-decoration: none; color: inherit; }
+.fa-foot__date { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.5; }
+.fa-foot__ptitle { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; line-height: 1.4; opacity: 0.85; }
+.fa-foot__post:hover .fa-foot__ptitle { opacity: 1; }
+.fa-foot__mark img { display: block; width: 22px; height: auto; }
