@@ -99,7 +99,7 @@ export function ProjectCard({
             color: "var(--text)",
           }}
         >
-          {live ? "Open the project" : "Forthcoming"}
+          {live ? project.cta ?? "Open the project" : "Forthcoming"}
           {live && <span>{project.path ? "→" : "↗"}</span>}
         </span>
       </div>

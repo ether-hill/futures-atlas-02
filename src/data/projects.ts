@@ -30,6 +30,7 @@ export interface Project {
   url?: string; // external link if it exists
   path?: string; // internal path served within this site (e.g. "/coastlines-2100")
   image?: string; // card thumbnail (else a hatch plate)
+  cta?: string; // card link label when live, default "Open the project"
   accent?: string; // optional per-project accent colour (CSS value), set on the project layout
   inHub?: boolean; // true = a route group inside this app (scaffolded), with /<slug>/research + /contact
 }
@@ -60,6 +61,7 @@ export const projects: Project[] = [
     visibility: "live",
     path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
     image: "/projects/odds-of-surviving-ai.jpg",
+    cta: "Play the odds",
   },
   {
     id: "signal-reactor",

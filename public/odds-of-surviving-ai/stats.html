@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stats — The Odds</title>
+<meta name="description" content="How everyone's plays of The Odds have actually gone — a real, running tally." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Futures Atlas" />
+<meta property="og:title" content="The Odds · Stats — Futures Atlas" />
+<meta property="og:description" content="How everyone's plays of The Odds have actually gone — a real, running tally." />
+<meta property="og:url" content="https://futures-atlas-02.vercel.app/theodds/stats" />
+<meta property="og:image" content="https://futures-atlas-02.vercel.app/og/the-odds.png" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:image" content="/projects/odds-of-surviving-ai.jpg" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#08080a;--panel:#141416;--line:rgba(236,234,230,0.12);--line2:rgba(236,234,230,0.24);--text:#ECEAE6;--muted:rgba(236,234,230,0.62);--faint:rgba(236,234,230,0.4);--accent:#E0481B}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;padding-top:50px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:720px;margin:0 auto;padding:clamp(40px,8vh,84px) clamp(20px,5vw,40px) 90px}
+.eyebrow{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent)}
+h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(30px,5vw,46px);line-height:1.02;letter-spacing:-0.02em;margin:14px 0 0}
+.lead{font-size:14.5px;line-height:1.65;color:var(--muted);max-width:56ch;margin-top:16px}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:44px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 20px}
+.stat b{display:block;font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,7vw,52px);line-height:1;color:var(--accent)}
+.stat.is-good b{color:#ECEAE6}
+.stat span{display:block;margin-top:8px;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint)}
+.note{margin-top:22px;font-size:12.5px;line-height:1.6;color:var(--faint)}
+.unconfigured{margin-top:44px;padding:20px;border:1px dashed var(--line2);border-radius:14px;font-size:13px;line-height:1.6;color:var(--muted)}
+.back{display:inline-block;margin-top:40px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--text)}
+@media(max-width:520px){.stat-grid{grid-template-columns:1fr}}
+</style>
+<link rel="stylesheet" href="/atlas-nav.css">
+<style>body{padding-top:var(--fa-nav-h,50px)!important}</style>
+<script src="/atlas-nav.js" defer></script>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="eyebrow">The Odds</div>
+  <h1>How it's actually gone.</h1>
+  <p class="lead">A real, running tally of every roll, spin and card pick since this launched — not a projection, not a guess. Nothing about who played is stored, just the outcome.</p>
+
+  <div id="loaded" style="display:none">
+    <div class="stat-grid">
+      <div class="stat is-good"><b id="playsN">—</b><span>plays recorded</span></div>
+      <div class="stat"><b id="doomPct">—</b><span>ended in doom — things went really, really badly</span></div>
+    </div>
+    <p class="note" id="doomN"></p>
+  </div>
+
+  <div id="unconfigured" class="unconfigured" style="display:none">
+    Plays aren't being recorded right now — the stats store isn't configured on this deployment.
+  </div>
+
+  <a href="/theodds" class="back">← Back to The Odds</a>
+</div>
+
+<script>
+fetch('/api/theodds/stats', { cache: 'no-store' })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (!d || !d.ok || !d.configured) { document.getElementById('unconfigured').style.display = 'block'; return; }
+    var plays = d.plays || 0, doom = d.doom || 0;
+    var pct = plays ? Math.round((doom / plays) * 100) : 0;
+    document.getElementById('playsN').textContent = plays.toLocaleString();
+    document.getElementById('doomPct').textContent = pct + '%';
+    document.getElementById('doomN').textContent = doom.toLocaleString() + ' of ' + plays.toLocaleString() + ' plays reached a doom scenario.';
+    document.getElementById('loaded').style.display = 'block';
+  })
+  .catch(function(){ document.getElementById('unconfigured').style.display = 'block'; });
+</script>
+</body>
+</html>
