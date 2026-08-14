@@ -16,6 +16,7 @@
 import { useId, useState } from "react";
 import type { Finding } from "@/data/hegemony";
 import { TIER_LABEL } from "@/data/hegemony";
+import { FigureChart } from "./FigureChart";
 
 const tierClass: Record<Finding["tier"], string> = {
   documented: "border-accent/45 text-accent-deep",
@@ -48,12 +49,29 @@ export function FindingCard({ finding }: { finding: Finding }) {
       </h3>
       <p className="mt-3 text-[14px] leading-[1.7] text-ink/70">{finding.detail}</p>
 
+      {/* Only where the finding's own numbers support a mark. A card without a
+          chart is not a card missing one — see FindingChart in data/hegemony.
+
+          The chart takes the flex slack, so in a rail of equal-height cards the
+          marks line up along one baseline instead of each floating wherever its
+          own paragraph happened to end. Bars you can compare across a row are
+          the reason for drawing them at all. */}
+      {finding.chart && (
+        <div className="mt-auto">
+          <FigureChart chart={finding.chart} />
+        </div>
+      )}
+
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={panelId}
-        className="mt-auto flex items-center gap-2 self-start pt-5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink/55 transition-colors hover:text-accent-deep"
+        // Without a chart the button takes the slack, exactly as before; with
+        // one, the chart has already taken it and the button sits under it.
+        className={`flex items-center gap-2 self-start pt-5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink/55 transition-colors hover:text-accent-deep ${
+          finding.chart ? "" : "mt-auto"
+        }`}
       >
         <span aria-hidden className="text-[13px] leading-none">
           {open ? "−" : "+"}

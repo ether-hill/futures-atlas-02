@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { FindingCard } from "@/components/hegemony/FindingCard";
+import { FindingCarousel } from "@/components/hegemony/FindingCarousel";
 import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
 import { FeedbackTimeline } from "@/components/hegemony/FeedbackTimeline";
 import { HeroMosaic } from "@/components/hegemony/HeroMosaic";
@@ -200,7 +201,10 @@ export default function AiHegemonyPage() {
             }
           >
             <DisparityTreemap />
-            <Grid strand="composition" />
+            {/* A rail, not a grid: eighteen cards is a wall, and the charts on
+                them want to be met four at a time. Nothing is held back — the
+                header counts the whole strand. */}
+            <FindingCarousel strand="composition" label="Findings on data composition" />
           </Section>
 
           <Section

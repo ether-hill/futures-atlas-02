@@ -64,6 +64,56 @@ export interface Source {
   url: string;
 }
 
+/**
+ * One quantity on a finding's chart.
+ *
+ * `value` is the number the mark is drawn from; everything written on screen is
+ * assembled from these fields, so the label under a bar cannot drift from the
+ * bar's length. The number counts up on screen, which is why `prefix` exists
+ * separately: "up to" and "more than" are the SOURCE's hedges, they belong to
+ * the claim rather than to the arithmetic, and they must not animate as if they
+ * were part of the figure.
+ */
+export interface Measure {
+  /** What is being counted — a language, a dialect, a class of source. */
+  label: string;
+  /** The number itself, exactly as the finding states it. Never rounded. */
+  value: number;
+  /** Written straight after the number: "%", "×", or "" for a bare count. */
+  unit: string;
+  /**
+   * A qualifier the source itself uses — "up to ", "more than ". Only ever
+   * copied from the finding; if the source did not hedge, neither do we.
+   */
+  prefix?: string;
+  /** A definitional reference point (1×, the US count) rather than a measurement. */
+  baseline?: boolean;
+}
+
+/**
+ * The optional chart on a finding's card.
+ *
+ * ── The rule, which is the same rule as `scope` ─────────────────────────────
+ *
+ * A chart is a re-presentation of `figure`, never an addition to it. Every
+ * `value` here must already be stated in that finding's own `claim` or
+ * `detail`. Nothing may be inferred, completed to a round number, or filled in
+ * to make a bar look better — including the remainder of a percentage, which is
+ * why a share is drawn as one bar against an empty track rather than as two
+ * bars that happen to sum to 100.
+ *
+ * A finding with no chart is not an omission. `no-disclosure` and `flatlined`
+ * carry no numbers because the absence of a number IS their finding, and
+ * drawing something there would be the exact move this report criticises.
+ */
+export interface FindingChart {
+  /** What the bars are drawn against. 100 for a percentage, the total for a count. */
+  max: number;
+  bars: Measure[];
+  /** One line naming precisely what is measured. Not a restatement of the claim. */
+  axis: string;
+}
+
 export interface Finding {
   id: string;
   strand: Strand;
@@ -80,6 +130,11 @@ export interface Finding {
   scope: string;
   tier: Tier;
   source: Source;
+  /**
+   * Optional. Drawn only where the finding's own numbers support a mark — see
+   * FindingChart. Absence is a legitimate state, not a gap to fill.
+   */
+  chart?: FindingChart;
 }
 
 export interface TimelineEvent {
@@ -132,6 +187,13 @@ export const FINDINGS: Finding[] = [
       published: "2021-11",
       url: "https://aclanthology.org/2021.emnlp-main.98/",
     },
+    chart: {
+      max: 100,
+      axis: "share of a 175,000-URL sample of C4, by host country",
+      bars: [
+        { label: "Pages hosted in the United States", value: 51.3, unit: "%" },
+      ],
+    },
   },
   {
     id: "c4-ratios",
@@ -150,6 +212,16 @@ export const FINDINGS: Finding[] = [
       published: "2021-11",
       url: "https://aclanthology.org/2021.emnlp-main.98/",
     },
+    chart: {
+      max: 100,
+      axis: "URLs contributed, as a percentage of the United States count",
+      bars: [
+        { label: "India", value: 3.4, unit: "%" },
+        { label: "Pakistan", value: 0.06, unit: "%" },
+        { label: "Nigeria", value: 0.03, unit: "%" },
+        { label: "Philippines", value: 0.1, unit: "%" },
+      ],
+    },
   },
   {
     id: "gpt3-english",
@@ -166,6 +238,13 @@ export const FINDINGS: Finding[] = [
       author: "Brown, Mann, Ryder et al. (OpenAI)",
       published: "2020",
       url: "https://github.com/openai/gpt-3/blob/master/dataset_statistics/languages_by_word_count.csv",
+    },
+    chart: {
+      max: 100,
+      axis: "share of GPT-3's training mix, by word count",
+      bars: [
+        { label: "English", value: 92.6, unit: "%" },
+      ],
     },
   },
   {
@@ -185,6 +264,14 @@ export const FINDINGS: Finding[] = [
       published: "2026",
       url: "https://commoncrawl.github.io/cc-crawl-statistics/plots/languages",
     },
+    chart: {
+      max: 100,
+      axis: "English share, before and after filtering",
+      bars: [
+        { label: "The open web, as crawled", value: 40.6, unit: "%" },
+        { label: "GPT-3's training mix", value: 92.6, unit: "%" },
+      ],
+    },
   },
   {
     id: "dialect-filter",
@@ -202,6 +289,15 @@ export const FINDINGS: Finding[] = [
       author: "Dodge, Sap, Marasović et al. (Allen Institute for AI)",
       published: "2021-11",
       url: "https://aclanthology.org/2021.emnlp-main.98/",
+    },
+    chart: {
+      max: 100,
+      axis: "documents removed by C4's blocklist, by dialect",
+      bars: [
+        { label: "African American English", value: 42, unit: "%" },
+        { label: "Hispanic-aligned English", value: 32, unit: "%" },
+        { label: "White American English", value: 6.2, unit: "%" },
+      ],
     },
   },
   {
@@ -221,6 +317,14 @@ export const FINDINGS: Finding[] = [
       published: "2020-07",
       url: "https://aclanthology.org/2020.acl-main.560/",
     },
+    chart: {
+      max: 2191,
+      axis: "languages in each resourcing class, of roughly 7,000",
+      bars: [
+        { label: "Class 0 — The Left-Behinds", value: 2191, unit: "" },
+        { label: "Class 5 — The Winners", value: 7, unit: "" },
+      ],
+    },
   },
   {
     id: "empty-corpora",
@@ -238,6 +342,13 @@ export const FINDINGS: Finding[] = [
       author: "Kreutzer, Caswell, Wang, Wahab et al. (Masakhane and 51 co-authors)",
       published: "2022",
       url: "https://aclanthology.org/2022.tacl-1.4/",
+    },
+    chart: {
+      max: 205,
+      axis: "of 205 language corpora audited by hand",
+      bars: [
+        { label: "Corpora with no usable text", value: 15, unit: "" },
+      ],
     },
   },
   {
@@ -257,6 +368,14 @@ export const FINDINGS: Finding[] = [
       published: "2023-12",
       url: "https://proceedings.neurips.cc/paper_files/paper/2023/hash/74bb24dca8334adce292883b4b651eda-Abstract-Conference.html",
     },
+    chart: {
+      max: 15,
+      axis: "tokens needed for the same text, against English",
+      bars: [
+        { label: "English", value: 1, unit: "×", baseline: true },
+        { label: "Worst-case language", value: 15, unit: "×", prefix: "up to " },
+      ],
+    },
   },
   {
     id: "pay-more-get-less",
@@ -274,6 +393,15 @@ export const FINDINGS: Finding[] = [
       author: "Ahia, Kumar, Gonen, Kasai, Mortensen, Smith & Tsvetkov",
       published: "2023-12",
       url: "https://aclanthology.org/2023.emnlp-main.614/",
+    },
+    chart: {
+      max: 5,
+      axis: "cost for the same task, against English, across 22 languages",
+      bars: [
+        { label: "English", value: 1, unit: "×", baseline: true },
+        { label: "Telugu and Amharic", value: 4, unit: "×", prefix: "up to " },
+        { label: "Non-Latin-script Indic languages", value: 5, unit: "×", prefix: "close to " },
+      ],
     },
   },
   {
@@ -311,6 +439,16 @@ export const FINDINGS: Finding[] = [
       published: "2024-05",
       url: "https://crfm.stanford.edu/fmti/May-2024/paper.pdf",
     },
+    chart: {
+      max: 100,
+      axis: "Foundation Model Transparency Index, May 2024 — scores out of 100",
+      bars: [
+        { label: "Data access", value: 7, unit: "%" },
+        { label: "Upstream indicators", value: 46, unit: "%" },
+        { label: "Downstream indicators", value: 65, unit: "%" },
+        { label: "Overall score", value: 58, unit: "" },
+      ],
+    },
   },
   {
     id: "consent-crisis",
@@ -329,6 +467,15 @@ export const FINDINGS: Finding[] = [
       published: "2024-07-20",
       url: "https://arxiv.org/abs/2407.14933",
     },
+    chart: {
+      max: 100,
+      axis: "share of C4 restricted to AI crawlers",
+      bars: [
+        { label: "All tokens, in one year", value: 5, unit: "%", prefix: "about " },
+        { label: "Its most actively maintained sources, in one year", value: 28, unit: "%" },
+        { label: "Restricted by Terms of Service", value: 45, unit: "%" },
+      ],
+    },
   },
   {
     id: "licensing-gap",
@@ -346,6 +493,14 @@ export const FINDINGS: Finding[] = [
       author: "Longpre, Mahari et al. (Data Provenance Initiative, MIT)",
       published: "2024-08",
       url: "https://arxiv.org/abs/2310.16787",
+    },
+    chart: {
+      max: 100,
+      axis: "of 1,800+ text datasets audited on popular hosting sites",
+      bars: [
+        { label: "Licence omitted", value: 70, unit: "%", prefix: "more than " },
+        { label: "Licence miscategorised", value: 50, unit: "%", prefix: "more than " },
+      ],
     },
   },
   {
@@ -382,6 +537,13 @@ export const FINDINGS: Finding[] = [
       author: "Llama Team, Meta AI",
       published: "2024-07-31",
       url: "https://arxiv.org/abs/2407.21783",
+    },
+    chart: {
+      max: 100,
+      axis: "share of Llama 3's ~15-trillion-token mix",
+      bars: [
+        { label: "Multilingual data", value: 8, unit: "%", prefix: "roughly " },
+      ],
     },
   },
   // ── encoding ─────────────────────────────────────────────────────────────
@@ -1153,6 +1315,13 @@ export const FINDINGS: Finding[] = [
       published: "2023-04-19",
       url: "https://www.storybench.org/how-the-washington-post-uncovered-the-sources-that-make-ai-chatbots-sound-so-smart/",
     },
+    chart: {
+      max: 100,
+      axis: "share of tokens, of 15.7 million domains in a C4 reconstruction",
+      bars: [
+        { label: "The top 1,000 sites", value: 8, unit: "%" },
+      ],
+    },
   },
 
   // ── who wrote the corpus, and who works in the field ──────────────────────
@@ -1178,6 +1347,15 @@ export const FINDINGS: Finding[] = [
       published: "2013-06-26",
       url: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065782",
     },
+    chart: {
+      max: 100,
+      axis: "share of Wikipedia editors who are women, 2008 survey re-analysed",
+      bars: [
+        { label: "All editors, raw survey", value: 12.7, unit: "%" },
+        { label: "All editors, corrected", value: 16.1, unit: "%" },
+        { label: "US adult editors, corrected", value: 22.7, unit: "%" },
+      ],
+    },
   },
   {
     id: "reddit-skew",
@@ -1195,6 +1373,14 @@ export const FINDINGS: Finding[] = [
       author: "Barthel, Stocking, Holcomb & Mitchell",
       published: "2016-02-25",
       url: "https://www.pewresearch.org/journalism/2016/02/25/reddit-news-users-more-likely-to-be-male-young-and-digital-in-their-news-preferences/",
+    },
+    chart: {
+      max: 100,
+      axis: "Reddit's news users, by share",
+      bars: [
+        { label: "Men", value: 71, unit: "%" },
+        { label: "Aged 18 to 29", value: 59, unit: "%" },
+      ],
     },
   },
   {
