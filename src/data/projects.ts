@@ -171,7 +171,7 @@ export const projects: Project[] = [
     id: "swipe-the-future",
     title: "Swipe the Future",
     tagline:
-      "A calibration game with one question: has this already happened, or not yet? Forty sourced claims about what machines are doing in medicine, transport, work and law, half of them older than you would guess. Swipe, then see which futures everyone buys early and which ones arrived while nobody was looking.",
+      "A calibration game with one question: has this already happened, or not yet? Forty sourced claims, half of them older than you would guess. Swipe, then see which futures everyone buys early and which ones arrived while nobody was looking.",
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
