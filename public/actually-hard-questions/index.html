@@ -17,7 +17,35 @@
     --ours-deep:oklch(0.55 0.13 245);  /* the same blue, for filled buttons */
     --green:#3F6B57;
     --serif:"Newsreader",Georgia,"Times New Roman",serif;
-    --line:rgba(20,20,19,.22);
+    --ink-rgb:20,20,19;      /* == --dark, as channels, for rgba() borders/overlays */
+    --paper-rgb:240,238,230; /* == --cream, as channels, for translucent glass chrome */
+    --surface:#fff;          /* card/panel fill on the tool screens */
+    --line:rgba(var(--ink-rgb),.22);
+  }
+  /* Dark mode reaches the whole app — map, grid, session, join, room, the
+     card, the QR overlay, and the chrome (nav/zoom/hint/join chip) that sits
+     outside #stage as body-level siblings — everywhere except the hero
+     banner, which is a fixed recreation of a specific screenshot and stays
+     as-authored regardless of theme. Swapping --dark/--cream on body inverts
+     every rule already written against them (custom properties inherit down
+     to every descendant, including plain text colour that only body ever
+     declared); --ink-rgb/--paper-rgb do the same for the rgba() borders and
+     glass chrome that couldn't reference --dark/--cream directly (alpha needs
+     the bare channels). #hero then resets all five straight back to their
+     fixed values so its own subtree never inherits the swap. */
+  html.dark body{
+    --dark:#F0EEE6;
+    --cream:#141413;
+    --ink-rgb:240,238,230;
+    --paper-rgb:20,20,19;
+    --surface:#1c1c1a;
+  }
+  #hero{
+    --dark:#141413;
+    --cream:#F0EEE6;
+    --ink-rgb:20,20,19;
+    --paper-rgb:240,238,230;
+    --surface:#fff;
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;background:var(--dark)}
@@ -40,32 +68,31 @@
     font-family:var(--serif);font-size:73px;line-height:1;letter-spacing:-.015em;white-space:nowrap}
   #ourLine #swap{color:var(--ours)}
   #ourAside{position:absolute;left:0;right:0;top:414px;text-align:center;color:var(--ours);
-    font-family:var(--serif);font-size:27px;letter-spacing:-.01em;opacity:0;transition:opacity .6s ease}
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    font-size:17px;letter-spacing:-.005em;opacity:0;transition:opacity .6s ease}
   #ourAside.on{opacity:1}
   #ourLine .caret{display:inline-block;width:3px;height:.72em;background:var(--ours);
     vertical-align:-.02em;margin-left:2px;animation:blink 1s steps(1) infinite}
   #choose{position:absolute;left:0;right:0;top:64%;z-index:22;text-align:center;padding:0 20px;
           opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
   #choose.on{opacity:1;transform:none}
-  .joinline{margin-top:18px;font-size:13px;color:rgba(240,238,230,.5)}
+  .joinline{margin-top:22px;font-size:13px;color:rgba(240,238,230,.5)}
   .joinline button{border:0;background:none;font-family:var(--serif);font-size:13px;cursor:pointer;
     color:rgba(240,238,230,.9);text-decoration:underline;text-underline-offset:3px;padding:0}
   .joinline button:hover{color:#fff}
+  .refline{margin-top:9px;font-size:11.5px;color:rgba(240,238,230,.3)}
+  .refline a{color:inherit;text-decoration-color:rgba(240,238,230,.3);text-underline-offset:2px}
+  .refline a:hover{color:rgba(240,238,230,.6)}
   .doors{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-  .door{font-size:15px;line-height:1.25;text-align:left;display:inline-flex;align-items:center;gap:13px;
-    max-width:340px;padding:14px 20px;border-radius:999px;cursor:pointer;border:1px solid transparent;
+  .door{font-size:16px;line-height:1.25;text-align:left;display:inline-flex;align-items:center;gap:15px;
+    max-width:360px;padding:17px 24px;border-radius:999px;cursor:pointer;border:1px solid transparent;
     transition:transform .2s ease,background .2s ease,border-color .2s ease;text-decoration:none}
-  .door small{display:block;font-size:11.5px;opacity:.62;margin-top:3px}
+  .door small{display:block;font-size:12px;opacity:.62;margin-top:4px}
   .door em{font-style:normal;color:var(--clay)}
-  .door.tame{background:rgba(204,120,92,.1);border-color:rgba(204,120,92,.55);color:var(--cream)}
-  .door.tame .arrow{color:var(--clay);opacity:1}
-  .door.tame small{color:rgba(204,120,92,.85);opacity:1}
-  .door.tame:hover{background:rgba(204,120,92,.2);transform:translateY(-2px)}
-  .door.hard{background:rgba(240,238,230,.92);color:var(--dark)}
-  .door.hard:hover{background:#fff;transform:translateY(-2px)}
   .door.room{background:var(--ours-deep);color:#fff}
-  .door.room small{opacity:.75}
+  .door.room small{opacity:.78}
   .door.room:hover{transform:translateY(-2px);filter:brightness(1.06)}
+  .door.room .arrow{font-size:19px}
   .door .arrow{font-size:17px;opacity:.75}
 
   @keyframes blink{0%,45%{opacity:1}55%,100%{opacity:.15}}
@@ -76,9 +103,9 @@
   #stage{position:fixed;inset:0;background:var(--cream)}
   #graph{width:100%;height:100%;display:block;cursor:grab}
   #graph.grabbing{cursor:grabbing}
-  .link{stroke:rgba(20,20,19,.17);stroke-width:1;fill:none}
-  .link.x{stroke:rgba(20,20,19,.1)}
-  .link.wl{stroke:rgba(20,20,19,.14)}
+  .link{stroke:rgba(var(--ink-rgb),.17);stroke-width:1;fill:none}
+  .link.x{stroke:rgba(var(--ink-rgb),.1)}
+  .link.wl{stroke:rgba(var(--ink-rgb),.14)}
   .node{cursor:pointer}
   .node .lab{font-size:14px;fill:var(--dark);text-anchor:middle;opacity:.72;pointer-events:none;
              transition:opacity .25s ease}
@@ -103,10 +130,10 @@
   .chrome{position:fixed;z-index:15;display:none}
   body.s-map .chrome{display:block}
   body.s-map #hint,body.s-map #zoom{display:flex}
-  .pill{font-size:13.5px;color:var(--dark);background:rgba(255,255,255,.72);border:1px solid var(--line);
+  .pill{font-size:13.5px;color:var(--dark);background:rgba(var(--paper-rgb),.72);border:1px solid var(--line);
         border-radius:9px;padding:10px 15px;cursor:pointer;backdrop-filter:blur(6px);
         transition:background .2s ease,border-color .2s ease}
-  .pill:hover{background:#fff;border-color:rgba(20,20,19,.45)}
+  .pill:hover{background:var(--surface);border-color:rgba(var(--ink-rgb),.45)}
   .pill.on{background:var(--dark);color:var(--cream);border-color:var(--dark)}
   .pill:disabled{opacity:.35;cursor:default}
   #hint{left:calc(22px + env(safe-area-inset-left));bottom:calc(22px + env(safe-area-inset-bottom));
@@ -115,7 +142,7 @@
   #zoom{right:calc(22px + env(safe-area-inset-right));bottom:calc(22px + env(safe-area-inset-bottom));
         gap:8px;align-items:center;font-size:13px;opacity:.85}
   #zoom .pill{width:38px;padding:10px 0;text-align:center}
-  .seg{display:inline-flex;background:rgba(255,255,255,.72);border:1px solid var(--line);
+  .seg{display:inline-flex;background:rgba(var(--paper-rgb),.72);border:1px solid var(--line);
        border-radius:999px;padding:3px;backdrop-filter:blur(6px)}
   .seg button{border:0;background:none;font-family:var(--serif);font-size:13.5px;color:var(--dark);
     padding:8px 18px;border-radius:999px;cursor:pointer;opacity:.6;transition:opacity .15s ease}
@@ -133,31 +160,31 @@
   .gsec .meta{padding-left:19px;font-size:13px;opacity:.55;margin:6px 0 16px;line-height:1.5}
   .gsec .meta a{color:inherit}
   .gcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(272px,1fr));gap:12px}
-  .gcard{background:#fff;border:1px solid rgba(20,20,19,.12);border-left:4px solid var(--gc,var(--dark));
+  .gcard{background:var(--surface);border:1px solid rgba(var(--ink-rgb),.12);border-left:4px solid var(--gc,var(--dark));
          border-radius:14px;padding:16px 18px;cursor:pointer}
   .gcard p{margin:0;font-size:17px;line-height:1.35}
   .gcard span{display:block;font-size:12.5px;opacity:.45;margin-top:8px}
   .gcard .hardness{display:inline-block;font-size:11.5px;letter-spacing:.04em;opacity:.6;
-    background:rgba(20,20,19,.06);border-radius:999px;padding:3px 9px;margin:9px 6px 0 0}
-  .gempty{border:1px dashed rgba(20,20,19,.22);border-radius:14px;padding:20px;font-size:14px;opacity:.5}
+    background:rgba(var(--ink-rgb),.06);border-radius:999px;padding:3px 9px;margin:9px 6px 0 0}
+  .gempty{border:1px dashed rgba(var(--ink-rgb),.22);border-radius:14px;padding:20px;font-size:14px;opacity:.5}
   #mapEmpty{left:50%;top:46%;transform:translateX(-50%);font-size:15px;opacity:.45;text-align:center}
   body.s-map #mapEmpty{display:block}
 
   #card{position:fixed;right:22px;top:22px;width:min(400px,calc(100vw - 44px));z-index:30;
         max-height:calc(100vh - 44px);overflow-y:auto;
-        background:#fff;border:1px solid rgba(20,20,19,.14);border-radius:14px;padding:26px 26px 22px;
-        box-shadow:0 20px 60px rgba(20,20,19,.18);opacity:0;transform:translateY(-10px);
+        background:var(--surface);border:1px solid rgba(var(--ink-rgb),.14);border-radius:14px;padding:26px 26px 22px;
+        box-shadow:0 20px 60px rgba(var(--ink-rgb),.18);opacity:0;transform:translateY(-10px);
         pointer-events:none;transition:opacity .25s ease,transform .25s ease}
   #card.on{opacity:1;transform:none;pointer-events:auto}
   #card .tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.5}
   #card .q{font-size:24px;line-height:1.25;margin:12px 0 0;letter-spacing:-.01em}
   #card .soft{margin:18px 0 0;font-size:13.5px;line-height:1.5;opacity:.66;
-              border-top:1px solid rgba(20,20,19,.12);padding-top:14px}
+              border-top:1px solid rgba(var(--ink-rgb),.12);padding-top:14px}
   #card .soft em{font-style:normal;display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.6;margin-bottom:5px}
   #card .soft .g{margin:0 0 16px;font-size:14px;line-height:1.5;opacity:.9}
   #card .soft ul.arts{margin:0;padding-left:17px;font-size:13.5px;line-height:1.45}
   #card .soft ul.arts li{margin-bottom:7px}
-  #card .soft ul.arts a{color:inherit;text-decoration-color:rgba(20,20,19,.35);text-underline-offset:2px}
+  #card .soft ul.arts a{color:inherit;text-decoration-color:rgba(var(--ink-rgb),.35);text-underline-offset:2px}
   #card .soft ul.arts a:hover{text-decoration-color:var(--dark)}
   #card .soft ul.arts.room{list-style:none;padding-left:0}
   #card .soft ul.arts.room li{padding-left:12px;border-left:2px solid var(--clay);margin-bottom:10px}
@@ -175,17 +202,17 @@
   .top h1 span{display:block;font-size:12.5px;opacity:.55}
   .top .sp{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
   .dots{display:flex;gap:6px;align-items:center}
-  .dots i{width:26px;height:4px;border-radius:2px;background:rgba(20,20,19,.16);display:block}
+  .dots i{width:26px;height:4px;border-radius:2px;background:rgba(var(--ink-rgb),.16);display:block}
   .dots i.done{background:var(--green)}
   .dots i.now{background:var(--clay)}
 
   .shead{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:22px}
-  .shead #sesName{font-size:23px;border:0;border-bottom:1px dashed rgba(20,20,19,.25);background:none;
+  .shead #sesName{font-size:23px;border:0;border-bottom:1px dashed rgba(var(--ink-rgb),.25);background:none;
     padding:0 0 3px;width:min(12em, 60vw);color:var(--dark)}
-  .shead #sesName::placeholder{color:rgba(20,20,19,.35)}
+  .shead #sesName::placeholder{color:rgba(var(--ink-rgb),.35)}
   .shead .step{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.45;margin-top:7px}
   .shead .dots{margin-left:auto}
-  .dots i{width:30px;height:4px;border-radius:2px;background:rgba(20,20,19,.14);display:block}
+  .dots i{width:30px;height:4px;border-radius:2px;background:rgba(var(--ink-rgb),.14);display:block}
   .dots i.done{background:var(--green)}
   .dots i.now{background:var(--accent,var(--dark))}
 
@@ -195,14 +222,14 @@
   .theirs h2{font-size:clamp(28px,4.4vw,46px);font-weight:400;margin:10px 0 10px;letter-spacing:-.018em;line-height:1.05}
   .theirs p{margin:0;font-size:15.5px;line-height:1.55;opacity:.7;max-width:46em}
 
-  .ask{background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:18px;padding:22px}
+  .ask{background:var(--surface);border:1px solid rgba(var(--ink-rgb),.13);border-radius:18px;padding:22px}
   .ask textarea{width:100%;font-family:var(--serif);font-size:20px;line-height:1.4;min-height:104px;resize:vertical;
     border:0;background:none;padding:6px 4px;color:var(--dark);outline:none}
-  .ask textarea::placeholder{color:rgba(20,20,19,.3)}
+  .ask textarea::placeholder{color:rgba(var(--ink-rgb),.3)}
   .ask .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;
-    border-top:1px solid rgba(20,20,19,.1);padding-top:14px;margin-top:6px}
-  .ask input[type=text]{font-size:16px;padding:10px 13px;border:1px solid rgba(20,20,19,.18);
-    border-radius:10px;background:rgba(20,20,19,.02);width:190px;color:var(--dark)}
+    border-top:1px solid rgba(var(--ink-rgb),.1);padding-top:14px;margin-top:6px}
+  .ask input[type=text]{font-size:16px;padding:10px 13px;border:1px solid rgba(var(--ink-rgb),.18);
+    border-radius:10px;background:rgba(var(--ink-rgb),.02);width:190px;color:var(--dark)}
   .ask .hintk{font-size:12px;opacity:.35}
   .btn{background:var(--dark);color:var(--cream);border:0;border-radius:999px;padding:12px 22px;font-size:15px;cursor:pointer}
   .btn.ghost{background:none;color:var(--dark);border:1px solid var(--line)}
@@ -215,7 +242,7 @@
   .grow{flex:1}
 
   .qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px;margin-top:16px}
-  .qcard{position:relative;background:#fff;border:1px solid rgba(20,20,19,.12);
+  .qcard{position:relative;background:var(--surface);border:1px solid rgba(var(--ink-rgb),.12);
     border-left:4px solid var(--accent,var(--dark));border-radius:14px;padding:16px 34px 14px 18px;
     animation:cardIn .45s cubic-bezier(.2,.9,.3,1)}
   @keyframes cardIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -224,17 +251,17 @@
   .qcard .del{position:absolute;right:9px;top:7px;border:0;background:none;font-size:17px;
     line-height:1;opacity:.25;cursor:pointer;color:inherit}
   .qcard .del:hover{opacity:1}
-  .qempty{grid-column:1/-1;border:1px dashed rgba(20,20,19,.22);border-radius:14px;padding:22px;
+  .qempty{grid-column:1/-1;border:1px dashed rgba(var(--ink-rgb),.22);border-radius:14px;padding:22px;
     font-size:14.5px;opacity:.5;text-align:center}
   .navrow{display:flex;gap:10px;align-items:center;margin-top:26px;flex-wrap:wrap}
 
   .qlist{list-style:none;padding:0;margin:16px 0 0;display:flex;flex-direction:column;gap:10px}
-  .qlist li{display:flex;gap:13px;align-items:flex-start;padding:13px 15px;border:1px solid rgba(20,20,19,.12);
-            border-radius:12px;background:rgba(20,20,19,.02)}
+  .qlist li{display:flex;gap:13px;align-items:flex-start;padding:13px 15px;border:1px solid rgba(var(--ink-rgb),.12);
+            border-radius:12px;background:rgba(var(--ink-rgb),.02)}
   .qlist .txt{flex:1;font-size:16px;line-height:1.35}
   .qlist .who{display:block;font-size:12px;opacity:.5;margin-top:3px}
   .meter{display:flex;gap:3px;align-items:center;margin-top:7px}
-  .meter i{width:12px;height:5px;border-radius:2px;background:rgba(20,20,19,.14)}
+  .meter i{width:12px;height:5px;border-radius:2px;background:rgba(var(--ink-rgb),.14)}
   .meter i.f{background:var(--green)}
   .meter b{font-weight:400;font-size:11px;opacity:.5;margin-left:6px}
 
@@ -244,27 +271,27 @@
   .verdict h2 em{font-style:normal;color:var(--clay)}
   .verdict p{margin:0;font-size:15.5px;line-height:1.6;opacity:.75;max-width:52em}
   .cols{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:22px}
-  .col{background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:14px;padding:18px 20px}
+  .col{background:var(--surface);border:1px solid rgba(var(--ink-rgb),.13);border-radius:14px;padding:18px 20px}
   .col h4{margin:0 0 2px;font-size:15px;font-weight:500}
   .col .n{font-size:34px;letter-spacing:-.02em;margin:8px 0 0}
   .col .n small{font-size:13px;opacity:.45;letter-spacing:0}
   .col .meta{font-size:12px;opacity:.55;line-height:1.45;margin-top:6px}
   .col.room{border-color:var(--clay)}
 
-  table.axes{width:100%;border-collapse:collapse;background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:14px;overflow:hidden}
-  table.axes td,table.axes th{padding:13px 16px;border-bottom:1px solid rgba(20,20,19,.08);vertical-align:top;text-align:left}
+  table.axes{width:100%;border-collapse:collapse;background:var(--surface);border:1px solid rgba(var(--ink-rgb),.13);border-radius:14px;overflow:hidden}
+  table.axes td,table.axes th{padding:13px 16px;border-bottom:1px solid rgba(var(--ink-rgb),.08);vertical-align:top;text-align:left}
   table.axes tr:last-child td{border-bottom:0}
   table.axes th{font-weight:500;font-size:12px;letter-spacing:.1em;text-transform:uppercase;opacity:.55}
   table.axes .name{font-size:16px}
   table.axes .name small{display:block;font-size:12.5px;opacity:.55;line-height:1.45;margin-top:3px;max-width:34em}
   .bar{display:flex;align-items:center;gap:8px;font-size:13px}
-  .bar .track{width:78px;height:7px;border-radius:4px;background:rgba(20,20,19,.1);overflow:hidden}
+  .bar .track{width:78px;height:7px;border-radius:4px;background:rgba(var(--ink-rgb),.1);overflow:hidden}
   .bar .fillv{height:100%;background:var(--dark)}
   .bar.room .fillv{background:var(--clay)}
   .bar.ours .fillv{background:var(--green)}
   .win{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--clay)}
 
-  .panel{background:#fff;border:1px solid rgba(20,20,19,.13);border-radius:14px;padding:22px 24px;margin-top:18px}
+  .panel{background:var(--surface);border:1px solid rgba(var(--ink-rgb),.13);border-radius:14px;padding:22px 24px;margin-top:18px}
   .panel h3{margin:0 0 12px;font-size:18px;font-weight:400}
   .panel ul{margin:0;padding-left:18px}
   .panel li{margin-bottom:9px;font-size:15px;line-height:1.5}
@@ -274,29 +301,29 @@
   .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
   details summary{cursor:pointer;font-size:14px;opacity:.7}
   .adj{display:flex;gap:6px;align-items:center;margin-left:auto}
-  .adj button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:14px}
+  .adj button{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:var(--surface);cursor:pointer;font-size:14px}
   .adj span{font-size:11.5px;opacity:.5;min-width:58px;text-align:center}
 
   /* join bar + phone screens */
-  .joinbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:#fff;
-    border:1px solid rgba(20,20,19,.13);border-radius:14px;padding:14px 18px;margin-bottom:18px}
+  .joinbar{display:flex;gap:18px;align-items:center;flex-wrap:wrap;background:var(--surface);
+    border:1px solid rgba(var(--ink-rgb),.13);border-radius:14px;padding:14px 18px;margin-bottom:18px}
   .joinbar span{display:block;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.5}
   .joinbar b{font-size:19px;font-weight:500;letter-spacing:.02em;overflow-wrap:anywhere}
   .joinbar .jb-url{max-width:100%}
   .joinbar .jb-code b{font-size:26px;letter-spacing:.14em;color:var(--clay)}
   .joinbar .jb-n{margin-left:auto;font-size:13px;opacity:.6}
-  .joinbar.off{background:rgba(20,20,19,.04)}
+  .joinbar.off{background:rgba(var(--ink-rgb),.04)}
   .joinbar.off .jb-code b{color:var(--dark)}
-  #joinChip{right:22px;top:20px;background:rgba(255,255,255,.72);border:1px solid var(--line);
+  #joinChip{right:22px;top:20px;background:rgba(var(--paper-rgb),.72);border:1px solid var(--line);
     border-radius:10px;padding:9px 13px;backdrop-filter:blur(6px);font-size:12px;line-height:1.35;
     text-align:right;cursor:pointer}
-  #joinChip:hover{background:#fff}
+  #joinChip:hover{background:var(--surface)}
   #joinChip b{display:block;font-size:17px;letter-spacing:.14em;color:var(--clay)}
   #joinChip span{opacity:.55}
-  #qrOverlay{position:fixed;inset:0;z-index:40;background:rgba(20,20,19,.86);display:none;
+  #qrOverlay{position:fixed;inset:0;z-index:40;background:rgba(var(--ink-rgb),.86);display:none;
              align-items:center;justify-content:center;cursor:pointer}
   #qrOverlay.on{display:flex}
-  .qrbox{background:#fff;border-radius:20px;padding:34px 34px 28px;text-align:center;max-width:92vw}
+  .qrbox{background:var(--surface);border-radius:20px;padding:34px 34px 28px;text-align:center;max-width:92vw}
   .qrbox svg{display:block;margin:0 auto;border-radius:8px}
   .qrbox b{display:block;font-size:34px;letter-spacing:.2em;margin:18px 0 4px;color:var(--clay)}
   .qrbox span{display:block;font-size:15px;opacity:.7}
@@ -311,8 +338,8 @@
   .lede{margin:0 0 26px;font-size:16px;line-height:1.5;opacity:.65}
   .fld{display:block;margin-bottom:16px}
   .fld span{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.55;margin-bottom:7px}
-  .fld input{width:100%;font-size:19px;padding:14px 16px;border:1px solid rgba(20,20,19,.2);
-    border-radius:12px;background:#fff;color:var(--dark)}
+  .fld input{width:100%;font-size:19px;padding:14px 16px;border:1px solid rgba(var(--ink-rgb),.2);
+    border-radius:12px;background:var(--surface);color:var(--dark)}
   #joinCode{letter-spacing:.3em;text-transform:uppercase;font-size:26px;text-align:center}
   .btn.wide{width:100%;padding:16px;font-size:17px}
   .err{color:var(--clay);font-size:14px;min-height:20px;margin:10px 0 0}
@@ -323,10 +350,10 @@
   .theirs.compact{padding:20px 22px;margin-bottom:14px}
   .theirs.compact h2{font-size:clamp(22px,5.5vw,30px);margin:7px 0 6px}
   .theirs.compact .gloss{font-size:15px;margin-top:8px}
-  #roomPick{width:100%;font-size:16px;padding:12px 14px;border:1px solid rgba(20,20,19,.2);
-    border-radius:12px;background:#fff;margin-bottom:12px;color:var(--dark);appearance:none}
+  #roomPick{width:100%;font-size:16px;padding:12px 14px;border:1px solid rgba(var(--ink-rgb),.2);
+    border-radius:12px;background:var(--surface);margin-bottom:12px;color:var(--dark);appearance:none}
   #roomText{width:100%;font-size:17px;line-height:1.4;min-height:120px;padding:14px 16px;
-    border:1px solid rgba(20,20,19,.2);border-radius:12px;background:#fff;color:var(--dark);resize:vertical}
+    border:1px solid rgba(var(--ink-rgb),.2);border-radius:12px;background:var(--surface);color:var(--dark);resize:vertical}
   .mine-h{font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin:26px 0 10px}
   .pick-h{font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.5;margin:0 0 7px}
 
@@ -352,11 +379,6 @@
 </style>
 <link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
 <style id="fa-nav-unify">
-/* The master /atlas-nav.js fa-shell is the one global bar. This app's own #nav
-   (Banner/Ask/Map/Grid) stays — it's the app's internal navigation, not a
-   duplicate of the atlas chrome — just pushed below the master bar, offset
-   from --fa-nav-now (not the constant --fa-nav-h) so it tracks the bar's
-   scroll-reveal position exactly. */
 #nav{top:calc(var(--fa-nav-now,64px) + 14px + env(safe-area-inset-top))}
 #joinChip{top:calc(var(--fa-nav-now,64px) + 20px + env(safe-area-inset-top))}
 .wrap{padding-top:calc(var(--fa-nav-now,64px) + 78px + env(safe-area-inset-top))}
@@ -437,8 +459,8 @@
         <span class="arrow">&rarr;</span>
       </button>
     </div>
-    <div class="joinline">Someone gave you a code? <button id="doorJoin">Join their session</button>
-      &nbsp;·&nbsp; <a href="https://www.anthropic.com/path-to-hope" target="_blank" rel="noopener">Anthropic's own page &#8599;</a></div>
+    <div class="joinline">Someone gave you a code? <button id="doorJoin">Join their session</button></div>
+    <div class="refline"><a href="https://www.anthropic.com/path-to-hope" target="_blank" rel="noopener">See Anthropic's own page on this &#8599;</a></div>
   </div>
 </div>
 
@@ -866,24 +888,24 @@ const ARTICLES = [
 const TOPICS = [
   { id:'work', q:'How does AI work?',
     sub:'Research exploring what happens inside the “minds” of AI models.',
-    gloss:'What is actually going on inside the thing. The honest answer is that nobody fully knows, including the people who built it.',
-    axT:-130, ayT:-650, axW:-620, ayW:-70, pal:['#7B8F6E','#B9C4AC','#3F4A38','#E4E0D4'] },
+    gloss:'Nobody fully knows what happens inside these models, including the people who built them. What would you actually want to ask?',
+    axT:-130, ayT:-650, axW:-970, ayW:-70, pal:['#7B8F6E','#B9C4AC','#3F4A38','#E4E0D4'] },
   { id:'gov', q:'Who should govern AI?',
     sub:'Policy positions, safety frameworks, and transparency commitments.',
-    gloss:'Who writes the rules and who has to follow them. So far, mostly the same people.',
-    axT:150, ayT:-320, axW:-80, ayW:-265, pal:['#6B5A8E','#C0B4D6','#2A2438','#E6E1EF'] },
+    gloss:'Somebody is deciding these rules right now. What would you ask them directly?',
+    axT:150, ayT:-320, axW:-125, ayW:-265, pal:['#6B5A8E','#C0B4D6','#2A2438','#E6E1EF'] },
   { id:'use', q:'How should I use AI?',
     sub:'Educational resources on working with AI models like Claude.',
-    gloss:'What you are doing when you use it, and what it does to you. Their version of this question is tutorials.',
-    axT:-160, ayT:30, axW:585, ayW:-168, pal:['#3F6B57','#A9CBBA','#22332B','#E2EDE6'] },
+    gloss:'Their own answer to this is tutorials. What do you actually want to know before you trust it?',
+    axT:-160, ayT:30, axW:910, ayW:-168, pal:['#3F6B57','#A9CBBA','#22332B','#E2EDE6'] },
   { id:'econ', q:'How does AI affect the economy?',
     sub:'Economic research, labor market data, and policies and programs for the future of work.',
-    gloss:'Jobs, wages, and where the money ends up.',
-    axT:140, ayT:390, axW:230, ayW:168, pal:['#B98A3C','#E8CFA0','#3B2F1D','#F0E6D2'] },
+    gloss:"Somebody's job or wage changes because of this. What question isn't being asked where you work?",
+    axT:140, ayT:390, axW:360, ayW:168, pal:['#B98A3C','#E8CFA0','#3B2F1D','#F0E6D2'] },
   { id:'society', q:"What is AI's impact on society?",
     sub:'Public surveys, safety research, and investigations of real-world impacts.',
-    gloss:'Everything that happens to people who never chose to use it.',
-    axT:-130, ayT:680, axW:-550, ayW:146, pal:['#8B4A3F','#D8A08F','#2E2A28','#EBD9CF'] }
+    gloss:'This reaches people who never agreed to any of it. What would you ask on their behalf?',
+    axT:-130, ayT:680, axW:-860, ayW:146, pal:['#8B4A3F','#D8A08F','#2E2A28','#EBD9CF'] }
 ];
 const TOPIC = Object.fromEntries(TOPICS.map(t => [t.id, t]));
 /* 0 at phone-portrait aspect, 1 at desktop-landscape aspect; clamped and
@@ -983,12 +1005,16 @@ let topicIdx = 0;
 let joiner = JSON.parse(localStorage.getItem('ahq.joined') || 'null');   // set on phones
 
 async function api(path, opts = {}){
-  const r = await fetch('/api' + path, { headers:{'content-type':'application/json'}, ...opts });
+  const r = await fetch('/api/ahq' + path, { headers:{'content-type':'application/json'}, ...opts });
   if (!r.ok) throw new Error('http ' + r.status);
   return r.json();
 }
 async function netInit(){
-  try { const h = await api('/health'); NET.on = true; NET.lan = h.lan }
+  /* server.mjs's /health has no "configured" field at all — undefined !== false,
+     so a real dev server always counts as live. The deployed copy's KV-backed
+     route sets configured:false when no store is provisioned, which this reads
+     as "no server" too, same as a network failure would. */
+  try { const h = await api('/health'); NET.on = h.configured !== false; NET.lan = h.lan || '' }
   catch { NET.on = false; NET.lan = '' }
 }
 const live = () => NET.on && session.id && session.id !== 'LOCAL';
@@ -1228,7 +1254,7 @@ function paintTile(g, pal, seed, w, h){
     else for(let j=0;j<4;j++) inner.appendChild(mk('line',{x1:-w/2,y1:-h/2+j*(h/4)+r()*5,x2:w/2,y2:-h/2+j*(h/4)+r()*6,stroke:c,'stroke-width':.9+r()*1.6,opacity:.8}));
   }
   g.appendChild(inner);
-  g.appendChild(mk('rect',{x:-w/2,y:-h/2,width:w,height:h,fill:'none',stroke:'rgba(20,20,19,.14)'}));
+  g.appendChild(mk('rect',{x:-w/2,y:-h/2,width:w,height:h,fill:'none',stroke:'rgba(var(--ink-rgb),.14)'}));
 }
 
 const svg = d3.select('#graph');
@@ -1461,10 +1487,16 @@ function fit(ms = 700){
   }
   /* reserve real screen bands for the fixed chrome (nav up top, zoom pills and
      the hint text along the bottom) so the fitted content — including the two
-     decorative words riding the corners — never lands underneath them. */
-  const chromeTop = 76, chromeBottom = 108;
+     decorative words riding the corners — never lands underneath them. Measured
+     live rather than guessed: when this app is embedded in the Futures Atlas,
+     the master site nav sits above #nav too, and a fixed guess undershoots that
+     extra height — measuring #nav's own bottom edge always includes it. */
+  const chromeBox = id => { const el = document.getElementById(id); return el ? el.getBoundingClientRect() : null };
+  const navR = chromeBox('nav'), zoomR = chromeBox('zoom'), hintR = chromeBox('hint');
+  const chromeTop = (navR ? navR.bottom : 60) + 16;
+  const chromeBottom = Math.max(zoomR ? innerHeight - zoomR.top : 0, hintR ? innerHeight - hintR.top : 0) + 16;
   const vh = Math.max(200, innerHeight - chromeTop - chromeBottom);
-  const k = Math.max(.15, Math.min(innerWidth/(bx1-bx0), vh/(by1-by0), 1.3));
+  const k = Math.max(.15, Math.min(innerWidth/(bx1-bx0), vh/(by1-by0), 1.6));
   fitK = k;
   /* the whole map is the world: no dragging off into the cream */
   zoom.scaleExtent([k, Math.max(k * 3.2, 1.6)])
