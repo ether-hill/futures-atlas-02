@@ -882,6 +882,22 @@ html.dark .one {
   color: var(--paper);
 }
 
+/* A model-written intervention has to say so, in the place you are looking when
+   it appears rather than in a footnote. */
+.one-gen {
+  margin: 12px 0 0;
+  max-width: 84ch;
+  padding-left: 14px;
+  border-left: var(--border-rule) solid var(--cool);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--paper-3);
+}
+.one-gen b {
+  color: var(--paper-1);
+  font-weight: var(--weight-medium);
+}
+
 @media (max-width: 720px) {
   .one-screen {
     min-height: auto;
@@ -914,6 +930,10 @@ html.dark .one {
   }
   .one-readwhy {
     order: 7;
+  }
+  .one-gen {
+    order: 4;
+    font-size: 12px;
   }
   .one-miss {
     order: 8;

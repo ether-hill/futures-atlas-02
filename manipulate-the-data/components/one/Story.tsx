@@ -44,6 +44,11 @@ const promptAt = (iv: Intervention, year: number) => {
   return `${stem}, from ${year}${q ? "?" : ""}`;
 };
 
+/* The route lives in the host app, not in this static export: a key shipped to
+   the browser is a public key. Absolute so it resolves the same from
+   /manipulate-the-data/ai-gigawatts as from anywhere else. */
+const INTERPRET_URL = "/api/manipulate/interpret";
+
 const totalOf = (ss: Figure["series"]) =>
   ss[0].points.map((_, i) => ss.reduce((n, s) => n + (s.points[i]?.[1] ?? 0), 0));
 
@@ -364,6 +369,7 @@ function Ask({
   const [typing, setTyping] = useState<string | null>(null);
   const [miss, setMiss] = useState<string | null>(null);
   const [seenId, setSeenId] = useState<string | null>(null);
+  const [thinking, setThinking] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   /* Adjust during render rather than in an effect: `active` is a fresh object on
@@ -401,17 +407,50 @@ function Ask({
     return () => window.clearInterval(id);
   }, [typing]);
 
-  function submit(e: React.FormEvent) {
+  async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const hit = matchFrom(INTERVENTIONS, text);
-    if (!hit) {
-      setMiss(text.trim());
+    const asked = text.trim();
+    if (asked.length < 4) return;
+
+    /* A preset is still the fast path: it is authored, it is free, and its
+       transforms have been argued over. Only what the presets do not recognise
+       goes to the model. */
+    const hit = matchFrom(INTERVENTIONS, asked, { strict: true });
+    if (hit) {
+      const y = yearIn(asked);
+      const ok = y !== null && y >= hit.fromRange[0] && y <= hit.fromRange[1];
+      onChoose(hit, ok ? y : undefined);
+      setMiss(null);
       return;
     }
-    const y = yearIn(text);
-    const ok = y !== null && y >= hit.fromRange[0] && y <= hit.fromRange[1];
-    onChoose(hit, ok ? y : undefined);
+
+    setThinking(true);
     setMiss(null);
+    try {
+      const res = await fetch(INTERPRET_URL, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ text: asked }),
+      });
+      const data = (await res.json().catch(() => null)) as
+        | { ok: true; intervention: Intervention }
+        | { ok: false; code: string; message: string }
+        | null;
+      if (!data) throw new Error("no body");
+      if (!data.ok) {
+        setMiss(
+          data.code === "not_configured"
+            ? "Free text needs the server behind this page, and the static preview has not got one. The suggestions below still work."
+            : data.message
+        );
+        return;
+      }
+      onChoose(data.intervention);
+    } catch {
+      setMiss("Could not reach the model. The suggestions below still work.");
+    } finally {
+      setThinking(false);
+    }
   }
 
   function retime(y: number) {
@@ -433,6 +472,7 @@ function Ask({
           className="one-input"
           value={text}
           placeholder="What would you do about AI, and when?"
+          disabled={thinking}
           onChange={(e) => {
             setTyping(null);
             setText(e.target.value);
@@ -440,8 +480,8 @@ function Ask({
           }}
           autoComplete="off"
         />
-        <button type="submit" className="one-go">
-          Redraw
+        <button type="submit" className="one-go" disabled={thinking}>
+          {thinking ? "Working" : "Redraw"}
         </button>
         {active && (
           <button type="button" className="one-reset" onClick={() => onChoose(null)}>
@@ -485,12 +525,16 @@ function Ask({
         ))}
       </div>
 
-      {miss !== null && (
-        <p className="one-miss">
-          No preset matches <em>&ldquo;{miss}&rdquo;</em>. Free text needs a model behind it. Until
-          then these {INTERVENTIONS.length} are the ones with authored transforms.
+      {active?.generated && (
+        <p className="one-gen">
+          <b>Written just now, by a model, from your sentence.</b> Its transforms are guesses in
+          exactly the way the eight below are guesses, except nobody has argued with these yet. The
+          reasoning under the chart is where to check them, and the box under that is where to say
+          it is wrong.
         </p>
       )}
+
+      {miss !== null && <p className="one-miss">{miss}</p>}
     </div>
   );
 }

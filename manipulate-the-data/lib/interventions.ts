@@ -35,6 +35,10 @@ export type Effect = {
 
 export type Intervention = {
   id: string;
+  /** Written by a model from free text rather than authored here. */
+  generated?: boolean;
+  /** What was typed to produce it, kept so the page can quote it back. */
+  asked?: string;
   /** What someone might type to reach this one. Weak on purpose; see matchFrom. */
   keywords: string[];
   /** What you would have typed to get this. */
@@ -917,7 +921,11 @@ export const interventionById = (id: string) => INTERVENTIONS.find((i) => i.id =
  * be added without touching this function, and so nothing has to hand a
  * function across the server/client boundary.
  */
-export function matchFrom(list: Intervention[], text: string): Intervention | null {
+export function matchFrom(
+  list: Intervention[],
+  text: string,
+  opts: { strict?: boolean } = {}
+): Intervention | null {
   const q = text.toLowerCase().trim();
   if (q.length < 3) return null;
   let best: { iv: Intervention; score: number } | null = null;
@@ -925,7 +933,17 @@ export function matchFrom(list: Intervention[], text: string): Intervention | nu
     const score = iv.keywords.reduce((n, w) => n + (q.includes(w) ? w.length : 0), 0);
     if (score > 0 && (!best || score > best.score)) best = { iv, score };
   }
-  return best?.iv ?? null;
+  if (!best) return null;
+  /* Loose matching was the right trade while presets were the only way in: a
+     near-miss preset beats "nothing matches". Once free text can take over, a
+     single short word must not be able to steal a real question. "Oblige every
+     operator to publish its hourly grid draw" is not a moratorium on data
+     centres, and it matched one on the strength of "grid". So under strict the
+     match has to be a real share of what was typed, not a fragment of it. This
+     floor keeps every preset matching its own sentence; anything lower lets
+     four letters win a sixty-character question. */
+  if (opts.strict && best.score < Math.max(6, 0.14 * q.length)) return null;
+  return best.iv;
 }
 
 /** A year written into the prompt is the date of the proposal, not decoration. */
