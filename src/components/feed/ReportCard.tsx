@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MosaicWall } from "@/components/hegemony/MosaicWall";
 import { FINDINGS, TIMELINE, DROPPED, PRESS, VIDEOS, countByTier } from "@/data/hegemony";
 
 /**
@@ -10,6 +11,12 @@ import { FINDINGS, TIMELINE, DROPPED, PRESS, VIDEOS, countByTier } from "@/data/
  * the Atlas the source of a link it also wrote. So the report gets a distinct
  * card that says what it is, spans the grid, and carries its own tallies
  * counted from the data rather than typed in.
+ *
+ * It also carries the report's own masthead wall, from the same MosaicWall the
+ * hero mounts — so the card in the feed is a small piece of the page it opens,
+ * and the two cannot drift apart. That forces the card dark in both themes
+ * (the surrounding cards flip): a scrim over photographs only works one way
+ * round, and this is the one card on the feed that is a whole investigation.
  */
 
 export function ReportCard() {
@@ -22,35 +29,43 @@ export function ReportCard() {
   ];
 
   return (
-    <article className="col-span-full border border-accent/40 bg-surface">
-      <Link href="/feed/ai-hegemony" className="group block p-6 min-[680px]:p-8">
+    <article className="relative isolate col-span-full overflow-hidden border border-accent/40 bg-band">
+      <div aria-hidden className="pointer-events-none absolute inset-0">
+        {/* Four rows is plenty behind a card this short, and the wall is the
+            same one the report's hero uses. */}
+        <MosaicWall perColumn={4} eagerRows={0} />
+        <div className="absolute inset-0 bg-[rgba(0,0,0,0.34)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.78)_60%,rgba(0,0,0,0.62)_100%)] min-[900px]:bg-[radial-gradient(96%_130%_at_-8%_45%,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_34%,rgba(0,0,0,0.66)_56%,rgba(0,0,0,0.2)_80%,rgba(0,0,0,0)_94%)]" />
+      </div>
+
+      <Link href="/feed/ai-hegemony" className="group relative block p-6 min-[680px]:p-8">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-          <span className="border border-accent/50 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-accent-deep">
+          <span className="border border-accent/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-accent-deep">
             Investigation
           </span>
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink/45">
+          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-paper/50">
             Atlas original · long read
           </span>
         </div>
 
-        <h2 className="mt-5 max-w-[16ch] text-[clamp(28px,4.2vw,52px)] font-medium leading-[1.02] tracking-[-0.035em] text-ink transition-colors group-hover:text-accent-deep">
+        <h2 className="mt-5 max-w-[16ch] text-[clamp(28px,4.2vw,52px)] font-medium leading-[1.02] tracking-[-0.035em] text-paper transition-colors group-hover:text-accent-deep">
           Whose common sense?
         </h2>
 
-        <p className="mt-5 max-w-[62ch] text-[15px] leading-[1.7] text-ink/75">
+        <p className="mt-5 max-w-[54ch] text-[15px] leading-[1.7] text-paper/75">
           The open web is about 41% English. GPT-3&rsquo;s training mix was
           92.6%. That gap isn&rsquo;t the web &mdash; it&rsquo;s filtering. An
           investigation into how Western assumptions get into AI systems, what
           is actually documented, and what is being built in response.
         </p>
 
-        <dl className="mt-7 flex flex-wrap gap-x-9 gap-y-4 border-t border-ink/[0.14] pt-5">
+        <dl className="mt-7 flex flex-wrap gap-x-9 gap-y-4 border-t border-paper/20 pt-5">
           {stats.map((s) => (
             <div key={s.l}>
               <dt className="font-mono text-[20px] font-bold leading-none tracking-tight text-accent-deep">
                 {s.n}
               </dt>
-              <dd className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-ink/50">
+              <dd className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-paper/50">
                 {s.l}
               </dd>
             </div>

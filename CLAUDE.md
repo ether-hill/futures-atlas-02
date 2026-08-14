@@ -137,6 +137,14 @@ reintroduce a second listing of these posts.
   `scratchpad/harvest.py` in the session notes shows how they were collected.
 - Nav entries live in `public/atlas-nav.js` (`LINKS`), and the homepage carousel
   shows the newest ten.
+- **The AI Hegemony report has two live designs.** `/feed/ai-hegemony` is v1,
+  the complete record (all 57 findings, all 27 rejects); `/feed/ai-hegemony/v2`
+  is a short EDIT of the same `src/data/hegemony.ts` — 8 findings at full size
+  (`HEADLINE_IDS`), the timeline sized by event type, coverage six at a time.
+  Both carry `VersionSwitch` so they can be compared directly. v2 is `noindex`
+  and canonicals to v1. **Every tally on v2 still counts the full set** — a
+  short edit that also shrank its own numbers would misrepresent the evidence
+  base, which is the exact failure the report is about.
 
 ## Hypothetica Magnifica (`/magnifica`)
 

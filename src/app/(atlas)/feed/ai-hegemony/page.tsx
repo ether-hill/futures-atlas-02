@@ -6,6 +6,7 @@ import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
 import { FeedbackTimeline } from "@/components/hegemony/FeedbackTimeline";
 import { HeroMosaic } from "@/components/hegemony/HeroMosaic";
 import { PressCard } from "@/components/hegemony/PressCard";
+import { VersionSwitch } from "@/components/hegemony/VersionSwitch";
 import { VideoCard } from "@/components/hegemony/VideoCard";
 import {
   DROPPED,
@@ -96,6 +97,8 @@ const Grid = ({ strand }: { strand: Parameters<typeof findingsIn>[0] }) => (
 export default function AiHegemonyPage() {
   return (
     <main className="pb-[clamp(60px,9vw,120px)]">
+      <VersionSwitch current="v1" />
+
       {/* ── masthead ───────────────────────────────────────────────────────
           The title sits on a wall built from the coverage itself — see
           HeroMosaic. Dark in both themes (bg-band), because a scrim over

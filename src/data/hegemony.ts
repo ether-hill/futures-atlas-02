@@ -1715,6 +1715,41 @@ export const DROPPED: Dropped[] = [
 export const findingsIn = (s: Strand) => FINDINGS.filter((f) => f.strand === s);
 export const countByTier = (t: Tier) => FINDINGS.filter((f) => f.tier === t).length;
 
+/**
+ * The short edit — the eight findings v2 runs at full size.
+ *
+ * v2 is an EDIT of this report, not a different one. It shows eight findings
+ * where v1 shows all fifty-seven, and every other number on it still counts
+ * the whole set, so the page can never imply the evidence base is eight items
+ * deep. The link back to v1 is on the page for the same reason.
+ *
+ * Chosen for spread and for concreteness, one or two per strand: the spine of
+ * the argument (manufactured-skew), the sharpest measured harm in the corpus
+ * (dialect-filter), the clearest demonstration of the encoding problem (malu),
+ * the case with a statutory inquiry attached (horizon), who builds it and who
+ * cleans it (model-concentration, labour-geography), and the two halves of the
+ * resistance section — the catch (sovereign-licences) and the counter-example
+ * that answers it (te-hiku).
+ *
+ * A typo here is a silent hole in the page, so it fails at import instead.
+ */
+const HEADLINE_IDS = [
+  "manufactured-skew",
+  "dialect-filter",
+  "malu",
+  "horizon",
+  "model-concentration",
+  "labour-geography",
+  "sovereign-licences",
+  "te-hiku",
+] as const;
+
+export const HEADLINE_FINDINGS: Finding[] = HEADLINE_IDS.map((id) => {
+  const found = FINDINGS.find((f) => f.id === id);
+  if (!found) throw new Error(`hegemony: HEADLINE_IDS names "${id}", which is not in FINDINGS`);
+  return found;
+});
+
 /* ══ COVERAGE ═══════════════════════════════════════════════════════════════
  *
  * The findings above are the evidence. This is the reporting *around* it —
