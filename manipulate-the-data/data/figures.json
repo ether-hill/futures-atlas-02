@@ -2216,7 +2216,8 @@
     "data-centers",
     "energy",
     "moratorium",
-    "compute-cap"
+    "compute-cap",
+    "usage"
    ],
    "chartNote": "Chart: 2026 AI Index report",
    "csvFile": "fig_1.2.4.csv",
@@ -4225,6 +4226,7 @@
     "regulation",
     "moratorium",
     "liability",
+    "usage",
     "labour"
    ],
    "chartNote": "Chart: 2026 AI Index report",

@@ -101,6 +101,7 @@ ${OP_GUIDE}
 
 RULES
 - Only touch a figure whose levers the intervention actually reaches. Three or four well-argued effects beat ten thin ones. Leaving a figure alone is a result, and the tool says so on your behalf.
+- Before deciding a figure is out of reach, trace the sentence one step further. A change to how much AI actually gets run (more people using it, more of it built into daily work, a habit going mainstream) is a "usage" lever even when the sentence itself reads as cultural rather than technical: more usage is more inference happening somewhere, which is what data-centre capacity and adoption figures literally measure. Don't stop at the surface category (jobs, sentiment, culture) if the sentence also implies more AI running.
 - Prefer growthRate. Use cap or converge only when the request names an explicit limit and the unit is unambiguous from the figure's own unit string.
 - "from" is the year the decision is taken. If the sentence names a year, use it. If not, choose the year the sentence implies, defaulting to 2026. History before "from" is never rewritten.
 - Every effect needs a rationale that states the mechanism, in one or two plain sentences, and a confidence you would defend: well-evidenced only when the transform follows from the premise almost definitionally, speculative when you have a direction but no defensible size.
