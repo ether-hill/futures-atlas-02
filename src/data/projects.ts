@@ -210,7 +210,7 @@ export const projects: Project[] = [
     id: "quantum-lag",
     title: "Quantum Lag",
     tagline:
-      "An instrument from the Centre for Quantum & Society at TU Delft. Place twenty claims about quantum technology on a timeline, then find out where they actually sit. It measures a specific error: people put finished work in the future and unfinished work in the past.",
+      "Place twenty claims about quantum technology on a timeline, then find out where they actually sit. It measures a specific error: people put finished work in the future and unfinished work in the past.",
     year: "2026",
     date: "2026-08-13",
     field: "AI & risk",
