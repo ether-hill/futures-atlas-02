@@ -9,6 +9,7 @@ import { type Figure, figures } from "@/lib/figures";
 import { INTERVENTIONS, type Intervention, matchFrom, yearIn } from "@/lib/interventions";
 import { PROJECTION_RULE, projectFigure } from "@/lib/project";
 import { reviseWith } from "@/lib/rebuttals";
+import { loadSaved, saveGenerated } from "@/lib/savedInterventions";
 import { applyIntervention, movesVisibly, untouchedReason } from "@/lib/transform";
 
 const FIG_ID = "1.2.4";
@@ -370,7 +371,12 @@ function Ask({
   const [miss, setMiss] = useState<string | null>(null);
   const [seenId, setSeenId] = useState<string | null>(null);
   const [thinking, setThinking] = useState(false);
+  const [saved, setSaved] = useState<Intervention[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  /* Read once on mount: localStorage isn't there on the server, and nothing
+     else in this session changes what's saved except this component. */
+  useEffect(() => setSaved(loadSaved()), []);
 
   /* Adjust during render rather than in an effect: `active` is a fresh object on
      every year tick, so keying on the id is what actually changes. */
@@ -415,7 +421,7 @@ function Ask({
     /* A preset is still the fast path: it is authored, it is free, and its
        transforms have been argued over. Only what the presets do not recognise
        goes to the model. */
-    const hit = matchFrom(INTERVENTIONS, asked, { strict: true });
+    const hit = matchFrom(INTERVENTIONS, asked, { strict: true }) ?? matchFrom(saved, asked, { strict: true });
     if (hit) {
       const y = yearIn(asked);
       const ok = y !== null && y >= hit.fromRange[0] && y <= hit.fromRange[1];
@@ -446,6 +452,7 @@ function Ask({
         return;
       }
       onChoose(data.intervention);
+      setSaved(saveGenerated(data.intervention));
     } catch {
       setMiss("Could not reach the model. The suggestions below still work.");
     } finally {
@@ -511,7 +518,7 @@ function Ask({
       )}
 
       <div className="one-options">
-        {INTERVENTIONS.map((i) => (
+        {[...INTERVENTIONS, ...saved].map((i) => (
           <button
             key={i.id}
             type="button"
