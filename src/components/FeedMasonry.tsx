@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PostImage } from "@/components/PostImage";
 import { YouTubeCard } from "@/components/feed/YouTubeCard";
 import { KIND_LABEL, formatPostDate, hasImage, hostOf, youtubeId, type Post } from "@/data/posts";
-import { ReportCard } from "@/components/feed/ReportCard";
+import { ReportCards } from "@/components/feed/ReportCard";
 
 /**
  * The feed on the homepage: the newest posts in a masonry, videos included and
@@ -48,7 +48,7 @@ export function FeedMasonry({ posts, showVisibility = false }: { posts: Post[]; 
             carries. Above the grid it reads as the lead item, which is what
             it is. */}
         <div className="mb-4">
-          <ReportCard />
+          <ReportCards />
         </div>
 
         <div className="[column-gap:16px] [columns:1] min-[560px]:[columns:2] min-[900px]:[columns:3] min-[1200px]:[columns:4] min-[1500px]:[columns:5]">

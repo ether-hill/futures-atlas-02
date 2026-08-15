@@ -8,7 +8,7 @@ import { PollCard } from "@/components/feed/PollCard";
 import { SwipeDemoCard } from "@/components/feed/SwipeDemoCard";
 import { POLLS } from "@/data/polls";
 import { LeftRail, RightRail } from "@/components/feed/FeedRails";
-import { ReportCard } from "@/components/feed/ReportCard";
+import { ReportCards } from "@/components/feed/ReportCard";
 import type { Project } from "@/data/projects";
 import {
   KIND_LABEL,
@@ -170,7 +170,7 @@ export function FeedTimeline({
           {/* The report is not a Post and is not in `items`, so it leads the
               grid only in the unfiltered view — under a topic or media filter
               it would sit above results it is not part of. */}
-          {(reports || (topic === null && !media)) && <ReportCard />}
+          {(reports || (topic === null && !media)) && <ReportCards />}
           {shown.map((post, i) => {
             const special = INTERLEAVE[i];
             return (

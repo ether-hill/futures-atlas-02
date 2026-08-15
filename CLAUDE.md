@@ -137,6 +137,38 @@ reintroduce a second listing of these posts.
   `scratchpad/harvest.py` in the session notes shows how they were collected.
 - Nav entries live in `public/atlas-nav.js` (`LINKS`), and the homepage carousel
   shows the newest ten.
+### Reports (`/feed/<slug>`, not posts)
+
+The Atlas's own long-form reports. **A report is data + a page**, never a
+one-off: `src/data/report-types.ts` holds the evidence contract and
+`src/data/ecology-types.ts` the industry layer, both shared. Generic components
+live in `src/components/report/` (CardRail, FigureChart, FindingCard,
+FindingCarousel, FeedbackTimeline, VideoCard, PressCard, EcologyDashboard,
+Section); `src/components/hegemony/` keeps only what is about that one report.
+
+Three live: `ai-hegemony` (+ its v2 edit), `ai-kill-chain`, `startup-cities`.
+`src/data/reports.ts` is the registry the feed's cards render from — add a
+report there or it will not appear.
+
+**The rules are the point, and they are enforced in the types:**
+- Every `Finding` carries a `figure` AND a `scope`, and the page renders them
+  together. `scope` is never empty. If you cannot write it, you do not have the
+  finding.
+- A `chart` is a re-presentation of `figure`, never an addition to it: every
+  value must already be stated in that finding's claim or detail. A single
+  share is one mark against an empty track — never two summing to 100, because
+  the remainder was not measured. Where the absence of a number IS the finding,
+  there is no chart.
+- `ChartKind` is chosen by what the data IS: `ring` for a share, `dots` (log
+  axis, labelled) for orders of magnitude, `slope` for before/after, `waffle`
+  for an exact n-of-N, `multiple` for a multiplier, `count` for a figure with no
+  denominator, `bars` otherwise.
+- The ecology nebula weights an organisation by how often its name appears in
+  **that report's own findings and timeline** — never by valuation, funding or
+  size. Leadership entries carry `asOf` and their own source, because it moves.
+- `DROPPED` is published, not kept in a drawer. "We checked this and it did not
+  hold up" is a finding.
+
 - **The AI Hegemony report has two live designs.** `/feed/ai-hegemony` is v1,
   the complete record (every finding, every reject); `/feed/ai-hegemony/v2`
   is a short EDIT of the same `src/data/hegemony.ts` — 8 findings at full size
