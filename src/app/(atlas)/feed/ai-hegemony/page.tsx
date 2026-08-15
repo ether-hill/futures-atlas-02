@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
-import { FindingCard } from "@/components/hegemony/FindingCard";
+import { CardRail, RailItem } from "@/components/hegemony/CardRail";
 import { FindingCarousel } from "@/components/hegemony/FindingCarousel";
 import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
 import { FeedbackTimeline } from "@/components/hegemony/FeedbackTimeline";
@@ -18,7 +18,6 @@ import {
   TIMELINE,
   VIDEOS,
   countByTier,
-  findingsIn,
 } from "@/data/hegemony";
 import { formatPostDate } from "@/data/posts";
 
@@ -84,18 +83,8 @@ const BandSection = ({
       {title}
     </h2>
     <div className="mt-5 max-w-[68ch] text-[15px] leading-[1.75] text-paper/65">{lede}</div>
-    <div className="mt-9 grid gap-x-6 gap-y-10 min-[720px]:grid-cols-2 xl:grid-cols-3">
-      {children}
-    </div>
+    {children}
   </section>
-);
-
-const Grid = ({ strand }: { strand: Parameters<typeof findingsIn>[0] }) => (
-  <div className="mt-9 grid gap-4 min-[720px]:grid-cols-2 xl:grid-cols-3">
-    {findingsIn(strand).map((f) => (
-      <FindingCard key={f.id} finding={f} />
-    ))}
-  </div>
 );
 
 export default function AiHegemonyPage() {
@@ -220,7 +209,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <Grid strand="encoding" />
+            <FindingCarousel strand="encoding" label="Findings on encoding" />
           </Section>
 
           <Section
@@ -236,7 +225,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <Grid strand="amplification" />
+            <FindingCarousel strand="amplification" label="Findings on amplification" />
           </Section>
 
           <Section
@@ -265,7 +254,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <Grid strand="geopolitics" />
+            <FindingCarousel strand="geopolitics" label="Findings on concentration" />
           </Section>
 
           <Section
@@ -281,7 +270,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <Grid strand="resistance" />
+            <FindingCarousel strand="resistance" label="Findings on resistance" />
           </Section>
         </div>
       </Container>
@@ -306,9 +295,18 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            {VIDEOS.map((v) => (
-              <VideoCard key={v.id} video={v} />
-            ))}
+            <CardRail
+              label="Broadcasts on this subject"
+              count={VIDEOS.length}
+              noun="broadcasts"
+              tone="dark"
+            >
+              {VIDEOS.map((v) => (
+                <RailItem key={v.id} width="three">
+                  <VideoCard video={v} />
+                </RailItem>
+              ))}
+            </CardRail>
           </BandSection>
 
           <BandSection
@@ -324,9 +322,18 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            {PRESS.map((p) => (
-              <PressCard key={p.id} item={p} />
-            ))}
+            <CardRail
+              label="Selected press coverage"
+              count={PRESS.length}
+              noun="articles"
+              tone="dark"
+            >
+              {PRESS.map((item) => (
+                <RailItem key={item.id} width="three">
+                  <PressCard item={item} />
+                </RailItem>
+              ))}
+            </CardRail>
           </BandSection>
         </Container>
       </section>
