@@ -1,4 +1,4 @@
-import type { PressItem } from "@/data/hegemony";
+import type { PressItem } from "@/data/report-types";
 import { CoverImage } from "./CoverImage";
 
 /**

@@ -32,7 +32,7 @@
  */
 
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import type { FindingChart, Measure } from "@/data/hegemony";
+import type { FindingChart, Measure } from "@/data/report-types";
 
 /**
  * The element a chart should count itself against.

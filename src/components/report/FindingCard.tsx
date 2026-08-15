@@ -14,8 +14,7 @@
  */
 
 import { useId, useState } from "react";
-import type { Finding } from "@/data/hegemony";
-import { TIER_LABEL } from "@/data/hegemony";
+import { TIER_LABEL, type Finding } from "@/data/report-types";
 import { FigureChart } from "./FigureChart";
 
 const tierClass: Record<Finding["tier"], string> = {

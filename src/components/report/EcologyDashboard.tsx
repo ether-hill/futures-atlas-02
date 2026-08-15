@@ -18,25 +18,19 @@
 
 import { useMemo, useState } from "react";
 import { LogoMark } from "@/components/about/StackGrid";
-import {
-  LEADERS,
-  ORGS,
-  ORG_ROLE_LABEL,
-  mentionsOf,
-  orgById,
-  type Org,
-  type OrgRole,
-} from "@/data/ecosystem";
-import { FINDINGS, type FindingChart, type Strand } from "@/data/hegemony";
+import { ORG_ROLE_LABEL, countMentions, type Leader, type Org, type OrgRole } from "@/data/ecology-types";
+import type { Finding, FindingChart, TimelineEvent } from "@/data/report-types";
 import { CardRail, RailItem } from "./CardRail";
 import { FigureChart } from "./FigureChart";
 
-/** Role decides the mark's treatment. Four states, one accent — not four hues. */
+/** Role decides the mark's treatment. Six states, one accent — not six hues. */
 const ROLE_STYLE: Record<OrgRole, string> = {
   lab: "border-accent/70 text-accent-deep",
   dataset: "border-ink/40 text-ink/80",
   measurer: "border-dashed border-ink/45 text-ink/70",
   labour: "border-accent/40 text-ink/70",
+  state: "border-ink/60 text-ink",
+  capital: "border-dotted border-accent/60 text-accent-deep",
 };
 
 /* ── panel one: the nebula ───────────────────────────────────────────────── */
@@ -105,22 +99,18 @@ function Nebula({
 
 /* ── panel three: the stat viewer ────────────────────────────────────────── */
 
-const STRAND_NAME: Record<Strand, string> = {
-  composition: "Composition",
-  encoding: "Encoding",
-  amplification: "Amplification",
-  geopolitics: "Concentration",
-  resistance: "Resistance",
-};
-
-function useStats(ranked: { org: Org; n: number }[]): { id: string; label: string; chart: FindingChart }[] {
+function useStats(
+  ranked: { org: Org; n: number }[],
+  findings: Finding[],
+  sections: Record<string, string>,
+): { id: string; label: string; chart: FindingChart }[] {
   return useMemo(() => {
-    const total = FINDINGS.length;
-    const documented = FINDINGS.filter((f) => f.tier === "documented").length;
+    const total = findings.length;
+    const documented = findings.filter((f) => f.tier === "documented").length;
 
-    const byStrand = (Object.keys(STRAND_NAME) as Strand[]).map((s) => ({
-      label: STRAND_NAME[s],
-      value: FINDINGS.filter((f) => f.strand === s).length,
+    const byStrand = Object.entries(sections).map(([key, label]) => ({
+      label,
+      value: findings.filter((f) => f.strand === key).length,
       unit: "",
     }));
 
@@ -157,22 +147,37 @@ function useStats(ranked: { org: Org; n: number }[]): { id: string; label: strin
         },
       },
     ];
-  }, [ranked]);
+  }, [ranked, findings, sections]);
 }
 
 /* ── the module ──────────────────────────────────────────────────────────── */
 
-export function EcologyDashboard() {
+export function EcologyDashboard({
+  orgs,
+  leaders,
+  findings,
+  timeline,
+  sections,
+}: {
+  orgs: Org[];
+  leaders: Leader[];
+  findings: Finding[];
+  timeline: TimelineEvent[];
+  /** Strand key → the name this report gives that section. */
+  sections: Record<string, string>;
+}) {
   const ranked = useMemo(
     () =>
-      ORGS.map((org) => ({ org, n: mentionsOf(org) }))
+      orgs
+        .map((org) => ({ org, n: countMentions(org, findings, timeline) }))
         .filter((r) => r.n > 0)
         .sort((a, b) => b.n - a.n),
-    [],
+    [orgs, findings, timeline],
   );
 
+  const orgById = (id: string) => orgs.find((o) => o.id === id);
   const [active, setActive] = useState<string | null>(null);
-  const stats = useStats(ranked);
+  const stats = useStats(ranked, findings, sections);
   const [tab, setTab] = useState(stats[0].id);
   const current = stats.find((s) => s.id === tab) ?? stats[0];
   const shown = active ? ranked.find((r) => r.org.id === active) : null;
@@ -184,7 +189,7 @@ export function EcologyDashboard() {
           The ecology, as this record has it
         </p>
         <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-ink/40">
-          {ranked.length} organisations · {LEADERS.length} named leaders
+          {ranked.length} organisations · {leaders.length} named leaders
         </p>
       </div>
 
@@ -255,8 +260,8 @@ export function EcologyDashboard() {
 
       {/* leadership */}
       <div className="border-t border-ink/[0.14] px-5 pb-6 pt-1 min-[680px]:px-6">
-        <CardRail label="Who runs the labs named here" count={LEADERS.length} noun="leaders">
-          {LEADERS.map((l) => {
+        <CardRail label="Who runs the labs named here" count={leaders.length} noun="leaders">
+          {leaders.map((l) => {
             const org = orgById(l.org);
             return (
               <RailItem key={l.id}>

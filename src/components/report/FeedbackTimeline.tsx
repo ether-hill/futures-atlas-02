@@ -29,7 +29,7 @@
  */
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import type { TimelineEvent } from "@/data/hegemony";
+import type { TimelineEvent } from "@/data/report-types";
 
 function useReducedMotion() {
   const [reduce, setReduce] = useState(false);

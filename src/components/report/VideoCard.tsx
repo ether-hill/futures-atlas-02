@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Video } from "@/data/hegemony";
+import type { Video } from "@/data/report-types";
 import { CoverImage } from "./CoverImage";
 
 /**

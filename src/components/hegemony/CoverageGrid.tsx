@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import type { PressItem, Video } from "@/data/hegemony";
-import { PressCard } from "./PressCard";
-import { VideoCard } from "./VideoCard";
+import { PressCard } from "@/components/report/PressCard";
+import { VideoCard } from "@/components/report/VideoCard";
 
 /**
  * Six, then the rest on request.

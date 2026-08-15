@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
-import { CardRail, RailItem } from "@/components/hegemony/CardRail";
-import { FindingCarousel } from "@/components/hegemony/FindingCarousel";
+import { CardRail, RailItem } from "@/components/report/CardRail";
+import { BandSection, Section } from "@/components/report/Section";
+import { FindingCarousel } from "@/components/report/FindingCarousel";
 import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
-import { EcologyDashboard } from "@/components/hegemony/EcologyDashboard";
-import { FeedbackTimeline } from "@/components/hegemony/FeedbackTimeline";
+import { EcologyDashboard } from "@/components/report/EcologyDashboard";
+import { FeedbackTimeline } from "@/components/report/FeedbackTimeline";
 import { HeroMosaic } from "@/components/hegemony/HeroMosaic";
-import { PressCard } from "@/components/hegemony/PressCard";
+import { PressCard } from "@/components/report/PressCard";
 import { VersionSwitch } from "@/components/hegemony/VersionSwitch";
-import { VideoCard } from "@/components/hegemony/VideoCard";
+import { VideoCard } from "@/components/report/VideoCard";
 import {
   DROPPED,
   FINDINGS,
+  findingsIn,
   PRESS,
   PUBLISHED,
   TIER_MEANING,
@@ -20,6 +22,7 @@ import {
   VIDEOS,
   countByTier,
 } from "@/data/hegemony";
+import { LEADERS, ORGS } from "@/data/ecosystem";
 import { formatPostDate } from "@/data/posts";
 
 /**
@@ -37,56 +40,6 @@ export const metadata: Metadata = {
   // long as it took to add three more.
   description: `How Western assumptions get into AI systems, what is actually documented, and what is being built in response. ${FINDINGS.length} findings, every one scoped to the dataset, model and year it covers.`,
 };
-
-const Section = ({
-  label,
-  title,
-  lede,
-  children,
-}: {
-  label: string;
-  title: string;
-  lede: React.ReactNode;
-  children: React.ReactNode;
-}) => (
-  <section className="border-t border-ink/[0.14] pt-[clamp(36px,5vw,64px)]">
-    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">{label}</p>
-    <h2 className="mt-4 max-w-[20ch] text-[clamp(28px,4vw,46px)] font-medium leading-[1.05] tracking-[-0.03em] text-ink">
-      {title}
-    </h2>
-    <div className="mt-5 max-w-[68ch] text-[15px] leading-[1.75] text-ink/75">{lede}</div>
-    {children}
-  </section>
-);
-
-/**
- * The same section furniture, on the dark coverage band.
- *
- * A near-copy of Section rather than a `dark` prop on it: the two live on
- * opposite grounds and every colour in them differs, so one component with a
- * branch in every className is harder to read than two that each say what they
- * are. If a third ground ever appears, that is the moment to merge them.
- */
-const BandSection = ({
-  label,
-  title,
-  lede,
-  children,
-}: {
-  label: string;
-  title: string;
-  lede: React.ReactNode;
-  children: React.ReactNode;
-}) => (
-  <section>
-    <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep">{label}</p>
-    <h2 className="mt-4 max-w-[24ch] text-[clamp(28px,4vw,46px)] font-medium leading-[1.05] tracking-[-0.03em] text-paper">
-      {title}
-    </h2>
-    <div className="mt-5 max-w-[68ch] text-[15px] leading-[1.75] text-paper/65">{lede}</div>
-    {children}
-  </section>
-);
 
 export default function AiHegemonyPage() {
   return (
@@ -194,7 +147,7 @@ export default function AiHegemonyPage() {
             {/* A rail, not a grid: eighteen cards is a wall, and the charts on
                 them want to be met four at a time. Nothing is held back — the
                 header counts the whole strand. */}
-            <FindingCarousel strand="composition" label="Findings on data composition" />
+            <FindingCarousel findings={findingsIn("composition")} label="Findings on data composition" />
           </Section>
 
           <Section
@@ -210,7 +163,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <FindingCarousel strand="encoding" label="Findings on encoding" />
+            <FindingCarousel findings={findingsIn("encoding")} label="Findings on encoding" />
           </Section>
 
           <Section
@@ -226,7 +179,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <FindingCarousel strand="amplification" label="Findings on amplification" />
+            <FindingCarousel findings={findingsIn("amplification")} label="Findings on amplification" />
           </Section>
 
           <Section
@@ -255,7 +208,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <FindingCarousel strand="geopolitics" label="Findings on concentration" />
+            <FindingCarousel findings={findingsIn("geopolitics")} label="Findings on concentration" />
           </Section>
 
           <Section
@@ -272,7 +225,19 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <EcologyDashboard />
+            <EcologyDashboard
+              orgs={ORGS}
+              leaders={LEADERS}
+              findings={FINDINGS}
+              timeline={TIMELINE}
+              sections={{
+                composition: "Composition",
+                encoding: "Encoding",
+                amplification: "Amplification",
+                geopolitics: "Concentration",
+                resistance: "Resistance",
+              }}
+            />
           </Section>
 
           <Section
@@ -288,7 +253,7 @@ export default function AiHegemonyPage() {
               </p>
             }
           >
-            <FindingCarousel strand="resistance" label="Findings on resistance" />
+            <FindingCarousel findings={findingsIn("resistance")} label="Findings on resistance" />
           </Section>
         </div>
       </Container>
