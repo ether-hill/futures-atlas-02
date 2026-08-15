@@ -4,6 +4,7 @@ import { Container } from "@/components/Container";
 import { CardRail, RailItem } from "@/components/hegemony/CardRail";
 import { FindingCarousel } from "@/components/hegemony/FindingCarousel";
 import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
+import { EcologyDashboard } from "@/components/hegemony/EcologyDashboard";
 import { FeedbackTimeline } from "@/components/hegemony/FeedbackTimeline";
 import { HeroMosaic } from "@/components/hegemony/HeroMosaic";
 import { PressCard } from "@/components/hegemony/PressCard";
@@ -258,7 +259,24 @@ export default function AiHegemonyPage() {
           </Section>
 
           <Section
-            label="06 · Resistance"
+            label="06 · The ecology"
+            title="Who builds it, and who is named for it"
+            lede={
+              <p>
+                The industry layer behind the corpus, drawn from this
+                report&rsquo;s own record rather than from a market map. There
+                are no valuations here and no funding rounds: a company&rsquo;s
+                weight is how often its name appears in the evidence above.
+                Leadership is a dated snapshot, because it moves &mdash; the
+                title at Google DeepMind changed ten days before this shipped.
+              </p>
+            }
+          >
+            <EcologyDashboard />
+          </Section>
+
+          <Section
+            label="07 · Resistance"
             title="Sovereign in the data, American in the licence"
             lede={
               <p>
@@ -284,7 +302,7 @@ export default function AiHegemonyPage() {
       <section className="mt-[clamp(48px,7vw,96px)] bg-band py-[clamp(52px,8vw,104px)]">
         <Container className="space-y-[clamp(52px,8vw,104px)]">
           <BandSection
-            label="07 · Watch"
+            label="08 · Watch"
             title="The corpus, the labour, the answer"
             lede={
               <p>
@@ -310,7 +328,7 @@ export default function AiHegemonyPage() {
           </BandSection>
 
           <BandSection
-            label="08 · In the press"
+            label="09 · In the press"
             title="Selected coverage"
             lede={
               <p>
@@ -342,7 +360,7 @@ export default function AiHegemonyPage() {
         <div>
           {/* ── methodology ───────────────────────────────────────────── */}
           <Section
-            label="09 · Method"
+            label="10 · Method"
             title="How to read the tiers, and what we threw away"
             lede={
               <p>
