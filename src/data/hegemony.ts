@@ -2132,5 +2132,7 @@ export const PRESS: PressItem[] = [
  */
 export const MOSAIC: string[] = [
   ...VIDEOS.map((v) => v.thumb),
-  ...PRESS.map((p) => p.image),
+  // filter(Boolean) rather than a cast: `image` is nullable across reports now,
+  // and the wall must never carry a slot for a picture that does not exist.
+  ...PRESS.map((p) => p.image).filter((src): src is string => src !== null),
 ];

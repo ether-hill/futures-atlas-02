@@ -87,8 +87,13 @@ export interface Measure {
  * slope, an exact count out of an exact denominator is a waffle whose cells
  * you can literally count, and a multiplier is a length against a 1× rule.
  * Bars are the default, for categories that are simply being compared.
+ *
+ * `count` is the mark for a number with no denominator — 37,000 people marked,
+ * 20 seconds of review. Those have no whole to be a share OF, and drawing them
+ * as a ring produces a full circle every time, which reads as "all of it" and
+ * means nothing. The number counts up and stands on its own.
  */
-export type ChartKind = "bars" | "ring" | "waffle" | "slope" | "multiple" | "dots";
+export type ChartKind = "bars" | "ring" | "waffle" | "slope" | "multiple" | "dots" | "count";
 
 /**
  * The optional chart on a finding's card.
@@ -196,8 +201,12 @@ export interface PressItem {
   /** Our one line on what the piece reports. */
   blurb: string;
   url: string;
-  /** The publisher's own og:image, hot-linked. Confirmed to resolve. */
-  image: string;
+  /**
+   * The publisher's own og:image, hot-linked, and confirmed to resolve. `null`
+   * where none was checked — the card then renders typographically rather than
+   * carrying a guessed URL, which is a broken image and a false claim at once.
+   */
+  image: string | null;
 }
 
 /** Helpers every report's data file uses on its own arrays. */

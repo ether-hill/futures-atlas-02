@@ -105,6 +105,23 @@ function Bars({ chart, t }: { chart: FindingChart; t: number[] }) {
 }
 
 /**
+ * A number with no denominator: 37,000 people marked, 20 seconds of review.
+ *
+ * There is no whole for these to be a share OF, so there is no track and no
+ * arc — a ring drawn at 100% every time reads as "all of it" and means
+ * nothing. The figure counts up and stands by itself.
+ */
+function Count({ chart, t }: { chart: FindingChart; t: number[] }) {
+  const b = chart.bars[0];
+  return (
+    <div>
+      <Readout bar={b} t={t[0] ?? 0} className="block text-[34px] leading-none" />
+      <p className="mt-2.5 text-[12.5px] leading-[1.45] text-ink/70">{b.label}</p>
+    </div>
+  );
+}
+
+/**
  * A share of a stated whole. One arc; the rest of the ring is the empty track.
  *
  * Drawn as an explicit arc path rather than a dash-offset circle: `<circle>`
@@ -303,7 +320,15 @@ function Dots({ chart, t }: { chart: FindingChart; t: number[] }) {
   );
 }
 
-const MARKS = { bars: Bars, ring: Ring, waffle: Waffle, slope: Slope, multiple: Multiple, dots: Dots };
+const MARKS = {
+  bars: Bars,
+  ring: Ring,
+  waffle: Waffle,
+  slope: Slope,
+  multiple: Multiple,
+  dots: Dots,
+  count: Count,
+};
 
 /* ── the walk ────────────────────────────────────────────────────────────── */
 

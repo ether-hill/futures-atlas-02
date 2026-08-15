@@ -16,11 +16,20 @@ export function PressCard({ item }: { item: PressItem }) {
   return (
     <article className="group flex flex-col">
       <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex flex-col">
+        {/* No picture, no placeholder pretending to be one: a piece whose
+            share image was never checked gets a typographic plate carrying the
+            masthead, which is the honest version of the same card. */}
         <div className="relative aspect-video w-full overflow-hidden bg-paper/[0.06]">
-          <CoverImage
-            src={item.image}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
+          {item.image ? (
+            <CoverImage
+              src={item.image}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+          ) : (
+            <span className="absolute inset-0 grid place-items-center border border-paper/10 px-5 text-center font-mono text-[13px] uppercase leading-[1.5] tracking-[0.16em] text-paper/45">
+              {item.publisher}
+            </span>
+          )}
         </div>
 
         <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-accent-deep">
