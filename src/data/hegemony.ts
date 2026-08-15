@@ -106,12 +106,30 @@ export interface Measure {
  * carry no numbers because the absence of a number IS their finding, and
  * drawing something there would be the exact move this report criticises.
  */
+/**
+ * Which mark a finding's numbers get.
+ *
+ * Chosen per finding by what the data IS, never for variety's sake — a share
+ * of a whole is a ring, three orders of magnitude is a dot plot on a log axis
+ * because a linear bar renders 0.03% as nothing, a before-and-after is a
+ * slope, an exact count out of an exact denominator is a waffle whose cells
+ * you can literally count, and a multiplier is a length against a 1× rule.
+ * Bars are the default, for categories that are simply being compared.
+ */
+export type ChartKind = "bars" | "ring" | "waffle" | "slope" | "multiple" | "dots";
+
 export interface FindingChart {
-  /** What the bars are drawn against. 100 for a percentage, the total for a count. */
+  kind: ChartKind;
+  /** What the marks are drawn against. 100 for a percentage, the total for a count. */
   max: number;
   bars: Measure[];
   /** One line naming precisely what is measured. Not a restatement of the claim. */
   axis: string;
+  /**
+   * `waffle` only: how many cells the grid has — the denominator, drawn. Used
+   * only where the finding states an exact "n of N", so every cell is real.
+   */
+  cells?: number;
 }
 
 export interface Finding {
@@ -188,6 +206,7 @@ export const FINDINGS: Finding[] = [
       url: "https://aclanthology.org/2021.emnlp-main.98/",
     },
     chart: {
+      kind: "ring",
       max: 100,
       axis: "share of a 175,000-URL sample of C4, by host country",
       bars: [
@@ -213,6 +232,7 @@ export const FINDINGS: Finding[] = [
       url: "https://aclanthology.org/2021.emnlp-main.98/",
     },
     chart: {
+      kind: "dots",
       max: 100,
       axis: "URLs contributed, as a percentage of the United States count",
       bars: [
@@ -240,6 +260,7 @@ export const FINDINGS: Finding[] = [
       url: "https://github.com/openai/gpt-3/blob/master/dataset_statistics/languages_by_word_count.csv",
     },
     chart: {
+      kind: "ring",
       max: 100,
       axis: "share of GPT-3's training mix, by word count",
       bars: [
@@ -265,6 +286,7 @@ export const FINDINGS: Finding[] = [
       url: "https://commoncrawl.github.io/cc-crawl-statistics/plots/languages",
     },
     chart: {
+      kind: "slope",
       max: 100,
       axis: "English share, before and after filtering",
       bars: [
@@ -291,6 +313,7 @@ export const FINDINGS: Finding[] = [
       url: "https://aclanthology.org/2021.emnlp-main.98/",
     },
     chart: {
+      kind: "bars",
       max: 100,
       axis: "documents removed by C4's blocklist, by dialect",
       bars: [
@@ -318,6 +341,7 @@ export const FINDINGS: Finding[] = [
       url: "https://aclanthology.org/2020.acl-main.560/",
     },
     chart: {
+      kind: "dots",
       max: 2191,
       axis: "languages in each resourcing class, of roughly 7,000",
       bars: [
@@ -344,6 +368,8 @@ export const FINDINGS: Finding[] = [
       url: "https://aclanthology.org/2022.tacl-1.4/",
     },
     chart: {
+      kind: "waffle",
+      cells: 205,
       max: 205,
       axis: "of 205 language corpora audited by hand",
       bars: [
@@ -369,6 +395,7 @@ export const FINDINGS: Finding[] = [
       url: "https://proceedings.neurips.cc/paper_files/paper/2023/hash/74bb24dca8334adce292883b4b651eda-Abstract-Conference.html",
     },
     chart: {
+      kind: "multiple",
       max: 15,
       axis: "tokens needed for the same text, against English",
       bars: [
@@ -395,6 +422,7 @@ export const FINDINGS: Finding[] = [
       url: "https://aclanthology.org/2023.emnlp-main.614/",
     },
     chart: {
+      kind: "multiple",
       max: 5,
       axis: "cost for the same task, against English, across 22 languages",
       bars: [
@@ -440,6 +468,7 @@ export const FINDINGS: Finding[] = [
       url: "https://crfm.stanford.edu/fmti/May-2024/paper.pdf",
     },
     chart: {
+      kind: "bars",
       max: 100,
       axis: "Foundation Model Transparency Index, May 2024 — scores out of 100",
       bars: [
@@ -468,6 +497,7 @@ export const FINDINGS: Finding[] = [
       url: "https://arxiv.org/abs/2407.14933",
     },
     chart: {
+      kind: "bars",
       max: 100,
       axis: "share of C4 restricted to AI crawlers",
       bars: [
@@ -495,6 +525,7 @@ export const FINDINGS: Finding[] = [
       url: "https://arxiv.org/abs/2310.16787",
     },
     chart: {
+      kind: "bars",
       max: 100,
       axis: "of 1,800+ text datasets audited on popular hosting sites",
       bars: [
@@ -539,6 +570,7 @@ export const FINDINGS: Finding[] = [
       url: "https://arxiv.org/abs/2407.21783",
     },
     chart: {
+      kind: "ring",
       max: 100,
       axis: "share of Llama 3's ~15-trillion-token mix",
       bars: [
@@ -1316,6 +1348,8 @@ export const FINDINGS: Finding[] = [
       url: "https://www.storybench.org/how-the-washington-post-uncovered-the-sources-that-make-ai-chatbots-sound-so-smart/",
     },
     chart: {
+      kind: "waffle",
+      cells: 100,
       max: 100,
       axis: "share of tokens, of 15.7 million domains in a C4 reconstruction",
       bars: [
@@ -1348,6 +1382,7 @@ export const FINDINGS: Finding[] = [
       url: "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065782",
     },
     chart: {
+      kind: "slope",
       max: 100,
       axis: "share of Wikipedia editors who are women, 2008 survey re-analysed",
       bars: [
@@ -1375,6 +1410,7 @@ export const FINDINGS: Finding[] = [
       url: "https://www.pewresearch.org/journalism/2016/02/25/reddit-news-users-more-likely-to-be-male-young-and-digital-in-their-news-preferences/",
     },
     chart: {
+      kind: "bars",
       max: 100,
       axis: "Reddit's news users, by share",
       bars: [
