@@ -96,74 +96,118 @@ export default async function PrototypePage({ params }: { params: Promise<{ slug
           </p>
         </header>
 
+        {p.story && (
+          <div className="mt-[clamp(20px,2.6vw,32px)] max-w-[68ch] space-y-4 text-[15px] leading-[1.75] text-ink/75">
+            {p.story.map((para) => (
+              <p key={para.slice(0, 40)}>{para}</p>
+            ))}
+          </div>
+        )}
+
         {/* ── the instrument, live ───────────────────────────────────────
             Cropped to the instrument and never scaled up — see
             InstrumentFrame. It renders at its own size. */}
         <div className="mt-[clamp(28px,4vw,52px)]">
-          <InstrumentFrame src={p.embed.src} title={p.title} />
+          <InstrumentFrame
+            src={p.embed.src}
+            title={p.title}
+            crop={p.embed.crop}
+            height={p.embed.height}
+          />
         </div>
 
-        {/* ── the frequency atlas ────────────────────────────────────────── */}
-        <section className="mt-[clamp(40px,6vw,80px)]">
-          {/* The face is set inline because core ships an unlayered
-              `h1..h6 { font-family: … }` that beats the font-mono utility. */}
-          <h2
-            className="text-[10.5px] uppercase tracking-[0.16em] text-graphite"
-            style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
-          >
-            {p.atlas.title}
-          </h2>
+        {/* ── the frequency atlas, where there is one ─────────────────── */}
+        {p.atlas && (() => {
+          const atlas = p.atlas;
+          return (
+          <section className="mt-[clamp(40px,6vw,80px)]">
+            {/* The face is set inline because core ships an unlayered
+                `h1..h6 { font-family: … }` that beats the font-mono utility. */}
+            <h2
+              className="text-[10.5px] uppercase tracking-[0.16em] text-graphite"
+              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
+            >
+              {atlas.title}
+            </h2>
 
-          <p className="mt-4 max-w-[76ch] text-[13.5px] leading-[1.7] text-ink/65">
-            {p.atlas.legend}
-          </p>
+            <p className="mt-4 max-w-[76ch] text-[13.5px] leading-[1.7] text-ink/65">
+              {atlas.legend}
+            </p>
 
-          {/* Wide tables scroll in their own container — the page body must
-              never scroll sideways. */}
-          <div className="mt-7 overflow-x-auto">
-            <table className="w-full min-w-[720px] border-collapse text-left">
-              <thead>
-                <tr className="border-b border-ink/25">
-                  {["HZ", "Frequency", "Category", "Said to", "Ev"].map((h) => (
-                    <th
-                      key={h}
-                      scope="col"
-                      className="py-3 pr-6 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ink/50"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {p.atlas.tones.map((t, i) => (
-                  <tr key={`${t.label}-${i}`} className="border-b border-ink/[0.1]">
-                    <td className="py-3 pr-6 font-mono text-[13px] tabular-nums text-ink">{t.hz}</td>
-                    <td className="py-3 pr-6 text-[13.5px] leading-[1.5] text-ink/80">
-                      {/* the source strips the numeric prefix in this column */}
-                      {t.label.replace(/^[0-9.]+ · /, "")}
-                    </td>
-                    <td className="py-3 pr-6 font-mono text-[11px] uppercase tracking-[0.1em] text-ink/45">
-                      {t.cat}
-                    </td>
-                    <td className="py-3 pr-6 text-[13.5px] leading-[1.5] text-ink/70">{t.claim}</td>
-                    <td className="py-3">
-                      <span
-                        className={`inline-block border px-1.5 py-0.5 font-mono text-[10px] font-bold ${EV_STYLE[t.ev]}`}
+            {/* Wide tables scroll in their own container — the page body must
+                never scroll sideways. */}
+            <div className="mt-7 overflow-x-auto">
+              <table className="w-full min-w-[720px] border-collapse text-left">
+                <thead>
+                  <tr className="border-b border-ink/25">
+                    {["HZ", "Frequency", "Category", "Said to", "Ev"].map((h) => (
+                      <th
+                        key={h}
+                        scope="col"
+                        className="py-3 pr-6 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-ink/50"
                       >
-                        {t.ev}
-                      </span>
-                    </td>
+                        {h}
+                      </th>
+                    ))}
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {atlas.tones.map((t, i) => (
+                    <tr key={`${t.label}-${i}`} className="border-b border-ink/[0.1]">
+                      <td className="py-3 pr-6 font-mono text-[13px] tabular-nums text-ink">{t.hz}</td>
+                      <td className="py-3 pr-6 text-[13.5px] leading-[1.5] text-ink/80">
+                        {/* the source strips the numeric prefix in this column */}
+                        {t.label.replace(/^[0-9.]+ · /, "")}
+                      </td>
+                      <td className="py-3 pr-6 font-mono text-[11px] uppercase tracking-[0.1em] text-ink/45">
+                        {t.cat}
+                      </td>
+                      <td className="py-3 pr-6 text-[13.5px] leading-[1.5] text-ink/70">{t.claim}</td>
+                      <td className="py-3">
+                        <span
+                          className={`inline-block border px-1.5 py-0.5 font-mono text-[10px] font-bold ${EV_STYLE[t.ev]}`}
+                        >
+                          {t.ev}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-          <p className="mt-7 max-w-[76ch] text-[13.5px] leading-[1.7] text-ink/65">
-            {p.atlas.mechanics}
-          </p>
-        </section>
+            <p className="mt-7 max-w-[76ch] text-[13.5px] leading-[1.7] text-ink/65">
+              {atlas.mechanics}
+            </p>
+          </section>
+          );
+        })()}
+
+        {/* ── more info ──────────────────────────────────────────────────── */}
+        {p.more && (
+          <section className="mt-[clamp(40px,6vw,80px)] border-t border-ink/[0.14] pt-[clamp(28px,4vw,48px)]">
+            <h2
+              className="text-[10.5px] uppercase tracking-[0.16em] text-graphite"
+              style={{ fontFamily: "var(--font-mono)", fontWeight: 600 }}
+            >
+              More info
+            </h2>
+
+            <div className="mt-8 grid gap-x-10 gap-y-9 min-[900px]:grid-cols-2">
+              {p.more.map((m) => (
+                <div key={m.heading}>
+                  <h3 className="text-[17px] font-medium leading-[1.3] tracking-[-0.015em] text-ink">
+                    {m.heading}
+                  </h3>
+                  <p className="mt-3 max-w-[62ch] text-[14.5px] leading-[1.7] text-ink/70">
+                    {m.body}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
       </Container>
     </article>
   );

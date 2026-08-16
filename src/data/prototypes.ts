@@ -56,12 +56,20 @@ export interface Prototype {
   /** Card thumbnail — a still of the instrument itself, in public/feed. */
   image: string;
   /**
-   * The live instrument, framed. Points at the project page rather than the
-   * compact embed: the embed endpoint only builds a 480px player strip, and the
-   * ask was for the instrument's real UI.
+   * The live instrument, framed rather than rebuilt.
+   *
+   * `crop` is how far down the source page the instrument starts, measured
+   * once at the frame's pinned width — see InstrumentFrame for why that width
+   * is fixed. `height` is how much of it to show below the crop. Both are per
+   * instrument because both pages are laid out differently.
    */
-  embed: { src: string };
-  atlas: {
+  embed: { src: string; crop: number; height: number };
+  /** The summary/story. Paragraphs, in order. */
+  story?: string[];
+  /** Sections under "More info", below the instrument. */
+  more?: { heading: string; body: string }[];
+  /** Biome's frequency table. Absent on instruments that do not have one. */
+  atlas?: {
     /** The panel heading, verbatim. */
     title: string;
     /** The evidence legend, verbatim. */
@@ -108,6 +116,43 @@ const BIOME_TONES: AtlasTone[] = [
 
 export const PROTOTYPES: Prototype[] = [
   {
+    slug: "theremin",
+    eyebrow: "THEREMIN · GESTURE INSTRUMENT",
+    title: "Theremin.",
+    description:
+      "No keys, no contact — pitch and volume are pulled out of the air. Power on and sweep the field (X bends pitch, Y swells volume). Stack up to four voices, set each to play itself on an autopilot preset, and mix them into one breathing chord.",
+    posted: "2026-08-16",
+    visibility: "live",
+    image: "/feed/theremin.png",
+    embed: {
+      src: "https://frond-studio.com/projects/instruments/theremin",
+      crop: 610,
+      height: 900,
+    },
+    story: [
+      "The theremin is the one instrument you play by not touching it. Lev Sergeyevich Termen — Leon Theremin in the West — demonstrated it in October 1920, and it is generally counted as the first electronic musical instrument. RCA brought it to market in 1929, making it the first one you could buy.",
+      "It works on the heterodyne principle. Two oscillators run at frequencies above hearing; one is fixed, the other shifts as a hand moves near its antenna. What reaches the speaker is the difference between them — an audible tone pulled out of two inaudible ones. A second antenna does the same for volume. Clara Rockmore, a violinist who became its best-known player, is the reason anyone knows it can be played properly rather than merely swooped.",
+    ],
+    more: [
+      {
+        heading: "How the web version works",
+        body: "There is no antenna and no radio-frequency anything: a browser cannot sense a hand in the air. What it can sense is a pointer, so the two antennas become two axes of one pad — X for pitch, Y for volume — and the gesture survives even though the physics does not. Dragging across the field is the closest honest analogue to sweeping a hand through a heterodyne field.",
+      },
+      {
+        heading: "What it is built from",
+        body: "Web Audio, no samples and no library. Each voice is an oscillator — sine, triangle, sawtooth or square — through a gain stage the Y axis drives, a lowpass filter, a stereo panner and a convolution reverb, with a compressor and an analyser on the master so the display reads the signal rather than the controls. Four voices can run at once.",
+      },
+      {
+        heading: "Scale snap, range and glide",
+        body: "A real theremin is continuous, which is also why it is hard: every pitch between the notes is available and most of them are wrong. Scale snap quantises the X axis to a scale, range sets how many octaves the pad spans, and glide is the portamento between positions. Turning snap off gives you back the original problem.",
+      },
+      {
+        heading: "Autopilot",
+        body: "Each voice can play itself on a preset — Healing, Drift, Chaos, Whale, Ascend, Penta — with its own speed. Set all four going and mix them, and it stops being an instrument you play and becomes one you tend.",
+      },
+    ],
+  },
+  {
     slug: "biome",
     eyebrow: "BIOME · SOUND HEALING SOUNDSCAPE ECOSYSTEM",
     title: "Biome.",
@@ -119,7 +164,7 @@ export const PROTOTYPES: Prototype[] = [
     // The project page itself, not the compact embed. The embed endpoint only
     // builds a 480px player strip, and stretched across a column it reads as an
     // empty bar; this is the instrument's real UI — transport, mixer, realms.
-    embed: { src: "https://frond-studio.com/projects/instruments/biome" },
+    embed: { src: "https://frond-studio.com/projects/instruments/biome", crop: 660, height: 1040 },
     atlas: {
       title: "FREQUENCY ATLAS · WHAT EACH TONE IS SAID TO DO",
       legend:

@@ -30,14 +30,22 @@
 
 import { useEffect, useRef, useState } from "react";
 
-/** The iframe's pinned width. CROP is only valid at this width. */
+/** The iframe's pinned width. Every `crop` is measured at this width. */
 const FRAME_W = 1200;
-/** Measured at FRAME_W: the instrument's transport panel starts at 717px. */
-const CROP = 660;
-/** How much of the instrument to show below the crop. */
-const VIEW_H = 1040;
 
-export function InstrumentFrame({ src, title }: { src: string; title: string }) {
+export function InstrumentFrame({
+  src,
+  title,
+  crop,
+  height,
+}: {
+  src: string;
+  title: string;
+  /** How far down the source page the instrument starts, at FRAME_W. */
+  crop: number;
+  /** How much to show below the crop. */
+  height: number;
+}) {
   const box = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
@@ -62,7 +70,7 @@ export function InstrumentFrame({ src, title }: { src: string; title: string }) 
       // load-bearing, everything else would be decoration around something
       // that already has its own edges.
       className="relative overflow-hidden"
-      style={{ height: VIEW_H * scale, maxWidth: FRAME_W }}
+      style={{ height: height * scale, maxWidth: FRAME_W }}
     >
       <iframe
         src={src}
@@ -75,9 +83,9 @@ export function InstrumentFrame({ src, title }: { src: string; title: string }) 
           top: 0,
           left: 0,
           width: FRAME_W,
-          height: CROP + VIEW_H,
+          height: crop + height,
           border: 0,
-          transform: `scale(${scale}) translateY(${-CROP}px)`,
+          transform: `scale(${scale}) translateY(${-crop}px)`,
           transformOrigin: "top left",
         }}
       />
