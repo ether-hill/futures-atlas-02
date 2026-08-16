@@ -63,7 +63,12 @@ export interface Prototype {
    * is fixed. `height` is how much of it to show below the crop. Both are per
    * instrument because both pages are laid out differently.
    */
-  embed: { src: string; crop: number; height: number };
+  embed?: { src: string; crop: number; height: number };
+  /**
+   * An instrument built in this repo, rendered rather than framed. Exactly one
+   * of `embed` and `instrument` is set.
+   */
+  instrument?: "theremin";
   /** The summary/story. Paragraphs, in order. */
   story?: string[];
   /** Sections under "More info", below the instrument. */
@@ -117,38 +122,39 @@ const BIOME_TONES: AtlasTone[] = [
 export const PROTOTYPES: Prototype[] = [
   {
     slug: "theremin",
-    eyebrow: "THEREMIN · GESTURE INSTRUMENT",
-    title: "Theremin.",
+    eyebrow: "THEREMIN · CONTINUOUS PITCH, NO KEYS",
+    title: "Theremin",
     description:
-      "No keys, no contact — pitch and volume are pulled out of the air. Power on and sweep the field (X bends pitch, Y swells volume). Stack up to four voices, set each to play itself on an autopilot preset, and mix them into one breathing chord.",
+      "The instrument you play by not touching it — pitch on one axis, volume on the other, and nothing in between to hold onto. Built here in Web Audio: one oscillator, two continuous controls, and a scale snap for when the continuity gets the better of you.",
     posted: "2026-08-16",
     visibility: "live",
     image: "/feed/theremin.png",
-    embed: {
-      src: "https://frond-studio.com/projects/instruments/theremin",
-      crop: 610,
-      height: 900,
-    },
+    /** Ours. Rendered by components/prototype/Theremin, not framed. */
+    instrument: "theremin",
     story: [
-      "The theremin is the one instrument you play by not touching it. Lev Sergeyevich Termen — Leon Theremin in the West — demonstrated it in October 1920, and it is generally counted as the first electronic musical instrument. RCA brought it to market in 1929, making it the first one you could buy.",
-      "It works on the heterodyne principle. Two oscillators run at frequencies above hearing; one is fixed, the other shifts as a hand moves near its antenna. What reaches the speaker is the difference between them — an audible tone pulled out of two inaudible ones. A second antenna does the same for volume. Clara Rockmore, a violinist who became its best-known player, is the reason anyone knows it can be played properly rather than merely swooped.",
+      "Lev Sergeyevich Termen — Leon Theremin in the West — demonstrated it in October 1920, and it is generally counted the first electronic musical instrument. RCA brought it to market in 1929, making it the first one anybody could buy.",
+      "It works on the heterodyne principle. Two oscillators run above hearing; one is fixed, the other shifts as a hand moves near its antenna, and what reaches the speaker is the difference between them — an audible tone pulled out of two inaudible ones. A second antenna does the same for volume. Clara Rockmore, a violinist who became its best-known player, is the reason anyone knows it can be played properly rather than merely swooped.",
     ],
     more: [
       {
-        heading: "How the web version works",
-        body: "There is no antenna and no radio-frequency anything: a browser cannot sense a hand in the air. What it can sense is a pointer, so the two antennas become two axes of one pad — X for pitch, Y for volume — and the gesture survives even though the physics does not. Dragging across the field is the closest honest analogue to sweeping a hand through a heterodyne field.",
+        heading: "What this version does not do",
+        body: "It is not heterodyne and there is no antenna. A browser cannot sense a hand in the air, and a version that claimed to would be a webcam demo wearing an instrument's name. What carries over is the part that is actually playable: two continuous axes, no keys, no discrete steps. X is pitch and Y is volume, exactly as the two antennas are.",
       },
       {
-        heading: "What it is built from",
-        body: "Web Audio, no samples and no library. Each voice is an oscillator — sine, triangle, sawtooth or square — through a gain stage the Y axis drives, a lowpass filter, a stereo panner and a convolution reverb, with a compressor and an analyser on the master so the display reads the signal rather than the controls. Four voices can run at once.",
+        heading: "The signal path",
+        body: "One oscillator — sine, triangle, sawtooth or square — into a lowpass filter, a gain stage, and a compressor. Reverb is a send into a convolver whose impulse response is generated rather than downloaded: exponentially decaying noise over about two seconds, which is a plausible small room and costs nothing to fetch.",
+      },
+      {
+        heading: "Why it does not click",
+        body: "Every parameter is ramped rather than set. A bare assignment to a running oscillator is a step discontinuity, which you hear as a click, so pitch moves on a time constant and gain on another — and the oscillator never stops between gestures, because starting and stopping one per touch is what makes cheap web synths pop. Volume floors at silence via a linear ramp, since an exponential one cannot reach zero.",
       },
       {
         heading: "Scale snap, range and glide",
-        body: "A real theremin is continuous, which is also why it is hard: every pitch between the notes is available and most of them are wrong. Scale snap quantises the X axis to a scale, range sets how many octaves the pad spans, and glide is the portamento between positions. Turning snap off gives you back the original problem.",
+        body: "A real theremin is continuous, which is also why it is hard: every pitch between the notes is available and most of them are wrong. Scale snap quantises the pitch axis, range sets how many octaves the field spans, and glide is the portamento between positions. Set scale to chromatic and you have the original problem back.",
       },
       {
-        heading: "Autopilot",
-        body: "Each voice can play itself on a preset — Healing, Drift, Chaos, Whale, Ascend, Penta — with its own speed. Set all four going and mix them, and it stops being an instrument you play and becomes one you tend.",
+        heading: "Nothing runs until you ask",
+        body: "The audio graph is built on the first press of power and torn down — context closed, not merely paused — when you switch off or leave the page. A page holding an open audio context you did not ask for is rude, and a suspended one is still a page keeping the device's audio hardware awake.",
       },
     ],
   },

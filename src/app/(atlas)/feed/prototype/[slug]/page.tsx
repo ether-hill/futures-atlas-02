@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { InstrumentFrame } from "@/components/feed/InstrumentFrame";
+import { Theremin } from "@/components/prototype/Theremin";
 import { formatPostDate } from "@/data/posts";
 import { PROTOTYPES, prototypeBySlug } from "@/data/prototypes";
 
@@ -104,17 +105,20 @@ export default async function PrototypePage({ params }: { params: Promise<{ slug
           </div>
         )}
 
-        {/* ── the instrument, live ───────────────────────────────────────
-            Cropped to the instrument and never scaled up — see
-            InstrumentFrame. It renders at its own size. */}
-        <div className="mt-[clamp(28px,4vw,52px)]">
-          <InstrumentFrame
-            src={p.embed.src}
-            title={p.title}
-            crop={p.embed.crop}
-            height={p.embed.height}
-          />
-        </div>
+        {/* ── the instrument ─────────────────────────────────────────────
+            Either one of ours, rendered, or one framed from elsewhere and
+            cropped — see InstrumentFrame for why that frame is pinned. */}
+        {p.instrument === "theremin" && <Theremin />}
+        {p.embed && (
+          <div className="mt-[clamp(28px,4vw,52px)]">
+            <InstrumentFrame
+              src={p.embed.src}
+              title={p.title}
+              crop={p.embed.crop}
+              height={p.embed.height}
+            />
+          </div>
+        )}
 
         {/* ── the frequency atlas, where there is one ─────────────────── */}
         {p.atlas && (() => {
