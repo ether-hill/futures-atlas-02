@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { CardRail, RailItem } from "@/components/report/CardRail";
+import { Method } from "@/components/report/Method";
 import { BandSection, Section } from "@/components/report/Section";
 import { FindingCarousel } from "@/components/report/FindingCarousel";
 import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
@@ -18,10 +19,8 @@ import {
   findingsIn,
   PRESS,
   PUBLISHED,
-  TIER_MEANING,
   TIMELINE,
   VIDEOS,
-  countByTier,
 } from "@/data/hegemony";
 import { LEADERS, ORGS } from "@/data/ecosystem";
 import { formatPostDate } from "@/data/posts";
@@ -291,49 +290,12 @@ export default function AiHegemonyPage() {
       <Container className="pt-[clamp(48px,7vw,96px)]">
         <div>
           {/* ── methodology ───────────────────────────────────────────── */}
-          <Section
+          <Method
             label="10 · Method"
-            title="How to read the tiers, and what we threw away"
-            lede={
-              <p>
-                Three tiers, spelled out rather than left to a colour. Then the
-                rejects.
-              </p>
-            }
-          >
-            <div className="mt-8 grid gap-4 min-[720px]:grid-cols-3">
-              {(["documented", "reported", "emergent"] as const).map((t) => (
-                <div key={t} className="border border-ink/[0.14] bg-surface p-5">
-                  <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-accent-deep">
-                    {t}
-                  </p>
-                  <p className="mt-1 font-mono text-[22px] font-bold leading-none text-ink">
-                    {countByTier(t)}
-                  </p>
-                  <p className="mt-3 text-[13px] leading-[1.65] text-ink/70">{TIER_MEANING[t]}</p>
-                </div>
-              ))}
-            </div>
-
-            <h3 className="mt-[clamp(36px,5vw,56px)] text-[22px] font-medium tracking-[-0.02em] text-ink">
-              Checked, and not used
-            </h3>
-            <p className="mt-3 max-w-[68ch] text-[15px] leading-[1.75] text-ink/75">
-              Every one of these is in circulation, and several were in the
-              brief for this report. &ldquo;We looked and it didn&rsquo;t hold
-              up&rdquo; is a finding.
-            </p>
-            <ol className="mt-7 grid gap-px border border-ink/[0.14] bg-ink/[0.14]">
-              {DROPPED.map((d) => (
-                <li key={d.claim} className="bg-surface p-5 min-[680px]:p-6">
-                  <p className="text-[15px] font-medium leading-[1.4] text-ink">{d.claim}</p>
-                  <p className="mt-2 max-w-[80ch] text-[13.5px] leading-[1.7] text-ink/70">
-                    {d.reason}
-                  </p>
-                </li>
-              ))}
-            </ol>
-          </Section>
+            findings={FINDINGS}
+            dropped={DROPPED}
+            note={"All of these are in circulation and several were in the brief for this report. Each was checked against its source and dropped, with the reason."}
+          />
         </div>
       </Container>
     </main>

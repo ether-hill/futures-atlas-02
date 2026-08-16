@@ -8,6 +8,7 @@ import { FindingCarousel } from "@/components/report/FindingCarousel";
 import { HeroMosaic } from "@/components/report/HeroMosaic";
 import { PressCard } from "@/components/report/PressCard";
 import { VideoCard } from "@/components/report/VideoCard";
+import { Method } from "@/components/report/Method";
 import { BandSection, Section } from "@/components/report/Section";
 import {
   DROPPED,
@@ -17,9 +18,7 @@ import {
   VIDEOS,
   PUBLISHED,
   STRAND_NAME,
-  TIER_MEANING,
   TIMELINE,
-  countByTier,
   findingsIn,
 } from "@/data/killchain";
 import { LEADERS, ORGS } from "@/data/killchain-ecosystem";
@@ -259,51 +258,12 @@ export default function AiKillChainPage() {
       </section>
 
       <Container className="pt-[clamp(48px,7vw,96px)]">
-        <Section
+        <Method
           label="10 · Method"
-          title="How to read the tiers, and what we threw away"
-          lede={
-            <p>
-              Three tiers, spelled out rather than left to a colour. Then the
-              rejects &mdash; including the two claims this subject is most
-              often reduced to.
-            </p>
-          }
-        >
-          <div className="mt-8 grid gap-4 min-[720px]:grid-cols-3">
-            {(["documented", "reported", "emergent"] as const).map((t) => (
-              <div key={t} className="border border-ink/[0.14] bg-surface p-5">
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-accent-deep">
-                  {t}
-                </p>
-                <p className="mt-1 font-mono text-[22px] font-bold leading-none text-ink">
-                  {countByTier(t)}
-                </p>
-                <p className="mt-3 text-[13px] leading-[1.65] text-ink/70">{TIER_MEANING[t]}</p>
-              </div>
-            ))}
-          </div>
-
-          <h3 className="mt-[clamp(36px,5vw,56px)] text-[22px] font-medium tracking-[-0.02em] text-ink">
-            Checked, and not used
-          </h3>
-          <p className="mt-3 max-w-[68ch] text-[15px] leading-[1.75] text-ink/75">
-            On this subject the temptation is not to overstate a number, it is
-            to overstate a causal chain &mdash; to move from &ldquo;a system
-            produced a list&rdquo; to &ldquo;a machine chose to kill&rdquo;.
-            These are the claims that did not survive that test.
-          </p>
-          <ol className="mt-7 grid gap-px border border-ink/[0.14] bg-ink/[0.14]">
-            {DROPPED.map((d) => (
-              <li key={d.claim} className="bg-surface p-5 min-[680px]:p-6">
-                <p className="text-[15px] font-medium leading-[1.4] text-ink">{d.claim}</p>
-                <p className="mt-2 max-w-[80ch] text-[13.5px] leading-[1.7] text-ink/70">
-                  {d.reason}
-                </p>
-              </li>
-            ))}
-          </ol>
-        </Section>
+          findings={FINDINGS}
+          dropped={DROPPED}
+          note={"The risk on this subject is overstating a causal chain rather than a number — moving from “a system produced a list” to “a machine chose to kill”. These did not survive that check."}
+        />
       </Container>
     </main>
   );
