@@ -10,6 +10,7 @@
  * Ordered newest first, which is how the feed shows them.
  */
 
+import { MOSAIC as COMPUTE_TILES, PUBLISHED as COMPUTE } from "./compute-cities";
 import { MOSAIC as HEGEMONY_TILES, PUBLISHED as HEGEMONY } from "./hegemony";
 import { MOSAIC as KILLCHAIN_TILES, PUBLISHED as KILLCHAIN } from "./killchain";
 import { MOSAIC as STARTUP_TILES, PUBLISHED as STARTUP_CITIES } from "./startup-cities";
@@ -33,6 +34,14 @@ export interface ReportEntry {
 }
 
 export const REPORTS: ReportEntry[] = [
+  {
+    slug: "where-compute-gets-built",
+    href: "/feed/where-compute-gets-built",
+    title: "Where Compute Gets Built",
+    dek: "Advanced computing needs somewhere to physically happen — chips, megawatts, fibre and a jurisdiction that permits it. What limits it, who funds it, and which places are trying to build their way in.",
+    published: COMPUTE,
+    tiles: COMPUTE_TILES,
+  },
   {
     slug: "startup-cities",
     href: "/feed/startup-cities",
