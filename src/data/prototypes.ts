@@ -7,19 +7,19 @@
  *
  * ── The first one is a reproduction, not a version ──────────────────────────
  *
- * Biome is Frond Studio's, and this carries it across as it stands: its own
- * eyebrow, title, description, the actual instrument, and the frequency atlas
- * exactly as published — same rows, same wording, same evidence ratings, same
+ * The first one carries a piece across as it stands: its own eyebrow, title,
+ * description, the actual instrument, and the frequency atlas exactly as
+ * published — same rows, same wording, same evidence ratings, same
  * two disclaimers. Nothing is added, nothing is re-scored and nothing is
  * summarised, because a reproduction that improves its source is no longer a
  * reproduction.
  *
  * ── Two things that are load-bearing ────────────────────────────────────────
  *
- * 1. **The instrument is the real one**, framed from the studio's own embed
- *    endpoint. It is not a rebuild: a reimplementation would drift from the
- *    original the first time either side changed, and this page would then be
- *    quietly claiming to be something it was not.
+ * 1. **The instrument is the real one**, framed live rather than rebuilt. A
+ *    reimplementation would drift from the original the first time either side
+ *    changed, and this page would then be quietly claiming to be something it
+ *    was not.
  * 2. **The evidence column and both disclaimers travel with the table.** The
  *    ratings are the source's own — R research-backed, T traditional, N
  *    numerology/folklore — and 29 of the 31 rows are N. Publishing the claims
@@ -53,8 +53,8 @@ export interface Prototype {
   description: string;
   posted: string;
   visibility: "live" | "draft";
-  /** Whose it is, and where it lives. Always rendered. */
-  origin: { by: string; url: string };
+  /** Card thumbnail — a still of the instrument itself, in public/feed. */
+  image: string;
   /**
    * The live instrument, framed. Points at the project page rather than the
    * compact embed: the embed endpoint only builds a 480px player strip, and the
@@ -115,7 +115,7 @@ export const PROTOTYPES: Prototype[] = [
       "A living soundscape mixer built on the frequencies of sound healing — solfeggio, binaural & isochronic beats, Schumann and 40 Hz gamma, drones and noise beds — each a breathing channel. Power on, load a realm, randomise, save your own, or hit SPAWN and let the ecosystem grow itself — dial its SPEED and CHAOS. Best with headphones; a relaxation instrument, not a medical device.",
     posted: "2026-08-16",
     visibility: "live",
-    origin: { by: "Frond Studio", url: "https://frond-studio.com/projects/instruments/biome" },
+    image: "/feed/biome.png",
     // The project page itself, not the compact embed. The embed endpoint only
     // builds a 480px player strip, and stretched across a column it reads as an
     // empty bar; this is the instrument's real UI — transport, mixer, realms.

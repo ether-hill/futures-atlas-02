@@ -12,11 +12,9 @@ import { PROTOTYPES, prototypeBySlug } from "@/data/prototypes";
  * of the feed rather than as a page from a different site.
  *
  * What sits between the standfirst and the atlas is the instrument itself,
- * framed live from the studio's project page. It is NOT rebuilt: a
- * reimplementation would drift from the original the first time either side
- * changed, and this page would then be quietly claiming to be something it was
- * not. It is also not the compact embed — that endpoint only builds a 480px
- * player strip, which stretched across a column reads as an empty bar.
+ * framed live rather than rebuilt: a reimplementation would drift from the
+ * original the first time either side changed, and this page would then be
+ * quietly claiming to be something it was not.
  *
  * The evidence column and both disclaimers travel with the table. The ratings
  * are the source's own and 29 of the 31 rows are N — numerology or folklore.
@@ -99,22 +97,11 @@ export default async function PrototypePage({ params }: { params: Promise<{ slug
         </header>
 
         {/* ── the instrument, live ───────────────────────────────────────
-            Cropped to the instrument itself — see InstrumentFrame for why the
-            iframe is pinned to a fixed width rather than given the column's. */}
+            Cropped to the instrument and never scaled up — see
+            InstrumentFrame. It renders at its own size. */}
         <div className="mt-[clamp(28px,4vw,52px)]">
-          <InstrumentFrame src={p.embed.src} title={`${p.title} — ${p.origin.by}`} />
+          <InstrumentFrame src={p.embed.src} title={p.title} />
         </div>
-        <p className="mt-3 font-mono text-[10.5px] uppercase tracking-[0.14em] text-faint">
-          The live instrument, served by {p.origin.by} ·{" "}
-          <a
-            href={p.origin.url}
-            target="_blank"
-            rel="noopener"
-            className="text-graphite transition-colors hover:text-ink"
-          >
-            open it full size ↗
-          </a>
-        </p>
 
         {/* ── the frequency atlas ────────────────────────────────────────── */}
         <section className="mt-[clamp(40px,6vw,80px)]">

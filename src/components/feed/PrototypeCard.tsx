@@ -8,17 +8,11 @@ import type { Prototype } from "@/data/prototypes";
  * Nothing about a prototype needs a different structure, and having one would
  * just make the grid look accidental.
  *
- * The picture slot follows the house pattern for a card with no image — the
- * hatch plate the feed already uses when a publisher ships no og:image — with
- * the frequency atlas drawn over it: one tick per tone on a log axis, because
- * the set runs 110–963 Hz and a linear axis buries four fifths of it in the
- * left third. Tick strength is the source's own evidence rating, not our
- * reading of it.
+ * The picture is a still of the instrument itself. A prototype card that
+ * showed an abstract mark instead would be advertising the idea; showing the
+ * thing tells a reader what they are about to open.
  */
 export function PrototypeCard({ prototype: p }: { prototype: Prototype }) {
-  const hz = p.atlas.tones.map((t) => t.hz);
-  const lo = Math.log10(Math.min(...hz));
-  const hi = Math.log10(Math.max(...hz));
   const href = `/feed/prototype/${p.slug}`;
 
   return (
@@ -26,29 +20,17 @@ export function PrototypeCard({ prototype: p }: { prototype: Prototype }) {
       className="flex flex-col overflow-hidden rounded-[4px] transition-colors hover:border-accent"
       style={{ background: "var(--panel)", border: "var(--border-hairline) solid var(--hairline)" }}
     >
-      <Link
-        href={href}
-        className="group relative block aspect-video overflow-hidden border-b border-ink/[0.12]"
-      >
-        <span className="fa-hatch absolute inset-0" aria-hidden />
-        <span aria-hidden className="absolute inset-x-0 top-1/2 h-[46%] -translate-y-1/2">
-          {p.atlas.tones.map((t, i) => (
-            <span
-              key={i}
-              className="absolute top-0 h-full w-px"
-              style={{
-                left: `${((Math.log10(t.hz) - lo) / (hi - lo)) * 100}%`,
-                background: "var(--accent)",
-                opacity: t.ev === "R" ? 0.95 : t.ev === "T" ? 0.6 : 0.32,
-              }}
-            />
-          ))}
-        </span>
-        <span className="absolute inset-0 flex items-end p-4">
-          <span className="font-mono text-[clamp(13px,1.5vw,19px)] uppercase leading-[1.15] tracking-[0.06em] text-ink/75 transition-colors group-hover:text-accent">
-            {p.origin.by}
-          </span>
-        </span>
+      <Link href={href} className="group block">
+        <div className="relative aspect-video overflow-hidden border-b border-ink/[0.12]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={p.image}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+          />
+        </div>
       </Link>
 
       <div className="flex flex-1 flex-col p-5">

@@ -22,8 +22,8 @@
  * thing. It fails visibly rather than silently — you would see the hero — and
  * the fix is one number.
  *
- * The credit line lives outside this component, on the page, because cropping
- * the nav out must not also crop the attribution out.
+ * Scale is clamped at 1 so the frame never enlarges the instrument: it renders
+ * at its own size, and only shrinks when the column is narrower than it is.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -42,7 +42,10 @@ export function InstrumentFrame({ src, title }: { src: string; title: string }) 
   useEffect(() => {
     const el = box.current;
     if (!el) return;
-    const fit = () => setScale(el.clientWidth / FRAME_W);
+    // Clamped at 1: a container wider than FRAME_W would otherwise scale the
+    // instrument UP, which is what made it read as enormous. It only ever
+    // shrinks, so at full width it is exactly its own size.
+    const fit = () => setScale(Math.min(1, el.clientWidth / FRAME_W));
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
@@ -53,7 +56,9 @@ export function InstrumentFrame({ src, title }: { src: string; title: string }) 
     <div
       ref={box}
       className="relative overflow-hidden rounded-[4px] border border-ink/[0.14]"
-      style={{ height: VIEW_H * scale }}
+      // Capped at FRAME_W and centred: past that width the frame would leave a
+      // strip of empty container beside it, since it never scales up.
+      style={{ height: VIEW_H * scale, maxWidth: FRAME_W, marginInline: "auto" }}
     >
       <iframe
         src={src}
