@@ -265,7 +265,7 @@ export default function AiHegemonyPage() {
           method on purpose: this is who else has looked, not what we measured,
           and putting a documentary before the evidence would let it stand in
           for the evidence. Nothing here is tiered, for the same reason. */}
-      <section className="mt-[clamp(48px,7vw,96px)] bg-band py-[clamp(52px,8vw,104px)]">
+      <section className="mt-[clamp(48px,7vw,96px)] border-y border-ink/[0.14] bg-panel py-[clamp(52px,8vw,104px)]">
         <Container className="space-y-[clamp(52px,8vw,104px)]">
           <BandSection
             label="08 · Watch"
@@ -283,7 +283,6 @@ export default function AiHegemonyPage() {
               label="Broadcasts on this subject"
               count={VIDEOS.length}
               noun="broadcasts"
-              tone="dark"
             >
               {VIDEOS.map((v) => (
                 <RailItem key={v.id} width="three">
@@ -310,7 +309,6 @@ export default function AiHegemonyPage() {
               label="Selected press coverage"
               count={PRESS.length}
               noun="articles"
-              tone="dark"
             >
               {PRESS.map((item) => (
                 <RailItem key={item.id} width="three">

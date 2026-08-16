@@ -19,29 +19,29 @@ export function PressCard({ item }: { item: PressItem }) {
         {/* No picture, no placeholder pretending to be one: a piece whose
             share image was never checked gets a typographic plate carrying the
             masthead, which is the honest version of the same card. */}
-        <div className="relative aspect-video w-full overflow-hidden bg-paper/[0.06]">
+        <div className="relative aspect-video w-full overflow-hidden bg-ink/[0.06]">
           {item.image ? (
             <CoverImage
               src={item.image}
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
           ) : (
-            <span className="absolute inset-0 grid place-items-center border border-paper/10 px-5 text-center font-mono text-[13px] uppercase leading-[1.5] tracking-[0.16em] text-paper/45">
+            <span className="absolute inset-0 grid place-items-center border border-ink/15 px-5 text-center font-mono text-[13px] uppercase leading-[1.5] tracking-[0.16em] text-ink/50">
               {item.publisher}
             </span>
           )}
         </div>
 
         <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-accent-deep">
-          {item.publisher} <span className="text-paper/35">·</span>{" "}
-          <span className="text-paper/45">{item.published}</span>
+          {item.publisher} <span className="text-ink/35">·</span>{" "}
+          <span className="text-ink/50">{item.published}</span>
         </p>
-        <h3 className="mt-2 text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-paper group-hover:underline group-hover:decoration-accent-deep group-hover:underline-offset-4">
+        <h3 className="mt-2 text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-ink group-hover:underline group-hover:decoration-accent-deep group-hover:underline-offset-4">
           {item.title}
         </h3>
-        <p className="mt-2 text-[14px] leading-[1.65] text-paper/60">{item.blurb}</p>
+        <p className="mt-2 text-[14px] leading-[1.65] text-ink/70">{item.blurb}</p>
 
-        <span className="mt-auto self-start pt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-paper/45 transition-colors group-hover:text-accent-deep">
+        <span className="mt-auto self-start pt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-ink/50 transition-colors group-hover:text-accent-deep">
           Read at {item.publisher} ↗
         </span>
       </a>

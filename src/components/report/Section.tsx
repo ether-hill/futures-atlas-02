@@ -1,11 +1,19 @@
 /**
  * The furniture every Atlas report shares: a numbered section, and the same
- * thing on a dark band.
+ * thing on the coverage slab.
  *
- * `BandSection` is a near-copy rather than a `dark` prop on `Section`: the two
- * live on opposite grounds and every colour in them differs, so one component
- * with a branch in every className is harder to read than two that each say
- * what they are. If a third ground ever appears, that is the moment to merge.
+ * `BandSection` is the same furniture on the coverage block — a panel ground
+ * rather than the page's, so the section reads as its own slab without being
+ * dark in both themes. It used to sit on `bg-band` and carry light type in
+ * both, which meant the Watch and In-the-press sections were the only ones on
+ * a report that did not answer the theme toggle. They do now; the masthead is
+ * still dark in both, because a scrim over photographs only works one way
+ * round and that reasoning applies to type over a picture wall, not to a run
+ * of cards.
+ *
+ * It stays a near-copy rather than a `dark` prop on `Section`: the two differ
+ * in their heading measure and their rule, and one component with a branch in
+ * every className is harder to read than two that each say what they are.
  */
 
 const Head = ({
@@ -68,7 +76,7 @@ export const BandSection = ({
       label={label}
       title={title}
       lede={lede}
-      tone={{ title: "text-paper", lede: "text-paper/65", width: "max-w-[24ch]" }}
+      tone={{ title: "text-ink", lede: "text-ink/75", width: "max-w-[24ch]" }}
     />
     {children}
   </section>

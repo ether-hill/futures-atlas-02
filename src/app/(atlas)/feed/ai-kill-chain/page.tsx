@@ -221,7 +221,7 @@ export default function AiKillChainPage() {
         </div>
       </Container>
 
-      <section className="mt-[clamp(48px,7vw,96px)] bg-band py-[clamp(52px,8vw,104px)]">
+      <section className="mt-[clamp(48px,7vw,96px)] border-y border-ink/[0.14] bg-panel py-[clamp(52px,8vw,104px)]">
         <Container className="space-y-[clamp(52px,8vw,104px)]">
           <BandSection
             label="08 · Watch"
@@ -241,7 +241,6 @@ export default function AiKillChainPage() {
               label="Broadcast coverage"
               count={VIDEOS.length}
               noun="broadcasts"
-              tone="dark"
             >
               {VIDEOS.map((v) => (
                 <RailItem key={v.id} width="three">
@@ -271,7 +270,6 @@ export default function AiKillChainPage() {
               label="Sources and coverage"
               count={PRESS.length}
               noun="articles"
-              tone="dark"
             >
               {PRESS.map((item) => (
                 <RailItem key={item.id} width="three">

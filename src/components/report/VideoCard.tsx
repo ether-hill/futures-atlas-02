@@ -24,7 +24,7 @@ export function VideoCard({ video }: { video: Video }) {
 
   return (
     <article className="flex flex-col">
-      <div className="relative aspect-video w-full overflow-hidden bg-paper/[0.06]">
+      <div className="relative aspect-video w-full overflow-hidden bg-ink/[0.06]">
         {playing ? (
           <iframe
             src={`https://www.youtube-nocookie.com/embed/${video.id}?autoplay=1&rel=0`}
@@ -57,19 +57,19 @@ export function VideoCard({ video }: { video: Video }) {
       </div>
 
       <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-accent-deep">
-        {video.channel} <span className="text-paper/35">·</span>{" "}
-        <span className="text-paper/45">{video.published}</span>
+        {video.channel} <span className="text-ink/35">·</span>{" "}
+        <span className="text-ink/50">{video.published}</span>
       </p>
-      <h3 className="mt-2 text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-paper">
+      <h3 className="mt-2 text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-ink">
         {video.title}
       </h3>
-      <p className="mt-2 text-[14px] leading-[1.65] text-paper/60">{video.blurb}</p>
+      <p className="mt-2 text-[14px] leading-[1.65] text-ink/70">{video.blurb}</p>
 
       <a
         href={watchUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-auto self-start pt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-paper/45 underline-offset-4 transition-colors hover:text-accent-deep hover:underline"
+        className="mt-auto self-start pt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-ink/50 underline-offset-4 transition-colors hover:text-accent-deep hover:underline"
       >
         Watch on YouTube ↗
       </a>
