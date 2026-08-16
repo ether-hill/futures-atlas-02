@@ -378,6 +378,29 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
    sticks only once its foot arrives — sticking to `top` would have pinned it
    immediately and stranded everything below the fold. */
 
+/* ---------- headings on the dark band ----------
+   `.bg-band` is the ground that stays dark in BOTH themes (a scrim over
+   photographs only works one way round), so type on it has to stay light in
+   both. Body copy already does: `text-paper` and its alpha variants resolve to
+   --paper, which does not flip.
+
+   HEADINGS did not, and the reason is worth writing down because `text-paper`
+   looks like it should be enough. futures-atlas-core ships an UNLAYERED rule:
+
+     h1, h2, h3, h4, h5, h6 { … color: var(--text); }
+
+   Tailwind's utilities live in `@layer utilities`, and an unlayered declaration
+   beats every layer regardless of specificity — so `text-paper` on a heading
+   never applied at all. In dark mode --text is light and the bug was invisible;
+   in light mode it flips to ink and every heading on a band rendered ink on ink,
+   disappearing rather than merely losing contrast. It hit the report mastheads
+   and the Watch and In-the-press sections on all three reports.
+
+   Fixed here rather than per-page: also unlayered, and one class more specific
+   than core's, so it wins on source order and specificity both. Anything on a
+   dark band inherits it, including reports not written yet. */
+.bg-band :is(h1, h2, h3, h4, h5, h6) { color: var(--paper); }
+
 /* ---------- the report card keeps its own light type ----------
    This card holds its dark ground in BOTH themes (a scrim over photographs only
    works one way round), so its type has to stay light in both — everything else
