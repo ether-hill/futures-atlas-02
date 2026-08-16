@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { PostImage } from "@/components/PostImage";
 import { YouTubeCard } from "@/components/feed/YouTubeCard";
+import type { Prototype } from "@/data/prototypes";
 import { KIND_LABEL, formatPostDate, hasImage, hostOf, youtubeId, type Post } from "@/data/posts";
 import { BenchCard } from "@/components/feed/BenchCard";
+import { PrototypeCard } from "@/components/feed/PrototypeCard";
 import { ReportCards } from "@/components/feed/ReportCard";
 
 /**
@@ -21,10 +23,12 @@ export function FeedMasonry({
   posts,
   showVisibility = false,
   benchSeed = 0,
+  prototypes = [],
 }: {
   posts: Post[];
   showVisibility?: boolean;
   benchSeed?: number;
+  prototypes?: Prototype[];
 }) {
   return (
     <section className="border-t border-ink/15">
@@ -56,8 +60,14 @@ export function FeedMasonry({
             into a single 5th-width column and lose the masthead wall it
             carries. Above the grid it reads as the lead item, which is what
             it is. */}
-        <div className="mb-4">
+        {/* Two up rather than three stacked full-width mastheads — the same
+            change the feed page's grid gets, so the two surfaces agree. The
+            prototype board rides along at one column. */}
+        <div className="mb-4 grid gap-4 min-[560px]:grid-cols-2">
           <ReportCards />
+          {prototypes.map((p) => (
+            <PrototypeCard key={p.slug} prototype={p} />
+          ))}
         </div>
 
         {/* The bench sits between the finished work and the pile of recent

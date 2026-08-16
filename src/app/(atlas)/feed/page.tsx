@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { FeedTimeline } from "./FeedTimeline";
 import { editorPosts, livePosts } from "@/data/posts";
+import { prototypesFor } from "@/data/prototypes";
 import { getEditor } from "@/lib/editor";
 import { liveProjects } from "@/data/projects";
 
@@ -22,6 +23,7 @@ export default async function FeedPage() {
   return (
     <FeedTimeline
       benchSeed={Date.now()}
+      prototypes={prototypesFor(isEditor)}
       items={isEditor ? editorPosts : livePosts}
       projects={picks}
       showVisibility={isEditor}

@@ -6,6 +6,7 @@ import { ProjectGrid } from "@/components/ProjectCard";
 import { liveProjects } from "@/data/projects";
 import { FeedMasonry } from "@/components/FeedMasonry";
 import { editorPosts, livePosts } from "@/data/posts";
+import { prototypesFor } from "@/data/prototypes";
 import { getEditor } from "@/lib/editor";
 import { LOGOS } from "@/lib/logos";
 
@@ -96,7 +97,12 @@ export default async function Home() {
       </section>
 
       {/* The feed, as a masonry of the newest posts — videos play in place */}
-      <FeedMasonry posts={latestPosts} showVisibility={isEditor} benchSeed={benchSeed} />
+      <FeedMasonry
+        posts={latestPosts}
+        showVisibility={isEditor}
+        benchSeed={benchSeed}
+        prototypes={prototypesFor(isEditor)}
+      />
 
       {/* Tech banner, the whole band links to the About page's stack + workflow */}
       <section className="border-t border-ink/15 bg-band">

@@ -35,7 +35,10 @@ export function ReportCards() {
 
 export function ReportCard({ report = REPORTS[0] }: { report?: ReportEntry }) {
   return (
-    <article className="fa-reportcard relative isolate col-span-full overflow-hidden border border-accent/40 bg-band">
+    <article // Two columns, not the full width. Full-bleed made three reports read as
+      // three mastheads stacked down the page; at two they sit in the grid's
+      // rhythm and the feed reads as a feed again.
+      className="fa-reportcard relative isolate overflow-hidden border border-accent/40 bg-band min-[560px]:[grid-column:span_2]">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         {/* Four rows is plenty behind a card this short, and the wall is the
             same one that report's hero uses. */}

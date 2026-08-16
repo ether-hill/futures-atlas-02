@@ -137,6 +137,16 @@ reintroduce a second listing of these posts.
   `scratchpad/harvest.py` in the session notes shows how they were collected.
 - Nav entries live in `public/atlas-nav.js` (`LINKS`), and the homepage carousel
   shows the newest ten.
+- **Prototype posts** (`src/data/prototypes.ts`, `/feed/prototype/<slug>`) are a
+  third non-Post content type: one COMPONENT of a bigger idea, shown as a
+  concept moodboard before it exists. Three rules — it states that it is not
+  built (`state`, on the card and at the top of the page); where it is a version
+  of someone else's idea, `lineage` names it, links it and says what differs;
+  and any figure on a board comes from a published Atlas report and says which,
+  with the MAPPING of that figure onto a pitch or a colour labelled as a design
+  decision rather than a measurement. Cards are one column and carry no picture:
+  there is nothing to photograph, and a render would make it look further along
+  than it is.
 - **The bench card** (`src/data/workbench.ts` + `components/feed/BenchCard.tsx`)
   shows work in progress from the inside — one specimen at a time, drawn. Rules:
   every specimen is real and locatable (`at` names a file, a doc or a day, and

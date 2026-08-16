@@ -9,8 +9,10 @@ import { SwipeDemoCard } from "@/components/feed/SwipeDemoCard";
 import { POLLS } from "@/data/polls";
 import { LeftRail, RightRail } from "@/components/feed/FeedRails";
 import { BenchCard } from "@/components/feed/BenchCard";
+import { PrototypeCard } from "@/components/feed/PrototypeCard";
 import { ReportCards } from "@/components/feed/ReportCard";
 import type { Project } from "@/data/projects";
+import type { Prototype } from "@/data/prototypes";
 import {
   KIND_LABEL,
   formatPostDate,
@@ -70,12 +72,15 @@ export function FeedTimeline({
   projects = [],
   showVisibility = false,
   benchSeed = 0,
+  prototypes = [],
 }: {
   items: Post[];
   projects?: Project[];
   showVisibility?: boolean;
   /** Server-computed, so the opening specimen is stable across hydration. */
   benchSeed?: number;
+  /** Concept boards. Not Posts — see src/data/prototypes.ts. */
+  prototypes?: Prototype[];
 }) {
   const [topic, setTopic] = useState<PostTopic | null>(null);
   const [media, setMedia] = useState(false);
@@ -177,6 +182,9 @@ export function FeedTimeline({
           {(reports || (topic === null && !media)) && (
             <>
               <ReportCards />
+              {prototypes.map((p) => (
+                <PrototypeCard key={p.slug} prototype={p} />
+              ))}
               <BenchCard seed={benchSeed} />
             </>
           )}
