@@ -3,14 +3,32 @@
 /**
  * A finding, and the thing that makes it citable.
  *
- * The card shows claim, figure and tier. The SCOPE and the source live behind
- * one click — not because they are secondary, but because putting them inline
- * on 57 cards makes a wall nobody reads, and burying them in a footnote at the
- * foot of the page makes a link nobody follows. One interaction, in place.
+ * ── Order on the card ───────────────────────────────────────────────────────
  *
- * The scope line is rendered FIRST in the open state, above the source. It is
- * the correction this report exists to make, so it gets the position that says
- * so.
+ * Tier and figure, then THE MARK, then the claim, then the substance, then the
+ * scope behind one click. The mark sits at the top because it is the fastest
+ * true thing on the card: a reader scanning a rail of twenty findings should
+ * get the shape of each one before they get the sentence.
+ *
+ * **Every card carries something in that slot**, so a rail reads as one system
+ * rather than as charts interrupted by prose. There are three states and they
+ * are not interchangeable:
+ *
+ *  1. A `chart` — the finding's numbers, drawn. See FigureChart.
+ *  2. No chart but a `figure` — the figure set typographically. Used where the
+ *     headline is real but does not decompose into quantities you can draw
+ *     ("unanimous", "effective 1 Sept 2025"). Drawing a bar for those would be
+ *     inventing a scale.
+ *  3. Neither — a plain plate saying so. Qualitative findings exist, and on
+ *     several of them the ABSENCE of a number is the finding; dressing that up
+ *     as a chart would be the exact move these reports criticise.
+ *
+ * The scope line and the source live behind one click — not because they are
+ * secondary, but because putting them inline on sixty cards makes a wall
+ * nobody reads, and burying them in a footnote makes a link nobody follows.
+ * One interaction, in place. Scope is rendered FIRST in the open state, above
+ * the source: it is the correction these reports exist to make, so it gets the
+ * position that says so.
  */
 
 import { useId, useState } from "react";
@@ -22,6 +40,36 @@ const tierClass: Record<Finding["tier"], string> = {
   reported: "border-ink/25 text-ink/70",
   emergent: "border-ink/20 text-ink/55",
 };
+
+/**
+ * The mark slot. Always present, never faked — see the three states above.
+ * Given its own inset plate so the eye finds it before the prose.
+ */
+function Mark({ finding }: { finding: Finding }) {
+  return (
+    <div className="mt-4 border border-ink/[0.1] bg-ink/[0.035] p-4 min-[680px]:p-[18px]">
+      {finding.chart ? (
+        <FigureChart chart={finding.chart} />
+      ) : finding.figure ? (
+        <div>
+          <p className="font-mono text-[clamp(19px,1.5vw,24px)] font-bold leading-[1.15] tracking-[-0.02em] text-accent-deep">
+            {finding.figure}
+          </p>
+          <p className="mt-2.5 font-mono text-[10px] uppercase leading-[1.5] tracking-[0.12em] text-ink/45">
+            The headline figure, as the source states it
+          </p>
+        </div>
+      ) : (
+        <p className="font-mono text-[10px] uppercase leading-[1.6] tracking-[0.12em] text-ink/40">
+          No figure
+          <span className="mt-1.5 block normal-case tracking-[0.06em] text-ink/35">
+            This finding is qualitative — nothing here is drawn from it
+          </span>
+        </p>
+      )}
+    </div>
+  );
+}
 
 export function FindingCard({ finding }: { finding: Finding }) {
   const [open, setOpen] = useState(false);
@@ -36,41 +84,21 @@ export function FindingCard({ finding }: { finding: Finding }) {
         >
           {TIER_LABEL[finding.tier]}
         </span>
-        {finding.figure && (
-          <span className="font-mono text-[15px] font-bold tracking-tight text-accent-deep">
-            {finding.figure}
-          </span>
-        )}
       </div>
 
-      <h3 className="mt-4 text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-ink">
+      <Mark finding={finding} />
+
+      <h3 className="mt-5 text-[17px] font-medium leading-[1.35] tracking-[-0.015em] text-ink">
         {finding.claim}
       </h3>
       <p className="mt-3 text-[14px] leading-[1.7] text-ink/70">{finding.detail}</p>
-
-      {/* Only where the finding's own numbers support a mark. A card without a
-          chart is not a card missing one — see FindingChart in data/hegemony.
-
-          The chart takes the flex slack, so in a rail of equal-height cards the
-          marks line up along one baseline instead of each floating wherever its
-          own paragraph happened to end. Bars you can compare across a row are
-          the reason for drawing them at all. */}
-      {finding.chart && (
-        <div className="mt-auto">
-          <FigureChart chart={finding.chart} />
-        </div>
-      )}
 
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={panelId}
-        // Without a chart the button takes the slack, exactly as before; with
-        // one, the chart has already taken it and the button sits under it.
-        className={`flex items-center gap-2 self-start pt-5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink/55 transition-colors hover:text-accent-deep ${
-          finding.chart ? "" : "mt-auto"
-        }`}
+        className="mt-auto flex items-center gap-2 self-start pt-5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink/55 transition-colors hover:text-accent-deep"
       >
         <span aria-hidden className="text-[13px] leading-none">
           {open ? "−" : "+"}

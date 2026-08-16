@@ -33,6 +33,7 @@ import {
   type Dropped,
   type Finding,
   type PressItem,
+  type Video,
   type Tier,
   type TimelineEvent,
 } from "./report-types";
@@ -184,6 +185,14 @@ export const FINDINGS: Finding[] = [
       published: "2024-07-23",
       url: "https://localnewsmatters.org/2024/07/23/california-forever-abandons-ballot-measure-in-face-of-growing-opposition-looks-to-2026/",
     },
+    chart: {
+      kind: "count",
+      max: 1,
+      axis: "how long before the county vote the measure was pulled",
+      bars: [
+        { label: "Day", value: 1, unit: "" },
+      ],
+    },
   },
 
   // ── the money ────────────────────────────────────────────────────────────
@@ -220,6 +229,14 @@ export const FINDINGS: Finding[] = [
       author: "US Department of State",
       published: "2026-06",
       url: "https://www.state.gov/wp-content/uploads/2026/06/United-States-Investment-in-Prospera-ZEDE-Accessible-HRC1399978.pdf",
+    },
+    chart: {
+      kind: "count",
+      max: 2,
+      axis: "reports to Congress on US investment in the zone, 2025 and 2026",
+      bars: [
+        { label: "Reports published", value: 2, unit: "" },
+      ],
     },
   },
 
@@ -259,6 +276,14 @@ export const FINDINGS: Finding[] = [
       author: "US Department of State",
       published: "2026-06",
       url: "https://www.state.gov/wp-content/uploads/2026/06/United-States-Investment-in-Prospera-ZEDE-Accessible-HRC1399978.pdf",
+    },
+    chart: {
+      kind: "count",
+      max: 2,
+      axis: "founding decrees struck down — 236-2012 and 120-2013",
+      bars: [
+        { label: "Decrees voided", value: 2, unit: "" },
+      ],
     },
   },
   {
@@ -342,6 +367,14 @@ export const FINDINGS: Finding[] = [
       author: "New Lines Magazine",
       published: "2026",
       url: "https://newlinesmag.com/argument/what-is-peter-thiel-up-to-in-argentina/",
+    },
+    chart: {
+      kind: "count",
+      max: 3,
+      axis: "meetings with Argentina's president since February 2024",
+      bars: [
+        { label: "Reported meetings", value: 3, unit: "" },
+      ],
     },
   },
   {
@@ -643,7 +676,8 @@ export const PRESS: PressItem[] = [
     published: "2022-05-13",
     blurb: "The repeal, reported at the time, with the government's own framing of it.",
     url: "https://www.aljazeera.com/news/2022/5/13/honduras-retakes-sovereignty-by-nixing-corporate-enclaves",
-    image: null,
+    image:
+      "https://www.aljazeera.com/wp-content/uploads/2022/05/2021-09-15T192650Z_2005148847_RC28QP95OT9N_RTRMADP_3_HONDURAS-PROTEST.jpg?resize=1920%2C1440",
   },
   {
     id: "fp-honduras",
@@ -653,7 +687,8 @@ export const PRESS: PressItem[] = [
     blurb:
       "The argument about what an arbitration of this size means for a country of this size. Opinion, and included as such.",
     url: "https://foreignpolicy.com/2024/01/24/honduras-zedes-us-prospera-world-bank-biden-castro/",
-    image: null,
+    image:
+      "https://foreignpolicy.com/wp-content/uploads/2024/01/GettyImages-1234139450.jpg",
   },
   {
     id: "newlines-thiel",
@@ -662,7 +697,8 @@ export const PRESS: PressItem[] = [
     published: "2026",
     blurb: "The Argentine strand, and the clearest account of what has actually been observed there.",
     url: "https://newlinesmag.com/argument/what-is-peter-thiel-up-to-in-argentina/",
-    image: null,
+    image:
+      "https://newlinesmag.com/wp-content/uploads/GettyImages-1239811965.jpg-web.jpg",
   },
   {
     id: "block-praxis",
@@ -716,6 +752,78 @@ export const DROPPED: Dropped[] = [
     reason:
       "The funders overlap heavily, which is documented and in the report. Coordination is a stronger claim, and nothing reached here evidences it.",
   },
+];
+
+/**
+ * Broadcast coverage, harvested and checked — every id, title, channel and
+ * date read off the watch page, every `thumb` confirmed to return 200.
+ *
+ * Deliberately spans the argument rather than one side of it: Bloomberg and
+ * AJ+ are hostile, ReasonTV is the movement's own outlet, and two are
+ * enthusiast tours. A coverage rail that only carried the critics would be
+ * making the report's case for it.
+ */
+export const VIDEOS: Video[] = [
+  {
+    id: "n6My2aYZByw",
+    channel: "Bloomberg Podcasts",
+    title: "How a Libertarian Island Experiment Became an $11 Billion Nightmare | Big Take",
+    published: "2025-02-18",
+    blurb: "The arbitration, told as a business story — the clearest broadcast account of the claim.",
+    thumb: "https://i.ytimg.com/vi/n6My2aYZByw/maxresdefault.jpg",
+  },
+  {
+    id: "X9xmdRgHEj4",
+    channel: "AJ+",
+    title: "What Happens When American Billionaires Build A Private City In Your Country",
+    published: "2025-04-28",
+    blurb: "The Honduran side of it, and the part of the story that is about sovereignty rather than tax.",
+    thumb: "https://i.ytimg.com/vi/X9xmdRgHEj4/maxresdefault.jpg",
+  },
+  {
+    id: "RGrh3JuR0A0",
+    channel: "Business Insider",
+    title: "Inside The Mysterious Bitcoin City Billionaires Are Pouring Money Into",
+    published: "2024-03-04",
+    blurb: "A reported visit, filmed inside the zone while the repeal was already law.",
+    thumb: "https://i.ytimg.com/vi/RGrh3JuR0A0/maxresdefault.jpg",
+  },
+  {
+    id: "TwiE1dxGYNY",
+    channel: "ReasonTV",
+    title: "A private libertarian city in Honduras",
+    published: "2023-07-06",
+    blurb:
+      "The case for it, made by the movement's own magazine. Included because a report that only shows the critics is not showing the argument.",
+    thumb: "https://i.ytimg.com/vi/TwiE1dxGYNY/maxresdefault.jpg",
+  },
+  {
+    id: "Oohil-QfBvA",
+    channel: "My Latin Life",
+    title: "What is Prospera? The charter city on the island of Roatán, Honduras",
+    published: "2025-07-03",
+    blurb: "A resident's-eye tour — useful for what the place physically is, at what scale.",
+    thumb: "https://i.ytimg.com/vi/Oohil-QfBvA/maxresdefault.jpg",
+  },
+  {
+    id: "PCGSIlhDfJk",
+    channel: "Etienne de la Boetie2",
+    title: "A Tour of Prospera — The Low-Tax, Pro-Freedom Charter City on Roatan Island",
+    published: "2025-04-30",
+    blurb: "An advocate's walkthrough, and a plain look at how much has actually been built.",
+    thumb: "https://i.ytimg.com/vi/PCGSIlhDfJk/maxresdefault.jpg",
+  },
+];
+
+/**
+ * Every preview image on the page, in one list, for the masthead mosaic.
+ *
+ * Derived, so the wall behind the title is literally the coverage below it and
+ * can never show a picture the page does not also credit.
+ */
+export const MOSAIC: string[] = [
+  ...VIDEOS.map((v) => v.thumb),
+  ...PRESS.map((p) => p.image).filter((src): src is string => src !== null),
 ];
 
 export const findingsIn = (s: Strand) => findingsInStrand(FINDINGS, s);

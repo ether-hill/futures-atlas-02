@@ -1,13 +1,16 @@
-import { MOSAIC } from "@/data/hegemony";
 
 /**
  * The tile wall, on its own.
  *
- * Built from MOSAIC — every video still and every publisher's og:image used on
- * the report — so anywhere this appears, the surface is made of the coverage
- * rather than decorated with a stock picture of a circuit board. Add an item to
- * VIDEOS or PRESS and it turns up here; nothing can appear in the wall that the
- * report does not also name and link.
+ * Built from a report's tiles — every video still and every publisher's
+ * og:image it uses — so anywhere this appears, the surface is made of the
+ * coverage rather than decorated with a stock picture of a circuit board. Add
+ * an item to VIDEOS or PRESS and it turns up here; nothing can appear in the
+ * wall that the report does not also name and link.
+ *
+ * The tiles arrive as a prop rather than an import: every report has its own
+ * coverage, and a wall that always showed one report's would be decorating the
+ * other two with someone else's pictures.
  *
  * The wall is meant to be READ, not felt. Every thumbnail carries type — a
  * chyron, a masthead, a cover — and that type is the point: you should be able
@@ -46,12 +49,14 @@ const COLUMN_VISIBILITY = [
   "hidden min-[1100px]:flex",
 ];
 
-export function MosaicWall({
+export function MosaicWall({ tiles,
   /** Tiles per stack. Enough to overflow whatever box is clipping the wall. */
   perColumn = 10,
   /** Tiles above this index load lazily; the rest are eager. */
   eagerRows = 3,
 }: {
+  /** The report's own tiles — video stills and publisher images. */
+  tiles: string[];
   perColumn?: number;
   eagerRows?: number;
 }) {
@@ -66,7 +71,7 @@ export function MosaicWall({
           {Array.from({ length: perColumn }, (_, row) => {
             // 7 is coprime with 18, so walking the list this way keeps the same
             // still from landing beside itself in the next column.
-            const src = MOSAIC[(col * 7 + row) % MOSAIC.length];
+            const src = tiles[(col * 7 + row) % tiles.length];
             return (
               // eslint-disable-next-line @next/next/no-img-element
               <img

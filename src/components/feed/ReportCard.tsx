@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { MosaicWall } from "@/components/hegemony/MosaicWall";
+import { MosaicWall } from "@/components/report/MosaicWall";
 import { formatPostDate } from "@/data/posts";
 import { REPORTS, type ReportEntry } from "@/data/reports";
 
@@ -12,13 +12,12 @@ import { REPORTS, type ReportEntry } from "@/data/reports";
  * the Atlas the source of a link it also wrote. So the report gets a distinct
  * card that says what it is and spans the grid.
  *
- * The hegemony report carries its own masthead wall, from the same MosaicWall
+ * Each card carries its own report's masthead wall, from the same MosaicWall
  * the hero mounts — so the card in the feed is a small piece of the page it
- * opens, and the two cannot drift apart. The later reports have no image set
- * they could credit that way, so they run typographic rather than borrowing a
- * picture that belongs to nobody.
+ * opens, and the two cannot drift apart. Every report harvests a checked image
+ * set for this; a report without one has not finished its coverage section.
  *
- * Either way the card is dark in both themes (the surrounding cards flip): a
+ * The card is dark in both themes (the surrounding cards flip): a
  * scrim over photographs only works one way round, and these are the cards on
  * the feed that are whole reports.
  */
@@ -40,7 +39,7 @@ export function ReportCard({ report = REPORTS[0] }: { report?: ReportEntry }) {
       <div aria-hidden className="pointer-events-none absolute inset-0">
         {/* Four rows is plenty behind a card this short, and the wall is the
             same one that report's hero uses. */}
-        {report.wall && <MosaicWall perColumn={4} eagerRows={0} />}
+        <MosaicWall tiles={report.tiles} perColumn={4} eagerRows={0} />
         <div className="absolute inset-0 bg-[rgba(0,0,0,0.34)]" />
         <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(0,0,0,0.86)_0%,rgba(0,0,0,0.78)_60%,rgba(0,0,0,0.62)_100%)] min-[900px]:bg-[radial-gradient(96%_130%_at_-8%_45%,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_34%,rgba(0,0,0,0.66)_56%,rgba(0,0,0,0.2)_80%,rgba(0,0,0,0)_94%)]" />
       </div>

@@ -4,12 +4,13 @@ import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
 import { CoverageGrid } from "@/components/hegemony/CoverageGrid";
 import { HeadlineFinding } from "@/components/hegemony/HeadlineFinding";
-import { HeroMosaic } from "@/components/hegemony/HeroMosaic";
+import { HeroMosaic } from "@/components/report/HeroMosaic";
 import { TimelineV2 } from "@/components/hegemony/TimelineV2";
 import { VersionSwitch } from "@/components/hegemony/VersionSwitch";
 import {
   DROPPED,
   FINDINGS,
+  MOSAIC,
   HEADLINE_FINDINGS,
   PRESS,
   PUBLISHED,
@@ -63,7 +64,7 @@ export default function AiHegemonyV2Page() {
 
       {/* ── masthead ─────────────────────────────────────────────────── */}
       <section className="relative isolate flex min-h-[clamp(560px,80vh,860px)] items-start overflow-hidden bg-band">
-        <HeroMosaic />
+        <HeroMosaic tiles={MOSAIC} />
         <Container className="relative pb-[clamp(48px,8vw,96px)] pt-[clamp(32px,9vh,104px)]">
           <div className="max-w-[34rem]">
             <Link

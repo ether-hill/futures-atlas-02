@@ -168,6 +168,19 @@ report there or it will not appear.
   size. Leadership entries carry `asOf` and their own source, because it moves.
 - `DROPPED` is published, not kept in a drawer. "We checked this and it did not
   hold up" is a finding.
+- **Every card carries a mark.** `FindingCard` has three states and they are not
+  interchangeable: a `chart`; or, with no chart, the `figure` set typographically
+  (for headlines that do not decompose into drawable quantities); or a plain "no
+  figure" plate (for genuinely qualitative findings). The mark sits at the TOP of
+  the card, above the claim; scope and source are the expandable at the bottom.
+- **Every report harvests its own media.** VIDEOS and PRESS are not optional
+  garnish: `MOSAIC` is derived from them and becomes the masthead wall and the
+  feed card's wall, so the hero is made of the coverage the page credits. Read
+  YouTube id, channel, title and upload date off the watch page; confirm each
+  `thumb` returns 200 (maxresdefault is missing for plenty of uploads); fetch
+  each article's own `og:image` and confirm it resolves. Anything unreachable is
+  `null` and renders typographically — a guessed URL is a broken image and a
+  false claim at once.
 
 - **The AI Hegemony report has two live designs.** `/feed/ai-hegemony` is v1,
   the complete record (every finding, every reject); `/feed/ai-hegemony/v2`

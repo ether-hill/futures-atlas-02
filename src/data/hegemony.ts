@@ -423,6 +423,14 @@ export const FINDINGS: Finding[] = [
       published: "2024-12-24",
       url: "https://arxiv.org/abs/2412.17847",
     },
+    chart: {
+      kind: "count",
+      max: 4000,
+      axis: "datasets audited across 608 languages, 1990–2024",
+      bars: [
+        { label: "Datasets audited", value: 4000, unit: "", prefix: "roughly " },
+      ],
+    },
   },
   {
     id: "llama3-multilingual",
@@ -472,6 +480,15 @@ export const FINDINGS: Finding[] = [
       published: "2024-09-17",
       url: "https://academic.oup.com/pnasnexus/article/3/9/pgae346/7756548",
     },
+    chart: {
+      kind: "dots",
+      max: 4.1,
+      axis: "cultural distance from five GPT versions, across 107 countries",
+      bars: [
+        { label: "Closest — Finland, Andorra, Netherlands", value: 0.2, unit: "" },
+        { label: "Furthest — Jordan, Libya, Ghana", value: 4.1, unit: "" },
+      ],
+    },
   },
   {
     id: "atari-weird",
@@ -490,6 +507,14 @@ export const FINDINGS: Finding[] = [
       published: "2023-09-22",
       url: "https://osf.io/preprints/psyarxiv/5b26t",
     },
+    chart: {
+      kind: "count",
+      max: 0.7,
+      axis: "GPT–human similarity against cultural distance from the US",
+      bars: [
+        { label: "Correlation, across 65 nations", value: 0.7, unit: "", prefix: "r = −" },
+      ],
+    },
   },
   {
     id: "moral-foundations",
@@ -507,6 +532,14 @@ export const FINDINGS: Finding[] = [
       author: "Zewail, Figueroa, Graham & Atari",
       published: "2026-03-04",
       url: "https://www.pnas.org/doi/10.1073/pnas.2519941123",
+    },
+    chart: {
+      kind: "count",
+      max: 90802,
+      axis: "people taking the same instrument, across 48 nations",
+      bars: [
+        { label: "Human respondents benchmarked against", value: 90802, unit: "" },
+      ],
     },
   },
   {
@@ -580,6 +613,15 @@ export const FINDINGS: Finding[] = [
       published: "2025-07",
       url: "https://arxiv.org/abs/2507.10073",
     },
+    chart: {
+      kind: "bars",
+      max: 19,
+      axis: "what the study covered",
+      bars: [
+        { label: "Cultures the models were told to answer as", value: 19, unit: "" },
+        { label: "Models tested", value: 6, unit: "" },
+      ],
+    },
   },
   {
     id: "epistemic-narrowing",
@@ -597,6 +639,14 @@ export const FINDINGS: Finding[] = [
       author: "Wright, Masud, Moore, Yadav, Antoniak, Christensen, Park & Augenstein",
       published: "2025-10",
       url: "https://arxiv.org/abs/2510.04226",
+    },
+    chart: {
+      kind: "count",
+      max: 27,
+      axis: "models tested against a plain web search on the same topic",
+      bars: [
+        { label: "Every one returned a narrower range of claims", value: 27, unit: "" },
+      ],
     },
   },
   {
@@ -616,6 +666,14 @@ export const FINDINGS: Finding[] = [
       published: "2025-12",
       url: "https://doi.org/10.1016/j.chbah.2025.100207",
     },
+    chart: {
+      kind: "count",
+      max: 2200,
+      axis: "admissions essays across three registered studies",
+      bars: [
+        { label: "Essays analysed", value: 2200, unit: "" },
+      ],
+    },
   },
   {
     id: "rlhf-annotators",
@@ -633,6 +691,16 @@ export const FINDINGS: Finding[] = [
       author: "Ouyang, Wu, Jiang et al. (OpenAI)",
       published: "2022-03",
       url: "https://cdn.openai.com/papers/Training_language_models_to_follow_instructions_with_human_feedback.pdf",
+    },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "InstructGPT labeler nationality, from the paper's own appendix",
+      bars: [
+        { label: "Filipino", value: 22, unit: "%" },
+        { label: "Bangladeshi", value: 22, unit: "%" },
+        { label: "American", value: 17, unit: "%" },
+      ],
     },
   },
   {
@@ -710,6 +778,14 @@ export const FINDINGS: Finding[] = [
       published: "1997-06",
       url: "https://doi.org/10.1518/001872097778543886",
     },
+    chart: {
+      kind: "count",
+      max: 4500,
+      axis: "citations of the 1997 paper that named misuse, disuse and abuse",
+      bars: [
+        { label: "Times cited", value: 4500, unit: "", prefix: "about " },
+      ],
+    },
   },
   {
     id: "radiologists",
@@ -727,6 +803,17 @@ export const FINDINGS: Finding[] = [
       author: "Dratsch et al. (University of Cologne)",
       published: "2023-05",
       url: "https://pubmed.ncbi.nlm.nih.gov/37129490/",
+    },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "correct mammogram readings, by reader experience and AI suggestion",
+      bars: [
+        { label: "Inexperienced · correct suggestion", value: 79.7, unit: "%" },
+        { label: "Inexperienced · wrong suggestion", value: 19.8, unit: "%" },
+        { label: "Very experienced · correct suggestion", value: 82.3, unit: "%" },
+        { label: "Very experienced · wrong suggestion", value: 45.5, unit: "%" },
+      ],
     },
   },
   {
@@ -746,6 +833,15 @@ export const FINDINGS: Finding[] = [
       published: "2025-08-12",
       url: "https://pubmed.ncbi.nlm.nih.gov/40816301/",
     },
+    chart: {
+      kind: "slope",
+      max: 30,
+      axis: "adenoma detection by standard colonoscopy, before and after AI arrived (%)",
+      bars: [
+        { label: "Before", value: 28.4, unit: "%" },
+        { label: "After", value: 22.4, unit: "%" },
+      ],
+    },
   },
   {
     id: "confidently-wrong",
@@ -764,6 +860,15 @@ export const FINDINGS: Finding[] = [
       published: "2025-03-06",
       url: "https://www.cjr.org/tow_center/we-compared-eight-ai-search-engines-theyre-all-bad-at-citing-news.php",
     },
+    chart: {
+      kind: "dots",
+      max: 100,
+      axis: "citation queries answered incorrectly, best tool to worst",
+      bars: [
+        { label: "Best-performing tool", value: 37, unit: "%" },
+        { label: "Worst-performing tool", value: 94, unit: "%" },
+      ],
+    },
   },
   {
     id: "horizon",
@@ -781,6 +886,16 @@ export const FINDINGS: Finding[] = [
       author: "Sir Wyn Williams, Chair",
       published: "2025-07-08",
       url: "https://www.postofficehorizoninquiry.org.uk/volume-1-post-office-horizon-it-inquirys-final-report",
+    },
+    chart: {
+      kind: "dots",
+      max: 1000,
+      axis: "the Horizon record, on a log scale",
+      bars: [
+        { label: "Prosecuted and convicted", value: 1000, unit: "", prefix: "about " },
+        { label: "Told the inquiry they contemplated suicide", value: 59, unit: "" },
+        { label: "Deaths by suicide linked", value: 13, unit: "" },
+      ],
     },
   },
   {
@@ -818,6 +933,14 @@ export const FINDINGS: Finding[] = [
       published: "2019-01",
       url: "https://doi.org/10.1145/3287560.3287598",
     },
+    chart: {
+      kind: "count",
+      max: 5,
+      axis: "traps identified where technical fairness work fails once deployed socially",
+      bars: [
+        { label: "Abstraction traps", value: 5, unit: "" },
+      ],
+    },
   },
   // ── geopolitics ──────────────────────────────────────────────────────────
   {
@@ -837,6 +960,17 @@ export const FINDINGS: Finding[] = [
       published: "2026-04",
       url: "https://hai.stanford.edu/ai-index/2026-ai-index-report/research-and-development",
     },
+    chart: {
+      kind: "bars",
+      max: 59,
+      axis: "notable models produced in 2025, by geography",
+      bars: [
+        { label: "United States", value: 59, unit: "" },
+        { label: "China", value: 35, unit: "" },
+        { label: "South Korea", value: 8, unit: "" },
+        { label: "Europe", value: 2, unit: "" },
+      ],
+    },
   },
   {
     id: "industry-share",
@@ -854,6 +988,15 @@ export const FINDINGS: Finding[] = [
       author: "Stanford HAI, data from Epoch AI and Citi Research",
       published: "2026-04",
       url: "https://hai.stanford.edu/ai-index/2026-ai-index-report",
+    },
+    chart: {
+      kind: "bars",
+      max: 93,
+      axis: "notable models in 2025, by who produced them",
+      bars: [
+        { label: "Companies", value: 93, unit: "" },
+        { label: "Academia", value: 2, unit: "" },
+      ],
     },
   },
   {
@@ -873,6 +1016,16 @@ export const FINDINGS: Finding[] = [
       published: "2025-04",
       url: "https://www.iea.org/reports/energy-and-ai/executive-summary",
     },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "share of the world's data-centre electricity",
+      bars: [
+        { label: "United States", value: 45, unit: "%" },
+        { label: "China", value: 25, unit: "%" },
+        { label: "Europe", value: 15, unit: "%" },
+      ],
+    },
   },
   {
     id: "labour-geography",
@@ -891,6 +1044,15 @@ export const FINDINGS: Finding[] = [
       published: "2023-01-18",
       url: "https://time.com/6247678/openai-chatgpt-kenya-workers/",
     },
+    chart: {
+      kind: "bars",
+      max: 2,
+      axis: "take-home pay per hour, outsourced Kenyan labellers",
+      bars: [
+        { label: "Lowest reported", value: 1.32, unit: "", prefix: "$" },
+        { label: "Highest reported", value: 2, unit: "", prefix: "$" },
+      ],
+    },
   },
   {
     id: "ml-values",
@@ -908,6 +1070,15 @@ export const FINDINGS: Finding[] = [
       author: "Birhane, Kalluri, Card, Agnew, Dotan & Bao",
       published: "2021-06-29",
       url: "https://arxiv.org/abs/2106.15590",
+    },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "of 100 of the most-cited machine learning papers",
+      bars: [
+        { label: "Justified by a societal need", value: 15, unit: "%" },
+        { label: "Discussing possible harms", value: 1, unit: "%" },
+      ],
     },
   },
   // ── resistance ───────────────────────────────────────────────────────────
@@ -931,6 +1102,14 @@ export const FINDINGS: Finding[] = [
       published: "2024-07-12",
       url: "https://ai-act-service-desk.ec.europa.eu/en/ai-act/article-113",
     },
+    chart: {
+      kind: "count",
+      max: 4,
+      axis: "tranches the Act arrives in, from February 2025 to August 2027",
+      bars: [
+        { label: "Separate application dates", value: 4, unit: "" },
+      ],
+    },
   },
   {
     id: "eu-delay",
@@ -948,6 +1127,14 @@ export const FINDINGS: Finding[] = [
       author: "Covington & Burling LLP",
       published: "2026",
       url: "https://www.insideprivacy.com/artificial-intelligence/eu-ai-act-update-timeline-relief-targeted-simplification-and-new-prohibitions/",
+    },
+    chart: {
+      kind: "count",
+      max: 16,
+      axis: "delay to the standalone high-risk rules, voted before the original deadline",
+      bars: [
+        { label: "Months", value: 16, unit: "" },
+      ],
     },
   },
   {
@@ -967,6 +1154,15 @@ export const FINDINGS: Finding[] = [
       published: "2025-07-24",
       url: "https://www.bundesnetzagentur.de/DE/Fachthemen/Digitales/KI/_functions/EU-Template.pdf?__blob=publicationFile&v=2",
     },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "share of scraped domains a provider must publish",
+      bars: [
+        { label: "General-purpose model providers", value: 10, unit: "%" },
+        { label: "Smaller companies", value: 5, unit: "%" },
+      ],
+    },
   },
   {
     id: "china-interim",
@@ -984,6 +1180,15 @@ export const FINDINGS: Finding[] = [
       author: "CAC and six other agencies",
       published: "2023-07-13",
       url: "https://www.cac.gov.cn/2023-07/13/c_1690898327029107.htm",
+    },
+    chart: {
+      kind: "slope",
+      max: 868,
+      axis: "generative AI services on China's filing register",
+      bars: [
+        { label: "April 2025", value: 346, unit: "" },
+        { label: "April 2026", value: 868, unit: "" },
+      ],
     },
   },
   {
@@ -1003,6 +1208,16 @@ export const FINDINGS: Finding[] = [
       published: "2024-02-29",
       url: "https://www.tc260.org.cn/upload/2024-03-01/1709282398070082466.pdf",
     },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "China's numeric training-data rules",
+      bars: [
+        { label: "Ceiling on illegal or harmful content in a source", value: 5, unit: "%" },
+        { label: "Manual sample qualification rate", value: 96, unit: "%" },
+        { label: "Technical sample qualification rate", value: 98, unit: "%" },
+      ],
+    },
   },
   {
     id: "china-labelling",
@@ -1020,6 +1235,14 @@ export const FINDINGS: Finding[] = [
       author: "CAC, MIIT, Ministry of Public Security, NRTA",
       published: "2025-03-14",
       url: "https://www.cac.gov.cn/2025-03/14/c_1743654684782215.htm",
+    },
+    chart: {
+      kind: "count",
+      max: 2,
+      axis: "labelling layers required — visible marks, and embedded provenance",
+      bars: [
+        { label: "Mandatory layers", value: 2, unit: "" },
+      ],
     },
   },
   {
@@ -1039,6 +1262,15 @@ export const FINDINGS: Finding[] = [
       published: "2026-06-17",
       url: "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=2487262",
     },
+    chart: {
+      kind: "waffle",
+      max: 2,
+      cells: 2,
+      axis: "chambers of the Brazilian Congress passed",
+      bars: [
+        { label: "Passed", value: 1, unit: "" },
+      ],
+    },
   },
   {
     id: "india-layers",
@@ -1056,6 +1288,15 @@ export const FINDINGS: Finding[] = [
       author: "Ministry of Electronics and Information Technology",
       published: "2025-11-05",
       url: "https://www.newsonair.gov.in/meity-unveils-india-ai-governance-guidelines-to-promote-safe-and-responsible-ai-adoption",
+    },
+    chart: {
+      kind: "slope",
+      max: 36,
+      axis: "takedown window on actual knowledge, hours",
+      bars: [
+        { label: "Before February 2026", value: 36, unit: "h" },
+        { label: "After", value: 3, unit: "h" },
+      ],
     },
   },
   {
@@ -1075,6 +1316,15 @@ export const FINDINGS: Finding[] = [
       published: "2024-07",
       url: "https://au.int/sites/default/files/documents/44004-doc-EN-_Continental_AI_Strategy_July_2024.pdf",
     },
+    chart: {
+      kind: "bars",
+      max: 15,
+      axis: "the African Union's continental AI strategy",
+      bars: [
+        { label: "Action areas", value: 15, unit: "" },
+        { label: "Focus areas", value: 5, unit: "" },
+      ],
+    },
   },
   {
     id: "sovereign-licences",
@@ -1092,6 +1342,14 @@ export const FINDINGS: Finding[] = [
       author: "AI Singapore; CENIA; Cohere Labs; Technology Innovation Institute",
       published: "2026-02-10",
       url: "https://huggingface.co/latam-gpt/Llama-3.1-70B-LatamGPT-SFT-1.0",
+    },
+    chart: {
+      kind: "count",
+      max: 71,
+      axis: "LATAM-GPT, built on Llama 3.1 under Meta's community licence",
+      bars: [
+        { label: "Parameters", value: 71, unit: "B" },
+      ],
     },
   },
   {
@@ -1111,6 +1369,14 @@ export const FINDINGS: Finding[] = [
       published: "2022-07-12",
       url: "https://huggingface.co/bigscience/bloom",
     },
+    chart: {
+      kind: "count",
+      max: 176,
+      axis: "BLOOM, 2022 — 46 languages, on a French public supercomputer",
+      bars: [
+        { label: "Parameters", value: 176, unit: "B" },
+      ],
+    },
   },
   {
     id: "sarvam",
@@ -1128,6 +1394,15 @@ export const FINDINGS: Finding[] = [
       author: "Government of India, MeitY; Sarvam AI",
       published: "2026-03-06",
       url: "https://www.pib.gov.in/PressReleasePage.aspx?PRID=2227612",
+    },
+    chart: {
+      kind: "bars",
+      max: 106,
+      axis: "flagship model size against the funding each team received, billions of parameters",
+      bars: [
+        { label: "Sarvam — ₹246.72cr", value: 106, unit: "B" },
+        { label: "Largest-funded consortium — ₹1,058.52cr", value: 2.9, unit: "B" },
+      ],
     },
   },
   {
@@ -1147,6 +1422,14 @@ export const FINDINGS: Finding[] = [
       published: "2020-12",
       url: "https://doi.org/10.1007/s13347-020-00405-8",
     },
+    chart: {
+      kind: "count",
+      max: 12,
+      axis: "rise in hate content between two generations of the LAION corpus",
+      bars: [
+        { label: "Increase", value: 12, unit: "%", prefix: "nearly " },
+      ],
+    },
   },
   {
     id: "care-principles",
@@ -1164,6 +1447,14 @@ export const FINDINGS: Finding[] = [
       author: "Carroll, Garba, Figueroa-Rodríguez, Hudson et al.",
       published: "2020-11-04",
       url: "https://doi.org/10.5334/dsj-2020-043",
+    },
+    chart: {
+      kind: "count",
+      max: 4,
+      axis: "CARE — Collective benefit, Authority to control, Responsibility, Ethics",
+      bars: [
+        { label: "Principles", value: 4, unit: "" },
+      ],
     },
   },
   {
@@ -1183,6 +1474,15 @@ export const FINDINGS: Finding[] = [
       published: "2023-01-24",
       url: "https://blog.papareo.nz/whisper-is-another-case-study-in-colonisation/",
     },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "word error rate on Te Hiku's harder internal dataset — lower is better",
+      bars: [
+        { label: "Te Hiku's own model", value: 53, unit: "%" },
+        { label: "Off-the-shelf frontier system", value: 73, unit: "%" },
+      ],
+    },
   },
   {
     id: "masakhane",
@@ -1200,6 +1500,14 @@ export const FINDINGS: Finding[] = [
       author: "Nekoto et al.; Adelani et al.; Ojo et al.",
       published: "2020-11",
       url: "https://aclanthology.org/2020.findings-emnlp.195/",
+    },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "Global MMLU geographic-knowledge questions, by cultural context",
+      bars: [
+        { label: "Western in context", value: 84.9, unit: "%" },
+      ],
     },
   },
   {
@@ -1307,6 +1615,15 @@ export const FINDINGS: Finding[] = [
       author: "Stanford Institute for Human-Centered AI",
       published: "2021-03",
       url: "https://hai.stanford.edu/news/ai-index-diversity-report-unmoving-needle",
+    },
+    chart: {
+      kind: "bars",
+      max: 100,
+      axis: "women in the North American AI and computer science pipeline",
+      bars: [
+        { label: "AI and CS PhDs, over a decade", value: 19, unit: "%", prefix: "under " },
+        { label: "Tenure-track CS faculty", value: 16, unit: "%" },
+      ],
     },
   },
 ];

@@ -10,9 +10,9 @@
  * Ordered newest first, which is how the feed shows them.
  */
 
-import { PUBLISHED as HEGEMONY } from "./hegemony";
-import { PUBLISHED as KILLCHAIN } from "./killchain";
-import { PUBLISHED as STARTUP_CITIES } from "./startup-cities";
+import { MOSAIC as HEGEMONY_TILES, PUBLISHED as HEGEMONY } from "./hegemony";
+import { MOSAIC as KILLCHAIN_TILES, PUBLISHED as KILLCHAIN } from "./killchain";
+import { MOSAIC as STARTUP_TILES, PUBLISHED as STARTUP_CITIES } from "./startup-cities";
 
 export interface ReportEntry {
   slug: string;
@@ -21,9 +21,12 @@ export interface ReportEntry {
   /** The one sentence that says what the report found, not what it is about. */
   dek: string;
   published: string;
-  /** The hegemony report builds a picture wall from the coverage it credits;
-      the others are typographic, because they have no image set to credit. */
-  wall: boolean;
+  /**
+   * The report's own coverage stills, for the card's wall and its masthead.
+   * Every report now harvests these — a report without a checked image set is
+   * a report that has not finished its coverage section.
+   */
+  tiles: string[];
 }
 
 export const REPORTS: ReportEntry[] = [
@@ -33,7 +36,7 @@ export const REPORTS: ReportEntry[] = [
     title: "Sovereign by contract",
     dek: "A private city on a Honduran island is claiming $10.6 billion from the country that hosted it, for changing its mind. Charter cities, network states, and the arbitration bill that follows.",
     published: STARTUP_CITIES,
-    wall: false,
+    tiles: STARTUP_TILES,
   },
   {
     slug: "ai-kill-chain",
@@ -41,7 +44,7 @@ export const REPORTS: ReportEntry[] = [
     title: "Twenty seconds",
     dek: "The machine learning is not in the missile. It is upstream, in the finding and fixing of targets — where there is no trigger to guard and no moment anybody would recognise as a decision to fire.",
     published: KILLCHAIN,
-    wall: false,
+    tiles: KILLCHAIN_TILES,
   },
   {
     slug: "ai-hegemony",
@@ -49,6 +52,6 @@ export const REPORTS: ReportEntry[] = [
     title: "Whose common sense?",
     dek: "The open web is about 41% English. GPT-3's training mix was 92.6%. That gap isn't the web — it's filtering. How Western assumptions get into AI systems, and what is actually documented.",
     published: HEGEMONY,
-    wall: true,
+    tiles: HEGEMONY_TILES,
   },
 ];

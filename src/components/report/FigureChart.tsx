@@ -378,7 +378,9 @@ export function FigureChart({ chart }: { chart: FindingChart }) {
   const Mark = MARKS[chart.kind];
 
   return (
-    <figure ref={ref} className="mt-4 border-t border-ink/[0.14] pt-4">
+    // No rule or margin of its own: the card gives the mark an inset plate, and
+    // a second border inside it read as a box in a box.
+    <figure ref={ref} className="m-0">
       <Mark chart={chart} t={t} />
       <figcaption className="mt-3 font-mono text-[10px] uppercase leading-[1.5] tracking-[0.12em] text-ink/45">
         {chart.axis}

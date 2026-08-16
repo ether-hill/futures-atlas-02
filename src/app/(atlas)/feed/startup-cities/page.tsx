@@ -5,12 +5,16 @@ import { CardRail, RailItem } from "@/components/report/CardRail";
 import { EcologyDashboard } from "@/components/report/EcologyDashboard";
 import { FeedbackTimeline } from "@/components/report/FeedbackTimeline";
 import { FindingCarousel } from "@/components/report/FindingCarousel";
+import { HeroMosaic } from "@/components/report/HeroMosaic";
 import { PressCard } from "@/components/report/PressCard";
+import { VideoCard } from "@/components/report/VideoCard";
 import { BandSection, Section } from "@/components/report/Section";
 import {
   DROPPED,
   FINDINGS,
+  MOSAIC,
   PRESS,
+  VIDEOS,
   PUBLISHED,
   STRAND_NAME,
   TIER_MEANING,
@@ -25,10 +29,10 @@ import { formatPostDate } from "@/data/posts";
  * Sovereign by Contract — the startup-cities report.
  *
  * A static segment under /feed, built from the shared report components. The
- * masthead is typographic for the same reason the kill-chain report's is: the
- * only images available would be the projects' own renders, and a promotional
- * render of a city that does not exist is precisely the borrowed authority the
- * evidence contract refuses.
+ * masthead wall is the report's own coverage — broadcast stills and publisher
+ * images, each fetched and confirmed to resolve. Notably NOT the projects' own
+ * renders: a promotional image of a city that does not exist yet is precisely
+ * the borrowed authority the evidence contract refuses.
  */
 
 export const metadata: Metadata = {
@@ -51,7 +55,8 @@ export default function StartupCitiesPage() {
           work sits at the top at display size, because the whole report is an
           argument about what twenty seconds of review can contain. */}
       <section className="relative isolate flex min-h-[clamp(560px,80vh,880px)] items-end overflow-hidden bg-band">
-        <Container className="relative pb-[clamp(48px,8vw,96px)] pt-[clamp(32px,9vh,104px)]">
+        <HeroMosaic tiles={MOSAIC} />
+        <Container className="relative z-10 pb-[clamp(48px,8vw,96px)] pt-[clamp(32px,9vh,104px)]">
           <div className="max-w-[46rem]">
             <Link
               href="/feed"
@@ -209,9 +214,36 @@ export default function StartupCitiesPage() {
       </Container>
 
       <section className="mt-[clamp(48px,7vw,96px)] bg-band py-[clamp(52px,8vw,104px)]">
-        <Container>
+        <Container className="space-y-[clamp(52px,8vw,104px)]">
           <BandSection
-            label="08 · In the press"
+            label="08 · Watch"
+            title="Both sides of it, on the record"
+            lede={
+              <p>
+              Bloomberg and AJ+ are hostile, ReasonTV is the movement&rsquo;s
+                own magazine, and two are enthusiast tours of the place itself.
+                A coverage rail carrying only the critics would be making the
+                report&rsquo;s case for it. Press play and the video loads here;
+                nothing from YouTube reaches your browser until you do.
+              </p>
+            }
+          >
+            <CardRail
+              label="Broadcast coverage"
+              count={VIDEOS.length}
+              noun="broadcasts"
+              tone="dark"
+            >
+              {VIDEOS.map((v) => (
+                <RailItem key={v.id} width="three">
+                  <VideoCard video={v} />
+                </RailItem>
+              ))}
+            </CardRail>
+          </BandSection>
+
+          <BandSection
+            label="09 · In the press"
             title="Where this came from"
             lede={
               <p>
@@ -221,9 +253,10 @@ export default function StartupCitiesPage() {
                 substitute for it. Two of them are primary documents &mdash; the
                 case file and the State Department report &mdash; and reading
                 those is the fastest route past everybody&rsquo;s summary of
-                them. No card carries a picture: none of the share images were
-                checked, and a guessed URL is a broken image and a false claim
-                at once.
+                them. Each publisher&rsquo;s own share image was fetched and
+                confirmed to resolve; the ones that render typographically are
+                the ones whose image could not be reached, because a guessed URL
+                is a broken image and a false claim at once.
               </p>
             }
           >
@@ -245,7 +278,7 @@ export default function StartupCitiesPage() {
 
       <Container className="pt-[clamp(48px,7vw,96px)]">
         <Section
-          label="09 · Method"
+          label="10 · Method"
           title="How to read the tiers, and what we threw away"
           lede={
             <p>

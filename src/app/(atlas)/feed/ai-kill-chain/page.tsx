@@ -5,12 +5,16 @@ import { CardRail, RailItem } from "@/components/report/CardRail";
 import { EcologyDashboard } from "@/components/report/EcologyDashboard";
 import { FeedbackTimeline } from "@/components/report/FeedbackTimeline";
 import { FindingCarousel } from "@/components/report/FindingCarousel";
+import { HeroMosaic } from "@/components/report/HeroMosaic";
 import { PressCard } from "@/components/report/PressCard";
+import { VideoCard } from "@/components/report/VideoCard";
 import { BandSection, Section } from "@/components/report/Section";
 import {
   DROPPED,
   FINDINGS,
+  MOSAIC,
   PRESS,
+  VIDEOS,
   PUBLISHED,
   STRAND_NAME,
   TIER_MEANING,
@@ -28,10 +32,11 @@ import { formatPostDate } from "@/data/posts";
  * components — the report template is now shared, so what differs here is the
  * data and the argument, not the machinery.
  *
- * The masthead is typographic rather than a picture wall. The hegemony report
- * builds its hero from the coverage it credits; this one has no image set it
- * could credit that way, and a stock photograph of a drone would be exactly
- * the kind of borrowed authority the evidence contract exists to refuse.
+ * The masthead wall is built from MOSAIC — the report's own broadcast stills
+ * and publisher images, every one fetched and confirmed to resolve. That is
+ * the standard for every report: the hero is made of the coverage the page
+ * credits below it, never decorated with a stock photograph of a drone, which
+ * would be exactly the borrowed authority the evidence contract refuses.
  */
 
 export const metadata: Metadata = {
@@ -54,7 +59,8 @@ export default function AiKillChainPage() {
           work sits at the top at display size, because the whole report is an
           argument about what twenty seconds of review can contain. */}
       <section className="relative isolate flex min-h-[clamp(560px,80vh,880px)] items-end overflow-hidden bg-band">
-        <Container className="relative pb-[clamp(48px,8vw,96px)] pt-[clamp(32px,9vh,104px)]">
+        <HeroMosaic tiles={MOSAIC} />
+        <Container className="relative z-10 pb-[clamp(48px,8vw,96px)] pt-[clamp(32px,9vh,104px)]">
           <div className="max-w-[46rem]">
             <Link
               href="/feed"
@@ -216,18 +222,48 @@ export default function AiKillChainPage() {
       </Container>
 
       <section className="mt-[clamp(48px,7vw,96px)] bg-band py-[clamp(52px,8vw,104px)]">
-        <Container>
+        <Container className="space-y-[clamp(52px,8vw,104px)]">
           <BandSection
-            label="08 · In the press"
+            label="08 · Watch"
+            title="The record is one week in April 2024"
+            lede={
+              <p>
+              Broadcast attention to AI in targeting is almost entirely
+                attention to a single investigation. There is no comparable
+                television record of Maven, of Replicator or of the UN votes
+                &mdash; which is itself worth noticing. Press play and the video
+                loads here; nothing from YouTube reaches your browser until you
+                do.
+              </p>
+            }
+          >
+            <CardRail
+              label="Broadcast coverage"
+              count={VIDEOS.length}
+              noun="broadcasts"
+              tone="dark"
+            >
+              {VIDEOS.map((v) => (
+                <RailItem key={v.id} width="three">
+                  <VideoCard video={v} />
+                </RailItem>
+              ))}
+            </CardRail>
+          </BandSection>
+
+          <BandSection
+            label="09 · In the press"
             title="Where this came from"
             lede={
               <p>
                 The reporting and the primary documents this report is built on.
                 Every card goes to the publisher&rsquo;s own page &mdash; this
                 section is an index of other people&rsquo;s work, never a
-                substitute for it. None of these cards carries a picture,
-                because none of the share images were checked, and a guessed URL
-                is a broken image and a false claim at once.
+                substitute for it. Each publisher&rsquo;s own share image was
+                fetched and confirmed to resolve; the ones that render
+                typographically are the ones whose image could not be reached,
+                because a guessed URL is a broken image and a false claim at
+                once.
               </p>
             }
           >
@@ -249,7 +285,7 @@ export default function AiKillChainPage() {
 
       <Container className="pt-[clamp(48px,7vw,96px)]">
         <Section
-          label="09 · Method"
+          label="10 · Method"
           title="How to read the tiers, and what we threw away"
           lede={
             <p>

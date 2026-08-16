@@ -7,13 +7,14 @@ import { FindingCarousel } from "@/components/report/FindingCarousel";
 import { DisparityTreemap } from "@/components/hegemony/DisparityTreemap";
 import { EcologyDashboard } from "@/components/report/EcologyDashboard";
 import { FeedbackTimeline } from "@/components/report/FeedbackTimeline";
-import { HeroMosaic } from "@/components/hegemony/HeroMosaic";
+import { HeroMosaic } from "@/components/report/HeroMosaic";
 import { PressCard } from "@/components/report/PressCard";
 import { VersionSwitch } from "@/components/hegemony/VersionSwitch";
 import { VideoCard } from "@/components/report/VideoCard";
 import {
   DROPPED,
   FINDINGS,
+  MOSAIC,
   findingsIn,
   PRESS,
   PUBLISHED,
@@ -51,7 +52,7 @@ export default function AiHegemonyPage() {
           HeroMosaic. Dark in both themes (bg-band), because a scrim over
           photographs only works one way round. */}
       <section className="relative isolate flex min-h-[clamp(620px,88vh,960px)] items-start overflow-hidden bg-band">
-        <HeroMosaic />
+        <HeroMosaic tiles={MOSAIC} />
         {/* One narrow column in the left third, sitting in the scrim's pool —
             the wall is the picture, so the type stays out of its way rather
             than spanning it. Top-weighted, not centred: the mosaic wants to

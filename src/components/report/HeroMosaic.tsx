@@ -9,10 +9,10 @@ import { MosaicWall } from "./MosaicWall";
  * photograph by a measured amount, which is not something a semantic colour
  * can do — the same documented exception the site's other photo heroes take.
  */
-export function HeroMosaic() {
+export function HeroMosaic({ tiles }: { tiles: string[] }) {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <MosaicWall />
+      <MosaicWall tiles={tiles} />
 
       {/* A light wash over the whole wall, to seat it as one surface… */}
       <div className="absolute inset-0 bg-[rgba(0,0,0,0.3)]" />

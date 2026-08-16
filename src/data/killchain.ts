@@ -31,6 +31,7 @@ import {
   type Dropped,
   type Finding,
   type PressItem,
+  type Video,
   type Tier,
   type TimelineEvent,
 } from "./report-types";
@@ -510,6 +511,14 @@ export const FINDINGS: Finding[] = [
       published: "2025-05-21",
       url: "https://www.hrw.org/news/2025/05/21/un-start-talks-treaty-ban-killer-robots",
     },
+    chart: {
+      kind: "count",
+      max: 0,
+      axis: "binding international instruments on autonomous weapons",
+      bars: [
+        { label: "Treaties in force", value: 0, unit: "" },
+      ],
+    },
   },
 ];
 
@@ -774,7 +783,8 @@ export const PRESS: PressItem[] = [
     published: "2024-04-05",
     blurb: "An interview with the reporter two days after publication, walking through the method.",
     url: "https://www.democracynow.org/2024/4/5/israel_ai",
-    image: null,
+    image:
+      "https://www.democracynow.org/images/story/67/71567/full_hd/seg1-gaza-bombing.jpg",
   },
   {
     id: "intercept-openai",
@@ -783,7 +793,8 @@ export const PRESS: PressItem[] = [
     published: "2024-01-12",
     blurb: "The policy diff that started the vendor strand, caught two days after it shipped.",
     url: "https://theintercept.com/2024/01/12/open-ai-military-ban-chatgpt/",
-    image: null,
+    image:
+      "https://theintercept.com/wp-content/uploads/2024/01/GettyImages-1647522284-openAI-military.jpg?fit=2500%2C1250&w=1200&h=800",
   },
   {
     id: "defensescoop-maven",
@@ -792,7 +803,8 @@ export const PRESS: PressItem[] = [
     published: "2025-05-23",
     blurb: "The procurement record behind the adoption curve, with the numbers attached.",
     url: "https://defensescoop.com/2025/05/23/dod-palantir-maven-smart-system-contract-increase/",
-    image: null,
+    image:
+      "https://defensescoop.com/wp-content/uploads/sites/8/2023/06/Palantir.jpg",
   },
   {
     id: "csis-maven",
@@ -802,7 +814,8 @@ export const PRESS: PressItem[] = [
     blurb:
       "The clearest public explanation of what the system actually does, and where a human sits in it.",
     url: "https://www.csis.org/analysis/what-maven-smart-system-and-what-does-it-do",
-    image: null,
+    image:
+      "https://csis-website-prod.s3.amazonaws.com/s3fs-public/2026-06/DVIDS_9532591_cropped.jpg?VersionId=4EFWpWTrz16EJ0LvZihzXNQjK1dLWHdQ",
   },
   {
     id: "hrw-treaty",
@@ -811,7 +824,8 @@ export const PRESS: PressItem[] = [
     published: "2025-05-21",
     blurb: "The campaign side of the legal record, and a useful index of every vote to date.",
     url: "https://www.hrw.org/news/2025/05/21/un-start-talks-treaty-ban-killer-robots",
-    image: null,
+    image:
+      "https://www.hrw.org/sites/default/files/styles/opengraph/public/multimedia_images_2019/201909arms_robots_unga.jpg?itok=iNY2TTet",
   },
 ];
 
@@ -856,6 +870,79 @@ export const DROPPED: Dropped[] = [
     reason:
       "Widely circulated totals mix budget lines, ceilings and multi-year contract values that are not comparable. One contract ceiling, clearly labelled as a ceiling, is used instead.",
   },
+];
+
+/**
+ * Broadcast coverage, harvested and checked.
+ *
+ * Every id, title, channel and upload date was read off the watch page, and
+ * every `thumb` was confirmed to return 200 — a guessed maxresdefault URL is a
+ * broken image, and plenty of uploads do not have one.
+ *
+ * Worth saying plainly: this set is lopsided, and the lopsidedness is real.
+ * Broadcast attention to AI in targeting is almost entirely attention to one
+ * week in April 2024. There is no comparable television record of Maven, of
+ * Replicator, or of the UN votes.
+ */
+export const VIDEOS: Video[] = [
+  {
+    id: "4RmNJH4UN3s",
+    channel: "Democracy Now!",
+    title:
+      "Lavender & Where's Daddy: How Israel Used AI to Form Kill Lists & Bomb Palestinians in Their Homes",
+    published: "2024-04-05",
+    blurb:
+      "The reporter who broke the story, two days after publication, walking through the method and the sourcing.",
+    thumb: "https://i.ytimg.com/vi/4RmNJH4UN3s/maxresdefault.jpg",
+  },
+  {
+    id: "GF-SyuuXrAA",
+    channel: "Channel 4 News",
+    title: "Is Israel using AI to identify targets in Gaza war?",
+    published: "2024-04-04",
+    blurb:
+      "A broadcast treatment that puts the Israeli military's own response alongside the investigation's claims.",
+    thumb: "https://i.ytimg.com/vi/GF-SyuuXrAA/maxresdefault.jpg",
+  },
+  {
+    id: "MOUmFT1qVcI",
+    channel: "CBC News",
+    title: "Israel accused of using AI to choose Gaza targets | Front Burner",
+    published: "2024-04-08",
+    blurb: "The longer-form radio version, useful on what 'human review' actually denotes.",
+    thumb: "https://i.ytimg.com/vi/MOUmFT1qVcI/maxresdefault.jpg",
+  },
+  {
+    id: "EkgexnnzKt0",
+    channel: "TRT World",
+    title: "'Lavender': How Israel's AI system is killing Palestinians in Gaza",
+    published: "2024-04-05",
+    blurb: "The same story from a non-Western newsroom, included because the framing differs.",
+    thumb: "https://i.ytimg.com/vi/EkgexnnzKt0/maxresdefault.jpg",
+  },
+  {
+    id: "KT7znz0eNFE",
+    channel: "Democracy Now!",
+    title:
+      "\"Mass Assassination Factory\": Israel Using AI to Generate Targets in Gaza, Increasing Civilian Toll",
+    published: "2023-12-01",
+    blurb:
+      "Four months before Lavender, on the earlier reporting about the Gospel system. The story did not start in April.",
+    thumb: "https://i.ytimg.com/vi/KT7znz0eNFE/maxresdefault.jpg",
+  },
+];
+
+/**
+ * Every preview image on the page, in one list, for the masthead mosaic.
+ *
+ * Derived rather than typed out, so the wall behind the title is literally the
+ * coverage below it — and it can never show a picture the page does not also
+ * credit. Press items whose og:image could not be reached contribute nothing
+ * rather than a placeholder.
+ */
+export const MOSAIC: string[] = [
+  ...VIDEOS.map((v) => v.thumb),
+  ...PRESS.map((p) => p.image).filter((src): src is string => src !== null),
 ];
 
 export const findingsIn = (s: Strand) => findingsInStrand(FINDINGS, s);
