@@ -21,6 +21,7 @@ export default async function FeedPage() {
   const picks = liveProjects.slice(0, 3);
   return (
     <FeedTimeline
+      benchSeed={Date.now()}
       items={isEditor ? editorPosts : livePosts}
       projects={picks}
       showVisibility={isEditor}

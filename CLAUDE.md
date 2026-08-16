@@ -137,6 +137,14 @@ reintroduce a second listing of these posts.
   `scratchpad/harvest.py` in the session notes shows how they were collected.
 - Nav entries live in `public/atlas-nav.js` (`LINKS`), and the homepage carousel
   shows the newest ten.
+- **The bench card** (`src/data/workbench.ts` + `components/feed/BenchCard.tsx`)
+  shows work in progress from the inside — one specimen at a time, drawn. Rules:
+  every specimen is real and locatable (`at` names a file, a doc or a day, and
+  nothing is written for the card); `rejected` means actually built or proposed
+  and then taken out, with the real reason; `open` means still open, not a
+  teaser for something finished. It is the one feed card with no picture, on
+  purpose. Its opening face is seeded from a SERVER-computed `seed` prop —
+  `Math.random()` at mount would mismatch on hydration.
 ### Reports (`/feed/<slug>`, not posts)
 
 The Atlas's own long-form reports. **A report is data + a page**, never a

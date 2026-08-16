@@ -4,6 +4,7 @@ import Link from "next/link";
 import { PostImage } from "@/components/PostImage";
 import { YouTubeCard } from "@/components/feed/YouTubeCard";
 import { KIND_LABEL, formatPostDate, hasImage, hostOf, youtubeId, type Post } from "@/data/posts";
+import { BenchCard } from "@/components/feed/BenchCard";
 import { ReportCards } from "@/components/feed/ReportCard";
 
 /**
@@ -16,7 +17,15 @@ import { ReportCards } from "@/components/feed/ReportCard";
  * each column rather than across, which is the right order here: this is a
  * pile of recent things, not a ranked list.
  */
-export function FeedMasonry({ posts, showVisibility = false }: { posts: Post[]; showVisibility?: boolean }) {
+export function FeedMasonry({
+  posts,
+  showVisibility = false,
+  benchSeed = 0,
+}: {
+  posts: Post[];
+  showVisibility?: boolean;
+  benchSeed?: number;
+}) {
   return (
     <section className="border-t border-ink/15">
       <div className="px-4 py-[clamp(48px,7vw,96px)] min-[680px]:px-7">
@@ -49,6 +58,12 @@ export function FeedMasonry({ posts, showVisibility = false }: { posts: Post[]; 
             it is. */}
         <div className="mb-4">
           <ReportCards />
+        </div>
+
+        {/* The bench sits between the finished work and the pile of recent
+            things, which is where it belongs: it is neither. */}
+        <div className="mb-4">
+          <BenchCard seed={benchSeed} />
         </div>
 
         <div className="[column-gap:16px] [columns:1] min-[560px]:[columns:2] min-[900px]:[columns:3] min-[1200px]:[columns:4] min-[1500px]:[columns:5]">

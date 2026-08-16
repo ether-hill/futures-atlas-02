@@ -378,6 +378,40 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
    sticks only once its foot arrives — sticking to `top` would have pinned it
    immediately and stranded everything below the fold. */
 
+/* ---------- the bench ----------
+   A working surface, so it gets a working surface's texture: a hairline grid,
+   like the cutting mat every one of these projects was actually made on. Built
+   from the ink token via color-mix rather than a literal, so it follows the
+   theme and the live overrides like everything else, and it sits UNDER the
+   content at a low enough alpha to be felt rather than read.
+
+   The card is otherwise deliberately plain. It is the one card on the feed
+   with no picture, because what it is showing is not a picture — and giving it
+   one would make it the fifth variation on image-text-link that it exists to
+   not be. */
+.fa-bench {
+  background-image:
+    repeating-linear-gradient(
+      to right,
+      color-mix(in oklab, var(--c-ink) 5%, transparent) 0 1px,
+      transparent 1px 22px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--c-ink) 5%, transparent) 0 1px,
+      transparent 1px 22px
+    );
+}
+
+/* One draw, one deal. Short and small — the fragment should arrive, not
+   perform. Neutralised wholesale by the prefers-reduced-motion block above,
+   which kills animation-duration globally. */
+@keyframes fa-deal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.fa-bench-face { animation: fa-deal 340ms var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) both; }
+
 /* ---------- headings on the dark band ----------
    `.bg-band` is the ground that stays dark in BOTH themes (a scrim over
    photographs only works one way round), so type on it has to stay light in

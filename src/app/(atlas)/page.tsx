@@ -28,6 +28,15 @@ export default async function Home() {
     return vid ? [...head.slice(0, 14), vid] : head;
   })();
 
+  /**
+   * A per-request seed for the bench card's opening face.
+   *
+   * Computed on the SERVER and passed down so both renders agree: a
+   * Math.random() at mount would give the client a different first specimen than
+   * the HTML it is hydrating, and React tears the tree down over that.
+   */
+  const benchSeed = Date.now();
+
   return (
     <div>
       {/* Hero, an always-black stage (does not follow the light theme) with
@@ -87,7 +96,7 @@ export default async function Home() {
       </section>
 
       {/* The feed, as a masonry of the newest posts — videos play in place */}
-      <FeedMasonry posts={latestPosts} showVisibility={isEditor} />
+      <FeedMasonry posts={latestPosts} showVisibility={isEditor} benchSeed={benchSeed} />
 
       {/* Tech banner, the whole band links to the About page's stack + workflow */}
       <section className="border-t border-ink/15 bg-band">
