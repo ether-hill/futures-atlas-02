@@ -55,8 +55,12 @@ export interface Prototype {
   visibility: "live" | "draft";
   /** Whose it is, and where it lives. Always rendered. */
   origin: { by: string; url: string };
-  /** The studio's own embed endpoint, and the size it is built for. */
-  embed: { src: string; width: number; height: number };
+  /**
+   * The live instrument, framed. Points at the project page rather than the
+   * compact embed: the embed endpoint only builds a 480px player strip, and the
+   * ask was for the instrument's real UI.
+   */
+  embed: { src: string };
   atlas: {
     /** The panel heading, verbatim. */
     title: string;
@@ -106,13 +110,16 @@ export const PROTOTYPES: Prototype[] = [
   {
     slug: "biome",
     eyebrow: "BIOME · SOUND HEALING SOUNDSCAPE ECOSYSTEM",
-    title: "Biome",
+    title: "Biome.",
     description:
-      "A sound-healing soundscape ecosystem — a living drone built from a frequency atlas, in Web Audio.",
+      "A living soundscape mixer built on the frequencies of sound healing — solfeggio, binaural & isochronic beats, Schumann and 40 Hz gamma, drones and noise beds — each a breathing channel. Power on, load a realm, randomise, save your own, or hit SPAWN and let the ecosystem grow itself — dial its SPEED and CHAOS. Best with headphones; a relaxation instrument, not a medical device.",
     posted: "2026-08-16",
     visibility: "live",
     origin: { by: "Frond Studio", url: "https://frond-studio.com/projects/instruments/biome" },
-    embed: { src: "https://frond-studio.com/embed/biome?size=mini", width: 480, height: 150 },
+    // The project page itself, not the compact embed. The embed endpoint only
+    // builds a 480px player strip, and stretched across a column it reads as an
+    // empty bar; this is the instrument's real UI — transport, mixer, realms.
+    embed: { src: "https://frond-studio.com/projects/instruments/biome" },
     atlas: {
       title: "FREQUENCY ATLAS · WHAT EACH TONE IS SAID TO DO",
       legend:

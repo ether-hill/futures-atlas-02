@@ -52,10 +52,10 @@ export function ReportCard({ report = REPORTS[0] }: { report?: ReportEntry }) {
           <span className="border border-accent/60 px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] fa-rc-accent">
             Report
           </span>
-          {/* The date, in place of the old "Atlas original · long read" —
-              same position, and it actually tells you something. */}
+          {/* The date alone. "Published" was a word doing no work next to a
+              date that already reads as one. */}
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] fa-rc-dim">
-            Published {formatPostDate(report.published)}
+            {formatPostDate(report.published)}
           </span>
         </div>
 
