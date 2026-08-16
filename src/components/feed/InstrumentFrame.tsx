@@ -22,8 +22,10 @@
  * thing. It fails visibly rather than silently — you would see the hero — and
  * the fix is one number.
  *
- * Scale is clamped at 1 so the frame never enlarges the instrument: it renders
- * at its own size, and only shrinks when the column is narrower than it is.
+ * Scale is clamped at 1 so it never enlarges the instrument: it renders at its
+ * own size and only shrinks when the column is narrower than it is. There is
+ * no border and no card around it — it is not a widget on the page, it is the
+ * page's content.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -55,10 +57,12 @@ export function InstrumentFrame({ src, title }: { src: string; title: string }) 
   return (
     <div
       ref={box}
-      className="relative overflow-hidden rounded-[4px] border border-ink/[0.14]"
-      // Capped at FRAME_W and centred: past that width the frame would leave a
-      // strip of empty container beside it, since it never scales up.
-      style={{ height: VIEW_H * scale, maxWidth: FRAME_W, marginInline: "auto" }}
+      // No border, no radius, no card: the instrument sits on the page. The
+      // only thing this element does is clip the crop — overflow-hidden is
+      // load-bearing, everything else would be decoration around something
+      // that already has its own edges.
+      className="relative overflow-hidden"
+      style={{ height: VIEW_H * scale, maxWidth: FRAME_W }}
     >
       <iframe
         src={src}
