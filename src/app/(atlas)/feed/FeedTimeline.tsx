@@ -171,9 +171,21 @@ export function FeedTimeline({
             // became a full-width block. That is what made the page read as a
             // stack. Fixing the counts means "wide" always means wide.
             gridAutoFlow: "dense",
-            // cards keep their natural height instead of stretching to the
-            // tallest in the row, which is what makes it read as a bento
-            alignItems: "start",
+            // Cards stretch to the tallest in their row, so every row has one
+            // bottom edge. The earlier `start` let each card keep its natural
+            // height, which reads as a bento when the cards are close in size
+            // and as a ragged hem when they are not — and with mixed kinds in
+            // one grid they are never close in size. Each card already ends in
+            // an `mt-auto` footer, so the extra space lands between the copy
+            // and the link rather than as a gap under everything.
+            //
+            // `1fr` on the auto rows takes it the rest of the way: every row
+            // is the height of the tallest card in the grid, so the whole
+            // thing is one height rather than a set of even-but-different
+            // rows. The cost is real — the shortest cards carry the
+            // difference as space — and it is the price of a grid that does
+            // not step down the page.
+            gridAutoRows: "1fr",
           }}
         >
           {/* The report is not a Post and is not in `items`, so it leads the
@@ -326,8 +338,12 @@ function PostCardFeed({ post, showVisibility }: { post: Post; showVisibility: bo
           >
             {post.title}
           </h2>
+          {/* Clamped, not shortened — the dek is whole in the data. With one
+              shared card height, a single long dek in a narrow column sets the
+              height for all seventy cards, and everything else pays for it in
+              empty space. */}
           <p
-            className="mt-2"
+            className="mt-2 line-clamp-4"
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: "var(--text-body-size)",
