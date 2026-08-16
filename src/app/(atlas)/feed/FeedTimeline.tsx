@@ -179,13 +179,11 @@ export function FeedTimeline({
             // an `mt-auto` footer, so the extra space lands between the copy
             // and the link rather than as a gap under everything.
             //
-            // `1fr` on the auto rows takes it the rest of the way: every row
-            // is the height of the tallest card in the grid, so the whole
-            // thing is one height rather than a set of even-but-different
-            // rows. The cost is real — the shortest cards carry the
-            // difference as space — and it is the price of a grid that does
-            // not step down the page.
-            gridAutoRows: "1fr",
+            // Rows are NOT forced to a common height. Making every row match
+            // the tallest card in the grid did give one height, and it bought
+            // it with a lot of empty card — the short ones carried the
+            // difference. Each row sizing to its own content is the version
+            // that looks right: flush bottoms, no padding out.
           }}
         >
           {/* The report is not a Post and is not in `items`, so it leads the
@@ -338,12 +336,8 @@ function PostCardFeed({ post, showVisibility }: { post: Post; showVisibility: bo
           >
             {post.title}
           </h2>
-          {/* Clamped, not shortened — the dek is whole in the data. With one
-              shared card height, a single long dek in a narrow column sets the
-              height for all seventy cards, and everything else pays for it in
-              empty space. */}
           <p
-            className="mt-2 line-clamp-4"
+            className="mt-2"
             style={{
               fontFamily: "var(--font-mono)",
               fontSize: "var(--text-body-size)",
