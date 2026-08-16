@@ -36,18 +36,11 @@ import { formatPostDate } from "@/data/posts";
  */
 
 export const metadata: Metadata = {
-  title: "Sovereign by Contract — Futures Atlas",
+  title: "Start-up Cities — Futures Atlas",
   description: `Charter cities, network states and the arbitration bill that follows when a host country changes its mind. ${FINDINGS.length} findings, every one scoped to the source and the year it covers.`,
 };
 
 export default function StartupCitiesPage() {
-  const stats = [
-    { n: String(FINDINGS.length), l: "Findings, each scoped" },
-    { n: String(countByTier("documented")), l: "From primary or peer-reviewed sources" },
-    { n: String(TIMELINE.length), l: "Dated events on the record" },
-    { n: String(DROPPED.length), l: "Claims checked and dropped" },
-  ];
-
   return (
     <main className="pb-[clamp(60px,9vw,120px)]">
       {/* ── masthead ───────────────────────────────────────────────────────
@@ -69,29 +62,13 @@ export default function StartupCitiesPage() {
               Report · Published {formatPostDate(PUBLISHED)}
             </p>
 
-            <h1 className="mt-6 max-w-[13ch] text-[clamp(44px,8vw,112px)] font-medium leading-[0.94] tracking-[-0.04em] text-paper">
-              Sovereign by contract
+            <h1 className="mt-6 max-w-[14ch] text-[clamp(44px,8vw,112px)] font-medium leading-[0.94] tracking-[-0.04em] text-paper">
+              Start-up Cities
             </h1>
 
-            <p className="mt-8 max-w-[56ch] text-[clamp(16px,1.5vw,20px)] leading-[1.65] text-paper/75">
-              A private city on a Honduran island is claiming $10.6&nbsp;billion
-              from the country that hosted it, for changing its mind. The exit
-              from the state turns out to be underwritten by the state system
-              &mdash; and that is the model, not a hitch in it.
+            <p className="mt-8 max-w-[58ch] text-[clamp(16px,1.5vw,20px)] leading-[1.65] text-paper/75">
+              Privately governed cities and network states: the projects under way, who funds them, the legal arrangements they depend on, and the arbitration claim Próspera has brought against Honduras.
             </p>
-
-            <dl className="mt-12 grid max-w-[52rem] grid-cols-2 gap-x-8 gap-y-8 min-[900px]:grid-cols-4">
-              {stats.map((s) => (
-                <div key={s.l}>
-                  <dt className="font-mono text-[clamp(28px,3.6vw,46px)] font-bold leading-none tracking-[-0.03em] text-paper">
-                    {s.n}
-                  </dt>
-                  <dd className="mt-2 font-mono text-[11px] uppercase leading-[1.5] tracking-[0.12em] text-paper/55">
-                    {s.l}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
         </Container>
       </section>

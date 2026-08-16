@@ -36,7 +36,7 @@ import { formatPostDate } from "@/data/posts";
  */
 
 export const metadata: Metadata = {
-  title: "Whose Common Sense? — Futures Atlas",
+  title: "AI Hegemony — Futures Atlas",
   // Counted, not typed: this description said "57 findings" for exactly as
   // long as it took to add three more.
   description: `How Western assumptions get into AI systems, what is actually documented, and what is being built in response. ${FINDINGS.length} findings, every one scoped to the dataset, model and year it covers.`,
@@ -72,24 +72,11 @@ export default function AiHegemonyPage() {
               Published {formatPostDate(PUBLISHED)}
             </p>
             <h1 className="mt-4 max-w-[13ch] text-[clamp(36px,5.2vw,64px)] font-medium leading-[1.0] tracking-[-0.035em] text-paper">
-              Whose common sense?
+              AI Hegemony
             </h1>
 
-            {/* Every clause here is a finding below, and nothing in it is
-                stated wider than the evidence — on a page whose whole argument
-                is that people do exactly that. */}
             <p className="mt-6 max-w-[46ch] text-[clamp(15px,1.6vw,18px)] leading-[1.6] tracking-[-0.005em] text-paper/90">
-              Training data is not the world. GPT-3&rsquo;s mix was 92.6%
-              English. The &ldquo;clean&rdquo; filter that made it respectable
-              deleted African American English seven times more often than
-              white American English. Wikipedia, the reference layer under
-              nearly every model, was written by an editor base about six in
-              seven male.{" "}
-              <span className="text-accent-deep">
-                What comes back is one culture&rsquo;s defaults in the voice of
-                no culture at all &mdash; and clinics, courts and benefits
-                offices are already deferring to it.
-              </span>
+              How the geographic and linguistic composition of AI training data was produced, what filtering did to it, and what is documented about the effects. Every finding is scoped to the dataset, model and year it covers.
             </p>
           </div>
         </Container>
@@ -111,25 +98,6 @@ export default function AiHegemonyPage() {
             the reader its own.
           </p>
         </div>
-
-        {/* the tally, from the data rather than typed by hand */}
-        <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-6 border-y border-ink/[0.14] py-6 min-[720px]:grid-cols-4">
-          {[
-            { n: FINDINGS.length, l: "findings" },
-            { n: countByTier("documented"), l: "peer-reviewed or primary" },
-            { n: TIMELINE.length, l: "dated events" },
-            { n: DROPPED.length, l: "claims rejected" },
-          ].map((s) => (
-            <div key={s.l}>
-              <dt className="font-mono text-[28px] font-bold leading-none tracking-tight text-accent-deep">
-                {s.n}
-              </dt>
-              <dd className="mt-2 font-mono text-[11px] uppercase leading-[1.5] tracking-[0.12em] text-ink/55">
-                {s.l}
-              </dd>
-            </div>
-          ))}
-        </dl>
 
         <div className="mt-[clamp(48px,7vw,96px)] space-y-[clamp(48px,7vw,96px)]">
           <Section

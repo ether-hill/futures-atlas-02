@@ -49,7 +49,7 @@ import { formatPostDate } from "@/data/posts";
  */
 
 export const metadata: Metadata = {
-  title: "Whose Common Sense? (v2) — Futures Atlas",
+  title: "AI Hegemony (v2) — Futures Atlas",
   description: `The short edit: ${HEADLINE_FINDINGS.length} findings at full size, the timeline sized by what each event is, and the coverage six at a time. The complete ${FINDINGS.length}-finding report is at /feed/ai-hegemony.`,
   // Two designs of one report is a duplicate-content problem for a crawler;
   // v1 is the canonical, complete one.
@@ -77,7 +77,7 @@ export default function AiHegemonyV2Page() {
               Published {formatPostDate(PUBLISHED)} · the short edit
             </p>
             <h1 className="mt-4 max-w-[13ch] text-[clamp(36px,5.2vw,64px)] font-medium leading-[1.0] tracking-[-0.035em] text-paper">
-              Whose common sense?
+              AI Hegemony
             </h1>
 
             {/* Same standfirst as v1 — it is the report's opening argument, not

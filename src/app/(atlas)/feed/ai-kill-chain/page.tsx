@@ -40,18 +40,11 @@ import { formatPostDate } from "@/data/posts";
  */
 
 export const metadata: Metadata = {
-  title: "Twenty Seconds — Futures Atlas",
+  title: "AI in the Military — Futures Atlas",
   description: `Where machine learning actually sits in military targeting, what is documented, and what is not. ${FINDINGS.length} findings, every one scoped to the system, the source and the year it covers.`,
 };
 
 export default function AiKillChainPage() {
-  const stats = [
-    { n: String(FINDINGS.length), l: "Findings, each scoped" },
-    { n: String(countByTier("documented")), l: "From primary or peer-reviewed sources" },
-    { n: String(TIMELINE.length), l: "Dated events on the record" },
-    { n: String(DROPPED.length), l: "Claims checked and dropped" },
-  ];
-
   return (
     <main className="pb-[clamp(60px,9vw,120px)]">
       {/* ── masthead ───────────────────────────────────────────────────────
@@ -73,29 +66,13 @@ export default function AiKillChainPage() {
               Report · Published {formatPostDate(PUBLISHED)}
             </p>
 
-            <h1 className="mt-6 text-[clamp(44px,9vw,124px)] font-medium leading-[0.92] tracking-[-0.04em] text-paper">
-              Twenty seconds
+            <h1 className="mt-6 max-w-[14ch] text-[clamp(44px,8vw,112px)] font-medium leading-[0.94] tracking-[-0.04em] text-paper">
+              AI in the Military
             </h1>
 
-            <p className="mt-8 max-w-[56ch] text-[clamp(16px,1.5vw,20px)] leading-[1.65] text-paper/75">
-              The machine learning is not in the missile. It is upstream, in the
-              finding and fixing of targets, where there is no trigger to guard
-              and no moment anybody would recognise as a decision to fire. This
-              is what is documented about that, and what is not.
+            <p className="mt-8 max-w-[58ch] text-[clamp(16px,1.5vw,20px)] leading-[1.65] text-paper/75">
+              Where machine learning sits in military targeting: the systems in use, what is documented about human review, the model developers supplying them, and the current state of international law.
             </p>
-
-            <dl className="mt-12 grid max-w-[52rem] grid-cols-2 gap-x-8 gap-y-8 min-[900px]:grid-cols-4">
-              {stats.map((s) => (
-                <div key={s.l}>
-                  <dt className="font-mono text-[clamp(28px,3.6vw,46px)] font-bold leading-none tracking-[-0.03em] text-paper">
-                    {s.n}
-                  </dt>
-                  <dd className="mt-2 font-mono text-[11px] uppercase leading-[1.5] tracking-[0.12em] text-paper/55">
-                    {s.l}
-                  </dd>
-                </div>
-              ))}
-            </dl>
           </div>
         </Container>
       </section>

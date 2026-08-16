@@ -18,7 +18,10 @@ export interface ReportEntry {
   slug: string;
   href: string;
   title: string;
-  /** The one sentence that says what the report found, not what it is about. */
+  /**
+   * What the report covers, stated plainly. Descriptive rather than
+   * argumentative: the findings make the case, the card does not need to.
+   */
   dek: string;
   published: string;
   /**
@@ -33,24 +36,24 @@ export const REPORTS: ReportEntry[] = [
   {
     slug: "startup-cities",
     href: "/feed/startup-cities",
-    title: "Sovereign by contract",
-    dek: "A private city on a Honduran island is claiming $10.6 billion from the country that hosted it, for changing its mind. Charter cities, network states, and the arbitration bill that follows.",
+    title: "Start-up Cities",
+    dek: "Privately governed cities and network states: the projects under way, who funds them, the legal arrangements they depend on, and the arbitration claim Próspera has brought against Honduras.",
     published: STARTUP_CITIES,
     tiles: STARTUP_TILES,
   },
   {
     slug: "ai-kill-chain",
     href: "/feed/ai-kill-chain",
-    title: "Twenty seconds",
-    dek: "The machine learning is not in the missile. It is upstream, in the finding and fixing of targets — where there is no trigger to guard and no moment anybody would recognise as a decision to fire.",
+    title: "AI in the Military",
+    dek: "Where machine learning sits in military targeting: the systems in use, what is documented about human review, the model developers supplying them, and the current state of international law.",
     published: KILLCHAIN,
     tiles: KILLCHAIN_TILES,
   },
   {
     slug: "ai-hegemony",
     href: "/feed/ai-hegemony",
-    title: "Whose common sense?",
-    dek: "The open web is about 41% English. GPT-3's training mix was 92.6%. That gap isn't the web — it's filtering. How Western assumptions get into AI systems, and what is actually documented.",
+    title: "AI Hegemony",
+    dek: "How the geographic and linguistic composition of AI training data was produced, what filtering did to it, and what is documented about the effects.",
     published: HEGEMONY,
     tiles: HEGEMONY_TILES,
   },
