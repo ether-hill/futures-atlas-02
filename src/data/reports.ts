@@ -37,7 +37,7 @@ export const REPORTS: ReportEntry[] = [
     slug: "startup-cities",
     href: "/feed/startup-cities",
     title: "Start-up Cities",
-    dek: "Privately governed cities and network states: the projects under way, who funds them, the legal arrangements they depend on, and the arbitration claim Próspera has brought against Honduras.",
+    dek: "Territory where the rules of doing business are set by contract with a host state rather than by ordinary law — charter cities, network states, and the investment regimes deciding where AI compute gets built.",
     published: STARTUP_CITIES,
     tiles: STARTUP_TILES,
   },

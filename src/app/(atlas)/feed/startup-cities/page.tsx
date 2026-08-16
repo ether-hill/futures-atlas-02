@@ -66,11 +66,52 @@ export default function StartupCitiesPage() {
             </h1>
 
             <p className="mt-8 max-w-[58ch] text-[clamp(16px,1.5vw,20px)] leading-[1.65] text-paper/75">
-              Privately governed cities and network states: the projects under way, who funds them, the legal arrangements they depend on, and the arbitration claim Próspera has brought against Honduras.
+              Territory where the rules of doing business are set by contract
+              with a host state rather than by that state&rsquo;s ordinary law.
+              The same instruments now decide where AI compute gets built.
             </p>
           </div>
         </Container>
       </section>
+
+      <Container className="pt-[clamp(36px,5vw,64px)]">
+        <div className="max-w-[68ch] space-y-4 text-[15px] leading-[1.75] text-ink/75">
+          <p>
+            A start-up city is a piece of territory where the terms of
+            business &mdash; tax, customs, courts, residency, regulation
+            &mdash; come from an agreement with the host state rather than
+            from its ordinary law, usually for a fixed term and usually
+            protected by an investment treaty. Pr&oacute;spera on Roat&aacute;n
+            is the furthest advanced. Praxis and California Forever are the
+            same idea earlier on. Argentina applies the mechanism without
+            carving out territory at all: a national regime that locks the
+            rules for thirty years.
+          </p>
+          <p>
+            The connection to compute is not incidental. What this model
+            supplies is exactly what a large data centre needs &mdash;
+            long-dated certainty on tax and customs, cheap power, and a
+            process that does not run at the speed of ordinary planning.
+            Stargate Argentina, the Patagonian facility of up to 500&nbsp;MW
+            that OpenAI signed a letter of intent for, is structured under
+            RIGI. The follow-on bill names data centres, AI and semiconductors
+            as its target sectors. Where the next generation of compute is
+            sited is being decided by these instruments, which is why a report
+            about city-building belongs next to one about training data.
+          </p>
+          <p>
+            It is worth tracking because it moves faster than the analysis of
+            it, and because the announcements outrun the buildings: the same
+            Argentine project has been widely cited as though it exists, and
+            reporters have since been unable to find it. So this is built as a
+            data file rather than an essay. Every finding carries the scope it
+            covers and the source it came from, the claims that did not survive
+            checking are published alongside those that did, and the whole
+            thing is meant to be extended as the record changes &mdash; a model
+            to argue with, not a conclusion.
+          </p>
+        </div>
+      </Container>
 
       <Container>
         <div className="mt-[clamp(48px,7vw,96px)] space-y-[clamp(48px,7vw,96px)]">

@@ -402,6 +402,75 @@ export const FINDINGS: Finding[] = [
     },
   },
   {
+    id: "stargate-argentina",
+    strand: "argentina",
+    claim:
+      "The largest AI data centre announced in Latin America is structured under Argentina's investment-stability regime.",
+    detail:
+      "Stargate Argentina, announced in October 2025, is a letter of intent between OpenAI and the Argentine firm Sur Energy for a Patagonian data centre of up to 500 MW, reported at around $25bn. It is structured under RIGI. OpenAI's role is as the main buyer of computing capacity rather than the builder; the facility is to be developed by a joint venture with a cloud infrastructure provider.",
+    figure: "up to 500 MW",
+    scope:
+      "A letter of intent, not a committed investment or a signed contract, and OpenAI disclosed no financial figure of its own — the $25bn is a reported project value. Covers one announced project in one country.",
+    tier: "reported",
+    source: {
+      name: "Buenos Aires Times",
+      author: "Buenos Aires Times",
+      published: "2025-10",
+      url: "https://www.batimes.com.ar/news/economy/openai-sur-energy-to-build-massive-ai-data-centre-in-patagonia.phtml",
+    },
+    chart: {
+      kind: "count",
+      max: 500,
+      axis: "planned capacity of the announced Patagonian facility",
+      bars: [{ label: "Megawatts", value: 500, unit: " MW", prefix: "up to " }],
+    },
+  },
+  {
+    id: "super-rigi",
+    strand: "argentina",
+    claim:
+      "The follow-on bill names data centres, AI and semiconductors as its target sectors, at five times the entry price.",
+    detail:
+      "Súper-RIGI (Mensaje No. 181/2026), submitted to Congress on 23 May 2026, requires a minimum $1bn in new capital against RIGI's $200m, and admits only greenfield projects in sectors with no existing commercial-scale operations in Argentina. The adhesion window runs to 8 July 2027.",
+    figure: "$200m → $1bn",
+    scope:
+      "A bill submitted to the Argentine Congress, not a law. Describes the proposed threshold and target sectors as filed; this report makes no claim about its prospects.",
+    tier: "reported",
+    source: {
+      name: "BNamericas",
+      author: "BNamericas",
+      published: "2026",
+      url: "https://www.bnamericas.com/en/features/argentinas-super-rigi-what-investors-need-to-know",
+    },
+    chart: {
+      kind: "slope",
+      max: 1000,
+      axis: "minimum qualifying investment, $ millions",
+      bars: [
+        { label: "RIGI", value: 200, unit: "m", prefix: "$" },
+        { label: "Súper-RIGI", value: 1000, unit: "bn", prefix: "$1" },
+      ],
+    },
+  },
+  {
+    id: "stargate-no-trace",
+    strand: "argentina",
+    claim:
+      "Months after the announcement, reporters could find no trace of the project on the ground.",
+    detail:
+      "Argentine reporting has since asked what became of the data centre announced shortly before the elections, finding no construction, no confirmed site and no disclosed financing. An announcement structured under an incentive regime is a policy event; it is not yet a building.",
+    figure: null,
+    scope:
+      "Argentine press reporting on the absence of visible progress. Absence of evidence at one point in time, not evidence the project is cancelled — included because the announcement is widely cited as though it were built.",
+    tier: "reported",
+    source: {
+      name: "Buenos Aires Times",
+      author: "Buenos Aires Times",
+      published: "2026",
+      url: "https://batimes.com.ar/news/economy/chau-gpt-no-trace-of-mega-billion-dollar-ai-project-announced-before-elections.phtml",
+    },
+  },
+  {
     id: "non-human-corporations",
     strand: "argentina",
     claim:
