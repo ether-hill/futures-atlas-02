@@ -40,6 +40,15 @@ const SITE_DESC =
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://futures-atlas-02.vercel.app"),
+  // Draft work, shared by link only: every page tells crawlers to stay out.
+  // Mirrored by robots.ts (Disallow: /) and the X-Robots-Tag header in
+  // next.config.ts, so the instruction survives however a bot arrives.
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: { index: false, follow: false, noimageindex: true },
+  },
   title: "Futures Atlas — a catalogue of possible worlds",
   description: SITE_DESC,
   // Default Open Graph so any page (and the Share → Social Composer transmutate)
