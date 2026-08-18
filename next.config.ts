@@ -112,6 +112,15 @@ const nextConfig: NextConfig = {
   // keeps a stale atlas-nav.js and misses updates (e.g. the global Share tool).
   async headers() {
     return [
+      // Site-wide noindex. The atlas is draft work sent to specific people, so
+      // every response — pages, the static sub-app bundles under public/, the
+      // OG images — carries the header, not just the Next-rendered routes.
+      {
+        source: "/:path*",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" },
+        ],
+      },
       {
         source: "/atlas-nav.:ext(js|css)",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],

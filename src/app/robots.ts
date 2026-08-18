@@ -1,17 +1,17 @@
 import type { MetadataRoute } from "next";
-import { draftPaths } from "@/data/projects";
-import { draftPostPaths } from "@/data/posts";
 
-/** Everything is crawlable except the internal areas and the unpublished
- *  projects. (The middleware already turns crawlers away from those; this keeps
- *  their URLs out of the index in the first place.) */
+/** Nothing here is meant to be found by searching. The atlas and every project
+ *  bundled under it is draft work, shared by link only, so the whole host is
+ *  closed to crawlers. (next.config.ts sends a matching X-Robots-Tag: noindex
+ *  on every response, for the bots that read headers but not this file.)
+ *
+ *  When a project is ready to be public, open it up here path by path — do not
+ *  reopen the site wholesale. */
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
-      // Bare paths: robots.txt prefix-matches, so each covers its subtree too.
-      disallow: ["/admin", "/editor", "/home-lab", "/mocks", ...draftPaths, ...draftPostPaths],
+      disallow: "/",
     },
   };
 }
