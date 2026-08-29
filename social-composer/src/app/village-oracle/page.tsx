@@ -1,9 +1,9 @@
-import { StudioApp } from "../studio-app";
-import { villagesSource } from "@/lib/composer/villages-source";
+import { ComposerPage } from "../composer-page";
 
-// Second pre-stocked composer — Village Oracle screens (home, 2050 vision, consultation
-// sections, consult-again in 16:9 + 3:2, plus clean text-free 2050 renders). Fields empty
-// by default. Served at /social-composer/village-oracle.
+// Kept as a deep link: the composer now carries every project's library behind one
+// picker, and this route just opens it on Village Oracle. Its screens (home, the
+// 2050 vision, consultation sections, consult-again, plus the text-free renders)
+// are still there — they ride along with the captured ones in atlas-source.
 export default function Page() {
   return (
     <div className="px-7 pb-[110px] pt-11 max-[680px]:px-4">
@@ -15,15 +15,14 @@ export default function Page() {
           Village Oracle · Composer
         </h1>
         <p className="mt-[22px] m-0 max-w-[640px] text-[16px] leading-[1.55] text-ink/70">
-          Pre-stocked with Village Oracle screens — the home, the 2050 vision, consultation
-          sections and consult-again (desktop 16:9 and 3:2), plus clean text-free 2050 renders.
-          Headline and subtext load empty; write your own copy per post, or upload / transmutate more.
+          The composer opened on Village Oracle — the home, the 2050 vision, consultation
+          sections and consult-again in desktop 16:9 and 3:2 and on mobile, plus the clean
+          text-free 2050 renders. Headline and subtext load empty; write your own copy per post,
+          switch to another project in the library panel, or upload / transmutate more.
         </p>
       </header>
 
-      <section className="rounded-xl border border-ink/12">
-        <StudioApp source={villagesSource()} />
-      </section>
+      <ComposerPage initialProject="hollow-villages" />
     </div>
   );
 }

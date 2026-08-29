@@ -116,11 +116,17 @@ function framesFromTransmute(d: TransmuteData, base: string): ComposerFrame[] {
   //    quotes and overviews.
   for (const v of vids.slice(0, 40)) { const t = v.title || d.title || site; seen.add(key(t)); frames.push({ id: nid(), kind: "video", label: "Video", headline: t, sub: site, videoUrl: v.src, posterUrl: v.poster || undefined }); }
   for (const im of imgs.slice(1, 30)) { const t = im.title || d.title || site; seen.add(key(t)); frames.push({ id: nid(), kind: "gallery", label: "Image", headline: t, sub: im.alt || site, imageUrl: im.src }); }
-  for (const hd of (d.headings ?? []).slice(0, 20)) { if (seen.has(key(hd))) continue; seen.add(key(hd)); frames.push({ id: nid(), kind: "summary", label: "Section", headline: cap(hd, 280), sub: site, thumbUrls: [] }); }
-  for (const q of (d.quotes ?? []).slice(0, 10)) frames.push({ id: nid(), kind: "quote", label: "Quote", headline: cap(q, 480), sub: site, thumbUrls: imgs.slice(0, 4).map((x) => x.src) });
-  for (const para of (d.paragraphs ?? []).slice(0, 12)) { if (seen.has(key(para))) continue; seen.add(key(para)); frames.push({ id: nid(), kind: "summary", label: "Overview", headline: cap(para, 600), sub: site, thumbUrls: [] }); }
+  // Text frames used to ship thumbUrls: [], which drew them as flat black cards —
+  // the "everything is black" library. Each now takes ONE of the page's images in
+  // rotation (a different one per card, so a carousel doesn't repeat), and when the
+  // page has no imagery at all the renderer lays a hatched ground instead.
+  let plate = 0;
+  const backdrop = () => (imgs.length ? [imgs[plate++ % imgs.length].src] : []);
+  for (const hd of (d.headings ?? []).slice(0, 20)) { if (seen.has(key(hd))) continue; seen.add(key(hd)); frames.push({ id: nid(), kind: "summary", label: "Section", headline: cap(hd, 280), sub: site, thumbUrls: backdrop() }); }
+  for (const q of (d.quotes ?? []).slice(0, 10)) frames.push({ id: nid(), kind: "quote", label: "Quote", headline: cap(q, 480), sub: site, thumbUrls: backdrop() });
+  for (const para of (d.paragraphs ?? []).slice(0, 12)) { if (seen.has(key(para))) continue; seen.add(key(para)); frames.push({ id: nid(), kind: "summary", label: "Overview", headline: cap(para, 600), sub: site, thumbUrls: backdrop() }); }
   const refs = d.references ?? [];
-  if (refs.length) frames.push({ id: nid(), kind: "summary", label: "References", headline: cap(refs.map((r) => r.text).join("  ·  "), 640), sub: `References · ${site}`, thumbUrls: [] });
+  if (refs.length) frames.push({ id: nid(), kind: "summary", label: "References", headline: cap(refs.map((r) => r.text).join("  ·  "), 640), sub: `References · ${site}`, thumbUrls: backdrop() });
   return frames;
 }
 
@@ -199,7 +205,14 @@ function videoTargetTime(v: HTMLVideoElement, localT: number, dur: number): numb
   return isFinite(span) ? t % span : t;
 }
 
-export function StudioApp({ source }: { source: ComposerSource }) {
+/** `library` turns the Assets panel's heading into a project picker: the page
+ *  owns which project is loaded, the studio just offers the switch. */
+export function StudioApp({ source, library, libraryId, onLibraryChange }: {
+  source: ComposerSource;
+  library?: Array<{ id: string; label: string }>;
+  libraryId?: string;
+  onLibraryChange?: (id: string) => void;
+}) {
   const isCorp = source.kind === "corporation";
   const slugKey = source.url + "|v2";   // bump to orphan stale saved working-state after default changes
 
@@ -796,13 +809,23 @@ export function StudioApp({ source }: { source: ComposerSource }) {
               )}
             </div>
             <p className="font-script text-[12px] text-ink/52 leading-snug mb-3">{frames.length} assets · {selected.length} picked · drag &amp; drop to add.</p>
+            {library && library.length > 1 && libraryId && onLibraryChange && (
+              <div className="mb-3">
+                <p className="font-docket text-[9px] uppercase tracking-[0.16em] text-oxblood mb-1.5">◍ Project library</p>
+                <select value={libraryId} onChange={(e) => onLibraryChange(e.target.value)}
+                  className="w-full font-docket text-[16px] sm:text-[11px] bg-bone text-ink border border-ink/17 focus:border-ink/72 px-2.5 py-2 outline-none">
+                  {library.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
+                </select>
+                <p className="font-script text-[11px] text-ink/40 leading-snug mt-1.5">Every screen of that project — desktop, 3:2 and mobile — ready to compose. Your picks and drafts are kept per project.</p>
+              </div>
+            )}
             <div className="mb-3">
               <p className="font-docket text-[9px] uppercase tracking-[0.16em] text-oxblood mb-1.5">⚗ Transmutate a URL</p>
               <div className="flex gap-1.5">
                 <input type="url" inputMode="url" value={tmUrl} onChange={(e) => setTmUrl(e.target.value)}
                   onKeyDown={(e) => { if (e.key === "Enter") onTransmutate(); }}
                   placeholder="Paste an article / page URL…" disabled={busy === "transmutate"}
-                  className="flex-1 min-w-0 font-docket text-[10px] bg-bone text-ink border border-ink/17 focus:border-ink/72 px-2.5 py-2 outline-none disabled:opacity-50" />
+                  className="flex-1 min-w-0 font-docket text-[16px] sm:text-[10px] bg-bone text-ink border border-ink/17 focus:border-ink/72 px-2.5 py-2 outline-none disabled:opacity-50" />
                 <button type="button" onClick={onTransmutate} disabled={busy === "transmutate" || !tmUrl.trim()}
                   className="font-docket text-[10px] uppercase tracking-[0.1em] px-3 py-2 hover:opacity-90 disabled:opacity-40 shrink-0" style={{ backgroundColor: "#3B93D5", color: "#211e18" }}>
                   {busy === "transmutate" ? "Scanning…" : "Transmutate"}

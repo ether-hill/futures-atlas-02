@@ -52,7 +52,10 @@ body {
 
 :root { --fa-nav-h: 64px; }
 
-
+/* The shared nav (atlas-nav.js) is position:fixed and publishes its height as
+   --fa-nav-h; every consumer has to reserve that space itself. Without this the
+   bar sits on top of the page and slices the top off the h1. */
+body { padding-top: var(--fa-nav-h); }
 
 
 /* ── Light theme: when the nav toggle removes html.dark, flip the chrome tokens

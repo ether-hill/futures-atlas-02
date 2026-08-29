@@ -410,8 +410,63 @@ function drawFinding(
   body: string, headline: string, sub: string, style: Style, m: MotionState,
 ) {
   void body; // body text intentionally not shown — only headline + sub
-  ctx.fillStyle = style.bgColor; ctx.fillRect(0, 0, w, h);
+  groundBg(ctx, w, h, style.bgColor, style.textColor, headline, m);
   textBlock(ctx, 0, 0, w, h, headline, sub, style, m);
+}
+
+/**
+ * Ground for a text-only frame — the fallback when a frame carries no imagery.
+ *
+ * A flat fill made every scraped section/quote/reference card a black rectangle
+ * with words on it. This lays the Atlas hatch plate instead: the base colour, a
+ * soft off-centre bloom, fine diagonal hatching and a hairline accent rule along
+ * the foot. Everything derives from `seed`, so a given frame always draws the
+ * same plate, and neighbouring frames in a carousel differ from each other.
+ * Motion drifts the hatch so a still ground still moves in a reel.
+ */
+function seedOf(s: string): number {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0) / 4294967295;
+}
+
+function groundBg(
+  ctx: CanvasRenderingContext2D, w: number, h: number,
+  bgHex: string, textHex: string, seed: string, m: MotionState,
+) {
+  ctx.fillStyle = bgHex;
+  ctx.fillRect(0, 0, w, h);
+  const r = seedOf(seed);
+  const ink = rgbTriplet(textHex);
+  // bloom — a wide, very soft lift toward the text colour, placed by the seed
+  const cx = w * (0.2 + r * 0.6);
+  const cy = h * (0.18 + ((r * 7) % 1) * 0.5);
+  const rad = Math.max(w, h) * (0.7 + ((r * 13) % 1) * 0.35);
+  const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+  g.addColorStop(0, `rgba(${ink},0.13)`);
+  g.addColorStop(0.55, `rgba(${ink},0.04)`);
+  g.addColorStop(1, `rgba(${ink},0)`);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+  // hatch — 45° hairlines, drifting with the frame's motion
+  const step = Math.max(9, Math.round(w * 0.017));
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, w, h);
+  ctx.clip();
+  ctx.translate(m.dx * w * 0.5, m.dy * h * 0.5);
+  ctx.strokeStyle = `rgba(${ink},0.08)`;
+  ctx.lineWidth = Math.max(1, w / 1080);
+  ctx.beginPath();
+  for (let x = -h - step; x < w + step; x += step) { ctx.moveTo(x, h + step); ctx.lineTo(x + h + step, -step); }
+  ctx.stroke();
+  ctx.restore();
+  // foot rule in the accent
+  const ruleH = Math.max(3, Math.round(h * 0.004));
+  ctx.fillStyle = ACCENT;
+  ctx.globalAlpha = 0.9;
+  ctx.fillRect(0, h - ruleH, w, ruleH);
+  ctx.globalAlpha = 1;
 }
 
 /** Mosaic background = the flattened mosaic image, cover-fit, zoomed + dimmed. */
@@ -433,7 +488,7 @@ function drawCentered(
 ) {
   const onMosaic = !!(thumbUrls && thumbUrls.length && getImg);
   if (onMosaic) mosaicBg(ctx, w, h, thumbUrls!, getImg!, m);
-  else { ctx.fillStyle = style.bgColor; ctx.fillRect(0, 0, w, h); }
+  else groundBg(ctx, w, h, style.bgColor, style.textColor, label + big, m);
   const textCol = style.textColor;
   const padX = Math.round(w * 0.11), padY = Math.round(h * 0.1);
   wordmark(ctx, w, padX, padY, textCol, label);
@@ -473,7 +528,7 @@ function drawSummary(
 ) {
   const onMosaic = !!(thumbUrls && thumbUrls.length && getImg);
   if (onMosaic) mosaicBg(ctx, w, h, thumbUrls!, getImg!, m, 0.78);
-  else { ctx.fillStyle = style.bgColor; ctx.fillRect(0, 0, w, h); }
+  else groundBg(ctx, w, h, style.bgColor, style.textColor, label + headline, m);
   const textCol = style.textColor;
   const padX = Math.round(w * 0.11), padY = Math.round(h * 0.1);
   wordmark(ctx, w, padX, padY, textCol, label);
@@ -513,7 +568,7 @@ function drawStat(
   ctx: CanvasRenderingContext2D, w: number, h: number,
   value: string, headline: string, sub: string, style: Style, m: MotionState,
 ) {
-  ctx.fillStyle = style.bgColor; ctx.fillRect(0, 0, w, h);
+  groundBg(ctx, w, h, style.bgColor, style.textColor, value + headline, m);
   const padX = Math.round(w * 0.1);
   ctx.save();
   ctx.globalAlpha = m.textProgress;

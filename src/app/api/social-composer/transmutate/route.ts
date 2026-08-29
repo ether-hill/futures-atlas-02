@@ -97,11 +97,19 @@ export async function GET(request: Request) {
   }
 
   const root = parse(html, { blockTextElements: { script: false, style: false, noscript: false } });
-  const abs = (src: string | undefined) => { if (!src) return ""; try { return new URL(src.trim(), target).toString(); } catch { return ""; } };
+  // Relative URLs resolve against <base href> when the page declares one, exactly
+  // as a browser does. The sub-app bundles here are served at extension-less paths
+  // (/actually-hard-questions) and carry <base href="/actually-hard-questions/">,
+  // so without this every relative image resolved one level too high and 404'd —
+  // which is how a page's own artwork turned into a black frame.
+  const baseHref = clean(root.querySelector("base[href]")?.getAttribute("href"));
+  let base = target;
+  if (baseHref) { try { base = new URL(baseHref, target); } catch { /* keep target */ } }
+  const abs = (src: string | undefined) => { if (!src) return ""; try { return new URL(src.trim(), base).toString(); } catch { return ""; } };
   // Unwrap image-proxy URLs (Next.js /_next/image, etc.) to the full-resolution original.
   const deproxy = (u: string): string => {
     try {
-      const url = new URL(u, target);
+      const url = new URL(u, base);
       if (url.pathname.endsWith("/_next/image") || url.pathname.endsWith("/_vercel/image")) {
         const orig = url.searchParams.get("url");
         if (orig) return abs(orig);

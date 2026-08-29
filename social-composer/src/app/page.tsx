@@ -1,9 +1,9 @@
-import { StudioApp } from "./studio-app";
-import { oddsSource } from "@/lib/composer/odds-source";
+import { ComposerPage } from "./composer-page";
 
-// Pre-stocked with "The Odds" screens (home, each game on load, and each game's
-// survival / annihilation end state, desktop + mobile). Users can still upload
-// their own or transmutate a URL; these just give the library a ready starting set.
+// Pre-stocked with EVERY Atlas project: pick one in the library panel and its
+// captured screens (desktop 16:9 / 3:2, mobile, scrolled views, sub-pages, plus
+// the card art) load as ready frames. Users can still upload their own or
+// transmutate a URL on top of that.
 
 // Frond-style project page: title + summary up top, the composer (the tool)
 // framed below, then an About section — all on the global nav grid (28px sides).
@@ -18,15 +18,14 @@ export default function Page() {
           Social Composer
         </h1>
         <p className="mt-[22px] m-0 max-w-[640px] text-[16px] leading-[1.55] text-ink/70">
-          A standalone social-post composer — pick a post type, lay out cover, quote and carousel
-          frames, tune type, colour and motion, then export PNG, ZIP, GIF or video. Import any
-          article with “transmutate” to pull its reusable pieces straight onto the canvas.
+          A social-post composer stocked with every Atlas project. Pick a project, pick a post
+          type, lay out cover, quote and carousel frames, tune type, colour and motion, then
+          export PNG, ZIP, GIF or video. Import any article with “transmutate” to pull its
+          reusable pieces straight onto the canvas.
         </p>
       </header>
 
-      <section className="rounded-xl border border-ink/12">
-        <StudioApp source={oddsSource()} />
-      </section>
+      <ComposerPage />
 
       <section className="mt-11 border-t border-ink/15 pt-7">
         <div className="mb-3.5 text-[10px] uppercase tracking-[0.12em] text-gilt">About</div>
