@@ -21,9 +21,9 @@ export default async function ContactPage({
     project && contactProjects.includes(project) ? project : "Futures Atlas";
   return (
     <section className="relative overflow-hidden py-[clamp(44px,7vw,96px)]">
-      {/* Ambient wave field, right half, desktop only. Decorative: it fades out
-          towards the column of text and sits behind everything. */}
-      <InterferenceField className="pointer-events-none absolute right-0 top-0 hidden h-full w-[54%] opacity-80 [mask-image:linear-gradient(to_left,black_5%,transparent_78%)] lg:block" />
+      {/* Two drops into still water, very slowly, as the page's ground.
+          Decorative: it fades out across the column of text. */}
+      <InterferenceField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-45 [mask-image:linear-gradient(to_left,black_0%,black_30%,transparent_88%)] md:block" />
       <div className="relative">
         <Container>
         <header className="max-w-3xl">

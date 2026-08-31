@@ -3,41 +3,88 @@
 import { useEffect, useRef } from "react";
 
 /**
- * A decorative wave field: two coherent sources, drifting very slowly.
+ * Two drops into still water, very slowly.
  *
- * It carries no palette of its own. The two colours are read off the live theme
- * tokens (--bg and --accent) at mount and again whenever the theme class flips,
- * so it re-skins with the rest of the site, including live /style-guide
- * overrides. Purely ornamental, so it is aria-hidden and freezes under
+ * The same field as the first panel of the Interference project (/interference),
+ * running at about a sixth of its normal speed: one pair of drops every half a
+ * minute, so the page moves at the pace of something you notice rather than
+ * something you watch. It carries no palette of its own. The ramp is built at
+ * runtime from the live theme tokens (--bg and --accent) and rebuilt whenever
+ * the theme class flips, so it re-skins with the rest of the site, live
+ * /style-guide overrides included.
+ *
+ * Decorative, so it is aria-hidden, and it holds still under
  * prefers-reduced-motion.
- *
- * The full set of these fields is the Interference project (/interference).
  */
 
 const VS = "attribute vec2 a; void main(){ gl_Position = vec4(a,0.0,1.0); }";
 
 const FS = `
-precision mediump float;
+precision highp float;
 uniform vec2 uRes;
 uniform float uT;
 uniform vec3 uA;   /* accent */
 uniform vec3 uB;   /* page ground */
+
+const float TD = 6.0;    /* the drip cycle, and the exact loop */
+const float C  = 0.30;
+const float KD = 30.0;
+
+/* the palette, as a ramp from the page's own two colours */
+vec3 rampI(float x){
+  x = clamp(x,0.0,1.0);
+  vec3 c1 = mix(uB, uA, 0.45);
+  vec3 c3 = mix(uA, vec3(1.0), 0.45);
+  vec3 c4 = mix(uA, vec3(1.0), 0.88);
+  vec3 col = mix(uB, c1, smoothstep(0.00,0.30,x));
+  col = mix(col, uA, smoothstep(0.24,0.58,x));
+  col = mix(col, c3, smoothstep(0.54,0.82,x));
+  col = mix(col, c4, smoothstep(0.80,1.00,x));
+  return col;
+}
+
+float dropWave(vec2 p, vec2 s, float tau){
+  if(tau <= 0.0) return 0.0;
+  float r = length(p - s);
+  float d = r - C*tau;
+  float pack  = exp(-d*d*4.0);
+  float fade  = smoothstep(5.0*TD, 3.6*TD, tau);
+  float decay = exp(-tau*0.13)*exp(-r*0.50)/sqrt(0.30 + r*2.0);
+  return sin(KD*d + 1.1)*pack*decay*fade;
+}
+
+float height(vec2 p){
+  float h = 0.0;
+  for(int i=0;i<2;i++){
+    vec2 s = mix(vec2(-0.55, 0.06), vec2(0.55,-0.06), float(i));
+    for(int n=0;n<5;n++){
+      h += dropWave(p, s, uT + float(n)*TD);
+    }
+  }
+  return h;
+}
+
 void main(){
-  vec2 p = (gl_FragCoord.xy - 0.5*uRes)/min(uRes.x,uRes.y)*2.0;
-  vec2 s1 = vec2(0.16,-1.05), s2 = vec2(0.78,-1.05);
-  float r1 = length(p-s1), r2 = length(p-s2);
-  float a1 = 1.0/sqrt(0.45+r1*1.5), a2 = 1.0/sqrt(0.45+r2*1.5);
-  float ph1 = 27.0*r1 - 0.55*uT;
-  float ph2 = 28.2*r2 - 0.62*uT;
-  vec2 F = a1*vec2(cos(ph1),sin(ph1)) + a2*vec2(cos(ph2),sin(ph2));
-  float I = dot(F,F)*0.70;
-  float x = I/(1.0+I);
-  vec3 col = mix(uB, uA, smoothstep(0.04,0.78,x));
-  col = mix(col, vec3(1.0), pow(x,6.0)*0.30);
-  gl_FragColor = vec4(col, 1.0);
+  /* pulled back: the page is a tall panel, so more of the field fits */
+  vec2 p = (gl_FragCoord.xy - 0.5*uRes)/min(uRes.x,uRes.y)*3.4;
+  float e = 0.006;
+  float h  = height(p);
+  float hx = height(p+vec2(e,0.0)) - h;
+  float hy = height(p+vec2(0.0,e)) - h;
+  vec3 n = normalize(vec3(-hx*30.0, -hy*30.0, e*30.0));
+  vec3 L = normalize(vec3(-0.40, 0.55, 0.62));
+  float diff = max(dot(n,L), 0.0);
+  float spec = pow(max(dot(reflect(-L,n), vec3(0.0,0.0,1.0)), 0.0), 90.0);
+  float fres = pow(1.0-n.z, 2.4);
+
+  vec3 col = mix(rampI(0.02), rampI(0.40), clamp(fres*1.7, 0.0, 1.0));
+  col += rampI(0.60)*diff*0.06;
+  col += rampI(1.00)*spec*0.85;
+  col += rampI(clamp(h*h*6.5, 0.0, 1.0))*0.24;
+  gl_FragColor = vec4(max(col,0.0), 1.0);
 }`;
 
-/** Resolve a CSS custom property to linear-ish rgb by letting canvas parse it. */
+/** Resolve a CSS custom property to rgb by letting a canvas parse it. */
 function readToken(el: HTMLElement, name: string, fallback: [number, number, number]) {
   const value = getComputedStyle(el).getPropertyValue(name).trim();
   if (!value) return fallback;
@@ -55,6 +102,8 @@ function readToken(el: HTMLElement, name: string, fallback: [number, number, num
   const d = ctx.getImageData(0, 0, 1, 1).data;
   return [d[0] / 255, d[1] / 255, d[2] / 255] as [number, number, number];
 }
+
+const SPEED = 0.16; // one pair of drops roughly every 37 seconds
 
 export function InterferenceField({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement | null>(null);
@@ -109,13 +158,13 @@ export function InterferenceField({ className = "" }: { className?: string }) {
 
     const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     let raf = 0;
-    let t = 0;
+    let t = 1.4; // start mid-ripple rather than on flat water
     let last = performance.now();
 
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!still) t += dt;
+      if (!still) t = (t + dt * SPEED) % 6.0; // the field's own loop period
 
       const r = canvas.getBoundingClientRect();
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);

@@ -22,37 +22,39 @@
   "use strict";
   /*
     One field, full bleed, driven by the query string:
-      v=<slug>     which field (default two-slits)
-      pal=0..3     palette index
-      speed=0..2   time multiplier (0 freezes it)
-      grain=0|1    film grain
-      label=0      hide the corner caption
+      v=<slug>       which field (default two-slits)
+      pal=0..4       palette index; 4 means the custom colour below
+      hex=%23rrggbb  the custom colour, when pal=4
+      speed=0..2     time multiplier (0 freezes it)
+      grain=0|1      film grain
+      label=0        hide the corner caption
+    Every field loops exactly, so an embed left running never drifts or seams.
   */
   var q = new URLSearchParams(location.search);
   var variant = FIELD.bySlug(q.get("v") || "") || FIELD.bySlug("two-slits");
-  var state = { pal: Math.max(0, Math.min(3, parseInt(q.get("pal") || "0", 10) || 0)),
-                grain: q.get("grain") !== "0" };
+  var pal = Math.max(0, Math.min(4, parseInt(q.get("pal") || "0", 10) || 0));
+  var stops = pal === 4 ? (FIELD.rampFromHex(q.get("hex") || "#4aa3df") || FIELD.PALETTES[0].stops)
+                        : FIELD.PALETTES[pal].stops;
   var speed = q.has("speed") ? Math.max(0, Math.min(2, parseFloat(q.get("speed")))) : 0.7;
   if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) speed = 0;
 
   var label = document.getElementById("label");
-  if (q.get("label") === "0") { label.remove(); }
-  else { label.textContent = variant.title + " — Futures Atlas"; }
+  if (q.get("label") === "0") label.remove();
+  else label.textContent = variant.title + ", Futures Atlas";
 
   var canvas = document.getElementById("c");
-  var unit = FIELD.createUnit(canvas, variant, state);
-  if (!unit) { document.body.innerHTML = ""; }
+  var unit = FIELD.createUnit(canvas, variant, {
+    speed: speed, pal: pal, stops: stops, grain: q.get("grain") !== "0"
+  });
 
-  var t = 0, last = performance.now();
+  var last = performance.now();
   function frame(now) {
     var dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    t += dt * speed;
-    if (unit) {
-      var r = canvas.getBoundingClientRect();
-      var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-      unit.draw(t, Math.max(2, Math.round(r.width * dpr)), Math.max(2, Math.round(r.height * dpr)));
-    }
+    unit.tick(dt);
+    var r = canvas.getBoundingClientRect();
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    unit.paint(Math.max(2, Math.round(r.width * dpr)), Math.max(2, Math.round(r.height * dpr)));
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);

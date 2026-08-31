@@ -5,11 +5,11 @@
 <base href="/interference/">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Interference. Futures Atlas</title>
-<meta name="description" content="Eleven live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one is a single shader you can slow down, re-colour, record and embed.">
+<meta name="description" content="Fifteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one loops seamlessly, re-colours to any palette, and can be saved as a still or a clip.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Futures Atlas">
 <meta property="og:title" content="Interference">
-<meta property="og:description" content="Eleven live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
+<meta property="og:description" content="Fifteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
 <meta property="og:image" content="/projects/interference.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="/projects/interference.jpg">
@@ -17,7 +17,7 @@
 <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700;900&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Saira+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=Saira+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
 <link rel="stylesheet" href="/api/theme.css">
@@ -27,28 +27,30 @@
 <div class="wrap">
   <header class="masthead">
     <div class="eyebrow">Wave optics, running live</div>
-    <h1>Interference <em>studies</em></h1>
-    <p class="lede">Eleven fields, each a different way of adding waves together, from two drips in a sink to the moment a fringe pattern stops existing. Every one is a single fragment shader over the pixels, computed fresh each frame, so nothing here is a video. Slow them down, re-colour them, open one full width, take a still or record a clip, or embed any of them somewhere else.</p>
+    <h1>Interference</h1>
+    <p class="lede">Fifteen fields, each a different way of adding waves together, from two drips in a sink to the moment a fringe pattern stops existing. Every one is a fragment shader computed fresh each frame, and every one is an exact loop: the last frame runs into the first. Drive them all from the bar below, or take any single field and set its own speed, palette and position on the timeline.</p>
   </header>
 </div>
 
 <div class="bar">
   <div class="bar__inner">
-    <div class="grp">
-      <button class="btn" id="play" aria-pressed="true">Pause</button>
-    </div>
+    <span class="lab lab--head">All fields</span>
+    <div class="grp"><button class="btn" id="play" aria-pressed="true">Pause</button></div>
     <div class="grp">
       <span class="lab">Speed</span>
-      <input id="speed" type="range" min="0.05" max="1.8" step="0.01" value="0.7" aria-label="Speed">
+      <input id="speed" type="range" min="0.05" max="2" step="0.01" value="0.7" aria-label="Speed, all fields">
       <span class="lab" id="speedVal">0.70&times;</span>
     </div>
     <div class="grp">
       <span class="lab">Palette</span>
       <div class="swatches" id="pals"></div>
+      <label class="swatches" title="Your own colour">
+        <input type="color" id="custom" value="#4aa3df" aria-label="Custom colour">
+      </label>
+      <input type="text" id="customHex" class="hexin" value="#4aa3df" spellcheck="false" aria-label="Custom colour, hex code">
     </div>
     <div class="grp">
       <button class="btn is-on" id="grain" aria-pressed="true">Grain</button>
-      <button class="btn" id="stills">Stills 2400px</button>
     </div>
   </div>
 </div>
@@ -57,7 +59,8 @@
   <main class="grid" id="grid"></main>
 
   <section class="colophon">
-    <p>Colour is doing work here, not decoration. Where a field shows intensity, the darkest tone is zero and the lightest is the maximum for that field. Where it shows phase, hue runs once around the cycle and brightness falls to nothing wherever the phase has no single value, which is why the vortex cores read as black pinpricks rather than as gaps in the drawing.</p>
+    <p>Colour is doing work here, not decoration. Where a field shows intensity, the darkest stop of the palette is zero and the lightest is the maximum for that field. Where it shows phase, the palette runs once round as a closed cycle and brightness falls to nothing wherever the phase has no single value, which is why the vortex cores read as black pinpricks rather than as gaps in the drawing.</p>
+    <p>Every field except <em>One at a time</em> is periodic, and the number beside its title is that period at normal speed. Recording a clip records exactly one period, so the file loops without a cut. The accumulating field has no period, only a history, so it records a fixed ten seconds instead.</p>
     <p>Physics is simulated, not measured: these are the standard textbook fields evaluated per pixel, tuned for legibility rather than for a particular apparatus. Wavelengths and source spacings are chosen so the structure reads at this size. Where a panel names a real experiment, the experiment is real and the picture is an illustration of it.</p>
   </section>
 </div>
@@ -72,24 +75,30 @@
 
   var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  var state = { pal: 0, grain: true };
-  var speed = 0.7;
-  var playing = !reduced;
-  var hiRes = false;           // 2400px stills instead of screen-size ones
-  var t = 0, last = performance.now();
+  var globalSpeed = 0.7;
+  var globalPlaying = !reduced;
+  var globalGrain = true;
+  var globalPal = 0;
+  var customStops = FIELD.rampFromHex("#4aa3df");
   var units = [];
+  var last = performance.now();
 
-  // remembered between visits: palette, speed, grain
   try {
     var saved = JSON.parse(localStorage.getItem("fa-interference") || "{}");
-    if (typeof saved.pal === "number") state.pal = saved.pal;
-    if (typeof saved.speed === "number") speed = saved.speed;
-    if (typeof saved.grain === "boolean") state.grain = saved.grain;
+    if (typeof saved.pal === "number") globalPal = saved.pal;
+    if (typeof saved.speed === "number") globalSpeed = saved.speed;
+    if (typeof saved.grain === "boolean") globalGrain = saved.grain;
+    if (typeof saved.hex === "string" && FIELD.rampFromHex(saved.hex)) customStops = FIELD.rampFromHex(saved.hex);
   } catch (e) {}
+
+  function stopsFor(i) { return i === 4 ? customStops : FIELD.PALETTES[i].stops; }
 
   function remember() {
     try {
-      localStorage.setItem("fa-interference", JSON.stringify({ pal: state.pal, speed: speed, grain: state.grain }));
+      localStorage.setItem("fa-interference", JSON.stringify({
+        pal: globalPal, speed: globalSpeed, grain: globalGrain,
+        hex: document.getElementById("customHex").value
+      }));
     } catch (e) {}
   }
 
@@ -98,10 +107,21 @@
     toastEl.textContent = msg;
     toastEl.classList.add("is-up");
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(function () { toastEl.classList.remove("is-up"); }, 1900);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("is-up"); }, 2200);
   }
 
-  /* ---------------------------------------------------------------- cards */
+  function palOptions(sel) {
+    FIELD.PALETTES.forEach(function (p, i) {
+      var o = document.createElement("option");
+      o.value = String(i); o.textContent = p.name;
+      sel.appendChild(o);
+    });
+    var o = document.createElement("option");
+    o.value = "4"; o.textContent = "Your colour";
+    sel.appendChild(o);
+  }
+
+  /* ------------------------------------------------------------------ cards */
 
   var grid = document.getElementById("grid");
 
@@ -111,55 +131,138 @@
     card.innerHTML =
       '<div class="stage"><canvas></canvas><span class="idx">' + (i < 9 ? "0" : "") + (i + 1) + '</span></div>' +
       '<div class="meta">' +
-        '<div class="meta__top"><span class="name">' + v.title + '</span></div>' +
+        '<div class="meta__top">' +
+          '<span class="name">' + v.title + '</span>' +
+          '<span class="loop">' + (v.loop ? v.loop.toFixed(1) + "s loop" : "no loop") + '</span>' +
+        '</div>' +
         '<p class="note">' + v.note + '</p>' +
-        '<div class="tools">' +
+        '<div class="ctl ctl--transport">' +
+          '<button class="btn btn--play" data-act="play">Pause</button>' +
+          '<input class="scrub" type="range" min="0" max="1000" value="0" aria-label="Timeline">' +
+          '<span class="lab time">0.0s</span>' +
+        '</div>' +
+        '<div class="ctl">' +
+          '<span class="lab">Speed</span>' +
+          '<input class="spd" type="range" min="0.05" max="2" step="0.01" aria-label="Speed">' +
+          '<select class="sel pal" aria-label="Palette"></select>' +
+          '<div class="dl">' +
+            '<button class="btn btn--dl" data-act="dl" aria-expanded="false">Download &#9662;</button>' +
+            '<div class="dl__menu" hidden>' +
+              '<button data-act="png">PNG, screen size</button>' +
+              '<button data-act="png2400">PNG, 2400px wide</button>' +
+              '<button data-act="jpg">JPG</button>' +
+              '<button data-act="rec">Video, one loop</button>' +
+              '<button data-act="embed">Copy embed code</button>' +
+              '<a href="embed.html?v=' + v.slug + '" target="_blank" rel="noopener">Open on its own &#8599;</a>' +
+            '</div>' +
+          '</div>' +
           '<button class="btn" data-act="read">Read more</button>' +
           '<button class="btn" data-act="wide">Widen</button>' +
-          '<button class="btn" data-act="png">PNG</button>' +
-          '<button class="btn" data-act="jpg">JPG</button>' +
-          '<button class="btn" data-act="rec">Record</button>' +
-          '<button class="btn" data-act="embed">Copy embed</button>' +
-          '<a class="btn" data-act="open" href="embed.html?v=' + v.slug + '" target="_blank" rel="noopener">Open alone</a>' +
         '</div>' +
         '<div class="read">' + v.read.map(function (p) { return "<p>" + p + "</p>"; }).join("") + '</div>' +
       '</div>';
     grid.appendChild(card);
 
     var canvas = card.querySelector("canvas");
-    var unit = FIELD.createUnit(canvas, v, state);
-    if (!unit) { canvas.parentNode.innerHTML = '<p class="note" style="padding:20px">This browser could not start WebGL for this field.</p>'; return; }
+    var unit = FIELD.createUnit(canvas, v, {
+      speed: globalSpeed, playing: globalPlaying, grain: globalGrain,
+      pal: globalPal, stops: stopsFor(globalPal)
+    });
     unit.card = card;
+    unit.t = v.loop ? (i * 0.37) % v.loop : 0;   // start each field somewhere different
     units.push(unit);
+
+    var scrub = card.querySelector(".scrub");
+    var timeEl = card.querySelector(".time");
+    var spd = card.querySelector(".spd");
+    var sel = card.querySelector(".pal");
+    var playBtn = card.querySelector(".btn--play");
+
+    palOptions(sel);
+    sel.value = String(globalPal);
+    spd.value = String(globalSpeed);
+    if (!v.loop) { scrub.disabled = true; }
+
+    unit.refresh = function () {
+      playBtn.textContent = unit.playing ? "Pause" : "Play";
+      spd.value = String(unit.speed);
+      sel.value = String(unit.pal);
+    };
+    unit.syncScrub = function () {
+      if (unit.dragging) return;
+      if (v.loop) scrub.value = String(Math.round((unit.t / v.loop) * 1000));
+      timeEl.textContent = v.loop ? unit.t.toFixed(1) + "s" : "running";
+    };
+    unit.refresh();
 
     card.querySelector(".stage").addEventListener("click", function () { card.classList.toggle("is-wide"); });
 
-    card.querySelector(".tools").addEventListener("click", function (e) {
+    scrub.addEventListener("pointerdown", function () { unit.dragging = true; });
+    window.addEventListener("pointerup", function () { unit.dragging = false; });
+    scrub.addEventListener("input", function () {
+      if (!v.loop) return;
+      unit.t = (parseFloat(scrub.value) / 1000) * v.loop;
+      timeEl.textContent = unit.t.toFixed(1) + "s";
+      unit.paint(canvas.width, canvas.height);
+    });
+
+    spd.addEventListener("input", function () { unit.speed = parseFloat(spd.value); });
+    sel.addEventListener("change", function () {
+      var i2 = parseInt(sel.value, 10);
+      unit.setPalette(i2, stopsFor(i2));
+    });
+
+    var menu = card.querySelector(".dl__menu");
+    var dlBtn = card.querySelector(".btn--dl");
+
+    card.querySelector(".meta").addEventListener("click", function (e) {
       var btn = e.target.closest("[data-act]");
       if (!btn) return;
       var act = btn.getAttribute("data-act");
-      if (act === "read") {
+      if (act === "play") {
+        unit.playing = !unit.playing;
+        unit.refresh();
+      } else if (act === "read") {
         card.classList.toggle("is-open");
         btn.textContent = card.classList.contains("is-open") ? "Close" : "Read more";
         btn.classList.toggle("is-on", card.classList.contains("is-open"));
       } else if (act === "wide") {
         card.classList.toggle("is-wide");
-      } else if (act === "png" || act === "jpg") {
+      } else if (act === "dl") {
+        var open = menu.hasAttribute("hidden");
+        closeMenus();
+        if (open) { menu.removeAttribute("hidden"); dlBtn.setAttribute("aria-expanded", "true"); }
+      } else if (act === "png" || act === "jpg" || act === "png2400") {
+        closeMenus();
         still(unit, act);
       } else if (act === "rec") {
-        record(unit, btn);
+        closeMenus();
+        record(unit, dlBtn);
       } else if (act === "embed") {
-        copyEmbed(v);
+        closeMenus();
+        copyEmbed(unit);
       }
     });
 
     if (window.IntersectionObserver) {
-      new IntersectionObserver(function (es) { unit.visible = es[0].isIntersecting; }, { rootMargin: "160px" })
+      new IntersectionObserver(function (es) { unit.visible = es[0].isIntersecting; }, { rootMargin: "200px" })
         .observe(card);
     }
   });
 
-  /* ------------------------------------------------------------- the loop */
+  function closeMenus() {
+    Array.prototype.forEach.call(document.querySelectorAll(".dl__menu"), function (m) {
+      m.setAttribute("hidden", "");
+    });
+    Array.prototype.forEach.call(document.querySelectorAll(".btn--dl"), function (b) {
+      b.setAttribute("aria-expanded", "false");
+    });
+  }
+  document.addEventListener("click", function (e) {
+    if (!e.target.closest(".dl")) closeMenus();
+  });
+
+  /* ------------------------------------------------------------------- loop */
 
   function sizeFor(unit) {
     var r = unit.canvas.getBoundingClientRect();
@@ -170,18 +273,19 @@
   function frame(now) {
     var dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (playing) t += dt * speed;
     for (var i = 0; i < units.length; i++) {
       var u = units[i];
       if (!u.visible) continue;
+      u.tick(dt);
       var s = sizeFor(u);
-      u.draw(t, s[0], s[1]);
+      u.paint(s[0], s[1]);
+      u.syncScrub();
     }
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 
-  /* --------------------------------------------------------------- export */
+  /* ----------------------------------------------------------------- export */
 
   function download(url, name) {
     var a = document.createElement("a");
@@ -189,25 +293,23 @@
     document.body.appendChild(a); a.click(); a.remove();
   }
 
-  // Grabbed inside the same task as the draw, so the drawing buffer is still
-  // intact without asking WebGL to preserve it on every frame.
+  // Grabbed in the same task as the paint, so the pixels are still there.
   function still(unit, kind) {
     var s = sizeFor(unit);
-    if (hiRes && unit.kind === "gl") {
-      var w = 2400, h = Math.round(2400 * s[1] / s[0]);
-      unit.draw(t, w, h);
+    if (kind === "png2400" && unit.variant.kind !== "2d") {
+      unit.paint(2400, Math.round(2400 * s[1] / s[0]));
     } else {
-      unit.draw(t, s[0], s[1]);
+      unit.paint(s[0], s[1]);
     }
-    var url = kind === "jpg"
-      ? unit.canvas.toDataURL("image/jpeg", 0.92)
-      : unit.canvas.toDataURL("image/png");
-    download(url, "interference-" + unit.variant.slug + "." + kind);
-    toast(kind.toUpperCase() + " saved");
+    var jpg = kind === "jpg";
+    var url = jpg ? unit.canvas.toDataURL("image/jpeg", 0.92) : unit.canvas.toDataURL("image/png");
+    download(url, "interference-" + unit.variant.slug + (jpg ? ".jpg" : ".png"));
+    toast(jpg ? "JPG saved" : "PNG saved");
   }
 
   // MediaRecorder writes MP4 where the browser can (Chrome 130+), WebM
-  // otherwise. The file is named for whatever it actually produced.
+  // otherwise, and the file is named for whatever it actually produced. The
+  // clip runs exactly one loop, so it cuts back to its own first frame.
   var RECORD_TYPES = [
     ["video/mp4;codecs=avc1.42E01E", "mp4"],
     ["video/mp4", "mp4"],
@@ -217,108 +319,135 @@
 
   function record(unit, btn) {
     if (unit.rec) { unit.rec.stop(); return; }
-    if (!window.MediaRecorder || !unit.canvas.captureStream) { toast("Recording not supported here"); return; }
-
+    if (!window.MediaRecorder || !unit.canvas.captureStream) { toast("Recording is not supported in this browser"); return; }
     var pick = null;
     for (var i = 0; i < RECORD_TYPES.length; i++) {
       if (MediaRecorder.isTypeSupported(RECORD_TYPES[i][0])) { pick = RECORD_TYPES[i]; break; }
     }
-    if (!pick) { toast("Recording not supported here"); return; }
+    if (!pick) { toast("Recording is not supported in this browser"); return; }
+
+    var period = unit.variant.loop ? unit.variant.loop / Math.max(0.05, unit.speed) : 10;
+    period = Math.min(period, 40);
 
     var stream = unit.canvas.captureStream(30);
     var rec = new MediaRecorder(stream, { mimeType: pick[0], videoBitsPerSecond: 12000000 });
     var chunks = [];
     var started = performance.now();
+    var wasPlaying = unit.playing;
+    unit.playing = true;
+    unit.refresh();
 
     rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
     rec.onstop = function () {
       clearInterval(unit.recTick);
       unit.rec = null;
-      btn.textContent = "Record";
+      unit.playing = wasPlaying;
+      unit.refresh();
       btn.classList.remove("is-rec");
+      btn.innerHTML = "Download &#9662;";
       var blob = new Blob(chunks, { type: pick[0] });
       var url = URL.createObjectURL(blob);
       download(url, "interference-" + unit.variant.slug + "." + pick[1]);
       setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-      toast(pick[1].toUpperCase() + " saved");
+      toast("One loop saved as " + pick[1].toUpperCase());
     };
 
     rec.start();
     unit.rec = rec;
     btn.classList.add("is-rec");
     unit.recTick = setInterval(function () {
-      var secs = (performance.now() - started) / 1000;
-      btn.textContent = "Stop " + secs.toFixed(0) + "s";
-      if (secs > 30) rec.stop();
-    }, 250);
-    toast("Recording, click again to stop");
+      var left = period - (performance.now() - started) / 1000;
+      btn.textContent = "Recording " + Math.max(0, left).toFixed(0) + "s";
+      if (left <= 0) rec.stop();
+    }, 200);
+    toast("Recording one loop, " + period.toFixed(0) + "s");
   }
 
-  function copyEmbed(v) {
-    var src = location.origin + "/interference/embed.html?v=" + v.slug +
-      "&pal=" + state.pal + "&speed=" + speed.toFixed(2);
+  function copyEmbed(unit) {
+    var hex = document.getElementById("customHex").value;
+    var src = location.origin + "/interference/embed.html?v=" + unit.variant.slug +
+      "&pal=" + unit.pal + "&speed=" + unit.speed.toFixed(2) +
+      (unit.pal === 4 ? "&hex=" + encodeURIComponent(hex) : "");
     var code = '<iframe src="' + src + '" width="960" height="600" ' +
       'style="border:0;width:100%;aspect-ratio:16/10" loading="lazy" ' +
-      'title="' + v.title + ', Futures Atlas"></iframe>';
+      'title="' + unit.variant.title + ', Futures Atlas"></iframe>';
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(code).then(function () { toast("Embed code copied"); },
+      navigator.clipboard.writeText(code).then(
+        function () { toast("Embed code copied"); },
         function () { window.prompt("Copy the embed code", code); });
     } else {
       window.prompt("Copy the embed code", code);
     }
   }
 
-  /* ------------------------------------------------------------- controls */
+  /* --------------------------------------------------------- global controls */
 
   var playBtn = document.getElementById("play");
-  playBtn.textContent = playing ? "Pause" : "Play";
+  playBtn.textContent = globalPlaying ? "Pause" : "Play";
   playBtn.addEventListener("click", function () {
-    playing = !playing;
-    playBtn.textContent = playing ? "Pause" : "Play";
-    playBtn.setAttribute("aria-pressed", String(playing));
+    globalPlaying = !globalPlaying;
+    playBtn.textContent = globalPlaying ? "Pause" : "Play";
+    playBtn.setAttribute("aria-pressed", String(globalPlaying));
+    units.forEach(function (u) { u.playing = globalPlaying; u.refresh(); });
   });
 
   var speedEl = document.getElementById("speed"), speedVal = document.getElementById("speedVal");
-  speedEl.value = String(speed);
-  speedVal.textContent = speed.toFixed(2) + "×";
+  speedEl.value = String(globalSpeed);
+  speedVal.textContent = globalSpeed.toFixed(2) + "×";
   speedEl.addEventListener("input", function () {
-    speed = parseFloat(speedEl.value);
-    speedVal.textContent = speed.toFixed(2) + "×";
+    globalSpeed = parseFloat(speedEl.value);
+    speedVal.textContent = globalSpeed.toFixed(2) + "×";
+    units.forEach(function (u) { u.speed = globalSpeed; u.refresh(); });
     remember();
   });
 
   var pals = document.getElementById("pals");
+  function applyPalette(i) {
+    globalPal = i;
+    units.forEach(function (u) { u.setPalette(i, stopsFor(i)); u.refresh(); });
+    Array.prototype.forEach.call(pals.children, function (c, j) { c.classList.toggle("is-on", j === i); });
+    remember();
+  }
   FIELD.PALETTES.forEach(function (p, i) {
     var b = document.createElement("button");
-    b.className = "sw" + (i === state.pal ? " is-on" : "");
+    b.className = "sw" + (i === globalPal ? " is-on" : "");
     b.type = "button";
     b.title = p.name;
     b.setAttribute("aria-label", "Palette: " + p.name);
-    b.style.background = "linear-gradient(120deg," + p.ground + " 0%," + p.dot + " 62%," + p.hot + " 100%)";
-    b.addEventListener("click", function () {
-      state.pal = i;
-      Array.prototype.forEach.call(pals.children, function (c, j) { c.classList.toggle("is-on", j === i); });
-      remember();
-    });
+    b.style.background = "linear-gradient(120deg," + FIELD.rgbToCss(p.stops[0]) + " 0%," +
+      FIELD.rgbToCss(p.stops[2]) + " 55%," + FIELD.rgbToCss(p.stops[4]) + " 100%)";
+    b.addEventListener("click", function () { applyPalette(i); });
     pals.appendChild(b);
   });
 
+  var colorEl = document.getElementById("custom");
+  var hexEl = document.getElementById("customHex");
+  function applyCustom(hex) {
+    var stops = FIELD.rampFromHex(hex);
+    if (!stops) return false;
+    customStops = stops;
+    colorEl.value = hex;
+    hexEl.value = hex;
+    applyPalette(4);
+    Array.prototype.forEach.call(pals.children, function (c) { c.classList.remove("is-on"); });
+    return true;
+  }
+  colorEl.addEventListener("input", function () { applyCustom(colorEl.value); });
+  hexEl.addEventListener("change", function () {
+    if (!applyCustom(hexEl.value.trim())) toast("That is not a hex colour");
+  });
+
   var grainBtn = document.getElementById("grain");
-  grainBtn.classList.toggle("is-on", state.grain);
+  grainBtn.classList.toggle("is-on", globalGrain);
   grainBtn.addEventListener("click", function () {
-    state.grain = !state.grain;
-    grainBtn.classList.toggle("is-on", state.grain);
-    grainBtn.setAttribute("aria-pressed", String(state.grain));
+    globalGrain = !globalGrain;
+    grainBtn.classList.toggle("is-on", globalGrain);
+    grainBtn.setAttribute("aria-pressed", String(globalGrain));
+    units.forEach(function (u) { u.grain = globalGrain; });
     remember();
   });
 
-  var stillsBtn = document.getElementById("stills");
-  stillsBtn.addEventListener("click", function () {
-    hiRes = !hiRes;
-    stillsBtn.classList.toggle("is-on", hiRes);
-    stillsBtn.textContent = hiRes ? "Stills 2400px" : "Stills screen size";
-  });
-  stillsBtn.textContent = "Stills screen size";
+  if (globalPal === 4) { applyCustom(hexEl.value); }
 
   window.addEventListener("keydown", function (e) {
     if (e.code === "Space" && e.target === document.body) { e.preventDefault(); playBtn.click(); }
