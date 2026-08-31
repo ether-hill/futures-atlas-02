@@ -5,7 +5,7 @@ import { useState } from "react";
 import { contactProjects } from "@/data/projects";
 
 const fieldCls =
-  "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 font-mono text-[13px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent";
+  "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 text-[13px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent";
 const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graphite";
 
 /**
@@ -30,7 +30,7 @@ export function ContactForm({
         <h2 className="text-[clamp(22px,2.6vw,32px)] font-extrabold leading-tight text-ink">
           Thanks, your message is in.
         </h2>
-        <p className="max-w-[46ch] font-mono text-[13px] leading-[1.7] text-ink-70">
+        <p className="max-w-[46ch] text-[13px] leading-[1.7] text-ink-70">
           We read everything that comes in and reply when we can. If you pitched
           a project or a collaboration, expect a slower, more considered answer.
         </p>
@@ -56,7 +56,7 @@ export function ContactForm({
         <p className="text-[clamp(20px,2.4vw,28px)] font-extrabold leading-tight text-ink">
           Send a message
         </p>
-        <p className="mt-2 font-mono text-[12px] leading-[1.6] text-graphite">
+        <p className="mt-2 text-[12px] leading-[1.6] text-graphite">
           Fill in the form and we&rsquo;ll get back to you.
         </p>
       </div>

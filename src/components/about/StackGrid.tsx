@@ -82,11 +82,11 @@ export function StackGrid() {
             </div>
             {openTool && (
               <div className="mt-3 border border-ink/15 bg-surface p-5">
-                <p className="max-w-[70ch] font-mono text-[13px] leading-[1.7] text-ink-70">
+                <p className="max-w-[70ch] text-[13px] leading-[1.7] text-ink-70">
                   <span className="text-ink">{openTool.name}.</span> {openTool.role}
                 </p>
                 {openTool.usedIn && openTool.usedIn.length > 0 && (
-                  <p className="mt-3 font-mono text-[12px] leading-[1.8] text-ink/55">
+                  <p className="mt-3 text-[12px] leading-[1.8] text-ink/55">
                     Used in:{" "}
                     {openTool.usedIn.map((p, i) => (
                       <span key={p.slug}>

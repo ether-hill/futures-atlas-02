@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Logo Animator</title>
+<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600&display=swap">
@@ -501,8 +502,8 @@
     </div>
     <div class="topctl">
       <div class="seg" role="group" aria-label="View">
-        <button type="button" class="mini" data-view="bench" aria-pressed="true">Bench</button>
-        <button type="button" class="mini" data-view="sheet" aria-pressed="false">All motions</button>
+        <button type="button" class="mini" data-view="sheet" aria-pressed="true">All motions</button>
+        <button type="button" class="mini" data-view="bench" aria-pressed="false">Bench</button>
       </div>
       <div class="seg" role="group" aria-label="Theme">
         <button type="button" class="mini" data-theme-set="light">Light</button>
@@ -1752,10 +1753,10 @@
 
   PRESETS[1].apply();
   syncUI();
-  var savedTheme = "system", savedView = "bench";
+  var savedTheme = "system", savedView = "sheet";
   try {
     savedTheme = localStorage.getItem("fa-anim-theme") || "system";
-    savedView = localStorage.getItem("fa-anim-view") || "bench";
+    savedView = localStorage.getItem("fa-anim-view") || "sheet";
   } catch (err) { /* private window */ }
   setTheme(savedTheme);
   setView(savedView);
@@ -1763,5 +1764,6 @@
 })();
 </script>
 
+<script src="/atlas-nav.js" defer></script>
 </body>
 </html>

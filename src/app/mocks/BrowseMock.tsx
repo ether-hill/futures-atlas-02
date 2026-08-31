@@ -252,6 +252,11 @@ export function BrowseMock({ T, hero }: { T: MockTheme; hero: HeroSpec }) {
   return (
     <div style={{ background: T.bg, color: T.text, overflowX: "hidden", minHeight: "100vh", fontFamily: T.bodyFont }}>
       <style>{`
+        /* the browse comps ship their own bar and footer, so the injected
+           atlas chrome steps aside for them (and the body's reserved nav
+           padding, the grey strip at the top, goes with it) */
+        .fa-shell,.fa-share,.fa-foot{display:none!important}
+        body{padding-top:0!important}
         .mock-card:hover{transform:translateY(-6px)}
         .mock-paddle:hover,.mock-chip:hover{border-color:${T.accent}!important;color:${T.accentBright}!important}
         .mock-hov:hover{background:${tx(0.08)}}

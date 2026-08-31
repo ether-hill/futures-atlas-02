@@ -99,7 +99,7 @@ export function BenchCard({ seed = 0 }: { seed?: number }) {
                 prefers-reduced-motion by the global rule in globals.css. */}
             <div key={i} className="fa-bench-face mt-4">
               {s.mono ? (
-                <p className="border-l-2 border-accent/40 pl-4 font-mono text-[clamp(13px,1.15vw,15px)] leading-[1.7] text-ink">
+                <p className="border-l-2 border-accent/40 pl-4 text-[clamp(13px,1.15vw,15px)] leading-[1.7] text-ink">
                   {s.body}
                 </p>
               ) : (
@@ -108,7 +108,7 @@ export function BenchCard({ seed = 0 }: { seed?: number }) {
                 </p>
               )}
 
-              <p className="mt-4 font-mono text-[11px] leading-[1.6] text-ink/40">
+              <p className="mt-4 text-[11px] leading-[1.6] text-ink/40">
                 <span className="uppercase tracking-[0.12em]">Found in</span>{" "}
                 <span className="text-ink/60">{s.at}</span>
               </p>

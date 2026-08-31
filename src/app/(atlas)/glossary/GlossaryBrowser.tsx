@@ -277,7 +277,7 @@ function Entry({ entry }: { entry: GlossaryEntry }) {
           </span>
         </a>
         {entry.aka && entry.aka.length > 0 && (
-          <span className="mt-1 block font-mono text-[11px] leading-[1.5] text-faint">
+          <span className="mt-1 block text-[11px] leading-[1.5] text-faint">
             {entry.aka.join(" · ")}
           </span>
         )}
@@ -297,7 +297,7 @@ function Entry({ entry }: { entry: GlossaryEntry }) {
           {entry.definition}
         </p>
         {entry.see && entry.see.length > 0 && (
-          <p className="mt-2.5 font-mono text-[11px] leading-[1.7] text-faint">
+          <p className="mt-2.5 text-[11px] leading-[1.7] text-faint">
             See also{" "}
             {entry.see.map((s, i) => (
               <span key={s}>

@@ -169,8 +169,10 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
   body {
     background: var(--color-surface);
     color: var(--color-ink-70);
-    /* body / labels / data are mono per the comp */
-    font-family: var(--font-mono), ui-monospace, monospace;
+    /* Sans is the reading face. Mono is for labels, data, code and paths, and
+       is asked for explicitly with `font-mono` — it used to be the default
+       here, which is how the whole site ended up set in it. */
+    font-family: var(--font-display), system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }

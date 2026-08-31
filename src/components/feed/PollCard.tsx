@@ -111,7 +111,7 @@ export function PollCard({ polls }: { polls: Poll[] }) {
           {poll.question}
         </h3>
         {poll.note && (
-          <p className="mt-2 font-mono text-[11.5px] leading-[1.55] text-graphite">{poll.note}</p>
+          <p className="mt-2 text-[11.5px] leading-[1.55] text-graphite">{poll.note}</p>
         )}
 
         <ul className="mt-4 flex flex-col gap-2">

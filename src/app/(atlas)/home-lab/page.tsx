@@ -43,7 +43,7 @@ export default function HomeLabIndex() {
         <h1 className="max-w-[16ch] text-[clamp(36px,5.4vw,80px)] font-extrabold leading-[0.96] tracking-[-0.025em] text-ink">
           Homepage lab
         </h1>
-        <p className="mt-6 max-w-[620px] font-mono text-[14px] leading-[1.8] text-ink-70">
+        <p className="mt-6 max-w-[620px] text-[14px] leading-[1.8] text-ink-70">
           Four alternative homepages, each with a different generative visual and a
           different theory of what the front page is for. Kick the tires; nothing
           here touches the real homepage.
@@ -62,7 +62,7 @@ export default function HomeLabIndex() {
               <h2 className="mt-3 text-[26px] font-extrabold tracking-[-0.02em] text-ink group-hover:text-accent-deep">
                 {x.name}
               </h2>
-              <p className="mt-3 font-mono text-[13px] leading-[1.7] text-ink-70">{x.idea}</p>
+              <p className="mt-3 text-[13px] leading-[1.7] text-ink-70">{x.idea}</p>
               <span className="mt-5 inline-block font-mono text-[11.5px] uppercase tracking-[0.12em] text-ink/60 group-hover:text-ink">
                 Open variant →
               </span>

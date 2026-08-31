@@ -1,27 +1,21 @@
 import type { Metadata } from "next";
 
 /**
- * /mocks, ports of the design_handoff_futures_atlas bundle, restyled onto
- * the CURRENT Futures Atlas system: Archivo (the site display face, loaded
- * by the root layout) + the site mono stack, no external fonts. The mock
- * ships its own chrome, so the injected atlas bar/share/footer are
- * suppressed, and the body's reserved nav padding (the "grey top bar") is
- * removed. Design exploration only: noindexed, unlinked from the site.
+ * /mocks — design experiments, restyled onto the current Futures Atlas system:
+ * Archivo (the site display face, loaded by the root layout) plus the site mono
+ * stack, no external fonts. Noindexed and unlinked from the site.
+ *
+ * The atlas bar and footer stay. They used to be suppressed for the whole
+ * directory, which was right for the browse comps — they ship their own chrome
+ * — and wrong for everything else here, so that suppression now lives in
+ * BrowseMock, next to the chrome it is making room for.
  */
 
 export const metadata: Metadata = {
-  title: "Browse mocks. Futures Atlas",
+  title: "Mocks. Futures Atlas",
   robots: { index: false },
 };
 
 export default function MocksLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <div>
-      <style>{`
-        .fa-shell,.fa-share,.fa-foot{display:none!important}
-        body{padding-top:0!important}
-      `}</style>
-      {children}
-    </div>
-  );
+  return <div>{children}</div>;
 }

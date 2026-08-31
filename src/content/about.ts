@@ -43,7 +43,7 @@ export const OUTPUT_TYPES: { type: OutputType; label: string; title: string; bod
  */
 export const WORK = {
   intro: "What we work on",
-  body: "Quantum computing and what the machines can demonstrably do, the applications claimed for them, where AI is actually heading, and the labs, companies and ministries narrating all of it. The gap between a demonstrated capability and a projected trajectory is where most decisions go wrong, so that gap is the subject.",
+  body: "Compute and the power it is reorganising: where AI is actually heading, what the energy and infrastructure behind it costs, what quantum machines can demonstrably do as against what is claimed for them, and the labs, companies and ministries narrating all of it. The gap between a demonstrated capability and a projected trajectory is where most decisions go wrong, so that gap is the subject.",
   note: "The terms this work keeps returning to. Size is emphasis, not a tally.",
   closing: "Across all of it: cite everything, substance over hype.",
 };

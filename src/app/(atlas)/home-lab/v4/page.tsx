@@ -65,7 +65,7 @@ export default function V4() {
             <h1 className="mx-auto max-w-[16ch] text-[clamp(40px,6.4vw,92px)] font-extrabold leading-[0.98] tracking-[-0.028em] !text-paper text-balance">
               Futures, in working form
             </h1>
-            <p className="mx-auto mt-6 max-w-[520px] font-mono text-[13.5px] leading-[1.8] text-paper/80">
+            <p className="mx-auto mt-6 max-w-[520px] text-[13.5px] leading-[1.8] text-paper/80">
               A library of playable foresight, simulations, instruments, and
               studies on quantum computing and emerging AI.
             </p>

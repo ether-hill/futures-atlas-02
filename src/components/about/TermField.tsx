@@ -28,7 +28,7 @@ import { TERMS, TERM_LINKS, type Term, type TermCluster } from "@/content/about"
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 /** Camera distance in sphere radii — smaller is a stronger perspective. */
 const FOV = 2.4;
-const SPIN = 0.00011; // radians per ms, a full turn takes ~95s
+const SPIN = 0.00006; // radians per ms, a full turn takes ~2m 55s
 
 const CLUSTER_ORDER: TermCluster[] = ["futures", "quantum", "ai", "society", "craft"];
 /** How far a family spreads from its anchor, in radians of arc. */
@@ -46,9 +46,9 @@ const MAX_NUDGE_Y = 34;
  * per node, capped, and heavily eased, so it reads as the words leaning in
  * rather than the camera swinging.
  */
-const ATTRACT_RADIUS = 340;
-const ATTRACT_PULL = 26; // px, at the centre of the falloff
-const ATTRACT_EASE = 0.055;
+const ATTRACT_RADIUS = 265;
+const ATTRACT_PULL = 34; // px, at the centre of the falloff
+const ATTRACT_EASE = 0.075;
 
 interface Node extends Term {
   x: number;

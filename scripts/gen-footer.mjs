@@ -70,7 +70,6 @@ const INTERNAL = [
   ["/style-guide", "Style guide"],
   ["/logo-animator", "Logo animator"],
   ["/mocks/instagram", "Instagram preview"],
-  ["/mocks/termfield", "Term field"],
   ["/mocks/gallery", "Browse mock · gallery"],
   ["/mocks/observatory", "Browse mock · observatory"],
   ["/mocks/signal", "Browse mock · signal"],
@@ -98,7 +97,7 @@ const link = (href, label, cls = "fa-foot__link") =>
   `<a class="${cls}" href="${esc(href)}">${esc(label)}</a>`;
 
 const html = `<div class="fa-foot__inner">
-<div class="fa-foot__grid">
+<div class="fa-foot__grid${INTERNAL_ONLY ? " fa-foot__grid--5" : ""}">
 <div class="fa-foot__col">
 <a class="fa-foot__home" href="/" aria-label="Futures Atlas home"><span class="fa-foot__mark" aria-hidden="true"><img src="/fa.svg" alt="" width="22" height="22"></span><span class="fa-foot__word">Futures Atlas</span></a>
 <p class="fa-foot__body">Building frameworks for foresight. Speculative-design projects, open-source tools, apps and prototypes exploring compute: quantum systems, AI, and the power structures driving them.</p>
@@ -107,7 +106,6 @@ const html = `<div class="fa-foot__inner">
 <div class="fa-foot__col">
 <p class="fa-foot__h">Sections</p>
 <nav class="fa-foot__list">${SECTIONS.map(([h, l]) => link(h, l)).join("")}</nav>
-<p class="fa-foot__meta">${GLOSSARY.length} terms in the glossary</p>
 </div>
 <div class="fa-foot__col">
 <p class="fa-foot__h">Projects</p>
@@ -131,9 +129,14 @@ const html = `<div class="fa-foot__inner">
   )
   .join("")}</nav>
 <p class="fa-foot__meta">${link("/feed", "The whole feed →", "fa-foot__a")}</p>
+</div>${INTERNAL_ONLY ? `
+<div class="fa-foot__col fa-foot__internal">
+<p class="fa-foot__h">Internal &middot; staging only</p>
+<nav class="fa-foot__list">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>
+<p class="fa-foot__meta">Not built on production.</p>
+</div>` : ""}
 </div>
-</div>
-<div class="fa-foot__split${INTERNAL_ONLY ? " fa-foot__split--3" : ""}">
+<div class="fa-foot__split">
 <div class="fa-foot__col">
 <p class="fa-foot__h">Use the work</p>
 <p class="fa-foot__body">Open where it counts. Fork a project, adapt it, wire it into your own work. Attribution appreciated, permission not required. Research is free to cite and every source is linked. Project code is MIT, the research is CC BY 4.0.</p>
@@ -143,12 +146,7 @@ const html = `<div class="fa-foot__inner">
 <p class="fa-foot__h">Get in touch</p>
 <p class="fa-foot__body">Used something from the Atlas in a workshop, a project or a classroom? We&rsquo;d like to hear how it went. Collaboration inquiries welcome.</p>
 <p class="fa-foot__body"><a class="fa-foot__a" href="/contact">Contact form &rarr;</a></p>
-</div>${INTERNAL_ONLY ? `
-<div class="fa-foot__col fa-foot__internal">
-<p class="fa-foot__h">Internal &middot; staging only</p>
-<nav class="fa-foot__list">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>
-<p class="fa-foot__meta">Not built on production. Editor sign-in required.</p>
-</div>` : ""}
+</div>
 </div>
 <div class="fa-foot__row">
 <span class="fa-foot__tag">&copy; ${now.getUTCFullYear()} Futures Atlas &middot; A living project. Things change, break and improve. Last updated ${updated}.</span>

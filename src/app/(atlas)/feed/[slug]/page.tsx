@@ -222,7 +222,7 @@ function SourceCard({ post }: { post: Post }) {
         href={post.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-2.5 block break-words font-mono text-[13px] leading-[1.5] text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+        className="mt-2.5 block break-words text-[13px] leading-[1.5] text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
       >
         {post.sourceName} — {hostOf(post.url)} <span aria-hidden>↗</span>
       </a>

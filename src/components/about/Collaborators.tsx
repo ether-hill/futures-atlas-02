@@ -60,7 +60,7 @@ export function Collaborators() {
     <div className="grid grid-cols-1 gap-x-[clamp(24px,5vw,80px)] gap-y-8 lg:grid-cols-[1fr_1.6fr]">
       <Reveal>
         <p className="eyebrow tick mb-5">{COLLAB.intro}</p>
-        <p className="max-w-[42ch] font-mono text-[13.5px] leading-[1.8] text-ink-70">{COLLAB.body}</p>
+        <p className="max-w-[42ch] text-[13.5px] leading-[1.8] text-ink-70">{COLLAB.body}</p>
       </Reveal>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {COLLAB.partners.map((p, i) => {
@@ -80,7 +80,7 @@ export function Collaborators() {
                 <span className="mt-1.5 block font-mono text-[11px] uppercase tracking-[0.14em] text-ink/45">
                   {p.org}
                 </span>
-                <span className="mt-3 block font-mono text-[13px] leading-[1.75] text-ink-70">{p.blurb}</span>
+                <span className="mt-3 block text-[13px] leading-[1.75] text-ink-70">{p.blurb}</span>
                 <span className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.12em] text-accent-deep">
                   Visit <span aria-hidden="true">↗</span>
                 </span>

@@ -3,15 +3,15 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Two drops into still water, very slowly.
+ * Rain: seven drops of different sizes, falling out of step.
  *
- * The same field as the first panel of the Interference project (/interference),
- * running at about a sixth of its normal speed: one pair of drops every half a
- * minute, so the page moves at the pace of something you notice rather than
- * something you watch. It carries no palette of its own. The ramp is built at
- * runtime from the live theme tokens (--bg and --accent) and rebuilt whenever
- * the theme class flips, so it re-skins with the rest of the site, live
- * /style-guide overrides included.
+ * The Rain field from the Interference project (/interference), slowed down.
+ * Seven drops instead of a matched pair, each with its own strength, wavelength
+ * and ring speed, so rings from a drop that landed a while ago are still
+ * crossing rings from one that just hit and no two crossings look alike. It
+ * carries no palette of its own: the ramp is built at runtime from the live
+ * theme tokens (--bg and --accent) and rebuilt whenever the theme flips, so it
+ * re-skins with the rest of the site, live /style-guide overrides included.
  *
  * Decorative, so it is aria-hidden, and it holds still under
  * prefers-reduced-motion.
@@ -26,9 +26,7 @@ uniform float uT;
 uniform vec3 uA;   /* accent */
 uniform vec3 uB;   /* page ground */
 
-const float TD = 6.0;    /* the drip cycle, and the exact loop */
-const float C  = 0.30;
-const float KD = 30.0;
+const float TR = 9.0;    /* the drip cycle, and the exact loop */
 
 /* the palette, as a ramp from the page's own two colours */
 vec3 rampI(float x){
@@ -43,25 +41,35 @@ vec3 rampI(float x){
   return col;
 }
 
-float dropWave(vec2 p, vec2 s, float tau){
+/* One falling drop's ring, as a wave packet expanding from where it landed.
+   The fade tapers the oldest generation to nothing before it leaves the stack,
+   which is what keeps a repeating drip exactly periodic. */
+float dropWave(vec2 p, vec2 s, float tau, float C, float KD, float win){
   if(tau <= 0.0) return 0.0;
   float r = length(p - s);
   float d = r - C*tau;
   float pack  = exp(-d*d*4.0);
-  /* fades in as well as out: a ring that appeared at full amplitude was a step
-     in an otherwise exact loop, and very slow motion makes a step obvious */
-  float birth = smoothstep(0.0, 0.60, tau);
-  float fade  = smoothstep(5.0*TD, 3.6*TD, tau)*birth;
-  float decay = exp(-tau*0.13)*exp(-r*0.50)/sqrt(0.30 + r*2.0);
+  float birth = smoothstep(0.0, 0.45, tau);
+  float fade  = smoothstep(win, win*0.72, tau)*birth;
+  float decay = exp(-tau*0.13)*exp(-r*0.62)/sqrt(0.30 + r*2.0);
   return sin(KD*d + 1.1)*pack*decay*fade;
 }
 
+/* Every drop is a different size: its own strength, wavelength and ring speed,
+   all fixed functions of its index, so the loop still repeats exactly. */
+float rnd(float i, float k){ return fract(sin(i*12.9898 + k*7.233)*43758.5453); }
+vec2  srcOf(float i){ return vec2(rnd(i,1.0)*2.7 - 1.35, rnd(i,2.0)*1.7 - 0.85); }
+float ampOf(float i){ return 0.55 + 0.70*rnd(i,3.0); }
+float kOf(float i){ return 22.0 + 14.0*rnd(i,4.0); }
+float cOf(float i){ return 0.24 + 0.12*rnd(i,5.0); }
+
 float height(vec2 p){
   float h = 0.0;
-  for(int i=0;i<2;i++){
-    vec2 s = mix(vec2(-0.55, 0.06), vec2(0.55,-0.06), float(i));
-    for(int n=0;n<5;n++){
-      h += dropWave(p, s, uT + float(n)*TD);
+  for(int j=0;j<7;j++){
+    float i = float(j);
+    float tau0 = mod(uT - TR*i/7.0 + TR, TR);
+    for(int n=0;n<2;n++){
+      h += ampOf(i)*dropWave(p, srcOf(i), tau0 + float(n)*TR, cOf(i), kOf(i), 2.0*TR);
     }
   }
   return h;
@@ -74,16 +82,18 @@ void main(){
   float h  = height(p);
   float hx = height(p+vec2(e,0.0)) - h;
   float hy = height(p+vec2(0.0,e)) - h;
-  vec3 n = normalize(vec3(-hx*30.0, -hy*30.0, e*30.0));
+  vec3 n = normalize(vec3(-hx*20.0, -hy*20.0, e*20.0));
   vec3 L = normalize(vec3(-0.40, 0.55, 0.62));
   float diff = max(dot(n,L), 0.0);
-  float spec = pow(max(dot(reflect(-L,n), vec3(0.0,0.0,1.0)), 0.0), 90.0);
+  /* No mirror highlight. On a surface this finely rippled the specular
+     condition is met along a band thinner than a pixel, so it samples as broken
+     white dashes that all lean towards the light: scratches, not glints. The
+     glancing-angle term carries the sheen instead. */
   float fres = pow(1.0-n.z, 2.4);
 
-  vec3 col = mix(rampI(0.02), rampI(0.40), clamp(fres*1.7, 0.0, 1.0));
-  col += rampI(0.60)*diff*0.06;
-  col += rampI(1.00)*spec*0.85;
-  col += rampI(clamp(h*h*6.5, 0.0, 1.0))*0.24;
+  vec3 col = mix(rampI(0.02), rampI(0.46), clamp(fres*1.9, 0.0, 1.0));
+  col += rampI(0.68)*diff*0.13;
+  col += rampI(clamp(h*h*6.5*0.75, 0.0, 1.0))*0.46;
   gl_FragColor = vec4(max(col,0.0), 1.0);
 }`;
 
@@ -106,7 +116,7 @@ function readToken(el: HTMLElement, name: string, fallback: [number, number, num
   return [d[0] / 255, d[1] / 255, d[2] / 255] as [number, number, number];
 }
 
-const SPEED = 0.16; // one pair of drops roughly every 37 seconds
+const SPEED = 0.34; // a drop every four seconds or so, well under the project's pace
 
 export function InterferenceField({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement | null>(null);

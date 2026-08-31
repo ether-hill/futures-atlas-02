@@ -26,7 +26,7 @@ export default function V2() {
             <h1 className="max-w-[14ch] text-[clamp(38px,6vw,88px)] font-extrabold leading-[0.96] tracking-[-0.028em] !text-paper text-balance">
               An observatory for possible worlds
             </h1>
-            <p className="mt-6 max-w-[480px] font-mono text-[13.5px] leading-[1.8] text-paper/70">
+            <p className="mt-6 max-w-[480px] text-[13.5px] leading-[1.8] text-paper/70">
               Instruments, simulations, and studies that make quantum and AI
               futures specific enough to argue with.
             </p>
@@ -50,7 +50,7 @@ export default function V2() {
               <h2 className="text-[clamp(26px,3.2vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
                 How a project gets made
               </h2>
-              <p className="mt-5 max-w-[46ch] font-mono text-[13px] leading-[1.8] text-ink-70">
+              <p className="mt-5 max-w-[46ch] text-[13px] leading-[1.8] text-ink-70">
                 Six stages, documented for every project so the process is as
                 replicatable as the output. The full interactive pipeline lives
                 on the About page.
@@ -91,7 +91,7 @@ export default function V2() {
                   <div className="font-mono text-[11px] uppercase tracking-[0.16em] text-accent-deep">{s.kind}<br /><span className="text-ink/40">{s.date}</span></div>
                   <div>
                     <h3 className="max-w-[46ch] text-[clamp(18px,2vw,26px)] font-extrabold leading-[1.15] tracking-[-0.015em] text-ink group-hover:text-accent-deep">{s.title}</h3>
-                    <p className="mt-2.5 max-w-[68ch] font-mono text-[12.5px] leading-[1.7] text-ink-70">{s.abstract}</p>
+                    <p className="mt-2.5 max-w-[68ch] text-[12.5px] leading-[1.7] text-ink-70">{s.abstract}</p>
                   </div>
                   <div className="flex items-center gap-4 self-center font-mono text-[11.5px] uppercase tracking-[0.1em] text-ink/55">
                     <span>{s.pages} pp</span>

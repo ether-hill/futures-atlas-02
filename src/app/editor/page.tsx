@@ -26,7 +26,7 @@ export default async function EditorPage() {
         <h1 className="mb-3 max-w-[20ch] text-[clamp(30px,4.4vw,60px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
           The whole atlas
         </h1>
-        <p className="mb-[clamp(30px,5vw,56px)] max-w-[62ch] font-mono text-[13px] leading-[1.7] text-graphite">
+        <p className="mb-[clamp(30px,5vw,56px)] max-w-[62ch] text-[13px] leading-[1.7] text-graphite">
           Signed in as {editor?.name ?? "an editor"}. Live projects are on the public
           site; drafts are listed and reachable only while you are signed in, a
           visitor who follows a draft link gets the sign-in form instead.
@@ -43,7 +43,7 @@ export default async function EditorPage() {
           items={draftProjects}
         />
 
-        <p className="mt-[clamp(36px,5vw,64px)] max-w-[62ch] font-mono text-[12px] leading-[1.7] text-graphite">
+        <p className="mt-[clamp(36px,5vw,64px)] max-w-[62ch] text-[12px] leading-[1.7] text-graphite">
           To publish or unpublish a project, change its{" "}
           <code className="text-ink">visibility</code> in{" "}
           <code className="text-ink">src/data/projects.ts</code> to{" "}
@@ -61,7 +61,7 @@ function Section({ title, note, items }: { title: string; note: string; items: P
       <div className="mb-4 flex flex-wrap items-baseline gap-3 border-b border-ink/20 pb-3">
         <h2 className="font-mono text-[12px] uppercase tracking-[0.16em] text-ink">{title}</h2>
         <span className="font-mono text-[12px] text-graphite">{items.length}</span>
-        <span className="font-mono text-[11.5px] leading-[1.6] text-graphite">{note}</span>
+        <span className="text-[11.5px] leading-[1.6] text-graphite">{note}</span>
       </div>
 
       <ul className="flex flex-col">

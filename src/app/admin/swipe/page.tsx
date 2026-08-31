@@ -131,7 +131,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <h1 className="mb-3 max-w-[20ch] text-[clamp(30px,4.4vw,60px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
           Swipe the Future desk
         </h1>
-        <p className="mb-[clamp(30px,5vw,56px)] max-w-[62ch] font-mono text-[13px] leading-[1.7] text-graphite">
+        <p className="mb-[clamp(30px,5vw,56px)] max-w-[62ch] text-[13px] leading-[1.7] text-graphite">
           Two review queues. Nothing here changes the public deck on its own.
         </p>
         {children}

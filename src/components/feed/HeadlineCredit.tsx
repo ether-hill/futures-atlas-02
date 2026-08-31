@@ -113,7 +113,7 @@ export function HeadlineCredit({ headline }: { headline: Headline }) {
           <span className="mt-1 block text-[13px] font-extrabold leading-tight tracking-[-0.01em] text-ink">
             {headline.song}
           </span>
-          <span className="mt-0.5 block font-mono text-[11px] leading-[1.4] text-graphite">
+          <span className="mt-0.5 block text-[11px] leading-[1.4] text-graphite">
             {headline.album}
           </span>
           <a

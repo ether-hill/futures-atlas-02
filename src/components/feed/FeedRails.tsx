@@ -258,7 +258,7 @@ function ProjectPicks({ projects }: { projects: Project[] }) {
               </span>
               {/* no `block` here: line-clamp needs display:-webkit-box, and a
                   display utility alongside it silently cancels the clamp */}
-              <span className="mt-1 line-clamp-[7] pb-1 font-mono text-[11px] leading-[1.5] text-graphite">
+              <span className="mt-1 line-clamp-[7] pb-1 text-[11px] leading-[1.5] text-graphite">
                 {pr.tagline}
               </span>
             </Link>
@@ -311,13 +311,13 @@ function SignUp() {
     <Panel className="mt-7">
       <RailHeading>Join us for updates</RailHeading>
       {state === "done" ? (
-        <p className="mt-3 font-mono text-[11.5px] leading-[1.55] text-graphite">
+        <p className="mt-3 text-[11.5px] leading-[1.55] text-graphite">
           You&rsquo;re on the list. Nothing has been sent yet — this is a list of people
           who asked to be told, not a running newsletter.
         </p>
       ) : (
         <>
-          <p className="mt-2 font-mono text-[11px] leading-[1.5] text-graphite">
+          <p className="mt-2 text-[11px] leading-[1.5] text-graphite">
             Occasional notes when something worth reading lands.
           </p>
           <form onSubmit={submit} className="mt-3 flex flex-col gap-2">
@@ -385,7 +385,7 @@ function PopularTags({ all }: { all: Post[] }) {
       </ul>
 
       <RailHeading className="mt-6">Keywords</RailHeading>
-      <p className="mt-1.5 font-mono text-[9.5px] leading-[1.5] text-faint">
+      <p className="mt-1.5 text-[9.5px] leading-[1.5] text-faint">
         Words the feed keeps coming back to, counted across every title and
         standfirst.
       </p>

@@ -56,7 +56,7 @@ export default async function Home() {
             <h1 className="max-w-[16ch] text-[clamp(40px,8vw,120px)] font-extrabold leading-[0.92] tracking-[-0.03em] !text-paper text-balance">
               Mapping foresight
             </h1>
-            <p className="mt-7 max-w-[620px] font-mono text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-paper/70">
+            <p className="mt-7 max-w-[620px] text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-paper/70">
               Building frameworks for foresight. Speculative-design projects,
               open-source tools, apps and prototypes exploring compute: quantum
               systems, AI, and the power structures driving them.

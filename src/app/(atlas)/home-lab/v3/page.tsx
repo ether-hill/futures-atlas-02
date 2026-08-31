@@ -42,7 +42,7 @@ export default function V3() {
               <h1 className="text-[clamp(40px,7vw,110px)] font-extrabold leading-[0.9] tracking-[-0.03em] !text-paper">
                 The Atlas Journal
               </h1>
-              <p className="max-w-[300px] pb-2 font-mono text-[11.5px] leading-[1.7] text-paper/60">
+              <p className="max-w-[300px] pb-2 text-[11.5px] leading-[1.7] text-paper/60">
                 Notes, evidence, and working papers from the foresight lab. Published irregularly, cited always.
               </p>
             </div>
@@ -73,7 +73,7 @@ export default function V3() {
                     <span className="text-ink/40">{a.date} · {a.read}</span>
                   </div>
                   <h3 className="mt-4 text-[20px] font-extrabold leading-[1.15] tracking-[-0.015em] text-ink group-hover:text-accent-deep">{a.title}</h3>
-                  <p className="mt-3 font-mono text-[12.5px] leading-[1.7] text-ink-70">{a.dek}</p>
+                  <p className="mt-3 text-[12.5px] leading-[1.7] text-ink-70">{a.dek}</p>
                   <span className="mt-auto pt-5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink/55 group-hover:text-ink">Read →</span>
                 </article>
               ))}
@@ -119,7 +119,7 @@ export default function V3() {
                 <article key={s.title} className="group flex flex-col border border-ink/15 p-6 transition-colors hover:border-ink/50">
                   <span className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-accent-deep">{s.kind} · {s.date}</span>
                   <h3 className="mt-3 text-[18px] font-extrabold leading-[1.2] tracking-[-0.012em] text-ink">{s.title}</h3>
-                  <p className="mt-3 flex-1 font-mono text-[12px] leading-[1.65] text-ink-70">{s.abstract}</p>
+                  <p className="mt-3 flex-1 text-[12px] leading-[1.65] text-ink-70">{s.abstract}</p>
                   <span className="mt-5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink/55 group-hover:text-ink">{s.pages} pp · Download ↓</span>
                 </article>
               ))}

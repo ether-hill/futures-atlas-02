@@ -26,7 +26,7 @@ export default function AboutPage() {
             <h1 className="max-w-[16ch] text-[clamp(40px,6.4vw,96px)] font-extrabold leading-[0.94] tracking-[-0.028em] text-ink text-balance">
               {HERO.headline}
             </h1>
-            <p className="mt-7 max-w-[640px] font-mono text-[clamp(13px,1.4vw,15.5px)] leading-[1.8] text-ink-70">
+            <p className="mt-7 max-w-[640px] text-[clamp(13px,1.4vw,15.5px)] leading-[1.8] text-ink-70">
               {HERO.standfirst}
             </p>
             <p className="mt-5 font-mono text-[clamp(15px,1.7vw,19px)] font-semibold text-accent-deep">
@@ -51,8 +51,8 @@ export default function AboutPage() {
               <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
                 {WORK.intro}
               </h2>
-              <p className="mt-6 font-mono text-[13.5px] leading-[1.85] text-ink-70">{WORK.body}</p>
-              <p className="mt-6 font-mono text-[12.5px] leading-[1.75] text-ink/50">{WORK.note}</p>
+              <p className="mt-6 text-[13.5px] leading-[1.85] text-ink-70">{WORK.body}</p>
+              <p className="mt-6 text-[12.5px] leading-[1.75] text-ink/50">{WORK.note}</p>
               <p className="mt-6 font-mono text-[12.5px] uppercase tracking-[0.08em] text-accent-deep">
                 {WORK.closing}
               </p>
@@ -82,7 +82,7 @@ export default function AboutPage() {
             <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
               The stack
             </h2>
-            <p className="mt-5 max-w-[68ch] font-mono text-[13.5px] leading-[1.8] text-ink-70">{STACK_INTRO}</p>
+            <p className="mt-5 max-w-[68ch] text-[13.5px] leading-[1.8] text-ink-70">{STACK_INTRO}</p>
           </Reveal>
           <div className="mt-[clamp(28px,4vw,48px)]">
             <StackGrid />
@@ -102,7 +102,7 @@ export default function AboutPage() {
             </Reveal>
             <div>
               <Reveal>
-                <p className="max-w-[68ch] font-mono text-[13.5px] leading-[1.8] text-ink-70">{OPEN.body}</p>
+                <p className="max-w-[68ch] text-[13.5px] leading-[1.8] text-ink-70">{OPEN.body}</p>
               </Reveal>
               <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {OPEN.licences.map((l, i) => (
@@ -122,7 +122,7 @@ export default function AboutPage() {
                 <div className="mt-8 flex flex-col items-start gap-3">
                   <Link
                     href={OPEN.cta.href}
-                    className="font-mono text-[13px] leading-[1.7] text-accent-deep underline-offset-4 transition-colors hover:underline"
+                    className="text-[13px] leading-[1.7] text-accent-deep underline-offset-4 transition-colors hover:underline"
                   >
                     {OPEN.cta.label}&nbsp;<span aria-hidden="true">→</span>
                   </Link>
@@ -130,7 +130,7 @@ export default function AboutPage() {
                     href={OPEN.repo.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-mono text-[13px] leading-[1.7] text-ink/55 underline-offset-4 transition-colors hover:text-ink hover:underline"
+                    className="text-[13px] leading-[1.7] text-ink/55 underline-offset-4 transition-colors hover:text-ink hover:underline"
                   >
                     {OPEN.repo.label}&nbsp;<span aria-hidden="true">↗</span>
                   </a>

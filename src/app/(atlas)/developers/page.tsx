@@ -63,7 +63,7 @@ function Section({
             {title}
           </h2>
           {lede && (
-            <p className="mt-5 max-w-[70ch] font-mono text-[13.5px] leading-[1.85] text-ink-70">
+            <p className="mt-5 max-w-[70ch] text-[13.5px] leading-[1.85] text-ink-70">
               {lede}
             </p>
           )}
@@ -137,13 +137,13 @@ function SourceRow({ project, draft }: { project: Project; draft?: boolean }) {
               ))}
             </div>
             {src.note && (
-              <p className="mt-3 max-w-[62ch] font-mono text-[12.5px] leading-[1.75] text-ink-70">
+              <p className="mt-3 max-w-[62ch] text-[12.5px] leading-[1.75] text-ink-70">
                 {src.note}
               </p>
             )}
           </>
         ) : (
-          <p className="font-mono text-[12.5px] leading-[1.75] text-graphite">
+          <p className="text-[12.5px] leading-[1.75] text-graphite">
             No source recorded yet.
           </p>
         )}
@@ -168,7 +168,7 @@ function RepoCard({
       <h3 className="mt-3 text-[clamp(19px,2.1vw,26px)] font-extrabold tracking-[-0.018em] text-ink">
         {title}
       </h3>
-      <p className="mt-3 flex-1 font-mono text-[13px] leading-[1.8] text-ink-70">{body}</p>
+      <p className="mt-3 flex-1 text-[13px] leading-[1.8] text-ink-70">{body}</p>
       <a
         href={`https://github.com/${repo}`}
         target="_blank"
@@ -201,7 +201,7 @@ export default async function DevelopersPage() {
             <h1 className="max-w-[16ch] text-[clamp(36px,5.6vw,80px)] font-extrabold leading-[0.98] tracking-[-0.026em] text-ink text-balance">
               {HERO.headline}
             </h1>
-            <p className="mt-[clamp(16px,2vw,26px)] max-w-[66ch] font-mono text-[clamp(13px,1.4vw,15.5px)] leading-[1.85] text-ink-70">
+            <p className="mt-[clamp(16px,2vw,26px)] max-w-[66ch] text-[clamp(13px,1.4vw,15.5px)] leading-[1.85] text-ink-70">
               {HERO.standfirst}
             </p>
             <p className="mt-5 font-mono text-[clamp(15px,1.7vw,19px)] font-semibold text-accent-deep">
@@ -242,7 +242,7 @@ export default async function DevelopersPage() {
                   </h3>
                   <span className="font-mono text-[11px] text-ink/35">{l.n}</span>
                 </div>
-                <p className="mt-3 font-mono text-[13px] leading-[1.8] text-ink-70">{l.body}</p>
+                <p className="mt-3 text-[13px] leading-[1.8] text-ink-70">{l.body}</p>
                 <p className="mt-4 border-t border-ink/10 pt-3 font-mono text-[11.5px] text-graphite">
                   {l.detail}
                 </p>
@@ -273,7 +273,7 @@ export default async function DevelopersPage() {
               <h3 className="mt-3 text-[clamp(19px,2.1vw,26px)] font-extrabold tracking-[-0.018em] text-ink">
                 Keys and builds
               </h3>
-              <p className="mt-3 flex-1 font-mono text-[13px] leading-[1.8] text-ink-70">
+              <p className="mt-3 flex-1 text-[13px] leading-[1.8] text-ink-70">
                 Every environment file, every built sub-app bundle and the generated footer are
                 git-ignored. No key or password has ever been in the tree, so a clone is safe to
                 run and safe to fork.
@@ -300,7 +300,7 @@ export default async function DevelopersPage() {
           <div className="mt-[clamp(32px,5vw,64px)]">
             <div className="border border-ink/25 p-[clamp(16px,2vw,24px)]">
               <span className={head}>Editors only</span>
-              <p className="mt-2 max-w-[70ch] font-mono text-[12.5px] leading-[1.8] text-ink-70">
+              <p className="mt-2 max-w-[70ch] text-[12.5px] leading-[1.8] text-ink-70">
                 {draftProjects.length} unpublished projects, hidden from the public listing above.
                 Their source sits in the same public repository. The gate keeps unfinished
                 work off the site, and that&rsquo;s all it does.
@@ -324,13 +324,13 @@ export default async function DevelopersPage() {
                 <code className="block overflow-x-auto whitespace-pre font-mono text-[13px] text-ink">
                   {s.cmd}
                 </code>
-                <p className="font-mono text-[12.5px] leading-[1.75] text-ink-70">{s.note}</p>
+                <p className="text-[12.5px] leading-[1.75] text-ink-70">{s.note}</p>
               </div>
             </Reveal>
           ))}
         </div>
         <Reveal>
-          <p className="mt-6 max-w-[70ch] font-mono text-[12.5px] leading-[1.85] text-graphite">
+          <p className="mt-6 max-w-[70ch] text-[12.5px] leading-[1.85] text-graphite">
             {ENV_NOTE}
           </p>
         </Reveal>
@@ -359,7 +359,7 @@ export default async function DevelopersPage() {
               >
                 {STATE_LABEL[r.state]}
               </span>
-              <p className="max-w-[68ch] font-mono text-[12.5px] leading-[1.8] text-ink-70">
+              <p className="max-w-[68ch] text-[12.5px] leading-[1.8] text-ink-70">
                 {r.detail}
               </p>
             </Reveal>
@@ -377,13 +377,13 @@ export default async function DevelopersPage() {
                 <p className="mt-3 text-[clamp(18px,2vw,24px)] font-extrabold tracking-[-0.018em] text-ink">
                   {t.licence}
                 </p>
-                <p className="mt-3 font-mono text-[12.5px] leading-[1.8] text-ink-70">{t.body}</p>
+                <p className="mt-3 text-[12.5px] leading-[1.8] text-ink-70">{t.body}</p>
               </div>
             </Reveal>
           ))}
         </div>
         <Reveal>
-          <p className="mt-6 max-w-[70ch] font-mono text-[13px] leading-[1.85] text-ink-70">
+          <p className="mt-6 max-w-[70ch] text-[13px] leading-[1.85] text-ink-70">
             {LICENCE.closing}
           </p>
         </Reveal>
@@ -396,7 +396,7 @@ export default async function DevelopersPage() {
             <h2 className="text-[clamp(22px,2.8vw,34px)] font-extrabold leading-[1.05] tracking-[-0.02em] text-ink">
               {CONTACT.title}
             </h2>
-            <p className="mt-4 max-w-[68ch] font-mono text-[13.5px] leading-[1.85] text-ink-70">
+            <p className="mt-4 max-w-[68ch] text-[13.5px] leading-[1.85] text-ink-70">
               {CONTACT.body}
             </p>
             <Link

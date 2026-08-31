@@ -56,7 +56,7 @@ const FLUID = ["--space-card", "--space-card-l", "--space-gap-l", "--space-gap-x
 const RADII = ["--radius", "--radius-input", "--radius-menu", "--radius-full"];
 
 const head = "font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep";
-const note = "mt-2 max-w-[62ch] font-mono text-[12.5px] leading-[1.7] text-graphite";
+const note = "mt-2 max-w-[62ch] text-[12.5px] leading-[1.7] text-graphite";
 
 function Section({
   id,
@@ -151,7 +151,7 @@ export default function DesignSystemPage() {
                 <div style={{ padding: "var(--space-4)" }}>
                   <p className="text-[13.5px] font-extrabold tracking-[-0.01em] text-ink">{c.name}</p>
                   <p className="mt-1 font-mono text-[11px] text-accent-deep">{c.token}</p>
-                  <p className="mt-1.5 font-mono text-[11px] leading-[1.5] text-faint">{c.note}</p>
+                  <p className="mt-1.5 text-[11px] leading-[1.5] text-faint">{c.note}</p>
                   <TokenValue token={c.token} />
                 </div>
               </div>
@@ -397,7 +397,7 @@ export default function DesignSystemPage() {
             ))}
           </ol>
 
-          <p className="mt-[clamp(28px,4vw,44px)] font-mono text-[12.5px] leading-[1.8] text-graphite">
+          <p className="mt-[clamp(28px,4vw,44px)] text-[12.5px] leading-[1.8] text-graphite">
             The tokens live in{" "}
             <code className="rounded-[2px] bg-ink/[0.07] px-1.5 py-0.5">futures-atlas-core/src/tokens.css</code>, the
             kit in <code className="rounded-[2px] bg-ink/[0.07] px-1.5 py-0.5">kit.css</code>. Runtime overrides are

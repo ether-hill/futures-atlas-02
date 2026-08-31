@@ -1,22 +1,26 @@
 /**
- * Three gates, all keyed on the same signed session cookie (see
- * lib/admin-session.ts) except the first:
+ * Two gates, both keyed on the same signed session cookie (lib/admin-session.ts):
  *
- * 1. The control panel: /style-guide (all methods) and POST /api/tokens.
- *    Basic auth against STYLE_GUIDE_USER / STYLE_GUIDE_PASSWORD.
+ * 1. The working pages: /admin/*, the editor overview /editor, the unlinked
+ *    design experiments (/home-lab, /mocks), the logo animator, the design
+ *    reference and the /style-guide panel that writes its overrides, plus POST
+ *    /api/tokens, which is that panel saving. Most of them do not exist at all
+ *    on production — see STAGING_ONLY below.
  *
- * 2. The internal areas: /admin/*, the editor overview /editor, and the
- *    unlinked design experiments (/home-lab, /mocks).
+ * 2. Draft projects and draft posts: every path belonging to a project marked
+ *    `visibility: "draft"` in src/data/projects.ts, and every unpublished post
+ *    in src/data/posts.ts. The public never renders one; unauthenticated
+ *    requests are rewritten to the sign-in form, so the page's markup is never
+ *    sent.
  *
- * 3. Draft projects and draft posts: every path belonging to a project
- *    marked `visibility: "draft"` in src/data/projects.ts, and every
- *    unpublished post in src/data/posts.ts. The public never renders one,
- *    unauthenticated requests are rewritten to the sign-in form, so the page's
- *    markup is never sent.
+ * There used to be a third, HTTP Basic against STYLE_GUIDE_PASSWORD, guarding
+ * the panel. It meant a second password and a browser dialog that looked like
+ * it came from somewhere else, for people who had already signed in. One gate
+ * now covers everything.
  *
- * All fail closed: if the relevant env var is unset the routes are locked
- * (503), they can never become public by accident. GET /api/tokens stays open
- * so the live site can read the saved overrides.
+ * Both fail closed: if the session env vars are unset the routes are locked,
+ * they can never become public by accident. GET /api/tokens stays open so the
+ * live site can read the saved overrides.
  */
 import { NextResponse, type NextRequest } from "next/server";
 // Relative, not "@/lib/…": the social-composer sub-app build also picks this
@@ -82,37 +86,17 @@ export async function middleware(req: NextRequest) {
     return NextResponse.rewrite(new URL("/_internal-not-here", req.url));
   }
 
-  if (pathname === "/style-guide" || (pathname === "/api/tokens" && req.method === "POST")) {
-    return styleGuideGate(req);
-  }
+  // /api/tokens is the style-guide panel writing an override. It is a fetch from
+  // a page that already required the editor cookie, so the same gate covers it.
+  const isTokenWrite = pathname === "/api/tokens" && req.method === "POST";
 
-  if (isInternal || isDraftPath(pathname) || isDraftPostPath(pathname)) return sessionGate(req);
+  if (isInternal || isTokenWrite || isDraftPath(pathname) || isDraftPostPath(pathname)) {
+    return sessionGate(req);
+  }
 
   return NextResponse.next();
 }
 
-function styleGuideGate(req: NextRequest) {
-  const password = process.env.STYLE_GUIDE_PASSWORD;
-  const user = process.env.STYLE_GUIDE_USER || "admin";
-  if (!password) {
-    return new NextResponse("Style guide auth is not configured.", { status: 503 });
-  }
-
-  const header = req.headers.get("authorization") || "";
-  if (header.startsWith("Basic ")) {
-    try {
-      const [u, p] = atob(header.slice(6)).split(":");
-      if (u === user && p === password) return NextResponse.next();
-    } catch {
-      /* fall through to challenge */
-    }
-  }
-
-  return new NextResponse("Authentication required.", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="Futures Atlas style guide"' },
-  });
-}
 
 async function sessionGate(req: NextRequest) {
   // The login form itself must stay reachable, or the rewrite below loops.

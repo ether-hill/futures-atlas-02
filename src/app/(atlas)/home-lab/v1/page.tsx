@@ -61,7 +61,7 @@ export default function V1() {
             <h1 className="max-w-[16ch] text-[clamp(38px,6.5vw,96px)] font-extrabold leading-[0.94] tracking-[-0.028em] !text-paper">
               The signal desk
             </h1>
-            <p className="mt-5 max-w-[560px] font-mono text-[14px] leading-[1.75] text-paper/70">
+            <p className="mt-5 max-w-[560px] text-[14px] leading-[1.75] text-paper/70">
               Prototypes, open tools, and research on quantum computing and
               emerging AI, laid out like a working desk, not a brochure.
             </p>
@@ -88,7 +88,7 @@ export default function V1() {
                       <div>
                         <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-paper/50">{p.field}</span>
                         <h2 className="mt-3 text-[clamp(24px,2.6vw,38px)] font-extrabold leading-[1.02] tracking-[-0.02em] !text-paper">{p.title}</h2>
-                        <p className="mt-4 line-clamp-4 font-mono text-[12.5px] leading-[1.7] text-paper/70">{p.tagline}</p>
+                        <p className="mt-4 line-clamp-4 text-[12.5px] leading-[1.7] text-paper/70">{p.tagline}</p>
                       </div>
                       <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-[2px] bg-accent px-5 py-3 font-mono text-[11.5px] uppercase tracking-[0.1em] text-paper transition-colors group-hover:bg-accent-deep">
                         Open the project →

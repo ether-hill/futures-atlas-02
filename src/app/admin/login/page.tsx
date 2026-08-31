@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 };
 
 const fieldCls =
-  "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 font-mono text-[13px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent";
+  "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 text-[13px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent";
 const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graphite";
 
 export default async function AdminLoginPage({
@@ -32,7 +32,7 @@ export default async function AdminLoginPage({
             <p className="text-[clamp(20px,2.4vw,28px)] font-extrabold leading-tight text-ink">
               This page is private
             </p>
-            <p className="mt-2 font-mono text-[12px] leading-[1.6] text-graphite">
+            <p className="mt-2 text-[12px] leading-[1.6] text-graphite">
               Sign in with your editor password to see it. Your password is who
               you are, so there is no username to enter.
             </p>
@@ -55,7 +55,7 @@ export default async function AdminLoginPage({
           {error && (
             <p
               role="alert"
-              className="font-mono text-[12px] leading-[1.6] text-accent-deep"
+              className="text-[12px] leading-[1.6] text-accent-deep"
             >
               Incorrect password.
             </p>
