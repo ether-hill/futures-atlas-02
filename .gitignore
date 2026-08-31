@@ -137,3 +137,6 @@ next-env.d.ts
 # deleted, because removing half a gigabyte of someone's files is their call.
 /counterfactual/
 /public/counterfactual/
+
+# session scratch files — working notes/renders, never part of the site
+/scratchpad/
