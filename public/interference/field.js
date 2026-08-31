@@ -191,7 +191,8 @@ window.FIELD = (function () {
     "  float r = length(p - s);",
     "  float d = r - C*tau;",
     "  float pack  = exp(-d*d*4.0);",
-    "  float fade  = smoothstep(win, win*0.72, tau);",
+    "  float birth = smoothstep(0.0, 0.45, tau);",
+    "  float fade  = smoothstep(win, win*0.72, tau)*birth;",
     "  float decay = exp(-tau*0.13)*exp(-r*0.50)/sqrt(0.30 + r*2.0);",
     "  return sin(KD*d + 1.1)*pack*decay*fade;",
     "}",
@@ -448,7 +449,7 @@ window.FIELD = (function () {
     read: [
       "Each dot is one arrival, placed at random with a probability given by the two slit pattern. Early on the screen looks like scatter. The fringes are not visible in any single detection and cannot be, because a single particle lands in one place; they exist only as a statement about where a great many of them land.",
       "This is the part of the experiment that is genuinely strange. Send the particles through so slowly that only one is ever inside the apparatus, and the pattern still builds. Whatever went through went through both openings, in the sense that the amplitude for each path contributed to where it could land.",
-      "It has been done for real. G. I. Taylor did a feeble light version in 1909, and Tonomura's team at Hitachi filmed single electrons accumulating into fringes in 1989. This is a simulation, sampling from the same distribution the other panels compute. It is the one field here that does not loop, because an accumulating record has no period, only a history."
+      "It has been done for real, though not always with slits. G. I. Taylor photographed the diffraction shadow of a needle in 1909 with light so feeble that the exposure ran for three months, and Tonomura's team at Hitachi filmed single electrons accumulating into fringes in 1989. This is a simulation, sampling from the same distribution the other panels compute. It is the one field here that does not loop, because an accumulating record has no period, only a history."
     ]
   },
 
@@ -458,20 +459,20 @@ window.FIELD = (function () {
     loop: 24.0,
     note: "Three plane waves at 120 degrees, coloured by phase. Each dark point is a singularity.",
     read: [
-      "Three plane waves of the same wavelength, travelling at 120 degrees to each other, add to a triangular lattice. Brightness here is amplitude and hue is phase, so a full trip around the colour cycle is a full trip around the wave cycle.",
+      "Three plane waves of the same wavelength and the same frequency, travelling at 120 degrees to each other, add to a triangular lattice. Brightness is amplitude and hue is phase, so a full trip around the colour cycle is a full trip around the wave cycle. One shared frequency is what makes it a lattice: the amplitude pattern holds still and only the colour turns, as the phase advances everywhere at once.",
       "Walk a small circle around one of the dark points and the hue runs through every value exactly once. The phase has no single answer at the centre, and the only way a wave can stay continuous around a point where its phase is undefined is for its amplitude to be zero there. These are phase singularities, or optical vortices, catalogued by Nye and Berry in 1974.",
-      "They are not rare or delicate. Any field made of three or more plane waves is threaded with them, including light scattered off a rough wall and radio in a room with walls. The lattice drifts because the three waves are given slightly different frequencies, and it rotates one third of a turn per loop, which is the same lattice again."
+      "They are not rare or delicate. Any field made of three or more plane waves is threaded with them, including light scattered off a rough wall and radio in a room with walls. What moves here is the geometry rather than the light: the three beams are turned through a third of a revolution per loop, which brings the same triangle of directions back. Nothing is detuned to fake the motion, since three waves at different frequencies could only share one wavelength by sitting in three different media."
     ],
     frag: [
       "const float B = TAU/24.0;",
       "",
       "vec3 render(vec2 p){",
-      "  float spin = TAU*uT/24.0;",
+      "  float spin = (TAU/3.0)*uT/24.0;",
       "  vec2 F = vec2(0.0);",
       "  for(int i=0;i<3;i++){",
       "    float a = 2.0944*float(i) + spin;",
       "    vec2 kv = 13.5*vec2(cos(a), sin(a));",
-      "    float ph = dot(kv,p) - B*(8.0 + float(i))*uT;",
+      "    float ph = dot(kv,p) - 4.0*B*uT;",
       "    F += vec2(cos(ph), sin(ph));",
       "  }",
       "  float amp = length(F)/3.0;",
@@ -526,26 +527,28 @@ window.FIELD = (function () {
 
   {
     slug: "packets",
-    title: "Packet collision",
+    title: "Cat state",
     loop: 16.0,
-    note: "Two wavepackets passing through each other. Fringes exist only in the overlap.",
+    note: "Two coherent states in one trap, swinging in antiphase. The fringes are finest as they pass.",
     read: [
-      "A free particle with a reasonably well defined position and momentum is described by a Gaussian wavepacket. Two of them, moving towards each other, pass straight through: there is no force here, only addition.",
-      "While they overlap, the sum carries fringes whose spacing is set by the difference in momentum between the two packets. Faster approach means finer fringes. Outside the overlap there is nothing to interfere with and the density is smooth, which is a useful reminder that interference is a property of a superposition and not of a particle.",
-      "In a fuller treatment each packet also spreads as it travels, because its component momenta move at different speeds. That spreading is why a wavepacket is not a good long term stand in for a classical particle, and why calling an electron a small ball goes wrong quickly."
+      "A coherent state is the closest a quantum particle comes to behaving like a classical one: a Gaussian in a harmonic trap that swings from side to side at the trap frequency and, uniquely, does not spread while it does so. Two of them released in antiphase pass through each other twice per swing.",
+      "Watch when the fringes arrive. Momentum runs a quarter cycle behind position, so at the turning points, where the two are furthest apart, both are momentarily at rest and there is nothing to see between them. At the crossing, where they sit on top of each other, both are moving at full speed in opposite directions, and the fringe spacing is at its finest. That spacing is set by the difference in momentum and by nothing else.",
+      "A superposition of two coherent states with opposite displacement is the textbook Schrodinger cat state, and the fringes in the middle are the part that says superposition rather than mixture. A coin flip between one packet and the other would give the plain sum of two humps with smooth nothing in between. Take the trap away and the packets do spread, and never come back, which is why the loop is a trapped one."
     ],
     frag: [
       "const float B = TAU/16.0;",
       "",
       "vec3 render(vec2 p){",
-      "  float cx = 0.80*sin(B*uT);",
+      "  /* a coherent state: position on the cosine, momentum on the sine */",
+      "  float cx = 0.80*cos(B*uT);",
+      "  float kx = 30.0*sin(B*uT);",
       "  float sx = 0.36, sy = 0.62;",
       "  vec2 d1 = (p - vec2( cx, 0.0)) / vec2(sx, sy);",
       "  vec2 d2 = (p - vec2(-cx, 0.0)) / vec2(sx, sy);",
       "  float g1 = exp(-dot(d1,d1)*0.85);",
       "  float g2 = exp(-dot(d2,d2)*0.85);",
-      "  float p1 = -25.0*p.x - 4.0*B*uT;",
-      "  float p2 =  27.0*p.x - 4.0*B*uT;",
+      "  float p1 = -kx*p.x;",
+      "  float p2 =  kx*p.x;",
       "  vec2 psi = g1*vec2(cos(p1),sin(p1)) + g2*vec2(cos(p2),sin(p2));",
       "  float dens = dot(psi,psi);",
       "  vec3 col = rampI(tm(dens*1.70));",
@@ -618,23 +621,24 @@ window.FIELD = (function () {
 
   {
     slug: "beats",
-    title: "Quantum beats",
-    loop: 16.0,
-    note: "Two sources at slightly different frequencies. The pattern never settles.",
+    title: "Beats",
+    loop: 24.0,
+    note: "Two sources detuned by a twelfth. The pattern never settles.",
     read: [
-      "Every other pair of sources on this page is held at one frequency, which is why their fringes stand still. Detune one slightly and the condition for constructive interference drifts, so the whole pattern sweeps sideways at a rate set by the difference between the two frequencies and nothing else.",
-      "In atomic physics this is what a quantum beat is. Excite an atom into a superposition of two closely spaced levels and its fluorescence is modulated at the difference frequency, which lets you measure a splitting far finer than the resolution of your spectrometer.",
+      "Every other pair of sources on this page is held at one frequency, which is why their fringes stand still. Detune one by a twelfth and the condition for constructive interference drifts, so the whole pattern sweeps at a rate set by the difference between the two frequencies and by nothing else. Both waves share one medium and therefore one speed, so the faster one also carries the shorter wavelength, in exactly the same proportion.",
+      "The same arithmetic is what a quantum beat is, with one difference worth stating: a quantum beat is one emitter, not two. Put an atom into a superposition of two closely spaced levels and its fluorescence is modulated at the difference frequency, which measures a splitting far finer than a spectrometer can resolve. What is drawn here is the classical version, two detuned sources in one tank.",
       "The same trick runs through measurement generally. Heterodyne detection, laser frequency combs, gravitational wave interferometers and a piano tuner listening for the beat between two strings are all reading a tiny difference by watching how fast a pattern crawls."
     ],
     frag: [
-      "const float B = TAU/16.0;",
+      "const float B = TAU/24.0;",
       "",
       "vec3 render(vec2 p){",
       "  vec2 s1 = vec2(-0.92, -0.52), s2 = vec2(0.92, -0.52);",
       "  float r1 = length(p-s1), r2 = length(p-s2);",
       "  float a1 = 1.0/sqrt(0.24+r1*1.6), a2 = 1.0/sqrt(0.24+r2*1.6);",
-      "  float ph1 = 33.0*r1 - 5.0*B*uT;",
-      "  float ph2 = 34.6*r2 - 6.0*B*uT;",
+      "  /* one medium: k is proportional to omega, 12:13 in both */",
+      "  float ph1 = 30.0*r1 - 12.0*B*uT;",
+      "  float ph2 = 32.5*r2 - 13.0*B*uT;",
       "  vec2 F = a1*vec2(cos(ph1),sin(ph1)) + a2*vec2(cos(ph2),sin(ph2));",
       "  vec3 col = rampI(tm(dot(F,F)*0.42));",
       "  col += rampI(0.22)*0.06;",

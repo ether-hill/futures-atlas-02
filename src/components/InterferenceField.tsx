@@ -48,7 +48,10 @@ float dropWave(vec2 p, vec2 s, float tau){
   float r = length(p - s);
   float d = r - C*tau;
   float pack  = exp(-d*d*4.0);
-  float fade  = smoothstep(5.0*TD, 3.6*TD, tau);
+  /* fades in as well as out: a ring that appeared at full amplitude was a step
+     in an otherwise exact loop, and very slow motion makes a step obvious */
+  float birth = smoothstep(0.0, 0.60, tau);
+  float fade  = smoothstep(5.0*TD, 3.6*TD, tau)*birth;
   float decay = exp(-tau*0.13)*exp(-r*0.50)/sqrt(0.30 + r*2.0);
   return sin(KD*d + 1.1)*pack*decay*fade;
 }
