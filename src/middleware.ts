@@ -43,7 +43,8 @@ export async function middleware(req: NextRequest) {
 
   // /home-lab and /mocks are unlinked design experiments that list every
   // project by name, drafts included, internal by nature, so they sign in too.
-  const isInternal = ["/admin", "/editor", "/home-lab", "/mocks"].some(
+  // /logo-animator is the mark's motion bench: a working tool, never public.
+  const isInternal = ["/admin", "/editor", "/home-lab", "/mocks", "/logo-animator"].some(
     (base) => pathname === base || pathname.startsWith(`${base}/`),
   );
 

@@ -110,7 +110,7 @@ const html = `<div class="fa-foot__inner">
 <div class="fa-foot__split">
 <div class="fa-foot__col">
 <p class="fa-foot__h">Use the work</p>
-<p class="fa-foot__body">Open where it counts. Fork a project, adapt it, wire it into your own work. Attribution appreciated, permission not required. Research is free to cite and every source is linked. Project code is MIT, the research is CC BY 4.0, and the <a class="fa-foot__a" href="/glossary">glossary</a> is yours to use. The Atlas’s own design and words stay ours.</p>
+<p class="fa-foot__body">Open where it counts. Fork a project, adapt it, wire it into your own work. Attribution appreciated, permission not required. Research is free to cite and every source is linked. Project code is MIT, the research is CC BY 4.0.</p>
 <p class="fa-foot__body"><a class="fa-foot__a" href="/developers">How it&rsquo;s built, and where every project&rsquo;s source lives &rarr;</a></p>
 </div>
 <div class="fa-foot__col">

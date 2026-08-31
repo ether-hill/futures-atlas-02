@@ -1,0 +1,1767 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo Animator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600&display=swap">
+</head>
+<body>
+<style>
+  :root {
+    --bone: #f4efe4;
+    --panel: #fbf8f0;
+    --haze: #ece4d4;
+    --stage: #efe8db;
+    --ink: #17181b;
+    --body: #303237;
+    --graphite: #63666c;
+    --faint: #8f929a;
+    --line: rgba(23, 24, 27, 0.13);
+    --line-firm: rgba(23, 24, 27, 0.24);
+    --accent: oklch(0.55 0.13 245);
+    --accent-hex: #1777b8;
+    --accent-soft: oklch(0.93 0.045 245);
+    --accent-ink: #fbf8f0;
+    --lattice: rgba(23, 24, 27, 0.16);
+    --shadow: 0 1px 0 rgba(23, 24, 27, 0.05);
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bone: #17181b;
+      --panel: #1c1d21;
+      --haze: #0d0e11;
+      --stage: #101114;
+      --ink: #f2ede2;
+      --body: #d3ccbe;
+      --graphite: #9da0a8;
+      --faint: #74777f;
+      --line: rgba(242, 237, 226, 0.14);
+      --line-firm: rgba(242, 237, 226, 0.26);
+      --accent: oklch(0.64 0.13 245);
+      --accent-hex: #3b93d5;
+      --accent-soft: oklch(0.34 0.06 245);
+      --accent-ink: #0d0e11;
+      --lattice: rgba(242, 237, 226, 0.17);
+      --shadow: none;
+      color-scheme: dark;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bone: #17181b;
+    --panel: #1c1d21;
+    --haze: #0d0e11;
+    --stage: #101114;
+    --ink: #f2ede2;
+    --body: #d3ccbe;
+    --graphite: #9da0a8;
+    --faint: #74777f;
+    --line: rgba(242, 237, 226, 0.14);
+    --line-firm: rgba(242, 237, 226, 0.26);
+    --accent: oklch(0.64 0.13 245);
+    --accent-hex: #3b93d5;
+    --accent-soft: oklch(0.34 0.06 245);
+    --accent-ink: #0d0e11;
+    --lattice: rgba(242, 237, 226, 0.17);
+    --shadow: none;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bone);
+    color: var(--body);
+    font-family: Archivo, "Helvetica Neue", Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: clamp(20px, 3vw, 40px) clamp(16px, 3vw, 34px) 64px;
+  }
+
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line-firm);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(24px, 3vw, 34px);
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    margin: 6px 0 0;
+    max-width: 62ch;
+    color: var(--graphite);
+    font-size: 14.5px;
+  }
+
+  .eyebrow {
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .bench {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 372px;
+    gap: clamp(18px, 2.4vw, 32px);
+    align-items: start;
+    margin-top: clamp(18px, 2.4vw, 28px);
+  }
+
+  @media (max-width: 1040px) {
+    .bench { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .stagecol {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    width: 100%;
+    max-width: 660px;
+    margin-inline: auto;
+  }
+
+  .stage {
+    position: relative;
+    background: var(--stage);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    overflow: hidden;
+    cursor: grab;
+    touch-action: none;
+  }
+
+  .stage.dragging { cursor: grabbing; }
+  .stage canvas { display: block; width: 100%; height: 100%; }
+
+  .stage .hint {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--faint);
+    pointer-events: none;
+  }
+
+  .transport {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+  }
+
+  .transport .spring { flex: 1 1 20px; }
+
+  button {
+    font-family: inherit;
+    font-size: 13px;
+    color: var(--body);
+    background: var(--panel);
+    border: 1px solid var(--line-firm);
+    border-radius: 2px;
+    padding: 7px 12px;
+    cursor: pointer;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+
+  button:hover { border-color: var(--ink); color: var(--ink); }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.primary { background: var(--ink); color: var(--bone); border-color: var(--ink); }
+  button.primary:hover { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+
+  .mini {
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 5px 9px;
+  }
+
+  .strip {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(14px, 2vw, 26px);
+    flex-wrap: wrap;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    box-shadow: var(--shadow);
+  }
+
+  .strip .lede {
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--faint);
+    width: 100%;
+  }
+
+  .swatch { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+  .swatch canvas { display: block; }
+  .swatch .px {
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+  }
+  .swatch.inverse { background: var(--ink); padding: 10px 12px 8px; border-radius: 2px; }
+  .swatch.inverse .px { color: rgba(244, 239, 228, 0.55); }
+
+  .rail { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 14px 15px 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .card h2 {
+    margin: 0 0 4px;
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .card .note { margin: 0 0 12px; font-size: 12.5px; color: var(--graphite); }
+
+  .rack { display: flex; flex-direction: column; gap: 2px; }
+
+  .row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 4px 4px 3px;
+    border-radius: 2px;
+    border: 1px solid transparent;
+  }
+
+  .row.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .row:hover { background: var(--haze); }
+  .row.sel:hover { background: var(--accent-soft); }
+
+  .pick {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 4px 3px;
+    font-size: 13.5px;
+    color: var(--ink);
+    min-width: 0;
+  }
+
+  .chip {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--c);
+    flex: none;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+  }
+
+  .pick .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .row .rate {
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 11px;
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    flex: none;
+    min-width: 34px;
+    text-align: right;
+  }
+
+  .row .fixed {
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--faint);
+    flex: none;
+  }
+
+  .tog {
+    flex: none;
+    padding: 4px 6px;
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+    background: transparent;
+    border: 1px solid var(--line);
+  }
+
+  .tog.spin[aria-pressed="true"] { color: var(--accent-ink); background: var(--accent); border-color: var(--accent); }
+  .tog.eye[aria-pressed="true"] { color: var(--graphite); border-color: var(--line); }
+  .tog.eye[aria-pressed="false"] { color: var(--faint); background: var(--haze); text-decoration: line-through; }
+
+  .rackfoot { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+
+  .ctl { display: grid; grid-template-columns: 92px minmax(0, 1fr) 50px; align-items: center; gap: 10px; padding: 3px 0; }
+  .ctl .k { font-size: 12.5px; color: var(--graphite); }
+  .ctl output {
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 11.5px;
+    color: var(--ink);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .subhead {
+    margin: 12px 0 2px;
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 18px;
+    background: transparent;
+    margin: 0;
+  }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--line-firm); border-radius: 2px; }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px; height: 13px; margin-top: -5.5px;
+    border-radius: 50%; background: var(--ink); border: none; cursor: pointer;
+  }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--line-firm); }
+  input[type="range"]::-moz-range-thumb { width: 13px; height: 13px; border: none; border-radius: 50%; background: var(--ink); cursor: pointer; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  select {
+    font-family: inherit;
+    font-size: 16px;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line-firm);
+    border-radius: 2px;
+    padding: 5px 7px;
+    width: 100%;
+  }
+
+  .axisrow { display: flex; gap: 5px; flex-wrap: wrap; margin: 8px 0 4px; }
+  .hintline { margin: 6px 0 8px; font-size: 12px; color: var(--faint); }
+
+  .check { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 13px; color: var(--body); cursor: pointer; }
+  .check input { width: 15px; height: 15px; accent-color: var(--accent); }
+
+  .presets { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .presets .grouphead { grid-column: 1 / -1; margin: 10px 0 0; }
+  .presets .grouphead:first-child { margin-top: 2px; }
+  .presets button { text-align: left; padding: 8px 10px; }
+  .presets .pn { display: block; color: var(--ink); font-size: 13px; }
+  .presets .pd { display: block; color: var(--faint); font-size: 11.5px; line-height: 1.35; }
+
+  .selhead { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 4px; }
+  .selhead .who { color: var(--ink); font-size: 13.5px; }
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--ink);
+    color: var(--bone);
+    padding: 9px 16px;
+    border-radius: 2px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .foot {
+    margin-top: 26px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    color: var(--faint);
+    font-size: 12.5px;
+    max-width: 74ch;
+  }
+
+  @media (prefers-reduced-motion: reduce) { * { transition-duration: 1ms !important; } }
+  .sheet { display: flex; flex-direction: column; gap: 4px; margin-top: clamp(18px, 2.4vw, 26px); }
+
+  .sheet .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+    gap: clamp(10px, 1.4vw, 16px);
+  }
+
+  .sheet .cell {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 10px 10px 11px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sheet .cell .frame {
+    background: var(--stage);
+    border-radius: 2px;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+  }
+
+  .sheet .cell canvas { display: block; width: 100%; height: 100%; }
+
+  .sheet .cell .nm { color: var(--ink); font-size: 13px; line-height: 1.25; }
+  .sheet .cell .ds { color: var(--faint); font-size: 11.5px; line-height: 1.3; }
+
+
+  .sheet h2 {
+    margin: 22px 0 6px;
+    font-family: "Bodoni Moda", Georgia, serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+  .sheet h2:first-child { margin-top: 4px; }
+  .cell figcaption { margin: 0; }
+
+  .topctl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .seg { display: flex; }
+  .seg button { border-radius: 0; margin-left: -1px; }
+  .seg button:first-child { border-radius: 2px 0 0 2px; margin-left: 0; }
+  .seg button:last-child { border-radius: 0 2px 2px 0; }
+  .seg button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bone); }
+  [hidden] { display: none !important; }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow" style="margin:0 0 6px">Futures Atlas · mark studies</p>
+      <h1>Logo Animator</h1>
+      <p class="standfirst">The mark is a sphere. Inside it a ring of the same gauge sits at an angle, a line runs the full diameter, and a smaller sphere sits at the middle of that line. All of it is round stock in one flat colour. Turn any of them on the bench, or see every motion at once.</p>
+    </div>
+    <div class="topctl">
+      <div class="seg" role="group" aria-label="View">
+        <button type="button" class="mini" data-view="bench" aria-pressed="true">Bench</button>
+        <button type="button" class="mini" data-view="sheet" aria-pressed="false">All motions</button>
+      </div>
+      <div class="seg" role="group" aria-label="Theme">
+        <button type="button" class="mini" data-theme-set="light">Light</button>
+        <button type="button" class="mini" data-theme-set="dark">Dark</button>
+        <button type="button" class="mini" data-theme-set="system">System</button>
+      </div>
+    </div>
+  </header>
+
+  <div id="viewBench">
+  <div class="bench">
+    <div class="stagecol">
+      <div class="transport">
+        <button id="play" class="primary" type="button">Pause</button>
+        <button id="rest" class="mini" type="button">Reset time</button>
+        <button id="review" class="mini" type="button">Reset view</button>
+        <span class="spring"></span>
+        <label class="ctl" style="grid-template-columns:auto 108px 44px;gap:8px;padding:0">
+          <span class="k">Tempo</span>
+          <input id="tempo" type="range" min="0" max="250" value="100">
+          <output id="tempoOut">1.00×</output>
+        </label>
+      </div>
+
+      <div class="stage" id="stage">
+        <canvas id="cv" role="img" aria-label="The Futures Atlas mark as a sphere with a tilted ring turning inside it"></canvas>
+        <span class="hint">Drag to orbit</span>
+      </div>
+
+      <div class="strip" id="strip">
+        <span class="lede">Live, at the sizes the mark is actually used</span>
+      </div>
+    </div>
+
+    <div class="rail">
+      <section class="card">
+        <h2>The object</h2>
+        <p class="note">The sphere sets the size of everything and never moves. Blink folds the ring shut like an eyelid.</p>
+        <div class="rack" id="rack"></div>
+        <div class="rackfoot">
+          <button class="mini" type="button" data-act="spinall">Turn both</button>
+          <button class="mini" type="button" data-act="stopall">Stop both</button>
+          <button class="mini" type="button" data-act="reset">Back to the logo</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="selhead">
+          <h2 style="margin:0">Part</h2>
+          <span class="who" id="who">Ring</span>
+        </div>
+        <div id="params">
+          <p class="hintline" data-for="ball">A sphere looks the same from every angle, so there is nothing here to turn. It can only change size.</p>
+
+          <div data-for="turns">
+            <label class="check"><input type="checkbox" id="pSpin"> <span id="pSpinLabel">Turn this ring</span></label>
+            <label class="ctl"><span class="k" id="pRateLabel">Turns / sec</span><input id="pRate" type="range" min="-60" max="60" value="10"><output id="pRateOut">+0.10</output></label>
+            <div data-for="axis">
+              <label class="ctl"><span class="k">Axis around</span><input id="pAxisA" type="range" min="0" max="360" value="120"><output id="pAxisAOut">120°</output></label>
+              <label class="ctl"><span class="k">Axis lift</span><input id="pAxisB" type="range" min="-90" max="90" value="0"><output id="pAxisBOut">0°</output></label>
+              <div class="axisrow">
+                <button class="mini" type="button" data-axis="own">Its own axis</button>
+                <button class="mini" type="button" data-axis="across">Across it</button>
+                <button class="mini" type="button" data-axis="face">Face on</button>
+              </div>
+            </div>
+            <label class="ctl" data-for="lidpose"><span class="k">Closes to</span><input id="pClose" type="range" min="50" max="90" value="90"><output id="pCloseOut">90°</output></label>
+            <label class="ctl" data-for="lidpose"><span class="k">How long</span><input id="pHold" type="range" min="10" max="150" value="34"><output id="pHoldOut">0.34 s</output></label>
+            <label class="ctl"><span class="k">Head start</span><input id="pPhase" type="range" min="0" max="360" value="0"><output id="pPhaseOut">0°</output></label>
+          </div>
+          <p class="hintline" data-for="lidnote">The ring is the eyelid. Blinking folds it flat onto the line, and the inner sphere goes behind it the way a pupil does, so nothing is painted over the mark.</p>
+
+          <p class="subhead" data-for="pose">Resting pose</p>
+          <label class="ctl" data-for="ringpose"><span class="k">Tilt</span><input id="pTilt" type="range" min="0" max="180" value="52"><output id="pTiltOut">52°</output></label>
+          <label class="ctl" data-for="ringpose"><span class="k">Tilt around</span><input id="pLean" type="range" min="0" max="360" value="120"><output id="pLeanOut">120°</output></label>
+          <label class="ctl" data-for="linepose"><span class="k">Angle</span><input id="pAngle" type="range" min="0" max="360" value="120"><output id="pAngleOut">120°</output></label>
+          <label class="ctl" data-for="linepose"><span class="k">Lift</span><input id="pLift" type="range" min="-90" max="90" value="0"><output id="pLiftOut">0°</output></label>
+
+          <p class="subhead" data-for="gaze">Gaze</p>
+          <label class="ctl" data-for="gaze"><span class="k">Look</span><input id="pGaze" type="range" min="0" max="100" value="0"><output id="pGazeOut">0.00</output></label>
+          <label class="ctl" data-for="gaze"><span class="k">Look toward</span><input id="pGazeA" type="range" min="0" max="360" value="120"><output id="pGazeAOut">120°</output></label>
+
+          <p class="subhead" data-for="size">Size</p>
+          <label class="ctl" data-for="radius"><span class="k">Radius</span><input id="pR" type="range" min="10" max="100" value="100"><output id="pROut">1.00</output></label>
+          <label class="ctl" data-for="length"><span class="k">Length</span><input id="pLen" type="range" min="20" max="100" value="100"><output id="pLenOut">1.00</output></label>
+          <label class="ctl" data-for="thickness"><span class="k">Thickness</span><input id="pBand" type="range" min="10" max="400" value="245"><output id="pBandOut">0.245</output></label>
+          <label class="ctl" data-for="opacity"><span class="k">Opacity</span><input id="pAlpha" type="range" min="10" max="100" value="100"><output id="pAlphaOut">1.00</output></label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Ready-made motions</h2>
+        <div class="presets" id="presets"></div>
+      </section>
+
+      <section class="card">
+        <h2>Sphere &amp; render</h2>
+        <label class="ctl"><span class="k">Perspective</span><input id="gPersp" type="range" min="0" max="100" value="34"><output id="gPerspOut">0.34</output></label>
+        <label class="ctl"><span class="k">Relief</span><input id="gShade" type="range" min="0" max="100" value="0"><output id="gShadeOut">0.00</output></label>
+        <label class="ctl" style="grid-template-columns:92px minmax(0,1fr)"><span class="k">Far side</span>
+          <select id="gBack">
+            <option value="hide">Hidden</option>
+            <option value="ghost">Ghosted</option>
+            <option value="solid" selected>Fully drawn</option>
+          </select>
+        </label>
+        <label class="ctl" style="grid-template-columns:92px minmax(0,1fr)"><span class="k">Sphere</span>
+          <select id="gGuide">
+            <option value="off">Ring only</option>
+            <option value="wire" selected>Lattice</option>
+            <option value="fill">Shaded ball</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" id="gPlate"> Line and inner sphere ride the ring's plane</label>
+        <label class="check"><input type="checkbox" id="gBall"> Keep the inner sphere a sphere</label>
+        <label class="check"><input type="checkbox" id="gGhost"> Show the resting pose underneath</label>
+        <label class="check"><input type="checkbox" id="gTint"> Colour the parts so I can tell them apart</label>
+        <div class="rackfoot">
+          <button class="mini" type="button" id="copy">Copy settings</button>
+          <button class="mini" type="button" id="shuffle">Shuffle</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  </div>
+
+  <div class="sheet" id="sheet" hidden></div>
+
+  <p class="foot">The numbers come from <em>fa.svg</em> itself. Along the diagonal the artwork is unbroken ink from 0.222 to 0.998 of the radius, which is one line running the full diameter; square to it there are three bands, at 0.224–0.396, 0.469–0.639 and 0.831–1.0. A ring tilted 51° about that diagonal projects to exactly those figures, so the crescents in the flat mark are one circle seen at an angle. Every part is round stock rather than flat: a tube of diameter 0.170, which is the same gauge as the sphere's own ring, swept round a circle of radius 0.875. Fitted that way it lands within 1.3% of the original, better than a flat ring manages, and nothing ever thins to nothing when it turns edge on.</p>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // >>> ENGINE
+  var TAU = Math.PI * 2, D2R = Math.PI / 180;
+
+  // Measured off the artwork, then fitted: tilt, lean and thickness are whatever
+  // reproduces fa.svg most closely.
+  var MARK = {
+  "sphereBand": 0.168,
+  "ringTilt": 51.0,
+  "ringLean": 120,
+  "ringBand": 0.17,
+  "lineAngle": 120,
+  "lineHalf": 0.084,
+  "coreR": 0.392,
+  "coreBand": 0.166,
+  "ringR": 0.96,
+  "lineLen": 0.875
+};
+
+  var SPHERE = 0, RING = 1, LINE = 2, CORE = 3, BLINK = 4;
+
+  var PARTS = [
+    { id: "sphere", name: "Sphere", tint: "#3d6fa3", kind: "ball", note: "the whole" },
+    { id: "ring", name: "Ring", tint: "#b0503a", kind: "ring" },
+    { id: "line", name: "Line", tint: "#b8862f", kind: "line" },
+    { id: "core", name: "Inner sphere", tint: "#a5487c", kind: "ball", note: "at the middle" },
+    { id: "blink", name: "Blink", tint: "#6f6350", kind: "blink" }
+  ];
+
+  function defaults() {
+    return [
+      { on: true, spin: false, rate: 0, axisA: 0, axisB: 0, phase: 0,
+        tilt: 0, lean: 0, r: 1, band: MARK.sphereBand, len: 1, alpha: 1 },
+      { on: true, spin: false, rate: 0.1, axisA: MARK.ringLean, axisB: 0, phase: 0,
+        tilt: MARK.ringTilt, lean: MARK.ringLean, r: MARK.ringR, band: MARK.ringBand, len: 1, alpha: 1 },
+      { on: true, spin: false, rate: 0.14, axisA: 0, axisB: 90, phase: 0,
+        tilt: 0, lean: MARK.lineAngle, r: 1, band: MARK.lineHalf, len: MARK.lineLen, alpha: 1 },
+      // len is how far the gaze is off centre, lean is which way it looks
+      { on: true, spin: false, rate: 0.1, axisA: 0, axisB: 0, phase: 0,
+        tilt: 0, lean: MARK.ringLean, r: MARK.coreR, band: MARK.coreBand, len: 0, alpha: 1 },
+      // The ring is the eyelid. Folding it flat onto the line shuts the eye, and
+      // the inner sphere goes behind the lids the way a pupil does: it is not
+      // painted over, it stops being drawn.
+      // len is how long one blink takes, in seconds
+      { on: true, spin: false, rate: 0.22, axisA: 0, axisB: 0, phase: 0,
+        tilt: 90, lean: 0, r: 1, band: 0, len: 0.34, alpha: 1 }
+    ];
+  }
+
+  var els = defaults();
+  var sel = RING;
+  var hover = -1;
+  var scene = {
+    playing: true, tempo: 1, persp: 0.34, shade: 0,
+    back: "solid", guide: "wire", ghost: false, tint: false,
+    plate: false, coreSolid: false, routine: "none", yaw: 0, pitch: 0
+  };
+  var T = 0;
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) scene.playing = false;
+
+  // ------------------------------------------------------------- presets
+  function set(list, i, cfg) {
+    var e = list[i], k;
+    for (k in cfg) if (Object.prototype.hasOwnProperty.call(cfg, k)) e[k] = cfg[k];
+  }
+
+  var RL = MARK.ringLean;
+
+  function base(plate) {
+    els = defaults();
+    scene.plate = !!plate;
+    scene.coreSolid = false;
+    scene.routine = "none";
+  }
+
+  // An eye is mostly lids: where they rest, how fast they move, and where the
+  // pupil is looking.
+  function eye(cfg) {
+    base(false);
+    set(els, RING, { tilt: cfg.lid, lean: cfg.lean || RL });
+    set(els, LINE, { lean: cfg.lean || RL });
+    set(els, BLINK, { spin: true, rate: cfg.rate, len: cfg.hold, tilt: cfg.shut || 90 });
+    if (cfg.look) set(els, CORE, { len: cfg.look, lean: cfg.lookAt === undefined ? (cfg.lean || RL) : cfg.lookAt });
+    if (cfg.roam) set(els, CORE, { spin: true, rate: cfg.roam });
+  }
+
+  var PRESETS = [
+    { g: "Motion", id: "rest", name: "At rest", desc: "The logo, exactly", apply: function () { base(false); } },
+    { g: "Motion", id: "roll", name: "Ring rolls", desc: "Line and core hold still", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.1, axisA: RL, axisB: 0 });
+      } },
+    { g: "Motion", id: "both", name: "Ring and line", desc: "Ring rolls, line sweeps", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.1, axisA: RL, axisB: 0 });
+        set(els, LINE, { spin: true, rate: -0.16, axisA: 0, axisB: 90 });
+      } },
+    { g: "Motion", id: "gimbal", name: "Gimbal", desc: "Turning across each other", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.1, axisA: RL, axisB: 0 });
+        set(els, LINE, { spin: true, rate: 0.1, axisA: RL + 90, axisB: 0 });
+      } },
+    { g: "Motion", id: "precess", name: "Precess", desc: "Ring swings round a fixed line", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.07, axisA: 0, axisB: 90 });
+      } },
+    { g: "Motion", id: "tumble", name: "Tumble", desc: "Both on one odd axis", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.11, axisA: 35, axisB: 30 });
+        set(els, LINE, { spin: true, rate: 0.11, axisA: 35, axisB: 30 });
+      } },
+
+    { g: "One flat plate", id: "flip", name: "Coin flip", desc: "End over end", apply: function () {
+        base(true);
+        set(els, RING, { spin: true, rate: 0.24, axisA: RL + 90, axisB: 0 });
+      } },
+    { g: "One flat plate", id: "platetumble", name: "Plate tumble", desc: "Off-axis, never repeating twice", apply: function () {
+        base(true);
+        set(els, RING, { spin: true, rate: 0.13, axisA: 35, axisB: 28 });
+      } },
+    { g: "One flat plate", id: "flipball", name: "Coin flip, ball centre", desc: "Plate turns, sphere stays a sphere", apply: function () {
+        base(true);
+        scene.coreSolid = true;
+        set(els, RING, { spin: true, rate: 0.24, axisA: RL + 90, axisB: 0 });
+      } },
+    { g: "One flat plate", id: "edgeball", name: "Edge on, ball centre", desc: "Hoop wheeling round a fixed ball", apply: function () {
+        base(true);
+        scene.coreSolid = true;
+        set(els, RING, { spin: true, rate: 0.16, axisA: RL, axisB: 0, tilt: 78 });
+      } },
+    { g: "One flat plate", id: "record", name: "On the turntable", desc: "Flat on, turning in place", apply: function () {
+        base(true);
+        set(els, RING, { spin: true, rate: 0.09, axisA: 0, axisB: 90 });
+      } },
+    { g: "One flat plate", id: "edge", name: "Edge on", desc: "Nearly side-on, wheeling round", apply: function () {
+        base(true);
+        set(els, RING, { spin: true, rate: 0.16, axisA: RL, axisB: 0, tilt: 78 });
+      } },
+
+    { g: "As an eye", id: "blink", name: "Blink", desc: "Steady, every few seconds", apply: function () {
+        eye({ lid: MARK.ringTilt, rate: 0.22, hold: 0.34 });
+      } },
+    { g: "As an eye", id: "rollblink", name: "Roll, then blink", desc: "One turn, a pause, two blinks", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.1, axisA: RL, axisB: 0 });
+        set(els, BLINK, { spin: true });
+        scene.routine = "rollblink";
+      } },
+    { g: "As an eye", id: "sleepy", name: "Sleepy", desc: "Heavy lids, slow and often", apply: function () {
+        eye({ lid: 70, rate: 0.45, hold: 0.62 });
+      } },
+    { g: "As an eye", id: "alert", name: "Alert", desc: "Wide, and rarely", apply: function () {
+        eye({ lid: 32, rate: 0.16, hold: 0.16 });
+      } },
+    { g: "As an eye", id: "suspicious", name: "Suspicious", desc: "Narrowed and tilted", apply: function () {
+        eye({ lid: 72, lean: 104, rate: 0.12, hold: 0.5 });
+      } },
+    { g: "As an eye", id: "flutter", name: "Flutter", desc: "Nervous, twice a second", apply: function () {
+        eye({ lid: 46, rate: 1.3, hold: 0.13 });
+      } },
+    { g: "As an eye", id: "sideeye", name: "Side-eye", desc: "Looking away, not at you", apply: function () {
+        eye({ lid: 58, rate: 0.2, hold: 0.3, look: 0.85 });
+      } },
+    { g: "As an eye", id: "rolling", name: "Rolling", desc: "The pupil going round", apply: function () {
+        eye({ lid: 40, rate: 0.18, hold: 0.3, look: 0.7, roam: 0.14 });
+      } },
+    { g: "As an eye", id: "wink", name: "Slow wink", desc: "Shuts, holds, opens", apply: function () {
+        eye({ lid: MARK.ringTilt, rate: 0.28, hold: 1.15 });
+      } },
+
+    { g: "Odder", id: "watchful", name: "Watchful plate", desc: "An eye on a tumbling disc", apply: function () {
+        eye({ lid: 44, rate: 0.3, hold: 0.28 });
+        scene.plate = true;
+        set(els, RING, { spin: true, rate: 0.05, axisA: 0, axisB: 90 });
+      } },
+    { g: "Odder", id: "iris", name: "Iris", desc: "Shutter closing, holding shut", apply: function () {
+        eye({ lid: 20, rate: 0.14, hold: 1.5, shut: 90 });
+      } },
+    { g: "Odder", id: "searchlight", name: "Searchlight", desc: "Sweeping, pupil trailing", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.06, axisA: 0, axisB: 90 });
+        set(els, CORE, { len: 0.8, spin: true, rate: 0.06 });
+      } },
+    { g: "Odder", id: "shiver", name: "Shiver", desc: "Line still, everything else adrift", apply: function () {
+        base(false);
+        set(els, RING, { spin: true, rate: 0.31, axisA: RL + 90, axisB: 12 });
+        set(els, CORE, { len: 0.35, spin: true, rate: -0.44 });
+      } }
+  ];
+
+  // --------------------------------------------------------------- blink
+  // Mostly open, with one quick shut. Closing is faster than opening, the way a
+  // real blink is.
+  function smooth(x) { return x * x * (3 - 2 * x); }
+
+  // A scripted turn: one whole roll, eased in and out so it lands back on the
+  // resting pose, then a pause and two blinks before it goes again.
+  var ROUTINE = { period: 9, roll: 4.2, turns: 1, blinks: [0.75, 1.75] };
+
+  function routineAt(t) {
+    if (scene.routine !== "rollblink") return null;
+    var u = ((t % ROUTINE.period) + ROUTINE.period) % ROUTINE.period;
+    var ang = TAU * ROUTINE.turns;
+    if (u < ROUTINE.roll) {
+      var s = u / ROUTINE.roll;
+      ang *= smooth(s);
+    }
+    var close = 0;
+    ROUTINE.blinks.forEach(function (off) {
+      var d = u - (ROUTINE.roll + off);
+      if (d < 0 || d >= 0.32) return;
+      var b = d / 0.32;
+      var c = b < 0.42 ? smooth(b / 0.42) : 1 - smooth((b - 0.42) / 0.58);
+      if (c > close) close = c;
+    });
+    return { ang: ang, close: close };
+  }
+
+  function blinkClose(t) {
+    var r = routineAt(t);
+    if (r) return r.close;
+    var e = els[BLINK];
+    if (!e.spin) return 0;
+    var per = 1 / Math.max(0.02, e.rate);
+    var u = ((t + e.phase / 360 * per) % per + per) % per;
+    var dur = Math.min(Math.max(0.08, e.len), per * 0.72);
+    if (u > dur) return 0;
+    var s = u / dur;
+    return s < 0.42 ? smooth(s / 0.42) : 1 - smooth((s - 0.42) / 0.58);
+  }
+
+  // ------------------------------------------------------------ geometry
+  function axisVec(a, b) {
+    var ar = a * D2R, br = b * D2R, cb = Math.cos(br);
+    return [cb * Math.cos(ar), cb * Math.sin(ar), Math.sin(br)];
+  }
+
+  function rodrigues(p, k, ang) {
+    var c = Math.cos(ang), s = Math.sin(ang);
+    var dot = k[0] * p[0] + k[1] * p[1] + k[2] * p[2];
+    var cx = k[1] * p[2] - k[2] * p[1];
+    var cy = k[2] * p[0] - k[0] * p[2];
+    var cz = k[0] * p[1] - k[1] * p[0];
+    var m = dot * (1 - c);
+    return [p[0] * c + cx * s + k[0] * m, p[1] * c + cy * s + k[1] * m, p[2] * c + cz * s + k[2] * m];
+  }
+
+  function sceneRot(p, yaw, pitch) {
+    var cy = Math.cos(yaw), sy = Math.sin(yaw);
+    var x = p[0] * cy + p[2] * sy;
+    var z = -p[0] * sy + p[2] * cy;
+    var cp = Math.cos(pitch), sp = Math.sin(pitch);
+    return [x, p[1] * cp - z * sp, p[1] * sp + z * cp];
+  }
+
+  function flatCircle(r, n) {
+    var out = [], i, a;
+    for (i = 0; i < n; i++) { a = i / n * TAU; out.push([Math.cos(a) * r, Math.sin(a) * r, 0]); }
+    return out;
+  }
+
+  // The contours of a moving part, spun and turned into view space.
+  // Everything the ring does, as a transform. In plate mode the line and the
+  // inner sphere are drawn in the ring's own plane and pushed through this, so
+  // the three of them tumble as one flat medallion inside the sphere.
+  function ringFrame(t) {
+    var e = els[RING];
+    var k0 = axisVec(e.lean, 0), tilt = ringTilt(t) * D2R;
+    var r = routineAt(t);
+    var ang = r ? r.ang : (e.phase / 360 + (e.spin ? e.rate * t : 0)) * TAU;
+    var k1 = axisVec(e.axisA, e.axisB);
+    return function (p) {
+      var q = rodrigues(p, k0, tilt);
+      return ang ? rodrigues(q, k1, ang) : q;
+    };
+  }
+
+  function gazeOffset(t) {
+    var e = els[CORE];
+    if (!e.len) return [0, 0];
+    var a = (e.lean + (e.spin ? e.rate * t * 360 : 0)) * D2R, d = e.len * 0.36;
+    return [Math.cos(a) * d, Math.sin(a) * d];
+  }
+
+  function ringTilt(t) {
+    var e = els[RING], c = blinkClose(t);
+    return c ? e.tilt + (els[BLINK].tilt - e.tilt) * c : e.tilt;
+  }
+
+  function view(p) { return sceneRot(p, scene.yaw, scene.pitch); }
+
+  // Every part is a tube: a centre line stroked with a round pen. The
+  // orthographic shadow of a tube is exactly its centre line stroked, which is
+  // why this is both simpler and truer than filling an outline, and why nothing
+  // collapses to zero area when a part turns edge on.
+  var OVERLAP = 0.01;
+
+  // Cut a centre line at the horizon. The halves overlap by a hair so the join
+  // never shows.
+  function runs(pts, front) {
+    var s = front ? 1 : -1, i, keep = [], any = false, all = true;
+    for (i = 0; i < pts.length; i++) {
+      var k = s * pts[i][2] + OVERLAP >= 0;
+      keep.push(k);
+      if (k) any = true; else all = false;
+    }
+    if (!any) return [];
+    if (all) return [pts];
+
+    var out = [], cur = null, start = keep.indexOf(false);
+    for (i = 0; i < pts.length; i++) {
+      var j = (start + i) % pts.length;
+      if (keep[j]) { if (!cur) { cur = []; out.push(cur); } cur.push(pts[j]); }
+      else cur = null;
+    }
+    return out.filter(function (r) { return r.length > 1; });
+  }
+
+  // -------------------------------------------------------------- colour
+  function hexRGB(h) {
+    h = h.replace("#", "");
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    var n = parseInt(h, 16);
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+  }
+
+  function mix(rgb, target, amt) {
+    return "rgb(" + Math.round(rgb[0] + (target[0] - rgb[0]) * amt) + "," +
+      Math.round(rgb[1] + (target[1] - rgb[1]) * amt) + "," +
+      Math.round(rgb[2] + (target[2] - rgb[2]) * amt) + ")";
+  }
+
+  var theme = {};
+  function readTheme() {
+    var css = getComputedStyle(document.documentElement);
+    function tok(n, fb) { return css.getPropertyValue(n).trim() || fb; }
+    theme.ink = hexRGB(tok("--ink", "#17181b"));
+    theme.stage = hexRGB(tok("--stage", "#efe8db"));
+    theme.accent = hexRGB(tok("--accent-hex", "#1777b8"));
+    theme.lattice = tok("--lattice", "rgba(23,24,27,0.16)");
+  }
+  readTheme();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTheme);
+
+  // ---------------------------------------------------------------- draw
+  function baseColour(i, bare) {
+    var base = scene.tint ? hexRGB(PARTS[i].tint) : theme.ink;
+    if (!bare && hover === i && !scene.tint) base = theme.accent;
+    return base;
+  }
+
+  // the centre line of each part, already spun and turned into view space
+  function ringCurve(t, n) {
+    var e = els[RING], f = ringFrame(t);
+    return flatCircle(Math.max(0.02, e.r - e.band / 2), n).map(function (p) { return view(f(p)); });
+  }
+
+  function lineCurve(t, n) {
+    var e = els[LINE], i, out = [], steps = Math.max(16, n >> 3);
+    var u, pts = [];
+    if (scene.plate) {
+      u = axisVec(e.lean, 0);
+      var f = ringFrame(t);
+      for (i = 0; i <= steps; i++) {
+        var s0 = -e.len + 2 * e.len * i / steps;
+        pts.push(f([u[0] * s0, u[1] * s0, 0]));
+      }
+    } else {
+      u = axisVec(e.lean, e.tilt);
+      var ang = (e.phase / 360 + (e.spin ? e.rate * t : 0)) * TAU;
+      var k = axisVec(e.axisA, e.axisB);
+      for (i = 0; i <= steps; i++) {
+        var s1 = -e.len + 2 * e.len * i / steps;
+        var p = [u[0] * s1, u[1] * s1, u[2] * s1];
+        pts.push(ang ? rodrigues(p, k, ang) : p);
+      }
+    }
+    for (i = 0; i < pts.length; i++) out.push(view(pts[i]));
+    return out;
+  }
+
+  function coreCurves(t, n) {
+    var e = els[CORE], g = gazeOffset(t);
+    var outer = flatCircle(e.r, n);
+    var centre = flatCircle(Math.max(0.01, e.r - e.band / 2), n);
+    var shift = function (p) { return [p[0] + g[0], p[1] + g[1], 0]; };
+    if (!scene.plate || scene.coreSolid) return [outer.map(shift), centre.map(shift)];
+    var f = ringFrame(t);
+    var carry = function (p) { return view(f(shift(p))); };
+    return [outer.map(carry), centre.map(carry)];
+  }
+
+  function sphereCurve(n) {
+    var e = els[SPHERE];
+    return flatCircle(Math.max(0.02, e.r - e.band / 2), n);
+  }
+
+  // Stroke one part's centre line, near side and far side apart so the far side
+  // can be dimmed, with a gradient along the depth so it reads as round.
+  function paintTube(ctx, project, pts, closed, width, R, i, shade, bare, cap, front) {
+    var segs = runs(pts, front);
+    if (!segs.length) return;
+
+    var zmin = Infinity, zmax = -Infinity, pmin = null, pmax = null;
+    pts.forEach(function (p) {
+      var q = project(p);
+      if (p[2] < zmin) { zmin = p[2]; pmin = q; }
+      if (p[2] > zmax) { zmax = p[2]; pmax = q; }
+    });
+
+    var base = baseColour(i, bare);
+    ctx.lineWidth = Math.max(0.6, width * R);
+    ctx.lineJoin = "round";
+    ctx.lineCap = cap || "round";
+    ctx.globalAlpha = els[i].alpha * (front ? 1 : (scene.back === "ghost" ? 0.22 : 1));
+
+    if (shade > 0.01 && pmin && pmax && zmax - zmin > 0.02 &&
+        (Math.abs(pmax[0] - pmin[0]) > 1 || Math.abs(pmax[1] - pmin[1]) > 1)) {
+      var g = ctx.createLinearGradient(pmin[0], pmin[1], pmax[0], pmax[1]);
+      g.addColorStop(0, mix(base, theme.stage, 0.42 * shade));
+      g.addColorStop(1, mix(base, [255, 255, 255], 0.16 * shade));
+      ctx.strokeStyle = g;
+    } else {
+      ctx.strokeStyle = "rgb(" + base.join(",") + ")";
+    }
+
+    segs.forEach(function (seg) {
+      ctx.beginPath();
+      seg.forEach(function (p, j) {
+        var q = project(p);
+        if (j) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]);
+      });
+      if (closed && seg.length === pts.length) ctx.closePath();
+      ctx.stroke();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  // The inner sphere is solid, so it hides whatever passes behind it: its
+  // silhouette is filled in the ground colour before its own band is drawn. With
+  // the lids shut it is behind them and is not drawn at all.
+  function paintCore(ctx, project, R, n, shade, bare, opening) {
+    var e = els[CORE];
+    var cur = coreCurves(T, n);
+    ctx.save();
+    if (opening) ctx.clip(opening);
+    ctx.globalAlpha = e.alpha;
+    ctx.beginPath();
+    cur[0].forEach(function (p, j) {
+      var q = project(p);
+      if (j) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]);
+    });
+    ctx.closePath();
+    ctx.fillStyle = "rgb(" + theme.stage.join(",") + ")";
+    ctx.fill();
+    ctx.globalAlpha = 1;
+    // on the plate it is a flat ring, so both halves of it show
+    if (scene.back !== "hide") paintTube(ctx, project, cur[1], true, e.band, R, CORE, shade, bare, "round", false);
+    paintTube(ctx, project, cur[1], true, e.band, R, CORE, shade, bare, "round", true);
+    ctx.restore();
+  }
+
+  // The eye's opening is the inside of the ring's tube: the projected centre
+  // line pushed inwards by half the tube. Once the lids meet there is nothing
+  // left of it.
+  function eyeOpening(project, n) {
+    if (!els[BLINK].spin) return null;
+    var e = els[RING];
+    var pts = ringCurve(T, n).map(project);
+    var d = (e.band / 2) * (project([1, 0, 0])[0]);
+    var m = pts.length, i, out = [], nearest = Infinity;
+    for (i = 0; i < m; i++) {
+      var p = pts[i], a = pts[(i - 1 + m) % m], b = pts[(i + 1) % m];
+      var tx = b[0] - a[0], ty = b[1] - a[1];
+      var L = Math.hypot(tx, ty) || 1;
+      var nx = -ty / L, ny = tx / L;
+      if (nx * p[0] + ny * p[1] > 0) { nx = -nx; ny = -ny; }
+      out.push([p[0] + nx * d, p[1] + ny * d]);
+      var r = Math.hypot(p[0], p[1]);
+      if (r < nearest) nearest = r;
+    }
+    if (nearest <= d * 1.02) return new Path2D();   // shut: no opening at all
+    var path = new Path2D();
+    out.forEach(function (p, j) { if (j) path.lineTo(p[0], p[1]); else path.moveTo(p[0], p[1]); });
+    path.closePath();
+    return path;
+  }
+
+  function drawScene(ctx, size, opts) {
+    opts = opts || {};
+    var R = size * 0.5 * (opts.fit || 0.9);
+    var D = 2.1 + 26 * (1 - scene.persp);
+    var n = opts.n || (opts.bare ? 128 : 720);
+    var shade = opts.bare ? 0 : scene.shade;
+    var bare = !!opts.bare;
+
+    function project(p) {
+      var f = D / (D - p[2]);
+      return [p[0] * f * R, p[1] * f * R];
+    }
+
+    ctx.clearRect(0, 0, size, size);
+    ctx.save();
+    ctx.translate(size / 2, size / 2);
+
+    if (!bare && scene.guide === "fill") {
+      var g = ctx.createRadialGradient(-R * 0.35, -R * 0.35, R * 0.1, 0, 0, R * 1.05);
+      g.addColorStop(0, mix(theme.stage, theme.ink, 0.06));
+      g.addColorStop(1, mix(theme.stage, theme.ink, 0.16));
+      ctx.beginPath(); ctx.arc(0, 0, R, 0, TAU);
+      ctx.fillStyle = g; ctx.fill();
+    }
+    if (!bare && scene.guide === "wire") drawLattice(ctx, R, project);
+
+    var ring = ringCurve(T, n), line = lineCurve(T, n);
+
+    if (!bare && scene.ghost) {
+      ctx.globalAlpha = 0.1;
+      var t0 = T;
+      T = 0;
+      if (els[RING].on) paintTube(ctx, project, ringCurve(0, n), true, els[RING].band, R, RING, 0, true, "round", true);
+      if (els[LINE].on) paintTube(ctx, project, lineCurve(0, n), false, els[LINE].band * 2, R, LINE, 0, true, "round", true);
+      T = t0;
+      ctx.globalAlpha = 1;
+    }
+
+    var showBack = scene.back !== "hide";
+    if (showBack) {
+      if (els[RING].on) paintTube(ctx, project, ring, true, els[RING].band, R, RING, shade, bare, "round", false);
+      if (els[LINE].on) paintTube(ctx, project, line, false, els[LINE].band * 2, R, LINE, shade, bare, "round", false);
+    }
+    if (els[LINE].on) paintTube(ctx, project, line, false, els[LINE].band * 2, R, LINE, shade, bare, "round", true);
+    if (els[CORE].on) paintCore(ctx, project, R, n, shade, bare, eyeOpening(project, n));
+    if (els[RING].on) paintTube(ctx, project, ring, true, els[RING].band, R, RING, shade, bare, "round", true);
+    if (els[SPHERE].on) paintTube(ctx, project, sphereCurve(n), true, els[SPHERE].band, R, SPHERE, 0, bare, "round", true);
+
+    ctx.restore();
+  }
+
+  function drawLattice(ctx, R, project) {
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = theme.lattice;
+    ctx.globalAlpha = 0.34;
+    var lat, lon, a, p, s, started;
+    for (lat = -60; lat <= 60; lat += 30) {
+      var rl = Math.cos(lat * D2R), yl = Math.sin(lat * D2R);
+      ctx.beginPath(); started = false;
+      for (a = 0; a <= 360; a += 4) {
+        p = sceneRot([rl * Math.cos(a * D2R), -yl, rl * Math.sin(a * D2R)], scene.yaw, scene.pitch);
+        if (p[2] < 0) { started = false; continue; }
+        s = project(p);
+        if (started) ctx.lineTo(s[0], s[1]); else { ctx.moveTo(s[0], s[1]); started = true; }
+      }
+      ctx.stroke();
+    }
+    for (lon = 0; lon < 180; lon += 30) {
+      ctx.beginPath(); started = false;
+      for (a = 0; a <= 360; a += 4) {
+        var la = a * D2R, lo = lon * D2R;
+        p = sceneRot([Math.cos(la) * Math.sin(lo), -Math.sin(la), Math.cos(la) * Math.cos(lo)], scene.yaw, scene.pitch);
+        if (p[2] < 0) { started = false; continue; }
+        s = project(p);
+        if (started) ctx.lineTo(s[0], s[1]); else { ctx.moveTo(s[0], s[1]); started = true; }
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // <<< ENGINE
+
+  // ------------------------------------------------------------- canvases
+  var stage = document.getElementById("stage");
+  var cv = document.getElementById("cv");
+  var ctx = cv.getContext("2d");
+  var stageSize = 600;
+
+  function sizeStage() {
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    var r = stage.getBoundingClientRect();
+    stageSize = Math.max(200, Math.round(Math.min(r.width, r.height)));
+    cv.width = Math.round(stageSize * dpr);
+    cv.height = Math.round(stageSize * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  new ResizeObserver(sizeStage).observe(stage);
+  sizeStage();
+
+  var SIZES = [16, 24, 32, 48, 72];
+  var strip = document.getElementById("strip");
+  var swatches = [];
+  SIZES.forEach(function (px, idx) {
+    var wrap = document.createElement("div");
+    wrap.className = "swatch" + (idx === SIZES.length - 1 ? " inverse" : "");
+    var c = document.createElement("canvas");
+    var dpr = Math.min(3, window.devicePixelRatio || 1);
+    c.width = px * dpr; c.height = px * dpr;
+    c.style.width = px + "px"; c.style.height = px + "px";
+    var cc = c.getContext("2d");
+    cc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var lab = document.createElement("span");
+    lab.className = "px"; lab.textContent = px + " px";
+    wrap.appendChild(c); wrap.appendChild(lab);
+    strip.appendChild(wrap);
+    swatches.push({ ctx: cc, size: px, inverse: idx === SIZES.length - 1 });
+  });
+
+  function frame(ts) {
+    if (frame.last === undefined) frame.last = ts;
+    var dt = Math.min(0.05, (ts - frame.last) / 1000);
+    frame.last = ts;
+    if (scene.playing) T += dt * scene.tempo;
+
+    if (showSheet) { drawSheet(dt); requestAnimationFrame(frame); return; }
+    drawScene(ctx, stageSize, {});
+    swatches.forEach(function (s) {
+      var ink = theme.ink, st = theme.stage;
+      if (s.inverse) { theme.ink = st; theme.stage = ink; }
+      drawScene(s.ctx, s.size, { bare: true, fit: 0.98 });
+      theme.ink = ink; theme.stage = st;
+    });
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // ----------------------------------------------------------------- orbit
+  var drag = null;
+  stage.addEventListener("pointerdown", function (ev) {
+    drag = { x: ev.clientX, y: ev.clientY, yaw: scene.yaw, pitch: scene.pitch };
+    stage.setPointerCapture(ev.pointerId);
+    stage.classList.add("dragging");
+  });
+  stage.addEventListener("pointermove", function (ev) {
+    if (!drag) return;
+    scene.yaw = drag.yaw + (ev.clientX - drag.x) * 0.008;
+    scene.pitch = Math.max(-1.2, Math.min(1.2, drag.pitch + (ev.clientY - drag.y) * 0.008));
+  });
+  function endDrag() { drag = null; stage.classList.remove("dragging"); }
+  stage.addEventListener("pointerup", endDrag);
+  stage.addEventListener("pointercancel", endDrag);
+
+  // -------------------------------------------------------------------- UI
+  var rack = document.getElementById("rack");
+  var rows = [];
+
+  PARTS.forEach(function (part, i) {
+    var row = document.createElement("div");
+    row.className = "row";
+
+    var pick = document.createElement("button");
+    pick.type = "button";
+    pick.className = "pick";
+    pick.innerHTML = '<span class="chip"></span><span class="nm"></span>';
+    pick.querySelector(".chip").style.setProperty("--c", part.tint);
+    pick.querySelector(".nm").textContent = part.name;
+    pick.addEventListener("click", function () { sel = i; syncUI(); });
+    row.appendChild(pick);
+
+    var turns = part.kind !== "ball" || part.id === "core";
+    var rate = document.createElement("span");
+    rate.className = turns ? "rate" : "fixed";
+    if (!turns) rate.textContent = part.note;
+    row.appendChild(rate);
+
+    var spin = null;
+    if (turns) {
+      spin = document.createElement("button");
+      spin.type = "button";
+      spin.className = "tog spin";
+      spin.textContent = part.kind === "blink" ? "blink" : part.id === "core" ? "roam" : "turn";
+      spin.addEventListener("click", function () { els[i].spin = !els[i].spin; syncUI(); });
+      row.appendChild(spin);
+    }
+
+    var show = null;
+    if (part.kind !== "blink") {
+      show = document.createElement("button");
+      show.type = "button";
+      show.className = "tog eye";
+      show.addEventListener("click", function () { els[i].on = !els[i].on; syncUI(); });
+      row.appendChild(show);
+    }
+
+    row.addEventListener("pointerenter", function () { hover = i; });
+    row.addEventListener("pointerleave", function () { if (hover === i) hover = -1; });
+
+    rack.appendChild(row);
+    rows.push({ row: row, rate: rate, spin: spin, show: show, i: i });
+  });
+
+  document.querySelectorAll("[data-act]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var act = btn.dataset.act;
+      if (act === "spinall") { els[RING].spin = true; els[LINE].spin = true; }
+      if (act === "stopall") { els[RING].spin = false; els[LINE].spin = false; }
+      if (act === "reset") { base(false); T = 0; }
+      syncUI();
+    });
+  });
+
+  var P = {
+    spin: document.getElementById("pSpin"),
+    rate: document.getElementById("pRate"),
+    axisA: document.getElementById("pAxisA"),
+    axisB: document.getElementById("pAxisB"),
+    phase: document.getElementById("pPhase"),
+    tilt: document.getElementById("pTilt"),
+    lean: document.getElementById("pLean"),
+    angle: document.getElementById("pAngle"),
+    lift: document.getElementById("pLift"),
+    r: document.getElementById("pR"),
+    len: document.getElementById("pLen"),
+    band: document.getElementById("pBand"),
+    close: document.getElementById("pClose"),
+    hold: document.getElementById("pHold"),
+    gaze: document.getElementById("pGaze"),
+    gazeA: document.getElementById("pGazeA"),
+    alpha: document.getElementById("pAlpha")
+  };
+
+  function edit(fn) { fn(els[sel]); syncUI(); }
+
+  P.spin.addEventListener("change", function () { edit(function (e) { e.spin = P.spin.checked; }); });
+  P.rate.addEventListener("input", function () { edit(function (e) { e.rate = +P.rate.value / 100; }); });
+  P.axisA.addEventListener("input", function () { edit(function (e) { e.axisA = +P.axisA.value; }); });
+  P.axisB.addEventListener("input", function () { edit(function (e) { e.axisB = +P.axisB.value; }); });
+  P.phase.addEventListener("input", function () { edit(function (e) { e.phase = +P.phase.value; }); });
+  P.tilt.addEventListener("input", function () { edit(function (e) { e.tilt = +P.tilt.value; }); });
+  P.lean.addEventListener("input", function () { edit(function (e) { e.lean = +P.lean.value; }); });
+  P.angle.addEventListener("input", function () { edit(function (e) { e.lean = +P.angle.value; }); });
+  P.lift.addEventListener("input", function () { edit(function (e) { e.tilt = +P.lift.value; }); });
+  P.r.addEventListener("input", function () { edit(function (e) { e.r = +P.r.value / 100; }); });
+  P.len.addEventListener("input", function () { edit(function (e) { e.len = +P.len.value / 100; }); });
+  P.band.addEventListener("input", function () { edit(function (e) { e.band = +P.band.value / 1000; }); });
+  P.close.addEventListener("input", function () { edit(function (e) { e.tilt = +P.close.value; }); });
+  P.hold.addEventListener("input", function () { edit(function (e) { e.len = +P.hold.value / 100; }); });
+  P.gaze.addEventListener("input", function () { edit(function (e) { e.len = +P.gaze.value / 100; }); });
+  P.gazeA.addEventListener("input", function () { edit(function (e) { e.lean = +P.gazeA.value; }); });
+  P.alpha.addEventListener("input", function () { edit(function (e) { e.alpha = +P.alpha.value / 100; }); });
+
+  document.querySelectorAll("[data-axis]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var which = b.dataset.axis;
+      edit(function (e) {
+        if (which === "own") { e.axisA = e.lean; e.axisB = 0; }
+        else if (which === "across") { e.axisA = (e.lean + 90) % 360; e.axisB = 0; }
+        else { e.axisA = 0; e.axisB = 90; }
+        e.spin = true;
+      });
+    });
+  });
+
+  var presetHost = document.getElementById("presets");
+  var lastGroup = null;
+  PRESETS.forEach(function (p) {
+    if (p.g !== lastGroup) {
+      lastGroup = p.g;
+      var h = document.createElement("p");
+      h.className = "subhead grouphead";
+      h.textContent = p.g;
+      presetHost.appendChild(h);
+    }
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = '<span class="pn"></span><span class="pd"></span>';
+    b.querySelector(".pn").textContent = p.name;
+    b.querySelector(".pd").textContent = p.desc;
+    b.addEventListener("click", function () { p.apply(); T = 0; syncUI(); });
+    presetHost.appendChild(b);
+  });
+
+  var G = {
+    persp: document.getElementById("gPersp"),
+    shade: document.getElementById("gShade"),
+    back: document.getElementById("gBack"),
+    guide: document.getElementById("gGuide"),
+    ghost: document.getElementById("gGhost"),
+    plate: document.getElementById("gPlate"),
+    ball: document.getElementById("gBall"),
+    tint: document.getElementById("gTint")
+  };
+  G.persp.addEventListener("input", function () { scene.persp = +G.persp.value / 100; syncUI(); });
+  G.shade.addEventListener("input", function () { scene.shade = +G.shade.value / 100; syncUI(); });
+  G.back.addEventListener("change", function () { scene.back = G.back.value; });
+  G.guide.addEventListener("change", function () { scene.guide = G.guide.value; });
+  G.ghost.addEventListener("change", function () { scene.ghost = G.ghost.checked; });
+  G.plate.addEventListener("change", function () { scene.plate = G.plate.checked; });
+  G.ball.addEventListener("change", function () { scene.coreSolid = G.ball.checked; });
+  G.tint.addEventListener("change", function () { scene.tint = G.tint.checked; });
+
+  var tempo = document.getElementById("tempo");
+  tempo.addEventListener("input", function () { scene.tempo = +tempo.value / 100; syncUI(); });
+
+  var playBtn = document.getElementById("play");
+  playBtn.addEventListener("click", function () { scene.playing = !scene.playing; syncUI(); });
+  document.getElementById("rest").addEventListener("click", function () { T = 0; });
+  document.getElementById("review").addEventListener("click", function () { scene.yaw = 0; scene.pitch = 0; });
+
+  document.getElementById("shuffle").addEventListener("click", function () {
+    var wasPlate = scene.plate;
+    els = defaults();
+    scene.plate = wasPlate;
+    [RING, LINE].forEach(function (i) {
+      set(els, i, {
+        spin: Math.random() < 0.85,
+        rate: (Math.random() * 0.2 + 0.05) * (Math.random() < 0.5 ? -1 : 1),
+        axisA: Math.floor(Math.random() * 12) * 30,
+        axisB: [0, 0, 0, 30, 60, 90][Math.floor(Math.random() * 6)],
+        phase: Math.floor(Math.random() * 8) * 45
+      });
+    });
+    if (Math.random() < 0.4) els[RING].tilt = Math.floor(Math.random() * 90);
+    T = 0;
+    syncUI();
+  });
+
+  var toast = document.getElementById("toast"), toastTimer = null;
+  function say(msg) {
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 1900);
+  }
+
+  document.getElementById("copy").addEventListener("click", function () {
+    var payload = {
+      scene: { persp: scene.persp, shade: scene.shade, back: scene.back, tempo: scene.tempo, onePlate: scene.plate },
+      parts: PARTS.map(function (part, i) {
+        var e = els[i];
+        var o = { part: part.name, on: e.on, radius: +e.r.toFixed(3), thickness: +e.band.toFixed(3), opacity: +e.alpha.toFixed(2) };
+        if (part.id === "core") {
+          o.gaze = { look: +e.len.toFixed(2), toward: e.lean, roams: e.spin, roamRate: +e.rate.toFixed(3) };
+          return o;
+        }
+        if (part.kind === "ball") return o;
+        if (part.kind === "blink") {
+          return { part: part.name, blink: e.spin,
+                   everySeconds: +(1 / Math.max(0.02, e.rate)).toFixed(1),
+                   closesTo: e.tilt, headStart: e.phase };
+        }
+        o.pose = part.kind === "ring"
+          ? { tilt: e.tilt, tiltAround: e.lean }
+          : { angle: e.lean, lift: e.tilt, length: +e.len.toFixed(2) };
+        o.turn = { on: e.spin, rate: +e.rate.toFixed(3), axisAround: e.axisA, axisLift: e.axisB, headStart: e.phase };
+        return o;
+      })
+    };
+    var text = JSON.stringify(payload, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { say("Settings copied"); },
+        function () { say("Could not reach the clipboard"); });
+    } else say("Could not reach the clipboard");
+  });
+
+  document.addEventListener("keydown", function (ev) {
+    if (ev.target.matches("input, select, textarea, button")) return;
+    if (ev.code === "Space") { ev.preventDefault(); scene.playing = !scene.playing; syncUI(); }
+    if (ev.key === "r" || ev.key === "R") T = 0;
+  });
+
+  // ------------------------------------------------------------ UI refresh
+  function fmt(n, d) { return n.toFixed(d === undefined ? 2 : d); }
+
+  function show(what, on) {
+    document.querySelectorAll('[data-for="' + what + '"]').forEach(function (n) {
+      n.style.display = on ? "" : "none";
+    });
+  }
+
+  function syncUI() {
+    rows.forEach(function (r) {
+      var e = els[r.i], kind = PARTS[r.i].kind;
+      r.row.classList.toggle("sel", sel === r.i);
+      if (r.show) {
+        r.show.setAttribute("aria-pressed", e.on ? "true" : "false");
+        r.show.textContent = e.on ? "shown" : "hidden";
+        r.row.style.opacity = e.on ? "1" : "0.45";
+      }
+      if (!r.spin) return;
+      r.spin.setAttribute("aria-pressed", e.spin ? "true" : "false");
+      r.rate.textContent = !e.spin ? (kind === "blink" ? "off" : "still")
+        : kind === "blink" ? "every " + fmt(1 / Math.max(0.02, e.rate), 1) + " s"
+        : (e.rate > 0 ? "+" : "") + fmt(e.rate, 2);
+    });
+
+    var part = PARTS[sel], e = els[sel];
+    var isRing = part.kind === "ring", isLine = part.kind === "line";
+    var isBlink = part.kind === "blink", isCore = part.id === "core";
+    var isSphere = part.id === "sphere";
+
+    document.getElementById("who").textContent = part.name;
+    show("ball", isSphere);
+    show("turns", !isSphere);
+    show("axis", isRing || isLine);
+    show("pose", isRing || isLine);
+    show("ringpose", isRing);
+    show("linepose", isLine);
+    show("lidpose", isBlink);
+    show("lidnote", isBlink);
+    show("gaze", isCore);
+    show("size", !isBlink);
+    show("radius", !isLine && !isBlink);
+    show("length", isLine && !scene.plate);
+    show("thickness", !isBlink);
+    show("opacity", !isBlink);
+    document.getElementById("pSpinLabel").textContent =
+      isBlink ? "Blink" : isCore ? "Let the gaze roam" : isRing ? "Turn this ring" : "Turn this line";
+    document.getElementById("pRateLabel").textContent =
+      isBlink ? "Blink every" : isCore ? "Roam speed" : "Turns / sec";
+    P.rate.min = isBlink ? 3 : -60;
+    P.rate.max = isBlink ? 200 : 60;
+
+    P.spin.checked = !!e.spin;
+    P.rate.value = Math.round(e.rate * 100);
+    P.axisA.value = e.axisA;
+    P.axisB.value = e.axisB;
+    P.phase.value = e.phase;
+    P.tilt.value = e.tilt;
+    P.lean.value = e.lean;
+    P.angle.value = e.lean;
+    P.lift.value = e.tilt;
+    P.r.value = Math.round(e.r * 100);
+    P.len.value = Math.round(e.len * 100);
+    P.band.value = Math.round(e.band * 1000);
+    P.alpha.value = Math.round(e.alpha * 100);
+
+    P.close.value = Math.round(e.tilt);
+    P.hold.value = Math.round(e.len * 100);
+    P.gaze.value = Math.round(e.len * 100);
+    P.gazeA.value = Math.round(e.lean);
+    document.getElementById("pCloseOut").textContent = Math.round(e.tilt) + "\u00b0";
+    document.getElementById("pHoldOut").textContent = fmt(e.len) + " s";
+    document.getElementById("pGazeOut").textContent = fmt(e.len);
+    document.getElementById("pGazeAOut").textContent = Math.round(e.lean) + "\u00b0";
+    document.getElementById("pRateOut").textContent = isBlink
+      ? fmt(1 / Math.max(0.02, e.rate), 1) + " s"
+      : (e.rate > 0 ? "+" : "") + fmt(e.rate, 2);
+    document.getElementById("pAxisAOut").textContent = Math.round(e.axisA) + "°";
+    document.getElementById("pAxisBOut").textContent = Math.round(e.axisB) + "°";
+    document.getElementById("pPhaseOut").textContent = Math.round(e.phase) + "°";
+    document.getElementById("pTiltOut").textContent = Math.round(e.tilt) + "°";
+    document.getElementById("pLeanOut").textContent = Math.round(e.lean) + "°";
+    document.getElementById("pAngleOut").textContent = Math.round(e.lean) + "°";
+    document.getElementById("pLiftOut").textContent = Math.round(e.tilt) + "°";
+    document.getElementById("pROut").textContent = fmt(e.r);
+    document.getElementById("pLenOut").textContent = fmt(e.len);
+    document.getElementById("pBandOut").textContent = fmt(e.band, 3);
+    document.getElementById("pAlphaOut").textContent = fmt(e.alpha);
+
+    playBtn.textContent = scene.playing ? "Pause" : "Play";
+    tempo.value = Math.round(scene.tempo * 100);
+    document.getElementById("tempoOut").textContent = fmt(scene.tempo) + "×";
+    document.getElementById("gPerspOut").textContent = fmt(scene.persp);
+    document.getElementById("gShadeOut").textContent = fmt(scene.shade);
+    G.persp.value = Math.round(scene.persp * 100);
+    G.shade.value = Math.round(scene.shade * 100);
+    G.back.value = scene.back;
+    G.guide.value = scene.guide;
+    G.ghost.checked = scene.ghost;
+    G.plate.checked = scene.plate;
+    G.ball.checked = scene.coreSolid;
+    G.tint.checked = scene.tint;
+  }
+
+  // ------------------------------------------------------- all motions
+  var showSheet = false;
+
+  function sheetScene() {
+    return {
+      playing: true, tempo: 1, persp: 0.3, shade: 0,
+      back: "solid", guide: "off", ghost: false, tint: false,
+      plate: false, coreSolid: false, routine: "none", yaw: 0, pitch: 0
+    };
+  }
+
+  // Each preset needs its own state, and the presets write to the shared
+  // globals, so build them one at a time and put the bench's back afterwards.
+  var cells = (function () {
+    var keepEls = els, keepScene = scene, keepT = T;
+    var list = PRESETS.map(function (p) {
+      scene = sheetScene();
+      els = defaults();
+      p.apply();
+      return { preset: p, els: els, scene: scene, t: 0, size: 180, visible: false };
+    });
+    els = keepEls; scene = keepScene; T = keepT;
+    return list;
+  })();
+
+  cells.forEach(function (c, i) { c.t = i * 0.43; });   // never blink in unison
+
+  var sheetHost = document.getElementById("sheet");
+  var lastGroup = null, sheetRow = null;
+
+  cells.forEach(function (c) {
+    if (c.preset.g !== lastGroup) {
+      lastGroup = c.preset.g;
+      var h = document.createElement("h2");
+      h.textContent = c.preset.g;
+      sheetHost.appendChild(h);
+      sheetRow = document.createElement("div");
+      sheetRow.className = "row";
+      sheetHost.appendChild(sheetRow);
+    }
+    var cell = document.createElement("figure");
+    cell.className = "cell";
+    cell.style.margin = "0";
+    var box = document.createElement("div");
+    box.className = "frame";
+    var cv2 = document.createElement("canvas");
+    box.appendChild(cv2);
+    var cap = document.createElement("figcaption");
+    cap.innerHTML = '<span class="nm"></span><br><span class="ds"></span>';
+    cap.querySelector(".nm").textContent = c.preset.name;
+    cap.querySelector(".ds").textContent = c.preset.desc;
+    cell.appendChild(box);
+    cell.appendChild(cap);
+    sheetRow.appendChild(cell);
+    c.ctx = cv2.getContext("2d");
+    c.canvas = cv2;
+    c.frame = box;
+
+    var pick = document.createElement("button");
+    pick.type = "button";
+    pick.className = "mini";
+    pick.textContent = "Open on the bench";
+    pick.style.marginTop = "2px";
+    pick.addEventListener("click", function () {
+      c.preset.apply();
+      T = 0;
+      syncUI();
+      setView("bench");
+    });
+    cell.appendChild(pick);
+  });
+
+  function sizeAll() {
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    cells.forEach(function (c) {
+      var r = c.frame.getBoundingClientRect();
+      var px = Math.max(120, Math.round(Math.min(r.width, r.height)));
+      if (px === c.size && c.canvas.width) return;
+      c.size = px;
+      c.canvas.width = Math.round(px * dpr);
+      c.canvas.height = Math.round(px * dpr);
+      c.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    });
+  }
+  window.addEventListener("resize", function () { if (showSheet) sizeAll(); });
+
+  // tiles out of view keep their clock but stop drawing
+  if (window.IntersectionObserver) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        for (var i = 0; i < cells.length; i++) {
+          if (cells[i].frame === en.target) { cells[i].visible = en.isIntersecting; break; }
+        }
+      });
+    }, { rootMargin: "180px" });
+    cells.forEach(function (c) { io.observe(c.frame); });
+  } else {
+    cells.forEach(function (c) { c.visible = true; });
+  }
+
+  function drawSheet(dt) {
+    var keepEls = els, keepScene = scene, keepT = T;
+    var playing = keepScene.playing, tempo = keepScene.tempo;
+    cells.forEach(function (c) {
+      if (playing) c.t += dt * tempo;
+      if (!c.visible) return;
+      els = c.els; scene = c.scene; T = c.t;
+      drawScene(c.ctx, c.size, { fit: 0.9, n: 240 });
+    });
+    els = keepEls; scene = keepScene; T = keepT;
+  }
+
+  // ------------------------------------------------------------- theme
+  var themeBtns = Array.prototype.slice.call(document.querySelectorAll("[data-theme-set]"));
+  function setTheme(mode) {
+    if (mode === "system") document.documentElement.removeAttribute("data-theme");
+    else document.documentElement.setAttribute("data-theme", mode);
+    themeBtns.forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.themeSet === mode ? "true" : "false");
+    });
+    try { localStorage.setItem("fa-anim-theme", mode); } catch (err) { /* private window */ }
+    readTheme();
+  }
+  themeBtns.forEach(function (b) {
+    b.addEventListener("click", function () { setTheme(b.dataset.themeSet); });
+  });
+
+  // --------------------------------------------------------- which view
+  var viewBench = document.getElementById("viewBench");
+  var viewBtns = Array.prototype.slice.call(document.querySelectorAll("[data-view]"));
+
+  function setView(v) {
+    showSheet = v === "sheet";
+    viewBench.hidden = showSheet;
+    sheetHost.hidden = !showSheet;
+    viewBtns.forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.view === v ? "true" : "false");
+    });
+    if (showSheet) sizeAll(); else sizeStage();
+    try { localStorage.setItem("fa-anim-view", v); } catch (err) { /* private window */ }
+  }
+  viewBtns.forEach(function (b) {
+    b.addEventListener("click", function () { setView(b.dataset.view); });
+  });
+
+  PRESETS[1].apply();
+  syncUI();
+  var savedTheme = "system", savedView = "bench";
+  try {
+    savedTheme = localStorage.getItem("fa-anim-theme") || "system";
+    savedView = localStorage.getItem("fa-anim-view") || "bench";
+  } catch (err) { /* private window */ }
+  setTheme(savedTheme);
+  setView(savedView);
+
+})();
+</script>
+
+</body>
+</html>
