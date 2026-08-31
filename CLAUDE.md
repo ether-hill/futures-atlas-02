@@ -63,11 +63,32 @@ grep -rnE '#[0-9a-fA-F]{3,8}\b|oklch\(' src/components src/app --include='*.tsx'
 
 ## Required environment variables (set on the Frond Studio Vercel project)
 
-- `KV_REST_API_URL`, `KV_REST_API_TOKEN` — from the Vercel KV / Upstash integration.
+- `REDIS_URL` — the KV store's connection string (ioredis). **This is what the
+  project actually provisions**, on all three environments. `src/lib/store.ts`
+  also accepts `KV_REST_API_URL` + `KV_REST_API_TOKEN` (`@upstash/redis`) as an
+  alternative, but those are not set on this project; it degrades gracefully if
+  neither is present.
 - `STYLE_GUIDE_PASSWORD` (required to unlock the panel), `STYLE_GUIDE_USER` (optional, default `admin`).
 - `EDITOR_USERS`, `ADMIN_SESSION_SECRET` — editor sign-in (see below). Both
   required; the gated routes 503 until they are set.
 - `ADMIN_PASSWORD` — legacy single password, used only if `EDITOR_USERS` is empty.
+
+**Setting up a new machine.** `vercel link` (scope `frond-studio`, project
+`futures-atlas-02`) then `vercel env pull .env.local`. That pulls the
+**Development** environment only, which has `REDIS_URL`, `EDITOR_USERS`,
+`ADMIN_SESSION_SECRET`, `ELEVENLABS_API_KEY`, `MAKEMODE_API_KEY` — enough for
+editor sign-in and draft visibility. `STYLE_GUIDE_PASSWORD` exists only in
+Preview + Production, so **`/style-guide` returns 503 locally by design**; use
+`vercel env pull --environment=preview` if you actually need it.
+
+npm 11 blocks install scripts by default: `sharp` and `ffmpeg-static` (the
+composer's MP4 export) need theirs, hence the `allowScripts` block in
+`package.json`.
+
+A local `npm run build` rewrites the three sub-app lockfiles
+(`hollow-villages`, `manipulate-the-data`, `quantum-lag`), stripping the
+`packages/futures-atlas-core: extraneous` entries recorded in `2d07444`.
+**Revert that churn rather than committing it.**
 
 ## Editors, drafts, and the internal area
 
