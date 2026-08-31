@@ -7,7 +7,7 @@ import { OutputTypeBadge } from "@/components/about/OutputTypeBadge";
 import { SignalField } from "@/components/about/SignalField";
 import { StackGrid } from "@/components/about/StackGrid";
 import { TermField } from "@/components/about/TermField";
-import { FOOTER_CTA, HERO, OUTPUT_TYPES, STACK_INTRO, WORK } from "@/content/about";
+import { FOOTER_CTA, HERO, OPEN, OUTPUT_TYPES, STACK_INTRO, WORK } from "@/content/about";
 
 export const metadata: Metadata = {
   title: "About. Futures Atlas",
@@ -112,6 +112,57 @@ export default function AboutPage() {
           </Reveal>
           <div className="mt-[clamp(28px,4vw,48px)]">
             <StackGrid />
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Open by default ─────────────────────────────────────────────── */}
+      <section className="border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
+        <Container>
+          <div className="grid grid-cols-1 gap-x-[clamp(24px,5vw,80px)] gap-y-10 lg:grid-cols-[1fr_1.6fr]">
+            <Reveal>
+              <p className="eyebrow tick mb-5">{OPEN.eyebrow}</p>
+              <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
+                {OPEN.intro}
+              </h2>
+            </Reveal>
+            <div>
+              <Reveal>
+                <p className="max-w-[68ch] font-mono text-[13.5px] leading-[1.8] text-ink-70">{OPEN.body}</p>
+              </Reveal>
+              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {OPEN.licences.map((l, i) => (
+                  <Reveal key={l.thing} delay={i * 90}>
+                    <div className="flex h-full flex-col justify-between border border-ink/15 p-5">
+                      <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink/45">
+                        {l.thing}
+                      </span>
+                      <span className="mt-6 block text-[19px] font-extrabold tracking-[-0.015em] text-ink">
+                        {l.licence}
+                      </span>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+              <Reveal>
+                <div className="mt-8 flex flex-col items-start gap-3">
+                  <Link
+                    href={OPEN.cta.href}
+                    className="font-mono text-[13px] leading-[1.7] text-accent-deep underline-offset-4 transition-colors hover:underline"
+                  >
+                    {OPEN.cta.label}&nbsp;<span aria-hidden="true">→</span>
+                  </Link>
+                  <a
+                    href={OPEN.repo.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-[13px] leading-[1.7] text-ink/55 underline-offset-4 transition-colors hover:text-ink hover:underline"
+                  >
+                    {OPEN.repo.label}&nbsp;<span aria-hidden="true">↗</span>
+                  </a>
+                </div>
+              </Reveal>
+            </div>
           </div>
         </Container>
       </section>

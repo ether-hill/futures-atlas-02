@@ -335,6 +335,23 @@ export const STACK_INTRO = "The tools we use, in the open. Nothing here is an en
 export const FOOTER_CTA = { label: "Browse the projects", href: "/projects" };
 
 /**
+ * The open-code signpost under the stack. Deliberately NOT a second copy of
+ * the licence table: /developers owns that, this is three labels and a way in.
+ */
+export const OPEN = {
+  eyebrow: "Open by default",
+  intro: "Take the code",
+  body: "The Atlas is one public repository: the site, every project bundled under it, and the data files behind the research. Project code is MIT and the research is CC BY 4.0, so you can fork a prototype or cite a finding without asking anyone. Nothing here needs a key to run it yourself.",
+  licences: [
+    { thing: "Project code", licence: "MIT" },
+    { thing: "Research & data", licence: "CC BY 4.0" },
+    { thing: "The site itself", licence: "Reserved" },
+  ],
+  cta: { label: "How it\u2019s built, and where every project\u2019s source lives", href: "/developers" },
+  repo: { label: "ether-hill/futures-atlas-02", href: "https://github.com/ether-hill/futures-atlas-02" },
+};
+
+/**
  * Who the Atlas is made with. Marks render mono (currentColor) so they hold in
  * both themes, see components/about/Collaborators.
  */

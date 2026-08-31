@@ -6,14 +6,22 @@ import { TERMS, TERM_LINKS, type Term, type TermCluster } from "@/content/about"
 /**
  * The vocabulary of the Atlas as a slowly turning graph.
  *
- * Terms sit on a Fibonacci sphere, projected with perspective, so depth reads
- * as size and opacity. Every term joins its cluster's anchor; TERM_LINKS adds
- * the joins that cross clusters. It turns on its own and follows a drag.
+ * Terms sit on a sphere, one family to a patch, projected with perspective so
+ * depth reads as size and opacity. Every term joins its family's anchor;
+ * TERM_LINKS adds the joins that cross families.
  *
- * Positions are written straight onto the DOM in the animation frame (never
- * through React state) so 60 labels and ~70 lines cost one rAF and no renders.
+ * Motion is deliberately smooth rather than lively. Two things could make it
+ * jitter and both are damped: the de-overlap pass is seeded from LAST frame's
+ * offsets and eased toward its new answer (recomputed cold every frame, it
+ * flip-flops between equally valid solutions, which reads as a jiggle), and
+ * type size is quantised, because a size changing by a hundredth of a pixel
+ * every frame shimmers. On a pointer device the field leans toward the cursor
+ * and terms near it lift, both eased into place.
+ *
+ * Positions are written straight onto the DOM inside the animation frame,
+ * never through React state, so ~60 labels and ~70 lines cost one rAF.
  * Colour comes from the .term-field rules in globals.css, keyed off the
- * cluster, so the palette stays in the token system.
+ * family, so the palette stays inside the token system.
  */
 
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
@@ -21,15 +29,28 @@ const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 const FOV = 2.4;
 const SPIN = 0.00011; // radians per ms, a full turn takes ~95s
 
+const CLUSTER_ORDER: TermCluster[] = ["futures", "quantum", "ai", "society", "craft"];
+/** How far a family spreads from its anchor, in radians of arc. */
+const CLUSTER_SPREAD = 1.05;
+
+/** How much of the de-overlap correction is taken per frame. Lower is calmer. */
+const SETTLE = 0.07;
+/** How far a label may be pushed off its projected point, in px. */
+const MAX_NUDGE_X = 46;
+const MAX_NUDGE_Y = 34;
+
+/** Cursor: how far the field leans, how fast it gets there, and the lift radius. */
+const TILT_Y = 0.3;
+const TILT_X = 0.2;
+const TILT_EASE = 0.04;
+const LIFT_RADIUS = 170;
+const LIFT_EASE = 0.1;
+
 interface Node extends Term {
   x: number;
   y: number;
   z: number;
 }
-
-const CLUSTER_ORDER: TermCluster[] = ["futures", "quantum", "ai", "society", "craft"];
-/** How far a family spreads from its anchor, in radians of arc. */
-const CLUSTER_SPREAD = 1.05;
 
 type Vec = [number, number, number];
 
@@ -59,7 +80,7 @@ function clusterAxes(): Map<TermCluster, Vec> {
 /**
  * Each family sits on its own patch of the sphere, anchor at the centre and
  * the rest spiralling out around it, so the connecting lines stay short and
- * the clusters read as clusters. Radius is jittered per term: on a single skin
+ * the families read as families. Radius is jittered per term: on a single skin
  * two neighbours at the same depth overlap as one solid block.
  */
 function buildNodes(terms: Term[]): Node[] {
@@ -97,7 +118,7 @@ function buildNodes(terms: Term[]): Node[] {
   return out;
 }
 
-/** Cluster anchors (the w:3 terms) plus the hand-written cross-cluster joins. */
+/** Family anchors (the w:3 terms) plus the hand-written cross-family joins. */
 function buildEdges(nodes: Node[]): [number, number][] {
   const index = new Map(nodes.map((n, i) => [n.t, i]));
   const anchor = new Map<string, number>();
@@ -122,9 +143,6 @@ export function TermField() {
   const wrap = useRef<HTMLDivElement>(null);
   const labels = useRef<(HTMLSpanElement | null)[]>([]);
   const lines = useRef<(SVGLineElement | null)[]>([]);
-  const hovered = useRef<number | null>(null);
-  /** Label width per 1px of font-size, measured once (see the mount effect). */
-  const widthRatio = useRef<number[]>([]);
   const [ready, setReady] = useState(false);
 
   // A phone can't read sixty overlapping labels; drop the supporting tier.
@@ -146,31 +164,47 @@ export function TermField() {
     if (!el) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const len = nodes.length;
+
     let w = el.clientWidth;
     let h = el.clientHeight;
     // A little past centre: the field reads better weighted to the right.
-    let rotY = 0.6;
-    let rotX = -0.22;
+    let spinY = 0.6;
+    let baseX = -0.22;
     let dragY = 0;
     let dragX = 0;
+    let tiltY = 0;
+    let tiltX = 0;
+    let wantTiltY = 0;
+    let wantTiltX = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+    let cursorOn = false;
+    let dragging = false;
+    let lastX = 0;
+    let lastY = 0;
     let last = performance.now();
     let frame = 0;
 
-    const ro = new ResizeObserver(() => {
-      w = el.clientWidth;
-      h = el.clientHeight;
-      draw(0);
-    });
-    ro.observe(el);
-
-    const project = (n: Node, cy: number, cx: number, sy: number, sx: number) => {
-      // yaw then pitch
-      const x1 = n.x * cy + n.z * sy;
-      const z1 = -n.x * sy + n.z * cy;
-      const y2 = n.y * cx - z1 * sx;
-      const z2 = n.y * sx + z1 * cx;
-      return { x: x1, y: y2, z: z2 };
-    };
+    // persisted across frames: the whole point of not jiggling
+    const offX = new Float64Array(len);
+    const offY = new Float64Array(len);
+    const lift = new Float64Array(len);
+    // scratch, allocated once
+    const X = new Float64Array(len);
+    const Y = new Float64Array(len);
+    const X0 = new Float64Array(len);
+    const Y0 = new Float64Array(len);
+    const P = new Float64Array(len);
+    const Z = new Float64Array(len);
+    const HW = new Float64Array(len);
+    const HH = new Float64Array(len);
+    const FS = new Float64Array(len);
+    const PX = new Float64Array(len);
+    const PY = new Float64Array(len);
+    /** Label width per 1px of font-size, measured once (see `measure`). */
+    let widthRatio = new Float64Array(len).fill(0.5);
 
     function draw(dt: number) {
       // Screen-space framing: wider than tall, because the labels are. On a
@@ -179,18 +213,24 @@ export function TermField() {
       const wide = w > 900;
       const rx = w * (wide ? 0.33 : 0.3);
       const ry = h * 0.4;
-      if (!reduce) rotY += SPIN * dt;
-      rotY += dragY;
-      rotX = Math.max(-0.9, Math.min(0.9, rotX + dragX));
+      const ox = w * (wide ? 0.6 : 0.5);
+      const oy = h / 2;
+
+      if (!reduce) spinY += SPIN * dt;
+      spinY += dragY;
+      baseX = Math.max(-0.9, Math.min(0.9, baseX + dragX));
       dragY *= 0.9;
       dragX *= 0.9;
+      tiltY += (wantTiltY - tiltY) * TILT_EASE;
+      tiltX += (wantTiltX - tiltX) * TILT_EASE;
 
+      const rotY = spinY + tiltY;
+      const rotX = Math.max(-1, Math.min(1, baseX + tiltX));
       const cy = Math.cos(rotY);
       const sy = Math.sin(rotY);
       const cx = Math.cos(rotX);
       const sx = Math.sin(rotX);
-      const ox = w * (wide ? 0.60 : 0.5);
-      const oy = h / 2;
+
       // base type size per weight, scaled off the field's own width
       const base = (weight: number) =>
         weight === 3
@@ -199,37 +239,33 @@ export function TermField() {
             ? Math.max(11.5, Math.min(21, w * 0.023))
             : Math.max(9.5, Math.min(14, w * 0.016));
 
-      const len = nodes.length;
-      const X = new Float64Array(len);
-      const Y = new Float64Array(len);
-      const X0 = new Float64Array(len);
-      const Y0 = new Float64Array(len);
-      const P = new Float64Array(len);
-      const Z = new Float64Array(len);
-      const HW = new Float64Array(len);
-      const HH = new Float64Array(len);
-      const FS = new Float64Array(len);
-
       for (let i = 0; i < len; i++) {
         const n = nodes[i];
-        const { x, y, z } = project(n, cy, cx, sy, sx);
-        const p = FOV / (FOV + z);
-        const fs = base(n.w) * p;
-        X[i] = X0[i] = ox + x * rx * p;
-        Y[i] = Y0[i] = oy + y * ry * p;
+        // yaw then pitch
+        const x1 = n.x * cy + n.z * sy;
+        const z1 = -n.x * sy + n.z * cy;
+        const y2 = n.y * cx - z1 * sx;
+        const z2 = n.y * sx + z1 * cx;
+        const p = FOV / (FOV + z2);
+        // quantised to a quarter pixel: finer than that and the text shimmers
+        const fs = Math.round(base(n.w) * p * 4) / 4;
+        X0[i] = ox + x1 * rx * p;
+        Y0[i] = oy + y2 * ry * p;
+        X[i] = X0[i] + offX[i];
+        Y[i] = Y0[i] + offY[i];
         P[i] = p;
-        Z[i] = z;
+        Z[i] = z2;
         FS[i] = fs;
-        HW[i] = ((widthRatio.current[i] ?? 0.5) * fs) / 2;
+        HW[i] = (widthRatio[i] * fs) / 2;
         HH[i] = fs * 0.6;
       }
 
       /*
-        Two relaxation passes in screen space. Text labels are wide, so a plain
-        projection stacks them into unreadable blocks; nudging overlapping pairs
-        apart (the nearer label holds its ground, the further one yields) keeps
-        the cloud legible without moving anything far from where the geometry
-        put it. Displacement is capped so the sphere still reads as a sphere.
+        Two relaxation passes in screen space, seeded from where the labels
+        already sit. Text labels are wide, so a plain projection stacks them
+        into unreadable blocks; nudging overlapping pairs apart (the nearer
+        label holds its ground, the further one yields) keeps the cloud legible
+        without moving anything far from where the geometry put it.
       */
       for (let pass = 0; pass < 2; pass++) {
         for (let i = 0; i < len; i++) {
@@ -240,8 +276,7 @@ export function TermField() {
             if (gapX <= 0) continue;
             const gapY = HH[i] + HH[j] + 2 - Math.abs(dy);
             if (gapY <= 0) continue;
-            // yield in the cheaper direction
-            const share = P[j] / (P[i] + P[j]);
+            const share = P[j] / (P[i] + P[j]); // the nearer label yields less
             if (gapY < gapX) {
               const push = gapY * 0.5 * (dy < 0 ? -1 : 1);
               Y[i] -= push * share;
@@ -255,37 +290,51 @@ export function TermField() {
         }
       }
 
-      const pts: { x: number; y: number; p: number }[] = new Array(len);
+      const settle = reduce ? 1 : SETTLE;
       for (let i = 0; i < len; i++) {
+        // ease toward this frame's answer instead of snapping onto it
+        offX[i] += (X[i] - X0[i] - offX[i]) * settle;
+        offY[i] += (Y[i] - Y0[i] - offY[i]) * settle;
+        offX[i] = Math.max(-MAX_NUDGE_X, Math.min(MAX_NUDGE_X, offX[i]));
+        offY[i] = Math.max(-MAX_NUDGE_Y, Math.min(MAX_NUDGE_Y, offY[i]));
         // keep every label whole: nothing is allowed to run off an edge
         const loX = Math.min(HW[i] + 6, w / 2);
         const loY = Math.min(HH[i] + 4, h / 2);
-        const px = Math.max(loX, Math.min(w - loX, X0[i] + Math.max(-46, Math.min(46, X[i] - X0[i]))));
-        const py = Math.max(loY, Math.min(h - loY, Y0[i] + Math.max(-34, Math.min(34, Y[i] - Y0[i]))));
-        pts[i] = { x: px, y: py, p: P[i] };
+        PX[i] = Math.max(loX, Math.min(w - loX, X0[i] + offX[i]));
+        PY[i] = Math.max(loY, Math.min(h - loY, Y0[i] + offY[i]));
+      }
 
+      for (let i = 0; i < len; i++) {
         const node = labels.current[i];
         if (!node) continue;
-        const near = hovered.current === i;
-        node.style.transform = `translate(${px.toFixed(1)}px, ${py.toFixed(1)}px) translate(-50%, -50%)`;
-        node.style.fontSize = `${FS[i].toFixed(1)}px`;
-        node.style.opacity = near ? "1" : (0.3 + 0.7 * Math.pow(Math.max(0, (P[i] - 0.68) / 0.72), 1.5)).toFixed(3);
-        node.style.zIndex = String(Math.round((2 - Z[i]) * 100));
+        // proximity lift, eased so nothing pops as the cursor passes
+        let want = 0;
+        if (cursorOn) {
+          const d = Math.hypot(PX[i] - cursorX, PY[i] - cursorY) / LIFT_RADIUS;
+          const t = Math.max(0, 1 - d);
+          want = t * t * (3 - 2 * t); // smoothstep
+        }
+        lift[i] += (want - lift[i]) * LIFT_EASE;
+        const g = lift[i];
+        const depth = Math.pow(Math.max(0, (P[i] - 0.68) / 0.72), 1.5);
+
+        node.style.transform = `translate(${PX[i].toFixed(1)}px, ${PY[i].toFixed(1)}px) translate(-50%, -50%)`;
+        node.style.fontSize = `${(FS[i] * (1 + g * 0.09)).toFixed(2)}px`;
+        node.style.opacity = Math.min(1, 0.3 + 0.7 * depth + g * 0.45).toFixed(3);
+        node.style.zIndex = String(Math.round((2 - Z[i]) * 100 + g * 400));
       }
 
       for (let i = 0; i < edges.length; i++) {
         const line = lines.current[i];
         if (!line) continue;
         const [a, b] = edges[i];
-        const pa = pts[a];
-        const pb = pts[b];
-        line.setAttribute("x1", pa.x.toFixed(1));
-        line.setAttribute("y1", pa.y.toFixed(1));
-        line.setAttribute("x2", pb.x.toFixed(1));
-        line.setAttribute("y2", pb.y.toFixed(1));
-        const lit = hovered.current === a || hovered.current === b;
-        const depth = (pa.p + pb.p) / 2;
-        line.style.opacity = lit ? "0.55" : (0.02 + 0.12 * (depth - 0.7)).toFixed(3);
+        line.setAttribute("x1", PX[a].toFixed(1));
+        line.setAttribute("y1", PY[a].toFixed(1));
+        line.setAttribute("x2", PX[b].toFixed(1));
+        line.setAttribute("y2", PY[b].toFixed(1));
+        const g = Math.max(lift[a], lift[b]);
+        const dep = (P[a] + P[b]) / 2;
+        line.style.opacity = (0.02 + 0.12 * (dep - 0.7) + g * 0.4).toFixed(3);
       }
     }
 
@@ -296,50 +345,70 @@ export function TermField() {
       frame = requestAnimationFrame(loop);
     }
 
+    const ro = new ResizeObserver(() => {
+      w = el.clientWidth;
+      h = el.clientHeight;
+      draw(0);
+    });
+    ro.observe(el);
+
     // Measure each label once at a reference size; width scales linearly with
     // font-size, so one read per term is enough for the whole animation.
     const measure = () => {
-      widthRatio.current = labels.current.map((node) => {
-        if (!node) return 0.5;
-        const prev = node.style.fontSize;
-        node.style.fontSize = "100px";
-        const ratio = node.offsetWidth / 100;
-        node.style.fontSize = prev;
-        return ratio;
-      });
-      draw(0);
+      widthRatio = new Float64Array(
+        labels.current.slice(0, len).map((node) => {
+          if (!node) return 0.5;
+          const prev = node.style.fontSize;
+          node.style.fontSize = "100px";
+          const ratio = node.offsetWidth / 100;
+          node.style.fontSize = prev;
+          return ratio;
+        }),
+      );
+      // let the eased de-overlap reach a resting state before it is seen
+      for (let i = 0; i < 90; i++) draw(0);
     };
     measure();
     if (document.fonts?.status !== "loaded") void document.fonts?.ready.then(measure);
-
-    draw(0);
     setReady(true);
     if (!reduce) frame = requestAnimationFrame(loop);
 
-    // drag to turn it
-    let dragging = false;
-    let lastX = 0;
-    let lastY = 0;
+    // cursor: the field leans toward it, and terms near it lift
+    const point = (e: PointerEvent) => {
+      const r = el.getBoundingClientRect();
+      cursorX = e.clientX - r.left;
+      cursorY = e.clientY - r.top;
+      cursorOn = fine;
+      if (fine) {
+        wantTiltY = (cursorX / Math.max(1, w) - 0.5) * TILT_Y;
+        wantTiltX = (cursorY / Math.max(1, h) - 0.5) * -TILT_X;
+      }
+      if (dragging) {
+        dragY += (e.clientX - lastX) * 0.00035;
+        dragX += (e.clientY - lastY) * 0.00025;
+        lastX = e.clientX;
+        lastY = e.clientY;
+        if (reduce) draw(0);
+      }
+    };
+    const leave = () => {
+      cursorOn = false;
+      wantTiltY = 0;
+      wantTiltX = 0;
+    };
     const down = (e: PointerEvent) => {
       dragging = true;
       lastX = e.clientX;
       lastY = e.clientY;
       el.setPointerCapture(e.pointerId);
     };
-    const move = (e: PointerEvent) => {
-      if (!dragging) return;
-      dragY += (e.clientX - lastX) * 0.00035;
-      dragX += (e.clientY - lastY) * 0.00025;
-      lastX = e.clientX;
-      lastY = e.clientY;
-      if (reduce) draw(0);
-    };
     const up = (e: PointerEvent) => {
       dragging = false;
       if (el.hasPointerCapture(e.pointerId)) el.releasePointerCapture(e.pointerId);
     };
     el.addEventListener("pointerdown", down);
-    el.addEventListener("pointermove", move);
+    el.addEventListener("pointermove", point);
+    el.addEventListener("pointerleave", leave);
     el.addEventListener("pointerup", up);
     el.addEventListener("pointercancel", up);
 
@@ -347,7 +416,8 @@ export function TermField() {
       cancelAnimationFrame(frame);
       ro.disconnect();
       el.removeEventListener("pointerdown", down);
-      el.removeEventListener("pointermove", move);
+      el.removeEventListener("pointermove", point);
+      el.removeEventListener("pointerleave", leave);
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", up);
     };
@@ -374,18 +444,12 @@ export function TermField() {
         {nodes.map((n, i) => (
           <li key={n.t} className="contents">
             <span
-              ref={(el) => {
-                labels.current[i] = el;
+              ref={(node) => {
+                labels.current[i] = node;
               }}
               data-cluster={n.c}
               data-w={n.w}
               className="term font-display"
-              onPointerEnter={() => {
-                hovered.current = i;
-              }}
-              onPointerLeave={() => {
-                hovered.current = null;
-              }}
             >
               {n.t}
             </span>
