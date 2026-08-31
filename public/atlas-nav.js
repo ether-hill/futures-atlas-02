@@ -265,7 +265,13 @@
       // page cannot be the authority on what the site's footer is; this file
       // is. (A page that genuinely supplies its own still opts out properly,
       // with data-fa-no-footer above.)
-      fetch("/atlas-footer.html", { credentials: "omit" })
+      // credentials: "same-origin" (the default) is load-bearing, not incidental.
+      // With "omit" the browser withholds the Vercel SSO cookie, so on any
+      // PREVIEW deployment this fetch got a 302 to vercel.com/sso-api, r.ok was
+      // false, and the footer silently did not render. Production is public so
+      // it always looked fine there, which is how it stayed unnoticed: every
+      // project page on every preview has been missing its footer.
+      fetch("/atlas-footer.html", { credentials: "same-origin" })
         .then(function (r) { return r.ok ? r.text() : null; })
         .then(function (html) {
           if (!html) return;
