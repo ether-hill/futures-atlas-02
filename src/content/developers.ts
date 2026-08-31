@@ -26,7 +26,7 @@ export const LAYERS: Layer[] = [
   {
     n: "01",
     title: "The host",
-    body: "A Next.js 15 app in src/. The homepage, the feed, the reports, the glossary, the design system reference, the contact form, the editor gate.",
+    body: "A Next.js 15 app in src/. The homepage, the feed, the reports, the glossary, the contact form, the editor gate.",
     detail: "src/app · Next.js 15 · React 19 · TypeScript",
   },
   {
@@ -44,7 +44,7 @@ export const LAYERS: Layer[] = [
   {
     n: "04",
     title: "The design system",
-    body: "Colour, type scale, spacing, motion, as a package rather than a stylesheet. It is vendored into the repo and consumed by the host and the sub-apps. This is the Atlas’s own look, so it is documented here but not offered for reuse.",
+    body: "Colour, type scale, spacing, motion, as a package rather than a stylesheet. It is vendored into the repo and consumed by the host and every sub-app, so one token change reaches all of them.",
     detail: "futures-atlas-core · tokens.css + components",
   },
 ];
@@ -103,7 +103,7 @@ export const OPENNESS: OpennessRow[] = [
     thing: "The design system",
     state: "closed",
     detail:
-      "Readable, and documented against the same variables the site runs on. It is the Atlas’s visual identity though, so it is not licensed for reuse, and the page that renders the reference is internal.",
+      "A package in the repo, vendored into the sub-apps, driven by one set of tokens.",
   },
   {
     thing: "The site in search engines",
@@ -146,18 +146,13 @@ export const LICENCE = {
       body: "Reports, findings, the evidence behind them, the glossary and the datasets. Cite it, republish it, argue with it. Credit the Atlas and link back.",
     },
     {
-      label: "The site itself",
-      licence: "Reserved",
-      body: "The design system, the site chrome, the Futures Atlas name and mark, and the words on these pages. Readable so the work can be checked, not licensed for reuse. Quoting with attribution is ordinary citation and always fine.",
-    },
-    {
       label: "Third-party assets",
       licence: "Their own terms",
       body: "Fonts under the SIL Open Font License, and the Wikimedia portraits in Hypothetica Magnifica under their individual CC licences. We pass those along rather than relicensing them, so check the credit before you reuse one.",
     },
   ],
   closing:
-    "Take a project's code and take the research. Build your own thing with them, under your own name, with your own design and your own words.",
+    "Take a project's code and take the research, and build your own thing with them.",
 };
 
 export const CONTACT = {

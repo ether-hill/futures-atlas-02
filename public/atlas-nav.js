@@ -29,7 +29,7 @@
     { name: "Trajectories", path: "/trajectories", draft: true },
     { name: "The Counterfactual Index", path: "/manipulate-the-data", draft: true },
     { name: "Counterfactual Quantum", path: "/manipulate-the-data/quantum", draft: true },
-    { name: "AI Gigawatts", path: "/manipulate-the-data/ai-gigawatts" },
+    { name: "AI Gigawatts", path: "/manipulate-the-data/ai-gigawatts", draft: true },
     { name: "Hyperscale", path: "/hyperscale", draft: true },
     { name: "Signal Reactor", path: "/signal-reactor" },
     { name: "Quantum Spark", path: "/quantum-spark" },
@@ -43,7 +43,7 @@
     { name: "Literal Frequency", path: "/literal-frequency", draft: true },
     { name: "Quantum Sandbox", path: "/quantum-sandbox", draft: true },
     { name: "The Odds", path: "/theodds", theme: "dark" },
-    { name: "Underground Intelligence", path: "/underground-intelligence", pages: [
+    { name: "Underground Intelligence", path: "/underground-intelligence", draft: true, pages: [
       { name: "Story", path: "/underground-intelligence/story" },
       { name: "Dashboard", path: "/underground-intelligence/dashboard" },
       { name: "Research", path: "/underground-intelligence/research" },

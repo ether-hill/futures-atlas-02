@@ -80,7 +80,7 @@ function SourceRow({ project, draft }: { project: Project; draft?: boolean }) {
   const where = project.path ?? project.url;
 
   return (
-    <div className="grid grid-cols-1 gap-x-8 gap-y-4 border-b border-ink/10 py-[clamp(18px,2.4vw,28px)] last:border-b-0 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1.35fr)]">
+    <div className="flex h-full flex-col gap-4 border border-ink/15 p-[clamp(18px,2.2vw,26px)] transition-colors hover:border-ink/45">
       <div>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
           <h3 className="text-[clamp(17px,1.9vw,22px)] font-extrabold tracking-[-0.018em] text-ink">
@@ -259,7 +259,7 @@ export default async function DevelopersPage() {
         title="One repository"
         lede="The site and every project bundled under it live in a single repo. Clone it, run it, take the parts the licence gives you."
       >
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
           <Reveal>
             <RepoCard
               repo={ATLAS_REPO}
@@ -268,20 +268,6 @@ export default async function DevelopersPage() {
             />
           </Reveal>
           <Reveal delay={80}>
-            <div className="flex h-full flex-col border border-ink/15 p-[clamp(20px,2.6vw,32px)]">
-              <span className={head}>Inside it</span>
-              <h3 className="mt-3 text-[clamp(19px,2.1vw,26px)] font-extrabold tracking-[-0.018em] text-ink">
-                The design system
-              </h3>
-              <p className="mt-3 flex-1 font-mono text-[13px] leading-[1.8] text-ink-70">
-                Vendored at <span className="whitespace-nowrap">packages/futures-atlas-core</span>,
-                with its own copy inside a few of the sub-apps. It is the Atlas&rsquo;s visual
-                identity, so it is documented rather than offered: the tokens are readable in
-                the repo, the reference that renders them is an internal page.
-              </p>
-            </div>
-          </Reveal>
-          <Reveal delay={160}>
             <div className="flex h-full flex-col border border-ink/15 p-[clamp(20px,2.6vw,32px)]">
               <span className={head}>Never committed</span>
               <h3 className="mt-3 text-[clamp(19px,2.1vw,26px)] font-extrabold tracking-[-0.018em] text-ink">
@@ -304,7 +290,7 @@ export default async function DevelopersPage() {
         title="Where each project lives"
         lede={SOURCES_INTRO}
       >
-        <div className="border-t border-ink/15">
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
           {liveProjects.map((p) => (
             <SourceRow key={p.id} project={p} />
           ))}
@@ -320,7 +306,7 @@ export default async function DevelopersPage() {
                 work off the site, and that&rsquo;s all it does.
               </p>
             </div>
-            <div className="mt-6 border-t border-ink/15">
+            <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
               {draftProjects.map((p) => (
                 <SourceRow key={p.id} project={p} draft />
               ))}

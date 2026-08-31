@@ -54,7 +54,7 @@ export const projects: Project[] = [
     id: "mappings",
     title: "Mappings",
     tagline:
-      "Mapping Police Violence proved a page can be an argument: one number, a map of records, and the evidence behind every dot. Mappings borrows that anatomy and makes the data domain a variable — the same widgets currently render the AI compute buildout and frontier-lab investment, every record from an openly licensed, cited dataset.",
+      "A page can be an argument: one number, a map of records, and the evidence behind every dot. The data domain is a variable, so the same widgets render the AI compute buildout and frontier-lab investment — every record from an openly licensed, cited dataset.",
     year: "2026",
     date: "2026-08-31",
     field: "Data & evidence",
@@ -150,7 +150,7 @@ export const projects: Project[] = [
     date: "2026-08-13",
     field: "Manipulate the data",
     status: "live",
-    visibility: "live",
+    visibility: "draft",
     path: "/manipulate-the-data/ai-gigawatts",
     image: "/projects/manipulate-ai-gigawatts.jpg",
   },
@@ -293,7 +293,7 @@ export const projects: Project[] = [
     date: "2025-11-30",
     field: "Systems & evidence",
     status: "live",
-    visibility: "live",
+    visibility: "draft",
     path: "/underground-intelligence", // the full project, served within this site
     image: "/projects/underground-intelligence.jpg",
   },
