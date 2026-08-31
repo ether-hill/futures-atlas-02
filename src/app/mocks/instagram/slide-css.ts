@@ -1,0 +1,157 @@
+/**
+ * The Swipe the Future card, verbatim.
+ *
+ * These rules are COPIED from `swipe-the-future/app/globals.css`, not written
+ * for the post: the slide has to be the card people actually see, not a second
+ * design that drifts from it. Everything is scoped under `.stf` so it cannot
+ * touch the host page. When the game's card changes, re-copy the blocks below —
+ * each carries the line range it came from.
+ *
+ * TWO DELIBERATE DEPARTURES, both marked FIXED-FOR-EXPORT:
+ *  · The game sizes three things with `clamp(…vw…)`. A slide is drawn in a fixed
+ *    design space and then scaled by a transform, so `vw` would resolve against
+ *    the browser window and the same slide would set differently on a laptop and
+ *    a phone. Each clamp is pinned to the value it takes on a phone-width column,
+ *    which is where the card is designed to be read.
+ *  · Hover and drag affordances (`:hover`, `cursor: grab`, the enter/leave
+ *    keyframes) are dropped. A still image has no pointer.
+ */
+
+/**
+ * The slide's design space, and the card's own fixed box inside it.
+ *
+ * The card is NOT stretched to the crop. Its rules are authored against a phone
+ * column roughly CARD_W x CARD_H, and the reveal fills that box: squeeze it and
+ * the source line — which the deck's own rule says every card must carry — falls
+ * off the bottom, because `.vo-body` scrolls in the game and a still slide has
+ * nothing to scroll. So the card keeps these proportions always and is scaled to
+ * fit whatever crop is asked for. A 1:1 post shows the same card smaller with
+ * more ground around it; it never shows a cropped one.
+ */
+export const DESIGN_W = 480;
+export const CARD_W = 420;
+export const CARD_H = 560;
+
+/** Slide chrome, pinned so the fit maths needs no measuring. */
+export const PAD_TOP = 22;
+export const PAD_BOTTOM = 18;
+export const FOOT_H = 36;   // 20px mark + 16px padding-top
+export const HEAD_H = 39;   // 27px row + 12px margin-bottom
+
+export const SLIDE_CSS = `
+/* ── tokens: swipe-the-future/app/globals.css :root (dark) ─────────────── */
+.stf {
+  --ff-sans: system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ff-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+  --accent: oklch(0.64 0.13 245);
+  --accent-deep: oklch(0.74 0.12 245);
+  --accent-ink: oklch(0.48 0.13 245);
+  --accent-soft: color-mix(in srgb, var(--accent) 18%, transparent);
+  --ink: #17181b;
+  --ink-2: #1d1f23;
+  --bone: #f2ede2;
+  --muted: #d3ccbe;
+  --faint: #8b877f;
+  --paper-muted: #8C8576;
+  --good: #3f9e6b;
+  --good-ink: #1d7a4c;
+  --bad-ink: #b8452c;
+  --oxblood: #d8694e;
+  --brass: #d8b13c;
+  --line: rgba(242, 237, 226, .13);
+  --card-line: #cdbfa6;
+  --shadow: 0 30px 64px -30px rgba(0, 0, 0, .85);
+  --wash-1: rgba(242, 237, 226, .07);
+
+  background: var(--ink);
+  color: var(--bone);
+  font-family: var(--ff-sans);
+  -webkit-font-smoothing: antialiased;
+  text-align: left;
+}
+
+/* ── deck head (globals.css 122-127) ───────────────────────────────────── */
+.stf .deck-head { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 0 0 12px; flex: 0 0 27px; box-sizing: border-box; }
+.stf .dots { display: flex; gap: 6px; }
+.stf .dots .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+.stf .dots .dot.done { background: var(--accent); }
+.stf .dots .dot.cur { background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+.stf .deck-head .count { font-family: var(--ff-mono); font-size: 12px; letter-spacing: .08em; color: var(--faint); }
+
+/* ── the card (globals.css 131-177) ────────────────────────────────────── */
+.stf .tinder { position: relative; width: 100%; height: 100%; }
+.stf .tcard {
+  position: absolute; inset: 0 34px 0 0; border-radius: 22px; overflow: hidden;
+  background: linear-gradient(176deg, #f8f4ec 0%, #ece4d4 100%); color: #1b1610;
+  box-shadow: var(--shadow), 0 1px 0 rgba(255, 255, 255, .5) inset;
+  display: flex; flex-direction: column; padding: 28px 26px;
+  transform-origin: center 135%;
+}
+.stf .tcard.b1 { transform: translateX(15px) translateY(6px); filter: brightness(.88); border-left: 1px solid var(--card-line); }
+.stf .tcard.b2 { transform: translateX(30px) translateY(12px); filter: brightness(.76); border-left: 1px solid var(--card-line); }
+/* FIXED-FOR-EXPORT: was clamp(20px, 2.4vw + 0.6vh, 31px). */
+.stf .tcard .claim { flex: 1; min-height: 0; overflow: hidden; display: grid; place-items: center; text-align: center; font-weight: 600; font-size: 25px; line-height: 1.34; letter-spacing: -.02em; color: #19140e; }
+
+/* ── the two buttons (globals.css 159-172) ─────────────────────────────── */
+.stf .card-actions { position: relative; display: flex; justify-content: center; gap: 44px; padding-top: 14px; flex: 0 0 auto; }
+.stf .card-actions .ca { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.stf .ca-lbl { font-family: var(--ff-mono); font-size: 11.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: #5d564a; }
+.stf .card-actions .round { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 25px; line-height: 1; background: rgba(255, 255, 255, .55); border: 2px solid; }
+.stf .card-actions .round.no { color: var(--oxblood); border-color: color-mix(in srgb, var(--oxblood) 55%, var(--card-line)); }
+.stf .card-actions .round.yes { color: var(--good-ink); border-color: color-mix(in srgb, var(--good) 60%, var(--card-line)); }
+
+/* ── the reveal (globals.css 180-217, 255-262) ─────────────────────────── */
+.stf .tcard.is-result { align-items: stretch; justify-content: flex-start; text-align: left; }
+.stf .vo-body { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: stretch; justify-content: safe center; }
+.stf .vo-claim { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--paper-muted); max-width: 34ch; }
+.stf .vo-grade { margin-top: 10px; font-weight: 700; font-size: 21px; letter-spacing: -.01em; line-height: 1.1; }
+.stf .vo-grade.correct { color: var(--good-ink); }
+.stf .vo-grade.wrong { color: var(--bad-ink); }
+.stf .vo-label { margin-top: 2px; font-size: 19px; line-height: 1.2; color: var(--paper-muted); letter-spacing: -.01em; }
+/* FIXED-FOR-EXPORT: was clamp(40px, 8.5vw, 58px). */
+.stf .vo-bignum { margin-top: 4px; font-weight: 700; font-size: 58px; line-height: .96; letter-spacing: -.04em; color: #17140e; }
+.stf .vo-lede { margin-top: 14px; max-width: 32ch; font-size: 16.5px; line-height: 1.34; letter-spacing: -.012em; color: #17140e; font-weight: 600; }
+/* FIXED-FOR-EXPORT: was clamp(20px, 2.6vw, 26px). */
+.stf .vo-lede.solo { margin-top: 10px; font-size: 23px; line-height: 1.22; letter-spacing: -.02em; font-weight: 700; }
+.stf .vo-insight { margin-top: 10px; max-width: 32ch; font-size: 14px; line-height: 1.5; color: #6b6255; }
+.stf .vo-src { margin-top: 12px; max-width: 34ch; font-size: 13px; line-height: 1.5; color: #4a4238; }
+.stf .vo-src u { text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; text-decoration-color: rgba(42, 36, 28, .35); color: #2a241c; }
+.stf .vo-checked { color: var(--paper-muted); }
+.stf .vo-crowd { margin-top: 14px; width: min(100%, 34ch); padding: 11px 13px; background: rgba(23, 20, 14, .06); }
+.stf .vo-crowdtop { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; color: #2a241c; }
+.stf .vo-crowdtop b { font-weight: 700; }
+.stf .vo-crowdtop i { margin-left: auto; font-style: normal; font-size: 11.5px; color: var(--paper-muted); }
+.stf .vo-crowdbar { display: block; margin-top: 8px; height: 6px; background: rgba(23, 20, 14, .12); overflow: hidden; }
+.stf .vo-crowdbar > span { display: block; height: 100%; }
+
+/* ── the stats page (globals.css 350-356, 479-484, 683-691) ────────────── */
+.stf .st-kicker { display: block; margin-bottom: 10px; font-family: var(--ff-mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); }
+/* FIXED-FOR-EXPORT: was clamp(26px, 3.4vw, 38px). */
+.stf .st-sec h2 { margin: 0; font-weight: 600; font-size: 30px; letter-spacing: -.028em; color: var(--bone); line-height: 1.04; }
+.stf .st-sec h3 { margin: 0; font-weight: 600; font-size: 19px; letter-spacing: -.015em; }
+.stf .st-sublede { margin-top: 4px; margin-bottom: 14px; font-family: var(--ff-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+.stf .st-para { margin: 0 0 18px; font-size: 14px; line-height: 1.68; color: var(--muted); max-width: 46ch; }
+.stf .st-row { display: flex; gap: 13px; padding: 12px 0; border-top: 1px solid var(--wash-1); }
+.stf .st-rowpct { font-family: var(--ff-mono); font-weight: 700; font-size: 14px; min-width: 4ch; font-variant-numeric: tabular-nums; }
+.stf .st-rowtxt { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; line-height: 1.45; }
+.stf .st-rowtxt b { font-weight: 500; color: var(--bone); }
+.stf .st-rowtxt span { font-size: 11.5px; color: var(--faint); }
+.stf .st-demobar { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin: 0 0 26px; padding: 14px 18px; background: var(--brass); color: #17140e; font-size: 14px; line-height: 1.5; }
+.stf .st-demobar b { font-weight: 700; }
+.stf .st-demobar span { flex: 1 1 320px; }
+
+/* ── the site's own brand lockup (public/atlas-nav.js + atlas-nav.css 67-68,
+      170: the mark is /fa.svg, inverted on a dark ground, beside the
+      "Futures Atlas" wordmark) ───────────────────────────────────────────── */
+.stf .fa-lockup { display: flex; align-items: center; gap: 9px; flex: 0 0 auto; }
+.stf .fa-lockup img { display: block; height: 20px; width: auto; filter: invert(1); }
+.stf .fa-lockup .word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: var(--bone); }
+.stf .fa-url { margin-left: auto; font-family: var(--ff-mono); font-size: 11px; letter-spacing: .06em; color: var(--faint); }
+
+/* ── the slide shell: the game's page ground, with the card in it ──────── */
+.stf-slide { display: flex; flex-direction: column; box-sizing: border-box; padding: 22px 20px 18px; height: 100%; }
+.stf-foot { display: flex; align-items: center; gap: 10px; padding-top: 16px; flex: 0 0 36px; box-sizing: border-box; }
+/* The card's box, at its authored size, scaled to the room available and
+   centred in it. Nothing inside it ever reflows. */
+.stf-stack { position: relative; flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }
+`;
