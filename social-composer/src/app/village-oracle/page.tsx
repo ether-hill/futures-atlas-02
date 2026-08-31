@@ -18,7 +18,7 @@ export default function Page() {
           The composer opened on Village Oracle — the home, the 2050 vision, consultation
           sections and consult-again in desktop 16:9 and 3:2 and on mobile, plus the clean
           text-free 2050 renders. Headline and subtext load empty; write your own copy per post,
-          switch to another project in the library panel, or upload / transmutate more.
+          or upload / transmutate more. Any asset can be deleted for good.
         </p>
       </header>
 

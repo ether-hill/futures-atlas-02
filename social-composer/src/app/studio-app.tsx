@@ -71,6 +71,10 @@ type Draft = { id: string; ts: number; postType: PostTypeId; aspect: Aspect; sel
 const dKey = (u: string) => `social-composer:drafts:${u}`;
 const wKey = (u: string) => `social-composer:working:${u}`;
 const tmKey = (u: string) => `social-composer:transmutated:${u}`;
+// Stock (source) frames can't be removed from their module, so deleting one
+// records its id here and the library filters it out — permanently.
+const hiddenKey = (u: string) => `social-composer:hidden:${u}`;
+// Legacy recycle-bin storage (the bin is gone; found data is purged on load).
 const binKey = (u: string) => `social-composer:bin:${u}`;
 
 const frameMediaUrl = (f: ComposerFrame): string | null | undefined =>
@@ -205,14 +209,7 @@ function videoTargetTime(v: HTMLVideoElement, localT: number, dur: number): numb
   return isFinite(span) ? t % span : t;
 }
 
-/** `library` turns the Assets panel's heading into a project picker: the page
- *  owns which project is loaded, the studio just offers the switch. */
-export function StudioApp({ source, library, libraryId, onLibraryChange }: {
-  source: ComposerSource;
-  library?: Array<{ id: string; label: string }>;
-  libraryId?: string;
-  onLibraryChange?: (id: string) => void;
-}) {
+export function StudioApp({ source }: { source: ComposerSource }) {
   const isCorp = source.kind === "corporation";
   const slugKey = source.url + "|v2";   // bump to orphan stale saved working-state after default changes
 
@@ -223,8 +220,13 @@ export function StudioApp({ source, library, libraryId, onLibraryChange }: {
   const { w, h } = ASPECT_DIMS[aspect];
 
   const [userFrames, setUserFrames] = useState<ComposerFrame[]>([]);
+  // Stock frames the user deleted — persisted, so they never come back.
+  const [hidden, setHidden] = useState<Set<string>>(new Set());
   // Uploads first so they're visible at the top of the library.
-  const frames = useMemo(() => [...userFrames, ...source.frames], [source.frames, userFrames]);
+  const frames = useMemo(
+    () => [...userFrames, ...source.frames.filter((f) => !hidden.has(f.id))],
+    [source.frames, userFrames, hidden]
+  );
   const allUrls = useMemo(() => frames.flatMap(frameImageUrls), [frames]);
   const getImg = useImages(allUrls);
   const videoUrls = useMemo(() => frames.filter((f) => f.kind === "video").map((f) => (f as Extract<ComposerFrame, { kind: "video" }>).videoUrl), [frames]);
@@ -252,7 +254,6 @@ export function StudioApp({ source, library, libraryId, onLibraryChange }: {
   const [dragOver, setDragOver] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [tmUrl, setTmUrl] = useState("");
-  const [bin, setBin] = useState<ComposerFrame[]>([]);
   const showToast = useCallback((m: string) => { setToast(m); window.setTimeout(() => setToast(null), 2000); }, []);
 
   const framesById = useMemo(() => new Map(frames.map((f) => [f.id, f])), [frames]);
@@ -289,20 +290,32 @@ export function StudioApp({ source, library, libraryId, onLibraryChange }: {
           ? { id: a.id, kind: "video" as const, label: a.label, headline: a.headline, sub: a.sub, videoUrl: URL.createObjectURL(a.blob) }
           : { id: a.id, kind: "gallery" as const, label: a.label, headline: a.headline, sub: a.sub, imageUrl: URL.createObjectURL(a.blob) });
       } catch { /* */ }
-      // Transmutated frames (remote URLs + text) and the Bin persist as plain JSON.
+      // Transmutated frames (remote URLs + text) and hidden stock ids persist as plain JSON.
       let tmFrames: ComposerFrame[] = [];
-      let binSpecs: ComposerFrame[] = [];
+      let hiddenIds: string[] = [];
       try { const raw = window.localStorage.getItem(tmKey(slugKey)); if (raw) tmFrames = JSON.parse(raw) as ComposerFrame[]; } catch { /* */ }
-      try { const raw = window.localStorage.getItem(binKey(slugKey)); if (raw) binSpecs = JSON.parse(raw) as ComposerFrame[]; } catch { /* */ }
+      try { const raw = window.localStorage.getItem(hiddenKey(slugKey)); if (raw) hiddenIds = JSON.parse(raw) as string[]; } catch { /* */ }
+      // Migrate away from the old recycle bin: anything a user once deleted
+      // stays deleted — binned uploads are purged from IndexedDB for good.
+      let legacyBinned = new Set<string>();
+      try {
+        const raw = window.localStorage.getItem(binKey(slugKey));
+        if (raw) {
+          const binSpecs = JSON.parse(raw) as ComposerFrame[];
+          legacyBinned = new Set(binSpecs.map((f) => f.id));
+          for (const f of binSpecs) if (f.id.startsWith("upload-")) void deleteAsset(f.id);
+          window.localStorage.removeItem(binKey(slugKey));
+        }
+      } catch { /* */ }
       if (cancelled) return;
-      const binnedIds = new Set(binSpecs.map((f) => f.id));
-      const blobById = new Map(blobFrames.map((f) => [f.id, f] as const));
-      // Binned uploads keep their blob in IndexedDB; resolve them to a fresh object URL.
-      const binFrames = binSpecs.map((f) => (f.id.startsWith("upload-") ? blobById.get(f.id) : f)).filter(Boolean) as ComposerFrame[];
-      const restored = [...tmFrames.filter((f) => !binnedIds.has(f.id)), ...blobFrames.filter((f) => !binnedIds.has(f.id))];
+      const restored = [...tmFrames.filter((f) => !legacyBinned.has(f.id)), ...blobFrames.filter((f) => !legacyBinned.has(f.id))];
       if (restored.length) setUserFrames(restored);
-      if (binFrames.length) setBin(binFrames);
-      const validIds = new Set<string>([...source.frames.map((f) => f.id), ...restored.map((f) => f.id)]);
+      if (hiddenIds.length) setHidden(new Set(hiddenIds));
+      const hiddenSet = new Set(hiddenIds);
+      const validIds = new Set<string>([
+        ...source.frames.filter((f) => !hiddenSet.has(f.id)).map((f) => f.id),
+        ...restored.map((f) => f.id),
+      ]);
 
       try { const r = window.localStorage.getItem(dKey(slugKey)); if (r) setDrafts(JSON.parse(r)); } catch { /* */ }
       try {
@@ -496,50 +509,46 @@ export function StudioApp({ source, library, libraryId, onLibraryChange }: {
     setPreviewIdx(typeDef.multi ? selected.length : 0);
   }, [source.name, source.attribution, typeDef.multi, selected.length]);
 
-  // Library items move to a recoverable Bin; the Bin itself can be emptied for
-  // good (which frees uploaded blobs from IndexedDB). Uploads keep their blob
-  // while binned so they can be restored. The blank starter / source frames
-  // aren't user frames, so they're never binned and the library stays usable.
+  // Deleting is permanent — no recycle bin. User frames (uploads, transmutated)
+  // are removed outright and uploads freed from IndexedDB; stock source frames
+  // can't be removed from their module, so their ids persist in the hidden set
+  // and the library filters them out on every load.
   const persistTm = useCallback((fr: ComposerFrame[]) => { try { window.localStorage.setItem(tmKey(slugKey), JSON.stringify(fr.filter((x) => x.id.startsWith("tm-")))); } catch { /* */ } }, [slugKey]);
-  const persistBin = useCallback((fr: ComposerFrame[]) => { try { window.localStorage.setItem(binKey(slugKey), JSON.stringify(fr)); } catch { /* */ } }, [slugKey]);
+  const persistHidden = useCallback((ids: Set<string>) => { try { window.localStorage.setItem(hiddenKey(slugKey), JSON.stringify([...ids])); } catch { /* */ } }, [slugKey]);
 
-  const binItem = useCallback((id: string) => {
+  const disposeUserFrame = useCallback((f: ComposerFrame) => {
+    const url = frameMediaUrl(f);
+    if (typeof url === "string" && url.startsWith("blob:")) URL.revokeObjectURL(url);
+    if (f.id.startsWith("upload-")) void deleteAsset(f.id);
+  }, []);
+
+  const deleteItem = useCallback((id: string) => {
     const f = userFrames.find((x) => x.id === id);
-    if (!f) return;
-    const nextUser = userFrames.filter((x) => x.id !== id);
-    const nextBin = [f, ...bin];
-    setUserFrames(nextUser); setBin(nextBin);
-    persistTm(nextUser); persistBin(nextBin);
-    setSelected((s) => s.filter((x) => x !== id));
-    setPreviewIdx(0);
-  }, [userFrames, bin, persistTm, persistBin]);
-
-  const clearLibrary = useCallback(() => {
-    if (!userFrames.length) return;
-    const nextBin = [...userFrames, ...bin];
-    setBin(nextBin); setUserFrames([]);
-    persistBin(nextBin); persistTm([]);
-    setSelected([]); setPreviewIdx(0);
-  }, [userFrames, bin, persistTm, persistBin]);
-
-  const restoreBin = useCallback(() => {
-    if (!bin.length) return;
-    const nextUser = [...bin, ...userFrames];
-    setUserFrames(nextUser); setBin([]);
-    persistTm(nextUser); persistBin([]);
-  }, [userFrames, bin, persistTm, persistBin]);
-
-  const emptyBin = useCallback(() => {
-    if (!bin.length) return;
-    const ids = new Set(bin.map((f) => f.id));
-    for (const f of bin) {
-      const url = frameMediaUrl(f);
-      if (typeof url === "string" && url.startsWith("blob:")) URL.revokeObjectURL(url);
-      if (f.id.startsWith("upload-")) void deleteAsset(f.id);
+    if (f) {
+      disposeUserFrame(f);
+      const nextUser = userFrames.filter((x) => x.id !== id);
+      setUserFrames(nextUser);
+      persistTm(nextUser);
+    } else {
+      const next = new Set(hidden); next.add(id);
+      setHidden(next); persistHidden(next);
     }
-    setBin([]); persistBin([]);
-    setOverrides((o) => { const n = { ...o }; for (const id of ids) delete n[id]; return n; });
-  }, [bin, persistBin]);
+    setSelected((s) => s.filter((x) => x !== id));
+    setOverrides((o) => { const n = { ...o }; delete n[id]; return n; });
+    setPreviewIdx(0);
+  }, [userFrames, hidden, disposeUserFrame, persistTm, persistHidden]);
+
+  const deleteAll = useCallback(() => {
+    if (!frames.length) return;
+    if (!window.confirm(`Delete all ${frames.length} assets? This can't be undone.`)) return;
+    for (const f of userFrames) disposeUserFrame(f);
+    const next = new Set(hidden);
+    for (const f of source.frames) next.add(f.id);
+    setUserFrames([]); persistTm([]);
+    setHidden(next); persistHidden(next);
+    setSelected([]); setOverrides({}); setPreviewIdx(0);
+    showToast("Library cleared");
+  }, [frames.length, userFrames, hidden, source.frames, disposeUserFrame, persistTm, persistHidden, showToast]);
 
   // Transmutate a URL — scan a page and pull its key elements into the library.
   const runTransmutate = useCallback(async (raw: string) => {
@@ -804,21 +813,11 @@ export function StudioApp({ source, library, libraryId, onLibraryChange }: {
                 <span className="font-docket text-[12px] tracking-[0.14em] text-oxblood">02</span>
                 <p className="font-docket text-[12px] uppercase tracking-[0.1em] text-ink">Assets</p>
               </div>
-              {userFrames.length > 0 && (
-                <button type="button" onClick={clearLibrary} className="font-docket text-[9px] uppercase tracking-[0.1em] text-ink/45 hover:text-oxblood">Clear → bin</button>
+              {frames.length > 0 && (
+                <button type="button" onClick={deleteAll} className="font-docket text-[9px] uppercase tracking-[0.1em] text-ink/45 hover:text-oxblood">✕ Delete all</button>
               )}
             </div>
             <p className="font-script text-[12px] text-ink/52 leading-snug mb-3">{frames.length} assets · {selected.length} picked · drag &amp; drop to add.</p>
-            {library && library.length > 1 && libraryId && onLibraryChange && (
-              <div className="mb-3">
-                <p className="font-docket text-[9px] uppercase tracking-[0.16em] text-oxblood mb-1.5">◍ Project library</p>
-                <select value={libraryId} onChange={(e) => onLibraryChange(e.target.value)}
-                  className="w-full font-docket text-[16px] sm:text-[11px] bg-bone text-ink border border-ink/17 focus:border-ink/72 px-2.5 py-2 outline-none">
-                  {library.map((o) => <option key={o.id} value={o.id}>{o.label}</option>)}
-                </select>
-                <p className="font-script text-[11px] text-ink/40 leading-snug mt-1.5">Every screen of that project — desktop, 3:2 and mobile — ready to compose. Your picks and drafts are kept per project.</p>
-              </div>
-            )}
             <div className="mb-3">
               <p className="font-docket text-[9px] uppercase tracking-[0.16em] text-oxblood mb-1.5">⚗ Transmutate a URL</p>
               <div className="flex gap-1.5">
@@ -839,28 +838,9 @@ export function StudioApp({ source, library, libraryId, onLibraryChange }: {
                 <FrameThumb key={f.id} frame={f} aspect={aspect} isLogo={isCorp && f.kind === "portrait"} text={tFor(f)} getImg={getImg} getVideo={getVideo}
                   selected={selected.includes(f.id)} order={selected.indexOf(f.id)} multi={!!typeDef.multi}
                   onClick={() => { const i = selected.indexOf(f.id); toggleFrame(f.id); setPreviewIdx(i >= 0 ? i : selected.length); }}
-                  onDelete={userFrames.some((u) => u.id === f.id) ? () => binItem(f.id) : undefined} />
+                  onDelete={() => deleteItem(f.id)} />
               ))}
             </div>
-            {bin.length > 0 && (
-              <div className="mt-4 border-t border-ink/13 pt-3">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="font-docket text-[10px] uppercase tracking-[0.14em] text-ink/56">Bin · {bin.length}</p>
-                  <div className="flex gap-3">
-                    <button type="button" onClick={restoreBin} className="font-docket text-[9px] uppercase tracking-[0.1em] text-ink/64 hover:text-ink">↩ Restore all</button>
-                    <button type="button" onClick={emptyBin} className="font-docket text-[9px] uppercase tracking-[0.1em] hover:opacity-80" style={{ color: "#3B93D5" }}>✕ Empty bin</button>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-0.5 max-h-40 overflow-y-auto">
-                  {bin.map((f) => (
-                    <div key={f.id} className="flex items-center gap-2 py-1 border-b border-ink/8 last:border-0">
-                      <span className="font-docket text-[8px] uppercase tracking-[0.08em] text-ink/38 shrink-0">{f.label}</span>
-                      <span className="font-script text-[11px] text-ink/55 truncate">{tFor(f).headline || "—"}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </aside>
 
           {/* RIGHT — composer (flows with the page) */}

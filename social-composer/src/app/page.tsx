@@ -18,10 +18,10 @@ export default function Page() {
           Social Composer
         </h1>
         <p className="mt-[22px] m-0 max-w-[640px] text-[16px] leading-[1.55] text-ink/70">
-          A social-post composer stocked with every Atlas project. Pick a project, pick a post
-          type, lay out cover, quote and carousel frames, tune type, colour and motion, then
-          export PNG, ZIP, GIF or video. Import any article with “transmutate” to pull its
-          reusable pieces straight onto the canvas.
+          A one-off social-post composer. Upload images or video, or import any article with
+          “transmutate” to pull its reusable pieces straight onto the canvas — then pick a post
+          type, lay out cover, quote and carousel frames, tune type, colour and motion, and
+          export PNG, ZIP, GIF or video.
         </p>
       </header>
 
