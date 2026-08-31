@@ -37,6 +37,20 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "interference",
+    title: "Interference",
+    tagline:
+      "Eleven live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one is a fragment shader computed fresh every frame rather than a video, slow enough to actually watch, and each can be re-coloured, opened full width, saved as a still, recorded as a clip or embedded somewhere else.",
+    year: "2026",
+    date: "2026-08-31",
+    field: "Waves & optics",
+    status: "live",
+    visibility: "draft",
+    path: "/interference",
+    image: "/projects/interference.jpg",
+    cta: "Open the fields",
+  },
+  {
     id: "mappings",
     title: "Mappings",
     tagline:

@@ -59,6 +59,8 @@ const nextConfig: NextConfig = {
         { source: "/theodds/max-tegmark", destination: "/odds-of-surviving-ai/p/max-tegmark.html" },
         { source: "/theodds/research", destination: "/odds-of-surviving-ai/research.html" },
         { source: "/theodds/stats", destination: "/odds-of-surviving-ai/stats.html" },
+        // Interference — hand-authored static bundle (gallery + embed.html player)
+        { source: "/interference", destination: "/interference/index.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
         // Generatives — Vite static app; the dashboard + a separate embed.html player

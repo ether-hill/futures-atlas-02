@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" class="dark" data-fa-no-footer="true">
+<head>
+<meta charset="utf-8">
+<base href="/interference/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interference, embedded. Futures Atlas</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/api/theme.css">
+</head>
+<body class="embed">
+<div class="embed__stage"><canvas id="c"></canvas></div>
+<a class="embed__label" id="label" href="/interference" target="_blank" rel="noopener"></a>
+
+<script src="field.js"></script>
+<script>
+(function () {
+  "use strict";
+  /*
+    One field, full bleed, driven by the query string:
+      v=<slug>     which field (default two-slits)
+      pal=0..3     palette index
+      speed=0..2   time multiplier (0 freezes it)
+      grain=0|1    film grain
+      label=0      hide the corner caption
+  */
+  var q = new URLSearchParams(location.search);
+  var variant = FIELD.bySlug(q.get("v") || "") || FIELD.bySlug("two-slits");
+  var state = { pal: Math.max(0, Math.min(3, parseInt(q.get("pal") || "0", 10) || 0)),
+                grain: q.get("grain") !== "0" };
+  var speed = q.has("speed") ? Math.max(0, Math.min(2, parseFloat(q.get("speed")))) : 0.7;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) speed = 0;
+
+  var label = document.getElementById("label");
+  if (q.get("label") === "0") { label.remove(); }
+  else { label.textContent = variant.title + " — Futures Atlas"; }
+
+  var canvas = document.getElementById("c");
+  var unit = FIELD.createUnit(canvas, variant, state);
+  if (!unit) { document.body.innerHTML = ""; }
+
+  var t = 0, last = performance.now();
+  function frame(now) {
+    var dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    t += dt * speed;
+    if (unit) {
+      var r = canvas.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      unit.draw(t, Math.max(2, Math.round(r.width * dpr)), Math.max(2, Math.round(r.height * dpr)));
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

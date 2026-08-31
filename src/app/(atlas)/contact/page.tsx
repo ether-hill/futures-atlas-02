@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { ContactForm } from "@/components/ContactForm";
+import { InterferenceField } from "@/components/InterferenceField";
 import { contactProjects } from "@/data/projects";
 
 export const metadata: Metadata = {
@@ -19,8 +20,12 @@ export default async function ContactPage({
   const defaultProject =
     project && contactProjects.includes(project) ? project : "Futures Atlas";
   return (
-    <section className="py-[clamp(44px,7vw,96px)]">
-      <Container>
+    <section className="relative overflow-hidden py-[clamp(44px,7vw,96px)]">
+      {/* Ambient wave field, right half, desktop only. Decorative: it fades out
+          towards the column of text and sits behind everything. */}
+      <InterferenceField className="pointer-events-none absolute right-0 top-0 hidden h-full w-[54%] opacity-80 [mask-image:linear-gradient(to_left,black_5%,transparent_78%)] lg:block" />
+      <div className="relative">
+        <Container>
         <header className="max-w-3xl">
           <div className="mb-4 flex items-center gap-3">
             <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-accent-deep">
@@ -45,7 +50,8 @@ export default async function ContactPage({
         <div className="mt-12 max-w-2xl">
           <ContactForm defaultProject={defaultProject} />
         </div>
-      </Container>
+        </Container>
+      </div>
     </section>
   );
 }
