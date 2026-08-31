@@ -45,7 +45,7 @@ export const projects: Project[] = [
     date: "2026-08-31",
     field: "Waves & optics",
     status: "live",
-    visibility: "draft",
+    visibility: "live",
     path: "/interference",
     image: "/projects/interference.jpg",
     cta: "Open the fields",
