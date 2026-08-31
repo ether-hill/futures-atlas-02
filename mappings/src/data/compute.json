@@ -5,7 +5,8 @@
   "total": 482,
   "noDate": 7,
   "noValue": 21,
-  "noLocation": 22
+  "noLocation": 22,
+  "approxLocation": 275
  },
  "records": [
   {
@@ -63,7 +64,8 @@
    "date": "2025-06-15",
    "lat": 23.85206,
    "lng": 54.256172,
-   "place": "United Arab Emirates",
+   "approx": true,
+   "place": "UAE",
    "value": 395,
    "dims": {
     "country": "Other",
@@ -94,7 +96,7 @@
    "id": "samsung-ssc4",
    "name": "Samsung SSC4",
    "date": "2025-06-15",
-   "place": "Korea (Republic of)",
+   "place": "South Korea",
    "value": 2496,
    "dims": {
     "country": "South Korea",
@@ -110,6 +112,7 @@
    "date": "2025-06-15",
    "lat": 47.824905,
    "lng": 2.618787,
+   "approx": true,
    "place": "France",
    "value": 2688,
    "dims": {
@@ -210,6 +213,7 @@
    "date": "2025-03-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 2048,
    "dims": {
@@ -260,6 +264,7 @@
    "date": "2025-02-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 5000,
    "dims": {
@@ -275,6 +280,7 @@
    "date": "2025-02-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 10000,
    "dims": {
@@ -324,6 +330,7 @@
    "date": "2025-01-15",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 1120,
    "dims": {
@@ -341,6 +348,7 @@
    "date": "2025-01-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 3000,
    "dims": {
@@ -407,6 +415,7 @@
    "date": "2025-01-14",
    "lat": 64.964875,
    "lng": 17.675409,
+   "approx": true,
    "place": "Sweden",
    "value": 4000,
    "dims": {
@@ -423,6 +432,7 @@
    "date": "2024-12-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 1000,
    "dims": {
@@ -455,6 +465,7 @@
    "date": "2024-11-21",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 65536,
    "dims": {
@@ -472,6 +483,7 @@
    "date": "2024-11-20",
    "lat": 31.847261,
    "lng": 34.841999,
+   "approx": true,
    "place": "Israel",
    "value": 2048,
    "dims": {
@@ -574,6 +586,7 @@
    "date": "2024-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 1000,
    "dims": {
@@ -589,6 +602,7 @@
    "date": "2024-11-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 21649,
    "dims": {
@@ -623,6 +637,7 @@
    "date": "2024-10-31",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 2040,
    "dims": {
@@ -640,6 +655,7 @@
    "date": "2024-10-31",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 2040,
    "dims": {
@@ -657,7 +673,8 @@
    "date": "2024-10-30",
    "lat": 23.85206,
    "lng": 54.256172,
-   "place": "United Arab Emirates",
+   "approx": true,
+   "place": "UAE",
    "value": 1272,
    "dims": {
     "country": "Other",
@@ -674,7 +691,8 @@
    "date": "2024-10-30",
    "lat": 39.381266,
    "lng": -97.922211,
-   "place": "United States of America",
+   "approx": true,
+   "place": "United States",
    "value": 100000,
    "dims": {
     "country": "United States",
@@ -691,6 +709,7 @@
    "date": "2024-10-23",
    "lat": 55.963398,
    "lng": 10.046297,
+   "approx": true,
    "place": "Denmark",
    "value": 3032,
    "dims": {
@@ -722,6 +741,7 @@
    "date": "2024-10-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -737,6 +757,7 @@
    "date": "2024-10-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1024,
    "dims": {
@@ -754,6 +775,7 @@
    "date": "2024-10-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 2000,
    "dims": {
@@ -770,6 +792,7 @@
    "date": "2024-10-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 10000,
    "dims": {
@@ -854,6 +877,7 @@
    "date": "2024-09-15",
    "lat": 22.279356,
    "lng": 114.16255,
+   "approx": true,
    "place": "Hong Kong",
    "value": null,
    "dims": {
@@ -869,6 +893,7 @@
    "date": "2024-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 1000,
    "dims": {
@@ -902,6 +927,7 @@
    "date": "2024-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 2000,
    "dims": {
@@ -917,6 +943,7 @@
    "date": "2024-09-12",
    "lat": 15.127333,
    "lng": 101.017438,
+   "approx": true,
    "place": "Thailand",
    "value": 1024,
    "dims": {
@@ -951,6 +978,7 @@
    "date": "2024-08-28",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 42000,
    "dims": {
@@ -968,6 +996,7 @@
    "date": "2024-08-20",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1024,
    "dims": {
@@ -985,6 +1014,7 @@
    "date": "2024-08-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 4000,
    "dims": {
@@ -1001,6 +1031,7 @@
    "date": "2024-08-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 8000,
    "dims": {
@@ -1102,6 +1133,7 @@
    "date": "2024-07-07",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1024,
    "dims": {
@@ -1181,6 +1213,7 @@
    "date": "2024-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 2000,
    "dims": {
@@ -1196,6 +1229,7 @@
    "date": "2024-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 5000,
    "dims": {
@@ -1246,6 +1280,7 @@
    "date": "2024-06-01",
    "lat": 23.384784,
    "lng": 44.652426,
+   "approx": true,
    "place": "Saudi Arabia",
    "value": 416,
    "dims": {
@@ -1365,6 +1400,7 @@
    "date": "2024-05-30",
    "lat": 1.351616,
    "lng": 103.808053,
+   "approx": true,
    "place": "Singapore",
    "value": 1024,
    "dims": {
@@ -1382,6 +1418,7 @@
    "date": "2024-05-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 4000,
    "dims": {
@@ -1515,6 +1552,7 @@
    "date": "2024-04-17",
    "lat": 47.824905,
    "lng": 2.618787,
+   "approx": true,
    "place": "France",
    "value": 1908,
    "dims": {
@@ -1566,6 +1604,7 @@
    "date": "2024-04-15",
    "lat": 22.279356,
    "lng": 114.16255,
+   "approx": true,
    "place": "Hong Kong",
    "value": 400,
    "dims": {
@@ -1582,6 +1621,7 @@
    "date": "2024-04-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 16384,
    "dims": {
@@ -1616,6 +1656,7 @@
    "date": "2024-04-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1321,
    "dims": {
@@ -1728,6 +1769,7 @@
    "date": "2024-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 300,
    "dims": {
@@ -1760,6 +1802,7 @@
    "date": "2024-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 400,
    "dims": {
@@ -1775,6 +1818,7 @@
    "date": "2024-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 900,
    "dims": {
@@ -1791,6 +1835,7 @@
    "date": "2024-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 2000,
    "dims": {
@@ -1806,6 +1851,7 @@
    "date": "2024-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 8000,
    "dims": {
@@ -1821,6 +1867,7 @@
    "date": "2024-03-12",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 24576,
    "dims": {
@@ -1838,6 +1885,7 @@
    "date": "2024-03-12",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 24576,
    "dims": {
@@ -1906,6 +1954,7 @@
    "date": "2024-02-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1024,
    "dims": {
@@ -1923,6 +1972,7 @@
    "date": "2024-01-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -1938,6 +1988,7 @@
    "date": "2024-01-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 800,
    "dims": {
@@ -1953,6 +2004,7 @@
    "date": "2024-01-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 1000,
    "dims": {
@@ -1968,6 +2020,7 @@
    "date": "2024-01-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 3000,
    "dims": {
@@ -1983,6 +2036,7 @@
    "date": "2023-12-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -1999,6 +2053,7 @@
    "date": "2023-12-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 300,
    "dims": {
@@ -2028,6 +2083,7 @@
    "date": "2023-11-23",
    "lat": 31.847261,
    "lng": 34.841999,
+   "approx": true,
    "place": "Israel",
    "value": 1024,
    "dims": {
@@ -2062,6 +2118,7 @@
    "date": "2023-11-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 828,
    "dims": {
@@ -2093,6 +2150,7 @@
    "date": "2023-11-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 10332,
    "dims": {
@@ -2110,6 +2168,7 @@
    "date": "2023-11-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 14400,
    "dims": {
@@ -2212,7 +2271,8 @@
    "date": "2023-11-01",
    "lat": 39.381266,
    "lng": -97.922211,
-   "place": "United States of America",
+   "approx": true,
+   "place": "United States",
    "value": 4608,
    "dims": {
     "country": "United States",
@@ -2229,6 +2289,7 @@
    "date": "2023-10-31",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 2522,
    "dims": {
@@ -2246,6 +2307,7 @@
    "date": "2023-10-16",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 4424,
    "dims": {
@@ -2263,6 +2325,7 @@
    "date": "2023-10-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -2295,6 +2358,7 @@
    "date": "2023-09-30",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 646,
    "dims": {
@@ -2312,6 +2376,7 @@
    "date": "2023-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -2327,6 +2392,7 @@
    "date": "2023-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 200,
    "dims": {
@@ -2343,6 +2409,7 @@
    "date": "2023-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 4000,
    "dims": {
@@ -2359,6 +2426,7 @@
    "date": "2023-09-07",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 10000,
    "dims": {
@@ -2410,6 +2478,7 @@
    "date": "2023-08-20",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 3984,
    "dims": {
@@ -2427,6 +2496,7 @@
    "date": "2023-08-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 400,
    "dims": {
@@ -2443,6 +2513,7 @@
    "date": "2023-08-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 500,
    "dims": {
@@ -2476,6 +2547,7 @@
    "date": "2023-07-24",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 293,
    "dims": {
@@ -2493,6 +2565,7 @@
    "date": "2023-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 200,
    "dims": {
@@ -2523,6 +2596,7 @@
    "date": "2023-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -2556,6 +2630,7 @@
    "date": "2023-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 200,
    "dims": {
@@ -2571,6 +2646,7 @@
    "date": "2023-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 400,
    "dims": {
@@ -2653,7 +2729,7 @@
    "id": "kt-superpod",
    "name": "KT SuperPOD",
    "date": "2023-06-01",
-   "place": "Korea (Republic of)",
+   "place": "South Korea",
    "value": 250,
    "dims": {
     "country": "South Korea",
@@ -2704,7 +2780,8 @@
    "date": "2023-05-22",
    "lat": 39.381266,
    "lng": -97.922211,
-   "place": "United States of America",
+   "approx": true,
+   "place": "United States",
    "value": 1024,
    "dims": {
     "country": "United States",
@@ -2738,6 +2815,7 @@
    "date": "2023-05-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -2754,6 +2832,7 @@
    "date": "2023-05-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 400,
    "dims": {
@@ -2770,6 +2849,7 @@
    "date": "2023-04-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -2786,6 +2866,7 @@
    "date": "2023-04-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 80,
    "dims": {
@@ -2802,6 +2883,7 @@
    "date": "2023-04-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 200,
    "dims": {
@@ -2831,6 +2913,7 @@
    "date": "2023-03-13",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 4000,
    "dims": {
@@ -2860,7 +2943,7 @@
    "id": "sk-telecom-titan-phase-2",
    "name": "SK Telecom Titan Phase 2",
    "date": "2023-02-14",
-   "place": "Korea (Republic of)",
+   "place": "South Korea",
    "value": 328,
    "dims": {
     "country": "South Korea",
@@ -2894,6 +2977,7 @@
    "date": "2023-01-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 500,
    "dims": {
@@ -2909,6 +2993,7 @@
    "date": "2023-01-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 4339,
    "dims": {
@@ -2924,7 +3009,7 @@
    "id": "kt-internal-mi250-cluster",
    "name": "KT Internal MI250 Cluster",
    "date": "2022-12-15",
-   "place": "Korea (Republic of)",
+   "place": "South Korea",
    "value": 232,
    "dims": {
     "country": "South Korea",
@@ -2975,6 +3060,7 @@
    "date": "2022-11-01",
    "lat": 1.351616,
    "lng": 103.808053,
+   "approx": true,
    "place": "Singapore",
    "value": 111,
    "dims": {
@@ -3043,6 +3129,7 @@
    "date": "2022-10-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -3076,6 +3163,7 @@
    "date": "2022-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -3091,6 +3179,7 @@
    "date": "2022-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -3123,6 +3212,7 @@
    "date": "2022-08-16",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 2321,
    "dims": {
@@ -3140,6 +3230,7 @@
    "date": "2022-08-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 6000,
    "dims": {
@@ -3169,6 +3260,7 @@
    "date": "2022-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 1000,
    "dims": {
@@ -3233,6 +3325,7 @@
    "date": "2022-06-01",
    "lat": 1.351616,
    "lng": 103.808053,
+   "approx": true,
    "place": "Singapore",
    "value": 81,
    "dims": {
@@ -3301,6 +3394,7 @@
    "date": "2022-06-01",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 197,
    "dims": {
@@ -3352,6 +3446,7 @@
    "date": "2022-05-27",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1703,
    "dims": {
@@ -3369,6 +3464,7 @@
    "date": "2022-05-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -3384,6 +3480,7 @@
    "date": "2022-05-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 200,
    "dims": {
@@ -3399,6 +3496,7 @@
    "date": "2022-05-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 200,
    "dims": {
@@ -3449,6 +3547,7 @@
    "date": "2022-04-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 400,
    "dims": {
@@ -3465,6 +3564,7 @@
    "date": "2022-04-05",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 854,
    "dims": {
@@ -3548,7 +3648,7 @@
    "id": "samsung-ssc-21-scalable-module",
    "name": "Samsung SSC-21 Scalable Module",
    "date": "2021-11-01",
-   "place": "Korea (Republic of)",
+   "place": "South Korea",
    "value": 45,
    "dims": {
     "country": "South Korea",
@@ -3565,6 +3665,7 @@
    "date": "2021-11-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 50,
    "dims": {
@@ -3667,6 +3768,7 @@
    "date": "2021-11-01",
    "lat": 61.994573,
    "lng": 96.669705,
+   "approx": true,
    "place": "Russia",
    "value": 250,
    "dims": {
@@ -3733,7 +3835,7 @@
    "id": "samsung-ssc-21",
    "name": "Samsung SSC-21",
    "date": "2021-11-01",
-   "place": "Korea (Republic of)",
+   "place": "South Korea",
    "value": 555,
    "dims": {
     "country": "South Korea",
@@ -3801,6 +3903,7 @@
    "date": "2021-10-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 50,
    "dims": {
@@ -3850,6 +3953,7 @@
    "date": "2021-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -3865,6 +3969,7 @@
    "date": "2021-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 200,
    "dims": {
@@ -3881,6 +3986,7 @@
    "date": "2021-08-20",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 552,
    "dims": {
@@ -3898,6 +4004,7 @@
    "date": "2021-08-20",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1271,
    "dims": {
@@ -3915,6 +4022,7 @@
    "date": "2021-08-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 500,
    "dims": {
@@ -3931,6 +4039,7 @@
    "date": "2021-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 300,
    "dims": {
@@ -3946,6 +4055,7 @@
    "date": "2021-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 400,
    "dims": {
@@ -3961,6 +4071,7 @@
    "date": "2021-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 3000,
    "dims": {
@@ -4027,6 +4138,7 @@
    "date": "2021-06-20",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1816,
    "dims": {
@@ -4044,6 +4156,7 @@
    "date": "2021-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -4076,6 +4189,7 @@
    "date": "2021-06-01",
    "lat": 61.994573,
    "lng": 96.669705,
+   "approx": true,
    "place": "Russia",
    "value": 50,
    "dims": {
@@ -4263,6 +4377,7 @@
    "date": "2021-06-01",
    "lat": 51.972466,
    "lng": 5.613491,
+   "approx": true,
    "place": "Netherlands",
    "value": 414,
    "dims": {
@@ -4297,6 +4412,7 @@
    "date": "2021-06-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 631,
    "dims": {
@@ -4314,6 +4430,7 @@
    "date": "2021-05-30",
    "lat": 14.315424,
    "lng": 108.339537,
+   "approx": true,
    "place": "Vietnam",
    "value": 50,
    "dims": {
@@ -4365,6 +4482,7 @@
    "date": "2021-05-19",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 569,
    "dims": {
@@ -4399,6 +4517,7 @@
    "date": "2021-05-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -4463,6 +4582,7 @@
    "date": "2021-04-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 2000,
    "dims": {
@@ -4512,6 +4632,7 @@
    "date": "2021-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 3000,
    "dims": {
@@ -4613,6 +4734,7 @@
    "date": "2020-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -4628,6 +4750,7 @@
    "date": "2020-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -4644,6 +4767,7 @@
    "date": "2020-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -4660,6 +4784,7 @@
    "date": "2020-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -4676,6 +4801,7 @@
    "date": "2020-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -4692,6 +4818,7 @@
    "date": "2020-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -4708,6 +4835,7 @@
    "date": "2020-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 500,
    "dims": {
@@ -4741,6 +4869,7 @@
    "date": "2020-11-01",
    "lat": 47.824905,
    "lng": 2.618787,
+   "approx": true,
    "place": "France",
    "value": 61,
    "dims": {
@@ -4758,6 +4887,7 @@
    "date": "2020-11-01",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 69,
    "dims": {
@@ -4809,6 +4939,7 @@
    "date": "2020-10-05",
    "lat": 36.536236,
    "lng": 128.168944,
+   "approx": true,
    "place": "South Korea",
    "value": 353,
    "dims": {
@@ -4826,6 +4957,7 @@
    "date": "2020-09-30",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 161,
    "dims": {
@@ -4860,6 +4992,7 @@
    "date": "2020-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 300,
    "dims": {
@@ -4876,6 +5009,7 @@
    "date": "2020-09-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 1000,
    "dims": {
@@ -4926,6 +5060,7 @@
    "date": "2020-07-29",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 255,
    "dims": {
@@ -4960,6 +5095,7 @@
    "date": "2020-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -4976,6 +5112,7 @@
    "date": "2020-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -4992,6 +5129,7 @@
    "date": "2020-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5008,6 +5146,7 @@
    "date": "2020-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 80,
    "dims": {
@@ -5041,6 +5180,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5057,6 +5197,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5073,6 +5214,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5089,6 +5231,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5105,6 +5248,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5121,6 +5265,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5137,6 +5282,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5153,6 +5299,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5169,6 +5316,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5185,6 +5333,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5201,6 +5350,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5217,6 +5367,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5233,6 +5384,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5249,6 +5401,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5265,6 +5418,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5281,6 +5435,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5297,6 +5452,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5313,6 +5469,7 @@
    "date": "2020-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5414,6 +5571,7 @@
    "date": "2020-05-30",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 61,
    "dims": {
@@ -5431,6 +5589,7 @@
    "date": "2020-05-14",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 126,
    "dims": {
@@ -5482,6 +5641,7 @@
    "date": "2020-04-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 20,
    "dims": {
@@ -5499,6 +5659,7 @@
    "date": "2020-04-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 79,
    "dims": {
@@ -5550,6 +5711,7 @@
    "date": "2019-12-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 600,
    "dims": {
@@ -5583,6 +5745,7 @@
    "date": "2019-12-03",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 129,
    "dims": {
@@ -5600,6 +5763,7 @@
    "date": "2019-11-18",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 19,
    "dims": {
@@ -5617,6 +5781,7 @@
    "date": "2019-11-18",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 51,
    "dims": {
@@ -5634,6 +5799,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -5650,6 +5816,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5666,6 +5833,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5682,6 +5850,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5698,6 +5867,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5714,6 +5884,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5730,6 +5901,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5746,6 +5918,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5762,6 +5935,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5778,6 +5952,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5794,6 +5969,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5810,6 +5986,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5826,6 +6003,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5842,6 +6020,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5858,6 +6037,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5874,6 +6054,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5890,6 +6071,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5906,6 +6088,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5922,6 +6105,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5938,6 +6122,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5954,6 +6139,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -5970,6 +6156,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -5986,6 +6173,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6002,6 +6190,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6018,6 +6207,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6034,6 +6224,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6050,6 +6241,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6066,6 +6258,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6082,6 +6275,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6098,6 +6292,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6114,6 +6309,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6130,6 +6326,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 50,
    "dims": {
@@ -6146,6 +6343,7 @@
    "date": "2019-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -6213,6 +6411,7 @@
    "date": "2019-11-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 36,
    "dims": {
@@ -6298,6 +6497,7 @@
    "date": "2019-07-30",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 65,
    "dims": {
@@ -6315,6 +6515,7 @@
    "date": "2019-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -6331,6 +6532,7 @@
    "date": "2019-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -6347,6 +6549,7 @@
    "date": "2019-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6394,6 +6597,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6410,6 +6614,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6426,6 +6631,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6442,6 +6648,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6458,6 +6665,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -6474,6 +6682,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -6490,6 +6699,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -6506,6 +6716,7 @@
    "date": "2019-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -6539,6 +6750,7 @@
    "date": "2019-06-01",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 49,
    "dims": {
@@ -6556,6 +6768,7 @@
    "date": "2019-06-01",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 53,
    "dims": {
@@ -6638,6 +6851,7 @@
    "date": "2018-12-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 70,
    "dims": {
@@ -6654,6 +6868,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6670,6 +6885,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6686,6 +6902,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6702,6 +6919,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6718,6 +6936,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6734,6 +6953,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6750,6 +6970,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6766,6 +6987,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6782,6 +7004,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6798,6 +7021,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6814,6 +7038,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6830,6 +7055,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6846,6 +7072,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6862,6 +7089,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6878,6 +7106,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6894,6 +7123,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6910,6 +7140,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6926,6 +7157,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6942,6 +7174,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6958,6 +7191,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6974,6 +7208,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -6990,6 +7225,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -7006,6 +7242,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -7022,6 +7259,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -7038,6 +7276,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -7054,6 +7293,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 90,
    "dims": {
@@ -7070,6 +7310,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 90,
    "dims": {
@@ -7086,6 +7327,7 @@
    "date": "2018-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 90,
    "dims": {
@@ -7102,6 +7344,7 @@
    "date": "2018-11-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 36,
    "dims": {
@@ -7153,6 +7396,7 @@
    "date": "2018-08-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -7169,6 +7413,7 @@
    "date": "2018-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -7185,6 +7430,7 @@
    "date": "2018-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -7201,6 +7447,7 @@
    "date": "2018-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -7217,6 +7464,7 @@
    "date": "2018-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -7233,6 +7481,7 @@
    "date": "2018-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -7249,6 +7498,7 @@
    "date": "2018-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 40,
    "dims": {
@@ -7316,6 +7566,7 @@
    "date": "2018-03-26",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 334,
    "dims": {
@@ -7333,6 +7584,7 @@
    "date": "2018-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 100,
    "dims": {
@@ -7349,6 +7601,7 @@
    "date": "2018-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 400,
    "dims": {
@@ -7381,6 +7634,7 @@
    "date": "2017-12-05",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 232,
    "dims": {
@@ -7398,6 +7652,7 @@
    "date": "2017-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -7414,6 +7669,7 @@
    "date": "2017-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 30,
    "dims": {
@@ -7430,6 +7686,7 @@
    "date": "2017-11-15",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 81,
    "dims": {
@@ -7447,6 +7704,7 @@
    "date": "2017-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 90,
    "dims": {
@@ -7463,6 +7721,7 @@
    "date": "2017-11-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 17,
    "dims": {
@@ -7497,6 +7756,7 @@
    "date": "2017-10-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 1390,
    "dims": {
@@ -7514,6 +7774,7 @@
    "date": "2017-06-15",
    "lat": 36.386493,
    "lng": 138.59223,
+   "approx": true,
    "place": "Japan",
    "value": 13,
    "dims": {
@@ -7531,6 +7792,7 @@
    "date": "2017-06-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 9,
    "dims": {
@@ -7548,6 +7810,7 @@
    "date": "2017-06-01",
    "lat": 46.802496,
    "lng": 8.234392,
+   "approx": true,
    "place": "Switzerland",
    "value": 55,
    "dims": {
@@ -7565,6 +7828,7 @@
    "date": "2017-05-17",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 95,
    "dims": {
@@ -7582,6 +7846,7 @@
    "date": "2016-11-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 9,
    "dims": {
@@ -7599,6 +7864,7 @@
    "date": "2016-11-01",
    "lat": 46.802496,
    "lng": 8.234392,
+   "approx": true,
    "place": "Switzerland",
    "value": 29,
    "dims": {
@@ -7616,6 +7882,7 @@
    "date": "2016-06-15",
    "lat": 61.994573,
    "lng": 96.669705,
+   "approx": true,
    "place": "Russia",
    "value": 4,
    "dims": {
@@ -7633,6 +7900,7 @@
    "date": "2016-06-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 6,
    "dims": {
@@ -7649,6 +7917,7 @@
    "date": "2016-06-15",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 7,
    "dims": {
@@ -7666,6 +7935,7 @@
    "date": "2015-06-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 11,
    "dims": {
@@ -7683,6 +7953,7 @@
    "date": "2014-11-15",
    "lat": 42.504154,
    "lng": 12.646361,
+   "approx": true,
    "place": "Italy",
    "value": 6,
    "dims": {
@@ -7700,6 +7971,7 @@
    "date": "2014-11-01",
    "lat": 39.381266,
    "lng": -97.922211,
+   "approx": true,
    "place": "United States",
    "value": 11,
    "dims": {
@@ -7734,6 +8006,7 @@
    "date": "2013-07-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": null,
    "dims": {
@@ -7750,6 +8023,7 @@
    "date": "2012-03-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 20,
    "dims": {
@@ -7766,6 +8040,7 @@
    "date": "2011-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 1,
    "dims": {
@@ -7782,6 +8057,7 @@
    "date": "2010-11-15",
    "lat": 35.486703,
    "lng": 101.901875,
+   "approx": true,
    "place": "China",
    "value": 4,
    "dims": {

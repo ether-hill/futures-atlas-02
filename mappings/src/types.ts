@@ -27,6 +27,12 @@ export type Rec = {
   lat?: number;
   lng?: number;
   place?: string; // human-readable location ("Memphis, TN, US")
+  /**
+   * The coordinates are a country-level placeholder (the source disclosed no
+   * site). The map must never draw these as individual located dots — they
+   * aggregate into one clearly-marked country marker instead.
+   */
+  approx?: boolean;
   /** Primary measure in the mapping's unit (H100-equivalents, USD…). */
   value: number | null; // null = genuinely unreported; charts must not guess
   /** Dimension key -> value; drives filters and breakdowns. */
@@ -69,6 +75,7 @@ export type Breakdown = {
   key: string; // a dim key
   label: string; // panel label, e.g. "By country"
   top?: number; // keep the top N groups (default 8), rest -> "Other"
+  span?: 1 | 2; // card width on the 3-column board (default 1)
 };
 
 export type Mapping = {
@@ -94,6 +101,24 @@ export type Mapping = {
     /** The trailing period is incomplete — its bar renders hatched. */
     openEndedYear?: number;
   };
+  /** Month-grid calendar heatmap (records per month, MPV's time-texture). */
+  calendar: {
+    label: string; // "Systems coming online, month by month"
+  };
+  /** Cumulative disclosed-value curve over time. */
+  cumulative: {
+    label: string; // "Total mapped computing power over time"
+  };
+  /**
+   * Concentration ring: what share of the summed disclosed measure sits with
+   * the top N groups of one dimension. One arc against an empty track — the
+   * remainder is drawn as track, not as a second measured share.
+   */
+  concentration: {
+    dim: string; // a dim key
+    top: number;
+    label: string; // "…of mapped computing power sits with the top 5 owners"
+  };
   breakdowns: Breakdown[];
   /** Extra methodology paragraphs beyond the per-source notes. */
   methodNotes: string[];
@@ -101,16 +126,23 @@ export type Mapping = {
 
 /** Global filter state — one state, every widget obeys it (the MPV pattern). */
 export type Filters = {
-  /** dim key -> selected values (empty set = no filter on that dim) */
+  /**
+   * dim key -> selected values (empty set = no filter on that dim).
+   * The pseudo-key "__year" filters on the record's year.
+   */
   dims: Map<string, Set<string>>;
 };
+
+export const YEAR_KEY = "__year";
 
 export const year = (r: Rec): number => Number(r.date.slice(0, 4));
 
 export function applyFilters(recs: Rec[], f: Filters): Rec[] {
   return recs.filter((r) => {
     for (const [k, sel] of f.dims) {
-      if (sel.size && !sel.has(r.dims[k] ?? "")) return false;
+      if (!sel.size) continue;
+      const v = k === YEAR_KEY ? String(year(r)) : (r.dims[k] ?? "");
+      if (!sel.has(v)) return false;
     }
     return true;
   });

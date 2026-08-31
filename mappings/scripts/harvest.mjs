@@ -65,7 +65,7 @@ const COUNTRY_SHORT = {
 async function harvestCompute() {
   const url = "https://epoch.ai/data/gpu_clusters.csv";
   const rows = parseCSV(await fetchText(url));
-  const meta = { total: rows.length, noDate: 0, noValue: 0, noLocation: 0 };
+  const meta = { total: rows.length, noDate: 0, noValue: 0, noLocation: 0, approxLocation: 0 };
   const records = [];
   // top countries become filter chips; the rest bucket into "Other"
   const countryCount = {};
@@ -88,6 +88,12 @@ async function harvestCompute() {
     const lng = num(r["longitude"]);
     if (lat === null || lng === null) meta.noLocation++;
     const country = COUNTRY_SHORT[r["Country"]] ?? r["Country"] ?? "";
+    // Epoch codes site-undisclosed systems at their country's centroid (the
+    // Location field is blank or just the country). Verified 2026-08-31: all
+    // 281 such rows collapse onto 18 distinct per-country coordinates. Flag
+    // them so the map draws a country aggregate, never 184 stacked "sites".
+    const approx = lat !== null && (!r["Location"] || r["Location"] === r["Country"]);
+    if (approx) meta.approxLocation++;
     const mw = num(r["Power Capacity (MW)"]);
     const chips = r["Total number of AI chips"] || r["Chip quantity (primary)"];
     const noteBits = [];
@@ -99,7 +105,8 @@ async function harvestCompute() {
       name: r["Name"],
       date,
       ...(lat !== null && lng !== null ? { lat, lng } : {}),
-      place: r["Location"] || country || undefined,
+      ...(approx ? { approx: true } : {}),
+      place: r["Location"] && r["Location"] !== r["Country"] ? r["Location"] : country || undefined,
       value: h100e === null ? null : Math.round(h100e),
       dims: {
         country: country ? (topCountries.includes(country) ? country : "Other") : "Undisclosed",

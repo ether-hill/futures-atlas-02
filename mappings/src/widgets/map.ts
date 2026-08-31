@@ -34,11 +34,26 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 
 export function renderMap(body: HTMLElement, cap: HTMLElement, m: Mapping, recs: Rec[]) {
   const located = recs.filter((r) => r.lat !== undefined && r.lng !== undefined);
+  // site-level dots vs country-level placeholders (drawn as one aggregate
+  // marker per country — never as stacked fake "sites")
+  const precise = located.filter((r) => !r.approx);
+  const approx = located.filter((r) => r.approx);
+  const groups = new Map<string, { recs: Rec[]; lat: number; lng: number }>();
+  for (const r of approx) {
+    // group by the record's own stated country (place), never the bucketed
+    // country dim — "Other" is not a place on the map
+    const k = r.place ?? r.dims.country ?? "?";
+    const g = groups.get(k) ?? { recs: [], lat: r.lat!, lng: r.lng! };
+    g.recs.push(r);
+    groups.set(k, g);
+  }
 
-  // dot area ~ value; records with no reported value get the minimum dot
-  const vals = located.map((r) => r.value ?? 0);
-  const vmax = Math.max(1, ...vals);
-  const rOf = (v: number | null) => (v === null || v <= 0 ? 2.2 : 2.2 + 11 * Math.sqrt(v / vmax));
+  // one AREA scale for every mark on the map: r ∝ √v with no base offset, a
+  // floor only to keep the tiniest disclosed marks findable; undisclosed
+  // values render hollow at the floor size so they never claim a magnitude
+  const groupSums = [...groups.values()].map((g) => g.recs.reduce((s, r) => s + (r.value ?? 0), 0));
+  const vmax = Math.max(1, ...precise.map((r) => r.value ?? 0), ...groupSums);
+  const rOf = (v: number) => Math.max(1.4, 13 * Math.sqrt(v / vmax));
 
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
@@ -46,39 +61,58 @@ export function renderMap(body: HTMLElement, cap: HTMLElement, m: Mapping, recs:
   svg.setAttribute("aria-label", `Map of ${m.recordNoun} records`);
   svg.innerHTML = basemap();
 
+  const circle = (cls: string, x: number, y: number, r: number, tip: () => string) => {
+    const c = document.createElementNS(SVG_NS, "circle");
+    c.setAttribute("class", cls);
+    c.setAttribute("cx", x.toFixed(1));
+    c.setAttribute("cy", y.toFixed(1));
+    c.setAttribute("r", r.toFixed(2));
+    c.addEventListener("mousemove", (e) => showTip(e.clientX, e.clientY, tip()));
+    c.addEventListener("mouseleave", hideTip);
+    svg.appendChild(c);
+  };
+
+  for (const [country, g] of groups) {
+    const p = projection([g.lng, g.lat]);
+    if (!p) continue;
+    const sum = g.recs.reduce((s, r) => s + (r.value ?? 0), 0);
+    const und = g.recs.filter((r) => r.value === null).length;
+    circle("dot approx", p[0], p[1], rOf(sum), () => {
+      const bits = [`${g.recs.length} ${m.recordNoun}${g.recs.length === 1 ? "" : "s"}`];
+      if (sum > 0) bits.push(`${m.format(sum)} summed`);
+      if (und > 0) bits.push(`${und} with the size undisclosed`);
+      return `<b>${esc(country)}</b>${esc(bits.join(" · "))}<br>exact sites not disclosed — drawn at the country, not a site`;
+    });
+  }
+
   // draw big dots first so small ones stay hoverable on top
-  const sorted = [...located].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+  const sorted = [...precise].sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
   for (const r of sorted) {
     const p = projection([r.lng!, r.lat!]);
     if (!p) continue;
-    const c = document.createElementNS(SVG_NS, "circle");
-    c.setAttribute("class", "dot");
-    c.setAttribute("cx", p[0].toFixed(1));
-    c.setAttribute("cy", p[1].toFixed(1));
-    c.setAttribute("r", rOf(r.value).toFixed(2));
-    c.addEventListener("mousemove", (e) => {
+    const nul = r.value === null || r.value <= 0;
+    circle(nul ? "dot nul" : "dot", p[0], p[1], nul ? 2.4 : rOf(r.value!), () => {
       const v = r.value === null ? "value not disclosed" : m.format(r.value);
-      showTip(
-        e.clientX,
-        e.clientY,
-        `<b>${esc(r.name)}</b>${esc(r.place ?? "")} · ${esc(r.date)}<br><span class="tv">${esc(v)}</span>`
-      );
+      return `<b>${esc(r.name)}</b>${esc(r.place ?? "")} · ${esc(r.date)}<br><span class="tv">${esc(v)}</span>`;
     });
-    c.addEventListener("mouseleave", hideTip);
-    svg.appendChild(c);
   }
 
   body.replaceChildren(svg);
   const missing = recs.length - located.length;
+  const hollow = precise.filter((r) => r.value === null || r.value <= 0).length;
   cap.textContent =
-    `${located.length} of ${recs.length} records have a location and are drawn. ` +
-    (missing > 0 ? `${missing} without coordinates still count in every figure. ` : "") +
-    m.map.dotLegend;
+    `${precise.length} of ${recs.length} records state a site and are drawn as solid dots. ` +
+    (approx.length > 0
+      ? `${approx.length} are known only to the country and are pooled into ${groups.size} dashed country marker${groups.size === 1 ? "" : "s"}. `
+      : "") +
+    (missing > 0 ? `${missing} without any location still count in every figure. ` : "") +
+    m.map.dotLegend +
+    (hollow > 0 ? ` Hollow dots are records with the size undisclosed.` : "");
   return { locatedCount: located.length };
 }
 
 export const mapPanel = () => {
-  const panel = el("section", "panel map wide");
+  const panel = el("section", "panel map s3");
   panel.append(el("div", "plbl", "The map"));
   const body = el("div", "pbody");
   const cap = el("div", "map-cap");

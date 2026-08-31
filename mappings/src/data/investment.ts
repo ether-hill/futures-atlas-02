@@ -57,10 +57,21 @@ export const investment: Mapping = {
     metric: "value",
     openEndedYear: 2026,
   },
+  calendar: {
+    label: "Rounds landing, month by month",
+  },
+  cumulative: {
+    label: "Disclosed equity, cumulative",
+  },
+  concentration: {
+    dim: "company",
+    top: 2,
+    label: "of all disclosed equity goes to just two companies",
+  },
   breakdowns: [
-    { key: "company", label: "By company" },
-    { key: "status", label: "By status" },
-    { key: "type", label: "By round type" },
+    { key: "status", label: "By status", span: 1 },
+    { key: "company", label: "By company", span: 2 },
+    { key: "type", label: "By round type", span: 1 },
   ],
   methodNotes: [
     "A committed round is not money in the bank: the biggest single record — NVIDIA's $100B letter of intent to OpenAI — has never been formally signed, and the record's own note says so. Filter status to 'Closed' for the conservative view.",
