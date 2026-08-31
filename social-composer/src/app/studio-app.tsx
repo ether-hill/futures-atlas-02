@@ -37,7 +37,6 @@ const POST_TYPES: Array<{ id: PostTypeId; label: string; glyph: string; dims: st
 const TYPE_SIZES: TypeSize[] = ["S", "M", "L", "XL"];
 const SIZE_MUL: Record<TypeSize, number> = { S: 0.82, M: 1, L: 1.28, XL: 1.62 };
 const PLACEMENTS: Placement[] = ["top", "middle", "bottom"];
-const FPS_OPTS = [15, 24, 30];
 // Futures Atlas dark palette swatches (accent = FA blue #3B93D5).
 const BG_SWATCHES = [
   { name: "Bone", value: "#211e18" }, { name: "Blue", value: "#3B93D5" }, { name: "Vellum", value: "#2b2722" },
@@ -244,7 +243,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const [defBg, setDefBg] = useState<MotionId>("slow-zoom-in");
   const [defText, setDefText] = useState<TextAnimId>("fade-up");
   const [defDur, setDefDur] = useState(5);
-  const [fps, setFps] = useState(24);
+  const fps = 30; // fixed clock for preview + every export — no selector
   const [playing, setPlaying] = useState(true);
 
   const [headlineIdx, setHeadlineIdx] = useState(0);
@@ -376,6 +375,20 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     lastLocalT.current.set(url, localT);
   }, [getVideo, durFor]);
 
+  // Park every selected clip at its first frame. Called whenever a pass starts
+  // (play pressed, preview restarted, an export finished): a video background
+  // always begins at the beginning, and each slide of a sequence starts fresh.
+  const resetClips = useCallback(() => {
+    lastLocalT.current.clear();
+    for (const f of selFrames) {
+      if (f.kind !== "video") continue;
+      const v = getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl);
+      if (!v) continue;
+      if (!v.paused) v.pause();
+      if (v.currentTime > 0.02) { try { v.currentTime = 0; } catch { /* */ } }
+    }
+  }, [selFrames, getVideo]);
+
   // Seek path (GIF, frame-stepped): position the clip exactly and wait for it.
   const seekVideoTo = useCallback((v: HTMLVideoElement, target: number) => new Promise<void>((resolve) => {
     if (!v.paused) v.pause();
@@ -474,10 +487,13 @@ export function StudioApp({ source }: { source: ComposerSource }) {
       renderFrameAt(ctx, ((now - start) % loopMs) / loopMs);
       raf = requestAnimationFrame(frame);
     };
+    // Every (re)start of the loop — and every pause — parks the clips at frame
+    // 0, so a video background never resumes from the middle of the clip.
+    resetClips();
     if (isAnimated && playing) raf = requestAnimationFrame(frame);
     else drawActiveFinal(ctx);
     return () => { cancelled = true; if (raf) cancelAnimationFrame(raf); };
-  }, [w, h, renderFrameAt, drawActiveFinal, isAnimated, playing, totalDuration, fontsReady]);
+  }, [w, h, renderFrameAt, drawActiveFinal, isAnimated, playing, totalDuration, fontsReady, resetClips]);
 
   /* Post type / selection */
   const selectPostType = useCallback((id: PostTypeId) => {
@@ -716,8 +732,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
       }
       zipDownload(entries, `airapture-${slugToken}-slides.zip`);
       showToast(`Downloaded ${selFrames.length}-slide ZIP`);
-    } catch { showToast("ZIP export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); setProgress(null); }
-  }, [selFrames, slideIsStill, slugToken, singleRenderer, w, h, fps, durFor, renderStill, showToast, getVideo, seekVideoTo]);
+    } catch { showToast("ZIP export failed"); } finally { videoSyncMode.current = "realtime"; resetClips(); setBusy(null); setProgress(null); }
+  }, [selFrames, slideIsStill, slugToken, singleRenderer, w, h, fps, durFor, renderStill, showToast, getVideo, seekVideoTo, resetClips]);
 
   const moveSlide = useCallback((id: string, dir: -1 | 1) => {
     setSelected((prev) => {
@@ -735,8 +751,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     setBusy("gif"); setProgress(0);
     videoSyncMode.current = "seek"; // GIF is frame-stepped → seek videos exactly
     try { await exportGIF({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, onProgress: (p) => setProgress(Math.round(p * 100)), w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}.gif` }); showToast("Downloaded GIF"); }
-    catch { showToast("GIF export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); setProgress(null); }
-  }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast]);
+    catch { showToast("GIF export failed"); } finally { videoSyncMode.current = "realtime"; resetClips(); setBusy(null); setProgress(null); }
+  }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast, resetClips]);
 
   const onDownloadVideo = useCallback(async () => {
     if (!activeFrame) return;
@@ -745,8 +761,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     try {
       const res = await exportVideo({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, onProgress: (p) => setProgress(Math.round(p * 100)), w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}` });
       showToast(res.ok ? `Downloaded ${res.ext?.toUpperCase()}` : "Video not supported in this browser");
-    } catch { showToast("Video export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); setProgress(null); }
-  }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast]);
+    } catch { showToast("Video export failed"); } finally { videoSyncMode.current = "realtime"; resetClips(); setBusy(null); setProgress(null); }
+  }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast, resetClips]);
 
   const onBatchAll = useCallback(async () => {
     setBusy("batch");
@@ -956,7 +972,6 @@ export function StudioApp({ source }: { source: ComposerSource }) {
                       <Control label={`Duration · ${aDur}s${selFrames.length > 1 ? ` · sequence ${seqTotal}s` : ""}`}>
                         <input type="range" min={1} max={15} step={1} value={aDur} onChange={(e) => setActiveDur(Number(e.target.value))} className="w-full accent-oxblood" />
                       </Control>
-                      <Control label="Frame rate"><Segmented options={FPS_OPTS.map((f) => ({ id: String(f), label: `${f}` }))} value={String(fps)} onChange={(v) => setFps(Number(v))} /></Control>
                     </div>
                   </div>
                 </div>
