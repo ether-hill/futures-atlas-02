@@ -87,10 +87,11 @@ h1 {
   font-weight: var(--weight-strong); letter-spacing: var(--track-display); line-height: var(--lh-display);
 }
 .lede {
-  margin: 22px 0 0; max-width: 66ch;
+  margin: 22px 0 0; max-width: 62ch;
   font-size: var(--text-lead); font-weight: var(--weight-body);
   line-height: var(--lh-body); color: var(--text-body);
 }
+.lede--sub { margin-top: 14px; color: var(--muted); font-size: var(--text-body-size); }
 
 /* ── the global bar ───────────────────────────────────────────────────────── */
 .bar {
