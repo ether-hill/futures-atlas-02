@@ -24,6 +24,7 @@ const eslintConfig = [
       "literal-frequency/**",
       "hyperscale/**",
       "trajectories/**",
+      "mappings/**",
       "social-composer/**",
       "magnifica/**",
     ],

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mappings · Futures Atlas</title>
+    <meta
+      name="description"
+      content="Evidence sites in the style of Mapping Police Violence, where the data domain is a variable — the same map, trend and breakdown widgets rendering whichever open dataset is loaded."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Futures Atlas" />
+    <meta property="og:title" content="Mappings — Futures Atlas" />
+    <meta property="og:description" content="One evidence-site engine, many datasets: mapping the compute buildout, mapping AI investment — every figure from an open, cited source." />
+    <script>
+      // default the global nav to dark, before first paint (no flash)
+      (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
+    </script>
+    <!-- the one shared global nav (+ its styles) -->
+    <link rel="stylesheet" href="/atlas-nav.css?v=19" data-fa-nav-css />
+    <script src="/atlas-nav.js?v=19" defer></script>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- Server-rendered overview for crawlers + the Social Composer transmutate
+         importer (the app is client-rendered). Hidden from users. -->
+    <section hidden data-fa-seed>
+      <h2>Mappings — one evidence site, many datasets</h2>
+      <p>Mappings borrows the anatomy of Mapping Police Violence — a headline figure, a map of incidents, trend and breakdown charts, and a filterable record table — and makes the data domain a variable.</p>
+      <p>Each mapping is a dataset module: openly licensed records with locations, dates and dimensions, plus its own methodology notes. The same widgets render whichever module is loaded.</p>
+      <p>Current mappings chart the AI compute buildout and AI investment, every record linking back to its source.</p>
+    </section>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

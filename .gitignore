@@ -27,6 +27,7 @@
 /public/hyperscale/
 /public/gigawatt/
 /public/trajectories/
+/public/mappings/
 /public/quantum-sandbox/
 /public/social-composer/
 /public/village-oracle/
@@ -73,6 +74,7 @@
 /hyperscale/node_modules/
 /gigawatt/node_modules/
 /trajectories/node_modules/
+/mappings/node_modules/
 /quantum-sandbox/node_modules/
 /social-composer/node_modules/
 /social-composer/out/

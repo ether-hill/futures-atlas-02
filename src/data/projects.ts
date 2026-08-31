@@ -37,6 +37,18 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "mappings",
+    title: "Mappings",
+    tagline:
+      "Mapping Police Violence proved a page can be an argument: one number, a map of records, and the evidence behind every dot. Mappings borrows that anatomy and makes the data domain a variable — the same widgets currently render the AI compute buildout and frontier-lab investment, every record from an openly licensed, cited dataset.",
+    year: "2026",
+    date: "2026-08-31",
+    field: "Data & evidence",
+    status: "live",
+    visibility: "draft",
+    path: "/mappings",
+  },
+  {
     id: "magnifica",
     title: "Hypothetica Magnifica",
     tagline:

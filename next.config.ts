@@ -69,6 +69,8 @@ const nextConfig: NextConfig = {
         { source: "/hyperscale", destination: "/hyperscale/index.html" },
         // Trajectories — Vite static app (generative filament sphere)
         { source: "/trajectories", destination: "/trajectories/index.html" },
+        // Mappings — Vite static app (MPV-style evidence site, pluggable datasets)
+        { source: "/mappings", destination: "/mappings/index.html" },
         // Actually Hard Questions — hand-authored static bundle (hash-routed single page)
         { source: "/actually-hard-questions", destination: "/actually-hard-questions/index.html" },
         // Social Composer — Next static export (basePath baked in, trailingSlash)

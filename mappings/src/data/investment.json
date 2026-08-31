@@ -1,0 +1,802 @@
+{
+ "retrieved": "2026-08-31",
+ "sourceUrl": "https://epoch.ai/data/ai_companies_funding_rounds.csv",
+ "meta": {
+  "total": 47,
+  "noDate": 0,
+  "noValue": 3,
+  "noLocation": 0,
+  "excludedByEpoch": 0
+ },
+ "records": [
+  {
+   "id": "deepseek-deepseek-june-2026",
+   "name": "DeepSeek — DeepSeek June 2026",
+   "date": "2026-06-16",
+   "lat": 30.2741,
+   "lng": 120.1551,
+   "place": "Hangzhou, China",
+   "value": 7500000000,
+   "dims": {
+    "company": "DeepSeek",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.wsj.com/tech/ai/deepseek-becomes-chinas-most-valuable-ai-startup-after-over-7-4-billion-fundraise-78ef64c0",
+   "note": "valued at $50B post-money"
+  },
+  {
+   "id": "anthropic-may-2026-965b-series-h",
+   "name": "Anthropic — May 2026 965B Series H",
+   "date": "2026-05-28",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 65000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "\thttps://www.anthropic.com/news/series-h",
+   "note": "valued at $965B post-money"
+  },
+  {
+   "id": "anthropic-alphabet-anthropic-april-2026",
+   "name": "Anthropic — Alphabet Anthropic April 2026",
+   "date": "2026-04-24",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 10000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.reuters.com/business/google-plans-invest-up-40-billion-anthropic-bloomberg-news-reports-2026-04-24/",
+   "note": "valued at $380B post-money"
+  },
+  {
+   "id": "anthropic-amazon-anthropic-april-2026",
+   "name": "Anthropic — Amazon Anthropic April 2026",
+   "date": "2026-04-20",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 5000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-amazon-compute",
+   "note": "valued at $380B post-money"
+  },
+  {
+   "id": "openai-852b-march-2026",
+   "name": "OpenAI — 852B March 2026",
+   "date": "2026-03-31",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 12000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://openai.com/index/accelerating-the-next-phase-ai/",
+   "note": "valued at $852B post-money"
+  },
+  {
+   "id": "minimax-minimax-q1",
+   "name": "MiniMax — MiniMax Q1",
+   "date": "2026-03-31",
+   "lat": 31.2304,
+   "lng": 121.4737,
+   "place": "Shanghai, China",
+   "value": null,
+   "dims": {
+    "company": "MiniMax",
+    "status": "Closed",
+    "type": "Other",
+    "confidence": "Confident"
+   },
+   "url": "https://finance.yahoo.com/quote/0100.HK/",
+   "note": "valued at $37B post-money"
+  },
+  {
+   "id": "z-ai-zhipu-z-ai-q1",
+   "name": "Z.ai (Zhipu) — Z.ai Q1",
+   "date": "2026-03-31",
+   "lat": 39.9906,
+   "lng": 116.3064,
+   "place": "Beijing, China",
+   "value": null,
+   "dims": {
+    "company": "Z.ai (Zhipu)",
+    "status": "Closed",
+    "type": "Other",
+    "confidence": "Confident"
+   },
+   "url": "https://www.reuters.com/markets/companies/2513.HK/profile/",
+   "note": "valued at $39B post-money"
+  },
+  {
+   "id": "openai-840b-feb-2026",
+   "name": "OpenAI — 840B Feb 2026",
+   "date": "2026-02-27",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 110000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://openai.com/index/scaling-ai-for-everyone/",
+   "note": "valued at $840B post-money"
+  },
+  {
+   "id": "anthropic-feb-2026-380b-series-g",
+   "name": "Anthropic — Feb 2026 380B Series G",
+   "date": "2026-02-12",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 30000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-raises-30-billion-series-g-funding-380-billion-post-money-valuation",
+   "note": "valued at $380B post-money"
+  },
+  {
+   "id": "minimax-minimax-ipo",
+   "name": "MiniMax — MiniMax IPO",
+   "date": "2026-01-08",
+   "lat": 31.2304,
+   "lng": 121.4737,
+   "place": "Shanghai, China",
+   "value": 619000000,
+   "dims": {
+    "company": "MiniMax",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.reuters.com/world/asia-pacific/chinas-ai-startup-minimax-group-raises-619-million-hong-kong-ipo-2026-01-08/",
+   "note": "valued at $7B post-money"
+  },
+  {
+   "id": "z-ai-zhipu-z-ai-ipo",
+   "name": "Z.ai (Zhipu) — Z.ai IPO",
+   "date": "2026-01-08",
+   "lat": 39.9906,
+   "lng": 116.3064,
+   "place": "Beijing, China",
+   "value": 558000000,
+   "dims": {
+    "company": "Z.ai (Zhipu)",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.bloomberg.com/news/articles/2026-01-07/china-s-openai-rival-zhipu-debuts-in-hk-after-558-million-ipo",
+   "note": "valued at $7B post-money"
+  },
+  {
+   "id": "xai-jan-2026-20b-series-e",
+   "name": "xAI — Jan 2026 20B Series E",
+   "date": "2026-01-06",
+   "lat": 37.4419,
+   "lng": -122.143,
+   "place": "Palo Alto, US",
+   "value": 20000000000,
+   "dims": {
+    "company": "xAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://x.ai/news/series-e",
+   "note": "valued at $230B post-money"
+  },
+  {
+   "id": "openai-300b-final-stage",
+   "name": "OpenAI — 300B final stage",
+   "date": "2025-12-30",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 22500000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.cnbc.com/2025/12/30/softbank-openai-investment.html"
+  },
+  {
+   "id": "openai-1b-disney",
+   "name": "OpenAI — 1B Disney",
+   "date": "2025-12-11",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 1000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Cancelled",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://openai.com/index/disney-sora-agreement/",
+   "note": "valued at $500B post-money · dated by report date — not yet closed"
+  },
+  {
+   "id": "anthropic-microsoft-nvidia",
+   "name": "Anthropic — Microsoft/Nvidia",
+   "date": "2025-11-18",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 15000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Late discussions",
+    "type": "Undisclosed",
+    "confidence": "Uncertain"
+   },
+   "url": "https://www.anthropic.com/news/microsoft-nvidia-anthropic-announce-strategic-partnerships",
+   "note": "valued at $350B post-money · dated by report date — not yet closed"
+  },
+  {
+   "id": "openai-2025-500b-tender",
+   "name": "OpenAI — 2025 500B tender",
+   "date": "2025-10-01",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 0,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Secondary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.wsj.com/tech/ai/openai-valuation-hits-500-billion-while-altman-signs-more-deals-in-asia-59b47a0d",
+   "note": "valued at $500B post-money"
+  },
+  {
+   "id": "openai-openai-nvidia",
+   "name": "OpenAI — OpenAI–Nvidia",
+   "date": "2025-09-22",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 100000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Late discussions",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://openai.com/index/openai-nvidia-systems-partnership/",
+   "note": "dated by report date — not yet closed"
+  },
+  {
+   "id": "mistral-ai-sep-2025-series-c",
+   "name": "Mistral AI — Sep 2025 Series C",
+   "date": "2025-09-09",
+   "lat": 48.8566,
+   "lng": 2.3522,
+   "place": "Paris, France",
+   "value": 1990000000,
+   "dims": {
+    "company": "Mistral AI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://mistral.ai/news/mistral-ai-raises-1-7-b-to-accelerate-technological-progress-with-ai",
+   "note": "valued at $14B post-money"
+  },
+  {
+   "id": "anthropic-sep-2025-183b-series-f",
+   "name": "Anthropic — Sep 2025 183B Series F",
+   "date": "2025-09-02",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 13000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-raises-series-f-at-usd183b-post-money-valuation",
+   "note": "valued at $183B post-money"
+  },
+  {
+   "id": "openai-300b-stage-2",
+   "name": "OpenAI — 300B Stage 2",
+   "date": "2025-08-01",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 8300000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.nytimes.com/2025/08/01/business/dealbook/openai-ai-mega-funding-deal.html",
+   "note": "valued at $300B post-money"
+  },
+  {
+   "id": "xai-june-2025-10b-raise",
+   "name": "xAI — June 2025 10B Raise",
+   "date": "2025-06-30",
+   "lat": 37.4419,
+   "lng": -122.143,
+   "place": "Palo Alto, US",
+   "value": 5000000000,
+   "dims": {
+    "company": "xAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.cnbc.com/2025/07/01/elon-musk-xai-raises-10-billion-in-debt-and-equity.html",
+   "note": "valued at $150B post-money · +$5.0B debt"
+  },
+  {
+   "id": "openai-mar-2025-300b-stage-1",
+   "name": "OpenAI — Mar 2025 300B Stage 1",
+   "date": "2025-03-31",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 10000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.cnbc.com/2025/03/31/openai-closes-40-billion-in-funding-the-largest-private-fundraise-in-history-softbank-chatgpt.html",
+   "note": "valued at $300B post-money"
+  },
+  {
+   "id": "xai-mar-2025-80b-x-merger",
+   "name": "xAI — Mar 2025 80B X merger",
+   "date": "2025-03-28",
+   "lat": 37.4419,
+   "lng": -122.143,
+   "place": "Palo Alto, US",
+   "value": 0,
+   "dims": {
+    "company": "xAI",
+    "status": "Closed",
+    "type": "Other",
+    "confidence": "Confident"
+   },
+   "url": "https://www.cnbc.com/2025/03/28/elon-musk-says-xai-has-acquired-x-in-deal-that-values-social-media-site-at-33-billion.html",
+   "note": "valued at $113B post-money"
+  },
+  {
+   "id": "anthropic-mar-2025-61-5b-series-e",
+   "name": "Anthropic — Mar 2025 61.5B Series E",
+   "date": "2025-03-03",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 3500000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-raises-series-e-at-usd61-5b-post-money-valuation",
+   "note": "valued at $62B post-money"
+  },
+  {
+   "id": "anthropic-google-1b-2025",
+   "name": "Anthropic — Google 1B 2025",
+   "date": "2025-03-01",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 1000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.ft.com/content/ed631513-dd37-44a3-a536-b2002f5727cc"
+  },
+  {
+   "id": "anthropic-amazon-nov-2024",
+   "name": "Anthropic — Amazon Nov 2024",
+   "date": "2024-11-24",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 4000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-amazon-trainium"
+  },
+  {
+   "id": "xai-dec-2024-series-c",
+   "name": "xAI — Dec 2024 Series C",
+   "date": "2024-11-20",
+   "lat": 37.4419,
+   "lng": -122.143,
+   "place": "Palo Alto, US",
+   "value": 6000000000,
+   "dims": {
+    "company": "xAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://x.ai/news/series-c",
+   "note": "valued at $45B post-money"
+  },
+  {
+   "id": "openai-oct-2024-157b",
+   "name": "OpenAI — Oct 2024 157B",
+   "date": "2024-10-02",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 6600000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://openai.com/index/scale-the-benefits-of-ai/",
+   "note": "valued at $157B post-money · +$4.0B debt"
+  },
+  {
+   "id": "mistral-ai-june-2024-6b",
+   "name": "Mistral AI — June 2024 6B",
+   "date": "2024-06-11",
+   "lat": 48.8566,
+   "lng": 2.3522,
+   "place": "Paris, France",
+   "value": 500000000,
+   "dims": {
+    "company": "Mistral AI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://techcrunch.com/2024/06/11/paris-based-ai-startup-mistral-ai-raises-640-million/",
+   "note": "valued at $6B post-money · +$0.1B debt"
+  },
+  {
+   "id": "xai-may-2024-24b-series-b",
+   "name": "xAI — May 2024 24B Series B",
+   "date": "2024-05-27",
+   "lat": 37.4419,
+   "lng": -122.143,
+   "place": "Palo Alto, US",
+   "value": 6000000000,
+   "dims": {
+    "company": "xAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://x.ai/news/series-b",
+   "note": "valued at $24B post-money"
+  },
+  {
+   "id": "anthropic-amazon-march-2024",
+   "name": "Anthropic — Amazon March 2024",
+   "date": "2024-03-27",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 4000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.aboutamazon.com/news/company-news/amazon-anthropic-ai-investment"
+  },
+  {
+   "id": "mistral-ai-february-2024-series-a",
+   "name": "Mistral AI — February 2024 Series A+",
+   "date": "2024-02-27",
+   "lat": 48.8566,
+   "lng": 2.3522,
+   "place": "Paris, France",
+   "value": 16300000,
+   "dims": {
+    "company": "Mistral AI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://techcrunch.com/2024/02/27/microsoft-made-a-16-million-investment-in-mistral-ai/",
+   "note": "valued at $2B post-money"
+  },
+  {
+   "id": "openai-feb-2024-80b",
+   "name": "OpenAI — Feb 2024 80B",
+   "date": "2024-02-16",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 0,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Secondary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.nytimes.com/2024/02/16/technology/openai-artificial-intelligence-deal-valuation.html ",
+   "note": "valued at $80B post-money"
+  },
+  {
+   "id": "anthropic-dec-2023-18-4b-series-d",
+   "name": "Anthropic — Dec 2023 18.4B Series D",
+   "date": "2024-01-11",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 750000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.cnbc.com/2023/12/21/openai-rival-anthropic-in-talks-to-raise-750-million-funding-round.html",
+   "note": "valued at $18B post-money"
+  },
+  {
+   "id": "mistral-ai-december-2023-series-a",
+   "name": "Mistral AI — December 2023 Series A",
+   "date": "2023-12-11",
+   "lat": 48.8566,
+   "lng": 2.3522,
+   "place": "Paris, France",
+   "value": 415000000,
+   "dims": {
+    "company": "Mistral AI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://techcrunch.com/2023/12/11/mistral-ai-a-paris-based-openai-rival-closed-its-415-million-funding-round/",
+   "note": "valued at $2B post-money"
+  },
+  {
+   "id": "anthropic-oct-2023-google",
+   "name": "Anthropic — Oct 2023 Google",
+   "date": "2023-10-25",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 2000000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.cnbc.com/2023/10/27/google-commits-to-invest-2-billion-in-openai-competitor-anthropic.html"
+  },
+  {
+   "id": "mistral-ai-june-2023-seed",
+   "name": "Mistral AI — June 2023 Seed",
+   "date": "2023-06-13",
+   "lat": 48.8566,
+   "lng": 2.3522,
+   "place": "Paris, France",
+   "value": 113000000,
+   "dims": {
+    "company": "Mistral AI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://techcrunch.com/2023/06/13/frances-mistral-ai-blows-in-with-a-113m-seed-round-at-a-260m-valuation-to-take-on-openai/",
+   "note": "valued at $0B post-money"
+  },
+  {
+   "id": "anthropic-may-2023-series-c",
+   "name": "Anthropic — May 2023 Series C",
+   "date": "2023-05-23",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 450000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-series-c ",
+   "note": "valued at $5B post-money"
+  },
+  {
+   "id": "openai-apr-2023-27b",
+   "name": "OpenAI — Apr 2023 27B",
+   "date": "2023-04-26",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 300000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.reuters.com/markets/deals/openai-closes-10-bln-funding-round-27-bln-29-bln-valuation-techcrunch-2023-04-28/",
+   "note": "valued at $27B post-money"
+  },
+  {
+   "id": "openai-jan-2023-microsoft",
+   "name": "OpenAI — Jan 2023 Microsoft",
+   "date": "2023-01-23",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 10000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://openai.com/index/openai-and-microsoft-extend-partnership/ "
+  },
+  {
+   "id": "anthropic-apr-2022-series-b",
+   "name": "Anthropic — Apr 2022 Series B ",
+   "date": "2022-04-29",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 580000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-raises-series-b-to-build-safe-reliable-ai ",
+   "note": "valued at $4B post-money"
+  },
+  {
+   "id": "openai-14b-tender",
+   "name": "OpenAI — 14B tender",
+   "date": "2021-07-01",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 0,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Secondary",
+    "confidence": "Uncertain"
+   },
+   "url": "https://www.wsj.com/articles/chatgpt-creator-openai-is-in-talks-for-tender-offer-that-would-value-it-at-29-billion-11672949279b",
+   "note": "valued at $14B post-money"
+  },
+  {
+   "id": "anthropic-may-2021-series-a",
+   "name": "Anthropic — May 2021 Series A",
+   "date": "2021-05-28",
+   "lat": 37.7876,
+   "lng": -122.3946,
+   "place": "San Francisco, US",
+   "value": 124000000,
+   "dims": {
+    "company": "Anthropic",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://www.anthropic.com/news/anthropic-raises-124-million-to-build-more-reliable-general-ai-systems",
+   "note": "valued at $1B post-money"
+  },
+  {
+   "id": "openai-march-2021-microsoft-2b",
+   "name": "OpenAI — March 2021 Microsoft 2B",
+   "date": "2021-03-15",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 2000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://www.nytimes.com/2023/01/12/technology/microsoft-openai-chatgpt.html"
+  },
+  {
+   "id": "openai-2019-microsoft-1b",
+   "name": "OpenAI — 2019 Microsoft 1B",
+   "date": "2019-07-22",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 1000000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Confident"
+   },
+   "url": "https://news.microsoft.com/source/2019/07/22/openai-forms-exclusive-computing-partnership-with-microsoft-to-build-new-azure-ai-supercomputing-technologies/"
+  },
+  {
+   "id": "openai-2019-lp-seed-other",
+   "name": "OpenAI — 2019 LP seed (Other)",
+   "date": "2019-03-11",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": null,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://openai.com/index/openai-lp/"
+  },
+  {
+   "id": "openai-2019-lp-seed-khosla",
+   "name": "OpenAI — 2019 LP seed (Khosla)",
+   "date": "2019-03-11",
+   "lat": 37.762,
+   "lng": -122.4103,
+   "place": "San Francisco, US",
+   "value": 50000000,
+   "dims": {
+    "company": "OpenAI",
+    "status": "Closed",
+    "type": "Primary",
+    "confidence": "Likely"
+   },
+   "url": "https://openai.com/index/openai-lp/"
+  }
+ ]
+}

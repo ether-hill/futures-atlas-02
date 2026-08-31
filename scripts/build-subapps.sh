@@ -73,7 +73,7 @@ stage_fonts() {
 stage_fonts
 
 # Vite apps build straight into public/<slug> via their vite.config outDir.
-for app in generatives quantum-sandbox literal-frequency gigawatt trajectories magnifica; do
+for app in generatives quantum-sandbox literal-frequency gigawatt trajectories magnifica mappings; do
   # Most of these write to public/<app>, but gigawatt is the source of
   # /hyperscale — its directory name and its URL differ, and the skip check
   # needs the OUTPUT name or it looks for a directory that never exists and
