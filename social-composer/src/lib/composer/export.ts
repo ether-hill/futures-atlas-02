@@ -7,6 +7,7 @@
 
 import { GIFEncoder, quantize, applyPalette } from "gifenc";
 import { zipSync } from "fflate";
+import { Muxer, ArrayBufferTarget } from "mp4-muxer";
 
 export function downloadBlob(blob: Blob, name: string) {
   const url = URL.createObjectURL(blob);
@@ -91,42 +92,123 @@ export function pickVideoMime(): { mime: string; ext: string } | null {
   return null;
 }
 
-/** Record an animation to a video Blob via canvas captureStream.
- *  `prepareFrame(0)` (optional) is awaited before recording starts so video
- *  slides are seeked to their first frame; real-time playback then advances. */
-export async function renderVideoBlob(opts: {
+type VideoOpts = {
   renderFrame: RenderFrame; w: number; h: number; fps: number; durationSec: number;
   prepareFrame?: (t: number) => Promise<void>;
   onProgress?: (p: number) => void;
-}): Promise<{ blob: Blob; ext: string } | null> {
+};
+
+/** Offline export: render every frame at its exact clock position and encode a
+ *  constant-frame-rate H.264 MP4 with WebCodecs + mp4-muxer. Deterministic —
+ *  immune to main-thread hitches, tab focus, and display refresh rate. */
+async function renderVideoWebCodecs(opts: VideoOpts): Promise<{ blob: Blob; ext: string } | null> {
+  if (typeof VideoEncoder === "undefined" || typeof VideoFrame === "undefined") return null;
+  // H.264 wants even dimensions
+  const w = opts.w & ~1, h = opts.h & ~1;
+  const bitrate = 10_000_000;
+  // High 4.0 → Main 4.0 → Baseline 4.0; 4.0 covers 1080×1920@30
+  let codec: string | null = null;
+  for (const c of ["avc1.640028", "avc1.4D0028", "avc1.420028"]) {
+    try {
+      const s = await VideoEncoder.isConfigSupported({ codec: c, width: w, height: h, bitrate, framerate: opts.fps });
+      if (s.supported) { codec = c; break; }
+    } catch { /* try the next profile */ }
+  }
+  if (!codec) return null;
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w; canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  if (document.fonts?.ready) { try { await document.fonts.ready; } catch { /* ignore */ } }
+
+  const muxer = new Muxer({
+    target: new ArrayBufferTarget(),
+    video: { codec: "avc", width: w, height: h },
+    fastStart: "in-memory",
+  });
+  let encodeError: unknown = null;
+  const encoder = new VideoEncoder({
+    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
+    error: (e) => { encodeError = e; },
+  });
+  encoder.configure({ codec, width: w, height: h, bitrate, framerate: opts.fps });
+
+  const total = Math.max(2, Math.round(opts.fps * opts.durationSec));
+  const usPerFrame = 1_000_000 / opts.fps;
+  try {
+    for (let i = 0; i < total; i++) {
+      const t = i / (total - 1);
+      if (opts.prepareFrame) await opts.prepareFrame(t);
+      opts.renderFrame(ctx, t);
+      const frame = new VideoFrame(canvas, {
+        timestamp: Math.round(i * usPerFrame),
+        duration: Math.round(usPerFrame),
+      });
+      encoder.encode(frame, { keyFrame: i % (opts.fps * 2) === 0 });
+      frame.close();
+      if (encodeError) throw encodeError;
+      // backpressure + let React repaint the progress %
+      while (encoder.encodeQueueSize > 4) await new Promise((r) => setTimeout(r, 0));
+      opts.onProgress?.((i + 1) / total);
+      if (i % 3 === 0) await new Promise((r) => setTimeout(r, 0));
+    }
+    await encoder.flush();
+    if (encodeError) throw encodeError;
+    muxer.finalize();
+  } catch (e) {
+    try { encoder.close(); } catch { /* already closed */ }
+    console.warn("WebCodecs export failed, falling back to MediaRecorder", e);
+    return null;
+  }
+  return { blob: new Blob([muxer.target.buffer], { type: "video/mp4" }), ext: "mp4" };
+}
+
+/** Fallback: canvas captureStream + MediaRecorder. Paced frame-by-frame — each
+ *  frame is painted deterministically, then pushed with track.requestFrame()
+ *  where supported, so a slow paint no longer drops frames silently (though
+ *  the result is still variable-frame-rate; WebCodecs is the quality path). */
+async function renderVideoMediaRecorder(opts: VideoOpts): Promise<{ blob: Blob; ext: string } | null> {
   const picked = pickVideoMime();
   const canvas = document.createElement("canvas");
   canvas.width = opts.w; canvas.height = opts.h;
   const ctx = canvas.getContext("2d");
   if (!ctx || !picked || !canvas.captureStream) return null;
   if (document.fonts?.ready) { try { await document.fonts.ready; } catch { /* ignore */ } }
-  const stream = canvas.captureStream(opts.fps);
+  // captureStream(0) = manual capture via requestFrame(); fall back to auto
+  const track0 = canvas.captureStream(0).getVideoTracks()[0] as MediaStreamTrack & { requestFrame?: () => void };
+  const manual = typeof track0.requestFrame === "function";
+  const stream = manual ? new MediaStream([track0]) : canvas.captureStream(opts.fps);
   const rec = new MediaRecorder(stream, { mimeType: picked.mime, videoBitsPerSecond: 8_000_000 });
   const chunks: BlobPart[] = [];
   rec.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
   const done = new Promise<void>((resolve) => { rec.onstop = () => resolve(); });
   if (opts.prepareFrame) await opts.prepareFrame(0);
+  opts.renderFrame(ctx, 0);
   rec.start();
+  const total = Math.max(2, Math.round(opts.fps * opts.durationSec));
+  const msPerFrame = 1000 / opts.fps;
   const startT = performance.now();
-  await new Promise<void>((resolve) => {
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - startT) / (opts.durationSec * 1000));
-      opts.renderFrame(ctx, t);
-      opts.onProgress?.(t);
-      if (t >= 1) { resolve(); return; }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
+  for (let i = 0; i < total; i++) {
+    const t = i / (total - 1);
+    if (opts.prepareFrame) await opts.prepareFrame(t);
+    opts.renderFrame(ctx, t);
+    if (manual) track0.requestFrame!();
+    opts.onProgress?.((i + 1) / total);
+    const target = startT + (i + 1) * msPerFrame;
+    const wait = target - performance.now();
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+  }
   await new Promise((r) => setTimeout(r, 120));
   rec.stop();
   await done;
   return { blob: new Blob(chunks, { type: picked.mime }), ext: picked.ext };
+}
+
+/** Render an animation to a video Blob — offline CFR MP4 via WebCodecs where
+ *  the browser supports it, else a paced MediaRecorder capture. */
+export async function renderVideoBlob(opts: VideoOpts): Promise<{ blob: Blob; ext: string } | null> {
+  return (await renderVideoWebCodecs(opts)) ?? renderVideoMediaRecorder(opts);
 }
 
 /** Record + download a single combined reel video. */
