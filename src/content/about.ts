@@ -35,31 +35,118 @@ export const OUTPUT_TYPES: { type: OutputType; label: string; title: string; bod
   },
 ];
 
-export const DOMAINS = {
+/**
+ * "What we work on" is a term field, not four essays: the left column states
+ * the subject, the cloud on the right is the vocabulary. Clusters drive both
+ * the colour families and the connecting lines; weight is emphasis, a design
+ * decision with no count behind it.
+ */
+export const WORK = {
   intro: "What we work on",
-  items: [
-    {
-      term: "Quantum computing",
-      def: "The technology itself, its real state, and the rhetoric sold around it. Quantum hardware is genuinely advancing, more qubits, better error correction, real laboratory milestones, and at the same time it is one of the most over-narrated technologies of the decade. We track both: what the machines can demonstrably do today, and how the story told about them departs from that baseline. When a claim reaches the press wrapped in inevitability, we trace it back to the paper, the benchmark, or the investor deck it came from.",
-    },
-    {
-      term: "Quantum applications",
-      def: "How the field evolves from lab results to claimed use cases. Between a physics result and an industry 'application' sits a long chain of assumptions, error rates, scaling, integration, economics, and most public claims skip the chain entirely. We map which applications have a credible path (optimization, molecular simulation, sensing, post-quantum cryptography), which are speculative, and which are marketing. The interesting work is in the middle: applications that are real but narrower, slower, or stranger than the pitch.",
-    },
-    {
-      term: "Emerging and future AI",
-      def: "Capabilities, trajectories, and the gap between the two. AI is moving fast enough that honest foresight has to be re-checked constantly, which is exactly why we build instruments instead of predictions. We look at what current systems actually do in working hands, where the next capabilities plausibly land, and how organisations should reason under that uncertainty. The gap between demonstrated capability and projected trajectory is where most decisions go wrong, so that gap is our subject.",
-    },
-    {
-      term: "The people and organisations",
-      def: "Who's building, funding, and narrating these futures. Technologies don't arrive on their own; they are carried by labs, companies, ministries and individuals with positions to defend and rounds to raise. We read the announcements, the filings and the incentives together, because the shape of a claimed future usually says as much about its narrator as about the technology. Understanding who benefits from a story is part of evaluating it.",
-    },
-  ],
+  body: "Quantum computing and what the machines can demonstrably do, the applications claimed for them, where AI is actually heading, and the labs, companies and ministries narrating all of it. The gap between a demonstrated capability and a projected trajectory is where most decisions go wrong, so that gap is the subject.",
+  note: "The terms this work keeps returning to. Size is emphasis, not a tally.",
   closing: "Across all of it: cite everything, substance over hype.",
 };
 
-export const WORKFLOW_INTRO =
-  "Every project on the Atlas is made with a mix of AI systems, creative tools, and open web technology. We document the workflow for each one, which models, which libraries, which steps, so the process is as replicatable as the output.";
+export type TermCluster = "futures" | "quantum" | "ai" | "society" | "craft";
+
+export interface Term {
+  t: string;
+  c: TermCluster;
+  /** 3 = a cluster's anchor, 1 = a supporting term. Emphasis only. */
+  w: 1 | 2 | 3;
+}
+
+export const TERMS: Term[] = [
+  // Futures practice
+  { t: "Speculative design", c: "futures", w: 3 },
+  { t: "Foresight", c: "futures", w: 2 },
+  { t: "Prototyping", c: "futures", w: 2 },
+  { t: "Backcasting", c: "futures", w: 2 },
+  { t: "Scenarios", c: "futures", w: 2 },
+  { t: "Design fiction", c: "futures", w: 2 },
+  { t: "Workshops", c: "futures", w: 2 },
+  { t: "Horizon scanning", c: "futures", w: 1 },
+  { t: "Weak signals", c: "futures", w: 1 },
+  { t: "Futures literacy", c: "futures", w: 1 },
+  { t: "World-building", c: "futures", w: 1 },
+  { t: "Provocation", c: "futures", w: 1 },
+
+  // Quantum
+  { t: "Quantum computing", c: "quantum", w: 3 },
+  { t: "Quantum", c: "quantum", w: 2 },
+  { t: "Quantum applications", c: "quantum", w: 2 },
+  { t: "Quantum & society", c: "quantum", w: 2 },
+  { t: "Qubits", c: "quantum", w: 1 },
+  { t: "Error correction", c: "quantum", w: 1 },
+  { t: "Post-quantum cryptography", c: "quantum", w: 1 },
+  { t: "Quantum sensing", c: "quantum", w: 1 },
+  { t: "Molecular simulation", c: "quantum", w: 1 },
+  { t: "Optimisation", c: "quantum", w: 1 },
+
+  // AI
+  { t: "AI", c: "ai", w: 3 },
+  { t: "AGI", c: "ai", w: 2 },
+  { t: "Agentic systems", c: "ai", w: 2 },
+  { t: "Frontier models", c: "ai", w: 2 },
+  { t: "Vibe coding", c: "ai", w: 2 },
+  { t: "AI safety", c: "ai", w: 2 },
+  { t: "Compute", c: "ai", w: 2 },
+  { t: "Open weights", c: "ai", w: 1 },
+  { t: "Evals", c: "ai", w: 1 },
+  { t: "Alignment", c: "ai", w: 1 },
+  { t: "Datacentres", c: "ai", w: 1 },
+  { t: "Gigawatts", c: "ai", w: 1 },
+  { t: "Inference", c: "ai", w: 1 },
+
+  // Society, policy, media
+  { t: "Society", c: "society", w: 3 },
+  { t: "Policy", c: "society", w: 2 },
+  { t: "Governance", c: "society", w: 2 },
+  { t: "Ethics", c: "society", w: 2 },
+  { t: "Media", c: "society", w: 2 },
+  { t: "Rhetoric", c: "society", w: 2 },
+  { t: "Social commentary", c: "society", w: 2 },
+  { t: "Public engagement", c: "society", w: 2 },
+  { t: "Regulation", c: "society", w: 1 },
+  { t: "Sovereignty", c: "society", w: 1 },
+  { t: "Power", c: "society", w: 1 },
+  { t: "Incentives", c: "society", w: 1 },
+  { t: "Narrative", c: "society", w: 1 },
+  { t: "Hype cycles", c: "society", w: 1 },
+  { t: "Finger on the pulse", c: "society", w: 1 },
+
+  // How it gets made
+  { t: "Creative coding", c: "craft", w: 3 },
+  { t: "Generative visuals", c: "craft", w: 2 },
+  { t: "Data visualisation", c: "craft", w: 2 },
+  { t: "Editorial", c: "craft", w: 2 },
+  { t: "Evidence", c: "craft", w: 2 },
+  { t: "WebGL & shaders", c: "craft", w: 1 },
+  { t: "Simulation", c: "craft", w: 1 },
+  { t: "Open source", c: "craft", w: 1 },
+  { t: "Replicability", c: "craft", w: 1 },
+  { t: "Citation", c: "craft", w: 1 },
+];
+
+/**
+ * Links that cross clusters, by term text. Inside a cluster every term already
+ * joins its anchor, so these are the joins worth drawing by hand.
+ */
+export const TERM_LINKS: [string, string][] = [
+  ["Quantum computing", "Compute"],
+  ["Quantum & society", "Society"],
+  ["AI", "Policy"],
+  ["AI safety", "Governance"],
+  ["Foresight", "Policy"],
+  ["Speculative design", "Social commentary"],
+  ["Prototyping", "Creative coding"],
+  ["Vibe coding", "Prototyping"],
+  ["Evidence", "Rhetoric"],
+  ["Data visualisation", "Evidence"],
+  ["Scenarios", "Governance"],
+  ["Media", "Hype cycles"],
+];
 
 export type StackGroup = "ai-language" | "ai-media" | "ai-open" | "web";
 
@@ -240,59 +327,6 @@ export const STACK: StackTool[] = [
     group: "web",
     url: "https://d3js.org",
     role: "Data-driven visuals where prototypes need them.",
-  },
-];
-
-export interface WorkflowStage {
-  id: string;
-  label: string;
-  blurb: string;
-  tools: string[]; // STACK slugs shown at this stage
-  types: OutputType[]; // which output types pass through this stage
-}
-
-export const WORKFLOW: WorkflowStage[] = [
-  {
-    id: "research",
-    label: "Research",
-    blurb: "Source-first reading and claim-checking before anything is drawn or built.",
-    tools: ["claude", "openai"],
-    types: ["read", "copy", "run"],
-  },
-  {
-    id: "frameworks",
-    label: "Frameworks",
-    blurb: "Drafting the structure, briefs, schemas, prompts and page architecture.",
-    tools: ["claude"],
-    types: ["read", "copy", "run"],
-  },
-  {
-    id: "visuals",
-    label: "Visuals",
-    blurb: "Imagery and motion in the project's own register.",
-    tools: ["midjourney", "kling", "seedance", "nanobanana", "veo"],
-    types: ["read", "run"],
-  },
-  {
-    id: "build",
-    label: "Build",
-    blurb: "Working software, shipped from source on every push.",
-    tools: ["nextjs", "react", "threejs", "p5js", "tailwindcss", "d3", "vercel"],
-    types: ["copy", "run"],
-  },
-  {
-    id: "test",
-    label: "Test",
-    blurb: "Real rooms, real workshops, kits earn the label by surviving contact.",
-    tools: [],
-    types: ["run"],
-  },
-  {
-    id: "publish",
-    label: "Publish",
-    blurb: "Ship it on the Atlas and open the code.",
-    tools: ["vercel"],
-    types: ["read", "copy", "run"],
   },
 ];
 

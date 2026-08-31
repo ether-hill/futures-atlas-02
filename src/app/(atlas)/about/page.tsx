@@ -6,15 +6,8 @@ import { Collaborators } from "@/components/about/Collaborators";
 import { OutputTypeBadge } from "@/components/about/OutputTypeBadge";
 import { SignalField } from "@/components/about/SignalField";
 import { StackGrid } from "@/components/about/StackGrid";
-import { WorkflowDiagram } from "@/components/about/WorkflowDiagram";
-import {
-  DOMAINS,
-  FOOTER_CTA,
-  HERO,
-  OUTPUT_TYPES,
-  STACK_INTRO,
-  WORKFLOW_INTRO,
-} from "@/content/about";
+import { TermField } from "@/components/about/TermField";
+import { FOOTER_CTA, HERO, OUTPUT_TYPES, STACK_INTRO, WORK } from "@/content/about";
 
 export const metadata: Metadata = {
   title: "About. Futures Atlas",
@@ -76,53 +69,36 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* ── What we work on, sticky title, scrolling essays ─────────────── */}
-      <section className="border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
-        <Container>
-          <div className="grid grid-cols-1 gap-x-[clamp(24px,5vw,80px)] gap-y-8 lg:grid-cols-[1fr_1.6fr]">
-            <div className="self-start lg:sticky lg:top-[calc(var(--fa-nav-h,64px)+28px)]">
-              <Reveal>
-                <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
-                  {DOMAINS.intro}
-                </h2>
-                <p className="mt-6 font-mono text-[12.5px] uppercase tracking-[0.08em] text-accent-deep">
-                  {DOMAINS.closing}
-                </p>
-              </Reveal>
-            </div>
-            <div className="flex flex-col divide-y divide-ink/10">
-              {DOMAINS.items.map((d) => (
-                <Reveal key={d.term} className="py-[clamp(20px,3vw,36px)] first:pt-0 last:pb-0">
-                  <h3 className="text-[clamp(19px,2vw,26px)] font-extrabold tracking-[-0.018em] text-ink">
-                    {d.term}
-                  </h3>
-                  <p className="mt-4 max-w-[68ch] font-mono text-[13.5px] leading-[1.85] text-ink-70">
-                    {d.def}
-                  </p>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* ── How things get made ─────────────────────────────────────────── */}
-      <section className="border-t border-ink/15 py-[clamp(48px,8vw,110px)]">
-        <Container>
+      {/* ── What we work on: the vocabulary, as a turning graph ─────────── */}
+      <section className="relative flex flex-col overflow-hidden border-t border-ink/15 md:min-h-[min(780px,86svh)] md:justify-center">
+        <Container className="relative z-[2] pt-[clamp(48px,8vw,110px)] pb-6 md:pb-[clamp(48px,8vw,110px)]">
           <Reveal>
-            <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
-              How things get made
-            </h2>
-            <p className="mt-5 max-w-[68ch] font-mono text-[13.5px] leading-[1.8] text-ink-70">
-              {WORKFLOW_INTRO}
-            </p>
+            <div className="max-w-[46ch]">
+              <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
+                {WORK.intro}
+              </h2>
+              <p className="mt-6 font-mono text-[13.5px] leading-[1.85] text-ink-70">{WORK.body}</p>
+              <p className="mt-6 font-mono text-[12.5px] leading-[1.75] text-ink/50">{WORK.note}</p>
+              <p className="mt-6 font-mono text-[12.5px] uppercase tracking-[0.08em] text-accent-deep">
+                {WORK.closing}
+              </p>
+            </div>
           </Reveal>
-          <div className="mt-[clamp(28px,4vw,48px)]">
-            <Reveal>
-              <WorkflowDiagram />
-            </Reveal>
-          </div>
         </Container>
+        {/*
+          The field is a block of its own on a phone (a backdrop there would
+          just sit under the paragraph and make both unreadable) and the
+          section's backdrop from md up.
+        */}
+        <div className="relative z-0 h-[112vw] max-h-[540px] w-full pb-[clamp(32px,6vw,64px)] md:absolute md:inset-0 md:h-auto md:max-h-none md:pb-0">
+          <TermField />
+        </div>
+        {/* Reading scrim: fades the left of the field into the page ground so
+            the terms behind the copy read as texture, not competition. */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-y-0 left-0 z-[1] hidden w-full bg-gradient-to-r from-surface from-14% via-surface/80 via-28% to-transparent to-46% md:block"
+        />
       </section>
 
       {/* ── The stack ───────────────────────────────────────────────────── */}

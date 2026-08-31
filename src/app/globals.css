@@ -104,6 +104,52 @@ html {
 body { padding-top: var(--fa-nav-h); }
 header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 
+/*
+  The About page's term field. Five families, one per cluster, ALL derived from
+  --accent by rotating its hue: no literal colours, and a live re-theme carries
+  them. Lightness and chroma come from --accent, so they flip with the theme.
+  Browsers without relative colour syntax fall back to the inherited ink, which
+  is legible in both themes.
+*/
+:root {
+  --term-futures: oklch(from var(--accent) l c calc(h - 60));
+  --term-quantum: oklch(from var(--accent) l c calc(h - 28));
+  --term-ai: var(--accent);
+  --term-society: oklch(from var(--accent) l c calc(h + 34));
+  --term-craft: oklch(from var(--accent) l c calc(h + 70));
+}
+
+.term-field [data-cluster="futures"] { color: var(--term-futures); }
+.term-field [data-cluster="quantum"] { color: var(--term-quantum); }
+.term-field [data-cluster="ai"] { color: var(--term-ai); }
+.term-field [data-cluster="society"] { color: var(--term-society); }
+.term-field [data-cluster="craft"] { color: var(--term-craft); }
+
+.term-field .term {
+  position: absolute;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  top: 0;
+  left: 0;
+  white-space: nowrap;
+  will-change: transform, opacity;
+  transition: color 200ms ease;
+}
+/* the small leading dot, same trick as the eyebrow tick */
+.term-field .term::before {
+  content: "";
+  display: inline-block;
+  width: 0.28em;
+  height: 0.28em;
+  margin-right: 0.42em;
+  vertical-align: 0.12em;
+  border-radius: 999px;
+  background: currentColor;
+}
+.term-field .term[data-w="3"] { font-weight: 600; }
+.term-field .term-line { stroke: currentColor; stroke-width: 0.6; }
+
+
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
