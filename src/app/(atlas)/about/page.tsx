@@ -130,7 +130,7 @@ export default function AboutPage() {
               <Reveal>
                 <p className="max-w-[68ch] font-mono text-[13.5px] leading-[1.8] text-ink-70">{OPEN.body}</p>
               </Reveal>
-              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {OPEN.licences.map((l, i) => (
                   <Reveal key={l.thing} delay={i * 90}>
                     <div className="flex h-full flex-col justify-between border border-ink/15 p-5">

@@ -91,7 +91,7 @@ export const OPENNESS: OpennessRow[] = [
     thing: "The source code",
     state: "open",
     detail:
-      "Both repositories are public on GitHub. Clone them, run them, fork them; there is no access to request.",
+      "The repository is public on GitHub. Clone it, run it, fork it; there is no access to request.",
   },
   {
     thing: "The research and data",

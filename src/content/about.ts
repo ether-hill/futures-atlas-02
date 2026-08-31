@@ -345,7 +345,6 @@ export const OPEN = {
   licences: [
     { thing: "Project code", licence: "MIT" },
     { thing: "Research & data", licence: "CC BY 4.0" },
-    { thing: "The site itself", licence: "Reserved" },
   ],
   cta: { label: "How it\u2019s built, and where every project\u2019s source lives", href: "/developers" },
   repo: { label: "ether-hill/futures-atlas-02", href: "https://github.com/ether-hill/futures-atlas-02" },
