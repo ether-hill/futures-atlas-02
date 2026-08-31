@@ -94,21 +94,24 @@ function paintLines(ctx: CanvasRenderingContext2D, lines: string[], x: number, y
       band = { top: lh * 0.0, height: lh, padX: lh * 0.13 };
     }
   }
+  // Two passes when highlighting: every band, THEN every glyph. Interleaving
+  // them let line i+1's band paint over line i's descenders (clipped p/q/y
+  // bottoms mid-animation) — the blue must always sit behind the letters.
+  const placed: { shown: string; tx: number; ty: number; tw: number }[] = [];
   for (let i = 0; i < lines.length; i++) {
     const shown = cut[i] ?? "";
     if (!shown) continue;
     const ly = y + i * lh;
     const tw = ctx.measureText(shown).width;
     const tx = align === "center" ? x - tw / 2 : align === "right" ? x - tw : x;
-    if (band) {
-      ctx.fillStyle = ACCENT;
-      ctx.fillRect(tx - band.padX, ly + band.top, tw + band.padX * 2, band.height);
-      ctx.fillStyle = "#F4EFE6";
-    } else {
-      ctx.fillStyle = color;
-    }
-    ctx.fillText(shown, tx, ly);
+    placed.push({ shown, tx, ty: ly, tw });
   }
+  if (band) {
+    ctx.fillStyle = ACCENT;
+    for (const p of placed) ctx.fillRect(p.tx - band.padX, p.ty + band.top, p.tw + band.padX * 2, band.height);
+  }
+  ctx.fillStyle = band ? "#F4EFE6" : color;
+  for (const p of placed) ctx.fillText(p.shown, p.tx, p.ty);
 }
 
 /** Hex → "r,g,b" triplet for building rgba() gradient stops. */
