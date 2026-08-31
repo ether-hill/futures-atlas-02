@@ -25,9 +25,28 @@
   --accent: var(--fa-accent); --accent-soft: var(--fa-accent-soft); --accent-deep: var(--fa-accent-deep);
   --hairline: color-mix(in srgb, var(--text) 16%, transparent);
   --font-heading: var(--fa-font-display); --font-year: var(--fa-font-year);
-  --container-max: 1500px;
-  --gutter: clamp(20px, 5vw, 56px);
+  /* type scale */
+  --text-display-xl: clamp(40px, 7.5vw, 120px);
+  --text-display-m: clamp(32px, 4.6vw, 68px);
+  --text-title: clamp(22px, 2.6vw, 32px);
+  --text-lead: clamp(15px, 1.5vw, 19px);
+  --text-body-size: clamp(13px, 1.35vw, 16px);
+  --text-label: 11px;
+  /* line-height, tracking, weight */
+  --lh-display: 0.96; --lh-snug: 1.34; --lh-body: 1.7;
+  --track-display: -0.022em; --track-label: 0.14em; --track-label-wide: 0.18em;
+  --weight-body: 400; --weight-medium: 500; --weight-strong: 800; --weight-black: 900;
+  /* layout: the hub's Container is full width with 16px / 28px gutters and NO
+     max-width, so this bundle matches it rather than centring on its own */
+  --gutter: 16px;
+  --gutter-wide: 28px;
+  /* spacing, radii, borders, motion */
+  --space-section: clamp(58px, 9vw, 130px);
+  --space-header: clamp(44px, 7vw, 96px);
+  --space-card: clamp(20px, 3vw, 28px);
+  --space-3: 12px; --space-4: 16px;
   --radius: 2px;
+  --border-hairline: 1px;
   --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
   color-scheme: light;
 }
@@ -52,9 +71,10 @@ body {
 a { color: inherit; }
 button, input, select { font-family: var(--font-heading); }
 
-.wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
+.wrap { width: 100%; margin: 0 auto; padding: 0 var(--gutter); }
+@media (min-width: 680px) { .wrap { padding: 0 var(--gutter-wide); } }
 
-.masthead { padding: clamp(56px, 8vw, 104px) 0 clamp(22px, 3vw, 34px); }
+.masthead { padding: var(--space-header) 0 clamp(22px, 3vw, 34px); }
 .eyebrow {
   display: flex; align-items: center; gap: 14px;
   font-family: var(--font-year); font-size: 12px; letter-spacing: 0.2em;
@@ -63,13 +83,13 @@ button, input, select { font-family: var(--font-heading); }
 .eyebrow::after { content: ""; height: 1px; flex: 1; background: var(--hairline); }
 h1 {
   margin: 16px 0 0;
-  font-size: clamp(44px, 8vw, 118px);
-  font-weight: 900; letter-spacing: -0.035em; line-height: 0.9;
+  font-size: var(--text-display-m);
+  font-weight: var(--weight-strong); letter-spacing: var(--track-display); line-height: var(--lh-display);
 }
 .lede {
   margin: 22px 0 0; max-width: 66ch;
-  font-size: clamp(14.5px, 1.4vw, 17px); font-weight: 400;
-  line-height: 1.62; color: var(--text-body);
+  font-size: var(--text-lead); font-weight: var(--weight-body);
+  line-height: var(--lh-body); color: var(--text-body);
 }
 
 /* ── the global bar ───────────────────────────────────────────────────────── */
@@ -81,9 +101,10 @@ h1 {
   border-bottom: 1px solid var(--hairline);
 }
 .bar__inner {
-  max-width: var(--container-max); margin: 0 auto; padding: 11px var(--gutter);
+  width: 100%; margin: 0 auto; padding: 11px var(--gutter);
   display: flex; flex-wrap: wrap; align-items: center; gap: clamp(12px, 2vw, 28px);
 }
+@media (min-width: 680px) { .bar__inner { padding: 11px var(--gutter-wide); } }
 .grp { display: flex; align-items: center; gap: 9px; }
 .lab {
   font-family: var(--font-year); font-size: 11px; letter-spacing: 0.18em;
@@ -143,10 +164,13 @@ input[type="color"] {
 /* ── grid ─────────────────────────────────────────────────────────────────── */
 .grid {
   display: grid; grid-template-columns: repeat(2, 1fr);
-  gap: clamp(18px, 2.4vw, 30px);
-  padding: clamp(24px, 3.5vw, 44px) 0 clamp(60px, 9vw, 120px);
+  gap: var(--space-card);
+  padding: clamp(24px, 3.5vw, 44px) 0 var(--space-section);
 }
 @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
+/* the hub runs full width, so on a very wide screen a third column keeps the
+   fields at a size you can read rather than one field per half a desk */
+@media (min-width: 1800px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 
 .card {
   border: 1px solid var(--hairline); background: var(--panel);
@@ -167,11 +191,11 @@ input[type="color"] {
 
 .meta { padding: 15px clamp(14px, 1.6vw, 20px) 16px; border-top: 1px solid var(--hairline); }
 .meta__top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
-.name { font-family: var(--font-year); font-size: 14px; letter-spacing: 0.2em; text-transform: uppercase; }
+.name { font-family: var(--font-year); font-size: 14px; letter-spacing: var(--track-label-wide); text-transform: uppercase; }
 .loop { font-family: var(--font-year); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
 .note {
   margin: 7px 0 0; max-width: 62ch;
-  font-size: 14px; line-height: 1.55; color: var(--muted);
+  font-size: var(--text-body-size); line-height: var(--lh-snug); color: var(--muted);
 }
 
 .ctl { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
@@ -203,16 +227,16 @@ input[type="color"] {
 
 .read { display: none; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--hairline); }
 .card.is-open .read { display: block; }
-.read p { margin: 0 0 13px; max-width: 74ch; font-size: 14.5px; line-height: 1.66; color: var(--text-body); }
+.read p { margin: 0 0 13px; max-width: 74ch; font-size: var(--text-body-size); line-height: var(--lh-body); color: var(--text-body); }
 .rlab {
   display: block; margin-bottom: 3px;
-  font-family: var(--font-year); font-size: 11px; letter-spacing: 0.18em;
+  font-family: var(--font-year); font-size: var(--text-label); letter-spacing: var(--track-label-wide);
   text-transform: uppercase; color: var(--accent);
 }
 .read p:last-child { margin-bottom: 0; }
 
-.colophon { border-top: 1px solid var(--hairline); padding: clamp(28px, 4vw, 52px) 0 clamp(60px, 8vw, 110px); }
-.colophon p { margin: 0 0 14px; max-width: 78ch; font-size: 14.5px; line-height: 1.68; color: var(--muted); }
+.colophon { border-top: var(--border-hairline) solid var(--hairline); padding: clamp(28px, 4vw, 52px) 0 var(--space-section); }
+.colophon p { margin: 0 0 14px; max-width: 78ch; font-size: var(--text-body-size); line-height: var(--lh-body); color: var(--muted); }
 .colophon em { font-style: normal; color: var(--text-body); }
 
 .toast {

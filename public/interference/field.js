@@ -210,11 +210,11 @@ window.FIELD = (function () {
     note: "Two drips into still water, landing together. Where the rings cross, they add.",
     read: [
       ["What you are seeing",
-       "Two drops land on still water at the same instant, and each sends out a ring. Where a crest from the left meets a crest from the right the water rises higher than either drop could manage alone; where a crest meets a trough it barely moves at all. The chequered lobes above and below the pair are the first kind of place. The calm lanes fanning out from between them are the second, and they hold still while everything around them travels."],
+       "Two drops hit the water at the same moment, and each one sends out a ring. Where two crests meet, the water piles up higher than either drop could manage on its own. Where a crest meets a dip, they cancel and the surface stays flat. The calm lanes fanning out from the middle are those cancellations, and they stay put while the rings travel through them."],
       ["Where the quantum comes in",
-       "Nothing quantum is happening here, which is the useful part. Adding waves is a property of waves, not of quantum mechanics, so this is already the geometry of the double slit: bright where the two path lengths differ by a whole wavelength, dead where they differ by half of one. What changes in the quantum case is what does the adding. Here it is the height of the water, measurable everywhere at once. There it is an amplitude nobody ever sees directly, which shows itself only in where the detections land."],
+       "Waves add up. That is the whole rule, and it is the same rule for water, sound, light and electrons. The famous double slit experiment is this picture with two openings instead of two drops. The difference is that here you can watch the water itself, while in the quantum version you never see the wave at all. You only see where the particles land, and they land in this pattern."],
       ["How it is built",
-       "Each drop is a wave packet expanding at a fixed speed: a sine in the distance behind the ring front, inside a Gaussian envelope that rides along with it, with amplitude falling as one over the square root of the distance, which is how energy spreads across a surface. Five drops per source stay in flight and the oldest is tapered to nothing, so the loop closes without a step. Real water is dispersive and would let short ripples outrun the packet; this one is not. The surface is then shaded by its own slope rather than plotted as a height."]
+       "There is no video and no image file. A short program runs on your graphics card once for every pixel of the panel, sixty times a second. Each pixel measures its own distance to the two impact points, works out how high each ring has lifted the water there, adds them, and turns the total into a colour. No pixel knows what any other pixel is doing, which is exactly why a graphics card can do a million of them at once."]
     ],
     frag: DROP + [
       "const float HGAIN = 1.0;",
@@ -239,11 +239,11 @@ window.FIELD = (function () {
     note: "Two dippers held at one frequency. The dead channels never move.",
     read: [
       ["What you are seeing",
-       "Two points on the surface driven up and down together, at one frequency, without stopping. This is the apparatus a physics department keeps in a cupboard: a shallow tray, two dippers on a bar, a lamp above and a screen below. Because the driving never stops the picture reaches a steady state, so the ripples keep travelling outwards while the calm channels between them stand perfectly still."],
+       "Two dippers bob up and down in a tray of water, always in step, never stopping. Rings spread from both and cross. The bright bands are where crests land on crests. The calm channels are where a crest always meets a dip, so the water along them never moves."],
       ["Where the quantum comes in",
-       "This is the double slit in a tray of water, with each dipper playing a slit. Count the calm channels against the dipper spacing and you have measured the wavelength, which is exactly the arithmetic used to get the wavelength of an electron out of a fringe pattern. What the tray cannot show you is the part that matters: what happens when the waves arrive one lump at a time."],
+       "This is the double slit with the mystery removed, each dipper standing in for a slit. Measure how far apart the calm channels are and you can work out the wavelength, which is exactly how the wavelength of an electron is read off a fringe pattern. The one thing a tray of water cannot show you is what happens when the wave arrives in single lumps."],
       ["How it is built",
-       "The height is the sum of two circular waves, each a sine in distance minus a sine in time, with amplitude falling as one over the square root of the distance and a little extra damping. The calm channels are where the path difference is an odd number of half wavelengths, which makes them hyperbolas with the dippers as foci. The whole field repeats every wave period, and that period is the loop."]
+       "Every pixel asks two questions: how far am I from this dipper, how far from that one. It puts each distance into a sine wave, adds the two, and gets a height. The shading is then honest fakery: the pixel compares its height with its neighbour's to work out which way the surface tilts, and lights it as if a lamp were hanging above the tray."]
     ],
     frag: [
       "const float HGAIN = 0.42;",
@@ -268,11 +268,11 @@ window.FIELD = (function () {
     note: "Five drops on a cycle, out of step with each other. Every crossing is an interference.",
     read: [
       ["What you are seeing",
-       "Five drops falling in sequence rather than together, so the surface is never carrying only one pattern. Rings from a drop that landed seconds ago cross rings from one that landed a moment ago, and those crossings are as real as the tidy symmetric ones a matched pair produces. Nothing lines up and nothing is centred."],
+       "Five drops falling one after another rather than together. Old rings from one drop cross fresh rings from another. It looks untidy because it is: nothing lines up, and no two crossings look the same."],
       ["Where the quantum comes in",
-       "This is what interference looks like when nobody has arranged the apparatus. Amplitudes add wherever they meet, so the clean two source figure elsewhere on this page is the special case rather than the general one. It is also why isolating a clean quantum interference experiment takes so much work: the ordered version is something you build, and the messy version is what you get for free."],
+       "Interference is not a trick that only works in a tidy experiment. Any two waves arriving at the same place add up, every time. The neat symmetrical patterns elsewhere on this page are the rare case, built deliberately by putting two matched sources side by side. This is what you get when nobody arranges anything, and it is part of why quantum experiments need such careful isolation to show a clean result."],
       ["How it is built",
-       "The same drop model as the first panel, with five sources whose drop times are spread evenly through one period. Each source's age is taken modulo that period so the sequence repeats exactly, and the oldest ripple in every stack is faded out before it would fall out of the window. Three generations per source, so fifteen expanding rings are on the surface at any moment."]
+       "The same per pixel idea, five times over. Each pixel runs through five drop points, and for each one adds up the last three rings that drop has sent out, so fifteen expanding rings are being summed at every pixel of every frame. That is a few million sine waves per frame, which sounds absurd and takes the graphics card about a millisecond."]
     ],
     frag: DROP + [
       "const float HGAIN = 0.75;",
@@ -305,11 +305,11 @@ window.FIELD = (function () {
     note: "A plane wave meets a wall with two gaps. Beyond it, one pattern instead of two.",
     read: [
       ["What you are seeing",
-       "A wave arrives at a wall from below and finds two narrow openings. Each opening becomes a new source spreading in every direction, and the region beyond the wall carries one pattern built from both. The bright fans are the directions where the two path lengths differ by a whole number of wavelengths. The faint steady glow beneath the moving crests is the time average, which is all a photographic plate ever records."],
+       "A wave rolls in from the bottom and meets a wall with two gaps. Each gap acts as a fresh source, and beyond the wall the two spread into a single pattern of bright fans and dark gaps between them. The faint steady glow under the moving crests is the long exposure: the average over time, which is what a camera would actually record."],
       ["Where the quantum comes in",
-       "This is the experiment. Thomas Young ran it with sunlight around 1801 and used it to argue that light is a wave, and it has since been run with electrons, neutrons, whole atoms and molecules of several hundred atoms, each of which draws this same figure. The fringe spacing is set by the ratio of the wavelength to the gap between the openings, which is what turns the picture into an instrument: measure the spacing and you have the wavelength of whatever went through."],
+       "This is the most famous experiment in physics. Thomas Young ran it with sunlight around 1801 to argue that light is a wave. It has since been run with electrons, neutrons, whole atoms and molecules made of hundreds of atoms, and every one of them draws this same figure. A fan is bright where the two routes to it differ by a whole number of wavelengths, so the two arrivals are in step and reinforce."],
       ["How it is built",
-       "Each slit is treated as a point source, so the field is the sum of two circular waves with amplitude falling as one over the square root of the distance. The picture is the square of the instantaneous sum, with the time averaged intensity laid faintly underneath. A real slit has width, which multiplies the fringes by a sinc squared envelope and dims the outer fans. That term is not modelled, so the outer fans here are brighter than a real apparatus would give."]
+       "Each gap is treated as a point that emits circles. Every pixel adds two circular waves and squares the answer, because brightness goes as the square of a wave's height. The wall and the incoming wave below it are the same program with a couple of extra rules about which pixels count as barrier. Real gaps have width, which would dim the outer fans, and that refinement is left out."]
     ],
     frag: [
       "const float K = 30.0;",
@@ -348,11 +348,11 @@ window.FIELD = (function () {
     note: "The same wall with seven gaps. The strip along the top is the screen.",
     read: [
       ["What you are seeing",
-       "The same wall with seven openings. Adding slits does not add fringes, it sharpens them: broad fans become narrow spikes with dim gaps between them, because a direction only stays bright if all seven contributions arrive in step, and that is a far harder condition than agreement between two. The strip along the top is the time averaged intensity at that height, which is what a detector placed there would read."],
+       "The same wall, now with seven gaps. The broad fans have tightened into narrow spikes with dark space between them. The strip across the top is a screen: it shows the average brightness that would land there, and unlike the field below it, it holds still."],
       ["Where the quantum comes in",
-       "The width of each maximum falls roughly as one over the number of slits. That is why a grating ruled with thousands of lines separates colours differing by a fraction of a nanometre, and it is the same reason an interferometer with more arms measures more finely. More amplitudes have to agree, so the agreement is a sharper condition."],
+       "Two sources only have to agree with each other. Seven have to agree all at once, which is a far fussier condition, so the bright directions get narrower. That is why a grating ruled with thousands of lines can separate two colours a fraction of a nanometre apart, and it is a large part of how we know what stars are made of."],
       ["How it is built",
-       "Seven point sources, one sum, exactly as in the two slit panel. The screen strip samples the same sum along a fixed height and squares it. This is the near field rather than the far field a spectrograph works in, and again there is no slit width envelope, so read the relative brightness of the outer spikes as illustrative rather than measured."]
+       "The loop inside the shader runs seven times instead of twice. That is the only change from the previous panel, and it is a good demonstration of why this is worth doing on a graphics card: seven times the work per pixel costs nothing you can feel. The strip along the top is the same sum taken at one fixed height, so each pixel up there is reporting a value from further down the field."]
     ],
     frag: [
       "const float K = 34.0;",
@@ -397,11 +397,11 @@ window.FIELD = (function () {
     note: "Only the silence, drawn. The sources drift apart and the fan opens.",
     read: [
       ["What you are seeing",
-       "Everything else stripped away, leaving only the dead curves: the places where the two paths differ by an odd number of half wavelengths, so the two arrivals cancel and the surface never moves. As the sources drift apart another pair of curves has to appear, and you can watch them peel off the centre line one at a time."],
+       "Only the silent places, drawn as lines on paper. Along these curves the two waves always cancel, so the water there never moves at all. Watch the two dots drift apart and new curves peel away from the middle, one pair at a time."],
       ["Where the quantum comes in",
-       "These are the dark fringes of every other panel, drawn on their own. In a quantum version they are the places a particle is never found, and the reason is worth stating carefully: nothing steers the particle away from them. The amplitude for arriving by one path and the amplitude for arriving by the other cancel exactly, and the probability is the square of that sum, so it is zero."],
+       "These are the dark bands from every other panel, on their own. In the quantum version they are the places a particle is never found, and it is worth being careful about why. Nothing pushes it away, and both routes stay open. The two contributions simply cancel, and the chance of landing there is zero. Cancelling is something waves do, and quantum mechanics says that chances follow wave rules."],
       ["How it is built",
-       "No waves are computed at all. This is pure geometry: a line is inked wherever the cosine of half the path difference crosses zero, anti-aliased against the screen space derivative of that phase so the curves keep one weight across the frame. They are hyperbolas with the sources as foci, and their number is set by how many half wavelengths fit between the sources, which is why the count changes as the separation is animated."]
+       "No wave is drawn here at all. Each pixel works out the difference between its two distances and asks whether that difference sits on a half wavelength boundary. If it does, the pixel is ink; otherwise it is paper. To stop the curves getting fat where they run slowly and vanishing where they run fast, the pixel also asks the graphics card how quickly that difference is changing between it and the pixel next door, and sets the thickness from that."]
     ],
     frag: [
       "const float K = 26.0;",
@@ -432,11 +432,11 @@ window.FIELD = (function () {
     note: "The same field as a survey map. Every line is one height of water.",
     read: [
       ["What you are seeing",
-       "A contour map of the same two source field, one line per height of water, drawn the way an ordnance map draws a hill. Close lines mean a steep slope and wide lines a gentle one; the small closed ovals are level ground, which is either a crest, a trough or a genuinely dead spot."],
+       "The same two source pattern drawn as a hill map. Every line joins places at the same water height, exactly like contour lines on a walking map. Lines packed close mean a steep slope, lines far apart mean gentle, and the small closed rings are the tops and the bottoms."],
       ["Where the quantum comes in",
-       "The spacing of the lines is the local wavelength, and for a quantum wavefunction the local wavelength is the momentum, through de Broglie's relation. A map like this drawn from a wavefunction shows you where the particle is moving fast, which is wherever the contours crowd. It also makes plain that there is one field across the whole frame rather than two patterns overlapping."],
+       "You can read the wavelength off a map like this by eye: it is the distance from one ring to the next. For a quantum particle that spacing means something specific. A shorter wavelength means more momentum, which is de Broglie's idea, so crowded rings mean a fast particle. It also shows there is one single field across the whole frame, rather than two patterns lying on top of each other."],
       ["How it is built",
-       "The same sum of two circular waves. The field is scaled and split into bands, and a line is drawn wherever a band boundary falls, with the threshold divided by the screen space gradient so the lines stay even in weight whether the surface there is steep or flat."]
+       "Each pixel adds the two waves, multiplies by a small number and keeps only the fractional part, which turns a smooth surface into a staircase. A line is drawn wherever a pixel lands on the edge of a step. Graphics cards can tell a pixel how different its value is from its neighbours, and that number sets the width of the test, so every line comes out the same weight."]
     ],
     frag: [
       "const float K = 11.0;",
@@ -469,11 +469,11 @@ window.FIELD = (function () {
     note: "Detections arriving singly. No fringe exists in any one of them.",
     read: [
       ["What you are seeing",
-       "Each dot is one arrival. Early on the screen looks like scatter, and the bands only assemble once enough of them have landed. No fringe is visible in any single detection and none can be, because one particle lands in exactly one place."],
+       "Dots arriving one at a time, each one a single particle hitting the screen. At first it looks like random speckle. Keep watching and the bands assemble themselves."],
       ["Where the quantum comes in",
-       "This is the strange part, and it is quantum all the way down. Send the particles so slowly that only one is ever inside the apparatus and the pattern still builds, so the pattern is not particles interfering with each other. It is the amplitude for each available path contributing to where that one particle can land. It has been done for real, though not always with slits: G. I. Taylor photographed a needle's diffraction shadow in 1909 with light so feeble that the exposure ran for three months, and Tonomura's team at Hitachi filmed single electrons accumulating into fringes in 1989."],
+       "This is the part that should bother you. Slow the source down until only one particle is inside the machine at a time and the stripes still build, so they cannot be particles bumping into one another. Each particle has to be described by something that passed through both openings, and that something sets the odds of where it lands. It has been done for real: G. I. Taylor in 1909, with light so dim his photograph took three months, and a team at Hitachi in 1989 who filmed single electrons piling up into fringes."],
       ["How it is built",
-       "The only panel here that is not a shader. Candidate positions are drawn at random and kept with a probability proportional to the two slit intensity, the squared cosine of half the path difference with a falloff for distance, at a few thousand attempts a second, onto a 2D canvas that fades very slowly so the record settles instead of filling in solid. It is also the only panel without a loop, because an accumulating record has no period, only a history."]
+       "The only panel not drawn on the graphics card. This one is plain drawing code: pick a random spot, look up how likely a particle is to land there, keep it or throw it away, and do that a few thousand times a second. Old dots fade slowly so the picture settles instead of filling in solid, and it is the only panel with no loop, because a record that keeps growing has no natural repeat."]
     ]
   },
 
@@ -484,11 +484,11 @@ window.FIELD = (function () {
     note: "Three plane waves at 120 degrees, coloured by phase. Each dark point is a singularity.",
     read: [
       ["What you are seeing",
-       "Three plane waves of one wavelength and one frequency, crossing at 120 degrees to each other. Brightness is amplitude and hue is phase, so one trip around the colour cycle is one trip around the wave cycle. The dark points are not gaps in the drawing."],
+       "Three waves crossing at even angles make a honeycomb. Colour shows the phase, which is where in its up and down cycle the wave is at that spot, and brightness shows how strong it is. The black points are places where the wave has no strength at all."],
       ["Where the quantum comes in",
-       "Walk a small circle around one of those points and the hue passes through every value exactly once. The phase has no single value at the centre, and the only way a wave can stay continuous around such a point is for its amplitude to be zero there. Nye and Berry catalogued these in 1974. They are everywhere: laser speckle off a rough wall, radio in a room with walls, and, carrying the same winding as a quantized vortex, in superfluids and Bose Einstein condensates."],
+       "Circle one of those black points and the colour runs through the whole wheel exactly once. That means there is no single answer for the phase at the centre, and the only way out is for the wave to be precisely zero there. Physicists call them phase singularities. The same knot turns up in laser light bounced off a rough wall, in radio inside a room, and in superfluids, where it becomes a whirlpool that can only spin by fixed amounts."],
       ["How it is built",
-       "The sum of three unit plane waves, coloured by the argument of that sum and dimmed by its magnitude. One frequency for all three is what makes it a lattice: the amplitude pattern holds still while the phase advances everywhere at once. The motion is geometric rather than optical, the three beam directions turning through a third of a revolution per loop, which is a symmetry of the triangle and therefore brings the same field back."]
+       "Every pixel adds three plane waves, then does something the other panels do not. Instead of using the height of the result it uses the angle of it, which is the phase, and maps that angle around the colour wheel. Brightness comes from the size. So the black points are not drawn in: they appear because the three waves genuinely cancel there, and the shader has nothing left to colour."]
     ],
     frag: [
       "const float B = TAU/24.0;",
@@ -517,11 +517,11 @@ window.FIELD = (function () {
     note: "A particle in a square box. Eight standing modes, beating in and out of step.",
     read: [
       ["What you are seeing",
-       "A quantum particle confined to a square box. What is drawn is the probability density, the thing that says where it would be found if you looked. It sloshes about in a way that looks disorderly, gathers itself, and returns exactly to where it started."],
+       "A quantum particle shut inside a square box. The glow shows where it would probably be found. It slops about, appears to lose its shape entirely, then gathers itself back into the pattern it started from."],
       ["Where the quantum comes in",
-       "Only certain standing waves fit inside a box, and each has an energy proportional to the sum of the squares of its two mode numbers. A particle in a superposition of eight of them has eight phases advancing at eight different rates, which is the disorder you are watching. Because those rates are whole numbers times one common unit they all come back into step at once, and the state revives. Revivals like this have been observed in Rydberg atoms and in cold atoms held in optical lattices."],
+       "Only certain wave shapes fit inside a box, in the same way that only certain notes fit on a guitar string. Each shape has its own energy and cycles at its own speed, so a particle sharing itself between eight of them gets steadily more scrambled. The speeds are all whole number multiples of one basic rate, so sooner or later they line up again and the original shape returns. It is called a revival, and it has been watched in real atoms."],
       ["How it is built",
-       "The exact eigenfunctions of the box, a sine in x times a sine in y, summed with fixed weights, each turning in phase at a rate proportional to n squared plus m squared. The picture is the squared magnitude of that sum. Nothing here is approximated, which is why the loop is precisely the revival time rather than a convenient place to cut."]
+       "The textbook shapes for a box are just sines, so each pixel evaluates eight of them, turns each one by an angle set by its energy, adds them up and squares the total. Nothing is approximated, so the loop is exactly one revival: the moment when all eight angles arrive back where they started. That is why the animation repeats rather than being cut to repeat."]
     ],
     frag: [
       "const float B = 0.88;",
@@ -562,11 +562,11 @@ window.FIELD = (function () {
     note: "Two coherent states in one trap, swinging in antiphase. The fringes are finest as they pass.",
     read: [
       ["What you are seeing",
-       "Two Gaussian humps swing towards each other, pass through one another and separate again, twice per cycle. Fringes appear in the overlap and are at their finest exactly as the two coincide, then vanish completely when the humps reach the far ends of the swing."],
+       "Two blobs swing towards each other, pass straight through, and swing apart again. Stripes appear between them as they overlap, sharpest at the moment they sit exactly on top of each other, and gone completely when the blobs reach the ends of their swing."],
       ["Where the quantum comes in",
-       "A coherent state is as close as a quantum particle comes to behaving classically: a Gaussian that swings in a harmonic trap at the trap frequency without spreading, which is the one case where a wavepacket does not. Two of them released in antiphase are the textbook Schrodinger cat state, and the fringes in the middle are the part that says superposition rather than mixture. A coin flip between one packet and the other would give two humps with smooth nothing in between."],
+       "A single particle can be spread across two places at once, in the sense that the wave describing it has two humps. That is a Schrodinger cat state in miniature. The stripes are the giveaway. If the particle were really in one place or the other with a coin flip deciding which, you would see two humps and smooth nothing between them. The stripes exist only because both halves are there together, adding."],
       ["How it is built",
-       "Position runs on a cosine and momentum on a sine, a quarter cycle behind it, exactly as a classical oscillator does, and each packet carries the phase factor belonging to its own momentum. That is why the fringes disappear at the turning points, where both packets are momentarily at rest, and are finest at the crossing, where they are moving fastest in opposite directions. The spacing is set by the momentum difference and by nothing else. Remove the trap and the packets spread and never return, which is why the loop is a trapped one."]
+       "The blobs sit in a trap, the one situation where a quantum blob keeps its shape instead of spreading out. Each pixel adds two bell curves, each carrying a phase that depends on how fast that blob is moving. Position rides a cosine and speed rides a sine a quarter cycle behind, exactly like a pendulum, fastest in the middle and still at the ends. That is why the shader draws the finest stripes at the crossing and none at all at the turning points."]
     ],
     frag: [
       "const float B = TAU/16.0;",
@@ -598,11 +598,11 @@ window.FIELD = (function () {
     note: "Twenty four emitters on a circle. The winding number climbs, and the focus opens.",
     read: [
       ["What you are seeing",
-       "Twenty four emitters on a circle, all at one frequency. While they are in step, everything they emit arrives at the centre together and the middle is the brightest point in the field. Then a phase is added that climbs once, twice, three times around the ring, and the bright centre hollows out into a ring of its own."],
+       "Twenty four small sources arranged in a circle, all humming at the same pitch. While they are in step everything meets in the middle and the centre is the brightest point in the picture. Then the timings are given a twist, and the bright centre opens up into a ring with a hole in it."],
       ["Where the quantum comes in",
-       "That hollow centre is the same object as the dark cores in the vortex lattice. A field whose phase winds around a point cannot have a single value there, so the amplitude has to vanish. The number of turns is the beam's orbital angular momentum, one unit of h-bar per photon per turn, and it is a property a single photon can carry and a detector can measure."],
+       "The hole is not a fault. If the phase has to wind around a point, there is no consistent value at the middle, so the wave has to be zero there. The number of turns is a real countable property of a beam, called orbital angular momentum, and a single photon can carry it. Arrays like this earn their keep in the world: radar, ultrasound scanners and radio telescopes all focus and steer by changing timings rather than moving anything."],
       ["How it is built",
-       "Twenty four point sources summed, with the winding number times the angle around the ring added to each source's phase. That number steps from zero to three across the loop and starts again. The array is a real technique rather than a picture of one: phasing an array like this is how radar, ultrasound and radio telescopes focus and steer without moving anything."]
+       "Each pixel loops around twenty four source positions, measures its distance to every one and adds a wave from each. The twist is one extra term: each source has its phase nudged by its own angle around the circle, multiplied by a winding number that counts from zero to three across the loop. Twenty four distance calculations per pixel per frame is the sort of thing that would be slow anywhere except a graphics card."]
     ],
     frag: [
       "const float K = 30.0;",
@@ -637,11 +637,11 @@ window.FIELD = (function () {
     note: "Two beams carrying opposite twist, added. The petals turn because the frequencies differ.",
     read: [
       ["What you are seeing",
-       "A rosette of six petals with a fainter ring outside it, turning slowly. The petals are not objects. They are the places where two beams agree, and the agreement is what moves."],
+       "A six petal flower with a faint ring around it, turning slowly. The petals are not objects. They are the places where two beams agree with each other, and it is the agreement that rotates rather than the light."],
       ["Where the quantum comes in",
-       "Each beam is a Laguerre Gauss mode, a doughnut whose phase winds three times around a dark centre. Add one twisted one way to one twisted the other and the windings cancel into six fixed petals, because plus l and minus l agree at 2l angles. Detune the two slightly and the agreement condition rotates, so the petals turn at the difference frequency rather than at the frequency of the light, and trapped particles follow them round. That is the optical spanner. A single photon in the same superposition of plus and minus l has these petals as its detection probability."],
+       "Both beams are doughnuts of light whose phase winds around a dark centre, one twisting one way and one the other. Added together the twists cancel into six fixed petals. Give one beam a slightly different frequency and the petals turn, at the difference between the two frequencies rather than at the enormous frequency of light itself, which is what makes it slow enough to watch. Physicists use exactly this to spin trapped particles, and call it an optical spanner."],
       ["How it is built",
-       "The radial profile is the genuine mode with p equal to 1 and l equal to 3: the radius cubed, times four minus two radii squared, times a Gaussian, which is the correct associated Laguerre polynomial and is where the outer ring comes from. That is multiplied by the cosine of three times the angle, offset in time, and squared. The rotation is one full revolution per loop."]
+       "Each pixel works out its distance from the centre and its angle around it, feeds both into the standard formula for this kind of beam, and squares the result. The formula carries an extra bump that produces the faint outer ring, which is a real feature of the mode rather than decoration. Only the angle term changes with time, which is why the flower turns instead of pulsing."]
     ],
     frag: [
       "vec3 render(vec2 p){",
@@ -665,11 +665,11 @@ window.FIELD = (function () {
     note: "Two sources detuned by a twelfth. The pattern never settles.",
     read: [
       ["What you are seeing",
-       "Two sources, one detuned from the other by a twelfth. Nothing in the picture ever settles: the whole fringe pattern sweeps across the frame and comes back."],
+       "Two sources humming at slightly different pitches. The pattern never settles: the whole set of stripes drifts steadily across the frame and comes back around."],
       ["Where the quantum comes in",
-       "The sweep rate is the difference between the two frequencies and nothing else, which is the trick behind a great deal of measurement: heterodyne detection, laser frequency combs, gravitational wave interferometers, and a piano tuner listening to two strings. In atomic physics the same arithmetic is a quantum beat, with one difference worth stating plainly. A quantum beat is one emitter in a superposition of two levels, not two separate sources, and its fluorescence carries the difference frequency. This is the classical version of it."],
+       "When two waves are close in frequency but not equal, the combination swells and fades at the difference between them. That is what a piano tuner is listening for. It is also behind a great deal of precise measurement, from radio receivers to gravitational wave detectors: instead of measuring an enormous frequency directly, you compare it against another and watch how slowly the pattern crawls. Atoms do their own version, called a quantum beat, where the two frequencies are two energy levels inside one atom."],
       ["How it is built",
-       "Two circular waves, each with its own frequency and its own wavenumber in the same twelve to thirteen ratio, so both travel at one speed, as they must if they share a medium. The picture is the squared magnitude of the sum. The beat period, one over the frequency difference, is the loop."]
+       "The same two source sum as the double slit panel, with one number changed per source. Each has its own frequency, and its wavelength set to match, because two waves sharing a medium have to travel at the same speed. The drift is simply the shader being handed a slightly different clock for each of the two waves."]
     ],
     frag: [
       "const float B = TAU/24.0;",
@@ -696,11 +696,11 @@ window.FIELD = (function () {
     note: "The same two slits, with the visibility dialled from one to zero and back.",
     read: [
       ["What you are seeing",
-       "The two slit pattern with one number changed. The fringes fade until the dark bands are as bright as the light ones, then come back. The bar along the bottom is that number. Nothing else moves: the sources stay where they are and each delivers the same intensity throughout."],
+       "The two slit pattern with one dial being turned. The stripes fade until the dark bands are as bright as the light ones, then come back. The bar along the bottom is the dial. Nothing else changes: the sources stay where they are and each one is exactly as bright throughout."],
       ["Where the quantum comes in",
-       "The number is visibility, the contrast of the fringes. Losing it is what decoherence does, and it needs nothing dramatic: sources that drift out of step will do it, and so will anything in the environment that records which path was taken. The trade is quantitative rather than philosophical. Englert's relation holds that visibility squared plus path distinguishability squared cannot exceed one, so partial information about the path costs exactly this much contrast."],
+       "The dial is called visibility, and it measures how much the two paths still have to do with each other. It drops for ordinary reasons: sources drifting out of time with one another, or anything in the surroundings quietly recording which way the particle went. That recording is decoherence, and it is the main reason large everyday objects never show this behaviour. The trade is exact: the more you could tell which path was taken, the fainter the stripes must be, and you cannot have both."],
       ["How it is built",
-       "The intensity is the sum of the two separate intensities plus an interference term, two gamma times the square root of their product times the cosine of the path difference. Gamma is swept from one to zero and back across the loop. Only that one term is touched, and at gamma equal to zero what is left is the plain sum of the two sources, which is exactly what a mixture would give."]
+       "The shader works the picture out in three parts: the brightness from one slit, the brightness from the other, and a third term that exists only because the two interfere. The dial multiplies that third term and leaves the other two alone. Turn it to zero and what is left on screen is the plain sum of two lamps."]
     ],
     frag: [
       "const float K = 30.0;",
