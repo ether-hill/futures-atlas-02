@@ -23,6 +23,10 @@
  * numbers and set `sample: false`.
  */
 
+import { REEL_POSTS, type ReelPost } from "./fields";
+
+export type { ReelPost };
+
 export type Verdict = "notyet" | "already";
 
 export interface Card {
@@ -43,9 +47,19 @@ export interface Card {
   checked: string;
   /** What everyone else answered. See the header: sample, not live. */
   crowd: { pctReal: number; n: number; sample: boolean };
+  /**
+   * The soft colour behind the card on this post's slides. Keyed to the SECTOR,
+   * deliberately not to the verdict: a green glow behind a card that is asking
+   * you whether it has happened would answer it for you. All three sit in a
+   * cool-to-warm range that reads as neither the green nor the red the game
+   * uses for its two answers.
+   */
+  hue: string;
 }
 
-export interface Post {
+/** A deck post: one card, three slides. */
+export interface DeckPost {
+  kind: "deck";
   /** Working title for the mock's own chrome. Never rendered on a slide. */
   name: string;
   card: Card;
@@ -53,11 +67,15 @@ export interface Post {
   hashtags: string[];
 }
 
-export const POSTS: Post[] = [
+/** The feed carries two shapes of post. See fields.ts for the other one. */
+export type Post = DeckPost | ReelPost;
+
+const DECK_POSTS: DeckPost[] = [
   {
+    kind: "deck",
     name: "Driverless trains, 1981",
     caption:
-      "Card 01 of the Transport deck. It sounds like a thing that is coming. It has been carrying passengers since 1981.\n\nSwipe the Future deals ten cards and asks one question: has this already happened, or has it not happened yet? Five of every ten are each.",
+      "Ask when trains started running with nobody in the cab and most people guess the last ten years.\n\nKobe's Port Island Line opened driverless in 1981. Lille's VAL followed in 1983, running under a city of a million people with unstaffed trains and unstaffed stations. Forty-five years of it, and driverless transport is still filed under things that are coming.\n\nCard 01 of the Transport deck. Swipe for what everyone else answered.",
     hashtags: ["#futuresatlas", "#swipethefuture", "#automation", "#transport", "#speculativedesign"],
     card: {
       id: "t1",
@@ -74,12 +92,14 @@ export const POSTS: Post[] = [
       source: { label: "Railway Technology, Lille VAL", url: "https://www.railway-technology.com/projects/lille_val/" },
       checked: "2026-08-09",
       crowd: { pctReal: 0.58, n: 24, sample: true },
+      hue: "#3E93D8",
     },
   },
   {
+    kind: "deck",
     name: "Radiologists, still there",
     caption:
-      "Card 09 of the Health deck. Nine years after the world was told to stop training radiologists, no health service has replaced one.\n\nEvery not-yet card carries the nearest approach, so a no still teaches you where the boundary actually sits.",
+      "In 2016 Geoffrey Hinton told people to stop training radiologists. Five years, he said, and the job would be finished.\n\nTen years on, radiology demand has gone up, average US pay is around $571,000, and Hinton has conceded the timing. No health service anywhere has replaced a radiologist with AI. The tools arrived. The replacement did not.\n\nCard 09 of the Health deck. Swipe for what everyone else answered.",
     hashtags: ["#futuresatlas", "#swipethefuture", "#aihype", "#radiology", "#foresight"],
     card: {
       id: "h9",
@@ -94,12 +114,14 @@ export const POSTS: Post[] = [
       source: { label: "New Republic / NYT", url: "https://newrepublic.com/article/187203/ai-radiology-geoffrey-hinton-nobel-prediction" },
       checked: "2026-08-09",
       crowd: { pctReal: 0.17, n: 53, sample: true },
+      hue: "#8B6FD4",
     },
   },
   {
+    kind: "deck",
     name: "Devs 19% slower",
     caption:
-      "Card 04 of the Work deck. A randomised trial, not a survey: experienced developers were measurably slower with AI tools, and were sure they had been faster.\n\nThe question the deck asks is never whether a thing is good. Only whether it has happened.",
+      "Every survey says AI makes developers faster. METR ran the trial instead.\n\nExperienced open-source developers, real tasks in their own repositories, randomised with and without AI tools. With the tools they were 19% slower. Asked afterwards, the same developers estimated they had been 20% faster. Thirty-nine points between how fast the work felt and how fast it actually was.\n\nCard 04 of the Work deck. Swipe for what everyone else answered.",
     hashtags: ["#futuresatlas", "#swipethefuture", "#futureofwork", "#developerproductivity", "#evidence"],
     card: {
       id: "w4",
@@ -116,10 +138,34 @@ export const POSTS: Post[] = [
       source: { label: "METR, July 2025", url: "https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/" },
       checked: "2026-08-09",
       crowd: { pctReal: 0.56, n: 25, sample: true },
+      hue: "#D89A4E",
     },
   },
 ];
 
-/** The three slides every post is made of, in order. */
+/** The three slides a DECK post is made of, in order. A field post has one. */
 export const SLIDE_KINDS = ["card", "reveal", "stats"] as const;
 export type SlideKind = (typeof SLIDE_KINDS)[number];
+
+export const slideCount = (p: Post) => (p.kind === "deck" ? SLIDE_KINDS.length : 1);
+
+/**
+ * The grid, newest first — and deliberately interleaved.
+ *
+ * Grouped by kind, the feed read as two accounts stacked: a block of dark
+ * moving pieces, then a block of identical bone cards. A grid is looked at as a
+ * whole before any single post is, so the mix is the composition. Reels are the
+ * majority, so they take two of every three slots and a card lands in the third.
+ */
+function interleave(reels: Post[], cards: Post[]): Post[] {
+  const out: Post[] = [];
+  let r = 0, c = 0;
+  while (r < reels.length || c < cards.length) {
+    if (r < reels.length) out.push(reels[r++]!);
+    if (r < reels.length) out.push(reels[r++]!);
+    if (c < cards.length) out.push(cards[c++]!);
+  }
+  return out;
+}
+
+export const POSTS: Post[] = interleave(REEL_POSTS, DECK_POSTS);

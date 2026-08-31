@@ -16,13 +16,12 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { POSTS, SLIDE_KINDS, type Post } from "./posts";
-import { SlideBody, SlideFrame, SlideStyles, RATIOS, type Ratio } from "./Slide";
+import { POSTS, SLIDE_KINDS, slideCount, type Post } from "./posts";
+import { PostSlide, SlideFrame, SlideStyles, RATIOS, type Ratio } from "./Slide";
 import { DESIGN_W } from "./slide-css";
 
 const HANDLE = "futuresatlas";
 const BIO = "Speculative design studio. Decks, reports and instruments about futures that already arrived.";
-const EMPTY_SLOTS = 3;
 
 const INK = "#17181b";
 const INK_2 = "#1d1f23";
@@ -30,15 +29,19 @@ const BONE = "#f2ede2";
 const MUTED = "#d3ccbe";
 const FAINT = "#8b877f";
 const OXBLOOD = "#d8694e";
+const PAPER = "#f4efe4";
 const HAIRLINE = "rgba(242,237,226,.14)";
 
-/** The mock's own chrome is the site's type, not the slide's. */
+/**
+ * The mock's chrome is set in the site's display sans, and there is no serif
+ * anywhere on this page: the slides themselves are system sans (the game's own
+ * face), and a Bodoni caption around them read as a different product.
+ */
 const UI = "var(--font-archivo), system-ui, sans-serif";
-const SERIF = "var(--font-bodoni), Georgia, serif";
 const lbl = (size: number, color = FAINT) => ({
-  fontFamily: SERIF,
+  fontFamily: UI,
   fontSize: size,
-  letterSpacing: "0.24em",
+  letterSpacing: "0.16em",
   textTransform: "uppercase" as const,
   color,
 });
@@ -48,9 +51,11 @@ export default function FeedMock() {
   const [open, setOpen] = useState<{ post: number; slide: number } | null>(null);
 
   const move = useCallback((d: number) => {
-    setOpen((o) =>
-      o ? { ...o, slide: Math.min(SLIDE_KINDS.length - 1, Math.max(0, o.slide + d)) } : o,
-    );
+    setOpen((o) => {
+      if (!o) return o;
+      const last = slideCount(POSTS[o.post]!) - 1;
+      return { ...o, slide: Math.min(last, Math.max(0, o.slide + d)) };
+    });
   }, []);
 
   useEffect(() => {
@@ -71,12 +76,13 @@ export default function FeedMock() {
 
       <div style={{ maxWidth: 1120, margin: "0 auto", padding: "48px 24px 120px" }}>
         <Profile />
-        <div style={{ marginTop: 40, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+        {/* An Instagram grid: three up, 2px gutters, nothing drawn between the
+            tiles. Three posts is one row, which is what a grid with three posts
+            looks like — no dashed placeholders standing in for posts that do
+            not exist. */}
+        <div style={{ marginTop: 36, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2 }}>
           {POSTS.map((p, i) => (
-            <Tile key={p.card.id} post={p} ratio={ratio} onOpen={() => setOpen({ post: i, slide: 0 })} />
-          ))}
-          {Array.from({ length: EMPTY_SLOTS }, (_, i) => (
-            <EmptySlot key={i} ratio={ratio} />
+            <Tile key={p.name} post={p} ratio={ratio} onOpen={() => setOpen({ post: i, slide: 0 })} />
           ))}
         </div>
       </div>
@@ -112,7 +118,7 @@ function Chrome({ ratio, setRatio }: { ratio: Ratio; setRatio: (r: Ratio) => voi
       }}
     >
       <span style={lbl(15, BONE)}>Instagram preview</span>
-      <span style={{ fontFamily: SERIF, fontSize: 14, color: FAINT }}>
+      <span style={{ fontFamily: UI, fontSize: 14, color: FAINT }}>
         Every slide is the live Swipe the Future card, in its own markup
       </span>
       <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
@@ -138,37 +144,41 @@ function Chrome({ ratio, setRatio }: { ratio: Ratio; setRatio: (r: Ratio) => voi
 
 function Profile() {
   return (
-    <div style={{ display: "flex", gap: 32, alignItems: "flex-start", flexWrap: "wrap" }}>
+    <div>
+      {/*
+        The mark at full width, as the header of the page rather than a 116px
+        avatar in a circle. Instagram's own avatar is tiny and this is not
+        Instagram: it is a page for looking at what the account would look like,
+        and the studio's mark is the thing that says whose account it is now
+        that no slide carries it.
+      */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/fa.svg"
+        alt="Futures Atlas"
+        style={{ display: "block", width: "100%", height: "auto", filter: "invert(1)", opacity: 0.96 }}
+      />
       <div
         style={{
-          width: 116,
-          height: 116,
-          borderRadius: "50%",
-          border: `1px solid rgba(242,237,226,.22)`,
-          background: INK_2,
-          display: "grid",
-          placeItems: "center",
-          flexShrink: 0,
+          marginTop: 26,
+          display: "flex",
+          gap: 28,
+          alignItems: "baseline",
+          flexWrap: "wrap",
+          borderTop: `1px solid ${HAIRLINE}`,
+          paddingTop: 22,
         }}
       >
-        {/* The site's mark, inverted for the dark ground exactly as
-            atlas-nav.css does it in dark mode. */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/fa.svg" alt="" aria-hidden="true" style={{ height: 46, width: "auto", filter: "invert(1)" }} />
-      </div>
-      <div style={{ minWidth: 280, flex: 1 }}>
         <div style={{ fontSize: 26, fontWeight: 600, letterSpacing: "-0.02em" }}>@{HANDLE}</div>
-        <div style={{ ...lbl(13, FAINT), marginTop: 8 }}>
-          {POSTS.length} posts · Followers not shown
-        </div>
-        <p style={{ fontFamily: SERIF, fontSize: 17, lineHeight: 1.5, color: MUTED, margin: "14px 0 0", maxWidth: 560 }}>
-          {BIO}
-        </p>
-        <p style={{ fontFamily: SERIF, fontSize: 14, lineHeight: 1.5, color: FAINT, margin: "10px 0 0", maxWidth: 560 }}>
-          No like, view or follower counts anywhere on this page. They don&apos;t exist for this
-          account yet, and a mock that shows them is a mock of a different account.
-        </p>
+        <div style={lbl(13, FAINT)}>{POSTS.length} posts · Followers not shown</div>
       </div>
+      <p style={{ fontFamily: UI, fontSize: 17, lineHeight: 1.5, color: MUTED, margin: "14px 0 0", maxWidth: 620 }}>
+        {BIO}
+      </p>
+      <p style={{ fontFamily: UI, fontSize: 14, lineHeight: 1.5, color: FAINT, margin: "10px 0 0", maxWidth: 620 }}>
+        No like, view or follower counts anywhere on this page. They don&apos;t exist for this
+        account yet, and a mock that shows them is a mock of a different account.
+      </p>
     </div>
   );
 }
@@ -190,61 +200,44 @@ function useWidth<T extends HTMLElement>(fallback = DESIGN_W) {
 function Tile({ post, ratio, onOpen }: { post: Post; ratio: Ratio; onOpen: () => void }) {
   const [ref, w] = useWidth<HTMLButtonElement>(340);
   return (
-    <div>
-      <button
-        ref={ref}
-        onClick={onOpen}
-        title={post.name}
-        style={{
-          position: "relative",
-          padding: 0,
-          border: `1px solid ${HAIRLINE}`,
-          background: INK_2,
-          cursor: "pointer",
-          display: "block",
-          width: "100%",
-          overflow: "hidden",
-          lineHeight: 0,
-        }}
-      >
-        <SlideFrame width={w} ratio={ratio}>
-          <SlideBody card={post.card} kind="card" ratio={ratio} />
-        </SlideFrame>
-        {/* The stacked-square glyph Instagram puts on a carousel. */}
-        <span
-          style={{
-            position: "absolute",
-            top: 12,
-            right: 12,
-            width: 20,
-            height: 20,
-            border: `2px solid ${BONE}`,
-            borderRadius: 4,
-            boxShadow: `-5px 5px 0 -2px ${INK}, -7px 7px 0 -2px ${BONE}`,
-            opacity: 0.9,
-          }}
-        />
-      </button>
-      <div style={{ ...lbl(10, FAINT), marginTop: 10, lineHeight: 1.5 }}>
-        Card {post.card.id} · {SLIDE_KINDS.length} slides
-      </div>
-    </div>
-  );
-}
-
-function EmptySlot({ ratio }: { ratio: Ratio }) {
-  return (
-    <div
+    <button
+      ref={ref}
+      onClick={onOpen}
+      aria-label={`Open ${post.name}`}
       style={{
-        aspectRatio: `1 / ${RATIOS[ratio]}`,
-        border: `1px dashed rgba(242,237,226,.16)`,
-        display: "grid",
-        placeItems: "center",
-        ...lbl(11, "rgba(242,237,226,.3)"),
+        position: "relative",
+        padding: 0,
+        border: 0,
+        background: INK_2,
+        cursor: "pointer",
+        display: "block",
+        width: "100%",
+        overflow: "hidden",
+        lineHeight: 0,
       }}
     >
-      Empty slot
-    </div>
+      <SlideFrame width={w} ratio={ratio}>
+        <PostSlide post={post} index={0} ratio={ratio} />
+      </SlideFrame>
+      {/* The stacked-square glyph Instagram puts on a carousel — only on posts
+          that are one. Drawn in ink because the deck tile under it is bone
+          paper; the field tiles carry no glyph, so nothing sits on the shader. */}
+      {slideCount(post) > 1 ? (
+      <span
+        style={{
+          position: "absolute",
+          top: 14,
+          right: 14,
+          width: 16,
+          height: 16,
+          border: `2px solid ${INK}`,
+          borderRadius: 4,
+          boxShadow: `-4px 4px 0 -2px ${PAPER}, -6px 6px 0 -2px ${INK}`,
+          opacity: 0.55,
+        }}
+      />
+      ) : null}
+    </button>
   );
 }
 
@@ -257,7 +250,7 @@ function Viewer({
   onMove: (d: number) => void;
   onClose: () => void;
 }) {
-  const kind = SLIDE_KINDS[index]!;
+  const n = slideCount(post);
   const drag = useRef<number | null>(null);
   // Sized off the height available, not a fixed width: at 9:16 a fixed-width
   // frame runs off the bottom, and a preview that crops the slide is not one.
@@ -301,14 +294,14 @@ function Viewer({
           style={{ position: "relative", background: INK_2, touchAction: "pan-y", cursor: "grab" }}
         >
           <SlideFrame width={w} ratio={ratio}>
-            <SlideBody card={post.card} kind={kind} ratio={ratio} />
+            <PostSlide post={post} index={index} ratio={ratio} live />
           </SlideFrame>
           <Arrow dir={-1} disabled={index === 0} onClick={() => onMove(-1)} />
-          <Arrow dir={1} disabled={index === SLIDE_KINDS.length - 1} onClick={() => onMove(1)} />
+          <Arrow dir={1} disabled={index === n - 1} onClick={() => onMove(1)} />
         </div>
 
-        <div style={{ display: "flex", gap: 7, justifyContent: "center", padding: "16px 0" }}>
-          {SLIDE_KINDS.map((_, i) => (
+        <div style={{ display: "flex", gap: 7, justifyContent: "center", padding: "16px 0", minHeight: 7 }}>
+          {(n > 1 ? SLIDE_KINDS : []).map((_, i) => (
             <span
               key={i}
               style={{
@@ -319,7 +312,7 @@ function Viewer({
           ))}
         </div>
         <div style={{ ...lbl(12, FAINT), textAlign: "center" }}>
-          {index + 1} / {SLIDE_KINDS.length} · {kind}
+          {n > 1 ? `${index + 1} / ${n} · ${SLIDE_KINDS[index]}` : "Single image"}
         </div>
       </div>
 
@@ -340,35 +333,13 @@ function Viewer({
             Close ✕
           </button>
         </div>
-        <p style={{ fontFamily: SERIF, fontSize: 16, lineHeight: 1.6, color: MUTED, margin: "16px 0 0", whiteSpace: "pre-line" }}>
+        <p style={{ fontFamily: UI, fontSize: 16, lineHeight: 1.6, color: MUTED, margin: "16px 0 0", whiteSpace: "pre-line" }}>
           {post.caption}
         </p>
         <p style={{ fontSize: 14, lineHeight: 1.7, color: OXBLOOD, margin: "16px 0 0", wordSpacing: "0.2em" }}>
           {post.hashtags.join(" ")}
         </p>
 
-        <div style={{ borderTop: `1px solid ${HAIRLINE}`, margin: "22px 0 0", paddingTop: 18 }}>
-          <span style={lbl(12, FAINT)}>Slides</span>
-          <ol style={{ margin: "12px 0 0", padding: 0, listStyle: "none", fontSize: 13, color: MUTED, lineHeight: 1.9 }}>
-            {SLIDE_KINDS.map((k, i) => (
-              <li key={k} style={{ display: "flex", gap: 10, opacity: i === index ? 1 : 0.55 }}>
-                <span style={{ color: FAINT, width: 20 }}>{String(i + 1).padStart(2, "0")}</span>
-                <span>{k === "card" ? "front of the card" : k === "reveal" ? "the reveal" : "the stats"}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-
-        <div style={{ borderTop: `1px solid ${HAIRLINE}`, margin: "20px 0 0", paddingTop: 16 }}>
-          <span style={lbl(12, FAINT)}>Source card</span>
-          <p style={{ fontFamily: SERIF, fontSize: 13, lineHeight: 1.6, color: FAINT, margin: "10px 0 0" }}>
-            <b style={{ color: MUTED, fontWeight: 400 }}>{post.card.id}</b> in
-            swipe-the-future/data/sectors.ts · {post.card.sector} · checked {post.card.checked}.
-            {post.card.crowd.sample
-              ? " The tally on slides 2 and 3 is the stats page's own sample, not a real one: the v2 deck has no live answers yet."
-              : null}
-          </p>
-        </div>
       </aside>
     </div>
   );

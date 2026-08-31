@@ -32,11 +32,8 @@ export const DESIGN_W = 480;
 export const CARD_W = 420;
 export const CARD_H = 560;
 
-/** Slide chrome, pinned so the fit maths needs no measuring. */
-export const PAD_TOP = 22;
-export const PAD_BOTTOM = 18;
-export const FOOT_H = 36;   // 20px mark + 16px padding-top
-export const HEAD_H = 39;   // 27px row + 12px margin-bottom
+/** The only slide chrome left: a margin, so the colour wash reads as a halo. */
+export const PAD = 16;
 
 export const SLIDE_CSS = `
 /* ── tokens: swipe-the-future/app/globals.css :root (dark) ─────────────── */
@@ -68,7 +65,40 @@ export const SLIDE_CSS = `
   font-family: var(--ff-sans);
   -webkit-font-smoothing: antialiased;
   text-align: left;
+  position: relative;
+  overflow: hidden;
 }
+
+/* ── light, for the stats slide: the game's own light theme, copied from
+      globals.css html:not(.dark). The results page reads as paper, so the
+      slide that quotes it does too. ─────────────────────────────────────── */
+.stf.light {
+  --accent: oklch(0.55 0.13 245);
+  --accent-deep: oklch(0.42 0.11 245);
+  --accent-ink: oklch(0.42 0.11 245);
+  --accent-soft: color-mix(in srgb, var(--accent) 16%, transparent);
+  --ink: #f4efe4;
+  --ink-2: #fbf8f1;
+  --bone: #17181b;
+  --muted: #303237;
+  --faint: #6f6759;
+  --line: rgba(23, 24, 27, .16);
+  --shadow: 0 24px 54px -28px rgba(60, 46, 24, .38);
+  --wash-1: rgba(23, 24, 27, .07);
+  --good: #16663d;
+}
+
+/* A soft colour behind the card. Keyed to the SECTOR, never the verdict: a
+   green glow behind a card you are being asked to answer would give the answer
+   away before you had read it. */
+.stf-wash { position: absolute; inset: 0; pointer-events: none; }
+.stf-wash i {
+  position: absolute; left: 50%; top: 46%; width: 130%; aspect-ratio: 1 / 1;
+  transform: translate(-50%, -50%); display: block;
+  background: radial-gradient(circle, var(--wash-hue) 0%, transparent 58%);
+  filter: blur(46px); opacity: .55;
+}
+.stf.light .stf-wash i { opacity: .34; }
 
 /* ── deck head (globals.css 122-127) ───────────────────────────────────── */
 .stf .deck-head { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 0 0 12px; flex: 0 0 27px; box-sizing: border-box; }
@@ -91,6 +121,23 @@ export const SLIDE_CSS = `
 .stf .tcard.b2 { transform: translateX(30px) translateY(12px); filter: brightness(.76); border-left: 1px solid var(--card-line); }
 /* FIXED-FOR-EXPORT: was clamp(20px, 2.4vw + 0.6vh, 31px). */
 .stf .tcard .claim { flex: 1; min-height: 0; overflow: hidden; display: grid; place-items: center; text-align: center; font-weight: 600; font-size: 25px; line-height: 1.34; letter-spacing: -.02em; color: #19140e; }
+
+/* ── the Instagram cut of the card ─────────────────────────────────────────
+   The deck's own card carries a progress head, a stack of cards behind it and
+   two swipe buttons, because it is a thing you play. A feed thumbnail is 120px
+   wide and none of that survives the shrink: it just reads as clutter around
+   the sentence, which is the only part anyone can actually see. So this cut
+   drops all of it and asks the question in words instead. The claim is a
+   statement about the world, so TRUE means it has happened and FALSE means it
+   has not — the same question the deck asks, in the form a feed understands. */
+.stf .tcard.ig { position: static; inset: auto; width: 100%; height: 100%; padding: 30px 28px 24px; }
+.stf .tq { flex: 0 0 auto; font-family: var(--ff-mono); font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #8a8172; text-align: center; line-height: 1.4; }
+
+/* The answer, said in both vocabularies at once. */
+.stf .vo-verdict { font-weight: 700; font-size: 46px; line-height: 1; letter-spacing: -.035em; }
+.stf .vo-verdict.correct { color: var(--good-ink); }
+.stf .vo-verdict.wrong { color: var(--bad-ink); }
+.stf .vo-verdict-sub { margin-top: 4px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; color: #6b6255; }
 
 /* ── the two buttons (globals.css 159-172) ─────────────────────────────── */
 .stf .card-actions { position: relative; display: flex; justify-content: center; gap: 44px; padding-top: 14px; flex: 0 0 auto; }
@@ -136,6 +183,12 @@ export const SLIDE_CSS = `
 .stf .st-rowtxt { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; line-height: 1.45; }
 .stf .st-rowtxt b { font-weight: 500; color: var(--bone); }
 .stf .st-rowtxt span { font-size: 11.5px; color: var(--faint); }
+/* One card's split, drawn: the share that read it right against the share that
+   made the named mistake. The results page argues in proportions, and two label
+   rows on their own left it reading as a list. */
+.stf .st-splitbar { display: flex; height: 12px; margin-top: 22px; overflow: hidden; background: var(--wash-1); }
+.stf .st-splitbar span { display: block; height: 100%; }
+.stf .st-splitkey { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11.5px; color: var(--faint); }
 .stf .st-demobar { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin: 0 0 26px; padding: 14px 18px; background: var(--brass); color: #17140e; font-size: 14px; line-height: 1.5; }
 .stf .st-demobar b { font-weight: 700; }
 .stf .st-demobar span { flex: 1 1 320px; }
@@ -145,12 +198,22 @@ export const SLIDE_CSS = `
       "Futures Atlas" wordmark) ───────────────────────────────────────────── */
 .stf .fa-lockup { display: flex; align-items: center; gap: 9px; flex: 0 0 auto; }
 .stf .fa-lockup img { display: block; height: 20px; width: auto; filter: invert(1); }
+.stf.light .fa-lockup img { filter: none; }
 .stf .fa-lockup .word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; color: var(--bone); }
 .stf .fa-url { margin-left: auto; font-family: var(--ff-mono); font-size: 11px; letter-spacing: .06em; color: var(--faint); }
 
+/* ── an interference slide: the live field, full bleed ─────────────────── */
+.stf .fld { position: relative; width: 100%; height: 100%; overflow: hidden; background: #05070a; }
+/* pointer-events:none matters: the iframe covers the whole tile, so without it
+   the embed swallows the click and the post never opens. The field is a post
+   image here, not something to interact with. */
+.stf .fld iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
+/* The still. object-fit:cover because the capture is 4:5 and the slide may
+   be asked for at 1:1 or 9:16. */
+.stf .fld-thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+
 /* ── the slide shell: the game's page ground, with the card in it ──────── */
-.stf-slide { display: flex; flex-direction: column; box-sizing: border-box; padding: 22px 20px 18px; height: 100%; }
-.stf-foot { display: flex; align-items: center; gap: 10px; padding-top: 16px; flex: 0 0 36px; box-sizing: border-box; }
+.stf-slide { position: relative; display: flex; flex-direction: column; box-sizing: border-box; padding: 16px; height: 100%; }
 /* The card's box, at its authored size, scaled to the room available and
    centred in it. Nothing inside it ever reflows. */
 .stf-stack { position: relative; flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; }

@@ -15,21 +15,11 @@
  * shows the same block smaller on more ground.
  */
 
-import {
-  DESIGN_W, CARD_W, CARD_H, PAD_TOP, PAD_BOTTOM, FOOT_H, HEAD_H, SLIDE_CSS,
-} from "./slide-css";
-import type { Card, SlideKind } from "./posts";
+import { DESIGN_W, CARD_W, CARD_H, PAD, SLIDE_CSS } from "./slide-css";
+import type { Card, Post, ReelPost, SlideKind } from "./posts";
 
 export const RATIOS = { "4:5": 5 / 4, "1:1": 1, "9:16": 16 / 9 } as const;
 export type Ratio = keyof typeof RATIOS;
-
-/**
- * The domain, not the deck path. The full URL is 44 characters, and at the
- * card's real 19px wordmark there is no row in a 420px column that holds both:
- * it wrapped over "Futures Atlas". The deck path lives in the caption, which is
- * where an Instagram reader looks for it anyway.
- */
-const HOME = "futures-atlas-02.vercel.app";
 
 /** The stats page's diverging pair, unchanged (StatsView.tsx 19-21). */
 const C_BELIEVE = "#D8694E"; // hype trap: believed something that hasn't happened
@@ -66,31 +56,50 @@ export function SlideFrame({
   );
 }
 
-/** The site's own lockup: /fa.svg inverted for the dark ground, plus the word. */
-function Lockup() {
-  return (
-    <div className="stf-foot">
-      <span className="fa-lockup">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/fa.svg" alt="" aria-hidden="true" />
-        <span className="word">Futures Atlas</span>
-      </span>
-      <span className="fa-url">{HOME}</span>
-    </div>
+/**
+ * One post, one slide index, drawn. A deck post has three slides; a reel post
+ * has one, and that one is either its still or the piece running.
+ *
+ * `live` is what makes the grid affordable and honest at once: a wall of tiles
+ * is a wall of stills, exactly as a feed of videos is, and the embed is mounted
+ * only for the post you actually opened.
+ */
+export function PostSlide({
+  post, index, ratio, live = false,
+}: {
+  post: Post;
+  index: number;
+  ratio: Ratio;
+  live?: boolean;
+}) {
+  return post.kind === "reel" ? (
+    <ReelSlide post={post} ratio={ratio} live={live} />
+  ) : (
+    <SlideBody card={post.card} kind={SLIDE_KINDS_LOCAL[index]!} ratio={ratio} />
   );
 }
 
-/** The deck head, as the game draws it: progress dots and the count. */
-function DeckHead({ pos, size }: { pos: number; size: number }) {
-  const pad = (n: number) => String(n).padStart(2, "0");
+const SLIDE_KINDS_LOCAL = ["card", "reveal", "stats"] as const;
+
+function ReelSlide({ post, ratio, live }: { post: ReelPost; ratio: Ratio; live: boolean }) {
+  const h = DESIGN_W * RATIOS[ratio];
   return (
-    <div className="deck-head">
-      <div className="dots">
-        {Array.from({ length: size }, (_, k) => (
-          <span key={k} className={`dot${k < pos - 1 ? " done" : k === pos - 1 ? " cur" : ""}`} />
-        ))}
+    <div className="stf" style={{ width: DESIGN_W, height: h }}>
+      <div className="fld">
+        {live ? (
+          <iframe
+            src={post.embed}
+            title={post.title}
+            scrolling="no"
+            /* The embed covers the whole frame; without this it swallows the
+               click and the post cannot be opened or closed. */
+            style={{ pointerEvents: "none" }}
+          />
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img className="fld-thumb" src={`/mocks/instagram/${post.id}.jpg`} alt="" />
+        )}
       </div>
-      <span className="count">{pad(pos)} / {pad(size)}</span>
     </div>
   );
 }
@@ -99,15 +108,21 @@ export function SlideBody({ card, kind, ratio }: { card: Card; kind: SlideKind; 
   // The deck head rides above the box, and only on the front: the reveal needs
   // every pixel (in the game `.vo-body` scrolls when it runs long, and a still
   // slide has nothing to scroll), and the deck position is already on slide 1.
-  const withHead = kind === "card";
+  // The results slide quotes the stats page, and that page reads as paper, so
+  // the slide does too. The two card slides stay on the game's dark ground.
+  const light = kind === "stats";
   return (
-    <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
+    <div
+      className={`stf${light ? " light" : ""}`}
+      style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}
+    >
+      <div className="stf-wash" style={{ ["--wash-hue" as string]: card.hue }}>
+        <i />
+      </div>
       <div className="stf-slide">
-        {withHead ? <DeckHead pos={card.pos} size={card.deckSize} /> : null}
-        <ScaleBox ratio={ratio} withHead={withHead}>
+        <ScaleBox ratio={ratio}>
           {kind === "stats" ? <StatsSlide card={card} /> : <CardSlide card={card} kind={kind} />}
         </ScaleBox>
-        <Lockup />
       </div>
     </div>
   );
@@ -119,15 +134,9 @@ export function SlideBody({ card, kind, ratio }: { card: Card; kind: SlideKind; 
  * every term is a pinned constant, so a slide is identical in the grid, in the
  * viewer and in an export.
  */
-function ScaleBox({
-  ratio, withHead, children,
-}: {
-  ratio: Ratio;
-  withHead: boolean;
-  children: React.ReactNode;
-}) {
-  const availW = DESIGN_W - 40;
-  const availH = DESIGN_W * RATIOS[ratio] - PAD_TOP - PAD_BOTTOM - FOOT_H - (withHead ? HEAD_H : 0);
+function ScaleBox({ ratio, children }: { ratio: Ratio; children: React.ReactNode }) {
+  const availW = DESIGN_W - PAD * 2;
+  const availH = DESIGN_W * RATIOS[ratio] - PAD * 2;
   const s = Math.min(availW / CARD_W, availH / CARD_H);
   return (
     <div className="stf-stack">
@@ -148,58 +157,36 @@ function ScaleBox({
 }
 
 function CardSlide({ card, kind }: { card: Card; kind: "card" | "reveal" }) {
-  return (
-    <>
-      <div className="tinder">
-        {/* b2 and b1 are the cards still to come, exactly as the game stacks
-            them. They are what makes it read as a deck rather than a poster. */}
-        <div className="tcard b2" />
-        <div className="tcard b1" />
-        {kind === "card" ? <CardFront card={card} /> : <CardReveal card={card} />}
-      </div>
-    </>
-  );
+  return kind === "card" ? <CardFront card={card} /> : <CardReveal card={card} />;
 }
 
 function CardFront({ card }: { card: Card }) {
   return (
-    <div className="tcard">
+    <div className="tcard ig">
+      <div className="tq">True or false?</div>
       <h3 className="claim">{card.claim}</h3>
-      <div className="card-actions">
-        <span className="ca">
-          <span className="round no" aria-hidden="true">✕</span>
-          <span className="ca-lbl">Not yet</span>
-        </span>
-        <span className="ca">
-          <span className="round yes" aria-hidden="true">✓</span>
-          <span className="ca-lbl">Already real</span>
-        </span>
-      </div>
     </div>
   );
 }
 
 function CardReveal({ card }: { card: Card }) {
   const already = card.verdict === "already";
+  // "Already real since 1981" under a line that already says ALREADY HAPPENED
+  // says it twice. The rest of the labels (a not-yet card's nearest approach,
+  // "Closest crossing", "Devices approved, none generative") still carry their
+  // own meaning, so only this one is trimmed.
+  const bigLabel = card.bigLabel === "Already real since" ? "Since" : card.bigLabel;
   return (
-    <div className="tcard is-result">
+    <div className="tcard is-result ig">
       <div className="vo-body">
         <p className="vo-claim">{card.claim}</p>
-        {/* In the game this slot reads "Correct" or "Wrong" — it is grading the
-            answer you just gave. A post has no answer to grade, so it carries
-            the verdict, in the same slot and the same two colours.
-            Only where the card has no `bigLabel`, though: that label already
-            opens with the verdict ("Already real since"), and printing both gave
-            "Already real / Already real since / 1981". Cards with a big number
-            keep the game's own sequence untouched. */}
-        {card.bigLabel ? null : (
-          <div className={`vo-grade ${already ? "correct" : "wrong"}`}>
-            {already ? "Already real" : "Not yet"}
-          </div>
-        )}
+        <div className={`vo-verdict ${already ? "correct" : "wrong"}`}>
+          {already ? "True" : "False"}
+        </div>
+        <div className="vo-verdict-sub">{already ? "Already happened" : "Not yet"}</div>
         {card.big ? (
           <>
-            <div className="vo-label">{card.bigLabel}</div>
+            <div className="vo-label">{bigLabel}</div>
             <div className="vo-bignum">{card.big}</div>
           </>
         ) : null}
@@ -284,6 +271,15 @@ function StatsSlide({ card }: { card: Card }) {
         </span>
       </div>
 
+      <div className="st-splitbar">
+        <span style={{ width: `${gotIt * 100}%`, background: "var(--good)" }} />
+        <span style={{ width: `${missPct * 100}%`, background: missColour }} />
+      </div>
+      <div className="st-splitkey">
+        <span>Read it right</span>
+        <span>{missName.replace("A ", "")}</span>
+      </div>
+
       <div style={{ flex: 1, minHeight: 0 }} />
 
       <p className="st-para" style={{ margin: "18px 0 14px" }}>
@@ -293,7 +289,7 @@ function StatsSlide({ card }: { card: Card }) {
 
       {/* The stats page's own brass bar, said the way that page says it. */}
       {card.crowd.sample ? (
-        <div className="st-demobar" style={{ margin: 0 }}>
+        <div className="st-demobar" style={{ margin: "0 0 14px" }}>
           <b>Sample data.</b>
           <span>These are made-up tallies, shown so the layout can be read. Nobody has answered this deck yet.</span>
         </div>
