@@ -6,7 +6,13 @@ export { Section } from "./components/Section";
 export { Page } from "./components/Page";
 export { Button } from "./components/Button";
 export { Card, CardBody } from "./components/Card";
-export { ResearchTemplate, type ResearchItem } from "./components/ResearchTemplate";
+export {
+  ResearchTemplate,
+  type ResearchItem,
+  type ResearchType,
+  type ThumbnailType,
+} from "./components/ResearchTemplate";
+export { VideoEmbed, youTubeId } from "./components/VideoEmbed";
 export { ContactTemplate } from "./components/ContactTemplate";
 
 // navbar — the global bar is now the one shared /atlas-nav.js component (host

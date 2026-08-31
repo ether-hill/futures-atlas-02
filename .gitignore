@@ -140,3 +140,11 @@ next-env.d.ts
 
 # session scratch files — working notes/renders, never part of the site
 /scratchpad/
+
+# The design system, staged into each consumer by scripts/build-subapps.sh from
+# the one canonical copy at packages/futures-atlas-core. These used to be
+# hand-maintained and silently drifted apart; they are build output now, so they
+# are not committed. Edit packages/, never a vendor/ tree.
+/hollow-villages/vendor/futures-atlas-core/
+/manipulate-the-data/vendor/futures-atlas-core/
+/quantum-lag/vendor/futures-atlas-core/

@@ -12,12 +12,18 @@ export function ContactTemplate({
   intro,
   aside,
   onSubmit,
+  projects,
+  defaultProject,
 }: {
   eyebrow?: string;
   heading: string;
   intro?: string;
   aside?: ReactNode;
   onSubmit?: (data: FormData) => void;
+  /** When passed, renders a Project dropdown (shared across the Atlas family). */
+  projects?: string[];
+  /** Which project is pre-selected (the one the visitor is inside). */
+  defaultProject?: string;
 }) {
   const [sent, setSent] = useState(false);
 
@@ -59,6 +65,18 @@ export function ContactTemplate({
             }}
             style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)", border: "var(--border-hairline) solid var(--text)", background: "var(--panel)", padding: "var(--space-card-l)" }}
           >
+            {projects && projects.length > 0 && (
+              <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                <span className="fa-label">Project</span>
+                <select name="project" defaultValue={defaultProject ?? projects[0]} className="fa-field">
+                  {projects.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
             <div style={{ display: "grid", gap: "var(--space-4)", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
               <label style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                 <span className="fa-label">Name</span>
