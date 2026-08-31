@@ -100,7 +100,6 @@ export default function DesignSystemPage() {
         <p
           className="mt-[clamp(16px,2vw,24px)] max-w-[64ch]"
           style={{
-            fontFamily: "var(--font-mono)",
             fontSize: "var(--text-body-size)",
             lineHeight: "var(--lh-body)",
             color: "var(--text-body)",
@@ -308,7 +307,6 @@ export default function DesignSystemPage() {
                   <p
                     className="mt-2"
                     style={{
-                      fontFamily: "var(--font-mono)",
                       fontSize: "var(--text-body-size)",
                       lineHeight: "var(--lh-body)",
                       color: "var(--text-body)",
@@ -385,7 +383,6 @@ export default function DesignSystemPage() {
                 <p
                   className="mt-2"
                   style={{
-                    fontFamily: "var(--font-mono)",
                     fontSize: "var(--text-body-size)",
                     lineHeight: "var(--lh-body)",
                     color: "var(--text-body)",

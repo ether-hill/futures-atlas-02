@@ -40,7 +40,7 @@ export const projects: Project[] = [
     id: "interference",
     title: "Interference",
     tagline:
-      "Quantum mechanics is hard to picture, so here is the part you can look at. Fourteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing, each one a program working out a colour for every pixel rather than a video, and each one an exact loop. Set the speed, drag the timeline, re-colour any field from a palette or your own hex, open it fullscreen, then save a still, record one clean loop, or embed it somewhere else.",
+      "Quantum mechanics is hard to picture, so here is the part you can look at. Fourteen live wave fields, tunable, recolourable, and yours to embed.",
     year: "2026",
     date: "2026-08-31",
     field: "Waves & optics",
@@ -54,7 +54,7 @@ export const projects: Project[] = [
     id: "mappings",
     title: "Mappings",
     tagline:
-      "A page can be an argument: one number, a map of records, and the evidence behind every dot. The data domain is a variable, so the same widgets render the AI compute buildout and frontier-lab investment — every record from an openly licensed, cited dataset.",
+      "One number, a map of records, and the evidence behind every dot. Swap the data domain and the same widgets argue about something else.",
     year: "2026",
     date: "2026-08-31",
     field: "Data & evidence",
@@ -66,7 +66,7 @@ export const projects: Project[] = [
     id: "magnifica",
     title: "Hypothetica Magnifica",
     tagline:
-      "In May 2026 Pope Leo XIV published the first papal encyclical on AI. Explore the real Magnifica Humanitas, then read sixteen research-grounded, clearly-labeled speculative equivalents — what the Dalai Lama, the Grand Imam of Al-Azhar, the Archbishop of Canterbury and other world faith leaders might write about artificial intelligence.",
+      "Pope Leo XIV wrote the first papal encyclical on AI. Read it, then sixteen labelled speculative ones from other faith leaders.",
     year: "2026",
     date: "2026-08-11",
     field: "AI & faith",
@@ -93,7 +93,7 @@ export const projects: Project[] = [
     id: "signal-reactor",
     title: "Signal Reactor",
     tagline:
-      "An organizational foresight instrument: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it, deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
+      "Name your organisation and get an eight-slide briefing on what quantum and advanced AI actually mean for it. AI-written, labelled as such.",
     year: "2026",
     date: "2026-07-02",
     field: "AI & risk",
@@ -106,7 +106,7 @@ export const projects: Project[] = [
     id: "quantum-spark",
     title: "Quantum Spark",
     tagline:
-      "Signal Reactor's energized companion: type your industry and get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it, the kind of insight that makes a room lean forward. Grounded hype with an honest label: provocations to spark conversation, not forecasts.",
+      "Type your industry, get five bold glimpses of how quantum and next-wave AI could change it. Provocations to open a room, labelled as such.",
     year: "2026",
     date: "2026-07-03",
     field: "AI & risk",
@@ -119,7 +119,7 @@ export const projects: Project[] = [
     id: "manipulate-ai-index",
     title: "The Counterfactual Index",
     tagline:
-      "The 2026 Stanford AI Index, rebuilt from the report's own published CSVs so the numbers are theirs rather than an approximation of theirs, then redrawn under decisions nobody took. Say what you would do about AI and when: sixteen figures move, or say plainly that they don't and name the lever that was missing. An intervention never invents a data point. It emits a typed, dated transform over the real series, carrying a stated reason and a confidence you can argue with.",
+      "The 2026 Stanford AI Index, rebuilt from its own CSVs. Say what you would do about AI and when, then watch sixteen figures answer.",
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
@@ -132,7 +132,7 @@ export const projects: Project[] = [
     id: "manipulate-quantum",
     title: "Counterfactual Quantum",
     tagline:
-      "Quantum has no AI Index, so this board is assembled: publication counts pulled from OpenAlex and queried by topic, next to the two endpoints Quantum Delta NL's own report actually publishes. The Dutch programme runs out of Growth Fund money in 2028 and that report ends by asking what happens next, so four of the six interventions are versions of that question. Delft's output inflected in 2017, three years before the programme existed.",
+      "Quantum has no AI Index, so this one is assembled from OpenAlex and Quantum Delta NL. Dutch funding ends in 2028, and six levers ask what follows.",
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
@@ -145,7 +145,7 @@ export const projects: Project[] = [
     id: "manipulate-ai-gigawatts",
     title: "AI Gigawatts",
     tagline:
-      "Global AI data centre power capacity as a rising field of light, marking the countries it passes on the way up: New Zealand, the Netherlands, New York State at peak. Pick a decision and the counterfactual is cut from the glow as a solid shape, so the gap is the subject rather than two lines to compare.",
+      "Global AI data centre power as a rising field of light, passing whole countries on the way up. Pick a decision and see the gap it leaves.",
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
@@ -158,7 +158,7 @@ export const projects: Project[] = [
     id: "hyperscale",
     title: "Hyperscale",
     tagline:
-      "A 3D management sim about the physical reality of the AI buildout, a compute campus in a river valley with a town next door. Mix grid, solar, wind, gas and batteries; keep GPU halls cool through heat waves and dust storms; watch the aquifer, the smog and civic sentiment as you grow toward a gigawatt. Full day–night cycle, seeded weather and markets, procedural audio.",
+      "A management sim about the physical cost of the AI buildout. Power a compute campus in a river valley and answer to the town next door.",
     year: "2026",
     date: "2026-07-01",
     field: "Simulation",
@@ -171,7 +171,7 @@ export const projects: Project[] = [
     id: "hollow-villages",
     title: "Village Oracle",
     tagline:
-      "An AI oracle forecasting how depopulating rural villages could be revived, people write it letters; it answers with grounded, cited plans and a picture of the place in 2050.",
+      "Write to an oracle about a village losing its people. It answers with a cited plan and a picture of the place in 2050.",
     year: "2026",
     date: "2026-04-10",
     field: "Rural futures",
@@ -184,7 +184,7 @@ export const projects: Project[] = [
     id: "generatives",
     title: "Generatives",
     tagline:
-      "A generative-visual lab, an array of animated, embeddable treatments (flow fields, noise, interference) for the project's visual language. Each one tunable, resizable to any banner, and copy-paste embeddable.",
+      "A lab of animated treatments for the Atlas's visual language. Tune one, size it to any banner, and paste the embed wherever you need it.",
     year: "2026",
     date: "2026-06-19",
     field: "Generative visuals",
@@ -197,7 +197,7 @@ export const projects: Project[] = [
     id: "swipe-the-future",
     title: "Swipe the Future",
     tagline:
-      "A calibration game with one question: has this already happened, or not yet? Forty sourced claims, half of them older than you would guess. Swipe, then see which futures everyone buys early and which ones arrived while nobody was looking.",
+      "Has this already happened, or not yet? Forty sourced claims, half of them older than you would guess. Swipe, then see where the room landed.",
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
@@ -210,7 +210,7 @@ export const projects: Project[] = [
     id: "swipe-v1",
     title: "Swipe the Future v1",
     tagline:
-      "The first version, frozen: pick a job, swipe Believe or Doubt on six claims, get a calibration score. Kept playable beside the current game, which asks whether a thing has already happened rather than whether it is true.",
+      "The first version, frozen. Pick a job, swipe Believe or Doubt on six claims, and get a calibration score.",
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
@@ -223,7 +223,7 @@ export const projects: Project[] = [
     id: "trajectories",
     title: "Trajectories",
     tagline:
-      "A real-time sphere of luminous filaments: thousands of strands reach from a boiling core to the shell, bending through noise that grows with radius, while pulses of brightness flow outward and ripples bloom at the surface. A non-commercial reimplementation (WebGL) of Jeongho Park's “Collective Trajectories” (CC BY-NC 4.0).",
+      "Thousands of luminous filaments reach from a boiling core to a shell, bending as they go. A WebGL take on Jeongho Park's Collective Trajectories.",
     year: "2026",
     date: "2026-06-28",
     field: "Generative visuals",
@@ -236,7 +236,7 @@ export const projects: Project[] = [
     id: "quantum-lag",
     title: "Quantum Lag",
     tagline:
-      "Place twenty claims about quantum technology on a timeline, then find out where they actually sit. It measures a specific error: people put finished work in the future and unfinished work in the past.",
+      "Place twenty claims about quantum technology on a timeline, then see where they really sit. Most people file finished work in the future.",
     year: "2026",
     date: "2026-08-13",
     field: "AI & risk",
@@ -249,7 +249,7 @@ export const projects: Project[] = [
     id: "quantum-dominance",
     title: "Quantum Dominance",
     tagline:
-      "Speculative satire: one official 'quantum dominance' post, two lenses. Pick The Dystopia or The Backfire and explore randomized futures, each anchored to something on the record, ready to push into the composer.",
+      "One official post about quantum dominance, two lenses. Pick The Dystopia or The Backfire and explore futures anchored to the record.",
     year: "2026",
     date: "2026-06-24",
     field: "AI & risk",
@@ -262,7 +262,7 @@ export const projects: Project[] = [
     id: "woodchipper",
     title: "Woodchipper Futures",
     tagline:
-      "An interactive futures engine on the 2025 USAID cuts: take the January-2025 chair, abolish, freeze, audit or reform, and watch a fact-checked, source-cited constellation of outcomes branch out. Every figure links to its study.",
+      "Take the chair in January 2025 and decide what happens to USAID. Abolish, freeze, audit or reform, and watch the outcomes branch out.",
     year: "2026",
     date: "2026-06-23",
     field: "AI & risk",
@@ -275,7 +275,7 @@ export const projects: Project[] = [
     id: "actually-hard-questions",
     title: "Actually Hard Questions",
     tagline:
-      "A parody of Anthropic's own homepage banner, hiding a workshop tool: hang a room's hardest AI questions on Anthropic's five real headings, next to what Anthropic has actually published there.",
+      "A workshop tool dressed as Anthropic's homepage. Hang a room's hardest AI questions on their five headings, beside what they published there.",
     year: "2026",
     date: "2026-08-13",
     field: "Public engagement",
@@ -288,7 +288,7 @@ export const projects: Project[] = [
     id: "underground-intelligence",
     title: "Underground Intelligence",
     tagline:
-      "An investigation into the unseen systems beneath everyday life, built on a traceable evidence base where every claim links back to its source.",
+      "An investigation into the systems running beneath everyday life, where every claim links back to the source it came from.",
     year: "2025",
     date: "2025-11-30",
     field: "Systems & evidence",
@@ -301,7 +301,7 @@ export const projects: Project[] = [
     id: "quantum-sandbox",
     title: "Quantum Sandbox",
     tagline:
-      "A prototyping dashboard for quantum-computing generative systems, every amplitude drawn as colour, with magnitude as density and phase as hue.",
+      "A prototyping dashboard for quantum generative systems. Every amplitude is drawn as colour, with magnitude as density and phase as hue.",
     year: "2026",
     date: "2026-05-28",
     field: "Quantum & computation",
@@ -314,7 +314,7 @@ export const projects: Project[] = [
     id: "literal-frequency",
     title: "Literal Frequency",
     tagline:
-      "Word-frequency visualisations built live from the Source Library, the open-access archive of digitised, translated books. Loads a book over the API and reads its vocabulary as a cloud, a word nebula, a bubble field, or bars, each view linking back to its source.",
+      "Load any book from the open Source Library archive and see what its vocabulary looks like from four angles.",
     year: "2026",
     date: "2026-06-22",
     field: "Data visualisation",
@@ -327,7 +327,7 @@ export const projects: Project[] = [
     id: "social-composer",
     title: "Social Composer",
     tagline:
-      "A standalone social-post composer, post types, layouts, motion, and PNG / GIF / video export, with a URL “transmutate” importer that pulls the reusable pieces out of any article.",
+      "A composer for social posts with motion and PNG, GIF and video export. Paste any article URL and it pulls the reusable pieces out.",
     year: "2026",
     date: "2026-06-17",
     field: "Creative tools",

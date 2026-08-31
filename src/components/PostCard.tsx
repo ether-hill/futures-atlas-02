@@ -125,7 +125,6 @@ export function PostCard({
           className="line-clamp-3"
           style={{
             marginTop: "var(--space-3)",
-            fontFamily: "var(--font-mono)",
             fontSize: "var(--text-body-size)",
             lineHeight: "var(--lh-body)",
             color: "var(--text-body)",

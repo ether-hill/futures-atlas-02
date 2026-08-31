@@ -79,7 +79,7 @@ export function ProjectCard({
         </div>
         <h3 className="fa-card__title">{project.title}</h3>
         <p
-          style={{ marginTop: "var(--space-3)", maxWidth: "52ch", fontFamily: "var(--font-mono)", fontSize: "var(--text-body-size)", lineHeight: "var(--lh-body)", color: "var(--text-body)" }}
+          style={{ marginTop: "var(--space-3)", maxWidth: "52ch", fontSize: "var(--text-body-size)", lineHeight: "var(--lh-body)", color: "var(--text-body)" }}
         >
           {project.tagline}
         </p>

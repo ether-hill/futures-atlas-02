@@ -59,7 +59,6 @@ export function PrototypeCard({ prototype: p }: { prototype: Prototype }) {
           <p
             className="mt-2 line-clamp-4"
             style={{
-              fontFamily: "var(--font-mono)",
               fontSize: "var(--text-body-size)",
               lineHeight: "var(--lh-body)",
               color: "var(--text-body)",
