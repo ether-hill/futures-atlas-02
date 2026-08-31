@@ -250,18 +250,29 @@ auto-builds & deploys.** More than one person (mnoesthedens, laubaumau) pushes t
 it. Vercel can build the private `futures-atlas-core` dependency itself, so there
 is no reason to deploy prebuilt from a local tree.
 
-**Branch model — work on `staging`, promote to `main`:**
-- `staging` → a Vercel **preview** at `https://futures-atlas-02-git-staging-frond-studio.vercel.app` (safe to ship freely; never touches the public site).
+**Branch model — personal branch → `staging` → `main`:**
+- **`mike` / `laura`** — each person's persistent working branch, with their own
+  Vercel preview (`https://futures-atlas-02-git-<branch>-frond-studio.vercel.app`).
+  Only your pushes touch your preview, so nobody competes for a URL. Sync
+  `origin/staging` into your branch at the start of a session.
+- `staging` → the shared **integration** preview at `https://futures-atlas-02-git-staging-frond-studio.vercel.app` — merge your branch in when a piece is ready to be seen together; don't work on it directly.
 - `main` → **production** (`https://futures-atlas-02.vercel.app`).
 
 ```sh
-# day-to-day: on the staging branch
-git checkout staging
+# day-to-day: on your personal branch (mike / laura)
+git checkout mike
+git fetch && git merge origin/staging   # sync down first
 git add -A && git commit -m "…"
-./scripts/safe-deploy.sh   # pushes the branch you're on; on staging → preview, on main → prod
+./scripts/safe-deploy.sh   # pushes the branch you're on → your own preview
+# piece ready for the shared preview?
+git checkout staging && git pull --ff-only && git merge mike && git push
 # happy with the staging preview? put it live:
 ./scripts/promote.sh       # fast-forwards main to staging → production
 ```
+
+A half-finished project merged to `staging` is usually harmless — drafts are
+gated by `visibility` — but if one project must ship while another on your
+branch must not, split the unfinished one onto its own feature branch.
 
 `safe-deploy.sh` is branch-aware and **refuses if you're behind origin** (so you can't overwrite a teammate). `promote.sh` only runs from `staging`. Both push via git — **never `vercel deploy --prebuilt`.**
 
