@@ -203,7 +203,12 @@ input[type="color"] {
 
 .read { display: none; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--hairline); }
 .card.is-open .read { display: block; }
-.read p { margin: 0 0 11px; max-width: 74ch; font-size: 14.5px; line-height: 1.66; color: var(--text-body); }
+.read p { margin: 0 0 13px; max-width: 74ch; font-size: 14.5px; line-height: 1.66; color: var(--text-body); }
+.rlab {
+  display: block; margin-bottom: 3px;
+  font-family: var(--font-year); font-size: 11px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--accent);
+}
 .read p:last-child { margin-bottom: 0; }
 
 .colophon { border-top: 1px solid var(--hairline); padding: clamp(28px, 4vw, 52px) 0 clamp(60px, 8vw, 110px); }

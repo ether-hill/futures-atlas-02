@@ -159,7 +159,9 @@
           '<button class="btn" data-act="read">Read more</button>' +
           '<button class="btn" data-act="wide">Widen</button>' +
         '</div>' +
-        '<div class="read">' + v.read.map(function (p) { return "<p>" + p + "</p>"; }).join("") + '</div>' +
+        '<div class="read">' + v.read.map(function (r) {
+          return '<p><span class="rlab">' + r[0] + '</span>' + r[1] + '</p>';
+        }).join("") + '</div>' +
       '</div>';
     grid.appendChild(card);
 
