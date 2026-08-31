@@ -523,7 +523,8 @@ function drawCentered(
   ctx.textAlign = "left";
 }
 
-/** Summary / text-block frame — left-aligned serif over an optional mosaic. */
+/** Summary / text-block frame — the same Archivo-bold headline voice as every
+ *  other frame (one face across all assets), over an optional mosaic. */
 function drawSummary(
   ctx: CanvasRenderingContext2D, w: number, h: number, label: string,
   headline: string, sub: string, style: Style, m: MotionState,
@@ -542,7 +543,7 @@ function drawSummary(
   const len = headline.length;
   const base = len > 320 ? 0.04 : len > 180 ? 0.05 : 0.062;
   const size = Math.round(w * base * style.sizeMul);
-  const lines = wrap(ctx, headline, w - padX * 2, heading(size, 500), h > w ? 24 : 16);
+  const lines = wrap(ctx, headline, w - padX * 2, heading(size), h > w ? 24 : 16);
   const lh = Math.round(size * 1.28);
   const subSize = Math.round(w * 0.032);
   const subLh = Math.round(subSize * 1.4);
@@ -551,7 +552,7 @@ function drawSummary(
   let y = style.placement === "top" ? padY + Math.round(h * 0.08) : style.placement === "bottom" ? h - padY - total : Math.max(padY + size, (h - total) / 2);
   const anchorX = style.align === "center" ? w / 2 : style.align === "right" ? w - padX : padX;
   y += Math.round(size * 0.5);
-  ctx.font = heading(size, 500); ctx.textBaseline = "top";
+  ctx.font = heading(size); ctx.textBaseline = "top";
   paintLines(ctx, lines, anchorX, y, lh, m, textCol, style.align);
   y += lines.length * lh;
   if (subLines.length) {
@@ -578,7 +579,7 @@ function drawStat(
   ctx.translate(0, (1 - m.textProgress) * h * 0.04 * m.textRise);
   const vSize = Math.round(w * 0.3);
   const capSize = Math.round(w * 0.05 * style.sizeMul);
-  const capLines = wrap(ctx, headline, w - padX * 2, heading(capSize, 500), 6);
+  const capLines = wrap(ctx, headline, w - padX * 2, heading(capSize), 6);
   const capLh = Math.round(capSize * 1.2);
   const total = vSize + Math.round(capSize) + capLines.length * capLh;
   let y = (h - total) / 2;
@@ -586,7 +587,7 @@ function drawStat(
   ctx.font = heading(vSize); ctx.fillStyle = ACCENT;
   ctx.fillText(value, padX, y);
   y += vSize + Math.round(capSize * 0.3);
-  ctx.font = heading(capSize, 500); ctx.fillStyle = style.textColor;
+  ctx.font = heading(capSize); ctx.fillStyle = style.textColor;
   capLines.forEach((ln, i) => ctx.fillText(ln, padX, y + i * capLh));
   if (sub) {
     const subSize = Math.round(w * 0.030), subLh = Math.round(subSize * 1.4);
@@ -699,8 +700,8 @@ function drawVideoGrid(
     ctx.font = mono(Math.round(w * 0.02), 600); ctx.fillStyle = ACCENT;
     ctx.fillText(it.source.toUpperCase().slice(0, 28), cx, cy + cellH + Math.round(h * 0.008));
     const tSize = Math.round(w * 0.026);
-    const tLines = wrap(ctx, it.title, cellW, heading(tSize, 500), 2);
-    ctx.font = heading(tSize, 500); ctx.fillStyle = style.textColor;
+    const tLines = wrap(ctx, it.title, cellW, heading(tSize), 2);
+    ctx.font = heading(tSize); ctx.fillStyle = style.textColor;
     tLines.forEach((ln, j) => ctx.fillText(ln, cx, cy + cellH + Math.round(h * 0.028) + j * tSize * 1.1));
   });
   ctx.restore();
@@ -737,8 +738,8 @@ function drawPressGrid(
     ctx.font = mono(Math.round(w * 0.019), 600); ctx.fillStyle = ACCENT;
     ctx.fillText(`${it.outlet}${it.date ? ` · ${it.date}` : ""}`.toUpperCase().slice(0, 34), cx, cy + cellH + Math.round(h * 0.008));
     const tSize = Math.round(w * 0.026);
-    const tLines = wrap(ctx, it.title, cellW, heading(tSize, 500), 3);
-    ctx.font = heading(tSize, 500); ctx.fillStyle = style.textColor;
+    const tLines = wrap(ctx, it.title, cellW, heading(tSize), 3);
+    ctx.font = heading(tSize); ctx.fillStyle = style.textColor;
     tLines.forEach((ln, j) => ctx.fillText(ln, cx, cy + cellH + Math.round(h * 0.028) + j * tSize * 1.1));
   });
   ctx.restore();

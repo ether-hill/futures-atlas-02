@@ -1,22 +1,22 @@
 "use client";
 
 /**
- * ComposerPage — the studio plus the stock library that seeds it.
+ * ComposerPage — the studio, for one-offs.
  *
- * The composer is for one-offs: there is no project picker any more. One stock
- * library loads (the default, or a project named by `initialProject` /
- * `?project=` for the deep-link routes), and from there it's uploads,
- * transmutated pages, and the user's own frames. Every asset — stock included —
- * is deletable, permanently.
+ * By default the library starts EMPTY: uploads and transmutated pages are the
+ * material. A stock library of captured Atlas screens loads only when a route
+ * asks for one by name (`initialProject`, or a `?project=` deep link kept for
+ * existing URLs) — and even then there is no header band or picker; the stock
+ * frames are just assets, deletable like any other.
  */
 
 import { useEffect, useMemo, useState } from "react";
 import { StudioApp } from "./studio-app";
-import { atlasProjects, atlasSource } from "@/lib/composer/atlas-source";
+import { atlasProjects, atlasSource, emptySource } from "@/lib/composer/atlas-source";
 
 export function ComposerPage({ initialProject }: { initialProject?: string }) {
   const all = atlasProjects();
-  const [id, setId] = useState(initialProject ?? all[0]?.id ?? "");
+  const [id, setId] = useState(initialProject ?? "");
 
   // ?project=<id> deep-links a stock library (kept for existing links).
   useEffect(() => {
@@ -27,24 +27,13 @@ export function ComposerPage({ initialProject }: { initialProject?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- one-shot restore
   }, []);
 
-  const project = all.find((p) => p.id === id) ?? all[0];
-  // Stable per project: the studio memoises off source.frames identity.
-  const source = useMemo(() => atlasSource(id), [id]);
+  const valid = id && all.some((p) => p.id === id);
+  const source = useMemo(() => (valid ? atlasSource(id) : emptySource()), [valid, id]);
 
   return (
     <section className="rounded-xl border border-ink/12">
-      {project && (
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-ink/12 px-5 py-3.5 sm:px-7">
-          <div className="flex items-baseline gap-3">
-            <span className="font-docket text-[9px] uppercase tracking-[0.16em] text-gilt">Stock</span>
-            <span className="font-display text-[17px] text-ink">{project.title}</span>
-          </div>
-          <span className="font-docket text-[10px] uppercase tracking-[0.1em] text-ink/45">
-            {project.field}
-          </span>
-        </div>
-      )}
-      <StudioApp key={id} source={source} />
+      {/* key: a different seed is a different library and draft store */}
+      <StudioApp key={valid ? id : "one-off"} source={source} />
     </section>
   );
 }

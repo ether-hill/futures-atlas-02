@@ -62,6 +62,16 @@ export function atlasProjects(): AtlasProject[] {
   return ATLAS_PROJECTS.filter((p) => p.shots.length || p.cards.length || LEGACY[p.id]);
 }
 
+/** The blank one-off library: no stock, just uploads + transmutated frames.
+ *  The url keys drafts/working state, so one-offs keep their own store. */
+export function emptySource(): ComposerSource {
+  return {
+    kind: "person", name: "One-off", description: "", summary: "", url: `${SITE}/one-off`,
+    frames: [], headlineOptions: [], attribution: "Futures Atlas", cards: [],
+    listLabel: "Assets", hashtags: "#FuturesAtlas",
+  };
+}
+
 export function atlasSource(id: string): ComposerSource {
   const p = ATLAS_PROJECTS.find((x) => x.id === id) ?? ATLAS_PROJECTS[0];
   if (!p) {
