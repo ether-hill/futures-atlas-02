@@ -16,18 +16,21 @@ import { Reveal } from "@/components/Reveal";
 export function LogoMark({ slug, name, colored, size = "h-12 w-12" }: { slug: string; name: string; colored: boolean; size?: string }) {
   const glyph = LOGOS[slug];
   if (glyph) {
+    // A wide mark keeps the caller's height and takes its own width, so it
+    // reads at the same optical size as the square glyphs beside it.
+    const box = glyph.viewBox ? `${size.replace(/\bw-\S+/g, "w-auto")} max-w-full` : size;
     return (
       <svg
-        viewBox="0 0 24 24"
+        viewBox={glyph.viewBox ?? "0 0 24 24"}
         role="img"
         aria-hidden="true"
         fillRule="evenodd"
         clipRule="evenodd"
-        className={`${size} transition-colors duration-200`}
+        className={`${box} transition-colors duration-200`}
         style={{ fill: colored ? glyph.hex : "currentColor" }}
       >
         {glyph.paths.map((d, i) => (
-          <path key={i} d={d} />
+          <path key={i} d={d} style={colored && glyph.hexes ? { fill: glyph.hexes[i] } : undefined} />
         ))}
       </svg>
     );

@@ -101,6 +101,13 @@ export const STACK: StackTool[] = [
     role: "Research cross-checks and alternative drafts.",
   },
   {
+    slug: "makemode",
+    name: "MakeMode",
+    group: "ai-language",
+    url: "https://makemode.eu",
+    role: "European AI coding agent, build work that stays on EU infrastructure.",
+  },
+  {
     slug: "midjourney",
     name: "Midjourney",
     group: "ai-media",
@@ -292,3 +299,30 @@ export const WORKFLOW: WorkflowStage[] = [
 export const STACK_INTRO = "The tools we use, in the open. Nothing here is an endorsement, it’s an inventory.";
 
 export const FOOTER_CTA = { label: "Browse the projects", href: "/projects" };
+
+/**
+ * Who the Atlas is made with. Marks render mono (currentColor) so they hold in
+ * both themes, see components/about/Collaborators.
+ */
+export const COLLAB = {
+  intro: "Made with",
+  body: "Futures Atlas is a collaboration between the Centre for Quantum and Society and Frond Studio.",
+  partners: [
+    {
+      id: "cqs",
+      name: "Centre for Quantum and Society",
+      org: "Quantum Delta NL",
+      url: "https://quantumdelta.nl/centre-for-quantum-and-society",
+      blurb:
+        "A knowledge and co-creation centre for the societal side of quantum technology: ethics, law, communication, and foresight.",
+    },
+    {
+      id: "frond",
+      name: "Frond Studio",
+      org: "Design and development",
+      url: "https://frond-studio.com",
+      blurb:
+        "Design that crosses disciplines and stays close to the natural world. Art direction, interface, and build.",
+    },
+  ],
+};

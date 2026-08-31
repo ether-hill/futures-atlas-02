@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
+import { Collaborators } from "@/components/about/Collaborators";
 import { OutputTypeBadge } from "@/components/about/OutputTypeBadge";
 import { SignalField } from "@/components/about/SignalField";
 import { StackGrid } from "@/components/about/StackGrid";
@@ -65,6 +66,13 @@ export default function AboutPage() {
               </Reveal>
             ))}
           </div>
+        </Container>
+      </section>
+
+      {/* ── Made with ───────────────────────────────────────────────────── */}
+      <section className="border-t border-ink/15 py-[clamp(40px,6vw,80px)]">
+        <Container>
+          <Collaborators />
         </Container>
       </section>
 

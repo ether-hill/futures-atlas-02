@@ -2,6 +2,7 @@
  * Brand glyphs for the stack UI. Sources:
  *  - simple-icons dataset (CC0): claude, openai, huggingface, nextjs, vercel,
  *    threejs, p5js, react, tailwindcss, d3
+ *  - makemode: the brand's own favicon.svg (three shapes, three colours)
  *  - @lobehub/icons-static-svg (MIT): midjourney, kling, sora, runway,
  *    stability, flux, meta (Llama), mistral, qwen, deepseek, ollama,
  *    deepmind, anthropic, cohere, microsoft
@@ -9,7 +10,15 @@
  * Copies of the SVGs live in public/logos (see LOGOS.md).
  */
 
-export interface LogoGlyph { title: string; hex: string; paths: string[] }
+export interface LogoGlyph {
+  title: string;
+  hex: string;
+  paths: string[];
+  /** Non-square marks carry their own box; defaults to "0 0 24 24". */
+  viewBox?: string;
+  /** Per-path brand colours for multi-colour marks, index-matched to paths. */
+  hexes?: string[];
+}
 
 export const LOGOS: Record<string, LogoGlyph> = {
   "claude": {
@@ -223,6 +232,17 @@ export const LOGOS: Record<string, LogoGlyph> = {
       "M22 2h-9.492v9.492H22V2z",
       "M11.49 12.508H2V22h9.492v-9.492h-.002z",
       "M22 12.508h-9.492V22H22v-9.492z"
+    ]
+  },
+  "makemode": {
+    "title": "MakeMode",
+    "hex": "#0048C0",
+    "viewBox": "0 0 133.27 32.46",
+    "hexes": ["#E8C018", "#D81818", "#0048C0"],
+    "paths": [
+      "M18.79 0 37.59 32.46H0Z",
+      "M54.67 1.71h30.75v30.75H54.67Z",
+      "M133.27 17.09a15.38 15.38 0 1 1-30.76 0 15.38 15.38 0 0 1 30.76 0Z"
     ]
   },
 };
