@@ -1,0 +1,58 @@
+THIRD-PARTY ASSETS
+==================
+
+This repository redistributes material created by other people. We pass it
+along under the terms it came with; we do not and cannot relicense it. If you
+reuse any of it, the licence below is the one that applies to you — not this
+repository's MIT or CC BY 4.0 licences.
+
+FONTS — assets/fonts/
+---------------------
+
+Self-hosted web fonts, all under the SIL Open Font License 1.1:
+
+  Anton               https://fonts.google.com/specimen/Anton
+  Archivo             https://fonts.google.com/specimen/Archivo
+  Bodoni Moda         https://fonts.google.com/specimen/Bodoni+Moda
+  Figtree             https://fonts.google.com/specimen/Figtree
+  IBM Plex Mono       https://fonts.google.com/specimen/IBM+Plex+Mono
+  JetBrains Mono      https://fonts.google.com/specimen/JetBrains+Mono
+  Saira Condensed     https://fonts.google.com/specimen/Saira+Condensed
+
+The OFL permits redistribution and use, including in commercial products, but
+the fonts may not be sold on their own and any modified version must be
+released under the same licence with a different name.
+
+  https://openfontlicense.org/
+
+PORTRAITS — magnifica/src/portraits.ts
+--------------------------------------
+
+Sixteen photographs of real people, each a freely-licensed image from Wikimedia
+Commons under CC0, Public Domain, CC BY 2.0/3.0/4.0 or CC BY-SA 2.0/3.0/4.0.
+The specific photographer and licence for each is recorded in portraits.ts and
+RENDERED ON SCREEN beside the image. Removing a credit is a licence breach, not
+a design change.
+
+The CC BY-SA images carry a share-alike condition: an adapted version must be
+released under the same licence. That condition travels with the image and is
+not waived by anything in this repository.
+
+Related: magnifica/ASSETS.md records the project's own rule that no generated
+likeness of a real person may be used.
+
+HOT-LINKED IMAGES
+-----------------
+
+Feed cards, source rails and report coverage walls display publishers' own
+og:images and video thumbnails by URL. Those images are never copied into this
+repository and are not ours to license. They remain the property of the
+publishers they are served from.
+
+GENERATED MEDIA
+---------------
+
+Video loops and still images produced with generative tools (magnifica/public/
+media/, public/projects/, public/feed/) are covered by this repository's
+CC BY 4.0 content licence. Where a generated image is a variation on a public
+domain work, the page says so.

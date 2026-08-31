@@ -1,0 +1,60 @@
+CONTENT AND RESERVED RIGHTS
+===========================
+
+Copyright (c) 2026 Futures Atlas / Frond Studio
+
+Project code is MIT licensed (see LICENSE). This file covers everything else
+that is ours. Third-party material keeps its own terms (see NOTICE).
+
+
+1. RESEARCH AND DATA -- CC BY 4.0
+---------------------------------
+
+Licensed under Creative Commons Attribution 4.0 International:
+
+  https://creativecommons.org/licenses/by/4.0/
+
+Covering:
+
+  - The reports and their findings, timelines and evidence
+    (src/data/hegemony.ts, killchain.ts, startup-cities.ts, reports.ts and the
+    ecosystem/ecology files beside them)
+  - The glossary (src/data/glossary.ts)
+  - The datasets behind the visualisations, and the source lists attached to
+    every project
+
+Share and adapt it for any purpose, including commercially, provided you give
+appropriate credit, link to the licence, and indicate if changes were made.
+Attribution should name Futures Atlas and link to the page or file you used.
+
+This is the part of the Atlas meant to be cited, checked and argued with.
+
+
+2. THE SITE ITSELF -- ALL RIGHTS RESERVED
+-----------------------------------------
+
+Not licensed for reuse:
+
+  - The design system: its tokens, type scale, spacing, components and runtime
+    theming, wherever it appears in this repository
+  - The host application and the site chrome built on it: navigation, footer,
+    page templates, layout and visual treatment
+  - The name "Futures Atlas", the F mark, the favicons and the wordmark
+  - The written copy: page and section text, project taglines and descriptions,
+    feed posts and their editorial commentary, the About text, and the copy
+    inside each project
+  - Photography, illustration and generated imagery made for the Atlas
+
+This material is published so the work can be read, checked and learned from.
+It is not published for reuse. The look and the voice are how the Atlas is
+recognised, and they are not being given away.
+
+Quoting a passage with attribution is ordinary citation and is always fine.
+Reproducing the design, the identity or the copy is not.
+
+
+IN SHORT
+--------
+
+Take a project's code and take the research. Build your own thing with them,
+under your own name, with your own design and your own words.
