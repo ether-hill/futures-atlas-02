@@ -28,6 +28,33 @@ import { isDraftPostPath } from "./data/posts";
 // Runs on page-ish requests only: static assets, image optimisation and files
 // with an extension are skipped, so a draft bundle's own JS/CSS costs nothing
 // here (its pages are what the gate closes).
+/** Signed-in only, on every environment. */
+const INTERNAL_PATHS = [
+  "/admin",
+  "/editor",
+  "/home-lab",
+  "/mocks",
+  "/logo-animator",
+  "/design-system",
+  "/style-guide",
+];
+
+/**
+ * The working pages: tools that exist for whoever is building the Atlas, not
+ * for anyone reading it. On production these are not hidden, they are absent.
+ *
+ * /admin and /editor are deliberately NOT here. They are the sign-in machinery
+ * and the draft overview, and a draft project on production depends on both, so
+ * they stay reachable and merely gated.
+ */
+const STAGING_ONLY = [
+  "/home-lab",
+  "/mocks",
+  "/logo-animator",
+  "/design-system",
+  "/style-guide",
+];
+
 export const config = {
   matcher: ["/((?!_next/static|_next/image|.*\\.[^/]+$).*)"],
 };
@@ -37,16 +64,27 @@ const LOGIN_PATH = "/admin/login";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // The working pages: the design reference and the style-guide panel behind it,
+  // the mark's motion bench, the social mock-ups, the draft overview. Unlinked
+  // design experiments that list every project by name, drafts included.
+  const isInternal = INTERNAL_PATHS.some(
+    (base) => pathname === base || pathname.startsWith(`${base}/`),
+  );
+
+  // A sign-in form sitting on a public URL still announces that the page is
+  // there, so on production the working pages answer as though they were never
+  // built. The footer's internal column is built to match, so production never
+  // links to a dead end either.
+  if (
+    process.env.VERCEL_ENV === "production" &&
+    STAGING_ONLY.some((base) => pathname === base || pathname.startsWith(`${base}/`))
+  ) {
+    return NextResponse.rewrite(new URL("/_internal-not-here", req.url));
+  }
+
   if (pathname === "/style-guide" || (pathname === "/api/tokens" && req.method === "POST")) {
     return styleGuideGate(req);
   }
-
-  // /home-lab and /mocks are unlinked design experiments that list every
-  // project by name, drafts included, internal by nature, so they sign in too.
-  // /logo-animator is the mark's motion bench: a working tool, never public.
-  const isInternal = ["/admin", "/editor", "/home-lab", "/mocks", "/logo-animator"].some(
-    (base) => pathname === base || pathname.startsWith(`${base}/`),
-  );
 
   if (isInternal || isDraftPath(pathname) || isDraftPostPath(pathname)) return sessionGate(req);
 

@@ -46,10 +46,36 @@ const SECTIONS = [
   ["/feed", "Feed"],
   ["/projects", "Projects"],
   ["/glossary", "Glossary"],
-  ["/design-system", "Design system"],
   ["/developers", "Developers"],
   ["/about", "About"],
   ["/contact", "Contact"],
+];
+
+/**
+ * The internal column: the working pages, listed only where they exist.
+ *
+ * These are tools, not parts of the site — the design reference, the mark's
+ * motion bench, the social mock-ups, the draft overview. On production the
+ * middleware answers all of them with a 404, so linking to them there would be
+ * advertising a set of dead ends. The column is emitted for preview builds and
+ * for local dev, and simply is not in the markup on production.
+ *
+ * VERCEL_ENV is set by the platform: "production", "preview", or absent when
+ * running locally.
+ */
+const INTERNAL_ONLY = process.env.VERCEL_ENV !== "production";
+
+const INTERNAL = [
+  ["/design-system", "Design system"],
+  ["/style-guide", "Style guide"],
+  ["/logo-animator", "Logo animator"],
+  ["/mocks/instagram", "Instagram preview"],
+  ["/mocks/termfield", "Term field"],
+  ["/mocks/gallery", "Browse mock · gallery"],
+  ["/mocks/observatory", "Browse mock · observatory"],
+  ["/mocks/signal", "Browse mock · signal"],
+  ["/home-lab", "Home lab"],
+  ["/editor", "Drafts overview"],
 ];
 
 const projects = liveProjects.filter((p) => p.path || p.url).slice(0, 12);
@@ -107,7 +133,7 @@ const html = `<div class="fa-foot__inner">
 <p class="fa-foot__meta">${link("/feed", "The whole feed →", "fa-foot__a")}</p>
 </div>
 </div>
-<div class="fa-foot__split">
+<div class="fa-foot__split${INTERNAL_ONLY ? " fa-foot__split--3" : ""}">
 <div class="fa-foot__col">
 <p class="fa-foot__h">Use the work</p>
 <p class="fa-foot__body">Open where it counts. Fork a project, adapt it, wire it into your own work. Attribution appreciated, permission not required. Research is free to cite and every source is linked. Project code is MIT, the research is CC BY 4.0.</p>
@@ -117,7 +143,12 @@ const html = `<div class="fa-foot__inner">
 <p class="fa-foot__h">Get in touch</p>
 <p class="fa-foot__body">Used something from the Atlas in a workshop, a project or a classroom? We&rsquo;d like to hear how it went. Collaboration inquiries welcome.</p>
 <p class="fa-foot__body"><a class="fa-foot__a" href="/contact">Contact form &rarr;</a></p>
-</div>
+</div>${INTERNAL_ONLY ? `
+<div class="fa-foot__col fa-foot__internal">
+<p class="fa-foot__h">Internal &middot; staging only</p>
+<nav class="fa-foot__list">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>
+<p class="fa-foot__meta">Not built on production. Editor sign-in required.</p>
+</div>` : ""}
 </div>
 <div class="fa-foot__row">
 <span class="fa-foot__tag">&copy; ${now.getUTCFullYear()} Futures Atlas &middot; A living project. Things change, break and improve. Last updated ${updated}.</span>

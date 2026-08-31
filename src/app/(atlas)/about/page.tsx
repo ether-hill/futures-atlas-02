@@ -3,11 +3,10 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
 import { Collaborators } from "@/components/about/Collaborators";
-import { OutputTypeBadge } from "@/components/about/OutputTypeBadge";
 import { SignalField } from "@/components/about/SignalField";
 import { StackGrid } from "@/components/about/StackGrid";
 import { TermField } from "@/components/about/TermField";
-import { FOOTER_CTA, HERO, OPEN, OUTPUT_TYPES, STACK_INTRO, WORK } from "@/content/about";
+import { FOOTER_CTA, HERO, OPEN, STACK_INTRO, WORK } from "@/content/about";
 
 export const metadata: Metadata = {
   title: "About. Futures Atlas",
@@ -34,31 +33,6 @@ export default function AboutPage() {
               {HERO.kicker}
             </p>
           </Reveal>
-        </Container>
-      </section>
-
-      {/* ── What you'll find here ───────────────────────────────────────── */}
-      <section className="py-[clamp(48px,8vw,110px)]">
-        <Container>
-          <Reveal>
-            <h2 className="mb-[clamp(24px,4vw,44px)] text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
-              What you&rsquo;ll find here
-            </h2>
-          </Reveal>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-            {OUTPUT_TYPES.map((o, i) => (
-              <Reveal key={o.type} delay={i * 90}>
-                <div className="group h-full border border-ink/15 p-6 transition-colors hover:border-ink/45">
-                  <div className="mb-4 flex items-center justify-between">
-                    <OutputTypeBadge type={o.type} />
-                    <span className="font-mono text-[11px] text-ink/35">0{i + 1}</span>
-                  </div>
-                  <h3 className="text-[20px] font-extrabold tracking-[-0.015em] text-ink">{o.title}</h3>
-                  <p className="mt-3 font-mono text-[13px] leading-[1.75] text-ink-70">{o.body}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
         </Container>
       </section>
 

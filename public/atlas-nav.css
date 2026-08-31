@@ -520,6 +520,9 @@ html .fa-shell.is-clear,
 .fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.6; }
 .fa-foot__split { display: grid; gap: 32px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4.5vw, 56px); border-top: 1px solid rgba(243, 241, 236, 0.18); padding-top: clamp(28px, 4vw, 44px); }
 @media (min-width: 640px) { .fa-foot__split { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .fa-foot__split--3 { grid-template-columns: 1fr 1fr 1fr; } }
+.fa-foot__internal .fa-foot__h { opacity: 0.75; }
+.fa-foot__internal .fa-foot__meta { opacity: 0.45; }
 .fa-foot__post { display: block; text-decoration: none; color: inherit; }
 .fa-foot__date { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.5; }
 .fa-foot__ptitle { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; line-height: 1.4; opacity: 0.85; }

@@ -276,10 +276,8 @@ export default async function DevelopersPage() {
               <p className="mt-3 flex-1 font-mono text-[13px] leading-[1.8] text-ink-70">
                 Vendored at <span className="whitespace-nowrap">packages/futures-atlas-core</span>,
                 with its own copy inside a few of the sub-apps. It is the Atlas&rsquo;s visual
-                identity, so it is documented rather than offered. The live reference is at{" "}
-                <Link href="/design-system" className="underline decoration-ink/30 underline-offset-4 hover:text-accent-deep">
-                  /design-system
-                </Link>.
+                identity, so it is documented rather than offered: the tokens are readable in
+                the repo, the reference that renders them is an internal page.
               </p>
             </div>
           </Reveal>

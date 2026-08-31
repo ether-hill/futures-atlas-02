@@ -103,7 +103,7 @@ export const OPENNESS: OpennessRow[] = [
     thing: "The design system",
     state: "closed",
     detail:
-      "Readable, and documented at /design-system, which is drawn from the same variables the site runs on. It is the Atlas’s visual identity though, so it is not licensed for reuse.",
+      "Readable, and documented against the same variables the site runs on. It is the Atlas’s visual identity though, so it is not licensed for reuse, and the page that renders the reference is internal.",
   },
   {
     thing: "The site in search engines",
