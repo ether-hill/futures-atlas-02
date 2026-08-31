@@ -349,26 +349,31 @@ export function StudioApp({ source }: { source: ComposerSource }) {
 
   /* ── Video clock ───────────────────────────────────────────────────────
    * Videos play from their first frame and restart at the slide's set duration
-   * (a 5s slide shows only the first 5s of an 8s clip, then loops) — honoured in
-   * the live preview, the real-time MP4/WebM export, and the GIF export. */
+   * (a 5s slide shows only the first 5s of an 8s clip, then loops) — honoured
+   * in the live preview (realtime mode) and in every frame-stepped export
+   * (MP4/WebM, GIF, per-slide ZIP), which run in seek mode: clips are paused
+   * and positioned exactly per frame, and syncVideoRealtime stays out of it. */
   const videoSyncMode = useRef<"realtime" | "seek">("realtime");
 
-  // Real-time path (preview + MP4/WebM): let the muted element PLAY naturally and
-  // never seek per-frame — repeatedly setting currentTime on a playing video makes
-  // it flicker between decoded frames, especially across a crossfade. The only
-  // correction is a single reset at the slide-duration boundary, so an 8s clip on
-  // a 5s slide loops at 5s. Exact frame positioning is the GIF path's job (seek).
+  // Real-time path (the live preview only): let the muted element PLAY naturally
+  // and never seek per-frame — repeatedly setting currentTime on a playing video
+  // makes it flicker between decoded frames. The only correction is a single
+  // reset when the slide's clock actually wraps (detected by localT jumping
+  // backwards), so an 8s clip on a 5s slide loops at 5s. The old heuristic
+  // (localT < 0.08 && currentTime > 0.25) re-fired several times across the
+  // first half-second of every pass, visibly stuttering each loop start.
+  const lastLocalT = useRef<Map<string, number>>(new Map());
   const syncVideoRealtime = useCallback((f: ComposerFrame, localT: number) => {
     if (f.kind !== "video" || videoSyncMode.current !== "realtime") return;
-    const v = getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl);
+    const url = (f as Extract<ComposerFrame, { kind: "video" }>).videoUrl;
+    const v = getVideo(url);
     if (!v) return;
     if (v.paused) v.play().catch(() => { /* */ });
-    // Restart at the slide's loop point (localT wrapped back to ~0 while the clip
-    // is still mid-play) or if a long clip ran past the slide window — one clean
-    // reset, never a per-frame seek (which is what made it flicker).
-    if ((localT < 0.08 && v.currentTime > 0.25) || v.currentTime > durFor(f) + 0.15) {
+    const last = lastLocalT.current.get(url);
+    if ((last !== undefined && localT < last - 0.5) || v.currentTime > durFor(f) + 0.15) {
       try { v.currentTime = 0; } catch { /* */ }
     }
+    lastLocalT.current.set(url, localT);
   }, [getVideo, durFor]);
 
   // Seek path (GIF, frame-stepped): position the clip exactly and wait for it.
@@ -683,6 +688,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const onDownloadPerSlide = useCallback(async () => {
     if (!selFrames.length) return;
     setBusy("zip"); setProgress(0);
+    videoSyncMode.current = "seek"; // frame-stepped export → position clips exactly
     const total = selFrames.length;
     try {
       const entries: Record<string, Uint8Array> = {};
@@ -694,7 +700,14 @@ export function StudioApp({ source }: { source: ComposerSource }) {
           const d = renderStill(f); if (d) entries[`${base}.png`] = dataUrlToBytes(d);
           setProgress(Math.round((done + 1) / total * 100));
         } else {
-          const prep = async () => { const v = f.kind === "video" ? getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl) : null; if (v && isFinite(v.duration) && v.duration > 0) await seekVideoTo(v, 0); };
+          // Frame-stepped export: seek the clip to this exact frame's clock
+          // position (t here IS the slide-local progress — singleRenderer
+          // draws with the same t).
+          const prep = async (t: number) => {
+            if (f.kind !== "video") return;
+            const v = getVideo((f as Extract<ComposerFrame, { kind: "video" }>).videoUrl);
+            if (v && v.readyState >= 1) await seekVideoTo(v, videoTargetTime(v, t, durFor(f)));
+          };
           const res = await renderVideoBlob({ renderFrame: singleRenderer(f), prepareFrame: prep, onProgress: (p) => setProgress(Math.round((done + p) / total * 100)), w, h, fps, durationSec: durFor(f) });
           if (res) entries[`${base}.${res.ext}`] = await blobToBytes(res.blob);
           else { const d = renderStill(f); if (d) entries[`${base}.png`] = dataUrlToBytes(d); }
@@ -703,7 +716,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
       }
       zipDownload(entries, `airapture-${slugToken}-slides.zip`);
       showToast(`Downloaded ${selFrames.length}-slide ZIP`);
-    } catch { showToast("ZIP export failed"); } finally { setBusy(null); setProgress(null); }
+    } catch { showToast("ZIP export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); setProgress(null); }
   }, [selFrames, slideIsStill, slugToken, singleRenderer, w, h, fps, durFor, renderStill, showToast, getVideo, seekVideoTo]);
 
   const moveSlide = useCallback((id: string, dir: -1 | 1) => {
@@ -728,10 +741,11 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const onDownloadVideo = useCallback(async () => {
     if (!activeFrame) return;
     setBusy("video"); setProgress(0);
+    videoSyncMode.current = "seek"; // frame-stepped export → position clips exactly
     try {
       const res = await exportVideo({ renderFrame: renderFrameAt, prepareFrame: prepareVideosAt, onProgress: (p) => setProgress(Math.round(p * 100)), w, h, fps, durationSec: totalDuration, name: `airapture-${slugToken}` });
       showToast(res.ok ? `Downloaded ${res.ext?.toUpperCase()}` : "Video not supported in this browser");
-    } catch { showToast("Video export failed"); } finally { setBusy(null); setProgress(null); }
+    } catch { showToast("Video export failed"); } finally { videoSyncMode.current = "realtime"; setBusy(null); setProgress(null); }
   }, [activeFrame, renderFrameAt, prepareVideosAt, w, h, fps, totalDuration, slugToken, showToast]);
 
   const onBatchAll = useCallback(async () => {
