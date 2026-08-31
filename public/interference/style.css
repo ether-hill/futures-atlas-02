@@ -95,11 +95,9 @@ h1 {
 
 /* ── the global bar ───────────────────────────────────────────────────────── */
 .bar {
-  position: sticky; top: 0; z-index: 40;
-  background: color-mix(in srgb, var(--bg) 90%, transparent);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid var(--hairline);
-  border-bottom: 1px solid var(--hairline);
+  background: var(--bg);
+  border-top: var(--border-hairline) solid var(--hairline);
+  border-bottom: var(--border-hairline) solid var(--hairline);
 }
 .bar__inner {
   width: 100%; margin: 0 auto; padding: 11px var(--gutter);
@@ -174,16 +172,54 @@ input[type="color"] {
 @media (min-width: 1800px) { .grid { grid-template-columns: repeat(3, 1fr); } }
 
 .card {
-  border: 1px solid var(--hairline); background: var(--panel);
-  border-radius: var(--radius); overflow: hidden;
+  border: var(--border-hairline) solid var(--hairline); background: var(--panel);
+  border-radius: var(--radius);
   transition: border-color 0.25s var(--ease);
 }
 .card:hover { border-color: color-mix(in srgb, var(--accent) 45%, transparent); }
-.card.is-wide { grid-column: 1 / -1; }
 
-.stage { position: relative; width: 100%; aspect-ratio: 16 / 10; cursor: zoom-in; }
-.card.is-wide .stage { aspect-ratio: 21 / 9; cursor: zoom-out; }
+.stage {
+  position: relative; width: 100%; aspect-ratio: 16 / 10;
+  overflow: hidden; cursor: pointer;
+}
 .stage canvas { display: block; width: 100%; height: 100%; }
+
+/* ── fullscreen ──────────────────────────────────────────────────────────── */
+.fshint {
+  position: absolute; top: 12px; right: 14px; z-index: 2;
+  font-family: var(--font-year); font-size: var(--text-label);
+  letter-spacing: var(--track-label); text-transform: uppercase;
+  color: var(--paper); opacity: 0; mix-blend-mode: screen; pointer-events: none;
+  transition: opacity 0.2s var(--ease);
+}
+.card:hover .fshint { opacity: 0.65; }
+.stage:fullscreen .fshint { display: none; }
+
+.stage:fullscreen {
+  aspect-ratio: auto; width: 100vw; height: 100vh;
+  background: #000; cursor: none;
+}
+.stage:fullscreen.is-live { cursor: default; }
+
+.fsbar { display: none; }
+.stage:fullscreen .fsbar {
+  position: absolute; left: 50%; bottom: 30px; z-index: 3;
+  display: flex; flex-direction: column; gap: 8px;
+  width: min(920px, 92vw); padding: 12px 16px;
+  background: color-mix(in srgb, var(--bg) 84%, transparent);
+  backdrop-filter: blur(12px);
+  border: var(--border-hairline) solid var(--hairline); border-radius: var(--radius);
+  opacity: 0; transform: translateX(-50%) translateY(10px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  pointer-events: none;
+}
+.stage:fullscreen.is-live .fsbar { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.stage:fullscreen .fsbar .ctl { margin-top: 0; }
+.stage:fullscreen .fsbar > .btn { align-self: flex-end; margin-top: 2px; }
+/* the two that make no sense in here: the prose is outside the fullscreen
+   element, and you are already fullscreen */
+.stage:fullscreen .fsbar [data-act="read"],
+.stage:fullscreen .fsbar [data-act="full"] { display: none; }
 .idx {
   position: absolute; top: 12px; left: 14px;
   font-family: var(--font-year); font-size: 11px; letter-spacing: 0.2em;

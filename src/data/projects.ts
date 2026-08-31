@@ -40,7 +40,7 @@ export const projects: Project[] = [
     id: "interference",
     title: "Interference",
     tagline:
-      "Fifteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one is a fragment shader computed fresh every frame rather than a video, and each is an exact loop. Set the speed, drag the timeline, re-colour any field from a palette or your own hex, then save it as a still, record one clean loop, or embed it somewhere else.",
+      "Quantum mechanics is hard to picture, so here is the part you can look at. Fourteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing, each one a program working out a colour for every pixel rather than a video, and each one an exact loop. Set the speed, drag the timeline, re-colour any field from a palette or your own hex, open it fullscreen, then save a still, record one clean loop, or embed it somewhere else.",
     year: "2026",
     date: "2026-08-31",
     field: "Waves & optics",

@@ -10,7 +10,7 @@
 
   1. ONE WebGL CONTEXT. Every field draws into a single offscreen GL canvas and
      is then blitted into that card's own 2D canvas. Browsers cap live WebGL
-     contexts (~16), so a page of fifteen fields each holding its own context is
+     contexts (~16), so a page of fourteen fields each holding its own context is
      one variant away from breaking. The scratch buffer is sized once and each
      draw takes the lower-left w×h corner of it.
 
@@ -391,126 +391,6 @@ window.FIELD = (function () {
   },
 
   {
-    slug: "nodal-lines",
-    title: "Nodal lines",
-    loop: 20.0,
-    note: "Only the silence, drawn. The sources drift apart and the fan opens.",
-    read: [
-      ["What you are seeing",
-       "Only the dead places, inked in like a diagram. Along these curves the two waves always cancel, so the water never moves at all. Watch the two dots pull apart and every so often a new pair of curves peels off the middle."],
-      ["Where the quantum comes in",
-       "These are the dark stripes from the other panels, on their own. In the quantum version they are the places a particle is never found. Nothing is blocking it and both routes stay open, but the two ways of arriving cancel exactly, so the odds come out at zero. Two ways for something to happen, adding up to it never happening, is the bit with no everyday equivalent."],
-      ["How it is built",
-       "Nothing is waving here. Each pixel works out the difference between its two distances and asks whether that difference lands on a cancelling value. If it does the pixel is ink, and if not it is paper. The graphics card also tells each pixel how fast that difference is changing next door, and the line thickness is set from that, so the curves stay one weight even where they bunch together."]
-    ],
-    frag: [
-      "const float K = 26.0;",
-      "",
-      "vec3 render(vec2 p){",
-      "  float d = 0.30 + 0.13*sin(TAU*uT/20.0);",
-      "  vec2 s1 = vec2(-d, 0.0), s2 = vec2(d, 0.0);",
-      "  float phi = K*0.5*(length(p-s1) - length(p-s2));",
-      "  float f = cos(phi);",
-      "  float w = max(FW(phi), 0.004)*0.75;",
-      "  float line = 1.0 - smoothstep(0.0, w + 0.02, abs(f));",
-      "  vec3 ink = rampI(0.06), paper = rampI(0.97);",
-      "  vec3 col = mix(paper, ink, line*0.92);",
-      "  for(int i=0;i<2;i++){",
-      "    vec2 s = mix(s1, s2, float(i));",
-      "    col = mix(col, ink, smoothstep(0.028, 0.014, length(p-s)));",
-      "  }",
-      "  col = mix(col, paper, smoothstep(0.72, 1.05, length(p*vec2(0.62,1.0))));",
-      "  return col;",
-      "}"
-    ].join("\n")
-  },
-
-  {
-    slug: "contours",
-    title: "Contours",
-    loop: 4.0,
-    note: "The same field as a survey map. Every line is one height of water.",
-    read: [
-      ["What you are seeing",
-       "The same two source pattern drawn as a hill map, the way a walking map draws a mountain: every line joins up places at the same height. The thing to look at is the spacing. From the middle of one cluster of rings to the middle of the next is one whole wavelength, so you can measure the wave off the map with a ruler."],
-      ["Where the quantum comes in",
-       "Faster particles have shorter waves. That one rule is why electron microscopes exist: get an electron moving quickly enough and its wave becomes thousands of times shorter than light, and the finest detail any microscope can show is limited by the wavelength it uses. So a map like this, drawn from a real particle, shows you where it is moving fast: wherever the pattern repeats over the shortest distance."],
-      ["How it is built",
-       "Each pixel adds the two waves, then throws away everything except the fractional part of the answer, which turns a smooth slope into a staircase. Wherever a pixel lands on the edge of a step, it draws a line. The graphics card can tell a pixel how different its value is from its neighbours, and that number keeps every line the same thickness whether the surface there is steep or flat."]
-    ],
-    frag: [
-      "const float K = 11.0;",
-      "const float W = TAU/4.0;",
-      "",
-      "vec3 render(vec2 p){",
-      "  float f = 0.0;",
-      "  for(int i=0;i<2;i++){",
-      "    vec2 s = mix(vec2(-0.46,-0.10), vec2(0.46, 0.10), float(i));",
-      "    float r = length(p-s);",
-      "    f += sin(K*r - W*uT)*exp(-r*0.30)/sqrt(0.25 + r*2.2);",
-      "  }",
-      "  float bands = f*3.2;",
-      "  float g = abs(fract(bands) - 0.5);",
-      "  float w = max(FW(bands), 0.0015)*1.1;",
-      "  float line = 1.0 - smoothstep(0.085 - w, 0.085 + w, g);",
-      "  vec3 paper = rampI(0.96), ink = rampI(0.10);",
-      "  vec3 col = mix(paper, ink, line*0.88);",
-      "  col = mix(col, rampI(0.62), smoothstep(0.4,1.4,abs(f))*0.10);",
-      "  return col;",
-      "}"
-    ].join("\n")
-  },
-
-  {
-    slug: "one-at-a-time",
-    kind: "2d",
-    loop: null,
-    title: "One at a time",
-    note: "Detections arriving singly. No fringe exists in any one of them.",
-    read: [
-      ["What you are seeing",
-       "Dots, arriving one at a time, each one a single particle hitting the screen. For a while it is nothing but speckle. Then the stripes turn up on their own."],
-      ["Where the quantum comes in",
-       "Nothing here is bumping into anything. Turn the source down until only one particle is inside the machine at a time and the stripes still build, so the pattern cannot be particles interfering with each other. Each one has to have taken both routes. Nobody has ever caught one doing it, because looking closely enough to tell which way it went is exactly what destroys the stripes. It was first done with dim light in 1909 and filmed with single electrons in 1989."],
-      ["How it is built",
-       "The only panel here not drawn by the graphics card. This is ordinary drawing code: pick a random spot, look up how likely a particle is to land there, keep it or throw it away, a few thousand times a second. Old dots fade slowly so the picture settles instead of filling in solid. It is also the only panel that does not loop, because a pile of dots that keeps growing has nothing to repeat."]
-    ]
-  },
-
-  {
-    slug: "vortex",
-    title: "Vortex lattice",
-    loop: 24.0,
-    note: "Three plane waves at 120 degrees, coloured by phase. Each dark point is a singularity.",
-    read: [
-      ["What you are seeing",
-       "Three waves crossing at even angles make a honeycomb. Colour shows the timing of the wave at each spot, brightness shows how strong it is, and the black dots are places where the wave is exactly nothing."],
-      ["Where the quantum comes in",
-       "Walk a small circle around one of the black dots and the colour runs the whole way round the wheel. There is no consistent answer for the timing at the centre, and the only way a wave can deal with that is to have no height at all there. The same knots show up in laser light bounced off a rough wall, in radio inside a building, and in liquid helium cooled until it flows without friction, where each one is a whirlpool that can only spin at certain fixed rates."],
-      ["How it is built",
-       "Every pixel adds three plane waves together. Instead of using the height of the result it takes the angle of it, which is the timing, and looks that angle up on a colour wheel, with brightness from the size. The black dots are not drawn on. They appear because the three waves genuinely cancel there and the shader is left with nothing to colour."]
-    ],
-    frag: [
-      "const float B = TAU/24.0;",
-      "",
-      "vec3 render(vec2 p){",
-      "  float spin = (TAU/3.0)*uT/24.0;",
-      "  vec2 F = vec2(0.0);",
-      "  for(int i=0;i<3;i++){",
-      "    float a = 2.0944*float(i) + spin;",
-      "    vec2 kv = 13.5*vec2(cos(a), sin(a));",
-      "    float ph = dot(kv,p) - 4.0*B*uT;",
-      "    F += vec2(cos(ph), sin(ph));",
-      "  }",
-      "  float amp = length(F)/3.0;",
-      "  vec3 col = rampC(atan(F.y, F.x)/TAU + 0.5) * pow(amp, 1.7) * 0.95;",
-      "  col += rampI(1.0) * pow(amp, 7.0) * 0.30;",
-      "  return max(col, rampI(0.0)*smoothstep(0.0,0.35,amp));",
-      "}"
-    ].join("\n")
-  },
-
-  {
     slug: "carpet",
     title: "Quantum carpet",
     loop: 20.0,
@@ -631,38 +511,10 @@ window.FIELD = (function () {
   },
 
   {
-    slug: "twisted",
-    title: "Twisted light",
-    loop: 20.0,
-    note: "Two beams carrying opposite twist, added. The petals turn because the frequencies differ.",
-    read: [
-      ["What you are seeing",
-       "A six petal flower with a faint ring around it, turning slowly. The petals are not objects. They are the places where two beams of light agree with each other, and it is the agreement that moves round, not the light."],
-      ["Where the quantum comes in",
-       "A beam of light can be given a twist, so its timing winds around a dark core like the thread on a screw. Take two beams twisted opposite ways and add them, and the twists cancel into six fixed petals. Detune one beam very slightly and the petals turn, at the small difference between the two frequencies rather than at the enormous frequency of light itself, which is what makes it slow enough to watch. Beams like this are used to pick up and spin tiny particles."],
-      ["How it is built",
-       "Each pixel works out its distance from the centre and its angle around it, feeds both into the standard formula for this kind of beam, and squares the answer. The faint outer ring is not decoration, it comes straight out of the formula. Only the angle part changes with time, which is why the flower turns rather than pulses."]
-    ],
-    frag: [
-      "vec3 render(vec2 p){",
-      "  float r = length(p), th = atan(p.y, p.x);",
-      "  float w = 0.42;",
-      "  float u = r/w;",
-      "  float rad = pow(u, 3.0) * (4.0 - 2.0*u*u) * exp(-u*u) * 0.90;",
-      "  float amp = rad * cos(3.0*th - TAU*uT/20.0);",
-      "  float dens = amp*amp*9.0;",
-      "  vec3 col = rampI(tm(dens*1.6));",
-      "  col += rampC(0.5*(1.0 - sign(amp))) * min(dens,1.0) * 0.10;",
-      "  return col;",
-      "}"
-    ].join("\n")
-  },
-
-  {
     slug: "beats",
     title: "Beats",
-    loop: 24.0,
-    note: "Two sources detuned by a twelfth. The pattern never settles.",
+    loop: 12.0,
+    note: "Two sources detuned by a sixth. The pattern never settles.",
     read: [
       ["What you are seeing",
        "Two sources humming at slightly different pitches. Nothing settles: the whole set of stripes slides steadily across the frame, over and over."],
@@ -672,15 +524,15 @@ window.FIELD = (function () {
        "The same two source sum as the double slit panel, with one number different for each source. Each has its own frequency, and its wavelength has to change to match, because two waves in the same water travel at the same speed. The drift you see is just the shader handing each of the two waves a slightly different clock."]
     ],
     frag: [
-      "const float B = TAU/24.0;",
+      "const float B = TAU/12.0;",
       "",
       "vec3 render(vec2 p){",
       "  vec2 s1 = vec2(-0.92, -0.52), s2 = vec2(0.92, -0.52);",
       "  float r1 = length(p-s1), r2 = length(p-s2);",
       "  float a1 = 1.0/sqrt(0.24+r1*1.6), a2 = 1.0/sqrt(0.24+r2*1.6);",
-      "  /* one medium: k is proportional to omega, 12:13 in both */",
-      "  float ph1 = 30.0*r1 - 12.0*B*uT;",
-      "  float ph2 = 32.5*r2 - 13.0*B*uT;",
+      "  /* one medium: k is proportional to omega, 6:7 in both */",
+      "  float ph1 = 30.0*r1 - 6.0*B*uT;",
+      "  float ph2 = 35.0*r2 - 7.0*B*uT;",
       "  vec2 F = a1*vec2(cos(ph1),sin(ph1)) + a2*vec2(cos(ph2),sin(ph2));",
       "  vec3 col = rampI(tm(dot(F,F)*0.42));",
       "  col += rampI(0.22)*0.06;",
@@ -717,6 +569,126 @@ window.FIELD = (function () {
       "  float span = step(-0.87,p.x)*step(p.x,0.87);",
       "  col = mix(col, rampI(0.04), row*span*0.85);",
       "  col += rampI(0.90)*row*span*step(p.x, -0.86 + 1.72*g)*0.8;",
+      "  return col;",
+      "}"
+    ].join("\n")
+  },
+
+  {
+    slug: "vortex",
+    title: "Vortex lattice",
+    loop: 24.0,
+    note: "Three plane waves at 120 degrees, coloured by phase. Each dark point is a singularity.",
+    read: [
+      ["What you are seeing",
+       "Three waves crossing at even angles make a honeycomb. Colour shows the timing of the wave at each spot, brightness shows how strong it is, and the black dots are places where the wave is exactly nothing."],
+      ["Where the quantum comes in",
+       "Walk a small circle around one of the black dots and the colour runs the whole way round the wheel. There is no consistent answer for the timing at the centre, and the only way a wave can deal with that is to have no height at all there. The same knots show up in laser light bounced off a rough wall, in radio inside a building, and in liquid helium cooled until it flows without friction, where each one is a whirlpool that can only spin at certain fixed rates."],
+      ["How it is built",
+       "Every pixel adds three plane waves together. Instead of using the height of the result it takes the angle of it, which is the timing, and looks that angle up on a colour wheel, with brightness from the size. The black dots are not drawn on. They appear because the three waves genuinely cancel there and the shader is left with nothing to colour."]
+    ],
+    frag: [
+      "const float B = TAU/24.0;",
+      "",
+      "vec3 render(vec2 p){",
+      "  float spin = (TAU/3.0)*uT/24.0;",
+      "  vec2 F = vec2(0.0);",
+      "  for(int i=0;i<3;i++){",
+      "    float a = 2.0944*float(i) + spin;",
+      "    vec2 kv = 13.5*vec2(cos(a), sin(a));",
+      "    float ph = dot(kv,p) - 4.0*B*uT;",
+      "    F += vec2(cos(ph), sin(ph));",
+      "  }",
+      "  float amp = length(F)/3.0;",
+      "  vec3 col = rampC(atan(F.y, F.x)/TAU + 0.5) * pow(amp, 1.7) * 0.95;",
+      "  col += rampI(1.0) * pow(amp, 7.0) * 0.30;",
+      "  return max(col, rampI(0.0)*smoothstep(0.0,0.35,amp));",
+      "}"
+    ].join("\n")
+  },
+
+  {
+    slug: "one-at-a-time",
+    kind: "2d",
+    loop: null,
+    title: "One at a time",
+    note: "Detections arriving singly. No fringe exists in any one of them.",
+    read: [
+      ["What you are seeing",
+       "Dots, arriving one at a time, each one a single particle hitting the screen. For a while it is nothing but speckle. Then the stripes turn up on their own."],
+      ["Where the quantum comes in",
+       "Nothing here is bumping into anything. Turn the source down until only one particle is inside the machine at a time and the stripes still build, so the pattern cannot be particles interfering with each other. Each one has to have taken both routes. Nobody has ever caught one doing it, because looking closely enough to tell which way it went is exactly what destroys the stripes. It was first done with dim light in 1909 and filmed with single electrons in 1989."],
+      ["How it is built",
+       "The only panel here not drawn by the graphics card. This is ordinary drawing code: pick a random spot, look up how likely a particle is to land there, keep it or throw it away, a few thousand times a second. Old dots fade slowly so the picture settles instead of filling in solid. It is also the only panel that does not loop, because a pile of dots that keeps growing has nothing to repeat."]
+    ]
+  },
+
+  {
+    slug: "nodal-lines",
+    title: "Nodal lines",
+    loop: 20.0,
+    note: "Only the silence, drawn. The sources drift apart and the fan opens.",
+    read: [
+      ["What you are seeing",
+       "Only the dead places, inked in like a diagram. Along these curves the two waves always cancel, so the water never moves at all. Watch the two dots pull apart and every so often a new pair of curves peels off the middle."],
+      ["Where the quantum comes in",
+       "These are the dark stripes from the other panels, on their own. In the quantum version they are the places a particle is never found. Nothing is blocking it and both routes stay open, but the two ways of arriving cancel exactly, so the odds come out at zero. Two ways for something to happen, adding up to it never happening, is the bit with no everyday equivalent."],
+      ["How it is built",
+       "Nothing is waving here. Each pixel works out the difference between its two distances and asks whether that difference lands on a cancelling value. If it does the pixel is ink, and if not it is paper. The graphics card also tells each pixel how fast that difference is changing next door, and the line thickness is set from that, so the curves stay one weight even where they bunch together."]
+    ],
+    frag: [
+      "const float K = 26.0;",
+      "",
+      "vec3 render(vec2 p){",
+      "  float d = 0.30 + 0.13*sin(TAU*uT/20.0);",
+      "  vec2 s1 = vec2(-d, 0.0), s2 = vec2(d, 0.0);",
+      "  float phi = K*0.5*(length(p-s1) - length(p-s2));",
+      "  float f = cos(phi);",
+      "  float w = max(FW(phi), 0.004)*0.75;",
+      "  float line = 1.0 - smoothstep(0.0, w + 0.02, abs(f));",
+      "  vec3 ink = rampI(0.06), paper = rampI(0.97);",
+      "  vec3 col = mix(paper, ink, line*0.92);",
+      "  for(int i=0;i<2;i++){",
+      "    vec2 s = mix(s1, s2, float(i));",
+      "    col = mix(col, ink, smoothstep(0.028, 0.014, length(p-s)));",
+      "  }",
+      "  col = mix(col, paper, smoothstep(0.72, 1.05, length(p*vec2(0.62,1.0))));",
+      "  return col;",
+      "}"
+    ].join("\n")
+  },
+
+  {
+    slug: "contours",
+    title: "Contours",
+    loop: 4.0,
+    note: "The same field as a survey map. Every line is one height of water.",
+    read: [
+      ["What you are seeing",
+       "The same two source pattern drawn as a hill map, the way a walking map draws a mountain: every line joins up places at the same height. The thing to look at is the spacing. From the middle of one cluster of rings to the middle of the next is one whole wavelength, so you can measure the wave off the map with a ruler."],
+      ["Where the quantum comes in",
+       "Faster particles have shorter waves. That one rule is why electron microscopes exist: get an electron moving quickly enough and its wave becomes thousands of times shorter than light, and the finest detail any microscope can show is limited by the wavelength it uses. So a map like this, drawn from a real particle, shows you where it is moving fast: wherever the pattern repeats over the shortest distance."],
+      ["How it is built",
+       "Each pixel adds the two waves, then throws away everything except the fractional part of the answer, which turns a smooth slope into a staircase. Wherever a pixel lands on the edge of a step, it draws a line. The graphics card can tell a pixel how different its value is from its neighbours, and that number keeps every line the same thickness whether the surface there is steep or flat."]
+    ],
+    frag: [
+      "const float K = 11.0;",
+      "const float W = TAU/4.0;",
+      "",
+      "vec3 render(vec2 p){",
+      "  float f = 0.0;",
+      "  for(int i=0;i<2;i++){",
+      "    vec2 s = mix(vec2(-0.46,-0.10), vec2(0.46, 0.10), float(i));",
+      "    float r = length(p-s);",
+      "    f += sin(K*r - W*uT)*exp(-r*0.30)/sqrt(0.25 + r*2.2);",
+      "  }",
+      "  float bands = f*3.2;",
+      "  float g = abs(fract(bands) - 0.5);",
+      "  float w = max(FW(bands), 0.0015)*1.1;",
+      "  float line = 1.0 - smoothstep(0.085 - w, 0.085 + w, g);",
+      "  vec3 paper = rampI(0.96), ink = rampI(0.10);",
+      "  vec3 col = mix(paper, ink, line*0.88);",
+      "  col = mix(col, rampI(0.62), smoothstep(0.4,1.4,abs(f))*0.10);",
       "  return col;",
       "}"
     ].join("\n")

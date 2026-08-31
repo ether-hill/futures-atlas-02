@@ -5,11 +5,11 @@
 <base href="/interference/">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Interference. Futures Atlas</title>
-<meta name="description" content="Fifteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one loops seamlessly, re-colours to any palette, and can be saved as a still or a clip.">
+<meta name="description" content="Fourteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one loops seamlessly, re-colours to any palette, and can be saved as a still or a clip.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Futures Atlas">
 <meta property="og:title" content="Interference">
-<meta property="og:description" content="Fifteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
+<meta property="og:description" content="Fourteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
 <meta property="og:image" content="/projects/interference.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="/projects/interference.jpg">
@@ -29,7 +29,8 @@
     <div class="eyebrow">Wave optics, running live</div>
     <h1>Interference</h1>
     <p class="lede">Drop two stones in a pond and the ripples cross. Where two crests meet, the water jumps higher than either stone could manage alone. Where a crest meets a dip, nothing moves at all. That is interference, and it is the reason a single electron, fired at a wall with two holes in it, lands in stripes.</p>
-    <p class="lede lede--sub">Fifteen of them here, running live. None of these is a video. Each one is a small program working out a colour for every pixel, sixty times a second, so you can slow it down, re-colour it, drag it back and forth in time, or take a copy away with you.</p>
+    <p class="lede lede--sub">Quantum mechanics is genuinely hard to hold in your head, and the honest reason is that nothing you have ever picked up behaves that way. These are not the equations. They are the part you can look at: the same adding up of waves, in water and in light, drawn large and slow enough to sit with. Some of these are quantum outright and some are a bucket of water, and each one tells you which it is.</p>
+    <p class="lede lede--sub">Fourteen of them, running live. None is a video. Each is a small program working out a colour for every pixel, sixty times a second, so you can slow it down, re-colour it, drag it back and forth in time, open it fullscreen, or take a copy away with you.</p>
   </header>
 </div>
 
@@ -49,9 +50,6 @@
         <input type="color" id="custom" value="#4aa3df" aria-label="Custom colour">
       </label>
       <input type="text" id="customHex" class="hexin" value="#4aa3df" spellcheck="false" aria-label="Custom colour, hex code">
-    </div>
-    <div class="grp">
-      <button class="btn is-on" id="grain" aria-pressed="true">Grain</button>
     </div>
   </div>
 </div>
@@ -78,7 +76,6 @@
 
   var globalSpeed = 0.7;
   var globalPlaying = !reduced;
-  var globalGrain = true;
   var globalPal = 0;
   var customStops = FIELD.rampFromHex("#4aa3df");
   var units = [];
@@ -88,7 +85,6 @@
     var saved = JSON.parse(localStorage.getItem("fa-interference") || "{}");
     if (typeof saved.pal === "number") globalPal = saved.pal;
     if (typeof saved.speed === "number") globalSpeed = saved.speed;
-    if (typeof saved.grain === "boolean") globalGrain = saved.grain;
     if (typeof saved.hex === "string" && FIELD.rampFromHex(saved.hex)) customStops = FIELD.rampFromHex(saved.hex);
   } catch (e) {}
 
@@ -97,7 +93,7 @@
   function remember() {
     try {
       localStorage.setItem("fa-interference", JSON.stringify({
-        pal: globalPal, speed: globalSpeed, grain: globalGrain,
+        pal: globalPal, speed: globalSpeed,
         hex: document.getElementById("customHex").value
       }));
     } catch (e) {}
@@ -130,7 +126,11 @@
     var card = document.createElement("section");
     card.className = "card";
     card.innerHTML =
-      '<div class="stage"><canvas></canvas><span class="idx">' + (i < 9 ? "0" : "") + (i + 1) + '</span></div>' +
+      '<div class="stage"><canvas></canvas>' +
+        '<span class="idx">' + (i < 9 ? "0" : "") + (i + 1) + '</span>' +
+        '<span class="fshint">Fullscreen</span>' +
+        '<div class="fsbar"><button class="btn" data-act="exit">Close</button></div>' +
+      '</div>' +
       '<div class="meta">' +
         '<div class="meta__top">' +
           '<span class="name">' + v.title + '</span>' +
@@ -142,7 +142,7 @@
           '<input class="scrub" type="range" min="0" max="1000" value="0" aria-label="Timeline">' +
           '<span class="lab time">0.0s</span>' +
         '</div>' +
-        '<div class="ctl">' +
+        '<div class="ctl ctl--main">' +
           '<span class="lab">Speed</span>' +
           '<input class="spd" type="range" min="0.05" max="2" step="0.01" aria-label="Speed">' +
           '<select class="sel pal" aria-label="Palette"></select>' +
@@ -158,7 +158,7 @@
             '</div>' +
           '</div>' +
           '<button class="btn" data-act="read">Read more</button>' +
-          '<button class="btn" data-act="wide">Widen</button>' +
+          '<button class="btn" data-act="full">Fullscreen</button>' +
         '</div>' +
         '<div class="read">' + v.read.map(function (r) {
           return '<p><span class="rlab">' + r[0] + '</span>' + r[1] + '</p>';
@@ -168,7 +168,7 @@
 
     var canvas = card.querySelector("canvas");
     var unit = FIELD.createUnit(canvas, v, {
-      speed: globalSpeed, playing: globalPlaying, grain: globalGrain,
+      speed: globalSpeed, playing: globalPlaying,
       pal: globalPal, stops: stopsFor(globalPal)
     });
     unit.card = card;
@@ -198,7 +198,19 @@
     };
     unit.refresh();
 
-    card.querySelector(".stage").addEventListener("click", function () { card.classList.toggle("is-wide"); });
+    card.querySelector(".stage").addEventListener("click", function (e) {
+      if (e.target.closest(".fsbar")) return;   // the overlay's own controls
+      toggleFull(card);
+    });
+
+    // in fullscreen the chrome gets out of the way until the cursor moves
+    var stage = card.querySelector(".stage");
+    var idle;
+    stage.addEventListener("mousemove", function () {
+      stage.classList.add("is-live");
+      clearTimeout(idle);
+      idle = setTimeout(function () { stage.classList.remove("is-live"); }, 2200);
+    });
 
     scrub.addEventListener("pointerdown", function () { unit.dragging = true; });
     window.addEventListener("pointerup", function () { unit.dragging = false; });
@@ -229,8 +241,8 @@
         card.classList.toggle("is-open");
         btn.textContent = card.classList.contains("is-open") ? "Close" : "Read more";
         btn.classList.toggle("is-on", card.classList.contains("is-open"));
-      } else if (act === "wide") {
-        card.classList.toggle("is-wide");
+      } else if (act === "full") {
+        toggleFull(card);
       } else if (act === "dl") {
         var open = menu.hasAttribute("hidden");
         closeMenus();
@@ -244,6 +256,8 @@
       } else if (act === "embed") {
         closeMenus();
         copyEmbed(unit);
+      } else if (act === "exit") {
+        if (document.fullscreenElement) document.exitFullscreen();
       }
     });
 
@@ -251,6 +265,32 @@
       new IntersectionObserver(function (es) { unit.visible = es[0].isIntersecting; }, { rootMargin: "200px" })
         .observe(card);
     }
+  });
+
+  /* Fullscreen. The stage becomes the fullscreen element and the card's two
+     control rows are moved into the overlay bar inside it, then moved back on
+     exit. Duplicating the controls would mean duplicating every handler. */
+  var fsCard = null;
+
+  function toggleFull(card) {
+    if (document.fullscreenElement) { document.exitFullscreen(); return; }
+    var stage = card.querySelector(".stage");
+    if (!stage.requestFullscreen) { toast("Fullscreen is not available in this browser"); return; }
+    var bar = card.querySelector(".fsbar");
+    bar.insertBefore(card.querySelector(".ctl--transport"), bar.firstChild);
+    bar.insertBefore(card.querySelector(".ctl--main"), bar.lastChild);
+    fsCard = card;
+    stage.classList.add("is-live");
+    stage.requestFullscreen();
+  }
+
+  document.addEventListener("fullscreenchange", function () {
+    if (document.fullscreenElement || !fsCard) return;
+    var meta = fsCard.querySelector(".meta");
+    var read = fsCard.querySelector(".read");
+    meta.insertBefore(fsCard.querySelector(".ctl--transport"), read);
+    meta.insertBefore(fsCard.querySelector(".ctl--main"), read);
+    fsCard = null;
   });
 
   function closeMenus() {
@@ -267,10 +307,22 @@
 
   /* ------------------------------------------------------------------- loop */
 
+  // Fullscreen on a 5K display at dpr 2 would ask for ~30 million pixels a
+  // frame, which is where the drop panels start to hurt, so the count is capped
+  // and the scale falls back rather than the frame rate.
+  var MAX_PIXELS = 3500000;
+
   function sizeFor(unit) {
     var r = unit.canvas.getBoundingClientRect();
     var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-    return [Math.max(2, Math.round(r.width * dpr)), Math.max(2, Math.round(r.height * dpr))];
+    var w = Math.max(2, Math.round(r.width * dpr));
+    var h = Math.max(2, Math.round(r.height * dpr));
+    if (w * h > MAX_PIXELS) {
+      var k = Math.sqrt(MAX_PIXELS / (w * h));
+      w = Math.max(2, Math.round(w * k));
+      h = Math.max(2, Math.round(h * k));
+    }
+    return [w, h];
   }
 
   function frame(now) {
@@ -438,16 +490,6 @@
   colorEl.addEventListener("input", function () { applyCustom(colorEl.value); });
   hexEl.addEventListener("change", function () {
     if (!applyCustom(hexEl.value.trim())) toast("That is not a hex colour");
-  });
-
-  var grainBtn = document.getElementById("grain");
-  grainBtn.classList.toggle("is-on", globalGrain);
-  grainBtn.addEventListener("click", function () {
-    globalGrain = !globalGrain;
-    grainBtn.classList.toggle("is-on", globalGrain);
-    grainBtn.setAttribute("aria-pressed", String(globalGrain));
-    units.forEach(function (u) { u.grain = globalGrain; });
-    remember();
   });
 
   if (globalPal === 4) { applyCustom(hexEl.value); }
