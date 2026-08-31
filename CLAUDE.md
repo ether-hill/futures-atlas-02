@@ -16,6 +16,27 @@ runtime theming store + the `/style-guide` control panel.
 - The app's `src/app/globals.css` now only *maps* its Tailwind tokens onto core's
   semantic tokens; it contains **no literal colour values**.
 
+### There are FOUR copies of core, and they have drifted
+
+`packages/futures-atlas-core` is the host's. `hollow-villages/`,
+`manipulate-the-data/` and `quantum-lag/` each carry their own
+`vendor/futures-atlas-core`. The three vendored copies share one `tokens.css`
+and the host's is different: the host moved to cool near-black neutrals
+(`--fa-ink: #17181b`) and added `--brand`, while the vendored copies kept the
+warm ones (`#211e18`). `index.ts` has diverged in BOTH directions (the host
+exports `FaLogoMark`, the vendored copies export `VideoEmbed`/`youTubeId`).
+
+So "one set of tokens drives everything" is **not true today** — do not write it
+in new copy. Unifying them is a real change with visual consequences for three
+live sub-apps, so it is a deliberate piece of work, not a tidy-up: resync the
+three onto the host's copy and re-check each app's palette, or keep one copy and
+give each app a token overlay (which is what Quantum Lag already does).
+
+A sub-app's `file:` dependency must point at ITS OWN vendored copy. Quantum Lag
+pointed at `file:./packages/futures-atlas-core`, a path that does not exist
+inside `quantum-lag/`, and failed a clean build on
+`Can't resolve 'futures-atlas-core/tokens.css'` — which fails the whole deploy.
+
 ### Greppable enforcement (should be empty outside globals/tokens)
 ```sh
 # theme colour literals in app components

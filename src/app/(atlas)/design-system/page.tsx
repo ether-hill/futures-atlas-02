@@ -106,7 +106,8 @@ export default function DesignSystemPage() {
             color: "var(--text-body)",
           }}
         >
-          One set of tokens drives every page here and every sub-app bundled under it.
+          One set of tokens drives every page here. The sub-apps bundled under the Atlas
+          each vendor their own copy of the system, so a few are still on an older palette.
           Nothing on this page is a copied hex or a screenshot: each swatch, ruler and
           specimen is drawn with the live variable, so if a token moves this page moves
           with it. Which makes it a diagnostic as much as a reference — anything that
