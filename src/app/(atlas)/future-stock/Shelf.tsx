@@ -116,13 +116,15 @@ function Quickview({ product, onClose }: { product: FutureProduct; onClose: () =
               <div className={label}>Customer reviews</div>
               <div className="mt-3 grid gap-5">
                 {l.reviews.map((r) => (
-                  <article key={r.author}>
+                  <article key={r.title}>
                     <div className="flex items-baseline gap-2.5 text-[13px]">
                       <Stars n={r.stars} />
                       <span className="font-bold text-ink">{r.title}</span>
                     </div>
                     <p className="mt-1.5 text-[13px] leading-[1.75] text-ink-70">{r.body}</p>
-                    <div className="mt-1.5 font-mono text-[11px] text-faint">— {r.author}</div>
+                    {r.author && (
+                      <div className="mt-1.5 font-mono text-[11px] text-faint">— {r.author}</div>
+                    )}
                   </article>
                 ))}
               </div>

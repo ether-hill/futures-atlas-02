@@ -144,7 +144,7 @@ export interface ProductReview {
   stars: 1 | 2 | 3 | 4 | 5;
   title: string;
   body: string;
-  author: string; // "Marta L., Rotterdam"
+  author?: string; // "Marta L., Rotterdam", or a role — some listings leave reviews unsigned
 }
 
 /**
@@ -174,12 +174,62 @@ export interface FutureProduct {
 /** Seed inventory — placeholders to be replaced by generated keepers. */
 export const STOCK: FutureProduct[] = [
   {
-    id: "clarity-duo",
-    name: "Clarity Duo",
+    id: "lingo-bud",
+    name: "Lingo Bud Translator Earbuds",
     aisle: "Health & body",
-    year: "2032",
-    price: "€640",
-    line: "Hearing aids that translate nine languages as you listen.",
+    year: "2030",
+    price: "€189",
+    line: "Clear two-way translation for everyday conversations.",
+    image: "/future-stock/lingo-bud.jpg",
+    listing: {
+      delivery: "Free delivery on orders over €50. Usually delivered in 2–3 working days.",
+      specs: [
+        {
+          label: "Translation",
+          value:
+            "72 spoken languages, 38 offline language packs; two-way conversation mode",
+        },
+        {
+          label: "Battery",
+          value: "Up to 9 hours per charge; charging case provides 30 additional hours",
+        },
+        {
+          label: "Materials",
+          value: "Polycarbonate housing with medical-grade silicone ear tips",
+        },
+        {
+          label: "Sizes",
+          value: "Small, medium and large ear tips; earbuds measure 29 × 18 × 16 mm",
+        },
+        {
+          label: "Weight",
+          value: "5.2 g per earbud; USB-C charging case, 48 × 45 × 25 mm",
+        },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "Very pleased",
+          body: "I bought these for a family trip and they worked better than expected. My mother speaks only Spanish and we could have a normal conversation without passing a phone back and forth. Comfortable enough to wear all afternoon.",
+        },
+        {
+          stars: 4,
+          title: "Useful for work",
+          body: "I use them during meetings with clients who speak French and German. Translation is generally quick and the offline packs are useful on trains. Setup took about five minutes. The case is a little larger than I expected.",
+        },
+        {
+          stars: 3,
+          title: "Fine, but the fit could be better",
+          body: "Translation is good and the battery lasts all day. Unfortunately the medium tips are slightly loose in my left ear. The small ones stay in better but don't block outside noise as well.",
+        },
+      ],
+      qa: [
+        {
+          q: "Do both people need to wear an earbud?",
+          a: "No. One person can wear an earbud while the other speaks normally. For two-way conversations, two earbuds provide the most natural experience.",
+        },
+      ],
+    },
   },
   {
     id: "solocool-1",
