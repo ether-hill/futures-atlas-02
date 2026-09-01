@@ -15,8 +15,11 @@ import { VARIANTS, type Variant, type Voice } from "./types";
  * ONE LINE. Every voice sits on a single timeline, one after another: Scott's
  * scenes, then Amara's, and so on. Global time is the current clip's time
  * plus the clips before it, so the reel is one long strip and a seek that
- * lands in another person's stretch swaps the clip underneath. When a clip
- * ends the next starts; the last wraps to the first.
+ * lands in another person's stretch swaps the clip underneath. Between two
+ * people the line carries GAP seconds of silence — the reel keeps moving at
+ * its one speed, nothing plays, and the next name arrives well clear of the
+ * last picture. When a clip ends the silence runs, then the next clip plays;
+ * the line eases to a stop after the last.
  *
  * The user drives it by hand — the wheel (vertical or horizontal) or a drag
  * on the reel — but the gesture SEEKS THE AUDIO, never moves the track.
@@ -35,6 +38,7 @@ const DEPTH: Record<Variant, number> = { editorial: 0, ledger: 0, cinema: 1, dec
 
 const DRAG_THRESHOLD = 4; // px before a press becomes a scrub
 const TAIL = 6; // seconds assumed after a clip's last scene until its metadata gives the real length
+const GAP = 3; // seconds of silence between one person and the next
 
 export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: string }) {
   const [voiceId, setVoiceId] = useState(voices[0]?.id);
@@ -53,6 +57,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
   const overrideRef = useRef<number | null>(null); // global second held while a clip swaps in
   const pendingSeek = useRef<number | null>(null); // seconds into the incoming clip
   const autoplay = useRef(false); // play as soon as the incoming clip can
+  const gap = useRef<{ raf: number } | null>(null); // the silence between two people, running
   const drag = useRef({ active: false, moved: false, x0: 0, y0: 0, t0: 0, wasPlaying: false });
   const urlRead = useRef(false);
 
@@ -63,7 +68,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
       const last = voice.scenes[voice.scenes.length - 1]?.start ?? 0;
       const duration = durations[voice.id] ?? last + TAIL;
       const entry = { voice, offset, duration };
-      offset += duration;
+      offset += duration + GAP;
       return entry;
     });
   }, [voices, durations]);
@@ -78,7 +83,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     () => timeline.flatMap((e) => e.voice.scenes.map((s) => e.offset + s.start)),
     [timeline],
   );
-  const { remeasure, xAt, tAt } = useAudioClock({ audioRef, sectionRef, trackRef, starts, offsetRef, overrideRef });
+  const { remeasure, xAt, tAt } = useAudioClock({ audioRef, sectionRef, trackRef, starts, end: total, offsetRef, overrideRef });
 
   /** Global second right now. */
   const now = useCallback(() => overrideRef.current ?? offsetRef.current + (audioRef.current?.currentTime ?? 0), []);
@@ -140,21 +145,53 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     countdownTimer.current = null;
     setCountdown(null);
   };
-  useEffect(() => () => clearCountdown(), []);
+  useEffect(() => () => { clearCountdown(); cancelGap(); }, []);
+
+  const cancelGap = () => {
+    if (gap.current) cancelAnimationFrame(gap.current.raf);
+    gap.current = null;
+  };
+  /** Run the silence between two people: the reel travels from `from` to `to` at real time, then `then`. */
+  const runGap = useCallback((from: number, to: number, then: () => void) => {
+    cancelGap();
+    const ms = Math.max(0, to - from) * 1000;
+    const t0 = performance.now();
+    const step = (now: number) => {
+      const u = ms ? Math.min(1, (now - t0) / ms) : 1;
+      overrideRef.current = from + (to - from) * u;
+      if (u < 1) gap.current = { raf: requestAnimationFrame(step) };
+      else {
+        gap.current = null;
+        then();
+      }
+    };
+    gap.current = { raf: requestAnimationFrame(step) };
+  }, []);
 
   const play = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
+    const parked = overrideRef.current;
+    if (parked !== null && pendingSeek.current === null && parked < offsetRef.current) {
+      // parked in the silence before this clip: cross it first, then play
+      setPlaying(true);
+      runGap(parked, offsetRef.current, () => {
+        overrideRef.current = null;
+        audio.play().catch(() => setPlaying(false));
+      });
+      return;
+    }
     audio
       .play()
       .then(() => setPlaying(true))
       .catch(() => setPlaying(false));
-  }, []);
+  }, [runGap]);
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current;
     if (!audio) return;
     if (playing) {
+      cancelGap(); // the reel parks where it is in the silence
       audio.pause();
       setPlaying(false);
       return;
@@ -188,20 +225,37 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     (T: number) => {
       const audio = audioRef.current;
       if (!audio || !timeline.length) return;
+      const wasPlaying = !audio.paused || gap.current !== null;
+      cancelGap();
       const t = Math.min(Math.max(0, T), Math.max(0, total - 0.05));
       const target = timeline.find((e) => t < e.offset + e.duration) ?? timeline[timeline.length - 1];
+      const rel = t - target.offset; // negative: in the silence before this person
       if (target.voice.id === voiceId) {
-        if (audio.duration) audio.currentTime = Math.min(audio.duration, t - target.offset);
-        else pendingSeek.current = t - target.offset;
+        if (!audio.duration) {
+          pendingSeek.current = rel;
+          overrideRef.current = t;
+          return;
+        }
+        audio.currentTime = Math.min(audio.duration, Math.max(0, rel));
+        if (rel < 0) {
+          overrideRef.current = t;
+          if (wasPlaying) {
+            audio.pause();
+            runGap(t, target.offset, () => {
+              overrideRef.current = null;
+              audio.play().catch(() => setPlaying(false));
+            });
+          }
+        } else overrideRef.current = null;
         return;
       }
       overrideRef.current = t;
-      pendingSeek.current = t - target.offset;
-      autoplay.current = !audio.paused;
+      pendingSeek.current = rel;
+      autoplay.current = wasPlaying;
       audio.pause();
       setVoiceId(target.voice.id);
     },
-    [timeline, total, voiceId],
+    [timeline, total, voiceId, runGap],
   );
 
   /** The incoming clip's metadata is in: apply the pending seek, release the hold, resume. */
@@ -210,27 +264,29 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     if (!audio) return;
     setDurations((d) => (d[voice.id] === audio.duration ? d : { ...d, [voice.id]: audio.duration }));
     if (pendingSeek.current !== null) {
-      audio.currentTime = Math.min(audio.duration, Math.max(0, pendingSeek.current));
+      const rel = pendingSeek.current;
       pendingSeek.current = null;
-    }
-    overrideRef.current = null;
+      audio.currentTime = Math.min(audio.duration, Math.max(0, rel));
+      // a negative seek parks the line in the silence before this clip; play() crosses it
+      overrideRef.current = rel < 0 ? entry.offset + rel : null;
+    } else overrideRef.current = null;
     if (autoplay.current) {
       autoplay.current = false;
       play();
     }
   };
 
-  /** The clip ended: the next person begins where this one stops. The last wraps to the first. */
+  /** The clip ended: the silence runs, then the next person plays. After the last the line rests. */
   const ended = () => {
     const i = timeline.indexOf(entry);
-    const next = timeline[(i + 1) % timeline.length];
-    if (!next || timeline.length < 2) {
+    const next = timeline[i + 1];
+    if (!next) {
       setPlaying(false);
       return;
     }
-    overrideRef.current = next.offset;
-    pendingSeek.current = 0;
-    autoplay.current = true;
+    overrideRef.current = entry.offset + entry.duration; // hold here; the next clip loads underneath
+    pendingSeek.current = -GAP; // parked at the start of the silence
+    autoplay.current = true; // and play() crosses it
     setVoiceId(next.voice.id);
   };
 

@@ -142,24 +142,25 @@ html.dark .ar {
 .ar-track--far .ar-scene {
   /* no approach fade in the distance: the layer's own opacity does that */
   opacity: 1;
-  transform: translate3d(calc(var(--reel-x, 0) * (1 - var(--p, 1)) * 1px), 0, 0);
+  transform: translate3d(calc(var(--d, 0) * (var(--p, 1) - 1) * 1px), 0, 0);
 }
+/* the track is a strip as long as the line (--track-w); each scene sits at
+   its own --x, placed by time × speed, so the strip moves at one steady rate */
 .ar-track {
-  display: flex;
-  align-items: center;
-  gap: clamp(40px, 6vw, 96px);
+  position: relative;
   height: 100%;
-  padding-left: 33vw;
-  padding-right: 50vw;
-  width: max-content;
+  width: calc(var(--track-w, 4000) * 1px);
   transform: translate3d(calc(var(--reel-x, 0) * -1px), 0, 0);
   will-change: transform;
 }
-/* a new person on the line gets a breath before their portrait */
-.ar-scene--portrait:not(:first-child) { margin-left: clamp(40px, 8vw, 140px); }
 .ar-scene {
-  flex: none;
-  transform: translate3d(calc(var(--reel-x, 0) * (1 - var(--p, 1)) * 1px), 0, 0)
+  position: absolute;
+  left: calc(var(--x, 0) * 1px);
+  top: 50%;
+  translate: 0 -50%;
+  /* parallax by distance from the playhead: a slow layer (--p < 1) trails
+     while it is far off and lands exactly on the playhead at its start */
+  transform: translate3d(calc(var(--d, 0) * (var(--p, 1) - 1) * 1px), 0, 0)
     scale(clamp(0.96, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.04), 1));
   opacity: clamp(0.35, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.65), 1);
   will-change: transform, opacity;
@@ -329,10 +330,9 @@ html.dark .ar {
 }
 .ar[data-variant="cinema"] .ar-portrait__img { width: clamp(300px, 40vw, 640px); aspect-ratio: 3 / 2; }
 .ar[data-variant="cinema"] .ar-portrait__name { font-size: clamp(48px, 8vw, 120px); }
+.ar[data-variant="cinema"] .ar-scene--quote { top: auto; bottom: 8vh; translate: 0 0; }
 .ar[data-variant="cinema"] .ar-quote {
   max-width: 46vw;
-  align-self: flex-end;
-  margin-bottom: 8vh;
   padding: 18px 22px;
   border-left: 3px solid var(--ar-line);
   background: var(--ar-panel);
@@ -413,7 +413,7 @@ html.dark .ar {
 }
 .ar[data-variant="type"] .ar-quote__open,
 .ar[data-variant="type"] .ar-quote p > span:last-child { color: var(--ar-line); }
-.ar[data-variant="type"] .ar-scene--media { align-self: flex-end; margin-bottom: 6vh; }
+.ar[data-variant="type"] .ar-scene--media { top: auto; bottom: 6vh; translate: 0 0; }
 .ar[data-variant="type"] .ar-media { height: clamp(160px, 26vh, 260px); }
 .ar[data-variant="type"] .ar-scene--portrait .ar-portrait { padding-top: clamp(40px, 6vw, 90px); }
 .ar[data-variant="type"] .ar-portrait__name {
@@ -426,7 +426,7 @@ html.dark .ar {
 .ar[data-variant="type"] .ar-portrait__img { width: clamp(180px, 18vw, 260px); margin-left: clamp(80px, 12vw, 200px); }
 .ar[data-variant="type"] .ar-track--far-1 { display: flex; --far-z: -1400px; --far-y: -28%; opacity: 0.45; }
 .ar[data-variant="type"] .ar-track--far .ar-scene--quote { display: none; } /* only the pictures recede */
-.ar[data-variant="type"] .ar-track--far .ar-scene--media { align-self: center; margin-bottom: 0; }
+.ar[data-variant="type"] .ar-track--far .ar-scene--media { top: 50%; bottom: auto; translate: 0 -50%; }
 .ar[data-variant="type"] .ar-track--far .ar-media { height: clamp(280px, 52vh, 560px); }
 .ar[data-variant="type"] .ar-wave__bars { gap: 3px; }
 .ar[data-variant="type"] .ar-wave__bars--played span { opacity: 1; background: var(--ar-line); }
@@ -436,15 +436,13 @@ html.dark .ar {
 @media (prefers-reduced-motion: reduce) {
   .ar[data-rm="1"] .ar-track {
     transform: none;
-    padding-left: 0;
-    padding-right: 0;
     width: 100%;
   }
   .ar[data-rm="1"] .ar-track--far { display: none; }
   .ar[data-rm="1"] .ar-scene {
-    position: absolute;
     left: 50%;
     top: 50%;
+    bottom: auto;
     translate: -50% -50%;
     transform: none;
     opacity: var(--active, 0);

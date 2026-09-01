@@ -18,9 +18,20 @@ length comes from its metadata (preloaded for all voices at mount, a
 `start + 6s` guess until then). A seek that lands in another person's
 stretch swaps the clip underneath: the reel holds at the target second
 (`overrideRef`) until the new metadata lands, then the pending seek applies
-and playback resumes if it was running. When a clip ends the next begins
-where it stops; the last wraps to the first. The "Voice of" select is a
-jump list and follows the line.
+and playback resumes if it was running. Between two people the line carries
+`GAP` seconds of silence: the reel keeps moving at its one speed, nothing
+plays, and the next name arrives well clear of the last picture. When a clip
+ends the silence runs and then the next clip plays; after the last the line
+eases to a stop. The "Voice of" select is a jump list and follows the line.
+
+**One speed.** The reel moves at a constant px/s for the whole line and
+every scene is placed at `start × speed`, so its centre reaches the playhead
+exactly at its start time. The speed is the smallest that keeps neighbouring
+scenes from overlapping (measured from their widths), never below a floor —
+nothing speeds up or slows down between scenes, the motion runs steadily
+through a clip's tail and the silence, and only the final seconds
+decelerate. Each clip's volume fades in over its first second and out over
+its last.
 
 ## Driving it by hand
 
