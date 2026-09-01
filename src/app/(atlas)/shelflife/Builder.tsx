@@ -8,12 +8,12 @@ import {
   YEARS,
   buildImagePrompt,
   buildListingPrompt,
-  type FutureStockOption,
-} from "@/data/future-stock";
+  type ShelfLifeOption,
+} from "@/data/shelflife";
 
 /**
  * The guided prompt builder. Entirely client-side and deterministic: the
- * controls assemble the two prompts from @/data/future-stock, the visitor
+ * controls assemble the two prompts from @/data/shelflife, the visitor
  * copies them into their own tools. No API call, nothing stored.
  */
 
@@ -92,7 +92,7 @@ function PromptPanel({ title, hint, text }: { title: string; hint: string; text:
   );
 }
 
-const byId = (opts: FutureStockOption[], id: string) =>
+const byId = (opts: ShelfLifeOption[], id: string) =>
   opts.find((o) => o.id === id) ?? opts[0];
 
 export function Builder() {

@@ -69,8 +69,8 @@ export const projects: Project[] = [
     cta: "See the clips",
   },
   {
-    id: "future-stock",
-    title: "Future Stock",
+    id: "shelflife",
+    title: "ShelfLife",
     tagline:
       "Pick the aisle, the year and what changed about the world, and take away two prompts that turn a hunch into a product listing from the marketplaces of the future. The keepers land on the shelf.",
     year: "2026",
@@ -79,7 +79,7 @@ export const projects: Project[] = [
     kind: "tool",
     status: "concept",
     visibility: "draft",
-    path: "/future-stock",
+    path: "/shelflife",
     cta: "Open the shop",
   },
   {

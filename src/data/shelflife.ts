@@ -1,5 +1,5 @@
 /**
- * Future Stock — the future-product prompt generator and its inventory.
+ * ShelfLife — the future-product prompt generator and its inventory.
  *
  * v1 generates PROMPTS, not products: the visitor assembles a scenario (aisle,
  * year, what changed about the world, optionally their own hunch) and gets two
@@ -8,18 +8,18 @@
  * deterministic and lives here so the page stays a static shell.
  *
  * STOCK is the living inventory: the keepers. Run the prompts, and when a
- * result makes you go hmmm, drop the image in public/future-stock/ and add an
+ * result makes you go hmmm, drop the image in public/shelflife/ and add an
  * entry here — `prompt` records the provenance. The shelf is the artifact.
  */
 
-export interface FutureStockOption {
+export interface ShelfLifeOption {
   id: string;
   label: string;
   /** the clause spliced into the prompts */
   clause: string;
 }
 
-export const AISLES: FutureStockOption[] = [
+export const AISLES: ShelfLifeOption[] = [
   { id: "health", label: "Health & body", clause: "the Health & body aisle" },
   { id: "home", label: "Home & climate", clause: "the Home & climate aisle" },
   { id: "food", label: "Food & drink", clause: "the Food & drink aisle" },
@@ -32,7 +32,7 @@ export const AISLES: FutureStockOption[] = [
 export const YEARS = ["2030", "2035", "2040", "2050"] as const;
 
 /** What changed about the world — the force that makes the product exist. */
-export const FORCES: FutureStockOption[] = [
+export const FORCES: ShelfLifeOption[] = [
   {
     id: "climate",
     label: "Climate adaptation",
@@ -71,7 +71,7 @@ export const FORCES: FutureStockOption[] = [
 ];
 
 /** Photographic treatment for the image prompt. */
-export const SHOTS: FutureStockOption[] = [
+export const SHOTS: ShelfLifeOption[] = [
   {
     id: "studio",
     label: "Studio listing",
@@ -93,10 +93,10 @@ export const SHOTS: FutureStockOption[] = [
 ];
 
 export interface PromptInput {
-  aisle: FutureStockOption;
+  aisle: ShelfLifeOption;
   year: string;
-  force: FutureStockOption;
-  shot: FutureStockOption;
+  force: ShelfLifeOption;
+  shot: ShelfLifeOption;
   /** the visitor's own hunch, optional */
   seed: string;
 }
@@ -166,7 +166,7 @@ export interface FutureProduct {
   year: string; // when it plausibly ships
   price: string; // display string, e.g. "€640" or "€6/mo"
   line: string; // one-line pitch / tagline, retail-plain
-  image?: string; // /future-stock/<id>.jpg once generated; fa-hatch plate until then
+  image?: string; // /shelflife/<id>.jpg once generated; fa-hatch plate until then
   prompt?: string; // provenance: the image prompt that made it
   listing?: ProductListing; // the quickview copy
 }
@@ -180,7 +180,7 @@ export const STOCK: FutureProduct[] = [
     year: "2030",
     price: "€189",
     line: "Clear two-way translation for everyday conversations.",
-    image: "/future-stock/lingo-bud.jpg",
+    image: "/shelflife/lingo-bud.jpg",
     listing: {
       delivery: "Free delivery on orders over €50. Usually delivered in 2–3 working days.",
       specs: [
@@ -238,7 +238,7 @@ export const STOCK: FutureProduct[] = [
     year: "2035",
     price: "€1,249",
     line: "A cool, quiet place to sit when the rest of the house is too warm.",
-    image: "/future-stock/solocool-1.jpg",
+    image: "/shelflife/solocool-1.jpg",
     listing: {
       delivery:
         "Delivery from €49. Standard room-of-choice delivery to most EU locations within 5–8 working days. Assembly available at checkout.",
@@ -302,7 +302,7 @@ export const STOCK: FutureProduct[] = [
     year: "2033",
     price: "€2,890",
     line: "A cooled break space for one person.",
-    image: "/future-stock/shiftcool-1.jpg",
+    image: "/shelflife/shiftcool-1.jpg",
     listing: {
       delivery:
         "Delivery and placement from €120. Delivered to ground-floor workplace locations within 10–15 working days. Site access check available before order.",
@@ -390,5 +390,45 @@ export const STOCK: FutureProduct[] = [
     year: "2030",
     price: "€2,300",
     line: "Carries the week's shopping, folds to a suitcase.",
+  },
+  {
+    id: "nightshift-lamp",
+    name: "Nightshift Lamp",
+    aisle: "Work & focus",
+    year: "2037",
+    price: "€85",
+    line: "Knows which shift you are on and lights the room for it.",
+  },
+  {
+    id: "seed-vault-24",
+    name: "Heirloom Seed Vault, 24-year",
+    aisle: "Home & climate",
+    year: "2044",
+    price: "€310",
+    line: "Two dozen seasons of the garden you had, kept at four degrees.",
+  },
+  {
+    id: "shutdown-room",
+    name: "Shutdown Room, weekend pass",
+    aisle: "Play & escape",
+    year: "2036",
+    price: "€140",
+    line: "Forty-eight hours with nothing connected. Snacks included.",
+  },
+  {
+    id: "zone-pass",
+    name: "Zone 1–3 Pass, driverless",
+    aisle: "Mobility",
+    year: "2033",
+    price: "€62/mo",
+    line: "Any pod, any hour, three zones. Luggage counts as a seat.",
+  },
+  {
+    id: "kettle-share",
+    name: "Neighbourhood Kettle, 6-home share",
+    aisle: "Food & drink",
+    year: "2039",
+    price: "€9/mo",
+    line: "One very good kettle between six kitchens. Boils on the surge.",
   },
 ];

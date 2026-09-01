@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Reveal } from "@/components/Reveal";
-import { STOCK, type FutureProduct, type ProductReview } from "@/data/future-stock";
+import { STOCK, type FutureProduct, type ProductReview } from "@/data/shelflife";
+import { Lightbox } from "./Lightbox";
 
 /**
  * The shelf and its product quickview. Every card opens the same lightbox —
@@ -22,7 +23,7 @@ function Stars({ n }: { n: ProductReview["stars"] }) {
   );
 }
 
-function Plate({ product, className = "" }: { product: FutureProduct; className?: string }) {
+export function Plate({ product, className = "" }: { product: FutureProduct; className?: string }) {
   return (
     <div className={`overflow-hidden ${product.image ? "" : "fa-hatch"} ${className}`}>
       {product.image ? (
@@ -39,46 +40,11 @@ function Plate({ product, className = "" }: { product: FutureProduct; className?
   );
 }
 
-function Quickview({ product, onClose }: { product: FutureProduct; onClose: () => void }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [onClose]);
-
+export function Quickview({ product, onClose }: { product: FutureProduct; onClose: () => void }) {
   const l = product.listing;
   return (
-    <div
-      className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-8"
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${product.name} — quick view`}
-    >
-      {/* veil */}
-      <button
-        type="button"
-        aria-label="Close quick view"
-        onClick={onClose}
-        className="absolute inset-0 cursor-pointer bg-ink/60"
-      />
-      {/* panel */}
-      <div className="relative grid max-h-[88vh] w-full max-w-4xl overflow-y-auto rounded-[20px] bg-panel shadow-2xl shadow-ink/20 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <button
-          ref={closeRef}
-          type="button"
-          onClick={onClose}
-          className="absolute right-3 top-3 z-10 cursor-pointer rounded-full bg-surface/90 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-ink shadow-sm shadow-ink/10 hover:bg-ink hover:text-surface"
-        >
-          Close ✕
-        </button>
-
+    <Lightbox label={`${product.name} — quick view`} onClose={onClose}>
+      <div className="grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <Plate product={product} className="aspect-square md:sticky md:top-0" />
 
         <div className="px-6 py-7 sm:px-8">
@@ -146,13 +112,13 @@ function Quickview({ product, onClose }: { product: FutureProduct; onClose: () =
           )}
         </div>
       </div>
-    </div>
+    </Lightbox>
   );
 }
 
 /** Apple-store-style tile: a rounded panel, product on top, centred retail
  *  type below, the whole tile the quickview trigger. */
-function ProductCard({ product, onOpen }: { product: FutureProduct; onOpen: () => void }) {
+export function ProductCard({ product, onOpen }: { product: FutureProduct; onOpen: () => void }) {
   return (
     <button
       type="button"
