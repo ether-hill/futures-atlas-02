@@ -21,17 +21,20 @@ stretch swaps the clip underneath: the reel holds at the target second
 and playback resumes if it was running. Between two people the line carries
 `GAP` seconds of silence: the reel keeps moving at its one speed, nothing
 plays, and the next name arrives well clear of the last picture. When a clip
-ends the silence runs and then the next clip plays; after the last the line
-eases to a stop. The "Voice of" select is a jump list and follows the line.
+ends the silence runs and then the next clip plays. After the last clip the
+reel keeps its speed until the audio has actually stopped, then glides to a
+halt over `GLIDE` seconds. The "Voice of" select is a jump list and follows
+the line.
 
 **One speed.** The reel moves at a constant px/s for the whole line and
 every scene is placed at `start × speed`, so its centre reaches the playhead
 exactly at its start time. The speed is the smallest that keeps neighbouring
 scenes from overlapping (measured from their widths), never below a floor —
-nothing speeds up or slows down between scenes, the motion runs steadily
-through a clip's tail and the silence, and only the final seconds
-decelerate. Each clip's volume fades in over its first second and out over
-its last.
+nothing speeds up or slows down between scenes and the motion runs steadily
+through a clip's tail and the silence. Spacing allows for parallax, so a
+lagging picture is never pulled back over the quote after it. Words are
+solid — no approach fade; only pictures come up out of the distance. Each
+clip's volume fades in over its first second and out over its last.
 
 ## Driving it by hand
 
@@ -60,8 +63,8 @@ flat; reduced motion hides the layers.
 
 Five designs share one DOM and one clock; only a stylesheet block differs
 (`.ar[data-variant=…]`). V1 Editorial (the brief), V2 Ledger, V3 Cinema, V4
-Deck, V5 Type. The top bar switches them, and they are linkable:
-`/listen?v=cinema`.
+Deck, V5 Type. V1 is the piece; the switch appears in the top bar only when
+the page is opened with a `?v=` link (`/listen?v=cinema`).
 
 **Light / dark principle.** Every colour derives from a trio — `--ar-bg`,
 `--ar-ink`, `--ar-line` — by `color-mix` or opacity. The light trio is the

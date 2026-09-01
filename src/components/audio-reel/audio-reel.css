@@ -160,11 +160,11 @@ html.dark .ar {
   translate: 0 -50%;
   /* parallax by distance from the playhead: a slow layer (--p < 1) trails
      while it is far off and lands exactly on the playhead at its start */
-  transform: translate3d(calc(var(--d, 0) * (var(--p, 1) - 1) * 1px), 0, 0)
-    scale(clamp(0.96, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.04), 1));
-  opacity: clamp(0.35, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.65), 1);
-  will-change: transform, opacity;
+  transform: translate3d(calc(var(--d, 0) * (var(--p, 1) - 1) * 1px), 0, 0);
+  will-change: transform;
 }
+/* pictures come up out of the distance; words are simply there, solid ink */
+.ar-scene--media { opacity: clamp(0.35, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.65), 1); will-change: transform, opacity; }
 
 /* portrait: giant serif name overlapping the top edge of a 4:5 photo */
 .ar-scene--portrait .ar-portrait { position: relative; margin: 0; padding-top: clamp(28px, 4vw, 64px); }

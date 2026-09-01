@@ -18,8 +18,9 @@ import { VARIANTS, type Variant, type Voice } from "./types";
  * lands in another person's stretch swaps the clip underneath. Between two
  * people the line carries GAP seconds of silence — the reel keeps moving at
  * its one speed, nothing plays, and the next name arrives well clear of the
- * last picture. When a clip ends the silence runs, then the next clip plays;
- * the line eases to a stop after the last.
+ * last picture. When a clip ends the silence runs, then the next clip plays.
+ * After the last clip the reel keeps its speed until the audio has actually
+ * stopped, then glides to a halt (GLIDE seconds, easing out).
  *
  * The user drives it by hand — the wheel (vertical or horizontal) or a drag
  * on the reel — but the gesture SEEKS THE AUDIO, never moves the track.
@@ -38,7 +39,8 @@ const DEPTH: Record<Variant, number> = { editorial: 0, ledger: 0, cinema: 1, dec
 
 const DRAG_THRESHOLD = 4; // px before a press becomes a scrub
 const TAIL = 6; // seconds assumed after a clip's last scene until its metadata gives the real length
-const GAP = 3; // seconds of silence between one person and the next
+const GAP = 3.5; // seconds of silence between one person and the next
+const GLIDE = 2.5; // seconds the reel takes to ease to a halt once the last clip has stopped
 
 export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: string }) {
   const [voiceId, setVoiceId] = useState(voices[0]?.id);
@@ -46,6 +48,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
   const [countdown, setCountdown] = useState<number | null>(null);
   const [started, setStarted] = useState(false);
   const [variant, setVariant] = useState<Variant>("editorial");
+  const [showVariants, setShowVariants] = useState(false); // V1 is the piece; ?v= opens the others
   const [durations, setDurations] = useState<Record<string, number>>({});
 
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -73,6 +76,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     });
   }, [voices, durations]);
   const total = timeline.length ? timeline[timeline.length - 1].offset + timeline[timeline.length - 1].duration : 0;
+  const rest = total + GLIDE / 2; // where the glide leaves the line
   const entry = useMemo(() => timeline.find((e) => e.voice.id === voiceId) ?? timeline[0], [timeline, voiceId]);
   const voice = entry.voice;
   useEffect(() => {
@@ -83,7 +87,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     () => timeline.flatMap((e) => e.voice.scenes.map((s) => e.offset + s.start)),
     [timeline],
   );
-  const { remeasure, xAt, tAt } = useAudioClock({ audioRef, sectionRef, trackRef, starts, end: total, offsetRef, overrideRef });
+  const { remeasure, xAt, tAt } = useAudioClock({ audioRef, sectionRef, trackRef, starts, end: rest, offsetRef, overrideRef });
 
   /** Global second right now. */
   const now = useCallback(() => overrideRef.current ?? offsetRef.current + (audioRef.current?.currentTime ?? 0), []);
@@ -127,8 +131,10 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
   /* the variant is linkable: ?v=cinema. Light/dark is the site's own toggle
      (html.dark) — the reel has no switch of its own. */
   useEffect(() => {
-    const v = new URLSearchParams(window.location.search).get("v") ?? "";
+    const q = new URLSearchParams(window.location.search);
+    const v = q.get("v") ?? "";
     if (isVariant(v)) setVariant(v);
+    if (q.has("v")) setShowVariants(true);
     urlRead.current = true;
   }, []);
   useEffect(() => {
@@ -151,14 +157,18 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     if (gap.current) cancelAnimationFrame(gap.current.raf);
     gap.current = null;
   };
-  /** Run the silence between two people: the reel travels from `from` to `to` at real time, then `then`. */
-  const runGap = useCallback((from: number, to: number, then: () => void) => {
+  /**
+   * Move the clock by hand from `from` to `to` over `seconds` of real time
+   * (linear unless `ease` is given), then `then`. Used for the silence between
+   * two people and for the glide after the last clip.
+   */
+  const runGap = useCallback((from: number, to: number, then: () => void, seconds = to - from, ease?: (u: number) => number) => {
     cancelGap();
-    const ms = Math.max(0, to - from) * 1000;
+    const ms = Math.max(0, seconds) * 1000;
     const t0 = performance.now();
     const step = (now: number) => {
       const u = ms ? Math.min(1, (now - t0) / ms) : 1;
-      overrideRef.current = from + (to - from) * u;
+      overrideRef.current = from + (to - from) * (ease ? ease(u) : u);
       if (u < 1) gap.current = { raf: requestAnimationFrame(step) };
       else {
         gap.current = null;
@@ -172,6 +182,9 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     const audio = audioRef.current;
     if (!audio) return;
     const parked = overrideRef.current;
+    if (parked !== null && pendingSeek.current === null && parked >= offsetRef.current + (audio.duration || 0)) {
+      return; // resting beyond the last clip: nothing left to play
+    }
     if (parked !== null && pendingSeek.current === null && parked < offsetRef.current) {
       // parked in the silence before this clip: cross it first, then play
       setPlaying(true);
@@ -227,9 +240,9 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
       if (!audio || !timeline.length) return;
       const wasPlaying = !audio.paused || gap.current !== null;
       cancelGap();
-      const t = Math.min(Math.max(0, T), Math.max(0, total - 0.05));
+      const t = Math.min(Math.max(0, T), rest);
       const target = timeline.find((e) => t < e.offset + e.duration) ?? timeline[timeline.length - 1];
-      const rel = t - target.offset; // negative: in the silence before this person
+      const rel = t - target.offset; // negative: in the silence before this person; past duration: the glide
       if (target.voice.id === voiceId) {
         if (!audio.duration) {
           pendingSeek.current = rel;
@@ -237,7 +250,11 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
           return;
         }
         audio.currentTime = Math.min(audio.duration, Math.max(0, rel));
-        if (rel < 0) {
+        if (rel > audio.duration) {
+          overrideRef.current = t; // parked in the glide after the last clip
+          audio.pause();
+          setPlaying(false);
+        } else if (rel < 0) {
           overrideRef.current = t;
           if (wasPlaying) {
             audio.pause();
@@ -255,7 +272,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
       audio.pause();
       setVoiceId(target.voice.id);
     },
-    [timeline, total, voiceId, runGap],
+    [timeline, rest, voiceId, runGap],
   );
 
   /** The incoming clip's metadata is in: apply the pending seek, release the hold, resume. */
@@ -267,8 +284,9 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
       const rel = pendingSeek.current;
       pendingSeek.current = null;
       audio.currentTime = Math.min(audio.duration, Math.max(0, rel));
-      // a negative seek parks the line in the silence before this clip; play() crosses it
-      overrideRef.current = rel < 0 ? entry.offset + rel : null;
+      // a negative seek parks the line in the silence before this clip (play() crosses it);
+      // one past the clip parks it in the glide after the last
+      overrideRef.current = rel < 0 || rel > audio.duration ? entry.offset + rel : null;
     } else overrideRef.current = null;
     if (autoplay.current) {
       autoplay.current = false;
@@ -276,12 +294,15 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     }
   };
 
-  /** The clip ended: the silence runs, then the next person plays. After the last the line rests. */
+  /** The clip ended: the silence runs, then the next person plays. After the last, the glide. */
   const ended = () => {
     const i = timeline.indexOf(entry);
     const next = timeline[i + 1];
     if (!next) {
-      setPlaying(false);
+      // the audio has officially stopped: keep the speed, then ease to a halt
+      const from = entry.offset + entry.duration;
+      overrideRef.current = from;
+      runGap(from, rest, () => setPlaying(false), GLIDE, (u) => 2 * u - u * u); // slope 1 → 0
       return;
     }
     overrideRef.current = entry.offset + entry.duration; // hold here; the next clip loads underneath
@@ -340,7 +361,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
     const onWheel = (e: WheelEvent) => {
       const delta = e.deltaY + e.deltaX;
       const T = now();
-      if ((delta > 0 && T >= total - 0.1) || (delta < 0 && T <= 0.01)) return;
+      if ((delta > 0 && T >= rest - 0.1) || (delta < 0 && T <= 0.01)) return;
       e.preventDefault();
       acc += delta;
       if (raf) return;
@@ -357,7 +378,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
       el.removeEventListener("wheel", onWheel);
       if (raf) cancelAnimationFrame(raf);
     };
-  }, [xAt, tAt, now, seekGlobal, total]);
+  }, [xAt, tAt, now, seekGlobal, rest]);
 
   const scenesOf = (prefix: string) =>
     timeline.flatMap((e) =>
@@ -396,6 +417,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
         </div>
 
         <div className="ar-top__mid">
+          {showVariants && (
           <div className="ar-switch" role="group" aria-label="Design variant">
             {VARIANTS.map((v) => (
               <button
@@ -410,6 +432,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
               </button>
             ))}
           </div>
+          )}
         </div>
 
         <a className="ar-share" href={shareHref}>
