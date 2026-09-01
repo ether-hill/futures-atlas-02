@@ -43,7 +43,3 @@ export const VARIANTS = [
   { id: "type", label: "V5", name: "Type" },
 ] as const;
 export type Variant = (typeof VARIANTS)[number]["id"];
-
-/** Colour scheme: light and dark are the two trios; auto follows the OS. */
-export const SCHEMES = ["light", "auto", "dark"] as const;
-export type Scheme = (typeof SCHEMES)[number];

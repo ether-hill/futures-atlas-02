@@ -11,10 +11,10 @@
 
   THE LIGHT/DARK PRINCIPLE. Every colour in the piece is derived from three
   values — --ar-bg, --ar-ink, --ar-line — by color-mix or opacity. The light
-  trio is the default; the dark trio replaces it under prefers-color-scheme
-  (unless the section is pinned light) and when the section is pinned dark.
-  Nothing below the trios names a colour, so every variant holds on either
-  ground: swap the trio and the whole reel re-skins.
+  trio is the default; the dark trio replaces it under html.dark, which is the
+  site's one theme switch (the nav toggle, stored as "fa-theme"). The reel has
+  no toggle of its own. Nothing below the trios names a colour, so every
+  variant holds on either ground: swap the trio and the whole reel re-skins.
 */
 .ar {
   /* light trio */
@@ -43,15 +43,7 @@
   color: var(--ar-ink);
   color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  .ar:not([data-scheme="light"]) {
-    --ar-bg: #0e0e10;
-    --ar-ink: #f3efe6;
-    --ar-line: #e2a97c;
-    color-scheme: dark;
-  }
-}
-.ar[data-scheme="dark"] {
+html.dark .ar {
   --ar-bg: #0e0e10;
   --ar-ink: #f3efe6;
   --ar-line: #e2a97c;
@@ -99,7 +91,7 @@
 }
 .ar-share:hover { background: var(--ar-ink); color: var(--ar-bg); }
 
-/* variant + scheme switches */
+/* variant switch */
 .ar-top__mid { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .ar-switch {
   display: inline-flex;
@@ -135,6 +127,23 @@
 }
 .ar[data-drag="1"] .ar-viewport { cursor: grabbing; }
 .ar-track img, .ar-track video { pointer-events: none; -webkit-user-drag: none; }
+/* depth: the viewport is a stage with its vanishing point on the playhead */
+.ar-viewport { perspective: 1200px; perspective-origin: 33% 50%; }
+.ar-track--near { position: relative; z-index: 1; }
+.ar-track.ar-track--far {
+  /* doubled class so this transform outranks .ar-track's flat one below */
+  display: none; /* variants that use depth turn their layers on */
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  transform: translate3d(calc(var(--reel-x, 0) * -1px), var(--far-y, 0px), var(--far-z, -1500px));
+}
+.ar-track--far .ar-scene {
+  /* no approach fade in the distance: the layer's own opacity does that */
+  opacity: 1;
+  transform: translate3d(calc(var(--reel-x, 0) * (1 - var(--p, 1)) * 1px), 0, 0);
+}
 .ar-track {
   display: flex;
   align-items: center;
@@ -146,6 +155,8 @@
   transform: translate3d(calc(var(--reel-x, 0) * -1px), 0, 0);
   will-change: transform;
 }
+/* a new person on the line gets a breath before their portrait */
+.ar-scene--portrait:not(:first-child) { margin-left: clamp(40px, 8vw, 140px); }
 .ar-scene {
   flex: none;
   transform: translate3d(calc(var(--reel-x, 0) * (1 - var(--p, 1)) * 1px), 0, 0)
@@ -206,12 +217,6 @@
   font-size: clamp(28px, 4vw, 56px);
   background: var(--ar-scrim);
   z-index: 4;
-}
-.ar-countdown__label {
-  font: 600 11px/1 var(--ar-mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ar-ink-soft);
 }
 
 /* progress rule — only the Type variant shows it */
@@ -339,6 +344,13 @@
   letter-spacing: -0.01em;
 }
 .ar[data-variant="cinema"] .ar-quote__open { margin-left: 0; }
+.ar[data-variant="cinema"] .ar-track--far-1 {
+  display: flex;
+  --far-z: -1600px;
+  --far-y: -22%;
+  opacity: 0.5;
+  filter: grayscale(1);
+}
 .ar[data-variant="cinema"] .ar-viewport::before,
 .ar[data-variant="cinema"] .ar-viewport::after {
   content: "";
@@ -377,6 +389,8 @@
 .ar[data-variant="deck"] .ar-quote { max-width: 44vw; padding: clamp(24px, 3vw, 44px); }
 .ar[data-variant="deck"] .ar-quote p { font-size: clamp(26px, 3.6vw, 60px); line-height: 1.1; }
 .ar[data-variant="deck"] .ar-quote__open { margin-left: 0; }
+.ar[data-variant="deck"] .ar-track--far-1 { display: flex; --far-z: -1800px; --far-y: -30%; opacity: 0.45; }
+.ar[data-variant="deck"] .ar-track--far-2 { display: flex; --far-z: -750px; --far-y: 34%; opacity: 0.7; }
 .ar[data-variant="deck"] .ar-play { border-radius: 24px; }
 
 /* ---- V5 · Type: the words carry it; media are footnotes; a progress rule on top ---- */
@@ -410,6 +424,10 @@
   -webkit-text-stroke: 1.5px var(--ar-ink);
 }
 .ar[data-variant="type"] .ar-portrait__img { width: clamp(180px, 18vw, 260px); margin-left: clamp(80px, 12vw, 200px); }
+.ar[data-variant="type"] .ar-track--far-1 { display: flex; --far-z: -1400px; --far-y: -28%; opacity: 0.45; }
+.ar[data-variant="type"] .ar-track--far .ar-scene--quote { display: none; } /* only the pictures recede */
+.ar[data-variant="type"] .ar-track--far .ar-scene--media { align-self: center; margin-bottom: 0; }
+.ar[data-variant="type"] .ar-track--far .ar-media { height: clamp(280px, 52vh, 560px); }
 .ar[data-variant="type"] .ar-wave__bars { gap: 3px; }
 .ar[data-variant="type"] .ar-wave__bars--played span { opacity: 1; background: var(--ar-line); }
 .ar[data-variant="type"] .ar-play { background: var(--ar-line); color: var(--ar-bg); }
@@ -422,6 +440,7 @@
     padding-right: 0;
     width: 100%;
   }
+  .ar[data-rm="1"] .ar-track--far { display: none; }
   .ar[data-rm="1"] .ar-scene {
     position: absolute;
     left: 50%;

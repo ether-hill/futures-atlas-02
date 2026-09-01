@@ -9,34 +9,56 @@ animates on scroll or its own clock; pause freezes the reel, seeking snaps it.
 
 Mounted at `/listen` (internal, gated via `INTERNAL_PATHS` in middleware).
 
+## One line
+
+Every voice sits on a single timeline, back to back in `index.json` order:
+Scott's scenes, then Amara's, and so on, one long strip. Global time is the
+current clip's time plus the clips before it (`offsetRef`); each clip's
+length comes from its metadata (preloaded for all voices at mount, a
+`start + 6s` guess until then). A seek that lands in another person's
+stretch swaps the clip underneath: the reel holds at the target second
+(`overrideRef`) until the new metadata lands, then the pending seek applies
+and playback resumes if it was running. When a clip ends the next begins
+where it stops; the last wraps to the first. The "Voice of" select is a
+jump list and follows the line.
+
 ## Driving it by hand
 
-The reel can be scrubbed directly — drag it, or swipe horizontally on a
-trackpad — but the gesture **seeks the audio; it never moves the track**.
-`useAudioClock` exposes the scene map both ways (`xAt(t)` and `tAt(x)`), so
-a drag of *dx* px becomes `seek(tAt(xAt(t0) − dx))` and the reel follows the
-clock as usual. A drag pauses for its duration and resumes on release; a
-plain press on the reel toggles play. Vertical wheel is left to the page.
+The wheel drives the line — scrolling down moves it on, up brings it back;
+horizontal deltas count too — and so does a drag on the reel. Either way the
+gesture **seeks the audio; it never moves the track**: `useAudioClock`
+exposes the scene map both ways (`xAt(t)` and `tAt(x)`), so a gesture of
+*dx* px becomes `seek(tAt(xAt(t0) − dx))` and the reel follows the clock as
+usual. At either end of the line the wheel goes back to the page, so the
+rest of the site stays reachable. A drag pauses for its duration and
+resumes on release; a plain press on the reel toggles play. On touch,
+horizontal swipes scrub and vertical ones scroll the page (`touch-action:
+pan-y`).
 
-## Continuous play
+## Depth
 
-When a clip ends the next voice in `index.json` order loads, an "Up next ·
-Name" card holds for a beat, and it plays — looping back to the first. Pass
-`continuous={false}` to stop at the end of each clip.
+Cinema, Deck and Type repeat the scene row as extra layers pushed back on
+the z axis (`.ar-track--far`, `DEPTH` in `AudioReel`) under a real CSS
+perspective whose origin sits on the playhead. The browser shrinks and
+slows them, and the vanishing point stays where a scene lands, so the
+distance shows what has passed and what is coming, small and dim,
+converging behind the scene that is playing. Editorial and Ledger stay
+flat; reduced motion hides the layers.
 
-## Variants and schemes
+## Variants, light and dark
 
 Five designs share one DOM and one clock; only a stylesheet block differs
 (`.ar[data-variant=…]`). V1 Editorial (the brief), V2 Ledger, V3 Cinema, V4
 Deck, V5 Type. The top bar switches them, and they are linkable:
-`/listen?v=cinema&scheme=dark`.
+`/listen?v=cinema`.
 
 **Light / dark principle.** Every colour derives from a trio — `--ar-bg`,
 `--ar-ink`, `--ar-line` — by `color-mix` or opacity. The light trio is the
-default; the dark trio applies under `prefers-color-scheme: dark` (unless
-pinned `light`) and when pinned `dark`. Nothing below the trios names a
-colour, so every variant holds on either ground. Add a variant by adding a
-block that uses the trio and its derivatives only.
+default; the dark trio applies under `html.dark`, the site's own theme class
+(the nav toggle; `atlas-nav.js` stores it as `fa-theme`). The reel has no
+toggle of its own. Nothing below the trios names a colour, so every variant
+holds on either ground. Add a variant by adding a block that uses the trio
+and its derivatives only.
 
 ## Authoring a new voice
 
@@ -68,11 +90,13 @@ block that uses the trio and its derivatives only.
 
 ## Pieces
 
-- `AudioReel` — state (voice, play, countdown, up-next, variant, scheme),
-  top bar, drag/wheel scrubbing, continuous play, transcript
+- `AudioReel` — the line (timeline, global seek, clip swap), state (voice,
+  play, countdown, variant), top bar, drag/wheel scrubbing, depth layers,
+  transcript
 - `useAudioClock` — the rAF clock; measures scene offsets, writes
   `--t --progress --reel-x --fade-w` (section) and `--d --active` (per scene);
-  exposes `xAt` / `tAt` for scrubbing
+  reads global time via `offsetRef` / `overrideRef`; exposes `xAt` / `tAt`
+  for scrubbing
 - `Scene` — the three scene types; videos play only while audio plays and the
   scene is on screen
 - `Waveform` — 240-peak strip; played bars clipped by `--progress`; the seek
