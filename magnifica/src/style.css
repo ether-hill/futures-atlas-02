@@ -695,6 +695,19 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 .v-type { margin-top: auto; padding-top: 10px; color: var(--faint); font: 500 10px var(--mono); letter-spacing: 0.12em; text-transform: uppercase; }
 /* Licence attribution — rendered, never hidden. See portraits.ts. */
 .v-credit { padding: 0 15px 13px; color: var(--faint); font-size: 10px; line-height: 1.4; }
+/* Phones: a 3-wide contact sheet rather than sixteen full cards stacked a
+   screen apiece. The card keeps its portrait, name, tradition tag and the
+   licence line (never hidden); office, document title and form move to the
+   voice page, which is one tap away. */
+@media (max-width: 680px) {
+  .voices { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .v-body { padding: 8px 8px 6px; gap: 3px; }
+  .v-name { font-size: 11.5px; line-height: 1.2; }
+  .v-office, .v-doc, .v-type { display: none; }
+  .v-trad { left: 5px; bottom: 5px; right: 5px; padding: 3px 5px; font-size: 7.5px; letter-spacing: 0.08em; line-height: 1.3; }
+  .v-mono { font-size: 24px; }
+  .v-credit { padding: 0 8px 8px; font-size: 8.5px; line-height: 1.3; }
+}
 
 /* ---------- 3 · the real document ---------- */
 .doc-head { display: grid; gap: clamp(20px, 3vw, 44px); align-items: start; margin-bottom: clamp(28px, 4vw, 48px); }
