@@ -18,13 +18,31 @@ export type ProjectStatus = "live" | "in-progress" | "concept";
  */
 export type ProjectVisibility = "live" | "draft";
 
+/**
+ * What a project IS, as opposed to what it is about. `field` stays the subject
+ * tag on the card ("Waves & optics", "AI & risk"); this is the shelf it sits
+ * on, and it is what the listing groups by.
+ */
+export type ProjectKind = "visuals" | "game" | "tool" | "story";
+
+export const KIND_LABEL: Record<ProjectKind, string> = {
+  visuals: "Visuals",
+  game: "Game",
+  tool: "Tool",
+  story: "Story",
+};
+
+/** Listing order, so the filter row does not depend on the data's order. */
+export const KIND_ORDER: ProjectKind[] = ["visuals", "game", "tool", "story"];
+
 export interface Project {
   id: string;
   title: string;
   tagline: string;
   year: string;
   date: string; // full date YYYY-MM-DD (used for ordering + display)
-  field: string; // short category, e.g. "Rural futures"
+  field: string; // short subject tag, e.g. "Rural futures"
+  kind: ProjectKind; // what it is: the listing groups by this
   status: ProjectStatus;
   visibility: ProjectVisibility; // live = public; draft = editors only
   url?: string; // external link if it exists
@@ -44,6 +62,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-31",
     field: "Waves & optics",
+    kind: "visuals",
     status: "live",
     visibility: "live",
     path: "/interference",
@@ -58,6 +77,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-31",
     field: "Data & evidence",
+    kind: "tool",
     status: "live",
     visibility: "draft",
     path: "/mappings",
@@ -70,6 +90,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-11",
     field: "AI & faith",
+    kind: "story",
     status: "live",
     visibility: "live",
     path: "/magnifica",
@@ -83,6 +104,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-02-14",
     field: "AI & risk",
+    kind: "game",
     status: "live",
     visibility: "live",
     path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
@@ -97,6 +119,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-07-02",
     field: "AI & risk",
+    kind: "tool",
     status: "live",
     visibility: "live",
     path: "/signal-reactor",
@@ -110,6 +133,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-07-03",
     field: "AI & risk",
+    kind: "tool",
     status: "live",
     visibility: "live",
     path: "/quantum-spark",
@@ -123,6 +147,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
+    kind: "tool",
     status: "live",
     visibility: "draft",
     path: "/manipulate-the-data", // static bundle served within this site
@@ -136,6 +161,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
+    kind: "tool",
     status: "live",
     visibility: "draft",
     path: "/manipulate-the-data/quantum",
@@ -149,6 +175,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
+    kind: "tool",
     status: "live",
     visibility: "draft",
     path: "/manipulate-the-data/ai-gigawatts",
@@ -162,6 +189,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-07-01",
     field: "Simulation",
+    kind: "game",
     status: "live",
     visibility: "draft",
     path: "/hyperscale",
@@ -175,6 +203,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-04-10",
     field: "Rural futures",
+    kind: "story",
     status: "live",
     visibility: "draft",
     path: "/village-oracle", // the full project, served within this site
@@ -188,6 +217,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-19",
     field: "Generative visuals",
+    kind: "visuals",
     status: "in-progress",
     visibility: "live",
     path: "/generatives", // self-contained Vite static bundle (dashboard + embed player)
@@ -201,6 +231,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
+    kind: "game",
     status: "live",
     visibility: "live",
     path: "/swipe-the-future",
@@ -214,6 +245,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
+    kind: "game",
     status: "live",
     visibility: "draft",
     path: "/swipe-v1",
@@ -227,6 +259,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-28",
     field: "Generative visuals",
+    kind: "visuals",
     status: "live",
     visibility: "draft",
     path: "/trajectories",
@@ -240,6 +273,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "AI & risk",
+    kind: "game",
     status: "live",
     visibility: "draft",
     path: "/quantum-lag",
@@ -253,6 +287,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-24",
     field: "AI & risk",
+    kind: "story",
     status: "live",
     visibility: "draft",
     path: "/quantum-dominance",
@@ -266,6 +301,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-23",
     field: "AI & risk",
+    kind: "game",
     status: "live",
     visibility: "draft",
     path: "/woodchipper",
@@ -273,12 +309,13 @@ export const projects: Project[] = [
   },
   {
     id: "actually-hard-questions",
-    title: "Actually Hard Questions",
+    title: "Hard Questions",
     tagline:
       "A workshop tool dressed as Anthropic's homepage. Hang a room's hardest AI questions on their five headings, beside what they published there.",
     year: "2026",
     date: "2026-08-13",
     field: "Public engagement",
+    kind: "tool",
     status: "live",
     visibility: "live",
     path: "/actually-hard-questions", // hand-authored static bundle, served within this site
@@ -292,6 +329,7 @@ export const projects: Project[] = [
     year: "2025",
     date: "2025-11-30",
     field: "Systems & evidence",
+    kind: "story",
     status: "live",
     visibility: "draft",
     path: "/underground-intelligence", // the full project, served within this site
@@ -305,6 +343,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-05-28",
     field: "Quantum & computation",
+    kind: "visuals",
     status: "in-progress",
     visibility: "draft",
     path: "/quantum-sandbox", // self-contained Vite static bundle served within this site
@@ -318,6 +357,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-22",
     field: "Data visualisation",
+    kind: "visuals",
     status: "in-progress",
     visibility: "draft",
     path: "/literal-frequency", // self-contained Vite static bundle served within this site
@@ -331,6 +371,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-17",
     field: "Creative tools",
+    kind: "tool",
     status: "live",
     visibility: "draft",
     path: "/social-composer", // self-contained Next static export served within this site
@@ -376,6 +417,12 @@ export const editorOrdered: Project[] = [...liveProjects, ...draftProjects];
 /** The distinct category tags (from `field`) present in a given list. */
 export function fieldsOf(items: Project[]): string[] {
   return Array.from(new Set(items.map((p) => p.field)));
+}
+
+/** The kinds present in a list, in KIND_ORDER rather than data order. */
+export function kindsOf(items: Project[]): ProjectKind[] {
+  const present = new Set(items.map((p) => p.kind));
+  return KIND_ORDER.filter((k) => present.has(k));
 }
 
 /** The distinct category tags across the public listing. */

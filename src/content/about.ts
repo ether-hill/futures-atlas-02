@@ -10,7 +10,7 @@ export const HERO = {
   eyebrow: "About",
   headline: "A prototype lab for foresight",
   standfirst:
-    "Futures Atlas is a showcase and prototype lab. We build frameworks and modular components for foresight, mostly around quantum computing, the evolution of quantum applications, emerging AI, and the organisations and people driving them. Some of what we post is editorial. Some is a working prototype with code you can copy. Some is a full, tested suite of tools and workshops. Take a piece, wire several together, or start your own path from one.",
+    "Futures Atlas is a showcase and prototype lab. We build frameworks and modular components for foresight, mostly around compute: quantum computing and where its applications are going, emerging AI, the power and infrastructure behind it, and the organisations and people driving all of it. Some of what we post is editorial. Some is a working prototype with code you can copy. Some is a full, tested suite of tools and workshops. Take a piece, wire several together, or start your own path from one.",
   kicker: "It’s meant to be used.",
 };
 

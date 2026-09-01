@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Container } from "@/components/Container";
 import { ProjectCard } from "@/components/ProjectCard";
-import { fieldsOf, type Project } from "@/data/projects";
+import { KIND_LABEL, kindsOf, type Project } from "@/data/projects";
 
 // The interactive half of the listing. It filters whatever list it is handed, // deciding what belongs in that list (public vs editor) is the page's job, so a
 // draft can never reach the browser for a visitor who isn't signed in.
@@ -15,18 +15,12 @@ export function ProjectsBrowser({
   showVisibility?: boolean;
 }) {
   const [active, setActive] = useState<string | null>(null);
-  const filtered = active ? items.filter((p) => p.field === active) : items;
-  const fields = fieldsOf(items);
+  const filtered = active ? items.filter((p) => p.kind === active) : items;
+  const kinds = kindsOf(items);
 
   return (
     <div className="min-h-[70vh] bg-surface py-[clamp(48px,8vw,110px)]">
       <Container>
-        <div className="mb-3.5 flex flex-wrap items-baseline gap-4">
-          <span className="h-px min-w-10 flex-1 bg-ink/[0.18]" />
-          <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-graphite">
-            {filtered.length} {filtered.length === 1 ? "project" : "projects"}
-          </span>
-        </div>
         <h1 className="mb-[clamp(26px,4vw,46px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
           Projects
         </h1>
@@ -34,13 +28,13 @@ export function ProjectsBrowser({
         {/* category filters */}
         <div className="mb-[clamp(28px,4vw,48px)] flex flex-wrap gap-2.5">
           <FilterTag label="All" count={items.length} active={active === null} onClick={() => setActive(null)} />
-          {fields.map((f) => (
+          {kinds.map((k) => (
             <FilterTag
-              key={f}
-              label={f}
-              count={items.filter((p) => p.field === f).length}
-              active={active === f}
-              onClick={() => setActive(f)}
+              key={k}
+              label={KIND_LABEL[k]}
+              count={items.filter((p) => p.kind === k).length}
+              active={active === k}
+              onClick={() => setActive(k)}
             />
           ))}
         </div>

@@ -540,7 +540,9 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 .banner {
   position: relative;
   margin: 0 calc(var(--gutter) * -1);
-  padding: clamp(40px, 8vh, 96px) var(--gutter) clamp(28px, 4vh, 48px);
+  /* wider than the page gutter on purpose: the copy and the print both run to
+     the edge of this band, and at the gutter they sat on its border */
+  padding: clamp(40px, 8vh, 96px) clamp(30px, 5vw, 76px) clamp(28px, 4vh, 48px);
   min-height: min(84vh, 780px);
   display: flex;
   flex-direction: column;

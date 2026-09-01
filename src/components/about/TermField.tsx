@@ -15,9 +15,8 @@ import { TERMS, TERM_LINKS, type Term, type TermCluster } from "@/content/about"
  * offsets and eased toward its new answer (recomputed cold every frame, it
  * flip-flops between equally valid solutions, which reads as a jiggle), and
  * type size is quantised, because a size changing by a hundredth of a pixel
- * every frame shimmers. On a pointer device each term drifts a little toward
- * the cursor on its own, eased, so the words follow it rather than the whole
- * field swinging.
+ * every frame shimmers. The field turns on its own, slowly enough to read as
+ * weather rather than motion, and answers to a drag.
  *
  * Positions are written straight onto the DOM inside the animation frame,
  * never through React state, so ~60 labels and ~70 lines cost one rAF.
@@ -28,7 +27,7 @@ import { TERMS, TERM_LINKS, type Term, type TermCluster } from "@/content/about"
 const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
 /** Camera distance in sphere radii — smaller is a stronger perspective. */
 const FOV = 2.4;
-const SPIN = 0.00006; // radians per ms, a full turn takes ~2m 55s
+const SPIN = 0.000028; // radians per ms, a full turn takes about six minutes
 
 const CLUSTER_ORDER: TermCluster[] = ["futures", "quantum", "ai", "society", "craft"];
 /** How far a family spreads from its anchor, in radians of arc. */
@@ -40,15 +39,6 @@ const SETTLE = 0.07;
 const MAX_NUDGE_X = 46;
 const MAX_NUDGE_Y = 34;
 
-/**
- * Cursor: each term drifts a little toward the pointer, on its own, on a
- * smoothstep falloff. Nothing moves the field as a whole — the attraction is
- * per node, capped, and heavily eased, so it reads as the words leaning in
- * rather than the camera swinging.
- */
-const ATTRACT_RADIUS = 265;
-const ATTRACT_PULL = 34; // px, at the centre of the falloff
-const ATTRACT_EASE = 0.075;
 
 interface Node extends Term {
   x: number;
@@ -168,7 +158,6 @@ export function TermField() {
     if (!el) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     const len = nodes.length;
 
     let w = el.clientWidth;
@@ -178,9 +167,6 @@ export function TermField() {
     let baseX = -0.22;
     let dragY = 0;
     let dragX = 0;
-    let cursorX = 0;
-    let cursorY = 0;
-    let cursorOn = false;
     let dragging = false;
     let lastX = 0;
     let lastY = 0;
@@ -190,9 +176,6 @@ export function TermField() {
     // persisted across frames: the whole point of not jiggling
     const offX = new Float64Array(len);
     const offY = new Float64Array(len);
-    const attX = new Float64Array(len);
-    const attY = new Float64Array(len);
-    const lift = new Float64Array(len);
     // scratch, allocated once
     const X = new Float64Array(len);
     const Y = new Float64Array(len);
@@ -252,33 +235,8 @@ export function TermField() {
         const bx = ox + x1 * rx * p;
         const by = oy + y2 * ry * p;
 
-        /*
-          Per-term attraction. Measured from where the term was drawn last
-          frame, so it never feeds back on itself, capped at half the distance
-          to the cursor so nothing overshoots it, and scaled by depth so the
-          foreground leans further than the back. The ease is what makes it a
-          drift instead of a snap.
-        */
-        let wantX = 0;
-        let wantY = 0;
-        if (cursorOn) {
-          const dx = cursorX - PX[i];
-          const dy = cursorY - PY[i];
-          const d = Math.hypot(dx, dy) || 1;
-          const t = Math.max(0, 1 - d / ATTRACT_RADIUS);
-          const s = t * t * (3 - 2 * t); // smoothstep
-          const pull = Math.min(s * ATTRACT_PULL * p, d * 0.5);
-          wantX = (dx / d) * pull;
-          wantY = (dy / d) * pull;
-          lift[i] += (s - lift[i]) * ATTRACT_EASE;
-        } else {
-          lift[i] += (0 - lift[i]) * ATTRACT_EASE;
-        }
-        attX[i] += (wantX - attX[i]) * ATTRACT_EASE;
-        attY[i] += (wantY - attY[i]) * ATTRACT_EASE;
-
-        X0[i] = bx + attX[i];
-        Y0[i] = by + attY[i];
+        X0[i] = bx;
+        Y0[i] = by;
         X[i] = X0[i] + offX[i];
         Y[i] = Y0[i] + offY[i];
         P[i] = p;
@@ -335,15 +293,12 @@ export function TermField() {
       for (let i = 0; i < len; i++) {
         const node = labels.current[i];
         if (!node) continue;
-        // The nearby terms only brighten. Scaling them as well made the
-        // cursor feel like a magnifier rather than a draw.
-        const g = lift[i];
         const depth = Math.pow(Math.max(0, (P[i] - 0.68) / 0.72), 1.5);
 
         node.style.transform = `translate(${PX[i].toFixed(1)}px, ${PY[i].toFixed(1)}px) translate(-50%, -50%)`;
         node.style.fontSize = `${FS[i].toFixed(2)}px`;
-        node.style.opacity = Math.min(1, 0.3 + 0.7 * depth + g * 0.22).toFixed(3);
-        node.style.zIndex = String(Math.round((2 - Z[i]) * 100 + g * 200));
+        node.style.opacity = Math.min(1, 0.3 + 0.7 * depth).toFixed(3);
+        node.style.zIndex = String(Math.round((2 - Z[i]) * 100));
       }
 
       for (let i = 0; i < edges.length; i++) {
@@ -354,9 +309,8 @@ export function TermField() {
         line.setAttribute("y1", PY[a].toFixed(1));
         line.setAttribute("x2", PX[b].toFixed(1));
         line.setAttribute("y2", PY[b].toFixed(1));
-        const g = Math.max(lift[a], lift[b]);
         const dep = (P[a] + P[b]) / 2;
-        line.style.opacity = (0.02 + 0.12 * (dep - 0.7) + g * 0.25).toFixed(3);
+        line.style.opacity = (0.02 + 0.12 * (dep - 0.7)).toFixed(3);
       }
     }
 
@@ -395,12 +349,8 @@ export function TermField() {
     setReady(true);
     if (!reduce) frame = requestAnimationFrame(loop);
 
-    // cursor: the field leans toward it, and terms near it lift
+    // drag turns the field; nothing else follows the pointer
     const point = (e: PointerEvent) => {
-      const r = el.getBoundingClientRect();
-      cursorX = e.clientX - r.left;
-      cursorY = e.clientY - r.top;
-      cursorOn = fine;
       if (dragging) {
         dragY += (e.clientX - lastX) * 0.00035;
         dragX += (e.clientY - lastY) * 0.00025;
@@ -408,9 +358,6 @@ export function TermField() {
         lastY = e.clientY;
         if (reduce) draw(0);
       }
-    };
-    const leave = () => {
-      cursorOn = false;
     };
     const down = (e: PointerEvent) => {
       dragging = true;
@@ -424,7 +371,6 @@ export function TermField() {
     };
     el.addEventListener("pointerdown", down);
     el.addEventListener("pointermove", point);
-    el.addEventListener("pointerleave", leave);
     el.addEventListener("pointerup", up);
     el.addEventListener("pointercancel", up);
 
@@ -433,7 +379,6 @@ export function TermField() {
       ro.disconnect();
       el.removeEventListener("pointerdown", down);
       el.removeEventListener("pointermove", point);
-      el.removeEventListener("pointerleave", leave);
       el.removeEventListener("pointerup", up);
       el.removeEventListener("pointercancel", up);
     };
