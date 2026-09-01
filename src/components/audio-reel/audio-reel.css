@@ -180,8 +180,8 @@ html.dark .ar {
      a deep scene also goes back along z and up into the high band */
   transform: translate3d(
       calc(var(--d, 0) * (var(--p, 1) - 1) * 1px),
-      calc(var(--depth, 0) * -30vh),
-      calc(var(--depth, 0) * -900px)
+      calc(var(--depth, 0) * -46vh),
+      calc(var(--depth, 0) * -1100px)
     );
   will-change: transform;
 }

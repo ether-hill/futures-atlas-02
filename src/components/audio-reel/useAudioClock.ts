@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef } from "react";
 const SPEED_FLOOR = 110; // px/s — never slower than this, however sparse the scenes
 const SCENE_GAP = 160; // px of clear air between neighbouring scenes at the chosen speed
 const PERSPECTIVE = 1200; // px — must match .ar-viewport's perspective
-const DEPTH_Z = 900; // px — a scene at depth 1 sits this far back (matches the CSS)
+const DEPTH_Z = 1100; // px — a scene at depth 1 sits this far back (matches the CSS)
 const FADE_IN = 1.0; // s — each clip's volume ramps up from silence
 const FADE_OUT = 1.4; // s — and down into it
 
