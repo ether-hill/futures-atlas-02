@@ -58,10 +58,11 @@ export const projects: Project[] = [
     id: "future-stock",
     title: "Future Stock",
     tagline:
-      "The Amazons of the future will sell things that sound impossible right up until they are ordinary. A guided prompt generator: pick the aisle, the year and what changed about the world, take away two prompts — one for your image tool, one for your chatbot — and turn a hunch into a product listing from 2040. The keepers land on the shelf below it, a living inventory of merchandise that does not exist yet.",
+      "Pick the aisle, the year and what changed about the world, and take away two prompts that turn a hunch into a product listing from the marketplaces of the future. The keepers land on the shelf.",
     year: "2026",
     date: "2026-08-31",
     field: "Speculative commerce",
+    kind: "tool",
     status: "concept",
     visibility: "draft",
     path: "/future-stock",
