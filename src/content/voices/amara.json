@@ -1,0 +1,13 @@
+{
+  "id": "amara",
+  "name": "Amara",
+  "role": "nurse and community organiser",
+  "audio": "/audio-reel/amara.mp3",
+  "peaks": "/audio-reel/amara.peaks.json",
+  "scenes": [
+    { "type": "portrait", "start": 0, "src": "/audio-reel/amara-portrait.jpg", "caption": "Amara runs a neighbourhood health collective." },
+    { "type": "quote", "start": 6, "text": "Who looks after the people the system forgets?" },
+    { "type": "media", "start": 11, "src": "/audio-reel/amara-scene.jpg", "parallax": 0.75 },
+    { "type": "quote", "start": 17, "text": "Care is not a dataset." }
+  ]
+}

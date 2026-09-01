@@ -1,0 +1,227 @@
+/*
+  Audio reel — all motion lives here, driven by custom properties that
+  useAudioClock writes every frame (unitless px numbers):
+    section: --t --progress --reel-x --fade-w
+    scene:   --d (distance from hairline) --p (parallax) --active (0/1)
+
+  PALETTE: this piece carries its own art direction per its brief (warm paper,
+  near-black ink, terracotta hairline) — deliberately NOT the atlas theme
+  tokens, in the same way Quantum Lag locks dark. Colour literals are confined
+  to this file.
+*/
+.ar {
+  --ar-bg: #fbfaf7;
+  --ar-ink: #1a1a1a;
+  --ar-line: #d9a37a;
+  --ar-serif: "Tiempos Headline", Georgia, serif;
+
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  height: calc(100dvh - var(--ar-top, 0px)); /* --ar-top: our offset below the shell bar */
+  overflow: hidden;
+  background: var(--ar-bg);
+  color: var(--ar-ink);
+}
+
+/* ---------- top bar ---------- */
+.ar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: clamp(16px, 2.5vw, 32px) clamp(16px, 3vw, 40px);
+  z-index: 3;
+}
+.ar-top__voice { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.ar-top__label { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.65; white-space: nowrap; }
+.ar-select {
+  appearance: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ar-ink);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--ar-ink) 30%, transparent);
+  border-radius: 999px;
+  padding: 8px 36px 8px 16px;
+  max-width: 60vw;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 20px) 55%, calc(100% - 15px) 55%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+}
+.ar-share {
+  font-size: 14px;
+  color: var(--ar-ink);
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--ar-ink) 30%, transparent);
+  border-radius: 999px;
+  padding: 8px 18px;
+  white-space: nowrap;
+}
+.ar-share:hover { background: var(--ar-ink); color: var(--ar-bg); }
+
+/* ---------- the reel ---------- */
+.ar-viewport { position: relative; overflow: hidden; z-index: 1; }
+.ar-hairline {
+  position: absolute;
+  left: 33%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--ar-line);
+  z-index: 2;
+  pointer-events: none;
+}
+.ar-track {
+  display: flex;
+  align-items: center;
+  gap: clamp(40px, 6vw, 96px);
+  height: 100%;
+  padding-left: 33vw;
+  padding-right: 50vw;
+  width: max-content;
+  transform: translate3d(calc(var(--reel-x, 0) * -1px), 0, 0);
+  will-change: transform;
+}
+.ar-scene {
+  flex: none;
+  transform: translate3d(calc(var(--reel-x, 0) * (1 - var(--p, 1)) * 1px), 0, 0)
+    scale(clamp(0.96, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.04), 1));
+  opacity: clamp(0.35, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.65), 1);
+  will-change: transform, opacity;
+}
+
+/* portrait: giant serif name overlapping the top edge of a 4:5 photo */
+.ar-scene--portrait .ar-portrait { position: relative; margin: 0; padding-top: clamp(28px, 4vw, 64px); }
+.ar-portrait__name {
+  position: absolute;
+  top: 0;
+  left: -0.06em;
+  font-family: var(--ar-serif);
+  font-size: clamp(64px, 11vw, 160px);
+  line-height: 0.8;
+  z-index: 1;
+  pointer-events: none;
+}
+.ar-portrait__img {
+  display: block;
+  width: clamp(220px, 26vw, 380px);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+.ar-portrait__caption { margin-top: 12px; font-size: 13px; line-height: 1.5; max-width: 34ch; opacity: 0.75; }
+
+/* media: image or muted looping video, 4:5 */
+.ar-media {
+  display: block;
+  height: clamp(280px, 52vh, 560px);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+/* quote: big serif with a hanging opening quote */
+.ar-quote { margin: 0; max-width: 60vw; }
+.ar-quote p {
+  margin: 0;
+  font-family: var(--ar-serif);
+  font-size: clamp(34px, 6.5vw, 120px);
+  line-height: 1.06;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+.ar-quote__open { margin-left: -0.45em; }
+
+/* countdown overlay */
+.ar-countdown {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--ar-serif);
+  font-size: clamp(28px, 4vw, 56px);
+  background: color-mix(in srgb, var(--ar-bg) 82%, transparent);
+  z-index: 4;
+}
+
+/* ---------- bottom: waveform + play ---------- */
+.ar-bottom { position: relative; z-index: 3; }
+.ar-wave {
+  position: relative;
+  height: 120px;
+  cursor: pointer;
+  touch-action: none;
+  outline-offset: -4px;
+}
+.ar-wave__bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  padding: 12px clamp(16px, 3vw, 40px);
+  pointer-events: none;
+}
+.ar-wave__bars span { flex: 1 1 0; background: var(--ar-ink); min-height: 2px; }
+.ar-wave__bars--base span { opacity: 0.12; }
+.ar-wave__bars--played span { opacity: 0.4; }
+.ar-wave__bars--played {
+  clip-path: inset(0 calc((1 - var(--progress, 0)) * 100%) 0 0);
+}
+.ar-play {
+  position: absolute;
+  right: clamp(16px, 3vw, 40px);
+  bottom: 64px;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ar-ink);
+  color: var(--ar-bg);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 4;
+}
+.ar-play:hover { transform: scale(1.04); }
+
+/* hidden transcript (screen readers + find-in-page) */
+.ar-transcript {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ---------- reduced motion: crossfade in place ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ar[data-rm="1"] .ar-track {
+    transform: none;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+  }
+  .ar[data-rm="1"] .ar-scene {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    translate: -50% -50%;
+    transform: none;
+    opacity: var(--active, 0);
+    transition: opacity 0.6s ease;
+  }
+  .ar[data-rm="1"] .ar-hairline { display: none; }
+}
+
+/* ---------- narrow screens ---------- */
+@media (max-width: 640px) {
+  .ar-quote { max-width: 78vw; }
+  .ar-play { width: 64px; height: 64px; bottom: 76px; }
+  .ar-wave { height: 88px; }
+  .ar-top { flex-wrap: wrap; }
+}

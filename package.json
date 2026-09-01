@@ -10,7 +10,8 @@
     "build:subapps": "bash scripts/build-subapps.sh",
     "build": "node scripts/gen-footer.mjs && node scripts/gen-logo-animator.mjs && bash scripts/build-subapps.sh && bash scripts/reset-build-cache.sh && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "peaks": "node scripts/peaks.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
