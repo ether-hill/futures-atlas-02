@@ -98,94 +98,101 @@ export type Pool = {
   };
 };
 
-export type Beat = {
-  id: string;
-  summary: string;
-  /** SourceLine ids. At least one, always. */
-  citations: string[];
+/* ── the storyboard ─────────────────────────────────────────────────────── */
+
+/**
+ * One thing that can appear on screen. Either a leaf this project verified and
+ * quoted, or an image the operator pasted a URL to. Both carry a credit, and
+ * neither is ever a URL this code invented — a constructed image address that
+ * 404s is a broken picture and a false claim at once.
+ */
+export type Asset =
+  | {
+      kind: "leaf";
+      /** The line whose page this is, so the caption and the picture agree. */
+      passageId: string;
+      bookId: string;
+      page: number;
+      src: string;
+      credit: string;
+    }
+  | {
+      kind: "url";
+      src: string;
+      /** Whatever the operator can tell us about where it came from. */
+      credit: string;
+      note?: string;
+    };
+
+/** How the camera moves across a still. Stills are all we have, so this is the film. */
+export type Motion = "hold" | "push-in" | "pull-out" | "pan-left" | "pan-right" | "tilt-down";
+
+/**
+ * A caption is a verbatim quotation or it is nothing. `lineId` points into the
+ * collection and the renderer substitutes the wording from there, so what is
+ * burned into a frame cannot drift from what the book says.
+ */
+export type Caption = {
+  lineId: string;
+  /** Copied from the line at build time; the validator byte-compares it back. */
+  text: string;
+  citationLink: string;
+  attribution: string;
 };
 
-export type Spine = {
+export type Shot = {
+  id: string;
+  asset: Asset;
+  caption: Caption | null;
+  /** Invented framing text — a title card or an intertitle. Never in quotes. */
+  titleCard?: string;
+  motion: Motion;
+  durationMs: number;
+  /** Why this shot is here, in plain prose. Editorial, shown in the editor. */
+  note?: string;
+};
+
+export type Storyboard = {
+  id: string;
   title: string;
   logline: string;
-  dramatisPersonae: {
-    name: string;
-    origin: "source" | "invented";
-    note: string;
-  }[];
-  acts: { title: string; beats: Beat[] }[];
+  aspect: "16:9" | "9:16" | "1:1";
+  fps: number;
+  shots: Shot[];
+  /** Set when a human has edited it, so a rebuild does not silently discard the edit. */
+  editedAt?: string;
 };
 
-export type Play = {
-  id: string;
-  spine: Spine;
-  fountain: string;
-  /** Line ids actually quoted, in order of appearance. */
-  quoted: string[];
-};
-
-export type RunStatus =
-  | "queued"
-  | "briefing"
-  | "harvesting"
-  | "verifying"
-  | "composing"
-  | "writing"
-  | "done"
-  | "failed"
-  | "blocked";
-
-export type RunEvent = {
-  at: string;
-  stage: string;
-  /** "start" | "ok" | "warn" | "fail" — drives the dot colour in the UI. */
-  kind: "start" | "ok" | "warn" | "fail";
-  message: string;
-  detail?: string;
-};
-
-export type Run = {
-  id: string;
-  createdAt: string;
-  status: RunStatus;
-  instructions: string;
-  bookIds: string[];
-  playCount: number;
-  theme?: ThemeSpec;
-  poolSummary?: {
-    passages: number;
-    lines: number;
-    perBook: Record<string, number>;
-    pagesRead: number;
-  };
-  plays: { id: string; title: string; logline: string }[];
-  error?: string;
+/** What a render produced, recorded next to the storyboard that made it. */
+export type Clip = {
+  storyboardId: string;
+  file: string;
+  width: number;
+  height: number;
+  fps: number;
+  durationMs: number;
+  renderedAt: string;
+  /** Every line quoted on screen, so the clip carries its own citations. */
+  cited: string[];
 };
 
 /**
- * What ships with a published set of plays: the plays themselves plus exactly
- * the evidence they cite, and nothing else from the pool they were drawn from.
- *
- * A pool is mostly weight a reader never sees — the full text of every leaf
- * considered and every sentence not used. Trimming to the cited lines is what
- * makes a set of plays committable as a data module rather than a blob, and
- * the bundle is still the comparison baseline the verbatim validator runs
- * against.
+ * What the operator assembled before any storyboard exists: the books, the
+ * verified passages and lines drawn from them, and any assets pasted by URL.
  */
-export type Bundle = {
+export type Collection = {
+  id: string;
   theme: ThemeSpec;
   createdAt: string;
   books: BookRef[];
-  /** Only the leaves a play quotes from; the page's full text is dropped. */
-  passages: Array<Omit<Passage, "lines" | "verbatim">>;
-  /** Only the lines a play quotes. */
+  passages: Passage[];
   lines: SourceLine[];
-  plays: Play[];
-  /** What the full pool held, so the reader can say what was drawn from. */
-  provenance: {
-    pooledPassages: number;
-    pooledLines: number;
-    pagesRead: number;
+  extraAssets: Asset[];
+  stats: {
     perBook: Record<string, number>;
+    pagesRead: number;
+    cacheHits: number;
+    droppedSummaries: number;
+    continuityResolved: number;
   };
 };

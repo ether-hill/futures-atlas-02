@@ -23,7 +23,7 @@ import {
   splitSentences,
   words,
 } from "./text";
-import type { BookRef, Passage, Pool, SourceLine, ThemeSpec } from "./types";
+import type { Asset, BookRef, Collection, Passage, SourceLine, ThemeSpec } from "./types";
 
 export type HarvestOptions = {
   /** Every chosen book must contribute at least this many passages. */
@@ -33,6 +33,8 @@ export type HarvestOptions = {
   /** Stop fetching once the pool reaches this size. */
   targetPassages?: number;
   onEvent?: (kind: "start" | "ok" | "warn" | "fail", message: string, detail?: string) => void;
+  /** Images the operator pasted a URL to, carried into the collection as-is. */
+  extraAssets?: Asset[];
 };
 
 type Candidate = {
@@ -216,11 +218,11 @@ async function verifyPage(
   return { passage, continuityResolved: resolved };
 }
 
-export async function harvest(
+export async function collect(
   books: BookRef[],
   theme: ThemeSpec,
   options: HarvestOptions = {},
-): Promise<Pool> {
+): Promise<Collection> {
   const log = options.onEvent ?? (() => {});
   const floor = options.floorPerBook ?? 5;
   const cap = options.capPerBook ?? 20;
@@ -262,12 +264,13 @@ export async function harvest(
   const stats = cacheStats();
 
   return {
-    themeId: theme.id,
+    id: theme.id,
     theme,
     createdAt: new Date().toISOString(),
     books,
     passages,
     lines,
+    extraAssets: options.extraAssets ?? [],
     stats: {
       perBook,
       pagesRead: stats.misses,
