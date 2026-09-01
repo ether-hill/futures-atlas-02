@@ -171,6 +171,15 @@ export const STOCK: FutureProduct[] = [
     image: "/future-stock/koji-pod.jpg",
   },
   {
+    id: "stillpoint-s1",
+    name: "Stillpoint S1",
+    aisle: "Work & focus",
+    year: "2033",
+    price: "€3,900 or €89/mo",
+    line: "Ten minutes of nowhere, installed on the shop floor.",
+    image: "/future-stock/stillpoint-s1.jpg",
+  },
+  {
     id: "omakase-a5",
     name: "Omakase A5, grown in Osaka",
     aisle: "Food & drink",
