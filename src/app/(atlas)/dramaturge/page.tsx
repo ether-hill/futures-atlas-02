@@ -70,9 +70,44 @@ export default function DramaturgePage() {
                   <p>{clip.logline}</p>
                   <span className="dg-meta">
                     {(clip.durationMs / 1000).toFixed(0)}s ·{" "}
-                    {clip.citations.length} quotations ·{" "}
+                    {clip.citations.length} quotations · cut from{" "}
                     {clip.sources.map((s) => s.published).join(", ")}
                   </span>
+
+                  {/*
+                    Every quotation spoken on screen, with the page it is
+                    printed on and a link to that page. A caption is only worth
+                    burning into a frame if the viewer can go and check it.
+                  */}
+                  <details className="dg-cites">
+                    <summary>Every quotation in this clip, with its source</summary>
+                    <ol>
+                      {clip.citations.map((c, i) => (
+                        <li key={`${clip.id}-${i}`}>
+                          <span className="dg-quoted">&ldquo;{c.text}&rdquo;</span>
+                          <span className="dg-src">
+                            {c.attribution}{" "}
+                            <a href={c.citationLink} target="_blank" rel="noreferrer">
+                              {c.citationLink.replace("https://", "")}
+                            </a>
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </details>
+
+                  <p className="dg-ap" style={{ marginTop: "1rem" }}>
+                    Sources:{" "}
+                    {clip.sources.map((src, i) => (
+                      <span key={src.url}>
+                        {i > 0 ? "; " : ""}
+                        <a href={src.url} target="_blank" rel="noreferrer">
+                          {src.title}
+                        </a>{" "}
+                        — {src.author}, {src.published}
+                      </span>
+                    ))}
+                  </p>
                 </li>
               ))}
             </ul>

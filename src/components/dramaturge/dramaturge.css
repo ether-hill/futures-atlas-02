@@ -524,3 +524,17 @@ html.dark .dg {
 .dg-picker li button:hover { background: var(--dg-paper-deep); }
 
 .dg-preview { display: block; width: 100%; max-width: 22rem; margin-top: 0.6rem; background: #000; }
+
+/* Every quotation in a clip, foldable. A caption is only worth burning into a
+   frame if the viewer can go and check it. */
+.dg-cites { margin-top: 1.2rem; }
+.dg-cites summary {
+  font-family: var(--dg-sans);
+  font-size: 0.74rem;
+  letter-spacing: 0.05em;
+  color: var(--dg-ink-faint);
+  cursor: pointer;
+}
+.dg-cites summary:hover { color: var(--dg-rubric); }
+.dg-cites ol { padding-left: 1.4rem; margin: 1rem 0 0; font-size: 0.92rem; }
+.dg-cites li { margin-bottom: 1rem; }

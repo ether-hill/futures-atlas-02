@@ -62,8 +62,11 @@ export function buildSceneHtml(board: Storyboard): string {
          </figcaption>`
       : "";
 
+    // A card on a shot that also carries a quotation goes to the head of the
+    // frame, not the middle: centred, it lands squarely on the page it is
+    // supposed to be introducing.
     const card = shot.titleCard
-      ? `<div class="card"><p>${escape(shot.titleCard)}</p></div>`
+      ? `<div class="card${shot.caption ? " card-top" : ""}"><p>${escape(shot.titleCard)}</p></div>`
       : "";
 
     const plate = hasImage
@@ -120,6 +123,12 @@ export function buildSceneHtml(board: Storyboard): string {
   .card{position:absolute;inset:0;display:grid;place-items:center;padding:0 12%}
   .card p{margin:0;text-align:center;color:#f4efe4;font-size:${Math.round(h * 0.062)}px;
           line-height:1.18;text-wrap:balance;text-shadow:0 2px 24px rgba(0,0,0,.7)}
+  .card-top{inset:0 0 auto 0;height:auto;padding:${Math.round(h * 0.055)}px 12% ${Math.round(h * 0.03)}px;
+            background:linear-gradient(180deg,rgba(13,12,10,.94) 0%,rgba(13,12,10,.86) 62%,
+                       rgba(13,12,10,0) 100%)}
+  .card-top p{font-size:${Math.round(h * 0.036)}px;letter-spacing:.06em;
+              font-family:ui-sans-serif,"Helvetica Neue",Helvetica,Arial,sans-serif;
+              text-transform:uppercase}
 </style></head>
 <body><div id="stage">${layers.map((l) => l.html).join("")}</div>
 <script>

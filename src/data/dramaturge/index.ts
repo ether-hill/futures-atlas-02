@@ -23,4 +23,6 @@ export type PublishedClip = {
   citations: { text: string; attribution: string; citationLink: string }[];
 };
 
-export const clips: PublishedClip[] = [];
+import published from "./clips.json";
+
+export const clips: PublishedClip[] = published as PublishedClip[];
