@@ -21,14 +21,12 @@ export default async function ContactPage({
     project && contactProjects.includes(project) ? project : "Futures Atlas";
   return (
     <section className="relative overflow-hidden py-[clamp(44px,7vw,96px)]">
-      {/* Rain, as the page's ground. It is the subject of the page as much as
-          the form is, so it runs at full strength and is not tinted or masked;
-          the panels sit on it and let it through instead. */}
-      <InterferenceField className="pointer-events-none absolute inset-0 hidden h-full w-full md:block" />
+      {/* Rain into still water, very slowly, as the page's ground.
+          Decorative: it fades out across the column of text. */}
+      <InterferenceField className="pointer-events-none absolute inset-0 hidden h-full w-full opacity-45 [mask-image:linear-gradient(to_left,black_0%,black_30%,transparent_88%)] md:block" />
       <div className="relative">
         <Container>
-        <div className="grid grid-cols-1 items-start gap-[clamp(28px,4vw,56px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)]">
-        <header className="max-w-2xl rounded-[3px] bg-surface/70 p-[clamp(18px,2.4vw,30px)] backdrop-blur-[2px] md:bg-surface/60">
+        <header className="max-w-3xl">
           <div className="mb-4 flex items-center gap-3">
             <span className="font-mono text-[12px] uppercase tracking-[0.18em] text-accent-deep">
               Get in touch
@@ -49,9 +47,8 @@ export default async function ContactPage({
           </p>
         </header>
 
-        <div className="rounded-[3px] bg-surface/70 p-[clamp(18px,2.4vw,30px)] backdrop-blur-[2px] md:bg-surface/60 lg:mt-0">
+        <div className="mt-12 max-w-2xl">
           <ContactForm defaultProject={defaultProject} />
-        </div>
         </div>
         </Container>
       </div>

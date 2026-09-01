@@ -171,7 +171,6 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
                 <p
                   className="mt-3"
                   style={{
-                    fontFamily: "var(--font-mono)",
                     fontSize: "var(--text-body-size)",
                     lineHeight: "var(--lh-body)",
                     color: "var(--text-body)",

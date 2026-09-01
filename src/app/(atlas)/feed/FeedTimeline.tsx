@@ -339,7 +339,6 @@ function PostCardFeed({ post, showVisibility }: { post: Post; showVisibility: bo
           <p
             className="mt-2"
             style={{
-              fontFamily: "var(--font-mono)",
               fontSize: "var(--text-body-size)",
               lineHeight: "var(--lh-body)",
               color: "var(--text-body)",

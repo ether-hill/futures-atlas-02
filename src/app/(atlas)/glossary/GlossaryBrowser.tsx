@@ -117,7 +117,6 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
         <p
           className="mt-[clamp(16px,2vw,24px)] max-w-[64ch]"
           style={{
-            fontFamily: "var(--font-mono)",
             fontSize: "var(--text-body-size)",
             lineHeight: "var(--lh-body)",
             color: "var(--text-body)",
@@ -288,7 +287,6 @@ function Entry({ entry }: { entry: GlossaryEntry }) {
       <dd className="m-0 mt-2.5 min-w-0 border-t border-ink/[0.1] pt-2.5">
         <p
           style={{
-            fontFamily: "var(--font-mono)",
             fontSize: "var(--text-body-size)",
             lineHeight: "var(--lh-body)",
             color: "var(--text-body)",
