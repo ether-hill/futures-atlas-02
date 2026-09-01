@@ -1,8 +1,8 @@
 # Audio reel
 
 Audio-driven horizontal story reel: an interview clip plays and scenes —
-portrait, media, pull-quotes — slide right-to-left past a fixed hairline
-playhead, in sync with the audio. **Audio time is the only source of truth**:
+portrait, media, pull-quotes — slide right-to-left past a fixed playhead — an invisible line a third of the
+way in; nothing is drawn there — in sync with the audio. **Audio time is the only source of truth**:
 `useAudioClock` runs one rAF loop that reads `audio.currentTime` and writes
 CSS custom properties; `audio-reel.css` turns those into all motion. Nothing
 animates on scroll or its own clock; pause freezes the reel, seeking snaps it.
@@ -60,7 +60,7 @@ block that uses the trio and its derivatives only.
 ```
 
 - `start` — seconds into the clip when the scene should be centred on the
-  hairline. Keep them ascending.
+  playhead. Keep them ascending.
 - `parallax` — layer speed multiplier (1 moves with the track, <1 lags).
   Defaults: 1 for quotes/portrait, 0.75 for media.
 4. Add the id to `src/content/voices/index.json` (display order) and register

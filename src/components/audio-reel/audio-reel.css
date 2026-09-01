@@ -135,16 +135,6 @@
 }
 .ar[data-drag="1"] .ar-viewport { cursor: grabbing; }
 .ar-track img, .ar-track video { pointer-events: none; -webkit-user-drag: none; }
-.ar-hairline {
-  position: absolute;
-  left: 33%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: var(--ar-line);
-  z-index: 2;
-  pointer-events: none;
-}
 .ar-track {
   display: flex;
   align-items: center;
@@ -320,9 +310,6 @@
 }
 .ar[data-variant="ledger"] .ar-portrait__img { width: clamp(240px, 30vw, 440px); filter: grayscale(1) contrast(1.05); }
 .ar[data-variant="ledger"] .ar-media { filter: grayscale(1); border: 1px solid var(--ar-ink-faint); }
-.ar[data-variant="ledger"] .ar-hairline {
-  background: repeating-linear-gradient(to bottom, var(--ar-line) 0 6px, transparent 6px 12px);
-}
 .ar[data-variant="ledger"] .ar-play,
 .ar[data-variant="ledger"] .ar-select,
 .ar[data-variant="ledger"] .ar-share,
@@ -365,16 +352,6 @@
 }
 .ar[data-variant="cinema"] .ar-viewport::before { top: 0; }
 .ar[data-variant="cinema"] .ar-viewport::after { bottom: 0; }
-.ar[data-variant="cinema"] .ar-hairline { width: 2px; }
-.ar[data-variant="cinema"] .ar-hairline::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 50%;
-  translate: -50% 0;
-  border: 7px solid transparent;
-  border-top: 9px solid var(--ar-line);
-}
 
 /* ---- V4 · Deck: every scene a card, dealt with a slight tilt ---- */
 .ar[data-variant="deck"] .ar-scene > * {
@@ -400,16 +377,9 @@
 .ar[data-variant="deck"] .ar-quote { max-width: 44vw; padding: clamp(24px, 3vw, 44px); }
 .ar[data-variant="deck"] .ar-quote p { font-size: clamp(26px, 3.6vw, 60px); line-height: 1.1; }
 .ar[data-variant="deck"] .ar-quote__open { margin-left: 0; }
-.ar[data-variant="deck"] .ar-hairline {
-  left: calc(33% - 3px);
-  width: 6px;
-  border-radius: 3px;
-  background: color-mix(in srgb, var(--ar-line) 45%, transparent);
-}
 .ar[data-variant="deck"] .ar-play { border-radius: 24px; }
 
-/* ---- V5 · Type: the words carry it; media are footnotes; no hairline ---- */
-.ar[data-variant="type"] .ar-hairline { display: none; }
+/* ---- V5 · Type: the words carry it; media are footnotes; a progress rule on top ---- */
 .ar[data-variant="type"] .ar-rule {
   display: block;
   position: absolute;
@@ -461,7 +431,6 @@
     opacity: var(--active, 0);
     transition: opacity 0.6s ease;
   }
-  .ar[data-rm="1"] .ar-hairline { display: none; }
 }
 
 /* ---------- narrow screens ---------- */

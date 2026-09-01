@@ -341,7 +341,6 @@ export function AudioReel({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        <div className="ar-hairline" aria-hidden="true" />
         <div ref={trackRef} className="ar-track">
           {voice.scenes.map((s, i) => (
             <Scene key={`${voice.id}-${i}`} scene={s} playing={playing} />
