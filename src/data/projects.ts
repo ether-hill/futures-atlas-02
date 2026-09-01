@@ -37,6 +37,19 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "future-stock",
+    title: "Future Stock",
+    tagline:
+      "The Amazons of the future will sell things that sound impossible right up until they are ordinary. A guided prompt generator: pick the aisle, the year and what changed about the world, take away two prompts — one for your image tool, one for your chatbot — and turn a hunch into a product listing from 2040. The keepers land on the shelf below it, a living inventory of merchandise that does not exist yet.",
+    year: "2026",
+    date: "2026-08-31",
+    field: "Speculative commerce",
+    status: "concept",
+    visibility: "draft",
+    path: "/future-stock",
+    cta: "Open the shop",
+  },
+  {
     id: "interference",
     title: "Interference",
     tagline:

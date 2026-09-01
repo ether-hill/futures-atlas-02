@@ -1,0 +1,204 @@
+/**
+ * Future Stock — the future-product prompt generator and its inventory.
+ *
+ * v1 generates PROMPTS, not products: the visitor assembles a scenario (aisle,
+ * year, what changed about the world, optionally their own hunch) and gets two
+ * copyable prompts — one for their image tool (Midjourney, DALL-E, …), one for
+ * their chatbot (ChatGPT, Claude, …). No API call anywhere; the assembly is
+ * deterministic and lives here so the page stays a static shell.
+ *
+ * STOCK is the living inventory: the keepers. Run the prompts, and when a
+ * result makes you go hmmm, drop the image in public/future-stock/ and add an
+ * entry here — `prompt` records the provenance. The shelf is the artifact.
+ */
+
+export interface FutureStockOption {
+  id: string;
+  label: string;
+  /** the clause spliced into the prompts */
+  clause: string;
+}
+
+export const AISLES: FutureStockOption[] = [
+  { id: "health", label: "Health & body", clause: "the Health & body aisle" },
+  { id: "home", label: "Home & climate", clause: "the Home & climate aisle" },
+  { id: "food", label: "Food & drink", clause: "the Food & drink aisle" },
+  { id: "mobility", label: "Mobility", clause: "the Mobility aisle" },
+  { id: "work", label: "Work & focus", clause: "the Work & focus aisle" },
+  { id: "care", label: "Family & care", clause: "the Family & care aisle" },
+  { id: "play", label: "Play & escape", clause: "the Play & escape aisle" },
+];
+
+export const YEARS = ["2030", "2035", "2040", "2050"] as const;
+
+/** What changed about the world — the force that makes the product exist. */
+export const FORCES: FutureStockOption[] = [
+  {
+    id: "climate",
+    label: "Climate adaptation",
+    clause: "daily life has reorganised around heat, storms and water",
+  },
+  {
+    id: "ai",
+    label: "Ambient AI",
+    clause: "capable AI is ambient, cheap and mostly invisible",
+  },
+  {
+    id: "energy",
+    label: "Volatile grid",
+    clause: "clean energy is abundant but arrives in unreliable surges",
+  },
+  {
+    id: "longevity",
+    label: "Long lives",
+    clause: "healthy lifespans routinely stretch past a hundred",
+  },
+  {
+    id: "bio",
+    label: "Grown, not made",
+    clause: "growing materials and food has replaced manufacturing much of it",
+  },
+  {
+    id: "repair",
+    label: "Repair economy",
+    clause: "new materials are rationed and repairing beats replacing",
+  },
+  {
+    id: "privacy",
+    label: "Guarded data",
+    clause: "personal data became a currency people now fiercely guard",
+  },
+];
+
+/** Photographic treatment for the image prompt. */
+export const SHOTS: FutureStockOption[] = [
+  {
+    id: "studio",
+    label: "Studio listing",
+    clause:
+      "clean e-commerce studio photograph, seamless white background, soft even lighting, centred product",
+  },
+  {
+    id: "lifestyle",
+    label: "In use at home",
+    clause:
+      "candid lifestyle photograph of the product in use in an ordinary home, natural window light",
+  },
+  {
+    id: "unboxing",
+    label: "Flat-lay unboxing",
+    clause:
+      "flat-lay unboxing photograph from above, product beside its packaging and accessories on a plain surface",
+  },
+];
+
+export interface PromptInput {
+  aisle: FutureStockOption;
+  year: string;
+  force: FutureStockOption;
+  shot: FutureStockOption;
+  /** the visitor's own hunch, optional */
+  seed: string;
+}
+
+/** The chatbot prompt: an ordinary retail listing from a changed world. */
+export function buildListingPrompt({ aisle, year, force, seed }: PromptInput): string {
+  const product = seed
+    ? `The product: ${seed}.`
+    : `Invent one product that would sit in ${aisle.clause}.`;
+  return [
+    `You are a copywriter for an ordinary online marketplace in ${year} — a world where ${force.clause}. Nobody in ${year} finds this product remarkable; that is the point.`,
+    ``,
+    `${product}`,
+    ``,
+    `Write its listing exactly as the retailer would publish it:`,
+    `- Product name (brandable but ordinary)`,
+    `- One-line tagline`,
+    `- Price in today's euros, with a delivery note`,
+    `- Five specification bullets — concrete numbers, materials, battery life, sizes`,
+    `- Three customer reviews: one delighted, one practical, one three-star with a mundane complaint`,
+    `- One question-and-answer exchange from the listing page`,
+    ``,
+    `Keep the language flat and retail-plain. No sci-fi vocabulary, nothing "revolutionary". The future should feel ordinary.`,
+  ].join("\n");
+}
+
+/** The image prompt: the listing photo for that same product. */
+export function buildImagePrompt({ aisle, year, force, shot, seed }: PromptInput): string {
+  const product = seed
+    ? seed
+    : `a consumer product from ${aisle.clause} of an online marketplace`;
+  return [
+    `Product photograph for an online marketplace listing in ${year}: ${product}.`,
+    `${shot.clause}.`,
+    `A world where ${force.clause}, but the product looks like an established category, not a concept render — restrained industrial design, believable materials, visible wear points.`,
+    `Square crop. No text, no logos, no watermark.`,
+  ].join(" ");
+}
+
+/* ------------------------------------------------------------------ */
+/* The shelf                                                           */
+/* ------------------------------------------------------------------ */
+
+export interface FutureProduct {
+  id: string;
+  name: string;
+  aisle: string; // display label, e.g. "Health & body"
+  year: string; // when it plausibly ships
+  price: string; // display string, e.g. "€640" or "€6/mo"
+  line: string; // one-line pitch, retail-plain
+  image?: string; // /future-stock/<id>.jpg once generated; fa-hatch plate until then
+  prompt?: string; // provenance: the image prompt that made it
+}
+
+/** Seed inventory — placeholders to be replaced by generated keepers. */
+export const STOCK: FutureProduct[] = [
+  {
+    id: "clarity-duo",
+    name: "Clarity Duo",
+    aisle: "Health & body",
+    year: "2032",
+    price: "€640",
+    line: "Hearing aids that translate nine languages as you listen.",
+  },
+  {
+    id: "koji-pod",
+    name: "Kōji Personal Climate Pod",
+    aisle: "Home & climate",
+    year: "2035",
+    price: "€1,890",
+    line: "One person, one perfect microclimate, half a kilowatt.",
+  },
+  {
+    id: "omakase-a5",
+    name: "Omakase A5, grown in Osaka",
+    aisle: "Food & drink",
+    year: "2031",
+    price: "€38",
+    line: "Cultivated wagyu, marbled to order, never a cow in sight.",
+  },
+  {
+    id: "dewpoint-40",
+    name: "DewPoint 40",
+    aisle: "Home & climate",
+    year: "2040",
+    price: "€420",
+    line: "Forty litres a week, harvested from the air you already have.",
+  },
+  {
+    id: "recall-locket",
+    name: "Recall Locket",
+    aisle: "Family & care",
+    year: "2040",
+    price: "€129 + €6/mo",
+    line: "A day's memories, backed up. Yours stay yours.",
+  },
+  {
+    id: "stowaway-trike",
+    name: "Stow-Away Cargo Trike",
+    aisle: "Mobility",
+    year: "2030",
+    price: "€2,300",
+    line: "Carries the week's shopping, folds to a suitcase.",
+  },
+];
