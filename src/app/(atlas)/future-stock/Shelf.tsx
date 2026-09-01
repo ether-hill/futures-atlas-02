@@ -69,12 +69,12 @@ function Quickview({ product, onClose }: { product: FutureProduct; onClose: () =
         className="absolute inset-0 cursor-pointer bg-ink/60"
       />
       {/* panel */}
-      <div className="relative grid max-h-[88vh] w-full max-w-4xl overflow-y-auto border border-ink/25 bg-surface md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+      <div className="relative grid max-h-[88vh] w-full max-w-4xl overflow-y-auto rounded-[20px] bg-panel shadow-2xl shadow-ink/20 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
         <button
           ref={closeRef}
           type="button"
           onClick={onClose}
-          className="absolute right-0 top-0 z-10 cursor-pointer border-b border-l border-ink/20 bg-surface px-4 py-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-ink hover:bg-ink hover:text-surface"
+          className="absolute right-3 top-3 z-10 cursor-pointer rounded-full bg-surface/90 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.14em] text-ink shadow-sm shadow-ink/10 hover:bg-ink hover:text-surface"
         >
           Close ✕
         </button>
@@ -148,28 +148,36 @@ function Quickview({ product, onClose }: { product: FutureProduct; onClose: () =
   );
 }
 
+/** Apple-store-style tile: a rounded panel, product on top, centred retail
+ *  type below, the whole tile the quickview trigger. */
 function ProductCard({ product, onOpen }: { product: FutureProduct; onOpen: () => void }) {
   return (
-    <button type="button" onClick={onOpen} className="group cursor-pointer text-left">
-      <div className="relative">
-        <Plate
-          product={product}
-          className="aspect-square [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-[1.03]"
-        />
-        <span className="absolute bottom-0 right-0 border-l border-t border-ink/20 bg-surface px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.14em] text-ink opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100">
-          Quick view
-        </span>
-      </div>
-      <div className="mt-3.5 flex items-baseline justify-between gap-3">
-        <h3 className="text-[15px] font-bold leading-snug text-ink group-hover:underline">
+    <button
+      type="button"
+      onClick={onOpen}
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[20px] bg-panel text-center shadow-md shadow-ink/5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-ink/10 focus-visible:-translate-y-1 focus-visible:shadow-xl"
+    >
+      <Plate
+        product={product}
+        className="aspect-square w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-[1.04]"
+      />
+      <div className="flex grow flex-col items-center px-6 pb-7 pt-5">
+        <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent-deep">
+          {product.aisle}
+        </div>
+        <h3 className="mt-2 text-[17px] font-bold leading-snug tracking-[-0.01em] text-ink">
           {product.name}
         </h3>
-        <span className="shrink-0 font-mono text-[13px] text-ink">{product.price}</span>
+        <p className="mt-1.5 max-w-[30ch] text-[12.5px] leading-[1.65] text-ink-70">
+          {product.line}
+        </p>
+        <div className="mt-auto pt-4">
+          <div className="text-[14px] font-medium text-ink">{product.price}</div>
+          <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.14em] text-faint">
+            Ships {product.year}
+          </div>
+        </div>
       </div>
-      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-graphite">
-        {product.aisle} · ships {product.year}
-      </div>
-      <p className="mt-2 text-[13px] leading-[1.7] text-ink-70">{product.line}</p>
     </button>
   );
 }
@@ -178,9 +186,9 @@ export function Shelf() {
   const [open, setOpen] = useState<FutureProduct | null>(null);
   return (
     <>
-      <div className="grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
         {STOCK.map((p, i) => (
-          <Reveal key={p.id} delay={Math.min(i, 5) * 60}>
+          <Reveal key={p.id} delay={Math.min(i, 5) * 60} className="h-full">
             <ProductCard product={p} onOpen={() => setOpen(p)} />
           </Reveal>
         ))}

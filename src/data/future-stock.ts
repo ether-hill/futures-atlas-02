@@ -246,13 +246,68 @@ export const STOCK: FutureProduct[] = [
     },
   },
   {
-    id: "stillpoint-s1",
-    name: "Stillpoint S1",
+    id: "shiftcool-1",
+    name: "NESTA ShiftCool 1",
     aisle: "Work & focus",
     year: "2033",
-    price: "€3,900 or €89/mo",
-    line: "Ten minutes of nowhere, installed on the shop floor.",
-    image: "/future-stock/stillpoint-s1.jpg",
+    price: "€2,890",
+    line: "A cooled break space for one person.",
+    image: "/future-stock/shiftcool-1.jpg",
+    listing: {
+      delivery:
+        "Delivery and placement from €120. Delivered to ground-floor workplace locations within 10–15 working days. Site access check available before order.",
+      specs: [
+        {
+          label: "External size",
+          value: "115 × 120 × 210 cm; enclosed seating space for one adult",
+        },
+        {
+          label: "Cooling",
+          value:
+            "Maintains a working temperature of 20–24°C in ambient conditions up to 45°C",
+        },
+        {
+          label: "Power",
+          value:
+            "230V mains connection; integrated 2.0 kWh backup battery provides up to 3 hours of cooling during a power interruption",
+        },
+        {
+          label: "Materials",
+          value:
+            "Powder-coated steel outer panels, insulated composite body, tempered glass door and commercial-grade vinyl seating",
+        },
+        {
+          label: "Weight",
+          value: "210 kg; fitted with four adjustable steel feet for fixed indoor installation",
+        },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "A useful addition to the floor.",
+          body: "We installed two near the packing area last summer. They are used constantly during the hottest part of the shift. Simple to clean and the cooling is reliable.",
+          author: "Operations Manager, Eindhoven",
+        },
+        {
+          stars: 4,
+          title: "Does what it is supposed to do.",
+          body: "We use ours for short recovery breaks and phone calls. The door closes properly and it stays noticeably cooler than the main warehouse.",
+          author: "Facilities Team, Ghent",
+        },
+        {
+          stars: 3,
+          title: "Good, but the screen is too bright at night.",
+          body: "The cooling works well and it is solidly built. Our night shift asked us to dim the status screen because it is visible across the floor.",
+          author: "Shift Supervisor, Duisburg",
+        },
+      ],
+      qa: [
+        {
+          q: "Can the ShiftCool 1 be installed on a factory or warehouse floor?",
+          a: "Yes. The ShiftCool 1 is designed for indoor workplaces including warehouses, workshops and production areas. It requires a level floor, a standard 230V connection and 15 cm clearance at the rear ventilation panel.",
+        },
+      ],
+    },
   },
   {
     id: "omakase-a5",
