@@ -55,6 +55,20 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    id: "dramaturge",
+    title: "Dramaturge",
+    tagline:
+      "Hand-pick a shelf of historical books, say what the plays should be about, and get back stage plays in which every line inside quotation marks is a verbatim passage from those books, carrying its citation. The writing model never types a quotation: it cites a sentence and the renderer substitutes the wording, so a quotation cannot drift.",
+    year: "2026",
+    date: "2026-09-01",
+    field: "Source texts",
+    kind: "story",
+    status: "concept",
+    visibility: "draft",
+    path: "/dramaturge",
+    cta: "Read the plays",
+  },
+  {
     id: "future-stock",
     title: "Future Stock",
     tagline:

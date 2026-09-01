@@ -1,0 +1,348 @@
+/*
+  Dramaturge — the reader.
+
+  The subject is a printed play built out of scanned leaves, so the page reads
+  as a text that was set, not a card grid. Two typefaces: a text serif for
+  everything read, a grotesque for apparatus (citations, page numbers, labels).
+
+  PALETTE: this piece carries its own art direction per its brief — printed
+  paper, near-black ink, a rubric red — deliberately NOT the atlas theme
+  tokens, in the same way Quantum Lag locks dark and the audio reel keeps its
+  own trio. Colour literals are confined to this file and to ONE place in it:
+  the two trios below. Everything else is derived by color-mix, so swapping a
+  trio re-skins the whole reader and nothing downstream names a colour.
+
+  Every selector is scoped under .dg so none of it reaches the rest of the site.
+
+  THE ONE RULE THE DESIGN EXISTS TO SERVE: a sourced line and an invented line
+  are told apart STRUCTURALLY — indentation, a rule, a marginal citation —
+  never by a tint. The distinction has to survive greyscale, a projector and a
+  photocopy, because it is the difference between what the book said and what
+  the play imagined.
+*/
+
+.dg {
+  /* light trio */
+  --dg-paper: #f4f1ea;
+  --dg-ink: #1b1917;
+  --dg-rubric: #8c2f22;
+
+  /* derived — never redefine these per scheme */
+  --dg-paper-deep: color-mix(in srgb, var(--dg-ink) 6%, var(--dg-paper));
+  --dg-leaf: color-mix(in srgb, var(--dg-ink) 12%, var(--dg-paper));
+  --dg-ink-soft: color-mix(in srgb, var(--dg-ink) 82%, var(--dg-paper));
+  /* apparatus is small type, so this stays above the AA contrast floor */
+  --dg-ink-faint: color-mix(in srgb, var(--dg-ink) 66%, var(--dg-paper));
+  --dg-rule: color-mix(in srgb, var(--dg-ink) 22%, var(--dg-paper));
+  --dg-rule-strong: color-mix(in srgb, var(--dg-ink) 42%, var(--dg-paper));
+
+  --dg-serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua",
+    Georgia, "Times New Roman", serif;
+  --dg-sans: ui-sans-serif, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+  --dg-measure: 34rem;
+  --dg-gutter: clamp(1.25rem, 4vw, 3.5rem);
+
+  background: var(--dg-paper);
+  color: var(--dg-ink);
+  font-family: var(--dg-serif);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+/*
+  The dark trio. A printed play read at night: the ground goes to ink and the
+  paper colour becomes the type. The rubric lifts, because a dark red on a dark
+  ground stops reading as a mark and starts reading as a smudge.
+*/
+html.dark .dg {
+  --dg-paper: #14130f;
+  --dg-ink: #ece6d8;
+  --dg-rubric: #d2705c;
+}
+
+.dg a {
+  color: inherit;
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: from-font;
+}
+
+.dg a:hover {
+  color: var(--dg-rubric);
+}
+
+/* ── apparatus: everything that is not the text itself ─────────────────── */
+
+.dg-ap {
+  font-family: var(--dg-sans);
+  font-size: 0.8rem;
+  color: var(--dg-ink-faint);
+}
+
+.dg-rule-label {
+  font-family: var(--dg-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--dg-ink-faint);
+  margin: 0 0 0.9rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.dg-rule-label::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--dg-rule);
+}
+
+/* ── the play ──────────────────────────────────────────────────────────── */
+
+.dg-play {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: var(--dg-gutter);
+}
+
+.dg-title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+  margin: 0 0 0.6rem;
+}
+
+.dg-logline {
+  font-size: 1.15rem;
+  color: var(--dg-ink-soft);
+  max-width: var(--dg-measure);
+  margin: 0 0 2.5rem;
+}
+
+.dg-cast {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-family: var(--dg-sans);
+  font-size: 0.85rem;
+}
+
+.dg-cast li {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr;
+  gap: 1rem;
+  padding: 0.4rem 0;
+  border-top: 1px solid var(--dg-rule);
+  align-items: baseline;
+}
+
+.dg-cast .dg-origin {
+  color: var(--dg-ink-faint);
+  letter-spacing: 0.04em;
+}
+
+.dg-cast .dg-note {
+  display: block;
+  color: var(--dg-ink-faint);
+  margin-top: 0.15rem;
+}
+
+.dg-act {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 4rem 0 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--dg-ink);
+}
+
+.dg-scene {
+  font-family: var(--dg-sans);
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dg-ink-soft);
+  margin: 2.75rem 0 1.25rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--dg-rule-strong);
+}
+
+.dg-transition {
+  font-family: var(--dg-sans);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--dg-ink-faint);
+  text-align: right;
+  margin: 1.5rem 0;
+}
+
+.dg-action {
+  max-width: var(--dg-measure);
+  margin: 0 0 1.15rem;
+  color: var(--dg-ink-soft);
+}
+
+.dg-character {
+  font-family: var(--dg-sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin: 1.5rem 0 0.25rem;
+}
+
+.dg-dialogue {
+  max-width: var(--dg-measure);
+  margin: 0 0 0.4rem;
+}
+
+.dg-paren {
+  max-width: var(--dg-measure);
+  margin: 0 0 0.2rem;
+  color: var(--dg-ink-soft);
+  font-size: 0.95rem;
+}
+
+/*
+  A sourced line. It steps in from the invented text, carries a rule set in the
+  rubric, and hangs its citation in the margin at width. Nothing about the
+  distinction depends on colour alone.
+*/
+.dg-sourced {
+  position: relative;
+  margin: 0.15rem 0 0.5rem;
+  padding-left: 1.1rem;
+  border-left: 2px solid var(--dg-rubric);
+  max-width: var(--dg-measure);
+  font-size: 1.05rem;
+}
+
+.dg-cite {
+  font-family: var(--dg-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.03em;
+  color: var(--dg-ink-faint);
+  display: block;
+  margin-top: 0.3rem;
+}
+
+@media (min-width: 1180px) {
+  .dg-cite {
+    position: absolute;
+    left: calc(100% + 1.5rem);
+    top: 0.2rem;
+    width: 11rem;
+    margin: 0;
+  }
+}
+
+.dg-cite a {
+  color: var(--dg-rubric);
+}
+
+/* ── the facsimile ─────────────────────────────────────────────────────── */
+
+.dg-leaf {
+  margin: 2.5rem 0;
+}
+
+.dg-leaf img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--dg-leaf);
+  border: 1px solid var(--dg-rule-strong);
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+}
+
+.dg-leaf figcaption {
+  font-family: var(--dg-sans);
+  font-size: 0.72rem;
+  color: var(--dg-ink-faint);
+  margin-top: 0.5rem;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--dg-rule);
+}
+
+/* ── the appendix ──────────────────────────────────────────────────────── */
+
+.dg-appendix {
+  margin-top: 5rem;
+  padding-top: 1.5rem;
+  border-top: 2px solid var(--dg-ink);
+}
+
+.dg-appendix ol {
+  padding-left: 1.4rem;
+  font-size: 0.92rem;
+}
+
+.dg-appendix li {
+  margin-bottom: 1.1rem;
+  padding-left: 0.3rem;
+}
+
+.dg-appendix .dg-quoted {
+  display: block;
+}
+
+.dg-appendix .dg-src {
+  display: block;
+  font-family: var(--dg-sans);
+  font-size: 0.74rem;
+  color: var(--dg-ink-faint);
+  margin-top: 0.25rem;
+}
+
+/* ── the index ─────────────────────────────────────────────────────────── */
+
+.dg-index {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--dg-rule-strong);
+}
+
+.dg-index li {
+  border-bottom: 1px solid var(--dg-rule);
+}
+
+.dg-index a {
+  display: block;
+  padding: 1.5rem 0;
+  text-decoration: none;
+}
+
+.dg-index h3 {
+  font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+  font-weight: 600;
+  line-height: 1.1;
+  margin: 0 0 0.4rem;
+}
+
+.dg-index p {
+  max-width: 46ch;
+  margin: 0;
+  color: var(--dg-ink-soft);
+}
+
+.dg-index .dg-meta {
+  font-family: var(--dg-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--dg-ink-faint);
+  margin-top: 0.6rem;
+  display: block;
+}
+
+@media print {
+  /* Ink on white, whatever the reader was looking at. */
+  .dg { --dg-paper: #ffffff; --dg-ink: #000000; }
+  .dg-play { max-width: none; padding: 0; }
+  .dg-act { break-before: page; }
+  .dg-appendix { break-before: page; }
+  .dg-cite { position: static; width: auto; }
+  .dg-leaf { display: none; }
+}
