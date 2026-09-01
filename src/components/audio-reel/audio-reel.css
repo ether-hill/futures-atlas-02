@@ -60,6 +60,20 @@ html.dark .ar {
   z-index: 3;
 }
 .ar-top__voice { display: flex; align-items: center; gap: 12px; min-width: 0; }
+/* the two editions of the piece: people, issues */
+.ar-editions { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--ar-ink-faint); border-radius: 999px; }
+.ar-editions a {
+  font: 600 11px/1 var(--ar-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ar-ink);
+  opacity: 0.6;
+  text-decoration: none;
+  border-radius: 999px;
+  padding: 7px 11px;
+}
+.ar-editions a:hover { opacity: 1; }
+.ar-editions a[aria-current="page"] { background: var(--ar-ink); color: var(--ar-bg); opacity: 1; }
 .ar-top__label { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ar-ink-soft); white-space: nowrap; }
 .ar-select {
   appearance: none;
@@ -127,9 +141,12 @@ html.dark .ar {
 }
 .ar[data-drag="1"] .ar-viewport { cursor: grabbing; }
 .ar-track img, .ar-track video { pointer-events: none; -webkit-user-drag: none; }
-/* depth: the viewport is a stage with its vanishing point on the playhead */
+/* depth: the viewport is a stage with its vanishing point on the playhead.
+   The near track keeps 3D so a scene with --depth can sit back in it: pushed
+   DEPTH_Z px along z, it renders smaller and moves slower by perspective alone,
+   and lands on the playhead at its start because the vanishing point is there. */
 .ar-viewport { perspective: 1200px; perspective-origin: 33% 50%; }
-.ar-track--near { position: relative; z-index: 1; }
+.ar-track--near { position: relative; z-index: 1; transform-style: preserve-3d; }
 .ar-track.ar-track--far {
   /* doubled class so this transform outranks .ar-track's flat one below */
   display: none; /* variants that use depth turn their layers on */
@@ -159,12 +176,19 @@ html.dark .ar {
   top: 50%;
   translate: 0 -50%;
   /* parallax by distance from the playhead: a slow layer (--p < 1) trails
-     while it is far off and lands exactly on the playhead at its start */
-  transform: translate3d(calc(var(--d, 0) * (var(--p, 1) - 1) * 1px), 0, 0);
+     while it is far off and lands exactly on the playhead at its start;
+     a deep scene also goes back along z and up into the high band */
+  transform: translate3d(
+      calc(var(--d, 0) * (var(--p, 1) - 1) * 1px),
+      calc(var(--depth, 0) * -30vh),
+      calc(var(--depth, 0) * -900px)
+    );
   will-change: transform;
 }
-/* pictures come up out of the distance; words are simply there, solid ink */
-.ar-scene--media { opacity: clamp(0.35, calc(1 - (var(--d, 0) / var(--fade-w, 500)) * 0.65), 1); will-change: transform, opacity; }
+/* nothing fades: words and pictures are solid; the distance is size and speed */
+.ar-scene[data-deep] .ar-media { height: clamp(200px, 34vh, 360px); }
+.ar-scene[data-deep] .ar-quote { max-width: 40vw; }
+.ar-scene[data-deep] .ar-quote p { font-size: clamp(24px, 3.4vw, 64px); }
 
 /* portrait: giant serif name overlapping the top edge of a 4:5 photo */
 .ar-scene--portrait .ar-portrait { position: relative; margin: 0; padding-top: clamp(28px, 4vw, 64px); }
@@ -231,7 +255,11 @@ html.dark .ar {
   cursor: pointer;
   touch-action: none;
   outline-offset: -4px;
+  transition: opacity 0.9s ease;
 }
+/* no clip sounding — the silence between people, the glide after the last —
+   and the strip goes with the sound, back in as the next clip starts */
+.ar[data-silent="1"] .ar-wave { opacity: 0; }
 .ar-wave__bars {
   position: absolute;
   inset: 0;

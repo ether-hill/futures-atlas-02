@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef } from "react";
 
 const SPEED_FLOOR = 110; // px/s — never slower than this, however sparse the scenes
 const SCENE_GAP = 160; // px of clear air between neighbouring scenes at the chosen speed
+const PERSPECTIVE = 1200; // px — must match .ar-viewport's perspective
+const DEPTH_Z = 900; // px — a scene at depth 1 sits this far back (matches the CSS)
 const FADE_IN = 1.0; // s — each clip's volume ramps up from silence
 const FADE_OUT = 1.4; // s — and down into it
 
@@ -20,6 +22,8 @@ const FADE_OUT = 1.4; // s — and down into it
  *   --d         px distance from the playhead, per scene
  *   --active    0/1 "this scene's start has been reached", per scene
  *                (reduced-motion mode crossfades on it)
+ *   data-silent 1 while no clip is sounding (the silence between people, the
+ *                glide after the last) — the waveform fades on it
  *
  * ONE SPEED. The reel moves at a constant px/s for the whole line, and every
  * scene is placed so its centre reaches the playhead exactly at its start
@@ -74,14 +78,27 @@ export function useAudioClock({
     const playhead = section.clientWidth * 0.33;
     const kids = Array.from(track.children) as HTMLElement[];
     const widths = kids.map((el) => el.offsetWidth);
-    const lags = kids.map((el) => Math.min(1, Math.max(0.1, parseFloat(el.style.getPropertyValue("--p")) || 1)));
+    const depths = kids.map((el) => Math.min(1, Math.max(0, parseFloat(el.style.getPropertyValue("--depth")) || 0)));
+    // how much slower than the track a scene moves on screen: its parallax
+    // lag times the perspective foreshortening of its depth
+    const lags = kids.map((el, i) => {
+      const p = Math.min(1, Math.max(0.1, parseFloat(el.style.getPropertyValue("--p")) || 1));
+      return p * (PERSPECTIVE / (PERSPECTIVE + depths[i] * DEPTH_Z));
+    });
+    // deep scenes live in their own band above the row: only neighbours in
+    // the same band are held apart
+    const row = kids.map((_, i) => (depths[i] > 0 ? "deep" : "main"));
     let v = SPEED_FLOOR;
-    for (let i = 0; i + 1 < starts.length && i + 1 < widths.length; i++) {
-      const dt = starts[i + 1] - starts[i];
-      if (dt <= 0) continue;
-      // when either neighbour is on the playhead the other sits dt·v·p away
-      const p = Math.min(lags[i], lags[i + 1]);
-      v = Math.max(v, (widths[i] / 2 + widths[i + 1] / 2 + SCENE_GAP) / (dt * p));
+    for (let i = 0; i < starts.length && i < widths.length; i++) {
+      for (let j = i + 1; j < starts.length && j < widths.length; j++) {
+        if (row[j] !== row[i]) continue;
+        const dt = starts[j] - starts[i];
+        if (dt <= 0) continue;
+        // when either is on the playhead the other sits dt·v·lag away
+        const p = Math.min(lags[i], lags[j]);
+        v = Math.max(v, ((widths[i] * lags[i]) / 2 + (widths[j] * lags[j]) / 2 + SCENE_GAP) / (dt * p));
+        break; // the next in the same band is the binding one
+      }
     }
     speed.current = v;
     const tracks = [track, ...Array.from(section.querySelectorAll<HTMLElement>(".ar-track--far"))];
@@ -123,6 +140,7 @@ export function useAudioClock({
       section.style.setProperty("--t", t.toFixed(3));
       section.style.setProperty("--progress", dur ? Math.min(1, audio.currentTime / dur).toFixed(4) : "0");
       section.style.setProperty("--reel-x", x.toFixed(1));
+      section.dataset.silent = overrideRef.current !== null ? "1" : "0";
 
       // the clip fades in from silence and out into it
       if (!audio.paused && dur) {

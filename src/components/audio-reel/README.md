@@ -32,9 +32,36 @@ exactly at its start time. The speed is the smallest that keeps neighbouring
 scenes from overlapping (measured from their widths), never below a floor —
 nothing speeds up or slows down between scenes and the motion runs steadily
 through a clip's tail and the silence. Spacing allows for parallax, so a
-lagging picture is never pulled back over the quote after it. Words are
-solid — no approach fade; only pictures come up out of the distance. Each
-clip's volume fades in over its first second and out over its last.
+lagging picture is never pulled back over the quote after it. Nothing on
+the reel fades. Each clip's volume fades in over its first second and out
+over its last, and the waveform strip goes with it.
+
+## Two editions
+
+`/listen` is people: each entry a person, opening on their portrait and
+name. `/listen/issues` is the same line and clock over issues and sectors
+(`src/content/issues/*.json`): each entry opens on a pull quote rather than a
+name, and carries a couple of extra pictures set back in depth. Both pages
+mount `AudioReel`; the `label` prop is the word before the jump list
+("Voice of" / "On") and `editions` renders the switch between them.
+
+## Depth
+
+Any scene may carry `depth` (0–1). The near track keeps 3D
+(`transform-style: preserve-3d`) inside the viewport's perspective, whose
+origin is the playhead, so a deep scene is pushed back along z: it renders
+smaller and moves slower by perspective alone, is lifted into a band above
+the main row, and still lands on the playhead at its start. The speed
+calculation only holds apart neighbours in the same band, so deep pictures
+can sit near the row without forcing the whole line faster. (The older
+whole-row depth layers of the Cinema/Deck/Type variants remain as they were.)
+
+## Silence
+
+While no clip is sounding — the silence between people, the glide after the
+last — the section carries `data-silent="1"` and the waveform strip fades
+out, coming back as the next clip starts. Nothing else fades: words and
+pictures are solid throughout.
 
 ## Driving it by hand
 

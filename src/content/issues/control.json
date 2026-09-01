@@ -1,0 +1,14 @@
+{
+  "id": "control",
+  "name": "Control",
+  "role": "oversight, misuse, who decides",
+  "audio": "/audio-reel/scott.mp3",
+  "peaks": "/audio-reel/scott.peaks.json",
+  "scenes": [
+    { "type": "quote", "start": 0, "text": "Who is in control, overseeing its use and misuse?" },
+    { "type": "media", "start": 4, "src": "/audio-reel/scott-clip.mp4", "kind": "video", "depth": 0.6 },
+    { "type": "media", "start": 8, "src": "/audio-reel/scott-portrait.jpg" },
+    { "type": "quote", "start": 13, "text": "Nobody asked to be the test." },
+    { "type": "media", "start": 17, "src": "/audio-reel/amara-portrait.jpg", "depth": 0.7 }
+  ]
+}

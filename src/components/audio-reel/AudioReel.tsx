@@ -42,7 +42,25 @@ const TAIL = 6; // seconds assumed after a clip's last scene until its metadata 
 const GAP = 3.5; // seconds of silence between one person and the next
 const GLIDE = 2.5; // seconds the reel takes to ease to a halt once the last clip has stopped
 
-export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: string }) {
+export interface Edition {
+  href: string;
+  label: string;
+  current?: boolean;
+}
+
+export function AudioReel({
+  voices,
+  shareHref,
+  label = "Voice of",
+  editions,
+}: {
+  voices: Voice[];
+  shareHref: string;
+  /** The word before the jump list: "Voice of" for people, "On" for issues. */
+  label?: string;
+  /** The editions of the piece, if there is more than one, as links. */
+  editions?: Edition[];
+}) {
   const [voiceId, setVoiceId] = useState(voices[0]?.id);
   const [playing, setPlaying] = useState(false);
   const [countdown, setCountdown] = useState<number | null>(null);
@@ -398,7 +416,7 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
 
       <header className="ar-top">
         <div className="ar-top__voice">
-          <span className="ar-top__label">Voice of</span>
+          <span className="ar-top__label">{label}</span>
           <select
             className="ar-select"
             value={voice.id}
@@ -417,6 +435,15 @@ export function AudioReel({ voices, shareHref }: { voices: Voice[]; shareHref: s
         </div>
 
         <div className="ar-top__mid">
+          {editions && editions.length > 1 && (
+            <nav className="ar-editions" aria-label="Edition">
+              {editions.map((e) => (
+                <a key={e.href} href={e.href} aria-current={e.current ? "page" : undefined}>
+                  {e.label}
+                </a>
+              ))}
+            </nav>
+          )}
           {showVariants && (
           <div className="ar-switch" role="group" aria-label="Design variant">
             {VARIANTS.map((v) => (

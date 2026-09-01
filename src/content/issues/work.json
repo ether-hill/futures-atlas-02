@@ -1,0 +1,15 @@
+{
+  "id": "work",
+  "name": "Work",
+  "role": "time, family, what a job is for",
+  "audio": "/audio-reel/scott.mp3",
+  "peaks": "/audio-reel/scott.peaks.json",
+  "scenes": [
+    { "type": "quote", "start": 0, "text": "Will AI give me more time to spend with my girls?" },
+    { "type": "media", "start": 3.5, "src": "/audio-reel/scott-portrait.jpg", "depth": 0.7 },
+    { "type": "media", "start": 7, "src": "/audio-reel/scott-scene.jpg" },
+    { "type": "quote", "start": 12, "text": "A job used to be where the hours went." },
+    { "type": "media", "start": 14.5, "src": "/audio-reel/amara-scene.jpg", "depth": 0.6 },
+    { "type": "media", "start": 17.5, "src": "/audio-reel/scott-clip.mp4", "kind": "video" }
+  ]
+}

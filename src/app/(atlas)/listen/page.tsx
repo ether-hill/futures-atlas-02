@@ -25,5 +25,14 @@ const byId: Record<string, Voice> = {
 
 export default function ListenPage() {
   const voices = (order as string[]).map((id) => byId[id]).filter(Boolean);
-  return <AudioReel voices={voices} shareHref="/contact" />;
+  return (
+    <AudioReel
+      voices={voices}
+      shareHref="/contact"
+      editions={[
+        { href: "/listen", label: "People", current: true },
+        { href: "/listen/issues", label: "Issues" },
+      ]}
+    />
+  );
 }

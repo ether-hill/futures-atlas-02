@@ -32,12 +32,14 @@ export function Scene({ scene, playing }: { scene: SceneData; playing: boolean }
   }, [playing]);
 
   const parallax = scene.parallax ?? (scene.type === "media" ? 0.75 : 1);
+  const depth = Math.min(1, Math.max(0, scene.depth ?? 0));
 
   return (
     <div
       ref={wrapRef}
       className={`ar-scene ar-scene--${scene.type}`}
-      style={{ "--p": parallax } as React.CSSProperties}
+      data-deep={depth > 0 ? "1" : undefined}
+      style={{ "--p": parallax, "--depth": depth } as React.CSSProperties}
     >
       {scene.type === "portrait" && (
         <figure className="ar-portrait">
