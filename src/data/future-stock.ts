@@ -168,6 +168,7 @@ export const STOCK: FutureProduct[] = [
     year: "2035",
     price: "€1,890",
     line: "One person, one perfect microclimate, half a kilowatt.",
+    image: "/future-stock/koji-pod.jpg",
   },
   {
     id: "omakase-a5",
