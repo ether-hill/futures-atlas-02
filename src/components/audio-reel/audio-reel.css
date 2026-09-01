@@ -7,13 +7,32 @@
   PALETTE: this piece carries its own art direction per its brief (warm paper,
   near-black ink, terracotta hairline) — deliberately NOT the atlas theme
   tokens, in the same way Quantum Lag locks dark. Colour literals are confined
-  to this file.
+  to this file, and to ONE place in it: the two trios below.
+
+  THE LIGHT/DARK PRINCIPLE. Every colour in the piece is derived from three
+  values — --ar-bg, --ar-ink, --ar-line — by color-mix or opacity. The light
+  trio is the default; the dark trio replaces it under prefers-color-scheme
+  (unless the section is pinned light) and when the section is pinned dark.
+  Nothing below the trios names a colour, so every variant holds on either
+  ground: swap the trio and the whole reel re-skins.
 */
 .ar {
+  /* light trio */
   --ar-bg: #fbfaf7;
   --ar-ink: #1a1a1a;
   --ar-line: #d9a37a;
+
+  /* derived — never override these per scheme */
+  --ar-ink-soft: color-mix(in srgb, var(--ar-ink) 65%, transparent);
+  --ar-ink-faint: color-mix(in srgb, var(--ar-ink) 28%, transparent);
+  --ar-ink-hair: color-mix(in srgb, var(--ar-ink) 12%, transparent);
+  --ar-panel: color-mix(in srgb, var(--ar-ink) 6%, var(--ar-bg));
+  --ar-scrim: color-mix(in srgb, var(--ar-bg) 82%, transparent);
+  --ar-shadow: color-mix(in srgb, var(--ar-ink) 45%, transparent);
+
   --ar-serif: "Tiempos Headline", Georgia, serif;
+  --ar-sans: system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --ar-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
 
   position: relative;
   display: grid;
@@ -22,6 +41,21 @@
   overflow: hidden;
   background: var(--ar-bg);
   color: var(--ar-ink);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  .ar:not([data-scheme="light"]) {
+    --ar-bg: #0e0e10;
+    --ar-ink: #f3efe6;
+    --ar-line: #e2a97c;
+    color-scheme: dark;
+  }
+}
+.ar[data-scheme="dark"] {
+  --ar-bg: #0e0e10;
+  --ar-ink: #f3efe6;
+  --ar-line: #e2a97c;
+  color-scheme: dark;
 }
 
 /* ---------- top bar ---------- */
@@ -34,14 +68,14 @@
   z-index: 3;
 }
 .ar-top__voice { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.ar-top__label { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.65; white-space: nowrap; }
+.ar-top__label { font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ar-ink-soft); white-space: nowrap; }
 .ar-select {
   appearance: none;
   font: inherit;
   font-size: 14px;
   color: var(--ar-ink);
   background: transparent;
-  border: 1px solid color-mix(in srgb, var(--ar-ink) 30%, transparent);
+  border: 1px solid var(--ar-ink-faint);
   border-radius: 999px;
   padding: 8px 36px 8px 16px;
   max-width: 60vw;
@@ -53,19 +87,54 @@
   background-size: 5px 5px;
   background-repeat: no-repeat;
 }
+.ar-select option { color: var(--ar-ink); background: var(--ar-bg); }
 .ar-share {
   font-size: 14px;
   color: var(--ar-ink);
   text-decoration: none;
-  border: 1px solid color-mix(in srgb, var(--ar-ink) 30%, transparent);
+  border: 1px solid var(--ar-ink-faint);
   border-radius: 999px;
   padding: 8px 18px;
   white-space: nowrap;
 }
 .ar-share:hover { background: var(--ar-ink); color: var(--ar-bg); }
 
+/* variant + scheme switches */
+.ar-top__mid { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.ar-switch {
+  display: inline-flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--ar-ink-faint);
+  border-radius: 999px;
+}
+.ar-switch button {
+  font: 600 11px/1 var(--ar-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ar-ink);
+  opacity: 0.6;
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+.ar-switch button:hover { opacity: 1; }
+.ar-switch button.on { background: var(--ar-ink); color: var(--ar-bg); opacity: 1; }
+
 /* ---------- the reel ---------- */
-.ar-viewport { position: relative; overflow: hidden; z-index: 1; }
+.ar-viewport {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y; /* horizontal touch is ours (scrub); vertical stays with the page */
+}
+.ar[data-drag="1"] .ar-viewport { cursor: grabbing; }
+.ar-track img, .ar-track video { pointer-events: none; -webkit-user-drag: none; }
 .ar-hairline {
   position: absolute;
   left: 33%;
@@ -113,7 +182,7 @@
   aspect-ratio: 4 / 5;
   object-fit: cover;
 }
-.ar-portrait__caption { margin-top: 12px; font-size: 13px; line-height: 1.5; max-width: 34ch; opacity: 0.75; }
+.ar-portrait__caption { margin-top: 12px; font-size: 13px; line-height: 1.5; max-width: 34ch; color: var(--ar-ink-soft); }
 
 /* media: image or muted looping video, 4:5 */
 .ar-media {
@@ -135,17 +204,28 @@
 }
 .ar-quote__open { margin-left: -0.45em; }
 
-/* countdown overlay */
+/* countdown / up-next overlay */
 .ar-countdown {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
+  align-content: center;
+  gap: 10px;
   font-family: var(--ar-serif);
   font-size: clamp(28px, 4vw, 56px);
-  background: color-mix(in srgb, var(--ar-bg) 82%, transparent);
+  background: var(--ar-scrim);
   z-index: 4;
 }
+.ar-countdown__label {
+  font: 600 11px/1 var(--ar-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ar-ink-soft);
+}
+
+/* progress rule — only the Type variant shows it */
+.ar-rule { display: none; }
 
 /* ---------- bottom: waveform + play ---------- */
 .ar-bottom { position: relative; z-index: 3; }
@@ -198,6 +278,172 @@
   white-space: nowrap;
 }
 
+/* =====================================================================
+   VARIANTS. Same DOM, same clock; only the dressing changes. Each block
+   uses the trio and its derivatives only, so every one of these holds on
+   the light and the dark ground alike.
+   ===================================================================== */
+
+/* ---- V2 · Ledger: mono slates, numbered scenes, sans quotes, greyscale ---- */
+.ar[data-variant="ledger"] .ar-track { counter-reset: scene; }
+.ar[data-variant="ledger"] .ar-scene { position: relative; padding-top: 30px; }
+.ar[data-variant="ledger"] .ar-scene::before {
+  counter-increment: scene;
+  content: counter(scene, decimal-leading-zero);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding-top: 8px;
+  border-top: 1px solid var(--ar-ink-faint);
+  font: 600 11px/1 var(--ar-mono);
+  letter-spacing: 0.14em;
+  color: var(--ar-ink-soft);
+}
+.ar[data-variant="ledger"] .ar-quote p {
+  font-family: var(--ar-sans);
+  font-weight: 500;
+  font-size: clamp(28px, 4.6vw, 76px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+}
+.ar[data-variant="ledger"] .ar-quote__open { margin-left: 0; }
+.ar[data-variant="ledger"] .ar-scene--portrait .ar-portrait { padding-top: 0; }
+.ar[data-variant="ledger"] .ar-portrait__name {
+  position: static;
+  display: block;
+  margin-bottom: 10px;
+  font: 600 12px/1 var(--ar-mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ar-ink-soft);
+}
+.ar[data-variant="ledger"] .ar-portrait__img { width: clamp(240px, 30vw, 440px); filter: grayscale(1) contrast(1.05); }
+.ar[data-variant="ledger"] .ar-media { filter: grayscale(1); border: 1px solid var(--ar-ink-faint); }
+.ar[data-variant="ledger"] .ar-hairline {
+  background: repeating-linear-gradient(to bottom, var(--ar-line) 0 6px, transparent 6px 12px);
+}
+.ar[data-variant="ledger"] .ar-play,
+.ar[data-variant="ledger"] .ar-select,
+.ar[data-variant="ledger"] .ar-share,
+.ar[data-variant="ledger"] .ar-switch,
+.ar[data-variant="ledger"] .ar-switch button { border-radius: 6px; }
+
+/* ---- V3 · Cinema: wide frames, lower-third quotes, letterbox rules ---- */
+.ar[data-variant="cinema"] .ar-media {
+  height: clamp(220px, 46vh, 520px);
+  aspect-ratio: 16 / 9;
+  box-shadow: 0 30px 60px -30px var(--ar-shadow);
+}
+.ar[data-variant="cinema"] .ar-portrait__img { width: clamp(300px, 40vw, 640px); aspect-ratio: 3 / 2; }
+.ar[data-variant="cinema"] .ar-portrait__name { font-size: clamp(48px, 8vw, 120px); }
+.ar[data-variant="cinema"] .ar-quote {
+  max-width: 46vw;
+  align-self: flex-end;
+  margin-bottom: 8vh;
+  padding: 18px 22px;
+  border-left: 3px solid var(--ar-line);
+  background: var(--ar-panel);
+}
+.ar[data-variant="cinema"] .ar-quote p {
+  font-family: var(--ar-sans);
+  font-size: clamp(20px, 2.4vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.ar[data-variant="cinema"] .ar-quote__open { margin-left: 0; }
+.ar[data-variant="cinema"] .ar-viewport::before,
+.ar[data-variant="cinema"] .ar-viewport::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--ar-ink-faint);
+  z-index: 2;
+  pointer-events: none;
+}
+.ar[data-variant="cinema"] .ar-viewport::before { top: 0; }
+.ar[data-variant="cinema"] .ar-viewport::after { bottom: 0; }
+.ar[data-variant="cinema"] .ar-hairline { width: 2px; }
+.ar[data-variant="cinema"] .ar-hairline::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  translate: -50% 0;
+  border: 7px solid transparent;
+  border-top: 9px solid var(--ar-line);
+}
+
+/* ---- V4 · Deck: every scene a card, dealt with a slight tilt ---- */
+.ar[data-variant="deck"] .ar-scene > * {
+  background: var(--ar-panel);
+  border: 1px solid var(--ar-ink-faint);
+  border-radius: 20px;
+  padding: 18px;
+  rotate: -1.5deg;
+  box-shadow: 0 24px 48px -28px var(--ar-shadow);
+}
+.ar[data-variant="deck"] .ar-scene:nth-child(even) > * { rotate: 1.5deg; }
+.ar[data-variant="deck"] .ar-scene--portrait .ar-portrait { padding-top: 18px; }
+.ar[data-variant="deck"] .ar-portrait__name {
+  position: static;
+  display: block;
+  margin-bottom: 12px;
+  font-size: clamp(32px, 4vw, 56px);
+  line-height: 1;
+}
+.ar[data-variant="deck"] .ar-portrait__img { width: clamp(200px, 22vw, 320px); border-radius: 10px; }
+.ar[data-variant="deck"] .ar-portrait__caption { max-width: 28ch; }
+.ar[data-variant="deck"] .ar-media { border-radius: 10px; }
+.ar[data-variant="deck"] .ar-quote { max-width: 44vw; padding: clamp(24px, 3vw, 44px); }
+.ar[data-variant="deck"] .ar-quote p { font-size: clamp(26px, 3.6vw, 60px); line-height: 1.1; }
+.ar[data-variant="deck"] .ar-quote__open { margin-left: 0; }
+.ar[data-variant="deck"] .ar-hairline {
+  left: calc(33% - 3px);
+  width: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--ar-line) 45%, transparent);
+}
+.ar[data-variant="deck"] .ar-play { border-radius: 24px; }
+
+/* ---- V5 · Type: the words carry it; media are footnotes; no hairline ---- */
+.ar[data-variant="type"] .ar-hairline { display: none; }
+.ar[data-variant="type"] .ar-rule {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: calc(var(--progress, 0) * 100%);
+  background: var(--ar-line);
+  z-index: 5;
+}
+.ar[data-variant="type"] .ar-quote { max-width: 70vw; }
+.ar[data-variant="type"] .ar-quote p {
+  font-weight: 500;
+  font-size: clamp(40px, 8.5vw, 160px);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+}
+.ar[data-variant="type"] .ar-quote__open,
+.ar[data-variant="type"] .ar-quote p > span:last-child { color: var(--ar-line); }
+.ar[data-variant="type"] .ar-scene--media { align-self: flex-end; margin-bottom: 6vh; }
+.ar[data-variant="type"] .ar-media { height: clamp(160px, 26vh, 260px); }
+.ar[data-variant="type"] .ar-scene--portrait .ar-portrait { padding-top: clamp(40px, 6vw, 90px); }
+.ar[data-variant="type"] .ar-portrait__name {
+  top: -0.1em;
+  left: -0.04em;
+  font-size: clamp(80px, 14vw, 220px);
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--ar-ink);
+}
+.ar[data-variant="type"] .ar-portrait__img { width: clamp(180px, 18vw, 260px); margin-left: clamp(80px, 12vw, 200px); }
+.ar[data-variant="type"] .ar-wave__bars { gap: 3px; }
+.ar[data-variant="type"] .ar-wave__bars--played span { opacity: 1; background: var(--ar-line); }
+.ar[data-variant="type"] .ar-play { background: var(--ar-line); color: var(--ar-bg); }
+
 /* ---------- reduced motion: crossfade in place ---------- */
 @media (prefers-reduced-motion: reduce) {
   .ar[data-rm="1"] .ar-track {
@@ -222,6 +468,19 @@
 @media (max-width: 640px) {
   .ar-quote { max-width: 78vw; }
   .ar-play { width: 64px; height: 64px; bottom: 76px; }
+  /* 240 bars with 2px gaps need ~720px; on a phone show every other bar */
   .ar-wave { height: 88px; }
-  .ar-top { flex-wrap: wrap; }
+  .ar-wave__bars { gap: 1px; padding: 10px 16px; }
+  .ar-wave__bars span:nth-child(even) { display: none; }
+  /* the bar folds to two short rows: voice + share, then the two switches */
+  .ar-top { flex-wrap: wrap; gap: 10px 8px; padding: 12px 16px; }
+  .ar-top__label { display: none; }
+  .ar-top__voice { flex: 1 1 auto; }
+  .ar-select { max-width: 100%; width: 100%; font-size: 13px; padding: 7px 30px 7px 12px; }
+  .ar-share { font-size: 13px; padding: 7px 12px; }
+  .ar-top__mid { order: 3; width: 100%; justify-content: flex-start; gap: 6px; }
+  .ar-switch { padding: 2px; }
+  .ar-switch button { font-size: 10px; letter-spacing: 0.06em; padding: 6px 7px; }
+  .ar[data-variant="cinema"] .ar-quote,
+  .ar[data-variant="deck"] .ar-quote { max-width: 78vw; }
 }

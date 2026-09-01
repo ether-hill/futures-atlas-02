@@ -2,6 +2,25 @@
 
 import { useCallback, useEffect, useRef } from "react";
 
+type Pt = { t: number; x: number };
+
+/** Piecewise-linear interpolation over ascending points, clamped at the ends. */
+function interp(pts: Pt[], v: number, from: keyof Pt, to: keyof Pt): number {
+  if (pts.length === 0) return 0;
+  if (v <= pts[0][from]) return pts[0][to];
+  const last = pts[pts.length - 1];
+  if (v >= last[from]) return last[to];
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i + 1];
+    if (v >= a[from] && v <= b[from]) {
+      const span = b[from] - a[from];
+      const f = span === 0 ? 1 : (v - a[from]) / span;
+      return a[to] + (b[to] - a[to]) * f;
+    }
+  }
+  return last[to];
+}
+
 /**
  * The single clock. A rAF loop reads audio.currentTime (timeupdate is too
  * coarse), lerps it (0.12) so seeks feel smooth, clamps to exact on pause,
@@ -17,6 +36,10 @@ import { useCallback, useEffect, useRef } from "react";
  * The reel-x mapping is piecewise-linear between scene start times and the
  * x-offset that centres each scene on the hairline, measured from the DOM at
  * mount and on resize — audio time is the only source of truth.
+ *
+ * The map is exposed both ways: `xAt(t)` for the frame loop and `tAt(x)` so
+ * a drag or a trackpad swipe on the reel can be turned back into a seek —
+ * the gesture never moves the track itself, it moves the clock.
  */
 export function useAudioClock({
   audioRef,
@@ -29,7 +52,7 @@ export function useAudioClock({
   trackRef: React.RefObject<HTMLDivElement | null>;
   starts: number[]; // scene start times, ascending
 }) {
-  const map = useRef<{ t: number; x: number }[]>([]);
+  const map = useRef<Pt[]>([]);
   const smooth = useRef(0);
 
   /** Measure scene centres → the x that puts scene i on the hairline. */
@@ -38,7 +61,7 @@ export function useAudioClock({
     const track = trackRef.current;
     if (!section || !track) return;
     const playhead = section.clientWidth * 0.33;
-    const pts: { t: number; x: number }[] = [];
+    const pts: Pt[] = [];
     Array.from(track.children).forEach((el, i) => {
       if (i >= starts.length) return;
       const s = el as HTMLElement;
@@ -47,6 +70,9 @@ export function useAudioClock({
     });
     map.current = pts;
   }, [sectionRef, trackRef, starts]);
+
+  const xAt = useCallback((t: number) => interp(map.current, t, "t", "x"), []);
+  const tAt = useCallback((x: number) => interp(map.current, x, "x", "t"), []);
 
   useEffect(() => {
     measure();
@@ -70,23 +96,7 @@ export function useAudioClock({
       if (Math.abs(cur - smooth.current) < 0.001) smooth.current = cur;
       const t = smooth.current;
 
-      // piecewise-linear t → reel-x
-      const pts = map.current;
-      let x = 0;
-      if (pts.length > 0) {
-        if (t <= pts[0].t) x = pts[0].x;
-        else if (t >= pts[pts.length - 1].t) x = pts[pts.length - 1].x;
-        else {
-          for (let i = 0; i < pts.length - 1; i++) {
-            const a = pts[i], b2 = pts[i + 1];
-            if (t >= a.t && t <= b2.t) {
-              const f = b2.t === a.t ? 1 : (t - a.t) / (b2.t - a.t);
-              x = a.x + (b2.x - a.x) * f;
-              break;
-            }
-          }
-        }
-      }
+      const x = interp(map.current, t, "t", "x");
 
       const dur = audio.duration || 0;
       section.style.setProperty("--fade-w", (section.clientWidth * 0.3).toFixed(0));
@@ -108,5 +118,5 @@ export function useAudioClock({
     return () => cancelAnimationFrame(raf);
   }, [audioRef, sectionRef, trackRef, starts]);
 
-  return { remeasure: measure };
+  return { remeasure: measure, xAt, tAt };
 }

@@ -33,3 +33,17 @@ export interface Voice {
   peaks: string;
   scenes: Scene[];
 }
+
+/** Design variants — same DOM and clock, different stylesheet block. */
+export const VARIANTS = [
+  { id: "editorial", label: "V1", name: "Editorial" },
+  { id: "ledger", label: "V2", name: "Ledger" },
+  { id: "cinema", label: "V3", name: "Cinema" },
+  { id: "deck", label: "V4", name: "Deck" },
+  { id: "type", label: "V5", name: "Type" },
+] as const;
+export type Variant = (typeof VARIANTS)[number]["id"];
+
+/** Colour scheme: light and dark are the two trios; auto follows the OS. */
+export const SCHEMES = ["light", "auto", "dark"] as const;
+export type Scheme = (typeof SCHEMES)[number];

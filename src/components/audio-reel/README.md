@@ -9,6 +9,35 @@ animates on scroll or its own clock; pause freezes the reel, seeking snaps it.
 
 Mounted at `/listen` (internal, gated via `INTERNAL_PATHS` in middleware).
 
+## Driving it by hand
+
+The reel can be scrubbed directly — drag it, or swipe horizontally on a
+trackpad — but the gesture **seeks the audio; it never moves the track**.
+`useAudioClock` exposes the scene map both ways (`xAt(t)` and `tAt(x)`), so
+a drag of *dx* px becomes `seek(tAt(xAt(t0) − dx))` and the reel follows the
+clock as usual. A drag pauses for its duration and resumes on release; a
+plain press on the reel toggles play. Vertical wheel is left to the page.
+
+## Continuous play
+
+When a clip ends the next voice in `index.json` order loads, an "Up next ·
+Name" card holds for a beat, and it plays — looping back to the first. Pass
+`continuous={false}` to stop at the end of each clip.
+
+## Variants and schemes
+
+Five designs share one DOM and one clock; only a stylesheet block differs
+(`.ar[data-variant=…]`). V1 Editorial (the brief), V2 Ledger, V3 Cinema, V4
+Deck, V5 Type. The top bar switches them, and they are linkable:
+`/listen?v=cinema&scheme=dark`.
+
+**Light / dark principle.** Every colour derives from a trio — `--ar-bg`,
+`--ar-ink`, `--ar-line` — by `color-mix` or opacity. The light trio is the
+default; the dark trio applies under `prefers-color-scheme: dark` (unless
+pinned `light`) and when pinned `dark`. Nothing below the trios names a
+colour, so every variant holds on either ground. Add a variant by adding a
+block that uses the trio and its derivatives only.
+
 ## Authoring a new voice
 
 1. Drop the clip at `public/audio-reel/<id>.mp3` and its media alongside.
@@ -39,9 +68,11 @@ Mounted at `/listen` (internal, gated via `INTERNAL_PATHS` in middleware).
 
 ## Pieces
 
-- `AudioReel` — state (voice, play, countdown), top bar, transcript
+- `AudioReel` — state (voice, play, countdown, up-next, variant, scheme),
+  top bar, drag/wheel scrubbing, continuous play, transcript
 - `useAudioClock` — the rAF clock; measures scene offsets, writes
-  `--t --progress --reel-x --fade-w` (section) and `--d --active` (per scene)
+  `--t --progress --reel-x --fade-w` (section) and `--d --active` (per scene);
+  exposes `xAt` / `tAt` for scrubbing
 - `Scene` — the three scene types; videos play only while audio plays and the
   scene is on screen
 - `Waveform` — 240-peak strip; played bars clipped by `--progress`; the seek
