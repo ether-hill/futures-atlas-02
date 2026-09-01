@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
-import { STOCK, type FutureProduct } from "@/data/future-stock";
 import { Builder } from "./Builder";
+import { Shelf } from "./Shelf";
 
 export const metadata: Metadata = {
   title: "Future Stock. Futures Atlas",
@@ -20,37 +20,6 @@ export const metadata: Metadata = {
  */
 
 const eyebrow = "font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep";
-
-function ProductCard({ product }: { product: FutureProduct }) {
-  return (
-    <div className="group">
-      <div className={`aspect-square overflow-hidden ${product.image ? "" : "fa-hatch"}`}>
-        {product.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={product.image}
-            alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-          />
-        ) : (
-          <div className="flex h-full w-full items-end p-4">
-            <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-graphite">
-              Awaiting photography
-            </span>
-          </div>
-        )}
-      </div>
-      <div className="mt-3.5 flex items-baseline justify-between gap-3">
-        <h3 className="text-[15px] font-bold leading-snug text-ink">{product.name}</h3>
-        <span className="shrink-0 font-mono text-[13px] text-ink">{product.price}</span>
-      </div>
-      <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.16em] text-graphite">
-        {product.aisle} · ships {product.year}
-      </div>
-      <p className="mt-2 text-[13px] leading-[1.7] text-ink-70">{product.line}</p>
-    </div>
-  );
-}
 
 export default function FutureStockPage() {
   return (
@@ -106,12 +75,8 @@ export default function FutureStockPage() {
               began as a prompt from the generator above.
             </p>
           </Reveal>
-          <div className="mt-[clamp(26px,4vw,48px)] grid gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
-            {STOCK.map((p, i) => (
-              <Reveal key={p.id} delay={Math.min(i, 5) * 60}>
-                <ProductCard product={p} />
-              </Reveal>
-            ))}
+          <div className="mt-[clamp(26px,4vw,48px)]">
+            <Shelf />
           </div>
         </Container>
       </section>

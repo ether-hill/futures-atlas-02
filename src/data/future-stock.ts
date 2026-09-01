@@ -140,15 +140,35 @@ export function buildImagePrompt({ aisle, year, force, shot, seed }: PromptInput
 /* The shelf                                                           */
 /* ------------------------------------------------------------------ */
 
+export interface ProductReview {
+  stars: 1 | 2 | 3 | 4 | 5;
+  title: string;
+  body: string;
+  author: string; // "Marta L., Rotterdam"
+}
+
+/**
+ * The full retail listing behind a product's quickview — the standard
+ * template for every product going forward. Paste the chatbot's output in
+ * here; every section is optional and the quickview renders what exists.
+ */
+export interface ProductListing {
+  delivery?: string; // the note under the price
+  specs?: { label: string; value: string }[];
+  reviews?: ProductReview[];
+  qa?: { q: string; a: string }[];
+}
+
 export interface FutureProduct {
   id: string;
   name: string;
   aisle: string; // display label, e.g. "Health & body"
   year: string; // when it plausibly ships
   price: string; // display string, e.g. "€640" or "€6/mo"
-  line: string; // one-line pitch, retail-plain
+  line: string; // one-line pitch / tagline, retail-plain
   image?: string; // /future-stock/<id>.jpg once generated; fa-hatch plate until then
   prompt?: string; // provenance: the image prompt that made it
+  listing?: ProductListing; // the quickview copy
 }
 
 /** Seed inventory — placeholders to be replaced by generated keepers. */
@@ -162,13 +182,68 @@ export const STOCK: FutureProduct[] = [
     line: "Hearing aids that translate nine languages as you listen.",
   },
   {
-    id: "koji-pod",
-    name: "Kōji Personal Climate Pod",
+    id: "solocool-1",
+    name: "NESTA SoloCool 1",
     aisle: "Home & climate",
     year: "2035",
-    price: "€1,890",
-    line: "One person, one perfect microclimate, half a kilowatt.",
-    image: "/future-stock/koji-pod.jpg",
+    price: "€1,249",
+    line: "A cool, quiet place to sit when the rest of the house is too warm.",
+    image: "/future-stock/solocool-1.jpg",
+    listing: {
+      delivery:
+        "Delivery from €49. Standard room-of-choice delivery to most EU locations within 5–8 working days. Assembly available at checkout.",
+      specs: [
+        {
+          label: "External size",
+          value: "140 × 125 × 205 cm; designed for one seated or reclining adult",
+        },
+        {
+          label: "Cooling",
+          value:
+            "Low-noise personal cooling for indoor temperatures up to 42°C; adjustable from 20–26°C",
+        },
+        {
+          label: "Power",
+          value:
+            "230V mains connection with integrated 1.8 kWh backup battery; up to 4 hours of cooling during a power interruption",
+        },
+        {
+          label: "Materials",
+          value:
+            "Moulded insulated composite shell, aluminium base frame, clear polycarbonate front panel and washable fabric seating",
+        },
+        {
+          label: "Weight",
+          value: "118 kg; supplied on adjustable floor feet for permanent indoor placement",
+        },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "Exactly what we needed.",
+          body: "We put it in the living room during the July heat period and now everyone knows whose turn it is. It is quiet enough to read or work in, and the chair is much more comfortable than I expected.",
+          author: "Marta L., Rotterdam",
+        },
+        {
+          stars: 4,
+          title: "Does the job.",
+          body: "Cooling is good and the controls are simple. We mainly use it in the afternoon when the front rooms get too warm. It takes up more floor space than you think, so measure first.",
+          author: "Daniel P., Lyon",
+        },
+        {
+          stars: 3,
+          title: "Good, but the cable is a bit short.",
+          body: "Keeps the temperature comfortable and the seat is good for a few hours. The power cable could be longer — we had to move a side table to reach the socket.",
+          author: "Elena R., Valencia",
+        },
+      ],
+      qa: [
+        {
+          q: "Does the SoloCool 1 need to be installed?",
+          a: "No. The SoloCool 1 is delivered as a single unit and only needs a level indoor floor and a standard 230V socket. Allow 10 cm clearance around the rear and sides for ventilation.",
+        },
+      ],
+    },
   },
   {
     id: "stillpoint-s1",
