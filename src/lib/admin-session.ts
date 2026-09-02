@@ -13,7 +13,18 @@ export const ADMIN_COOKIE = "fa_admin";
 /** Readable (non-httpOnly) companion flag: lets the static nav bundle know an
  *  editor is signed in so it can list drafts. It grants nothing on its own, *  every draft URL is still checked against the signed cookie above. */
 export const EDITOR_FLAG_COOKIE = "fa_editor";
-export const ADMIN_MAX_AGE = 12 * 60 * 60; // 12 hours, in seconds
+/**
+ * How long a sign-in lasts, in seconds.
+ *
+ * Was twelve hours, which meant signing in again most mornings. Now that the
+ * whole of staging sits behind this cookie rather than only its drafts, that
+ * became a toll on every visit, so it is thirty days: long enough to stay
+ * signed in through a stretch of work, short enough that a borrowed or
+ * forgotten browser does not stay signed in indefinitely. Signing out still
+ * ends it immediately, and the expiry is inside the signed payload, so a
+ * cookie cannot be edited to outlive it.
+ */
+export const ADMIN_MAX_AGE = 30 * 24 * 60 * 60;
 
 function b64url(bytes: ArrayBuffer): string {
   const bin = String.fromCharCode(...new Uint8Array(bytes));

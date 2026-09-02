@@ -1,5 +1,10 @@
 /**
- * Two gates, both keyed on the same signed session cookie (lib/admin-session.ts):
+ * Three gates, all keyed on the same signed session cookie (lib/admin-session.ts):
+ *
+ * 0. On a PREVIEW deployment, everything. Staging is where unfinished work is
+ *    looked at, so having the link is not the same as being allowed to read it.
+ *    Production is deliberately exempt — it is the public site. The two gates
+ *    below still do the work on production, and on a developer's machine.
  *
  * 1. The working pages: /admin/*, the editor overview /editor, the unlinked
  *    design experiments (/home-lab, /mocks), the logo animator, the design
@@ -99,6 +104,21 @@ export async function middleware(req: NextRequest) {
     return NextResponse.rewrite(new URL("/_internal-not-here", req.url));
   }
 
+  // On a PREVIEW deployment the whole site is behind the sign-in, not only its
+  // drafts. Staging is where unfinished work is looked at, and a link to it
+  // should not be a way to read the site. Production is untouched: it is the
+  // public site, and gating it would close the Atlas to its readers.
+  //
+  // The sign-in machinery itself has to stay reachable or nobody can ever get
+  // in — the form is handled by sessionGate, this is the endpoint it posts to.
+  if (
+    process.env.VERCEL_ENV === "preview" &&
+    pathname !== "/api/admin/login" &&
+    pathname !== "/api/admin/logout"
+  ) {
+    return sessionGate(req);
+  }
+
   // /api/tokens is the style-guide panel writing an override. It is a fetch from
   // a page that already required the editor cookie, so the same gate covers it.
   const isTokenWrite = pathname === "/api/tokens" && req.method === "POST";
@@ -123,6 +143,12 @@ async function sessionGate(req: NextRequest) {
 
   const editor = await readSession(req.cookies.get(ADMIN_COOKIE)?.value, secret);
   if (editor) return NextResponse.next();
+
+  // A fetch wants an answer it can read, not the sign-in page's markup with a
+  // 200 on it. Only the browser gets redirected to the form.
+  if (req.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "not signed in" }, { status: 401 });
+  }
 
   // Rewrite (not redirect) so the requested URL stays in the address bar and
   // the visitor lands on it directly once they sign in.
