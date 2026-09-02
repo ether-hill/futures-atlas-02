@@ -268,9 +268,14 @@ export const SLIDE_CSS = `
    image here, not something to interact with. */
 .stf .fld-crop { position: absolute; inset: 0; transform-origin: center center; }
 .stf .fld iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
-/* The still. object-fit:cover because the capture is 4:5 and the slide may
-   be asked for at 1:1 or 9:16. */
-.stf .fld-thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+/* A post keeps its own framing at every preview ratio.
+   These stills and recordings are composed once, at a fixed ratio, with their
+   type burned into them. Filling a frame of a different ratio does not adapt
+   them, it slices the words off the sides: a 4:5 cut shown at 9:16 lost about
+   a fifth of its width, title included. So letterbox on the slide's own black,
+   and let a post opt into filling with fit: "cover" when it is imagery with
+   nothing at its edges worth keeping. */
+.stf .fld-thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block; }
 
 /* ── The Odds player card ──────────────────────────────────────────────────
    Composed rather than screenshotted, so it maps to any frame exactly. Sizes

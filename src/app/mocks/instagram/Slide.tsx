@@ -139,9 +139,13 @@ function ReelSlide({
   );
 }
 
-/** Cover unless the post says otherwise; see `ReelPost.fit`. */
-function fitStyle(post: ReelPost): CSSProperties | undefined {
-  return post.fit === "contain" ? { objectFit: "contain" } : undefined;
+/**
+ * Contain unless the post asks to fill. The stylesheet default keeps every
+ * post's own aspect ratio at every preview ratio; `fit: "cover"` is the opt-out
+ * for imagery that has nothing at its edges worth keeping.
+ */
+function fitStyle(post: { fit?: "cover" | "contain" }): CSSProperties | undefined {
+  return post.fit === "cover" ? { objectFit: "cover" } : undefined;
 }
 
 /** Redden one phrase inside the quote. The card used to shout the figure in
@@ -415,10 +419,10 @@ function ShotSlide({
       <div className="fld">
         <div className="fld-crop" style={cropStyle({}, crop)}>
           {live && shot.video ? (
-            <video className="fld-thumb" src={shot.video} autoPlay loop muted playsInline />
+            <video className="fld-thumb" src={shot.video} style={fitStyle(shot)} autoPlay loop muted playsInline />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img className="fld-thumb" src={shot.src ?? `/mocks/instagram/${shot.id}.jpg`} alt="" />
+            <img className="fld-thumb" src={shot.src ?? `/mocks/instagram/${shot.id}.jpg`} style={fitStyle(shot)} alt="" />
           )}
         </div>
       </div>

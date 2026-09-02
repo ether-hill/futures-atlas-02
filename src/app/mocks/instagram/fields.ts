@@ -62,6 +62,8 @@ export interface ShotsPost {
      * until you tap one — so a slide with a video still needs its <id>.jpg.
      */
     video?: string;
+    /** Fill the frame instead of keeping the slide's own ratio. See ReelPost.fit. */
+    fit?: "cover" | "contain";
     hide?: string;
     at?: number;
     /** Scroll down this many viewport heights before grabbing. */
@@ -314,7 +316,6 @@ export const JONES_SLIME_REEL: ReelPost = {
   // letterboxed rather than cropped in the squarer ratios.
   embed: "",
   video: "/mocks/instagram/jones-slime.webm",
-  fit: "contain",
   thumbAt: 4,
   caption:
     "Three rules per agent, no plan anywhere, and it builds a transport network.\n\nWhat you are seeing. Thousands of agents on a plane, each one carrying nothing but a position and a heading. Every frame an agent smells the trail ahead of it and slightly to each side, turns toward whichever smells strongest, steps forward, and leaves a little trail of its own. The trail blurs and fades. That is the entire model, and it is all three lines on screen: turn, step, then decay and deposit.\n\nWhy it matters. This is Jeff Jones's model of Physarum polycephalum, a slime mould with no brain and no central anything. Set the real organism loose on a map of Tokyo with food at the stations and it grows a network close to the rail network engineers designed. The behaviour is not in any agent. It is in what they leave behind for each other.\n\nRunning here on the GPU, four passes a frame, up to three species in the red, green and blue channels with optional avoidance between them. It is one of the treatments in Generatives on the Atlas, where you can change the sensor angle, the turn speed and the decay and watch a different network grow.",
@@ -329,7 +330,6 @@ export const SHIFTCOOL_REEL: ReelPost = {
   note: "A cooled break space for one person. Work & focus aisle, ships 2033, €2,890.",
   embed: "",
   video: "/mocks/instagram/shiftcool-1.webm",
-  fit: "contain",
   thumbAt: 3,
   caption:
     "NESTA ShiftCool 1. €2,890. Ships 2033.\n\nA cooled break space for one person. Maintains 20 to 24°C in ambient conditions up to 45°C. Delivery and placement from €120, ground floor only, site access check available before order.\n\nThe product listing is the argument. Nobody in this catalogue is alarmed: the copy is warranty terms and clearance requirements, written the way a workplace supplier would write them, for a workplace where the ambient temperature is 45°C and the cooling is sold per person rather than per building.\n\nFrom ShelfLife on the Atlas, a shop of things that do not exist yet. You assemble an aisle, a year and what changed about the world, and it hands you the prompts to make your own. The ones that land on the shelf are the keepers.",
@@ -344,7 +344,6 @@ export const SOLOCOOL_REEL: ReelPost = {
   note: "A cool, quiet place to sit when the rest of the house is too warm. Home & climate aisle, ships 2035, €1,249.",
   embed: "",
   video: "/mocks/instagram/solocool-1.webm",
-  fit: "contain",
   thumbAt: 3,
   caption:
     "NESTA SoloCool 1. €1,249. Ships 2035.\n\nA cool, quiet place to sit when the rest of the house is too warm. One seated or reclining adult. Room-of-choice delivery from €49, five to eight working days, assembly available at checkout.\n\nTwo years after the ShiftCool, and the same idea has moved from the workplace to the living room. The thing worth noticing is not the pod. It is that cooling one chair became a product category before cooling the house did, and that the listing treats it as unremarkable.\n\nFrom ShelfLife on the Atlas, a shop of things that do not exist yet.",
