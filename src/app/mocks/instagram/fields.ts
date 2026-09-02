@@ -56,6 +56,12 @@ export interface ShotsPost {
     id: string;
     src?: string;
     path?: string;
+    /**
+     * A recording, played instead of the still when the post is open. The grid
+     * tile stays a still either way — a feed of videos is a wall of stills
+     * until you tap one — so a slide with a video still needs its <id>.jpg.
+     */
+    video?: string;
     hide?: string;
     at?: number;
     /** Scroll down this many viewport heights before grabbing. */
@@ -142,6 +148,14 @@ export interface ReelPost {
   embed: string;
   /** A screen recording, played instead of the embed when the post is open. */
   video?: string;
+  /**
+   * How the still and the recording sit in a frame of a different ratio.
+   * Default cover: a running piece fills whatever it is given. A recording
+   * that was framed for one ratio with type burned in is different: cover at
+   * 9:16 slices the sides off a 4:5 cut and takes the words with it, so those
+   * say `contain` and sit letterboxed on the frame's own black.
+   */
+  fit?: "cover" | "contain";
   /** Seconds to let the embed run before the thumbnail is grabbed. */
   thumbAt: number;
   /**
@@ -263,6 +277,28 @@ export const ODDS_POSTS: OddsPost[] = [
     hashtags: ["#aisafety", "#maxtegmark", "#life30", "#speculativedesign", "#futuresthinking"],
   },
 ];
+
+/**
+ * A two-slide carousel, both slides video.
+ *
+ * The cut is already framed 4:5 with its own titles burned in, so there is no
+ * live route to capture: each slide names a recording and carries a still for
+ * the grid. The second slide is the call to action that came with it, kept as
+ * its own slide rather than folded into the caption, because that is how it
+ * was cut.
+ */
+export const TURBULENCE_POST: ShotsPost = {
+  kind: "shots",
+  name: "Organic Turbulence",
+  id: "organic-turbulence",
+  shots: [
+    { id: "organic-turbulence-1", video: "/mocks/instagram/organic-turbulence-1.webm" },
+    { id: "organic-turbulence-2", video: "/mocks/instagram/organic-turbulence-2.webm" },
+  ],
+  caption:
+    "A few rules and some randomness, and this falls out of it.\n\nWhat you are seeing. A flow field built from layered noise, with thousands of particles streaming along it. Nothing here is drawn: every shape is the accumulated trail of particles following a field that is itself slowly changing, so the structure builds up and then dissolves as the field moves under it.\n\nWhy it is worth looking at. The question underneath it — how much structure you get from simple rules plus noise — is the same one under a lot of things that do not look like this. Transformers. Quantum error correction. Why hardware built to push pixels turned out to be the hardware for building minds.\n\nOrganic Turbulence is one of the treatments in Generatives, on the Atlas. You can change the particle count, the turbulence and the trail length, watch it run, and export your own clip. Free, no account.",
+  hashtags: ["#generativeart", "#creativecoding", "#flowfield", "#noise", "#mathart", "#futuresatlas"],
+};
 
 export const FIELD_DYNAMICS_REEL: ReelPost = {
   kind: "reel",
