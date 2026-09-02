@@ -499,8 +499,44 @@ export const projectsOrdered: Project[] = [...projects].sort((a, b) =>
   b.date.localeCompare(a.date),
 );
 
+/** Live projects kept off the homepage strip. They stay on /projects. */
+const OFF_HOMEPAGE = ["glossary"];
+
+/**
+ * The published shelf, in the order it is read.
+ *
+ * Curated rather than chronological. The dates on the cards are real and stay
+ * real, so the running order is stated here instead of being nudged by editing
+ * them. Anything live and missing from this list keeps its date position at the
+ * end, so forgetting to add an id can never hide a project.
+ */
+const LIVE_ORDER = [
+  "interference",
+  "odds-of-surviving-ai",
+  "glossary",
+  "signal-reactor",
+  "quantum-spark",
+  "swipe-the-future",
+  "generatives",
+];
+
 /** Everything the public may see. */
-export const liveProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "live");
+export const liveProjects: Project[] = (() => {
+  const rank = new Map(LIVE_ORDER.map((id, i) => [id, i] as const));
+  return projectsOrdered
+    .filter((p) => p.visibility === "live")
+    .sort((a, b) => (rank.get(a.id) ?? 1e6) - (rank.get(b.id) ?? 1e6));
+})();
+
+/**
+ * The homepage strip. The same shelf, minus the projects that earn their place
+ * on /projects but not in the first six a visitor meets — the Glossary is a
+ * reference the rest of the Atlas leans on, and leading with a word list sells
+ * the site short.
+ */
+export const homepageProjects: Project[] = liveProjects.filter(
+  (p) => !OFF_HOMEPAGE.includes(p.id),
+);
 
 /** Unpublished work, listed only for a signed-in editor. */
 export const draftProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "draft");

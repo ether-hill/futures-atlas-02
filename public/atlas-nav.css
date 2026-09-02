@@ -663,6 +663,11 @@ html .fa-shell.is-clear,
 /* The footer's column count varies with the environment: brand, sections and
    projects always, plus the feed column and the internal column where those
    exist (see scripts/gen-footer.mjs). --4 is the default four-column rule. */
+/* The internal column's sign-out is a form button, so it has to be un-styled
+   back down to the plain link the rest of that column is set in. */
+.fa-foot__signout { margin: 10px 0 0; }
+.fa-foot__signout button { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+
 .fa-foot__grid--3 { grid-template-columns: 1.4fr 0.8fr 1.4fr; }
 @media (max-width: 900px) { .fa-foot__grid--3 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .fa-foot__grid--3 { grid-template-columns: 1fr; } }

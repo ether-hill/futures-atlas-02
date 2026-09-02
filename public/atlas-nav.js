@@ -64,7 +64,11 @@
     ] },
   ];
 
-  var IS_EDITOR = /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
+  // The cookie is a hint about who is looking; FA_ENV is the fact about where.
+  // On production there are no drafts to list at all — the middleware answers
+  // their URLs as though they were never built — so a stale editor cookie can
+  // never put a dead link in the switcher.
+  var IS_EDITOR = !IS_PRODUCTION && /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
   // What the switcher offers: drafts only once signed in.
   var FA_LISTED = FA_PROJECTS.filter(function (x) { return IS_EDITOR || !x.draft; });
   // Glossary is deliberately NOT here. It is a PROJECT now (it is in
@@ -164,10 +168,10 @@
     '<nav class="fa-shell__right" aria-label="Primary">' +
       '<div class="fa-shell__nav">' + navlinks + "</div>" +
       '<button type="button" class="fa-shell__toggle" aria-label="Toggle theme"></button>' +
-      '<button type="button" class="fa-shell__profile" aria-label="' + (IS_EDITOR ? "Sign out" : "Sign in") + '">' +
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
-          '<circle cx="12" cy="8" r="3.4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>' +
-        "</svg></button>" +
+      // No account button. The bar is the site's front door and a profile icon
+      // on it offers a sign-in to people who have nothing to sign in to. Sign
+      // out lives in the mobile sheet and in the footer's internal column,
+      // both of which only exist where there is a session to end.
       '<button type="button" class="fa-shell__burger" aria-label="Open menu" aria-expanded="false" aria-controls="fa-sheet"><span></span><span></span><span></span></button></nav>';
 
   // build the mobile sheet contents (primary links + this project's pages + theme)
@@ -188,10 +192,10 @@
       out.push("</div>");
     }
     out.push('<button type="button" class="fa-sheet__theme" style="--i:' + (i++) + '"><span class="fa-sheet__themelabel">Theme</span><span class="fa-sheet__themeicon" aria-hidden="true"></span></button>');
-    // No "Sign in" here. The menu is the site's public front door and editor
-    // sign-in is not a thing a visitor is being offered; the bar's profile
-    // button still opens it for anyone who wants it. Sign OUT stays, because
-    // without it there is no way off an editor session on a phone.
+    // No "Sign in" here, and none in the bar either: the menu is the site's
+    // public front door and editor sign-in is not a thing a visitor is being
+    // offered. Anyone who wants it goes to /admin/login. Sign OUT stays,
+    // because without it there is no way off an editor session on a phone.
     if (IS_EDITOR) {
       out.push('<button type="button" class="fa-sheet__theme fa-sheet__profile" style="--i:' + (i++) + '"><span>Sign out</span></button>');
     }

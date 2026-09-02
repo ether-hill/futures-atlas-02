@@ -135,6 +135,11 @@ ${FEED_HERE ? `<div class="fa-foot__col">
 <p class="fa-foot__h">Internal &middot; staging only</p>
 <nav class="fa-foot__list">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>
 <p class="fa-foot__meta">Not built on production.</p>
+<!-- Sign out. It has to be a POST (it clears an httpOnly cookie) so it is a
+     one-button form rather than a link, and it works with no JavaScript. This
+     is the desktop way off a session now that the bar has no account button;
+     the mobile sheet still carries its own. -->
+<form class="fa-foot__signout" method="POST" action="/api/admin/logout"><button type="submit" class="fa-foot__a">Sign out</button></form>
 </div>` : ""}
 </div>
 <div class="fa-foot__split">

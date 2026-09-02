@@ -14,9 +14,11 @@
  *
  * 2. Draft projects and draft posts: every path belonging to a project marked
  *    `visibility: "draft"` in src/data/projects.ts, and every unpublished post
- *    in src/data/posts.ts. The public never renders one; unauthenticated
- *    requests are rewritten to the sign-in form, so the page's markup is never
- *    sent.
+ *    in src/data/posts.ts. On staging an unauthenticated request is rewritten
+ *    to the sign-in form, so the page's markup is never sent. On PRODUCTION
+ *    they are not gated but absent, like the staging-only paths above: a
+ *    sign-in form sitting on a draft project's URL still announces the project
+ *    and its name.
  *
  * There used to be a third, HTTP Basic against STYLE_GUIDE_PASSWORD, guarding
  * the panel. It meant a second password and a browser dialog that looked like
@@ -97,9 +99,18 @@ export async function middleware(req: NextRequest) {
   // there, so on production the working pages answer as though they were never
   // built. The footer's internal column is built to match, so production never
   // links to a dead end either.
+  //
+  // Draft projects and posts get the same treatment on production, and for a
+  // stronger reason: a sign-in form on /some-unreleased-project still tells the
+  // world the project exists and what it is called. On production a draft is
+  // absent, and that holds for a signed-in editor too — the listings drop them
+  // there as well (draftsVisible() in lib/editor.ts), so production never shows
+  // a card pointing at a page it will not serve.
   if (
     process.env.VERCEL_ENV === "production" &&
-    STAGING_ONLY.some((base) => pathname === base || pathname.startsWith(`${base}/`))
+    (STAGING_ONLY.some((base) => pathname === base || pathname.startsWith(`${base}/`)) ||
+      isDraftPath(pathname) ||
+      isDraftPostPath(pathname))
   ) {
     return NextResponse.rewrite(new URL("/_internal-not-here", req.url));
   }

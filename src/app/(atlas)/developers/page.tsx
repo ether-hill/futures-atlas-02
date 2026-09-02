@@ -9,15 +9,13 @@ import {
   HERO,
   LAYERS,
   LICENCE,
-  OPENNESS,
-  OPENNESS_INTRO,
   RUN_INTRO,
   RUN_STEPS,
   SOURCES_INTRO,
 } from "@/content/developers";
 import { draftProjects, liveProjects, type Project } from "@/data/projects";
 import { ATLAS_REPO, BUILD_LABEL, githubUrl, sourceFor } from "@/data/source-map";
-import { getEditor } from "@/lib/editor";
+import { getListingEditor } from "@/lib/editor";
 
 export const metadata: Metadata = {
   title: "For developers. Futures Atlas",
@@ -80,7 +78,21 @@ function SourceRow({ project, draft }: { project: Project; draft?: boolean }) {
   const where = project.path ?? project.url;
 
   return (
-    <div className="flex h-full flex-col gap-4 border border-ink/15 p-[clamp(18px,2.2vw,26px)] transition-colors hover:border-ink/45">
+    <div className="flex h-full flex-col border border-ink/15 transition-colors hover:border-ink/45">
+      {/* The same plate the project card carries. A source index that is only
+          folder names makes you hold seven projects in your head to read it. */}
+      {project.image && (
+        <div className="relative aspect-[3/2] overflow-hidden border-b border-ink/15">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={project.image}
+            alt=""
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
+        </div>
+      )}
+      <div className="flex h-full flex-col gap-4 p-[clamp(18px,2.2vw,26px)]">
       <div>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
           <h3 className="text-[clamp(17px,1.9vw,22px)] font-extrabold tracking-[-0.018em] text-ink">
@@ -124,7 +136,7 @@ function SourceRow({ project, draft }: { project: Project; draft?: boolean }) {
               rel="noopener noreferrer"
               className="inline-block font-mono text-[13px] text-ink underline decoration-ink/30 underline-offset-4 transition-colors hover:text-accent-deep hover:decoration-accent-deep"
             >
-              {src.dir}/ <span aria-hidden="true">↗</span>
+              github.com/{src.repo}/{src.dir}/ <span aria-hidden="true">↗</span>
             </a>
             <div className="mt-3 flex flex-wrap gap-1.5">
               {src.stack.map((s) => (
@@ -147,6 +159,7 @@ function SourceRow({ project, draft }: { project: Project; draft?: boolean }) {
             No source recorded yet.
           </p>
         )}
+      </div>
       </div>
     </div>
   );
@@ -181,10 +194,8 @@ function RepoCard({
   );
 }
 
-const STATE_LABEL = { open: "Open", closed: "Closed", unlisted: "Unlisted" } as const;
-
 export default async function DevelopersPage() {
-  const editor = await getEditor();
+  const editor = await getListingEditor();
 
   return (
     <div className="bg-surface">
@@ -336,36 +347,6 @@ export default async function DevelopersPage() {
         </Reveal>
       </Section>
 
-      {/* ── What's open, what isn't ─────────────────────────────────────── */}
-      <Section id="open" label="Transparency" title="What's open, what isn't" lede={OPENNESS_INTRO}>
-        <div className="border-t border-ink/15">
-          {OPENNESS.map((r) => (
-            <Reveal
-              key={r.thing}
-              className="grid grid-cols-1 gap-x-8 gap-y-3 border-b border-ink/10 py-[clamp(16px,2.2vw,26px)] lg:grid-cols-[minmax(0,0.5fr)_auto_minmax(0,1.5fr)]"
-            >
-              <h3 className="text-[clamp(16px,1.7vw,20px)] font-extrabold tracking-[-0.016em] text-ink">
-                {r.thing}
-              </h3>
-              <span
-                className="justify-self-start self-start text-center font-mono text-[10px] uppercase tracking-[0.14em]"
-                style={{
-                  minWidth: "9ch",
-                  padding: "4px 9px",
-                  background: r.state === "open" ? "var(--accent)" : "transparent",
-                  border: r.state === "open" ? "1px solid var(--accent)" : "1px solid var(--text)",
-                  color: r.state === "open" ? "var(--paper, #fff)" : "var(--text)",
-                }}
-              >
-                {STATE_LABEL[r.state]}
-              </span>
-              <p className="max-w-[68ch] text-[12.5px] leading-[1.8] text-ink-70">
-                {r.detail}
-              </p>
-            </Reveal>
-          ))}
-        </div>
-      </Section>
 
       {/* ── Licence ─────────────────────────────────────────────────────── */}
       <Section id="licence" label="Licence" title="What you may do with it" lede={LICENCE.intro}>

@@ -3,11 +3,11 @@ import { Container } from "@/components/Container";
 import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
-import { liveProjects } from "@/data/projects";
+import { homepageProjects } from "@/data/projects";
 import { FeedMasonry } from "@/components/FeedMasonry";
 import { editorPosts, livePosts } from "@/data/posts";
 import { prototypesFor } from "@/data/prototypes";
-import { getEditor } from "@/lib/editor";
+import { getListingEditor } from "@/lib/editor";
 import { LOGOS } from "@/lib/logos";
 
 // The stack strip: which marks headline the homepage tech banner (all render
@@ -17,8 +17,8 @@ const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "veo", "nextjs"
 export default async function Home() {
   // The homepage strip is public-facing: always live projects only, even for a
   // signed-in editor. Drafts are visible on /projects, not here.
-  const isEditor = Boolean(await getEditor());
-  const recent = liveProjects.slice(0, 6);
+  const isEditor = Boolean(await getListingEditor());
+  const recent = homepageProjects.slice(0, 6);
   // The feed is staging-only (STAGING_ONLY in src/middleware.ts). Production
   // does not link to it, so the homepage does not carry it either — a masonry
   // of posts whose every card leads to a 404 is worse than no masonry.
