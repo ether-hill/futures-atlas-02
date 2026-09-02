@@ -322,3 +322,36 @@ body.viz .btn.is-on { background: color-mix(in srgb, var(--accent) 30%, transpar
 .track .who { display: inline-block; margin-bottom: 8px; font-family: var(--font-bodoni); font-size: 11.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
 .chapters--tight { grid-template-columns: 1fr; margin-top: 10px; }
 .chapters--tight button { font-size: 13px; padding: 6px 0; }
+
+/* ── the instrument's panels: one, a grid, or a stack ───────────────────── */
+.instrument__stage { height: auto; }
+.panel { display: flex; flex-direction: column; background: #0b0c0e; min-width: 0; }
+.panel canvas { flex: 1 1 auto; min-height: 0; width: 100%; display: block; }
+.panel__head { display: flex; align-items: baseline; gap: 12px; padding: 10px 14px 0; }
+.panel__label { font-family: var(--font-bodoni); font-size: 11.5px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); }
+.panel__note { margin: 0; padding: 8px 14px 12px; font-size: 12.5px; line-height: 1.5; color: var(--muted); }
+.panel__note b { color: var(--paper); font-weight: 600; }
+.is-single { position: relative; height: clamp(380px, 68vh, 760px); }
+.is-single .panel { display: none; position: absolute; inset: 0; }
+.is-single .panel.is-active { display: flex; }
+.is-single .panel__head { display: none; }
+.is-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--hairline); }
+.is-grid .panel { height: clamp(260px, 42vh, 460px); }
+@media (max-width: 720px) { .is-grid { grid-template-columns: 1fr; } .is-grid .panel { height: clamp(240px, 38vh, 360px); } }
+.is-stack { display: flex; flex-direction: column; gap: 1px; background: var(--hairline); }
+.is-stack .panel { height: clamp(320px, 56vh, 560px); }
+.grp.is-dim .btn { opacity: 0.5; }
+.instrument__frame:fullscreen { overflow: auto; }
+.instrument__frame:fullscreen .is-single { height: calc(100vh - 118px); }
+.instrument__frame:fullscreen .is-grid .panel { height: calc((100vh - 118px) / 2); }
+/* the standalone page: the stage is the viewport, the grid tiles it, the
+   stack scrolls inside it under the fixed toolbar */
+body.viz .viz__stage.is-single { height: 100vh; }
+body.viz .viz__stage.is-single .panel__note { padding-bottom: 150px; }
+/* grid and stack start below the title block, which stays fixed top-left */
+body.viz { --viz-top: calc(var(--fa-nav-h, 64px) + 104px); }
+body.viz .viz__stage.is-grid { padding-top: var(--viz-top); padding-bottom: 140px; height: 100vh; overflow: hidden; box-sizing: border-box; }
+body.viz .viz__stage.is-grid .panel { height: calc((100vh - var(--viz-top) - 141px) / 2); }
+@media (max-width: 720px) { body.viz .viz__stage.is-grid { overflow-y: auto; } body.viz .viz__stage.is-grid .panel { height: 44vh; } }
+body.viz .viz__stage.is-stack { padding-top: var(--viz-top); padding-bottom: 160px; height: 100vh; overflow-y: auto; box-sizing: border-box; }
+body.viz .viz__stage.is-stack .panel { height: calc(100vh - var(--viz-top) - 160px); flex: 0 0 auto; }

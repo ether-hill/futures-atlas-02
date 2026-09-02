@@ -17,7 +17,12 @@
 </head>
 <body class="viz">
 <div id="viz">
-  <div class="viz__stage" data-fa-hero><canvas aria-label="The quantum visualiser"></canvas></div>
+  <div class="viz__stage is-single" data-fa-hero>
+    <div class="panel is-active" data-panel="levels"><div class="panel__head"><span class="panel__label">Levels</span></div><canvas aria-label="Levels"></canvas><p class="panel__note"><b>Levels.</b> Standing waves in a box, one hump per rung, summed with the measured weights: the line is the state, the glow its density. The ladder is lit by what is ringing.</p></div>
+    <div class="panel" data-panel="orbit"><div class="panel__head"><span class="panel__label">Orbit</span></div><canvas aria-label="Orbit"></canvas><p class="panel__note"><b>Orbit.</b> Bohr's rule: a whole number of wavelengths around a ring. Each ringing overtone is an n-lobed wave on its own shell; the ink line is the sum.</p></div>
+    <div class="panel" data-panel="arrows"><div class="panel__head"><span class="panel__label">Arrows</span></div><canvas aria-label="Arrows"></canvas><p class="panel__note"><b>Arrows.</b> Feynman's arrows from QED: sixteen hands, one per overtone, turning n times as fast as the first, added tip to tail. The tip traces the voice's waveform.</p></div>
+    <div class="panel" data-panel="bars"><div class="panel__head"><span class="panel__label">Bars</span></div><canvas aria-label="Bars"></canvas><p class="panel__note"><b>Bars.</b> Overtones 1 to 16, relative strength, strongest marked.</p></div>
+  </div>
   <div class="viz__title">
     <span class="label">Feynman's Tuva</span>
     <h1>Overtone</h1>
@@ -33,7 +38,12 @@
         <button class="btn" data-src="mic">Your voice</button>
       </div>
       <span class="spacer"></span>
-      <div class="grp"><span class="label">View</span>
+      <div class="grp grp--layout"><span class="label">Layout</span>
+        <button class="btn" data-layout="single">One</button>
+        <button class="btn" data-layout="grid">Grid</button>
+        <button class="btn" data-layout="stack">Stack</button>
+      </div>
+      <div class="grp grp--view"><span class="label">View</span>
         <button class="btn" data-view="levels">Levels</button>
         <button class="btn" data-view="orbit">Orbit</button>
         <button class="btn" data-view="arrows">Arrows</button>
@@ -46,11 +56,6 @@
       <span data-state>synthetic drone</span>
       <span data-msg></span>
     </div>
-    <p class="viewnote"></p>
-    <template data-note="levels"><b>Levels.</b> Standing waves in a box, mode n with n humps, summed with the measured weights: the line is the real part, the glow the density. The ladder is the harmonic series, spaced like a quantum oscillator's levels.</template>
-    <template data-note="orbit"><b>Orbit.</b> Bohr's rule: a whole number of wavelengths around a ring. Each ringing harmonic is an n-lobed wave on its own shell; the ink line is the sum.</template>
-    <template data-note="arrows"><b>Arrows.</b> Feynman's arrows from QED: sixteen hands, one per harmonic, turning n times as fast as the first, added tip to tail. The tip traces the voice's waveform.</template>
-    <template data-note="bars"><b>Bars.</b> Harmonics 1 to 16, relative strength, strongest overtone marked.</template>
   </div>
 </div>
 <script src="overtone.js"></script>

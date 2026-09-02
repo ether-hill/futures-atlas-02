@@ -429,10 +429,16 @@ window.OVERTONE = (function () {
   /* ------------------------------------------------------------ stage */
   function createStage(canvas, opts) {
     opts = opts || {};
-    var g = canvas.getContext("2d");
     var state = makeState();
-    var view = opts.view || "levels";
-    var unit = { trail: null, shift: opts.shift || 0 };
+    /* one analysis can feed several canvases: the main one, plus any panels
+       added for a grid or stack layout. Each keeps its own view and trail. */
+    var panels = [];
+    function addPanel(cv, v, shift) {
+      var p = { canvas: cv, g: cv.getContext("2d"), view: VIEWS[v] ? v : "levels", unit: { trail: null, shift: shift || 0 } };
+      panels.push(p);
+      return p;
+    }
+    var main = addPanel(canvas, opts.view || "levels", opts.shift || 0);
     var analyser = null, srcNode = null, srcKind = "idle", srcEl = null, stream = null;
     var timeBuf = null, freqBuf = null, gainOut = null;
     var last = performance.now(), running = true, raf = 0;
@@ -523,11 +529,12 @@ window.OVERTONE = (function () {
       }
     }
 
-    function resize() {
-      var r = canvas.getBoundingClientRect();
+    function resize(p) {
+      var r = p.canvas.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) return null;     // hidden panel: skip
       var dpr = Math.min(window.devicePixelRatio || 1, dprCap);
       var W = Math.max(2, Math.round(r.width * dpr)), H = Math.max(2, Math.round(r.height * dpr));
-      if (canvas.width !== W || canvas.height !== H) { canvas.width = W; canvas.height = H; unit.trail = null; }
+      if (p.canvas.width !== W || p.canvas.height !== H) { p.canvas.width = W; p.canvas.height = H; p.unit.trail = null; }
       return { W: W, H: H, dpr: dpr };
     }
 
@@ -537,24 +544,32 @@ window.OVERTONE = (function () {
       var dt = Math.min(0.05, (now - last) / 1000); last = now;
       analyse(dt);
       settle(state, dt);
-      var dim = resize(), pal = palette();
-      g.setTransform(dim.dpr, 0, 0, dim.dpr, 0, 0);
-      var w = dim.W / dim.dpr, h = dim.H / dim.dpr;
-      if (opts.clear !== false) {
-        g.fillStyle = pal.bg; g.fillRect(0, 0, w, h);
-      } else {
-        g.clearRect(0, 0, w, h);
+      var pal = palette();
+      for (var i = 0; i < panels.length; i++) {
+        var p = panels[i], dim = resize(p);
+        if (!dim) continue;
+        var g = p.g;
+        g.setTransform(dim.dpr, 0, 0, dim.dpr, 0, 0);
+        var w = dim.W / dim.dpr, h = dim.H / dim.dpr;
+        if (opts.clear !== false) {
+          g.fillStyle = pal.bg; g.fillRect(0, 0, w, h);
+        } else {
+          g.clearRect(0, 0, w, h);
+        }
+        g.lineCap = "round"; g.lineJoin = "round";
+        (VIEWS[p.view] || VIEWS.levels)(g, w, h, state, pal, p.unit);
       }
-      g.lineCap = "round"; g.lineJoin = "round";
-      (VIEWS[view] || VIEWS.levels)(g, w, h, state, pal, unit);
       emit("frame", state);
     }
     raf = requestAnimationFrame(frame);
 
     return {
       state: state,
-      get view() { return view; },
-      setView: function (v) { view = VIEWS[v] ? v : "levels"; unit.trail = null; },
+      get view() { return main.view; },
+      setView: function (v) { main.view = VIEWS[v] ? v : "levels"; main.unit.trail = null; },
+      /* extra canvases painted from the same analysis (grid / stack layouts) */
+      addPanel: function (cv, v) { return addPanel(cv, v, 0); },
+      panels: panels,
       useClip: useClip,
       useMic: useMic,
       stop: stop,

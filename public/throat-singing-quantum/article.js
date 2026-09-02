@@ -129,22 +129,50 @@
     readout(clips, cs);
   }
 
-  /* the instrument */
-  var inst = document.getElementById("instrument");
-  if (inst) {
-    var ic = inst.querySelector("canvas");
-    var is = register(OVERTONE.createStage(ic, { view: "levels", clear: true }), inst);
-    var notes = {};
-    inst.querySelectorAll("template[data-note]").forEach(function (t) { notes[t.getAttribute("data-note")] = t.innerHTML; });
-    var noteEl = inst.querySelector(".viewnote");
-    function setNote(v) { if (noteEl && notes[v]) noteEl.innerHTML = notes[v]; }
-    wireSources(inst, is, function (k, err) {
-      var n = inst.querySelector("[data-msg]");
+  /* the instrument, on the page and on its own: four fixed panels painted
+     from one analysis; "view" picks which one shows in the single layout,
+     "layout" shows one, all four in a grid, or all four stacked */
+  function wirePanels(root, stage, stageEl) {
+    var panels = Array.prototype.slice.call(root.querySelectorAll(".panel"));
+    panels.forEach(function (p, i) { if (i > 0) stage.addPanel(p.querySelector("canvas"), p.getAttribute("data-panel")); });
+    function setView(v) {
+      panels.forEach(function (p) { p.classList.toggle("is-active", p.getAttribute("data-panel") === v); });
+      root.querySelectorAll("[data-view]").forEach(function (b) { b.classList.toggle("is-on", b.getAttribute("data-view") === v); });
+    }
+    function setLayout(l) {
+      stageEl.classList.remove("is-single", "is-grid", "is-stack");
+      stageEl.classList.add("is-" + l);
+      root.querySelectorAll("[data-layout]").forEach(function (b) { b.classList.toggle("is-on", b.getAttribute("data-layout") === l); });
+      var vg = root.querySelector(".grp--view");
+      if (vg) vg.classList.toggle("is-dim", l !== "single");
+    }
+    root.querySelectorAll("[data-view]").forEach(function (b) {
+      b.addEventListener("click", function () { setView(b.getAttribute("data-view")); setLayout("single"); });
+    });
+    root.querySelectorAll("[data-layout]").forEach(function (b) {
+      b.addEventListener("click", function () { setLayout(b.getAttribute("data-layout")); });
+    });
+    return { setView: setView, setLayout: setLayout };
+  }
+  function wireStage(root, stageEl, q) {
+    var first = root.querySelector(".panel canvas");
+    if (!first) return null;
+    var stage = OVERTONE.createStage(first, { view: root.querySelector(".panel").getAttribute("data-panel"), clear: true });
+    var ui = wirePanels(root, stage, stageEl);
+    ui.setView(q && q.get("view") || "levels");
+    ui.setLayout(q && q.get("layout") || "single");
+    wireSources(root, stage, function (k) {
+      var n = root.querySelector("[data-msg]");
       if (n) n.textContent = k === "error" ? "The microphone was refused, or this browser will not share it. The clips still work." : "";
     });
-    wireViews(inst, is, setNote);
-    setNote("levels");
-    readout(inst, is);
+    readout(root, stage);
+    return stage;
+  }
+
+  var inst = document.getElementById("instrument");
+  if (inst) {
+    var is = wireStage(inst, inst.querySelector(".instrument__stage"), null);
+    if (is) register(is, inst);
     var fs = inst.querySelector("[data-full]"), frame = inst.querySelector(".instrument__frame");
     if (fs && frame) {
       if (!frame.requestFullscreen) fs.hidden = true;
@@ -157,23 +185,9 @@
     }
   }
 
-  /* the standalone page shares this file: the same wiring on one stage */
   var viz = document.getElementById("viz");
   if (viz) {
-    var vc = viz.querySelector("canvas");
-    var q = new URLSearchParams(location.search);
-    var vs = OVERTONE.createStage(vc, { view: q.get("view") || "levels", clear: true });
-    stages.push(vs);
-    var vnotes = {};
-    viz.querySelectorAll("template[data-note]").forEach(function (t) { vnotes[t.getAttribute("data-note")] = t.innerHTML; });
-    var vnote = viz.querySelector(".viewnote");
-    function vset(v) { if (vnote && vnotes[v]) vnote.innerHTML = vnotes[v]; viz.querySelectorAll("[data-view]").forEach(function (x) { x.classList.toggle("is-on", x.getAttribute("data-view") === v); }); }
-    wireSources(viz, vs, function (k) {
-      var n = viz.querySelector("[data-msg]");
-      if (n) n.textContent = k === "error" ? "The microphone was refused, or this browser will not share it. The clips still work." : "";
-    });
-    wireViews(viz, vs, vset);
-    vset(vs.view);
-    readout(viz, vs);
+    var vs = wireStage(viz, viz.querySelector(".viz__stage"), new URLSearchParams(location.search));
+    if (vs) stages.push(vs);
   }
 })();
