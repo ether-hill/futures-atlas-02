@@ -5,8 +5,8 @@ import { Container } from "@/components/Container";
 import { InterferenceField } from "@/components/InterferenceField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectCard } from "@/components/ProjectCard";
-import { KIND_LABEL, kindsOf, projectTopicsOf, type Project } from "@/data/projects";
-import { type Topic } from "@/data/topics";
+import { KIND_LABEL, kindsOf, type Project } from "@/data/projects";
+import { topicsOf, type Topic } from "@/data/topics";
 
 /** The word in front of each filter row. Two rows of bare chips read as one
  *  long wrapped row, and the second one stops meaning anything. */
@@ -40,7 +40,7 @@ export function ProjectsBrowser({
   const filtered = byKind.filter((p) => !topic || p.topics.includes(topic));
 
   const kinds = kindsOf(byTopic);
-  const topics = projectTopicsOf(byKind);
+  const topics = topicsOf(byKind);
 
   return (
     <div className="relative min-h-[70vh] overflow-hidden bg-surface py-[clamp(48px,8vw,110px)]">

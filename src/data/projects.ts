@@ -16,7 +16,15 @@ export type ProjectStatus = "live" | "in-progress" | "concept";
  * sees it listed, and the public is turned away from its URL (see
  * `src/middleware.ts`). Flip a project by changing this one word.
  */
-import { TOPIC_ORDER, type Topic } from "./topics";
+/*
+  TYPE-ONLY, and it has to stay that way. scripts/gen-footer.mjs imports this
+  file through Node's own ESM loader, which strips types but then resolves
+  whatever imports survive — and it wants a file extension that TypeScript's
+  bundler resolution will not accept here. A `type` import is erased before
+  Node ever sees it. Anything from topics.ts that is needed at RUNTIME is used
+  from topics.ts directly, by the component that needs it.
+*/
+import type { Topic } from "./topics";
 
 export type ProjectVisibility = "live" | "draft";
 
@@ -602,12 +610,6 @@ export function fieldsOf(items: Project[]): string[] {
 export function kindsOf(items: Project[]): ProjectKind[] {
   const present = new Set(items.map((p) => p.kind));
   return KIND_ORDER.filter((k) => present.has(k));
-}
-
-/** The topics present in a list, in the vocabulary's order. */
-export function projectTopicsOf(items: Project[]): Topic[] {
-  const present = new Set(items.flatMap((p) => p.topics));
-  return TOPIC_ORDER.filter((t) => present.has(t));
 }
 
 /** The distinct category tags across the public listing. */
