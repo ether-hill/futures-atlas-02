@@ -233,6 +233,54 @@ export const STOCK: FutureProduct[] = [
     },
   },
   {
+    id: "halden-locket",
+    name: "Halden Keepsake Locket",
+    aisle: "Fashion",
+    year: "2040",
+    price: "€149",
+    line: "The photos you carry, kept up to date by the people in them.",
+    image: "/shelflife/halden-locket.jpg",
+    listing: {
+      delivery: "Standard delivery included. Delivered in 2–4 days.",
+      specs: [
+        { label: "Screen", value: "32 mm circular colour display, 400 × 400, behind mineral glass" },
+        { label: "Case", value: "316L stainless steel, hinged; 38 mm across, 11 mm deep, 46 g with chain" },
+        { label: "Chain", value: "60 cm rolo chain, shortens to 45 cm; spring-ring clasp" },
+        {
+          label: "Battery",
+          value: "9 days of typical use; 90 minutes to full on the supplied charging pad",
+        },
+        {
+          label: "Storage and sync",
+          value: "2,000 photos on the pendant; updates over home wi-fi while the locket is closed",
+        },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "Exactly what I wanted",
+          body: "My son's family moved inland two years ago and I don't see the children as often as I'd like. Their photos come through on their own and I don't have to ask. My daughter-in-law set it up in about ten minutes and I have not had to touch it since.",
+        },
+        {
+          stars: 4,
+          title: "Good, chain is the weak point",
+          body: "The locket itself is well made and heavier than it looks, which I like. Battery has gone about eight days between charges. The clasp is small and fiddly with cold hands, so I swapped it for a magnetic one.",
+        },
+        {
+          stars: 3,
+          title: "Only updates at home",
+          body: "No complaints about the build. But it only pulls new photos on the home wi-fi, so after a fortnight away it was still showing the same twelve pictures I left with. Fine once I was back, just not what I assumed.",
+        },
+      ],
+      qa: [
+        {
+          q: "Can other people add photos to it?",
+          a: "Yes. Up to six people can be invited from the app. Photos they add appear the next time the locket connects to a saved wi-fi network. The wearer can remove anyone's access at any time.",
+        },
+      ],
+    },
+  },
+  {
     id: "dewpoint-40",
     name: "DewPoint 40",
     aisle: "Home & climate",
