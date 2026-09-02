@@ -233,6 +233,71 @@ export const STOCK: FutureProduct[] = [
     },
   },
   {
+    id: "quantum-chocolate",
+    name: "Quantum Chocolate — Multi tier",
+    aisle: "Food & drink",
+    // No year in the copy. 2045 sits where the joke does: 24 qubits is a
+    // trivial machine by any serious measure, and the listing sells it as a
+    // kitchen feature next to the reservoir volume. That is a world where
+    // "quantum" has finished being a claim and become a spec line.
+    year: "2045",
+    price: "€24,450.00",
+    line: "Compute the world's hardest problems while treating yourself to the finest chocolate.",
+    image: "/shelflife/quantum-chocolate.jpg",
+    listing: {
+      delivery:
+        "Free delivery in 5–8 working days, two-person install. Chocolate not included.",
+      specs: [
+        {
+          label: "Processor",
+          value:
+            "24-qubit processing module, rated for standard household workloads (route planning, tax prep, protein folds under 400 residues)",
+        },
+        {
+          label: "Reservoir",
+          value: "1.2 L chocolate reservoir, three stainless-steel tiers, 38 cm total height",
+        },
+        {
+          label: "Heating",
+          value:
+            "240 W heating element, 35–60 °C, keeps dark, milk and white chocolate in temper for up to 6 hours",
+        },
+        {
+          label: "Power",
+          value:
+            "Runs on mains or 14 hours on the built-in battery; processor stays on standby while heating is off",
+        },
+        {
+          label: "Cleaning",
+          value: "Dishwasher-safe tiers and auger; processor housing wipe-clean only",
+        },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "Lovely at parties",
+          body: "Had it out for my daughter's 30th and it kept the chocolate flowing all evening. Ran the seating plan on it while the strawberries went round. Guests barely noticed. Would buy again.",
+        },
+        {
+          stars: 4,
+          title: "Does what it says",
+          body: "Bought for the kitchen mainly for the fountain. The processor is fine for the odd bit of scheduling and it handles my allotment watering model without complaint. Tiers come apart easily for cleaning. Slightly loud fan when it's working hard.",
+        },
+        {
+          stars: 3,
+          title: "Fine, but the cable is short",
+          body: "Chocolate side is good, no complaints. But the mains lead is about 90 cm, which means it has to sit right next to a socket, and mine ends up behind the toaster. Also the manual doesn't say you have to fully cool the unit before running the dishwasher cycle on the auger. Learned that the hard way.",
+        },
+      ],
+      qa: [
+        {
+          q: "Can I run it with the chocolate empty, just for the processor?",
+          a: "Yes. The heating element switches off automatically when the reservoir is empty and the processor runs as normal. We'd recommend taking the tiers off so nothing gets knocked over. — Quantum Chocolate Support",
+        },
+      ],
+    },
+  },
+  {
     id: "ilocket",
     name: "iLocket",
     aisle: "Fashion",
