@@ -56,6 +56,7 @@
       { name: "Oracle", path: "/village-oracle/oracle" },
       { name: "Research", path: "/village-oracle/research" },
     ] },
+    { name: "Source Library × Futures Atlas Recommended Reading", path: "/ancestors", draft: true },
     { name: "Hard Questions", path: "/actually-hard-questions", draft: true, pages: [
       { name: "Map", path: "/actually-hard-questions#map" },
       { name: "Grid", path: "/actually-hard-questions#grid" },
