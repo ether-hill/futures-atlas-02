@@ -9,6 +9,7 @@ export const DHARMIC: Leader[] = [
     tradition: "Tibetan Buddhism",
     bio: "Tenzin Gyatso, the 14th Dalai Lama, is the exiled spiritual leader of Tibetan Buddhism and Nobel Peace laureate who has spent four decades in structured dialogue with scientists on the nature of mind through the Mind & Life Institute.",
     docTitle: "སེམས་དང་འཕྲུལ་འཁོར།",
+    docLang: "bo",
     docTitleTranslation: "'Mind and Machine': An Appeal for Warm-Heartedness in the Age of Artificial Intelligence",
     docType: "Public message to humanity, expanded into a book-length science dialogue in the lineage of 'The Universe in a Single Atom'",
     summary:
@@ -61,6 +62,7 @@ export const DHARMIC: Leader[] = [
     tradition: "Hinduism — yogic tradition",
     bio: "Sadhguru Jaggi Vasudev is an Indian yogi, mystic and founder of the Isha Foundation, whose Inner Engineering programs, Davos appearances and viral youth events have made him one of the most-watched spiritual voices on technology and consciousness.",
     docTitle: "Yantra & Chetana",
+    docLang: "sa-Latn",
     docTitleTranslation: "'Machine and Consciousness': Why Artificial Intelligence Is a Spiritual Opportunity",
     docType: "A book in the mode of 'Inner Engineering' and 'Karma,' launched through a global youth talk tour",
     summary:

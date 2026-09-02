@@ -811,9 +811,10 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
   else setTimeout(() => scape.preload(), 1200);
 }
 
-/** Tear down on route change: stop speech, keep ambience running across pages. */
+/** Tear down on route change: every sound stops — the narration and the ambience both. */
 export function unmountDock() {
   player.stop();
+  if (scape.on) scape.toggle();
   begun = false;
   syncAmbience = () => {};
   document.querySelectorAll(".dock, .x-amb").forEach((d) => d.remove());

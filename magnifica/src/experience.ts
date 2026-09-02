@@ -56,6 +56,18 @@ export const EXPERIENCES: Record<string, ExperienceSpec> = {
     chapterStills: ["dl-library", "dl-block"],
     videos: ["dalai-lama-02", "dalai-lama-03", "dalai-lama-04"],
   },
+  sadhguru: {
+    displayName: "Sadhguru",
+    displayTitle: "Jaggi Vasudev, founder of the Isha Foundation",
+    // Media not yet generated: the briefs are in scenes.ts (SCENES.sadhguru
+    // for the hero loop, STILL_BRIEFS for the six stills). Until the files
+    // land the hero is a plain masthead and every plate is plain — the page
+    // reads the same; it just does not move.
+    hero: { v1: "sadhguru", v2: "sadhguru-hero", v3: "sadhguru-hero", v4: "" },
+    stills: ["sg-velliangiri", "sg-lamp", "sg-dhyanalinga", "sg-monsoon"],
+    chapterStills: ["sg-workshop", "sg-fields"],
+    videos: [],
+  },
 };
 
 export const hasExperience = (id: string) => id in EXPERIENCES;
@@ -358,7 +370,7 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
           <h1 data-reveal>${esc(spec.displayName)}</h1>
           <p class="x-hero-title" data-reveal>${esc(spec.displayTitle)}</p>
           <p class="x-hero-doc" data-reveal>
-            <span lang="bo">${esc(l.docTitle)}</span>
+            <span lang="${esc(l.docLang ?? "en")}">${esc(l.docTitle)}</span>
             ${l.docTitleTranslation ? `<em>${esc(l.docTitleTranslation)}</em>` : ""}
           </p>
           <button type="button" class="x-begin" data-reveal>
@@ -404,6 +416,17 @@ export function mountExperience(root: HTMLElement) {
     video.addEventListener("error", () => video.remove(), { once: true });
     bg?.appendChild(video);
   }
+
+  // A still that is not there yet (see EXPERIENCES) must not leave a broken
+  // image: the plate falls back to plain, as if no still had been named.
+  root.querySelectorAll<HTMLImageElement>(".x-bg img").forEach((img) => {
+    const plain = () => {
+      img.parentElement?.classList.add("x-bg-plain");
+      img.remove();
+    };
+    if (img.complete && img.naturalWidth === 0 && img.src) plain();
+    else img.addEventListener("error", plain, { once: true });
+  });
 
   // v1 only: section backdrops are loops. They are created as their section
   // approaches and paused the moment it leaves — a page of simultaneously

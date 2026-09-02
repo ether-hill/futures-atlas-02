@@ -123,3 +123,27 @@ export const SCENES: Record<string, Scene> = {
     alt: "The Golden Temple reflected in still night water",
   },
 };
+
+/**
+ * Generation briefs for the v2 section stills (public/media/stills/<name>.jpg),
+ * 16:9, encoded to 1920px wide — see ASSETS.md §3. Same hard rule as the
+ * loops: place, weather, architecture, light; no people, no text. The first
+ * four sit behind a leader's excerpt slides, the last two behind the reading
+ * chapters (EXPERIENCES[id].stills / chapterStills in experience.ts).
+ */
+export const STILL_BRIEFS: Record<string, string> = {
+  // Sadhguru — the Velliangiri foothills, the Isha yoga centre's forms and
+  // materials, and the southern Indian monsoon.
+  "sg-velliangiri":
+    "Velliangiri hills of Tamil Nadu at dawn, layered dark green ridges receding into blue haze, low cloud caught in the folds, first warm light on the far peak, cinematic, still, no people, no text",
+  "sg-lamp":
+    "A single brass oil lamp burning on dark granite in a dim stone hall, small steady flame, soft warm glow on polished black stone, deep shadow all round, close and quiet, no people, no text",
+  "sg-dhyanalinga":
+    "Interior of a vast domed brick meditation hall in southern India, elliptical dome of unplastered red brick, a few oil lamps, warm dust-laden shafts of light, silence made visible, no people, no text",
+  "sg-monsoon":
+    "Monsoon rain sweeping across coconut groves and wet red earth in Tamil Nadu, grey-green light, rain visible as diagonal veils, a flooded track reflecting the sky, cinematic, no people, no text",
+  "sg-workshop":
+    "An open-sided workshop of dark timber and rough stone in the hills, tools hung on the wall, a lathe under a single bulb, evening blue outside, warm inside, honest materials, no people, no text",
+  "sg-fields":
+    "Terraced fields on the lower slopes of the Velliangiri hills after rain, standing water mirroring an overcast sky, a line of tall trees on the ridge, soft grey light, wide and calm, no people, no text",
+};

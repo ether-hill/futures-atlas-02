@@ -14,6 +14,10 @@ export interface Leader {
   tradition: string;
   bio: string;
   docTitle: string;
+  /** BCP-47 tag for `docTitle` — "bo" for Tibetan script, "sa-Latn" for
+   *  transliterated Sanskrit — so screen readers and fonts treat it right.
+   *  Defaults to English. */
+  docLang?: string;
   docTitleTranslation?: string;
   docType: string;
   summary: string;
