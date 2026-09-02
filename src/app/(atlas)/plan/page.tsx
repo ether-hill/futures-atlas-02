@@ -110,6 +110,7 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
       {
         track: "Website",
         body: ["Ship. Fix what breaks. Get feed ready for launch."],
+        list: { label: "Ready to launch", items: LAUNCH },
       },
       {
         track: "Projects",
