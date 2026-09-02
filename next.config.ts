@@ -174,6 +174,16 @@ const nextConfig: NextConfig = {
   // Generatives was formerly "Prism" at /prism — keep old links + embeds working.
   async redirects() {
     return [
+      // The shared staging preview has ONE address, futures-atlas-staging.vercel.app
+      // (a project domain bound to the `staging` branch). Vercel also mints a
+      // branch alias for every branch and that one cannot be switched off, so
+      // it forwards here instead of being a second front door to the same build.
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "futures-atlas-02-git-staging-frond-studio.vercel.app" }],
+        destination: "https://futures-atlas-staging.vercel.app/:path*",
+        permanent: true,
+      },
       { source: "/prism", destination: "/generatives", permanent: true },
       // The Counterfactual Index became Manipulate the data, and its
       // single-figure story stopped being called /one. The old paths were only

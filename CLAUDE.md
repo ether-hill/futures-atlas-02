@@ -486,7 +486,7 @@ is no reason to deploy prebuilt from a local tree.
   Vercel preview (`https://futures-atlas-02-git-<branch>-frond-studio.vercel.app`).
   Only your pushes touch your preview, so nobody competes for a URL. Sync
   `origin/staging` into your branch at the start of a session.
-- `staging` → the shared **integration** preview at `https://futures-atlas-02-git-staging-frond-studio.vercel.app` — merge your branch in when a piece is ready to be seen together; don't work on it directly.
+- `staging` → the shared **integration** preview at `https://futures-atlas-staging.vercel.app` (a project domain bound to the branch; the auto-minted `futures-atlas-02-git-staging-frond-studio.vercel.app` alias 308-redirects there via `next.config.ts`) — merge your branch in when a piece is ready to be seen together; don't work on it directly.
 - `main` → **production** (`https://futures-atlas-02.vercel.app`).
 
 ```sh
