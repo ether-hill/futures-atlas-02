@@ -4,7 +4,7 @@ import { SCENES, HOME_SCENE } from "./scenes";
 import { mountDock, mountPanels, unmountDock, type Part } from "./listen";
 import { experienceView, experienceParts, hasExperience, mountExperience, type Variant } from "./experience";
 import { experience4View, mountExperience4 } from "./experience4";
-import { mountDrawer, unmountDrawer, markDrawerRoute, markPinned } from "./drawer";
+import { mountDrawer, unmountDrawer, markDrawerRoute } from "./drawer";
 import { mountParallax, readLayers } from "./parallax";
 import { portraitOf, monogram } from "./portraits";
 
@@ -375,17 +375,8 @@ function render(root: HTMLElement) {
         : experienceView(leader, variant)
       : leaderView(leader);
 
-  if (leader && immersive) {
-    root.insertAdjacentHTML(
-      "beforeend",
-      `<nav class="x-versions" aria-label="Design version">
-         <a href="#/v1/${leader.id}"${variant === "v1" ? ' class="on"' : ""}>v1</a>
-         <a href="#/l/${leader.id}"${variant === "v2" ? ' class="on"' : ""}>v2</a>
-         <a href="#/v3/${leader.id}"${variant === "v3" ? ' class="on"' : ""}>v3</a>
-         <a href="#/v4/${leader.id}"${variant === "v4" ? ' class="on"' : ""}>v4</a>
-       </nav>`,
-    );
-  }
+  // v2 is the experience. The other designs still answer to their routes
+  // (#/v1, #/v3, #/v4) for comparison, but nothing on the page points at them.
 
   // The slide-out index belongs to the voices, not to the overview that lists
   // them. Navigation, not page content: kept across voice-to-voice moves.
@@ -393,7 +384,6 @@ function render(root: HTMLElement) {
   else unmountDrawer();
 
   window.scrollTo(0, 0);
-  markPinned(root.querySelector<HTMLElement>(".x-versions"));
 
   root.querySelectorAll("[data-ch] > button").forEach((btn) => {
     btn.addEventListener("click", () => btn.parentElement?.classList.toggle("open"));

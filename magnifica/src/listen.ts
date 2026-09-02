@@ -143,6 +143,12 @@ class Player {
   private target: HTMLElement | null = null;
   /** Which clip of the current part is sounding: its title, or the passage. */
   private stage: "title" | "body" = "body";
+  /**
+   * Whether the page follows the narration. The reader's own scroll (wheel,
+   * touch, keys) hands the page back to them for as long as they like; a
+   * click on a timeline marker is the one thing that re-engages the follow.
+   */
+  autoScroll = true;
 
   i = 0;
   playing = false;
@@ -164,6 +170,16 @@ class Player {
     this.audio.addEventListener("ended", () => {
       if (this.stage === "title") this.playBody();
       else this.advance();
+    });
+    // The reader's own scrolling — never the page's smooth scrolls, which fire
+    // `scroll` but none of these — switches the follow off.
+    const release = () => {
+      this.autoScroll = false;
+    };
+    window.addEventListener("wheel", release, { passive: true });
+    window.addEventListener("touchmove", release, { passive: true });
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(e.key)) release();
     });
   }
 
@@ -208,9 +224,10 @@ class Player {
     await this.playCurrent();
   }
 
-  /** Jump to a part from the timeline. */
+  /** Jump to a part from the timeline — and take the page along again. */
   async goTo(i: number) {
     if (i < 0 || i >= this.queue.length) return;
+    this.autoScroll = true;
     this.clearHighlight();
     this.audio.pause();
     speechSynthesis.cancel();
@@ -345,10 +362,22 @@ class Player {
     }
   }
 
-  /** Bring the section this part narrates into view. */
+  /**
+   * Bring the passage this part narrates into view — one smooth move that
+   * leaves it centred, or, when it is taller than the viewport can centre,
+   * with its opening sitting a little above the middle. The word-follow is
+   * then held off for a moment so it never stacks a second move on top.
+   */
   private focusSection(part: Part) {
-    if (!part.anchor) return;
-    document.getElementById(part.anchor)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!this.autoScroll || !part.anchor) return;
+    const section = document.getElementById(part.anchor);
+    if (!section) return;
+    const el = (part.highlight && section.querySelector<HTMLElement>(part.highlight)) || section;
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const top = r.height < vh * 0.7 ? r.top - (vh - r.height) / 2 : r.top - vh * 0.22;
+    window.scrollTo({ top: window.scrollY + top, behavior: "smooth" });
+    this.lastFollow = performance.now() + 900; // let this move land before any nudge
   }
 
   /**
@@ -390,13 +419,14 @@ class Player {
    * fights the reader or stacks smooth-scrolls on top of each other.
    */
   private follow(word: HTMLElement) {
+    if (!this.autoScroll) return;
     const now = performance.now();
-    if (now - this.lastFollow < 1000) return;
+    if (now - this.lastFollow < 1200) return;
     const r = word.getBoundingClientRect();
     const vh = window.innerHeight;
-    if (r.top > vh * 0.3 && r.bottom < vh * 0.68) return; // already well placed
+    if (r.top > vh * 0.22 && r.bottom < vh * 0.7) return; // already well placed
     this.lastFollow = now;
-    window.scrollBy({ top: r.top - vh * 0.42, behavior: "smooth" });
+    window.scrollTo({ top: window.scrollY + r.top - vh * 0.42, behavior: "smooth" });
   }
 
   private startTracking() {
@@ -537,6 +567,8 @@ const scape = new Soundscape();
 
 /** Whatever control is showing the ambience state, told to re-read it. */
 let syncAmbience: () => void = () => {};
+/** Has the experience been begun on this page — by Begin, or by the first Listen. */
+let begun = false;
 
 /**
  * "Begin experience": the ambience comes on and the narration starts from the
@@ -544,6 +576,7 @@ let syncAmbience: () => void = () => {};
  * the first play, so they have to happen here rather than on scroll.
  */
 export async function begin() {
+  begun = true;
   if (!scape.on) scape.toggle();
   syncAmbience();
   await player.goTo(0);
@@ -569,7 +602,7 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   dock.className = "dock";
   dock.innerHTML = `
     <div class="dock-row">
-      <button type="button" class="dock-play" aria-label="Listen">▶&nbsp; Listen</button>
+      <button type="button" class="dock-play" aria-label="Listen"><span class="dock-play-ico" aria-hidden="true">▶</span><span class="dock-play-lbl">Listen</span></button>
       <div class="dock-timeline">
         <div class="dock-track"><div class="dock-fill"></div></div>
         ${nodes}
@@ -605,8 +638,12 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   const fill = dock.querySelector<HTMLDivElement>(".dock-fill")!;
   const nodeEls = Array.from(dock.querySelectorAll<HTMLButtonElement>(".dock-node"));
 
+  const playIco = playBtn.querySelector<HTMLElement>(".dock-play-ico")!;
+  const playLbl = playBtn.querySelector<HTMLElement>(".dock-play-lbl")!;
   player.onstate = (s) => {
-    playBtn.innerHTML = s.playing ? "❚❚&nbsp; Pause" : "▶&nbsp; Listen";
+    playIco.textContent = s.playing ? "❚❚" : "▶";
+    playLbl.textContent = s.playing ? "Pause" : "Listen";
+    playBtn.setAttribute("aria-label", s.playing ? "Pause" : "Listen");
     // The section name lives on the timeline node, so the transport stays bare.
     nodeEls.forEach((n, i) => {
       n.classList.toggle("on", i === s.index && s.playing);
@@ -617,7 +654,13 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
     fill.style.transform = `scaleX(${f})`;
   };
 
-  playBtn.addEventListener("click", () => player.toggle());
+  // On a phone the hero has no Begin button, so the first Listen is the
+  // beginning: ambience on, narration from the top. After that it is a
+  // plain pause/resume.
+  playBtn.addEventListener("click", () => {
+    if (!begun && !player.playing && player.i === 0) void begin();
+    else player.toggle();
+  });
 
   // Warm the first passage the moment the pointer reaches the button, and the
   // loop files as soon as the browser is idle — between them, both Listen and
@@ -771,6 +814,7 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
 /** Tear down on route change: stop speech, keep ambience running across pages. */
 export function unmountDock() {
   player.stop();
+  begun = false;
   syncAmbience = () => {};
   document.querySelectorAll(".dock, .x-amb").forEach((d) => d.remove());
 }

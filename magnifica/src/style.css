@@ -316,6 +316,8 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
   cursor: pointer;
 }
 .dock-play:hover { filter: brightness(1.1); }
+.dock-play-ico { margin-right: 0.6em; }
+@media (max-width: 680px) { .dock-play-ico { margin-right: 0; } }
 .dock-part { font: 500 11px var(--mono); color: var(--muted); }
 .dock-note { font: 500 10px var(--mono); color: var(--faint); }
 .dock-spacer { flex: 1; }
@@ -498,9 +500,24 @@ blockquote.ex footer { margin-top: 12px; font: 600 10px var(--mono); letter-spac
 }
 
 @media (max-width: 680px) {
-  /* Ten dots across a phone's width are unhittable and just visual noise; the
-     fill still reports progress and the panels are reachable by scrolling. */
-  .dock-node { display: none; }
+  /* The phone dock: the play button is its icon alone, which gives the
+     timeline the width for its markers — smaller dots, the same hit areas. */
+  .dock { padding: 0 12px 8px; }
+  .dock-row { gap: 10px; min-height: 56px; }
+  .dock-play {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    flex: none;
+    font-size: 12px;
+  }
+  .dock-play-lbl { display: none; }
+  .dock-sound { flex: none; }
+  .dock-node { width: 20px; height: 20px; }
+  .dock-node i { width: 7px; height: 7px; }
+  .dock-node span { font-size: 8px; padding: 3px 7px; }
 }
 
 /* ---------- audio controls ----------
