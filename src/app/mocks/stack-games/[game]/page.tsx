@@ -34,7 +34,7 @@ export default async function GamePage({
   const board =
     game === "tetris" ? <Tetris marks={marks} bare={bare} /> :
     game === "cascade" ? <Cascade marks={marks} /> :
-    game === "break" ? <Break marks={marks} /> :
+    game === "break" ? <Break marks={marks} bare={bare} /> :
     game === "merge" ? <Merge marks={marks} /> :
     null;
 

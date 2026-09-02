@@ -36,7 +36,7 @@ const R = 6;
 
 type Wall = { id: number; item: Item; col: number; row: number; cls: string };
 
-export function Break({ marks }: { marks: Marks }) {
+export function Break({ marks, bare = false }: { marks: Marks; bare?: boolean }) {
   const [wall, setWall] = useState<Wall[]>([]);
   const [left, setLeft] = useState(COLS * ROWS);
   const ball = useRef<HTMLDivElement>(null);
@@ -161,12 +161,17 @@ export function Break({ marks }: { marks: Marks }) {
     // Break keeps the quick pop the other three gave up: a brick has to leave
     // on the frame the ball touches it, or the bounce reads as a miss.
     <div className="sg-stage" style={{ "--clear": "320ms" } as React.CSSProperties}>
-      <div className="sg-hud sg-hud-top">
-        <span>The stack</span>
-        <span>
-          Bricks left <b>{String(left).padStart(2, "0")}</b>
-        </span>
-      </div>
+      {/* ?bare drops the chrome for the post: the title, the counter and the
+          family key. What stays is the game — the marks on the bricks and the
+          name behind them, which is the thing the wall is hiding. */}
+      {!bare && (
+        <div className="sg-hud sg-hud-top">
+          <span>The stack</span>
+          <span>
+            Bricks left <b>{String(left).padStart(2, "0")}</b>
+          </span>
+        </div>
+      )}
 
       {/* What the wall is standing in front of. */}
       <div
@@ -242,7 +247,7 @@ export function Break({ marks }: { marks: Marks }) {
         }}
       />
 
-      <Legend groups={GROUPS} />
+      {!bare && <Legend groups={GROUPS} />}
     </div>
   );
 }

@@ -17,8 +17,14 @@ import { GAMES } from "./stack";
  * The iframes are lazy, which on a page of full-height blocks means a game
  * does not start until it is nearly in view: four boards animating at once,
  * three of them off screen, is four times the work for one thing to look at.
+ *
+ * `base` is where the boards are served from, because there are two sheets of
+ * the same four games: this one under /mocks, which is the working contact
+ * sheet and what the recorder films, and the project page at /stack-games,
+ * which is the same component pointed at its own routes so the project does
+ * not link out into the editors-only area.
  */
-export function Sheet() {
+export function Sheet({ base = "/mocks/stack-games" }: { base?: string }) {
   const [scale, setScale] = useState(0.86);
 
   useEffect(() => {
@@ -50,7 +56,7 @@ export function Sheet() {
             style={{ width: Math.round(430 * scale), height: Math.round(764 * scale) }}
           >
             <iframe
-              src={`/mocks/stack-games/${g.id}`}
+              src={`${base}/${g.id}`}
               title={g.title}
               loading="lazy"
               style={{ transform: `scale(${scale})` }}
@@ -60,7 +66,7 @@ export function Sheet() {
             <span className="sg-n">{String(i + 1).padStart(2, "0")}</span>
             <h2>{g.title}</h2>
             <p>{g.blurb}</p>
-            <a href={`/mocks/stack-games/${g.id}`}>Full bleed &#8594;</a>
+            <a href={`${base}/${g.id}`}>Full bleed &#8594;</a>
           </div>
         </section>
       ))}

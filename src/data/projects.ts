@@ -114,6 +114,29 @@ export const projects: Project[] = [
     path: "/throat-singing-quantum",
     image: "/projects/throat-singing-quantum.jpg",
   },
+  /*
+   * The studio's own toolchain, played rather than listed.
+   *
+   * A draft because the games exist and the project around them does not: four
+   * boards that loop, no writing, no argument yet. `status: "in-progress"` is
+   * the honest word for that — the pieces work, the project has not been made.
+   */
+  {
+    id: "stack-games",
+    title: "The stack, as four games",
+    tagline:
+      "Every tool this studio actually builds with, as bricks. Four boards read the same inventory four ways, and all four cancel on the family rather than on the tool.",
+    year: "2026",
+    date: "2026-09-02",
+    field: "Toolchain & play",
+    topics: ["AI"],
+    kind: "game",
+    status: "in-progress",
+    visibility: "draft",
+    path: "/stack-games",
+    image: "/projects/stack-games.jpg",
+    cta: "Play the boards",
+  },
   {
     id: "horizon-scan",
     title: "Horizon Scan",

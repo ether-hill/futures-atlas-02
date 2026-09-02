@@ -51,8 +51,9 @@ export const SLIDE_CSS = `
   --faint: #8b877f;
   --paper-muted: #8C8576;
   --good: #3f9e6b;
-  --good-ink: #1d7a4c;
-  --bad-ink: #b8452c;
+  /* Lifted for the dark cut: the game mixes these for cream paper. */
+  --good-ink: #4fbb85;
+  --bad-ink: #f0785a;
   --oxblood: #d8694e;
   --brass: #d8b13c;
   --line: rgba(242, 237, 226, .13);
@@ -130,7 +131,48 @@ export const SLIDE_CSS = `
    drops all of it and asks the question in words instead. The claim is a
    statement about the world, so TRUE means it has happened and FALSE means it
    has not — the same question the deck asks, in the form a feed understands. */
-.stf .tcard.ig { position: static; inset: auto; width: 100%; height: 100%; padding: 30px 28px 24px; }
+/* The dark cut. The deck's own card is cream paper, which is right in the game
+   — you are holding it, on a page that is otherwise empty — and wrong in a feed
+   of dark work, where it is the one bright rectangle. Ground and ink are the
+   Atlas's own near-blacks; the sector's colour comes back in as a glow inside
+   the card and as the tint of the mesh, so the two cards of a post are never
+   the same picture twice. */
+.stf .tcard.ig {
+  position: static; inset: auto; width: 100%; height: 100%;
+  padding: 30px 28px 22px; border-radius: 22px; overflow: hidden;
+  background:
+    radial-gradient(78% 40% at 76% 4%, color-mix(in srgb, var(--hue, #3b93d5) 26%, transparent), transparent 68%),
+    linear-gradient(168deg, #242833 0%, #1a1e26 58%, #15181e 100%);
+  color: var(--bone);
+  box-shadow: var(--shadow), inset 0 0 0 1px rgba(242,237,226,.12);
+  /* The reveal fills its card corner to corner, so the mesh lives in the
+     margin here rather than in a hole the shape of one headline. */
+  --field-op: .34;
+  --field-mask: radial-gradient(86% 58% at 50% 50%, transparent 26%, #000 100%);
+}
+/* Everything above the texture. */
+.stf .tcard.ig > *:not(.tex-field):not(.tex-rule):not(.tex-grain) { position: relative; z-index: 1; }
+/* FIXED-FOR-EXPORT: the claim, on the dark cut. */
+.stf .tcard.ig .claim { color: var(--bone); font-weight: 500; letter-spacing: -.022em; }
+
+/* The deck's own head, at the foot. */
+.stf .ig-foot {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 14px;
+  padding-top: 18px; border-top: 1px solid rgba(242,237,226,.12);
+}
+.stf .ig-foot .ig-sector {
+  font-family: var(--font-heading); font-weight: 600; font-size: 11.5px;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--faint);
+  white-space: nowrap;
+}
+.stf .ig-foot .dots { margin-left: auto; }
+.stf .ig-foot .dot { width: 5px; height: 5px; }
+.stf .ig-foot .dot.done { background: rgba(242,237,226,.3); }
+.stf .ig-foot .dot.cur { background: #3b93d5; box-shadow: 0 0 0 3px rgba(59,147,213,.22); }
+.stf .ig-foot .ig-pos {
+  font-family: var(--font-heading); font-weight: 700; font-size: 11.5px;
+  letter-spacing: .1em; color: var(--muted); font-variant-numeric: tabular-nums;
+}
 /* The card slide's ground. Both this and the term field were near-black on a
    near-black page, so the post had no edge: a deliberate ground gives the paper
    card something to sit on. */
@@ -138,16 +180,18 @@ export const SLIDE_CSS = `
 .stf .tq {
   flex: 0 0 auto; align-self: center; display: inline-flex; align-items: center; gap: 10px;
   background: #3b93d5; color: #fff; border-radius: 999px; padding: 11px 20px;
-  font-family: var(--ff-mono); font-size: 12.5px; font-weight: 700;
+  font-family: var(--font-heading); font-size: 12.5px; font-weight: 700;
   letter-spacing: .16em; text-transform: uppercase; line-height: 1;
 }
 .stf .tq svg { display: block; width: 15px; height: 15px; }
 
 /* The answer, said in both vocabularies at once. */
 .stf .vo-verdict { font-weight: 700; font-size: 46px; line-height: 1; letter-spacing: -.035em; }
-.stf .vo-verdict.correct { color: var(--good-ink); }
-.stf .vo-verdict.wrong { color: var(--bad-ink); }
-.stf .vo-verdict-sub { margin-top: 4px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; color: #6b6255; }
+/* The two verdict inks, lifted for the dark cut: the game's #1d7a4c / #b8452c
+   are mixed for cream paper and go nearly black on a near-black card. */
+.stf .vo-verdict.correct { color: #4fbb85; }
+.stf .vo-verdict.wrong { color: #f0785a; }
+.stf .vo-verdict-sub { margin-top: 4px; font-size: 17px; font-weight: 600; letter-spacing: -.01em; color: var(--faint); }
 
 /* ── the two buttons (globals.css 159-172) ─────────────────────────────── */
 .stf .card-actions { position: relative; display: flex; justify-content: center; gap: 44px; padding-top: 14px; flex: 0 0 auto; }
@@ -160,36 +204,36 @@ export const SLIDE_CSS = `
 /* ── the reveal (globals.css 180-217, 255-262) ─────────────────────────── */
 .stf .tcard.is-result { align-items: stretch; justify-content: flex-start; text-align: left; }
 .stf .vo-body { flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: stretch; justify-content: safe center; }
-.stf .vo-claim { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--paper-muted); max-width: 34ch; }
+.stf .vo-claim { margin: 0; font-size: 13.5px; line-height: 1.45; color: var(--faint); max-width: 34ch; }
 .stf .vo-grade { margin-top: 10px; font-weight: 700; font-size: 21px; letter-spacing: -.01em; line-height: 1.1; }
 .stf .vo-grade.correct { color: var(--good-ink); }
 .stf .vo-grade.wrong { color: var(--bad-ink); }
-.stf .vo-label { margin-top: 2px; font-size: 19px; line-height: 1.2; color: var(--paper-muted); letter-spacing: -.01em; }
+.stf .vo-label { margin-top: 2px; font-size: 19px; line-height: 1.2; color: var(--faint); letter-spacing: -.01em; }
 /* FIXED-FOR-EXPORT: was clamp(40px, 8.5vw, 58px). */
-.stf .vo-bignum { margin-top: 4px; font-weight: 700; font-size: 58px; line-height: .96; letter-spacing: -.04em; color: #17140e; }
-.stf .vo-lede { margin-top: 14px; max-width: 32ch; font-size: 16.5px; line-height: 1.34; letter-spacing: -.012em; color: #17140e; font-weight: 600; }
+.stf .vo-bignum { margin-top: 4px; font-weight: 700; font-size: 58px; line-height: .96; letter-spacing: -.04em; color: var(--bone); }
+.stf .vo-lede { margin-top: 14px; max-width: 32ch; font-size: 16.5px; line-height: 1.34; letter-spacing: -.012em; color: var(--bone); font-weight: 600; }
 /* FIXED-FOR-EXPORT: was clamp(20px, 2.6vw, 26px). */
 .stf .vo-lede.solo { margin-top: 10px; font-size: 23px; line-height: 1.22; letter-spacing: -.02em; font-weight: 700; }
-.stf .vo-insight { margin-top: 10px; max-width: 32ch; font-size: 14px; line-height: 1.5; color: #6b6255; }
-.stf .vo-src { margin-top: 12px; max-width: 34ch; font-size: 13px; line-height: 1.5; color: #4a4238; }
-.stf .vo-src u { text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; text-decoration-color: rgba(42, 36, 28, .35); color: #2a241c; }
-.stf .vo-checked { color: var(--paper-muted); }
-.stf .vo-crowd { margin-top: 14px; width: min(100%, 34ch); padding: 11px 13px; background: rgba(23, 20, 14, .06); }
-.stf .vo-crowdtop { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; color: #2a241c; }
+.stf .vo-insight { margin-top: 10px; max-width: 32ch; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.stf .vo-src { margin-top: 12px; max-width: 34ch; font-size: 13px; line-height: 1.5; color: var(--faint); }
+.stf .vo-src u { text-decoration: underline; text-underline-offset: 2px; text-decoration-thickness: 1px; text-decoration-color: rgba(242,237,226,.3); color: var(--muted); }
+.stf .vo-checked { color: var(--faint); }
+.stf .vo-crowd { margin-top: 14px; width: min(100%, 34ch); padding: 11px 13px; background: rgba(242,237,226,.06); border: 1px solid rgba(242,237,226,.09); }
+.stf .vo-crowdtop { display: flex; align-items: baseline; gap: 8px; font-size: 13.5px; color: var(--muted); }
 .stf .vo-crowdtop b { font-weight: 700; }
-.stf .vo-crowdtop i { margin-left: auto; font-style: normal; font-size: 11.5px; color: var(--paper-muted); }
-.stf .vo-crowdbar { display: block; margin-top: 8px; height: 6px; background: rgba(23, 20, 14, .12); overflow: hidden; }
+.stf .vo-crowdtop i { margin-left: auto; font-style: normal; font-size: 11.5px; color: var(--faint); }
+.stf .vo-crowdbar { display: block; margin-top: 8px; height: 6px; background: rgba(242,237,226,.14); overflow: hidden; }
 .stf .vo-crowdbar > span { display: block; height: 100%; }
 
 /* ── the stats page (globals.css 350-356, 479-484, 683-691) ────────────── */
-.stf .st-kicker { display: block; margin-bottom: 10px; font-family: var(--ff-mono); font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); }
+.stf .st-kicker { display: block; margin-bottom: 10px; font-family: var(--font-heading); font-weight: 600; font-size: 10px; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-deep); }
 /* FIXED-FOR-EXPORT: was clamp(26px, 3.4vw, 38px). */
 .stf .st-sec h2 { margin: 0; font-weight: 600; font-size: 30px; letter-spacing: -.028em; color: var(--bone); line-height: 1.04; }
 .stf .st-sec h3 { margin: 0; font-weight: 600; font-size: 19px; letter-spacing: -.015em; }
-.stf .st-sublede { margin-top: 4px; margin-bottom: 14px; font-family: var(--ff-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
+.stf .st-sublede { margin-top: 4px; margin-bottom: 14px; font-family: var(--font-heading); font-weight: 600; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); }
 .stf .st-para { margin: 0 0 18px; font-size: 14px; line-height: 1.68; color: var(--muted); max-width: 46ch; }
 .stf .st-row { display: flex; gap: 13px; padding: 12px 0; border-top: 1px solid var(--wash-1); }
-.stf .st-rowpct { font-family: var(--ff-mono); font-weight: 700; font-size: 14px; min-width: 4ch; font-variant-numeric: tabular-nums; }
+.stf .st-rowpct { font-family: var(--font-heading); font-weight: 700; font-size: 14px; min-width: 4ch; font-variant-numeric: tabular-nums; letter-spacing: .02em; }
 .stf .st-rowtxt { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; line-height: 1.45; }
 .stf .st-rowtxt b { font-weight: 500; color: var(--bone); }
 .stf .st-rowtxt span { font-size: 11.5px; color: var(--faint); }
@@ -202,6 +246,10 @@ export const SLIDE_CSS = `
 .stf .st-demobar { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; margin: 0 0 26px; padding: 14px 18px; background: var(--brass); color: #17140e; font-size: 14px; line-height: 1.5; }
 .stf .st-demobar b { font-weight: 700; }
 .stf .st-demobar span { flex: 1 1 320px; }
+/* The results, in the same card as the other two slides rather than on paper. */
+.stf .tcard.ig.is-stats { padding: 30px 28px 24px; display: block; }
+.stf .tcard.ig.is-stats .st-sec { position: relative; z-index: 1; }
+.stf .st-row { border-top-color: rgba(242,237,226,.12); }
 
 /* ── the site's own brand lockup (public/atlas-nav.js + atlas-nav.css 67-68,
       170: the mark is /fa.svg, inverted on a dark ground, beside the
@@ -268,32 +316,108 @@ export const SLIDE_CSS = `
 }
 .stf .swipe-cue svg { width: 6cqw; height: 6cqw; display: block; }
 
-/* ── a vocabulary card ─────────────────────────────────────────────────── */
+/* ── shared texture ────────────────────────────────────────────────────────
+   Three layers, in this order, on any card that would otherwise be a flat
+   field of colour with type on it.
+
+   The RULE is the site's own .fa-plan-grid (futures-atlas-core/kit.css 171-176)
+   at a card's scale rather than a page's: 40px on a 1200px page is roughly
+   3.4cqw here. The GRAIN is fractal noise, inline as an SVG data URI so the
+   slide stays one file with no request to make; at 4% it is felt rather than
+   seen, and it is what stops a large flat gradient banding on export. The FIELD
+   is drawn in the component (Slide.tsx) because it is geometry, not a fill.
+
+   All three are absolutely positioned siblings, never backgrounds on the card
+   itself, so each keeps its own opacity and the type sits above all of them. */
+.stf .tex-field, .stf .tex-rule, .stf .tex-grain {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; display: block;
+}
+.stf .tex-field {
+  opacity: var(--field-op, .55);
+  /* Held off the type. The mesh is texture, and a hairline crossing a word is
+     not texture, it is a strike-through. Each card sets its own hole, because
+     each puts its words somewhere different. */
+  -webkit-mask-image: var(--field-mask, radial-gradient(72% 32% at 46% 52%, transparent 12%, #000 82%));
+  mask-image: var(--field-mask, radial-gradient(72% 32% at 46% 52%, transparent 12%, #000 82%));
+}
+.stf .tex-rule {
+  background-image:
+    linear-gradient(rgba(242,237,226,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242,237,226,.045) 1px, transparent 1px);
+  background-size: 3.4cqw 3.4cqw;
+  -webkit-mask-image: radial-gradient(120% 70% at 50% 40%, #000 30%, transparent 100%);
+  mask-image: radial-gradient(120% 70% at 50% 40%, #000 30%, transparent 100%);
+}
+.stf .tex-grain {
+  opacity: .04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 33cqw 33cqw;
+}
+/* On a light card the same three have to invert or they are invisible. */
+.stf .light-card .tex-rule {
+  background-image:
+    linear-gradient(rgba(23,20,14,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23,20,14,.06) 1px, transparent 1px);
+}
+.stf .light-card .tex-grain { opacity: .05; mix-blend-mode: multiply; }
+
+/* ── a vocabulary card ─────────────────────────────────────────────────────
+   The word is still the whole post; everything added here sits under it. The
+   ground is a slow diagonal rather than the old radial, which put a bright
+   corner in the top left of every crop, and the type column is pushed off the
+   optical centre so the field has somewhere to be. */
 .stf .term-card {
   position: relative; width: 100%; height: 100%; box-sizing: border-box;
   padding: 9cqw 8cqw; display: flex; flex-direction: column; justify-content: center;
-  background: radial-gradient(120% 80% at 20% 12%, #1b2330 0%, #101319 55%, #0a0c11 100%);
-  container-type: inline-size;
+  overflow: hidden; container-type: inline-size;
+  background:
+    radial-gradient(80% 46% at 78% 8%, rgba(59,147,213,.16), transparent 62%),
+    linear-gradient(168deg, #1b2330 0%, #101319 52%, #090b0f 100%);
 }
+/* The card as an object: a hairline held off the edge, the way the deck's own
+   cards and the report plates are drawn. */
+.stf .term-card::after {
+  content: ""; position: absolute; inset: 3.4cqw; pointer-events: none;
+  border: 1px solid rgba(242,237,226,.10);
+}
+.stf .term-body-col { position: relative; z-index: 1; }
 .stf .term-kind {
-  font-family: var(--ff-mono); font-size: 3cqw; letter-spacing: .16em;
-  text-transform: uppercase; color: #3b93d5;
+  font-family: var(--font-heading); font-weight: 600; font-size: 3cqw;
+  letter-spacing: .16em; text-transform: uppercase; color: #3b93d5;
 }
 .stf .term-word {
   margin-top: 3cqw; font-size: 15cqw; font-weight: 800; letter-spacing: -.045em;
   line-height: .96; color: #f2ede2;
 }
+/* A rule under the word, in the accent, the width of the word's own stem. */
+.stf .term-word::after {
+  content: ""; display: block; width: 12cqw; height: 2px;
+  margin-top: 3.4cqw; background: #3b93d5;
+}
 .stf .term-pron {
-  margin-top: 2.4cqw; font-family: var(--ff-mono); font-size: 3.4cqw;
-  color: rgba(242,237,226,.5);
+  margin-top: 3cqw; font-family: var(--font-heading); font-size: 3.4cqw;
+  letter-spacing: .04em; color: rgba(242,237,226,.5);
 }
 .stf .term-def {
-  margin: 7cqw 0 0; font-size: 5.4cqw; line-height: 1.3; letter-spacing: -.015em;
+  margin: 6cqw 0 0; font-size: 5.4cqw; line-height: 1.3; letter-spacing: -.015em;
   color: #f2ede2; font-weight: 600;
 }
 .stf .term-body {
-  margin: 4cqw 0 0; font-family: Georgia, "Times New Roman", serif; font-style: italic;
+  margin: 4cqw 0 0; padding-left: 4cqw; border-left: 1px solid rgba(59,147,213,.45);
+  font-family: Georgia, "Times New Roman", serif; font-style: italic;
   font-size: 4.4cqw; line-height: 1.38; color: rgba(242,237,226,.66);
+}
+/* The mark, bottom left, so the card is signed like a plate rather than
+   floating. Small enough to be a footer and not a logo. */
+.stf .term-mark {
+  position: absolute; left: 8cqw; bottom: 7cqw; z-index: 1;
+  display: flex; align-items: center; gap: 2.2cqw;
+}
+.stf .term-mark img { display: block; height: 3.6cqw; width: auto; filter: invert(1); opacity: .7; }
+.stf .term-mark span {
+  font-family: var(--font-heading); font-weight: 600; font-size: 2.4cqw;
+  letter-spacing: .2em; text-transform: uppercase; color: rgba(242,237,226,.34);
 }
 
 /* ── Tegmark's twelve ──────────────────────────────────────────────────────

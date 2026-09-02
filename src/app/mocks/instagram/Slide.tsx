@@ -204,16 +204,112 @@ function OddsSlide({
   );
 }
 
-/** One word, set big. The vocabulary posts are typography, nothing else. */
+/**
+ * A drawn field behind a card: nodes, and a hairline to each node's two nearest
+ * neighbours.
+ *
+ * It is TEXTURE, NOT DATA. No edge here claims a relation between two terms and
+ * nothing is measured: it is the vocabulary sphere at /mocks/termfield reduced
+ * to a still, so a card that is only words has something under them. Said out
+ * loud because everything else on these slides is copied from a source, and a
+ * reader is entitled to know which marks mean something.
+ *
+ * Deterministic from the post's id, so the server and the client draw the same
+ * field. `Math.random()` here would be a hydration mismatch, and a texture that
+ * changes on every render would make two screenshots of one post differ.
+ */
+function rng(seed: string) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return () => {
+    h += 0x6d2b79f5;
+    let t = h;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const FIELD_W = 100;
+const FIELD_H = 178;
+
+function Field({ seed, nodes = 64, tint = "#3b93d5" }: { seed: string; nodes?: number; tint?: string }) {
+  const r = rng(seed);
+  const pts = Array.from({ length: nodes }, () => ({
+    x: r() * FIELD_W,
+    y: r() * FIELD_H,
+    // A few nodes carry weight, the rest are dust. An even field reads as a
+    // pattern; an uneven one reads as a structure.
+    big: r() < 0.22,
+  }));
+  // Nearest two, and only if they are actually near: without the cap, a node
+  // in a sparse corner reaches right across the card and the field reads as
+  // three big triangles rather than as a mesh.
+  const MAX_EDGE = 22 ** 2;
+  const edges: [number, number][] = [];
+  pts.forEach((p, i) => {
+    const near = pts
+      .map((q, j) => ({ j, d: (p.x - q.x) ** 2 + (p.y - q.y) ** 2 }))
+      .filter((q) => q.j !== i && q.d < MAX_EDGE)
+      .sort((a, b) => a.d - b.d)
+      .slice(0, 2);
+    for (const q of near) if (i < q.j) edges.push([i, q.j]);
+  });
+  return (
+    <svg
+      className="tex-field"
+      viewBox={`0 0 ${FIELD_W} ${FIELD_H}`}
+      preserveAspectRatio="xMidYMid slice"
+      aria-hidden="true"
+    >
+      <g stroke={tint} strokeWidth="0.13" opacity="0.55">
+        {edges.map(([a, b], i) => (
+          <line key={i} x1={pts[a]!.x} y1={pts[a]!.y} x2={pts[b]!.x} y2={pts[b]!.y} />
+        ))}
+      </g>
+      <g fill={tint}>
+        {pts.map((p, i) => (
+          <circle key={i} cx={p.x} cy={p.y} r={p.big ? 0.7 : 0.32} opacity={p.big ? 0.8 : 0.4} />
+        ))}
+      </g>
+    </svg>
+  );
+}
+
+/** The three texture layers, in the order they stack. Separate elements rather
+ *  than background layers on the card so each can carry its own blend and
+ *  opacity without fighting the others. */
+function Texture({ seed, tint, nodes }: { seed: string; tint?: string; nodes?: number }) {
+  return (
+    <>
+      <Field seed={seed} tint={tint} nodes={nodes} />
+      <i className="tex-rule" aria-hidden="true" />
+      <i className="tex-grain" aria-hidden="true" />
+    </>
+  );
+}
+
+/** One word, set big, on a field of its own vocabulary. */
 function TermSlide({ post, ratio }: { post: TermPost; ratio: Ratio }) {
   return (
     <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
       <div className="term-card">
-        <div className="term-kind">{post.kind_}</div>
-        <div className="term-word">{post.term}</div>
-        <div className="term-pron">{post.pron}</div>
-        <p className="term-def">{post.definition}</p>
-        <p className="term-body">{post.body}</p>
+        <Texture seed={post.id} />
+        <div className="term-body-col">
+          <div className="term-kind">{post.kind_}</div>
+          <div className="term-word">{post.term}</div>
+          <div className="term-pron">{post.pron}</div>
+          <p className="term-def">{post.definition}</p>
+          <p className="term-body">{post.body}</p>
+        </div>
+        <div className="term-mark" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/fa.svg" alt="" />
+          <span>Futures Atlas &middot; vocabulary</span>
+        </div>
       </div>
     </div>
   );
@@ -332,16 +428,15 @@ function ShotSlide({
 }
 
 export function SlideBody({ card, kind, ratio }: { card: Card; kind: SlideKind; ratio: Ratio }) {
-  // The deck head rides above the box, and only on the front: the reveal needs
-  // every pixel (in the game `.vo-body` scrolls when it runs long, and a still
-  // slide has nothing to scroll), and the deck position is already on slide 1.
-  // The results slide quotes the stats page, and that page reads as paper, so
-  // the slide does too. The two card slides stay on the game's dark ground.
-  const light = kind === "stats";
+  // All three slides are now the same object: one card, dark, textured, with
+  // the sector's own colour in it. The results slide used to be light because
+  // it quotes the stats page and that page reads as paper — true of the page,
+  // wrong in a carousel, where two dark cards followed by a cream one reads as
+  // a post that has lost its third slide.
   return (
     <div
-      className={`stf${light ? " light" : ""}`}
-      style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}
+      className="stf"
+      style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio], ["--hue" as string]: card.hue }}
     >
       <div className="stf-wash" style={{ ["--wash-hue" as string]: card.hue }}>
         <i />
@@ -390,8 +485,36 @@ function CardSlide({ card, kind }: { card: Card; kind: "card" | "reveal" }) {
 function CardFront({ card }: { card: Card }) {
   return (
     <div className="tcard ig">
+      <Texture seed={card.id} tint={card.hue} nodes={54} />
       <div className="tq">True or false?</div>
       <h3 className="claim">{card.claim}</h3>
+      <DeckFoot card={card} />
+    </div>
+  );
+}
+
+/**
+ * The deck head, moved to the foot.
+ *
+ * These are the game's own parts (`.deck-head`, `.dots`, globals.css 122-127):
+ * which card of ten this is, and which deck it belongs to. The Instagram cut
+ * dropped them, on the grounds that a 120px tile cannot show them — true of the
+ * tile, but it also left the card as a sentence floating in a rectangle. At the
+ * foot they give the card a base to stand on and say the one thing the claim
+ * cannot, which is that there are nine more like it.
+ */
+function DeckFoot({ card }: { card: Card }) {
+  return (
+    <div className="ig-foot">
+      <span className="ig-sector">{card.sector}</span>
+      <span className="dots" aria-hidden="true">
+        {Array.from({ length: card.deckSize }, (_, i) => (
+          <i key={i} className={i + 1 === card.pos ? "dot cur" : i + 1 < card.pos ? "dot done" : "dot"} />
+        ))}
+      </span>
+      <span className="ig-pos">
+        {String(card.pos).padStart(2, "0")}/{card.deckSize}
+      </span>
     </div>
   );
 }
@@ -405,6 +528,7 @@ function CardReveal({ card }: { card: Card }) {
   const bigLabel = card.bigLabel === "Already real since" ? "Since" : card.bigLabel;
   return (
     <div className="tcard is-result ig">
+      <Texture seed={`${card.id}r`} tint={card.hue} nodes={54} />
       <div className="vo-body">
         <p className="vo-claim">{card.claim}</p>
         <div className={`vo-verdict ${already ? "correct" : "wrong"}`}>
@@ -467,7 +591,9 @@ function StatsSlide({ card }: { card: Card }) {
   const pc = (x: number) => `${Math.round(x * 100)}%`;
 
   return (
-    <div className="st-sec" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+    <div className="tcard ig is-stats">
+      <Texture seed={`${card.id}s`} tint={card.hue} nodes={54} />
+      <div className="st-sec" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <span className="st-kicker">What everyone else answered</span>
       <h2>{pc(pctReal)} said already real.</h2>
       {/* The truth, in the deck's own two words (VLABEL in sectors.ts), with the
@@ -521,6 +647,7 @@ function StatsSlide({ card }: { card: Card }) {
           <span>These are made-up tallies, shown so the layout can be read. Nobody has answered this deck yet.</span>
         </div>
       ) : null}
+      </div>
     </div>
   );
 }

@@ -52,6 +52,7 @@ const PAGES = {
   break: "break",
   merge: "merge",
   bare: "tetris?bare",
+  "break-bare": "break?bare",
 };
 const GAMES = ["tetris", "cascade", "break", "merge"];
 const arg = (process.argv[2] || "all").toLowerCase();

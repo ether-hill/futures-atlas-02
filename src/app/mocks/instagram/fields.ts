@@ -327,6 +327,34 @@ export const STACK_REEL: ReelPost = {
   hashtags: ["#techstack", "#creativecoding", "#webgl", "#nextjs", "#designstudio", "#futuresatlas"],
 };
 
+/**
+ * The same inventory, taken apart instead of stacked up.
+ *
+ * BREAK is the fourth of the stack games (/mocks/stack-games/break), filmed
+ * with `?bare` like its sibling: no title, no brick counter, no family key. The
+ * words stay in the caption, because a reel that prints its own caption onto
+ * the video says the sentence twice.
+ *
+ * What is left on the board is the game: the marks, and the studio's name
+ * behind them, which is the thing the wall is hiding and the reason this one is
+ * worth a post of its own. The other three add tools to a board. This one takes
+ * them away and shows you what was underneath the whole time.
+ */
+export const BREAK_REEL: ReelPost = {
+  kind: "reel",
+  name: "The stack \u00B7 break",
+  id: "stack-break-bare",
+  title: "Break",
+  note: "The stack as a wall, and one ball taking it apart.",
+  embed: "",
+  video: "/mocks/instagram/stack-break-bare.webm",
+  thumb: "/mocks/instagram/stack-break-bare.jpg",
+  thumbAt: 0,
+  caption:
+    "Twenty tools in a wall, and one ball to get through them.\n\nSame inventory as the last one, read the other way round. The other stack games add tools to a board until something lines up. This one starts with everything already there and removes it a brick at a time, and what the wall turns out to have been standing in front of is the studio's own name.\n\nThat is the honest order of things. The tools are in front, they are what you see first, and there is a practice behind them that is not any of them. When the last brick goes the wall rebuilds from a fresh shuffle, so it never comes apart the same way twice.\n\nNo text on the board on purpose. It plays itself.",
+  hashtags: ["#techstack", "#creativecoding", "#gamedesign", "#designstudio", "#futuresatlas"],
+};
+
 export const UNDERGROUND_REEL: ReelPost = {
   kind: "reel",
   name: "Underground Intelligence",
