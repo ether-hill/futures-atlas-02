@@ -11,15 +11,16 @@ import { useEffect, useRef, type ReactNode } from "react";
 export function Lightbox({
   label,
   onClose,
-  wide = false,
+  size = "regular",
   children,
 }: {
   label: string;
   onClose: () => void;
-  /** the configurator wants more room than a listing */
-  wide?: boolean;
+  /** regular for text; wide for the configurator; full for a listing whose photo carries half the panel */
+  size?: "regular" | "wide" | "full";
   children: ReactNode;
 }) {
+  const width = { regular: "max-w-4xl", wide: "max-w-5xl", full: "max-w-[1700px]" }[size];
   const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     closeRef.current?.focus();
@@ -47,9 +48,7 @@ export function Lightbox({
         className="absolute inset-0 cursor-pointer bg-ink/60"
       />
       <div
-        className={`relative max-h-[88vh] w-full overflow-y-auto rounded-[20px] bg-surface shadow-2xl shadow-ink/20 ${
-          wide ? "max-w-5xl" : "max-w-4xl"
-        }`}
+        className={`relative max-h-[90vh] w-full overflow-y-auto rounded-[20px] bg-surface shadow-2xl shadow-ink/20 ${width}`}
       >
         <button
           ref={closeRef}

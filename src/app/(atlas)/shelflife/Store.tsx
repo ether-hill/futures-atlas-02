@@ -278,7 +278,7 @@ export function Store() {
 
       {open && <Quickview product={open} onClose={() => setOpen(null)} />}
       {creating && (
-        <Lightbox label="Create a product" onClose={() => setCreating(false)} wide>
+        <Lightbox label="Create a product" onClose={() => setCreating(false)} size="wide">
           <div className="px-6 py-8 sm:px-10 sm:py-10">
             <span className={eyebrow}>Create a product</span>
             <h2 className="mt-2 text-[clamp(22px,2.6vw,34px)] font-extrabold leading-[1.05] tracking-[-0.02em] text-ink">

@@ -43,11 +43,14 @@ export function Plate({ product, className = "" }: { product: FutureProduct; cla
 export function Quickview({ product, onClose }: { product: FutureProduct; onClose: () => void }) {
   const l = product.listing;
   return (
-    <Lightbox label={`${product.name} — quick view`} onClose={onClose}>
-      <div className="grid md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-        <Plate product={product} className="aspect-square md:sticky md:top-0" />
+    <Lightbox label={`${product.name} — quick view`} onClose={onClose} size="full">
+      {/* photo left, copy right, half and half; the photo sits in its own margin */}
+      <div className="grid md:grid-cols-2">
+        <div className="p-5 sm:p-7 md:sticky md:top-0 md:self-start">
+          <Plate product={product} className="aspect-square w-full rounded-[14px]" />
+        </div>
 
-        <div className="px-6 py-7 sm:px-8">
+        <div className="px-6 py-7 sm:px-8 md:py-10 md:pr-12">
           <div className={label}>
             {product.aisle} · ships {product.year}
           </div>
