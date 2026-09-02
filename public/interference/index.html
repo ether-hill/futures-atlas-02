@@ -65,6 +65,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="mp4-muxer.js"></script>
 <script src="field.js"></script>
 <script src="/atlas-nav.js" defer></script>
 <script>
@@ -359,7 +360,8 @@
     for (var i = 0; i < units.length; i++) {
       var u = units[i];
       if (!u.visible) continue;
-      if (recording && u !== recording) continue;
+      // A rendering unit paints its own frames, off the clock.
+      if (recording && (u !== recording || u.rendering)) continue;
       u.tick(dt);
       var s = u.recSize || sizeFor(u);
       u.paint(s[0], s[1]);
@@ -391,15 +393,156 @@
     toast(jpg ? "JPG saved" : "PNG saved");
   }
 
-  // MediaRecorder writes MP4 where the browser can (Chrome 130+), WebM
-  // otherwise, and the file is named for whatever it actually produced. The
-  // clip runs exactly one loop, so it cuts back to its own first frame.
-  //
-  // A fixed-size clip (`fixed`: w, h, seconds) is for the socials, where the
-  // frame is 9:16 or 16:9 and ten seconds regardless of the loop. The canvas
-  // is painted at that size for the duration instead of its on-screen size
-  // (`unit.recSize`, read by the frame loop) and the stage letterboxes it
-  // meanwhile, so what you watch while it records is what the file gets.
+  /*
+   * Clips are RENDERED, not captured. Each frame is drawn at a fixed step of
+   * field time (1/30 s at the field's speed) into the canvas at the clip's
+   * size, handed to a WebCodecs encoder and muxed into an MP4, so the file has
+   * every frame whatever the page manages on screen. The earlier path wrapped
+   * the canvas in captureStream and let MediaRecorder take what the display
+   * painted in real time: an integrated GPU at 18 fps made an 18 fps clip, and
+   * every hitch on the page went into the file. That path survives only as the
+   * fallback for browsers without VideoEncoder, and says so when it is used.
+   *
+   * A fixed-size clip (`fixed`: w, h, seconds) is for the socials, where the
+   * frame is 9:16 or 16:9 and ten seconds regardless of the loop. The canvas
+   * is painted at that size for the duration (`unit.recSize`, read by the
+   * frame loop) and the stage letterboxes it, so what you watch while it
+   * renders is what the file gets. Choosing any video item again cancels.
+   */
+  var FPS = 30;
+  var CODECS = ["avc1.640034", "avc1.640033", "avc1.64002A", "avc1.4D4028", "avc1.42E01E"];
+
+  function canRender() {
+    return typeof VideoEncoder !== "undefined" && typeof VideoFrame !== "undefined" &&
+      typeof Mp4Muxer !== "undefined";
+  }
+
+  function pickCodec(w, h, bitrate) {
+    var i = 0;
+    function next() {
+      if (i >= CODECS.length) return Promise.resolve(null);
+      var codec = CODECS[i++];
+      return VideoEncoder.isConfigSupported({ codec: codec, width: w, height: h, bitrate: bitrate, framerate: FPS })
+        .then(function (r) { return r.supported ? codec : next(); }, next);
+    }
+    return next();
+  }
+
+  function clipSpec(unit, fixed) {
+    var seconds, w, h;
+    if (fixed) {
+      seconds = fixed.seconds; w = fixed.w; h = fixed.h;
+    } else {
+      seconds = unit.variant.loop ? unit.variant.loop / Math.max(0.05, unit.speed) : 10;
+      seconds = Math.min(seconds, 40);
+      var s = sizeFor(unit); w = s[0]; h = s[1];
+    }
+    // H.264 wants even dimensions.
+    return { seconds: seconds, w: w - (w % 2), h: h - (h % 2),
+             suffix: fixed ? "-" + fixed.w + "x" + fixed.h : "",
+             label: fixed ? fixed.w + " × " + fixed.h : "one loop" };
+  }
+
+  function record(unit, btn, fixed) {
+    if (unit.rec) { unit.rec.stop(); return; }
+    if (!canRender()) { captureRecord(unit, btn, fixed); return; }
+    var spec = clipSpec(unit, fixed);
+    var stage = unit.canvas.parentNode;
+    var total = Math.round(FPS * spec.seconds);
+    // Bits per pixel per second, as Generatives exports: fringes and grain are
+    // the hardest thing to encode, and starving them is what blocks.
+    var bitrate = Math.round(Math.min(80e6, Math.max(12e6, spec.w * spec.h * FPS * 0.3)));
+    var cancelled = false;
+    var job = { stop: function () { cancelled = true; } };
+
+    unit.rec = job;
+    unit.rendering = true;
+    unit.recSize = [spec.w, spec.h];
+    if (fixed) stage.classList.add("is-fixed");
+    btn.classList.add("is-rec");
+    btn.textContent = "Rendering 0%";
+    toast("Rendering " + spec.label + ", " + Math.round(spec.seconds) + "s at " + FPS + " fps");
+
+    function done() {
+      unit.rec = null;
+      unit.rendering = false;
+      unit.recSize = null;
+      stage.classList.remove("is-fixed");
+      btn.classList.remove("is-rec");
+      btn.innerHTML = "Download &#9662;";
+    }
+
+    pickCodec(spec.w, spec.h, bitrate).then(function (codec) {
+      if (!codec) throw new Error("no H.264 encoder configuration");
+      var muxer = new Mp4Muxer.Muxer({
+        target: new Mp4Muxer.ArrayBufferTarget(),
+        video: { codec: "avc", width: spec.w, height: spec.h, frameRate: FPS },
+        fastStart: "in-memory"
+      });
+      var encError = null;
+      var encoder = new VideoEncoder({
+        output: function (chunk, meta) { muxer.addVideoChunk(chunk, meta); },
+        error: function (e) { encError = e; }
+      });
+      encoder.configure({
+        codec: codec, width: spec.w, height: spec.h, bitrate: bitrate, framerate: FPS,
+        latencyMode: "quality", bitrateMode: "variable"
+      });
+
+      var t0 = unit.t;
+      var dt = unit.speed / FPS;           // field seconds per frame
+      var usPerFrame = 1e6 / FPS;
+      var loop = unit.variant.loop;
+      var i = 0;
+
+      return new Promise(function (resolve, reject) {
+        function step() {
+          try {
+            var budget = performance.now() + 24;   // leave the page a frame
+            while (i < total && performance.now() < budget) {
+              if (encError) throw encError;
+              if (cancelled) { resolve(null); return; }
+              var t = t0 + i * dt;
+              unit.t = loop ? t % loop : t;
+              unit.paint(spec.w, spec.h);
+              var frame = new VideoFrame(unit.canvas, {
+                timestamp: Math.round(i * usPerFrame), duration: Math.round(usPerFrame)
+              });
+              encoder.encode(frame, { keyFrame: i % FPS === 0 });
+              frame.close();
+              i++;
+              if (encoder.encodeQueueSize > 4) break;
+            }
+            btn.textContent = "Rendering " + Math.round(100 * i / total) + "%";
+            if (i < total) { setTimeout(step, 0); return; }
+            btn.textContent = "Writing…";
+            encoder.flush().then(function () {
+              if (encError) throw encError;
+              muxer.finalize();
+              resolve(new Blob([muxer.target.buffer], { type: "video/mp4" }));
+            }, reject);
+          } catch (e) { reject(e); }
+        }
+        step();
+      }).finally(function () { try { encoder.close(); } catch (e) {} });
+    }).then(function (blob) {
+      done();
+      if (!blob) { toast("Render cancelled"); return; }
+      var url = URL.createObjectURL(blob);
+      download(url, "interference-" + unit.variant.slug + spec.suffix + ".mp4");
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      toast((fixed ? spec.label : "One loop") + " saved as MP4, " + total + " frames");
+    }, function (e) {
+      done();
+      console.error("render", e);
+      toast("Render failed; recording the screen instead");
+      captureRecord(unit, btn, fixed);
+    });
+  }
+
+  // The fallback: MediaRecorder writes MP4 where the browser can, WebM
+  // otherwise, and the file is named for whatever it actually produced. It
+  // records what the display paints, in real time, at the display's rate.
   var RECORD_TYPES = [
     ["video/mp4;codecs=avc1.42E01E", "mp4"],
     ["video/mp4", "mp4"],
@@ -407,7 +550,7 @@
     ["video/webm", "webm"]
   ];
 
-  function record(unit, btn, fixed) {
+  function captureRecord(unit, btn, fixed) {
     if (unit.rec) { unit.rec.stop(); return; }
     if (!window.MediaRecorder || !unit.canvas.captureStream) { toast("Recording is not supported in this browser"); return; }
     var pick = null;
@@ -416,16 +559,14 @@
     }
     if (!pick) { toast("Recording is not supported in this browser"); return; }
 
-    var period = unit.variant.loop ? unit.variant.loop / Math.max(0.05, unit.speed) : 10;
-    period = Math.min(period, 40);
+    var spec = clipSpec(unit, fixed);
+    var period = spec.seconds;
     var stage = unit.canvas.parentNode;
     if (fixed) {
-      period = fixed.seconds;
       unit.recSize = [fixed.w, fixed.h];
       unit.paint(fixed.w, fixed.h);
       stage.classList.add("is-fixed");
     }
-    var suffix = fixed ? "-" + fixed.w + "x" + fixed.h : "";
 
     var stream = unit.canvas.captureStream(30);
     var rec = new MediaRecorder(stream, { mimeType: pick[0], videoBitsPerSecond: 12000000 });
@@ -447,9 +588,9 @@
       btn.innerHTML = "Download &#9662;";
       var blob = new Blob(chunks, { type: pick[0] });
       var url = URL.createObjectURL(blob);
-      download(url, "interference-" + unit.variant.slug + suffix + "." + pick[1]);
+      download(url, "interference-" + unit.variant.slug + spec.suffix + "." + pick[1]);
       setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-      toast((fixed ? fixed.w + " \u00d7 " + fixed.h + " saved as " : "One loop saved as ") + pick[1].toUpperCase());
+      toast("Screen recording saved as " + pick[1].toUpperCase() + " (this browser cannot render clips)");
     };
 
     rec.start();
@@ -460,8 +601,7 @@
       btn.textContent = "Recording " + Math.max(0, left).toFixed(0) + "s";
       if (left <= 0) rec.stop();
     }, 200);
-    toast(fixed ? "Recording " + fixed.w + " \u00d7 " + fixed.h + ", " + period + "s"
-                : "Recording one loop, " + period.toFixed(0) + "s");
+    toast("Recording the screen for " + period.toFixed(0) + "s; this browser cannot render clips");
   }
 
   function copyEmbed(unit) {
