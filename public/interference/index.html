@@ -90,6 +90,11 @@
 
   function stopsFor(i) { return i === 4 ? customStops : FIELD.PALETTES[i].stops; }
 
+  /* The shaders are printed as text, and they are full of < and & */
+  function esc(t) {
+    return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
   function remember() {
     try {
       localStorage.setItem("fa-interference", JSON.stringify({
@@ -179,11 +184,21 @@
             '</div>' +
           '</div>' +
           '<button class="btn" data-act="read">Read more</button>' +
+          '<button class="btn" data-act="code">Behind it</button>' +
           '<button class="btn" data-act="full">Fullscreen</button>' +
         '</div>' +
         '<div class="read">' + v.read.map(function (r) {
           return '<p><span class="rlab">' + r[0] + '</span>' + r[1] + '</p>';
         }).join("") + '</div>' +
+        '<div class="code">' +
+          '<p class="code__note">This is the whole of what makes the panel above, and it runs once for ' +
+          'every pixel, sixty times a second. Every field shares a prelude on top of it (the palette as a ' +
+          'ramp, the tone map, the noise) and a main() underneath that hands this code a point on the ' +
+          'plane and takes back a colour. Both are in ' +
+          '<a href="/interference/field.js" target="_blank" rel="noopener">field.js</a>, with the ' +
+          'every other field.</p>' +
+          '<pre><code>' + esc(v.frag) + '</code></pre>' +
+        '</div>' +
       '</div>';
     grid.appendChild(card);
 
@@ -258,10 +273,20 @@
       if (act === "play") {
         unit.playing = !unit.playing;
         unit.refresh();
-      } else if (act === "read") {
-        card.classList.toggle("is-open");
-        btn.textContent = card.classList.contains("is-open") ? "Close" : "Read more";
-        btn.classList.toggle("is-on", card.classList.contains("is-open"));
+      } else if (act === "read" || act === "code") {
+        /* one pair: opening either panel closes the other, so the card never
+           grows to hold both and the two buttons never both read "Close" */
+        var want = act === "read" ? "is-open" : "is-code";
+        var other = act === "read" ? "is-code" : "is-open";
+        var on = !card.classList.contains(want);
+        card.classList.toggle(want, on);
+        card.classList.remove(other);
+        var rb = card.querySelector('[data-act="read"]');
+        var cb = card.querySelector('[data-act="code"]');
+        rb.textContent = card.classList.contains("is-open") ? "Close" : "Read more";
+        cb.textContent = card.classList.contains("is-code") ? "Close" : "Behind it";
+        rb.classList.toggle("is-on", card.classList.contains("is-open"));
+        cb.classList.toggle("is-on", card.classList.contains("is-code"));
       } else if (act === "full") {
         toggleFull(card);
       } else if (act === "dl") {

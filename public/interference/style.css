@@ -279,6 +279,30 @@ input[type="color"] {
 }
 .read p:last-child { margin-bottom: 0; }
 
+/* ── the code panel ────────────────────────────────────────────────────────
+   The shader that draws the panel above it, printed as it is written. Set in
+   the mono the rest of the site keeps for machine text, scrolling in its own
+   box rather than stretching the card, and capped in height so a long field
+   does not push the next card off the screen. */
+.code { display: none; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--hairline); }
+.card.is-code .code { display: block; }
+.code__note {
+  margin: 0 0 12px; max-width: 74ch;
+  font-size: var(--text-body-size); line-height: var(--lh-body); color: var(--text-body);
+}
+.code__note a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.code pre {
+  margin: 0; max-height: 460px; overflow: auto;
+  padding: 14px 16px; background: rgba(0, 0, 0, .28);
+  border: 1px solid var(--hairline);
+  -webkit-overflow-scrolling: touch;
+}
+.code code {
+  display: block; white-space: pre; tab-size: 2;
+  font-family: var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace);
+  font-size: 12.5px; line-height: 1.62; color: var(--text-body);
+}
+
 .colophon { border-top: var(--border-hairline) solid var(--hairline); padding: clamp(28px, 4vw, 52px) 0 var(--space-section); }
 .colophon p { margin: 0 0 14px; max-width: 78ch; font-size: var(--text-body-size); line-height: var(--lh-body); color: var(--muted); }
 .colophon em { font-style: normal; color: var(--text-body); }
