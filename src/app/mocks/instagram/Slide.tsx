@@ -130,7 +130,7 @@ function ReelSlide({
             />
           ) : (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img className="fld-thumb" src={`/mocks/instagram/${post.id}.jpg`} alt="" />
+            <img className="fld-thumb" src={post.thumb ?? `/mocks/instagram/${post.id}.jpg`} alt="" />
           )}
         </div>
       </div>

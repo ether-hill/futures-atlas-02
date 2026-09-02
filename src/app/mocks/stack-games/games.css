@@ -1,0 +1,271 @@
+/*
+ * Shared skin for the four brick games.
+ *
+ * Every game is authored inside a 430x764 stage — Instagram's 9:16 at the size
+ * Playwright films it — and scaled from there, so one set of pixel numbers
+ * works for a full-screen recording and for a thumbnail on the contact sheet.
+ * Nothing here is responsive on purpose: a layout that reflows films badly.
+ *
+ * Square corners, 1px bone hairlines, brand colour only on the mark. The
+ * Atlas does not round its corners and the games do not get to either.
+ */
+
+.sg-stage {
+  position: relative;
+  width: 430px;
+  height: 764px;
+  overflow: hidden;
+  background:
+    radial-gradient(110% 55% at 50% 0%, rgba(59, 147, 213, 0.16) 0%, transparent 62%),
+    radial-gradient(90% 50% at 12% 100%, rgba(59, 147, 213, 0.08) 0%, transparent 58%),
+    #08090b;
+  color: #f2ede2;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+
+  /* How long a landing and a cancel take. Each game sets its own: Break wants
+     a brick gone the instant the ball touches it, the other three want to be
+     read rather than reacted to. */
+  --hit: 340ms;
+  --clear: 520ms;
+}
+
+/* A faint grid, so an empty well still reads as a board rather than a void. */
+.sg-well {
+  position: absolute;
+  border: 1px solid rgba(242, 237, 226, 0.08);
+  background-image:
+    linear-gradient(rgba(242, 237, 226, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 237, 226, 0.045) 1px, transparent 1px);
+}
+
+/* ---- the brick itself ------------------------------------------------- */
+
+.sg-brick {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid rgba(242, 237, 226, 0.16);
+  background: linear-gradient(150deg, rgba(242, 237, 226, 0.085), rgba(242, 237, 226, 0.022));
+  box-shadow: inset 0 1px 0 rgba(242, 237, 226, 0.07);
+  will-change: transform, opacity;
+}
+
+/* The family stripe. Two bricks that cancel share this colour, and nothing
+   else on the brick says so, so the eye learns the rule in one clear. */
+.sg-brick::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--fam);
+  opacity: 0.85;
+}
+
+.sg-brick svg {
+  display: block;
+  width: var(--mark, 24px);
+  height: var(--mark, 24px);
+  flex: 0 0 auto;
+}
+
+.sg-name {
+  font-size: var(--name, 7.5px);
+  line-height: 1;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+  color: rgba(242, 237, 226, 0.66);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Landing thump: a bloom that fades rather than a strobe. */
+.sg-brick.is-hit {
+  animation: sg-hit var(--hit) ease-out;
+}
+@keyframes sg-hit {
+  0% { background: rgba(242, 237, 226, 0.26); border-color: rgba(242, 237, 226, 0.44); }
+  100% { background: rgba(242, 237, 226, 0.022); border-color: rgba(242, 237, 226, 0.16); }
+}
+
+/* Cancelling out: the brick turns over to bone, holds long enough to be read,
+   then leaves. It used to snap to white and vanish in 300ms, which registered
+   as a flash rather than as a brick being taken off the board. */
+.sg-brick.is-clearing {
+  animation: sg-clear var(--clear) cubic-bezier(.3, 0, .3, 1) forwards;
+  z-index: 3;
+}
+@keyframes sg-clear {
+  0% { transform: var(--t) scale(1); background: rgba(242, 237, 226, 0.05); }
+  22% { transform: var(--t) scale(1.02); background: rgba(242, 237, 226, 0.86); }
+  62% { transform: var(--t) scale(1); background: rgba(242, 237, 226, 0.86); }
+  100% { transform: var(--t) scale(0.72); opacity: 0; background: rgba(242, 237, 226, 0.86); }
+}
+.sg-brick.is-clearing .sg-name { color: #08090b; }
+.sg-brick.is-clearing svg { color: #08090b !important; }
+
+/* ---- chrome ----------------------------------------------------------- */
+
+.sg-hud {
+  position: absolute;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(242, 237, 226, 0.45);
+}
+.sg-hud-top { top: 20px; }
+.sg-hud b { font-weight: 500; color: rgba(242, 237, 226, 0.82); letter-spacing: 0.22em; }
+
+.sg-legend {
+  position: absolute;
+  bottom: 20px;
+  left: 22px;
+  right: 22px;
+  display: flex;
+  gap: 14px;
+  font-size: 8px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(242, 237, 226, 0.4);
+}
+.sg-legend span { display: flex; align-items: center; gap: 5px; }
+.sg-legend i { width: 7px; height: 7px; display: block; background: currentColor; }
+
+/* The names of whatever just cancelled, drifting up out of the board. */
+.sg-toast {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(242, 237, 226, 0.85);
+  pointer-events: none;
+  animation: sg-toast 2400ms ease-out forwards;
+}
+@keyframes sg-toast {
+  0% { opacity: 0; transform: translateY(10px); }
+  12% { opacity: 1; transform: translateY(0); }
+  78% { opacity: 1; transform: translateY(-9px); }
+  100% { opacity: 0; transform: translateY(-24px); }
+}
+
+/* The dev overlay is not part of the design, and on the contact sheet it sits
+   in the middle of four frames that are meant to be judged as artwork. */
+nextjs-portal,
+[data-nextjs-toast],
+#__next-build-watcher { display: none !important; }
+
+/* ---- the pages that hold the stage ------------------------------------ */
+
+.sg-solo {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: #08090b;
+  overflow: hidden;
+}
+
+.sg-sheet {
+  background: #08090b;
+  color: #f2ede2;
+  font-family: var(--font-archivo), system-ui, sans-serif;
+}
+
+.sg-intro {
+  padding: 56px 40px 8px;
+  max-width: 720px;
+}
+.sg-intro h1 {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin: 0 0 14px;
+}
+.sg-intro p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.8;
+  color: rgba(242, 237, 226, 0.58);
+}
+
+/* One game per screen. Centred as a pair rather than left-aligned, so the
+   reel sits where the eye already is when the previous block scrolls off. */
+.sg-block {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 56px;
+  padding: 40px;
+  box-sizing: border-box;
+}
+
+.sg-frame {
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(242, 237, 226, 0.14);
+}
+.sg-frame iframe {
+  width: 430px;
+  height: 764px;
+  border: 0;
+  display: block;
+  transform-origin: top left;
+}
+
+.sg-say {
+  max-width: 330px;
+}
+.sg-n {
+  display: block;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  color: rgba(242, 237, 226, 0.3);
+  margin-bottom: 14px;
+}
+.sg-say h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+.sg-say p {
+  margin: 0 0 20px;
+  font-size: 13px;
+  line-height: 1.8;
+  color: rgba(242, 237, 226, 0.55);
+}
+.sg-say a {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #3b93d5;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(59, 147, 213, 0.4);
+  padding-bottom: 3px;
+}
+
+/* Narrow: the caption goes under the reel rather than fighting it for width. */
+@media (max-width: 860px) {
+  .sg-block { flex-direction: column; gap: 28px; min-height: auto; padding: 48px 24px; }
+  .sg-say { max-width: 430px; }
+}

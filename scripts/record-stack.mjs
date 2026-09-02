@@ -1,5 +1,10 @@
 /**
- * Records the stack reel at /mocks/stack-reel.
+ * Records the marquee stack reel at /mocks/stack-reel.
+ *
+ * NOTE: the Instagram post "The stack" no longer plays this. It plays the Stack
+ * game with its chrome off — `node scripts/record-stack-game.mjs bare` — so
+ * re-running this writes stack.webm / stack.jpg and changes nothing in the feed
+ * mock. The marquee is kept because it is a different idea, not a worse cut.
  *
  * The sign-in happens in a SEPARATE context whose session is saved and handed to
  * the recording context. Playwright records a context from the moment it is

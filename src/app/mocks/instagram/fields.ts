@@ -142,6 +142,13 @@ export interface ReelPost {
   embed: string;
   /** A screen recording, played instead of the embed when the post is open. */
   video?: string;
+  /**
+   * The still, when it is not `<id>.jpg`. A recorded post's poster comes out of
+   * whatever recorded it, so a post whose recording is replaced needs to be
+   * able to point at the new still without changing its id — the id is what the
+   * saved arrangement is keyed on.
+   */
+  thumb?: string;
   /** Seconds to let the embed run before the thumbnail is grabbed. */
   thumbAt: number;
   /**
@@ -304,12 +311,16 @@ export const STACK_REEL: ReelPost = {
   name: "The stack",
   id: "stack",
   title: "The stack",
-  note: "Everything this studio builds with, drifting past.",
+  note: "Everything this studio builds with, falling into place.",
   embed: "",
-  // Built for this, at /mocks/stack-reel, and recorded: five rows on their own
-  // periods, none a multiple of another, so they never fall into step. The
-  // About page's stack grid is a table, and a screengrab of a table is a table.
-  video: "/mocks/instagram/stack.webm",
+  // The Stack game at /mocks/stack-games/tetris, filmed with `?bare` — no
+  // title, no counter, no family key, no line naming what cleared. A reel
+  // carries its words in the caption, and printing them onto the video as well
+  // says the same sentence twice. It replaces the marquee reel that was here:
+  // the About page's stack grid is a table, a screengrab of a table is a table,
+  // and a table sliding sideways is still a table.
+  video: "/mocks/instagram/stack-bare.webm",
+  thumb: "/mocks/instagram/stack-bare.jpg",
   thumbAt: 0,
   caption:
     "Everything this studio is built with, named.\n\nThe work splits three ways and so does the stack. Language and code models for research, drafting and the agent work. Image and video models for the plates that are generated, which are always labelled as generated. And the web layer everything actually ships on: Next.js, Three.js, p5, D3, and a lot of hand-written shaders, because a fragment shader computed fresh every frame is smaller, sharper and more honest than a video of one.\n\nOpen weights sit next to the closed ones on purpose. Some pieces here run models locally because the piece is about what you can do without asking permission.\n\nUsed, not endorsed. It is on the About page rather than in a deck, because a studio that will not say what it uses is telling you something.",

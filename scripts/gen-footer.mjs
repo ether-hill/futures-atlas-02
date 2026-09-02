@@ -80,6 +80,7 @@ const INTERNAL = [
   ["/style-guide", "Style guide"],
   ["/logo-animator", "Logo animator"],
   ["/mocks/instagram", "Instagram preview"],
+  ["/mocks/stack-games", "Stack games"],
   ["/mocks/gallery", "Browse mock · gallery"],
   ["/mocks/observatory", "Browse mock · observatory"],
   ["/mocks/signal", "Browse mock · signal"],
