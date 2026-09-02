@@ -1,11 +1,27 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { ADMIN_HOME, safeNext } from "@/lib/admin-session";
+import { ogFor } from "@/lib/og";
 
-export const metadata: Metadata = {
-  title: "Sign in. Futures Atlas",
-  robots: { index: false, follow: false },
-};
+type Search = Promise<{ next?: string; error?: string }>;
+
+/**
+ * A private link shared outside still gets unfurled, and what the unfurler
+ * sees is this form. So the form carries the Open Graph card of the page the
+ * link leads to, where that page has one, and the site default otherwise.
+ */
+export async function generateMetadata({ searchParams }: { searchParams: Search }): Promise<Metadata> {
+  const { next } = await searchParams;
+  const card = ogFor(safeNext(next ?? ADMIN_HOME).split("?")[0]);
+  return {
+    title: "Sign in. Futures Atlas",
+    robots: { index: false, follow: false },
+    ...(card && {
+      openGraph: { title: card.title, images: [card.image] },
+      twitter: { card: "summary_large_image", images: [card.image] },
+    }),
+  };
+}
 
 const fieldCls =
   "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 text-[13px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent";
@@ -14,7 +30,7 @@ const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graph
 export default async function AdminLoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string; error?: string }>;
+  searchParams: Search;
 }) {
   const { next, error } = await searchParams;
   const target = safeNext(next ?? ADMIN_HOME);

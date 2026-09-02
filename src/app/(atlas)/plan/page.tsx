@@ -3,11 +3,14 @@ import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
 import { liveProjects, month1Candidates, type Project } from "@/data/projects";
+import { OG_IMAGES } from "@/lib/og";
 
 export const metadata: Metadata = {
   title: "Plan. Futures Atlas",
   description: "What ships at launch, and what happens in the three months after it.",
   robots: { index: false },
+  openGraph: { title: OG_IMAGES["/plan"].title, images: [OG_IMAGES["/plan"].image] },
+  twitter: { card: "summary_large_image", images: [OG_IMAGES["/plan"].image] },
 };
 
 /**

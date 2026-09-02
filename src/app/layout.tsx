@@ -48,7 +48,14 @@ const SITE_DESC =
   "An atlas of speculative-design and futures projects: each one a grounded forecast of how things could be otherwise.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://futures-atlas-02.vercel.app"),
+  // Absolute URLs for Open Graph images and the like. Production is the public
+  // address; a preview build uses its own branch URL, so a staging link
+  // unfurls with images that exist on staging rather than on production.
+  metadataBase: new URL(
+    process.env.VERCEL_ENV === "preview" && process.env.VERCEL_BRANCH_URL
+      ? `https://${process.env.VERCEL_BRANCH_URL}`
+      : "https://futures-atlas-02.vercel.app",
+  ),
   // Draft work, shared by link only: every page tells crawlers to stay out.
   // Mirrored by robots.ts (Disallow: /) and the X-Robots-Tag header in
   // next.config.ts, so the instruction survives however a bot arrives.
@@ -67,9 +74,9 @@ export const metadata: Metadata = {
     siteName: "Futures Atlas",
     title: "Futures Atlas, a catalogue of possible worlds",
     description: SITE_DESC,
-    images: ["/projects/og-default.jpg"],
+    images: ["/og/home.jpg"],
   },
-  twitter: { card: "summary_large_image", images: ["/projects/og-default.jpg"] },
+  twitter: { card: "summary_large_image", images: ["/og/home.jpg"] },
 };
 
 // Render per-request so the SSR-injected token overrides always reflect the

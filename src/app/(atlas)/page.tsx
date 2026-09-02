@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { HeroField } from "@/components/HeroField";
@@ -9,6 +10,12 @@ import { editorPosts, livePosts } from "@/data/posts";
 import { prototypesFor } from "@/data/prototypes";
 import { getListingEditor } from "@/lib/editor";
 import { LOGOS } from "@/lib/logos";
+import { OG_IMAGES } from "@/lib/og";
+
+export const metadata: Metadata = {
+  openGraph: { images: [OG_IMAGES["/"].image] },
+  twitter: { card: "summary_large_image", images: [OG_IMAGES["/"].image] },
+};
 
 // The stack strip: which marks headline the homepage tech banner (all render
 // as paper-tone inline SVGs; the full inventory lives on /about).
