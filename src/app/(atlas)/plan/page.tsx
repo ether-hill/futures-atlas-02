@@ -62,7 +62,47 @@ type Track = {
   preview?: { src: string; href: string; label: string; alt: string };
 };
 
-const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
+type Month = { n: string; name: string; tracks: Track[]; tbd?: boolean };
+
+/** The spend, per month, from launch to the end of the plan. */
+const BUDGET = { perMonth: "5k", months: 10, total: "50k", from: 1, to: 10 };
+
+/**
+ * Months 4 to 10 run the same cadence as months 2 and 3, and nothing more
+ * specific is decided about them yet: the plan holds the shape and the money,
+ * and the detail gets written a month or two ahead, from what the analytics
+ * and the batch queue are saying at the time.
+ */
+function laterMonth(n: number): Month {
+  return {
+    n: `Month ${n}`,
+    name: "Same cadence, details TBD",
+    tbd: true,
+    tracks: [
+      {
+        track: "Website",
+        body: [
+          "Nothing fixed. Whatever the analytics and the feed are asking for, decided a month ahead.",
+        ],
+      },
+      {
+        track: "Projects",
+        body: [
+          `Publish the batch reviewed in month ${n - 1}.`,
+          n < 10
+            ? `Review the month-${n + 1} batch. Start the month-${n + 2} batch.`
+            : "Review what comes after the plan.",
+        ],
+      },
+      {
+        track: "Social",
+        body: ["3x/week both platforms."],
+      },
+    ],
+  };
+}
+
+const FIXED_MONTHS: Month[] = [
   {
     n: "Month 0",
     name: "Pre-launch",
@@ -160,6 +200,11 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
       },
     ],
   },
+];
+
+const MONTHS: Month[] = [
+  ...FIXED_MONTHS,
+  ...Array.from({ length: 7 }, (_, i) => laterMonth(i + 4)),
 ];
 
 /** The three readings month 3 is spent on, pulled out of the prose so the room
@@ -282,10 +327,11 @@ export default function PlanPage() {
             The plan
           </h1>
           <p className="mt-6 max-w-[620px] text-[14px] leading-[1.8] text-ink-70">
-            Eleven pages at launch, then three months of publishing on a fixed
+            Eleven pages at launch, then ten months of publishing on a fixed
             cadence. Three tracks run in parallel throughout — the website, the
             projects, the social feed — and each one is a month ahead of what the
-            public sees.
+            public sees. The first four months are written out; the rest hold the
+            same shape and get their detail a month or two ahead.
           </p>
         </Container>
       </section>
@@ -295,8 +341,21 @@ export default function PlanPage() {
           <Reveal>
             <span className={head}>Schedule</span>
             <h2 className="mt-3 text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
-              Four months, three tracks
+              Month 0 to month 10, three tracks
             </h2>
+          </Reveal>
+
+          <Reveal>
+            <div className="mt-[clamp(20px,3vw,32px)] flex flex-wrap items-baseline gap-x-8 gap-y-2 border border-ink/15 p-[clamp(16px,2vw,24px)]">
+              <span className={head}>Budget</span>
+              <span className="text-[15px] font-extrabold tracking-[-0.015em] text-ink">
+                {BUDGET.perMonth} a month
+              </span>
+              <span className="text-[13.5px] leading-[1.8] text-ink-70">
+                {BUDGET.months} months, month {BUDGET.from} to month {BUDGET.to}, {BUDGET.total} in
+                all. Month 0 is pre-launch and sits outside it.
+              </span>
+            </div>
           </Reveal>
 
           <div className="mt-[clamp(26px,4vw,48px)] space-y-[clamp(28px,4vw,52px)]">
@@ -304,9 +363,21 @@ export default function PlanPage() {
               <Reveal key={m.n}>
                 <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2 border-t border-ink/40 pt-5">
                   <span className="year text-[clamp(22px,2.6vw,34px)] text-ink">{m.n}</span>
-                  <span className="text-[clamp(18px,2.2vw,28px)] font-extrabold tracking-[-0.02em] text-accent-deep">
+                  <span
+                    className={`text-[clamp(18px,2.2vw,28px)] font-extrabold tracking-[-0.02em] ${
+                      m.tbd ? "text-ink/40" : "text-accent-deep"
+                    }`}
+                  >
                     {m.name}
                   </span>
+                  {(() => {
+                    const n = Number(m.n.replace("Month ", ""));
+                    return n >= BUDGET.from && n <= BUDGET.to ? (
+                      <span className="ml-auto font-mono text-[11px] uppercase tracking-[0.18em] text-ink/40">
+                        {BUDGET.perMonth}
+                      </span>
+                    ) : null;
+                  })()}
                 </div>
                 <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-3">
                   {m.tracks.map((t) => (
