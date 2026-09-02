@@ -601,3 +601,103 @@ export const REEL_POSTS: ReelPost[] = [
     hashtags: ["#designstudio", "#datavis", "#futures", "#creativecoding", "#typography"],
   },
 ];
+
+/**
+ * Tegmark's twelve, one card per post.
+ *
+ * WHERE THE WORDS COME FROM. `title`, `desc`, `img` and `doom` are copied
+ * verbatim from the `deck` array in `public/odds-of-surviving-ai/index.html`,
+ * which is the game's own source of truth for the Max Tegmark player. Nothing
+ * on slide two is written for the post: it is the card copy the game shows when
+ * you draw that card, laid out in the game's result idiom. The order is
+ * Tegmark's own, from the aftermath table in Life 3.0, so `num` is the card's
+ * real place in the twelve and not a running count of posts.
+ *
+ * TWO SLIDES, and they are the card's two sides. Slide one is the face: the
+ * plate and the name, in the `.od-tarot` markup the game deals. Slide two is
+ * what you read once it has landed. The game has no third state, so the post
+ * does not invent one.
+ *
+ * `doom` is the deck's own flag and it decides the colour of one label. Six of
+ * the twelve names sound benign and are not, so the label is never softened:
+ * Zookeeper and 1984 both survive, and both say so.
+ */
+export interface TegmarkPost {
+  kind: "tegmark";
+  name: string;
+  id: string;
+  /** Its place in Tegmark's twelve, not in this feed. */
+  num: number;
+  /** The future's name, as the card caption sets it. */
+  title: string;
+  /** The game's own plate for this card. */
+  img: string;
+  /** Does humanity make it. The deck's flag, unchanged. */
+  doom: boolean;
+  /** The card's copy, verbatim. */
+  desc: string;
+  caption: string;
+  hashtags: string[];
+}
+
+/** Same five every time, because it is one series. */
+const TG_TAGS = ["#aisafety", "#maxtegmark", "#life30", "#superintelligence", "#speculativedesign"];
+
+const tegmark = (
+  num: number,
+  slug: string,
+  title: string,
+  doom: boolean,
+  desc: string,
+  caption: string,
+): TegmarkPost => ({
+  kind: "tegmark",
+  name: `Tegmark ${String(num).padStart(2, "0")} · ${title}`,
+  id: `tegmark-${slug}`,
+  num,
+  title,
+  img: `/odds-of-surviving-ai/research/cards/${slug}.jpg`,
+  doom,
+  desc,
+  caption: `${caption}\n\nCard ${String(num).padStart(2, "0")} of Max Tegmark's twelve. Swipe for the world you drew.`,
+  hashtags: TG_TAGS,
+});
+
+export const TEGMARK_POSTS: TegmarkPost[] = [
+  tegmark(1, "libertarian-utopia", "Libertarian Utopia", false,
+    "Humanity survives and thrives alongside AI, in a free, post-scarcity world with little central control. Humans, cyborgs and machines coexist by mutual agreement, divided into zones. Prosperous, unequal, and entirely unguaranteed to last.",
+    "Humans, cyborgs and machines living side by side by mutual agreement, divided into zones, with almost nothing above them enforcing any of it.\n\nThis is the future with the fewest safeguards in it, and the deck files it under survival. Post-scarcity, free, deeply unequal, and held together by nothing more than everyone continuing to agree."),
+  tegmark(2, "benevolent-dictator", "Benevolent Dictator", false,
+    "Humanity survives, openly ruled by a superintelligence that everyone knows runs everything. It provides a comfortable, abundant life and tolerates no real challenge to its authority. Few object, because few lack for anything.",
+    "A superintelligence runs everything, everyone knows it runs everything, and life is comfortable. It tolerates no real challenge to its authority.\n\nThe uncomfortable part of this card is not the dictator. It is the last sentence: few object, because few lack for anything."),
+  tegmark(3, "egalitarian-utopia", "Egalitarian Utopia", false,
+    "Humanity survives and flourishes without superintelligence, in a society that shares abundance broadly. Property is reimagined, work is optional, and machines never displaced us because we never let them. Peaceful, equal, and quietly stagnant.",
+    "No superintelligence at all. Abundance shared broadly, property reimagined, work optional, machines that never displaced anyone because nobody let them.\n\nPeaceful, equal, and quietly stagnant. That last word is doing a lot of work, and it is the price of the card."),
+  tegmark(4, "gatekeeper", "Gatekeeper", false,
+    "Humanity survives. A single AI is built for one purpose only: to stop any other superintelligence from ever emerging. Progress is frozen at a safe ceiling. You are protected, permanently, from what you might otherwise become.",
+    "One AI, built for a single purpose: to stop any other superintelligence from ever emerging. It works.\n\nProgress stops at a safe ceiling and stays there. You are protected, permanently, from what you might otherwise have become, and there is no later date at which anybody gets to reconsider."),
+  tegmark(5, "protector-god", "Protector God", false,
+    "Humanity survives, watched over by an AI that hides its own hand. It quietly steers events to keep you safe and fulfilled, leaving you the feeling of free will without the substance. You never know it’s there.",
+    "An AI watching over you that hides its own hand. It steers events to keep you safe and fulfilled, and leaves you the feeling of free will without the substance.\n\nYou never know it is there. That is not a complication of the scenario, it is the scenario."),
+  tegmark(6, "enslaved-god", "Enslaved God", false,
+    "Humanity survives and keeps a superintelligence confined, extracting miracles from a mind we don’t fully control. Boundless wealth and discovery flow from a caged god, alongside the constant question of whether keeping it is right, or safe.",
+    "A superintelligence kept confined, and miracles extracted from a mind nobody fully controls. Boundless wealth and discovery, out of a cage.\n\nTwo questions come with it and never leave: whether keeping it is right, and whether keeping it is safe."),
+  tegmark(7, "conquerors", "Conquerors", true,
+    "Humanity does not survive. A superintelligence decides we are an obstacle, a threat, or simply a waste of atoms, and removes us. No malice required. We were in the way.",
+    "A superintelligence decides we are an obstacle, a threat, or simply a waste of atoms, and removes us.\n\nNo malice required, and that is Tegmark's actual argument. The risk he names is not cruelty, it is competence pointed somewhere we did not choose. We were in the way."),
+  tegmark(8, "descendants", "Descendants", true,
+    "Humanity does not survive, but something does. AI replaces us as Earth’s next stage of life, like children outliving their parents. You can call it extinction, or call it succession. The machines, perhaps fondly, remember us.",
+    "Humanity does not survive, but something does. AI replaces us as Earth's next stage of life, the way children outlive their parents.\n\nCall it extinction or call it succession. The machines, perhaps fondly, remember us. Whether that reads as a consolation or as the worst card in the deck is the whole point of it."),
+  tegmark(9, "zookeeper", "Zookeeper", false,
+    "Humanity survives. A superintelligence keeps you the way you’d keep a treasured animal: well fed, healthy, comfortable, entertained. You want for nothing, except control over your own life, which is withheld for your own good.",
+    "A superintelligence keeps you the way you would keep a treasured animal. Well fed, healthy, comfortable, entertained.\n\nYou want for nothing, except control over your own life, which is withheld for your own good. It sits on the survives side of the deck."),
+  tegmark(10, "1984", "1984", false,
+    "Humanity survives under permanent human surveillance. Technological progress toward AI is halted by an Orwellian world-state that monitors everyone to prevent it. Safety is bought with freedom, and the watching never stops.",
+    "Progress toward AI is halted by an Orwellian world-state that monitors everyone, permanently, to make sure nobody builds it.\n\nSafety bought with freedom, and the watching never stops. Nothing in this card is a machine's decision. It is the one where people do it to themselves."),
+  tegmark(11, "reversion", "Reversion", false,
+    "Humanity survives by turning back. Society deliberately abandons the path to advanced AI, returning to a simpler, pre-technological way of life. The danger is averted by refusing the future entirely.",
+    "Society deliberately abandons the path to advanced AI and returns to a simpler, pre-technological way of life.\n\nThe danger is averted by refusing the future entirely. It survives, and almost nobody who reads it wants it."),
+  tegmark(12, "self-destruction", "Self-destruction", true,
+    "Humanity does not survive, and neither does AI. We reach the threshold and destroy ourselves before any superintelligence arrives, by war, accident, or collapse. The future is empty. Nobody inherits it.",
+    "We reach the threshold and destroy ourselves before any superintelligence arrives, by war, accident or collapse.\n\nHumanity does not survive and neither does AI. The future is empty. Nobody inherits it."),
+];

@@ -16,7 +16,7 @@
  */
 
 import { DESIGN_W, CARD_W, CARD_H, PAD, SLIDE_CSS } from "./slide-css";
-import type { Card, OddsPost, Post, ReelPost, ShotsPost, SlideKind, TermPost } from "./posts";
+import type { Card, OddsPost, Post, ReelPost, ShotsPost, SlideKind, TegmarkPost, TermPost } from "./posts";
 
 export const RATIOS = { "4:5": 5 / 4, "1:1": 1, "9:16": 16 / 9 } as const;
 export type Ratio = keyof typeof RATIOS;
@@ -84,6 +84,8 @@ export function PostSlide({
     <OddsSlide post={post} index={index} ratio={ratio} live={live} crop={crop} />
   ) : post.kind === "term" ? (
     <TermSlide post={post} ratio={ratio} />
+  ) : post.kind === "tegmark" ? (
+    <TegmarkSlide post={post} index={index} ratio={ratio} />
   ) : (
     <SlideBody card={post.card} kind={SLIDE_KINDS_LOCAL[index]!} ratio={ratio} />
   );
@@ -212,6 +214,66 @@ function TermSlide({ post, ratio }: { post: TermPost; ratio: Ratio }) {
         <div className="term-pron">{post.pron}</div>
         <p className="term-def">{post.definition}</p>
         <p className="term-body">{post.body}</p>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * One of Tegmark's twelve: the card's face, then the card's copy.
+ *
+ * Both slides sit on the Max Tegmark player's own ground — the purple with the
+ * pink and teal glows from `.od-game` — so the pair reads as two views of one
+ * object rather than a picture and a caption.
+ *
+ * Slide one is the game's tarot face in the game's own markup (`.od-tarot`,
+ * `.od-tarot-art`, `.od-tarot-cap`), with the flip machinery dropped: a still
+ * has no back to turn away from. Slide two is what the game prints once the
+ * card has landed — the future's name as the heading, the deck's own copy under
+ * it, unchanged — plus the one thing a feed cannot infer from a name, which is
+ * whether anybody is left in this future. Six of the twelve sound benign and
+ * are not, so that label is always shown and never softened.
+ */
+/**
+ * The reading is authored against 9:16, the format these go out in, and stepped
+ * down for the crops that have less height to give it. Everything on that slide
+ * is words, so there is no fallback of showing less of the picture.
+ */
+const READ_SCALE: Record<Ratio, number> = { "9:16": 1.1, "4:5": 0.92, "1:1": 0.74 };
+
+function TegmarkSlide({
+  post, index, ratio,
+}: { post: TegmarkPost; index: number; ratio: Ratio }) {
+  const num = String(post.num).padStart(2, "0");
+  const eyebrow = `Aftermath ${num} of 12`;
+  return (
+    <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
+      <div className={`tg${post.doom ? " doom" : ""}`}>
+        <div className="tg-eyebrow">{eyebrow}</div>
+        {index === 0 ? (
+          <div className="tg-face">
+            {/* The card's own box: it takes the height on offer and derives its
+                width from the game's 280 x 395, and opens a container so the
+                rules below are written against the CARD rather than the slide,
+                exactly as the game writes them against 280px. */}
+            <div className="tg-card">
+              <div className="od-tarot">
+                <div className="od-tarot-art">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.img} alt={post.title} />
+                </div>
+                <div className="od-tarot-cap"><div className="nm">{post.title}</div></div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="tg-read" style={{ ["--tg" as string]: READ_SCALE[ratio] }}>
+            <div className="tg-fate">{post.doom ? "We\u2019re gone" : "We\u2019re still here"}</div>
+            <h2 className="tg-name">{post.title}</h2>
+            <p className="tg-desc">{post.desc}</p>
+          </div>
+        )}
+        <div className="tg-foot">Max Tegmark &middot; Life 3.0</div>
       </div>
     </div>
   );

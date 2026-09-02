@@ -24,11 +24,12 @@
  */
 
 import {
-  REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, HOME_REEL, UNDERGROUND_REEL, STACK_REEL,
-  type ReelPost, type ShotsPost, type OddsPost, type TermPost,
+  REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, TEGMARK_POSTS,
+  HOME_REEL, UNDERGROUND_REEL, STACK_REEL,
+  type ReelPost, type ShotsPost, type OddsPost, type TermPost, type TegmarkPost,
 } from "./fields";
 
-export type { ReelPost, ShotsPost, OddsPost, TermPost };
+export type { ReelPost, ShotsPost, OddsPost, TermPost, TegmarkPost };
 
 export type Verdict = "notyet" | "already";
 
@@ -71,7 +72,7 @@ export interface DeckPost {
 }
 
 /** The feed carries two shapes of post. See fields.ts for the other one. */
-export type Post = DeckPost | ReelPost | ShotsPost | OddsPost | TermPost;
+export type Post = DeckPost | ReelPost | ShotsPost | OddsPost | TermPost | TegmarkPost;
 
 const DECK_POSTS: DeckPost[] = [
   {
@@ -291,6 +292,7 @@ export const slideCount = (p: Post) =>
   p.kind === "deck" ? SLIDE_KINDS.length
     : p.kind === "shots" ? p.shots.length
     : p.kind === "odds" ? 2   // the player, then the play-through
+    : p.kind === "tegmark" ? 2   // the card's face, then the card's copy
     : 1;
 
 /**
@@ -326,8 +328,19 @@ function interleave(reels: Post[], cards: Post[]): Post[] {
   return out;
 }
 
-// The site's own reel leads: it is the one post that says what the account is.
-export const POSTS: Post[] = interleave(
-  [HOME_REEL, UNDERGROUND_REEL, STACK_REEL, ...REEL_POSTS],
-  [...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
-);
+/**
+ * The site's own reel leads: it is the one post that says what the account is.
+ *
+ * Tegmark's twelve are appended rather than mixed in. They are one series, in
+ * Tegmark's own order, and the whole point of a run of twelve is that it reads
+ * as a run: interleaved they would be twelve near-identical tarot faces
+ * scattered through the grid with nothing saying they belong together. So the
+ * shuffle above applies to the feed as it was, and the deck sits under it.
+ */
+export const POSTS: Post[] = [
+  ...interleave(
+    [HOME_REEL, UNDERGROUND_REEL, STACK_REEL, ...REEL_POSTS],
+    [...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
+  ),
+  ...TEGMARK_POSTS,
+];
