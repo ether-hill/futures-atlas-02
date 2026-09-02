@@ -20,7 +20,7 @@
  * speech synthesis, labelled as such, with no alignment and so no highlight.
  */
 
-import { Soundscape, LAYER_LABELS, type LayerName } from "./soundscape";
+import { Soundscape } from "./soundscape";
 import type { Scene } from "./scenes";
 
 export interface Part {
@@ -585,7 +585,7 @@ export async function begin() {
 /** Render the listen dock into `root` for the given script + scene. */
 export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   player.load(parts);
-  (Object.keys(LAYER_LABELS) as LayerName[]).forEach((n) => scape.setLevel(n, scene.sound[n] ?? 0));
+  scape.load(scene.id, scene.layers);
 
   const offsets = player.offsets();
   const nodes = parts
@@ -620,15 +620,15 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
       <div class="dock-amb-row">
         <button type="button" class="dock-amb">ambience: off</button>
       </div>
-      ${(Object.keys(LAYER_LABELS) as LayerName[])
+      ${scene.layers
         .map(
-          (n) => `
-        <label class="dock-slider"><span>${LAYER_LABELS[n]}</span>
-          <input type="range" min="0" max="100" value="${Math.round((scene.sound[n] ?? 0) * 100)}" data-layer="${n}" />
+          (l) => `
+        <label class="dock-slider"><span>${esc(l.label)}</span>
+          <input type="range" min="0" max="100" value="${Math.round(l.level * 100)}" data-layer="${esc(l.id)}" />
         </label>`,
         )
         .join("")}
-      <p class="dock-hint">Layered ambience loops, mixed in the browser over the produced beds.</p>
+      <p class="dock-hint">This place's own sounds, mixed in the browser.</p>
     </div>`;
   root.appendChild(dock);
 
@@ -654,12 +654,19 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
     fill.style.transform = `scaleX(${f})`;
   };
 
-  // On a phone the hero has no Begin button, so the first Listen is the
-  // beginning: ambience on, narration from the top. After that it is a
-  // plain pause/resume.
+  // Listen is the whole sound: the narration and the ambience pause and
+  // resume together. (The ambience toggle in the panel remains a separate
+  // override.) On a phone the hero has no Begin button, so the first Listen
+  // is the beginning — ambience on, narration from the top.
   playBtn.addEventListener("click", () => {
-    if (!begun && !player.playing && player.i === 0) void begin();
-    else player.toggle();
+    if (!begun && !player.playing && player.i === 0) {
+      void begin();
+      return;
+    }
+    const resuming = !player.playing;
+    void player.toggle();
+    if (scape.on !== resuming) scape.toggle();
+    syncAmbience();
   });
 
   // Warm the first passage the moment the pointer reaches the button, and the
@@ -701,7 +708,7 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   });
   panel.querySelectorAll<HTMLInputElement>("input[data-layer]").forEach((input) => {
     input.addEventListener("input", () => {
-      scape.setLevel(input.dataset.layer as LayerName, Number(input.value) / 100);
+      scape.setLevel(input.dataset.layer!, Number(input.value) / 100);
     });
   });
 }
@@ -714,7 +721,7 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
  */
 export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
   player.load(parts);
-  (Object.keys(LAYER_LABELS) as LayerName[]).forEach((n) => scape.setLevel(n, scene.sound[n] ?? 0));
+  scape.load(scene.id, scene.layers);
 
   const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-play]"));
 
@@ -759,11 +766,11 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
         <input type="range" min="0" max="100" value="100" data-vol />
       </label>
       <div class="dock-amb-row"><button type="button" class="dock-amb">ambience: off</button></div>
-      ${(Object.keys(LAYER_LABELS) as LayerName[])
+      ${scene.layers
         .map(
-          (n) => `
-        <label class="dock-slider"><span>${LAYER_LABELS[n]}</span>
-          <input type="range" min="0" max="100" value="${Math.round((scene.sound[n] ?? 0) * 100)}" data-layer="${n}" />
+          (l) => `
+        <label class="dock-slider"><span>${esc(l.label)}</span>
+          <input type="range" min="0" max="100" value="${Math.round(l.level * 100)}" data-layer="${esc(l.id)}" />
         </label>`,
         )
         .join("")}
@@ -801,7 +808,7 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
   });
   amb.querySelectorAll<HTMLInputElement>("input[data-layer]").forEach((input) => {
     input.addEventListener("input", () => {
-      scape.setLevel(input.dataset.layer as LayerName, Number(input.value) / 100);
+      scape.setLevel(input.dataset.layer!, Number(input.value) / 100);
     });
   });
 

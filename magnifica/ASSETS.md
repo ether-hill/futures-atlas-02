@@ -32,19 +32,28 @@ claude mcp add --transport http higgsfield https://mcp.higgsfield.ai/mcp
 The page auto-detects each file: `app.ts#mountHero` tries
 `/magnifica/media/loops/<id>.mp4` and silently skips missing ones.
 
-## 2 · Soundscape loops → `public/media/sfx/<layer>.mp3`
+## 2 · Soundscape loops → `public/media/sfx/<scene>/<layer>.mp3`
 
-Five layer names: `wind` `drone` `bells` `rain` `hum`. The sound board
-(`src/soundscape.ts`) prefers these files and falls back to its synthesized
-versions. Generate with the ElevenLabs sound-effects API (same
-`ELEVENLABS_API_KEY` as TTS, `loop: true`, ~20 s each):
+Every leader has their own soundscape: four layers, each particular to the
+place and the tradition — the Bosphorus and a semantron for the Phanar,
+monsoon and a temple bell for Velliangiri, change-ringing and rain on stone
+for the Anglican close. They are defined in `src/scenes.ts` (`LAYERS`): id,
+label, default level, a procedural `family` to fall back to when the file is
+missing, and the generation prompt. No voices, no chant.
+
+Generate the loops from those prompts with the ElevenLabs sound-generation
+API (same `ELEVENLABS_API_KEY` as TTS), looped, 20 s each:
 
 ```sh
-curl -s -X POST https://api.elevenlabs.io/v1/sound-generation \
-  -H "xi-api-key: $ELEVENLABS_API_KEY" -H "content-type: application/json" \
-  -d '{"text":"soft steady himalayan wind through a high mountain pass, smooth loopable ambience, no melody","duration_seconds":20,"loop":true}' \
-  -o public/media/sfx/wind.mp3
+cd magnifica
+node --experimental-strip-types scripts/sfx.mjs             # every missing loop
+node --experimental-strip-types scripts/sfx.mjs sadhguru    # one scene
+FORCE=1 node --experimental-strip-types scripts/sfx.mjs …   # regenerate
 ```
+
+Commit the output. The sound board (`src/soundscape.ts`) loads the current
+scene's files and falls back to its synthesized family for any that are
+missing, so a leader without loops still has a bed — just a generic one.
 
 ## 3 · Experience view (v2) — layered plates
 
