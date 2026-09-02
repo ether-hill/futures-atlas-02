@@ -322,6 +322,20 @@ export const JONES_SLIME_REEL: ReelPost = {
   hashtags: ["#physarum", "#slimemould", "#emergence", "#agentbased", "#generativeart", "#creativecoding", "#futuresatlas"],
 };
 
+export const MEADOW_WAGYU_REEL: ReelPost = {
+  kind: "reel",
+  name: "MeadowWagyu",
+  id: "meadow-wagyu",
+  title: "MeadowWagyu – Lab Grown",
+  note: "Wagyu-style beef grown from cells, portioned and ready to cook. Food & drink aisle, pre-order for 2032, €24.90 / 250 g.",
+  embed: "",
+  video: "/mocks/instagram/meadow-wagyu.webm",
+  thumbAt: 3,
+  caption:
+    "MeadowWagyu – Lab Grown. €24.90 for 250 g. Pre-order for 2032.\n\nTwo 125 g sirloin portions, cultured from beef muscle and fat cells and formed into whole cuts. 22 g of fat per 100 g. Refrigerated delivery included, 1 to 2 days, use within 3 days or freeze for six months.\n\nThe part that is already true is the meat. Cultured beef has been approved for sale in Singapore since 2020 and in the United States since 2023. What has not happened is this: a whole cut, in a supermarket box, at a price you would compare against the shelf next to it.\n\nSo the listing does not argue. It gives you the fat content and the storage temperature, and lets a three-star reviewer complain that the portions look smaller than expected.\n\nFrom ShelfLife on the Atlas, a shop of things that do not exist yet.",
+  hashtags: ["#culturedmeat", "#labgrown", "#designfiction", "#speculativedesign", "#foodfutures", "#futuresatlas", "#shelflife"],
+};
+
 export const SHIFTCOOL_REEL: ReelPost = {
   kind: "reel",
   name: "NESTA ShiftCool 1",
