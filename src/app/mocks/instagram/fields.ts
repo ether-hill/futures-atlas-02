@@ -415,18 +415,18 @@ export const TERM_POSTS: TermPost[] = [
   },
   {
     kind: "term",
-    name: "Umwelt",
-    id: "umwelt",
-    term: "Umwelt",
-    pron: "/\u02C8\u028Amv\u025Blt/",
-    kind_: "noun \u00B7 biology, phenomenology",
+    name: "p(doom)",
+    id: "pdoom",
+    term: "p(doom)",
+    pron: "/pi\u02D0 \u02C8du\u02D0m/",
+    kind_: "noun \u00B7 AI risk, jargon",
     definition:
-      "The world as one creature\u2019s own senses assemble it. Not the environment, but the slice of it a particular body can register at all.",
+      "The probability a person puts on advanced AI ending badly for humanity, said out loud as a number.",
     body:
-      "A tick\u2019s world holds three things: the smell of butyric acid, warmth, and something to grip. Everything else visible from its branch is not there.",
+      "Two people can both say twenty percent and mean different things: extinction, permanent loss of control, or a bad century. Nothing in the number says which.",
     caption:
-      "Umwelt. The world as one creature\u2019s senses assemble it, which is never the whole world and never the same world twice.\n\nJakob von Uexk\u00FCll\u2019s example is a tick and it is still the best one. Hanging on a branch, it waits for three signals and no others: butyric acid, which mammals sweat; a temperature near 37 degrees; and something to grip once it lands. A tick can wait years for the first of them. The forest around it, the light, the birds, the person walking underneath: none of that is in its world. It is not that the tick ignores them. They are not there.\n\nHe introduced the idea in 1909 and made the tick famous in 1934. The German means surrounding world, and \u2018environment\u2019 is the translation that loses it. An environment is what is out there. An Umwelt is what gets in.\n\nIt is in this studio\u2019s vocabulary because every instrument has one. A model\u2019s world is its training data and whatever fits in its context window. A sensor\u2019s world is its band. Ask what a system is missing and the answer is usually nothing, in exactly the sense that the tick is missing nothing.",
-    hashtags: ["#umwelt", "#morethanhuman", "#perception", "#speculativedesign", "#futuresatlas"],
+      "p(doom). The probability a person puts on advanced AI ending badly for humanity, said out loud as a number.\n\nThe people building it answer. Dario Amodei, who runs Anthropic, put it at a 25% chance things go really, really badly, on the record at the Axios AI+ summit in September 2025. Elon Musk says the probability of a good outcome is about 80%, so only a 20% chance of annihilation. Note the only.\n\nIt is jargon out of the AI safety forums that escaped into interviews around 2023, and it looks like a measurement, which is the problem. No agreed definition of doom, no timeframe attached, no method behind any of the figures. Two people can both say twenty percent while one means extinction and the other means a bad century.\n\nIt is in this studio\u2019s vocabulary because The Odds is built on it. Three people, three numbers, and three mechanics that make you hold one: a twelve-sided die, a wheel, and Max Tegmark, who declines to give a number at all and deals you twelve futures instead.",
+    hashtags: ["#pdoom", "#aisafety", "#existentialrisk", "#aigovernance", "#futuresatlas"],
   },
   {
     kind: "term",
