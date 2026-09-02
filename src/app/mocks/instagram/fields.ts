@@ -297,7 +297,7 @@ export const ODDS_POSTS: OddsPost[] = [
  * was cut.
  */
 /**
- * Two ShelfLife listings, one post each.
+ * Two Shop listings, one post each.
  *
  * Both are real entries in src/data/shelflife.ts — the name, the price, the
  * ship year and the one-line description are the shelf's, not written for the
@@ -332,7 +332,7 @@ export const SHIFTCOOL_REEL: ReelPost = {
   video: "/mocks/instagram/shiftcool-1.webm",
   thumbAt: 3,
   caption:
-    "NESTA ShiftCool 1. €2,890. Ships 2033.\n\nA cooled break space for one person. Maintains 20 to 24°C in ambient conditions up to 45°C. Delivery and placement from €120, ground floor only, site access check available before order.\n\nThe product listing is the argument. Nobody in this catalogue is alarmed: the copy is warranty terms and clearance requirements, written the way a workplace supplier would write them, for a workplace where the ambient temperature is 45°C and the cooling is sold per person rather than per building.\n\nFrom ShelfLife on the Atlas, a shop of things that do not exist yet. You assemble an aisle, a year and what changed about the world, and it hands you the prompts to make your own. The ones that land on the shelf are the keepers.",
+    "NESTA ShiftCool 1. €2,890. Ships 2033.\n\nA cooled break space for one person. Maintains 20 to 24°C in ambient conditions up to 45°C. Delivery and placement from €120, ground floor only, site access check available before order.\n\nThe product listing is the argument. Nobody in this catalogue is alarmed: the copy is warranty terms and clearance requirements, written the way a workplace supplier would write them, for a workplace where the ambient temperature is 45°C and the cooling is sold per person rather than per building.\n\nFrom Shop on the Atlas, stocked with things that do not exist yet. You assemble an aisle, a year and what changed about the world, and it hands you the prompts to make your own. The ones that land on the shelf are the keepers.",
   hashtags: ["#designfiction", "#speculativedesign", "#climateadaptation", "#futureofwork", "#futuresatlas", "#shelflife"],
 };
 
@@ -346,7 +346,7 @@ export const SOLOCOOL_REEL: ReelPost = {
   video: "/mocks/instagram/solocool-1.webm",
   thumbAt: 3,
   caption:
-    "NESTA SoloCool 1. €1,249. Ships 2035.\n\nA cool, quiet place to sit when the rest of the house is too warm. One seated or reclining adult. Room-of-choice delivery from €49, five to eight working days, assembly available at checkout.\n\nTwo years after the ShiftCool, and the same idea has moved from the workplace to the living room. The thing worth noticing is not the pod. It is that cooling one chair became a product category before cooling the house did, and that the listing treats it as unremarkable.\n\nFrom ShelfLife on the Atlas, a shop of things that do not exist yet.",
+    "NESTA SoloCool 1. €1,249. Ships 2035.\n\nA cool, quiet place to sit when the rest of the house is too warm. One seated or reclining adult. Room-of-choice delivery from €49, five to eight working days, assembly available at checkout.\n\nTwo years after the ShiftCool, and the same idea has moved from the workplace to the living room. The thing worth noticing is not the pod. It is that cooling one chair became a product category before cooling the house did, and that the listing treats it as unremarkable.\n\nFrom Shop on the Atlas, stocked with things that do not exist yet.",
   hashtags: ["#designfiction", "#speculativedesign", "#climateadaptation", "#heatwave", "#futuresatlas", "#shelflife"],
 };
 

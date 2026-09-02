@@ -1,5 +1,5 @@
 /**
- * ShelfLife — the future-product prompt generator and its inventory.
+ * Shop (formerly ShelfLife) — the future-product prompt generator and its inventory.
  *
  * v1 generates PROMPTS, not products: the visitor assembles a scenario (aisle,
  * year, what changed about the world, optionally their own hunch) and gets two
@@ -462,11 +462,11 @@ export const STOCK: FutureProduct[] = [
     id: "meadow-wagyu",
     name: "MeadowWagyu – Lab Grown",
     aisle: "Food & drink",
-    // No year came with the copy. 2030 is the earliest bracket the generator
-    // offers and the one this listing reads as: cultured meat is already
-    // approved for sale in Singapore and the US, so the future part is not the
-    // technology, it is a whole cut on a supermarket shelf at this price.
-    year: "2030",
+    // 2032 because the reel says so. No year came with the listing copy, so I
+    // picked 2030; the social cut that arrived later has "PRE-ORDER FOR 2032"
+    // burned into it, and a baked video cannot be corrected by a data file.
+    // The shelf follows the artwork.
+    year: "2032",
     price: "€24.90 / 250 g",
     line: "Wagyu-style beef grown from cells, portioned and ready to cook.",
     image: "/shelflife/meadow-wagyu.jpg",

@@ -219,7 +219,7 @@ export const projects: Project[] = [
   },
   {
     id: "shelflife",
-    title: "ShelfLife",
+    title: "Shop",
     tagline:
       "Pick the aisle, the year and what changed about the world, and take away two prompts that turn a hunch into a product listing from the marketplaces of the future. The keepers land on the shelf.",
     year: "2026",

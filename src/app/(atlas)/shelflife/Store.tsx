@@ -9,7 +9,7 @@ import { Lightbox } from "./Lightbox";
 import { Plate, ProductCard, Quickview } from "./Shelf";
 
 /**
- * ShelfLife — the storefront. A mocked-up online store in the manner of
+ * Shop — the storefront. A mocked-up online store in the manner of
  * apple.com/store, stocked with products that do not exist yet: the hero
  * line, a rail of aisles, a rail of what is new, the "Create a product" call
  * (the loudest thing on the page — it opens the prompt configurator in a
@@ -121,7 +121,7 @@ export function Store() {
       <div className="border-b border-ink/10 bg-surface">
         <Container className="flex h-14 items-center justify-between gap-4">
           <a href="#top" className="text-[19px] font-extrabold tracking-[-0.03em] text-ink">
-            Shelf<span className="text-accent">Life</span>
+            Shop<span className="text-accent">.</span>
           </a>
           <nav aria-label="Aisles" className="hidden gap-6 text-[13px] text-ink-70 lg:flex">
             {AISLES.map((a) => (
@@ -193,7 +193,7 @@ export function Store() {
                     Create a product.
                   </h2>
                   <p className="mt-4 max-w-[52ch] text-[15px] leading-[1.75] text-surface/75">
-                    Pick the aisle, the year and what changed about the world. ShelfLife writes the two
+                    Pick the aisle, the year and what changed about the world. Shop writes the two
                     prompts that turn a hunch into a listing and a product photograph. Run them in your
                     own tools; the keepers land on the shelf.
                   </p>
@@ -212,7 +212,7 @@ export function Store() {
         <Container>
           <Reveal>
             <h2 className={h2}>
-              The ShelfLife difference. <span className="text-ink-70">Even more reasons to shop ahead.</span>
+              The Shop difference. <span className="text-ink-70">Even more reasons to shop ahead.</span>
             </h2>
           </Reveal>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -273,7 +273,7 @@ export function Store() {
             ))}
           </div>
           <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-faint">
-            ShelfLife is a Futures Atlas mock-up. Nothing is for sale.
+            Shop is a Futures Atlas mock-up. Nothing is for sale.
           </p>
         </Container>
       </section>
