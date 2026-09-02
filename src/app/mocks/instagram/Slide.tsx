@@ -314,7 +314,6 @@ function ShotSlide({
   post, index, ratio, live, crop,
 }: { post: ShotsPost; index: number; ratio: Ratio; live?: boolean; crop?: CropOverride }) {
   const shot = post.shots[Math.min(index, post.shots.length - 1)]!;
-  const cue = index === 0 && post.shots.length > 1;
   return (
     <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
       <div className="fld">
@@ -326,16 +325,6 @@ function ShotSlide({
             <img className="fld-thumb" src={shot.src ?? `/mocks/instagram/${shot.id}.jpg`} alt="" />
           )}
         </div>
-        {/* Says there is more, in place of the page furniture that was cropped
-            out of the top of these captures. */}
-        {cue ? (
-          <div className="swipe-cue">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
-              strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 12h15M13 6l6 6-6 6" />
-            </svg>
-          </div>
-        ) : null}
       </div>
     </div>
   );

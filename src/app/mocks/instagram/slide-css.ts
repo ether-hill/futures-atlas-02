@@ -261,13 +261,6 @@ export const SLIDE_CSS = `
 }
 .stf .odds-cta svg { display: block; width: 4.4cqw; height: 4.4cqw; }
 
-.stf .swipe-cue {
-  position: absolute; right: 5cqw; top: 50%; transform: translateY(-50%);
-  width: 12cqw; height: 12cqw; border-radius: 50%; background: #3b93d5; color: #fff;
-  display: grid; place-items: center; box-shadow: 0 4cqw 8cqw rgba(0,0,0,.45);
-}
-.stf .swipe-cue svg { width: 6cqw; height: 6cqw; display: block; }
-
 /* ── a vocabulary card ─────────────────────────────────────────────────── */
 .stf .term-card {
   position: relative; width: 100%; height: 100%; box-sizing: border-box;
