@@ -25,6 +25,10 @@ import type { Scene } from "./scenes";
 
 export interface Part {
   label: string;
+  /** Spoken before `text`, as its own short clip: the section's title. Not
+   *  folded into `text`, because the read-along maps spoken words onto page
+   *  words and the title is not part of the passage it would be mapped to. */
+  title?: string;
   text: string;
   /** id of the page section this part narrates; scrolled to when it starts. */
   anchor?: string;
@@ -137,6 +141,8 @@ class Player {
   private lastWord = -1;
   private lastFollow = 0;
   private target: HTMLElement | null = null;
+  /** Which clip of the current part is sounding: its title, or the passage. */
+  private stage: "title" | "body" = "body";
 
   i = 0;
   playing = false;
@@ -155,7 +161,10 @@ class Player {
   onprogress: (fraction: number) => void = () => {};
 
   constructor() {
-    this.audio.addEventListener("ended", () => this.advance());
+    this.audio.addEventListener("ended", () => {
+      if (this.stage === "title") this.playBody();
+      else this.advance();
+    });
   }
 
   load(parts: Part[]) {
@@ -254,24 +263,33 @@ class Player {
     return `${i}:${this.lang}`;
   }
 
-  private async fetchPart(i: number): Promise<Clip | null> {
-    const k = this.key(i);
+  private fetchPart(i: number): Promise<Clip | null> {
+    return this.fetchText(this.queue[i].text, this.key(i));
+  }
+
+  /** The title clip of part i, if it has a title. */
+  private fetchTitle(i: number): Promise<Clip | null> {
+    const t = this.queue[i]?.title;
+    return t ? this.fetchText(t, `${this.key(i)}:title`) : Promise.resolve(null);
+  }
+
+  private async fetchText(text: string, k: string): Promise<Clip | null> {
     const hit = this.cache.get(k);
     if (hit) return hit;
     // Coalesce: hovering a node while it is already being fetched must not
     // start a second identical request.
     const pending = this.inflight.get(k);
     if (pending) return pending;
-    const p = this.request(i, k).finally(() => this.inflight.delete(k));
+    const p = this.request(text, k).finally(() => this.inflight.delete(k));
     this.inflight.set(k, p);
     return p;
   }
 
-  private async request(i: number, k: string): Promise<Clip | null> {
+  private async request(text: string, k: string): Promise<Clip | null> {
     const res = await fetch("/api/magnifica/tts", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ text: this.queue[i].text, lang: this.lang }),
+      body: JSON.stringify({ text, lang: this.lang }),
     });
     if (!res.ok) {
       let code = "";
@@ -287,7 +305,7 @@ class Player {
     const bytes = Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0));
     const clip: Clip = {
       url: URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" })),
-      spoken: data.spoken ?? this.queue[i].text,
+      spoken: data.spoken ?? text,
       alignment: data.alignment ?? null,
     };
     this.cache.set(k, clip);
@@ -319,6 +337,7 @@ class Player {
       while (this.warmQueue.length) {
         const i = this.warmQueue.shift()!;
         if (this.cache.has(this.key(i))) continue;
+        await this.fetchTitle(i).catch(() => {});
         await this.fetchPart(i).catch(() => {});
       }
     } finally {
@@ -414,12 +433,46 @@ class Player {
     this.raf = 0;
   }
 
+  /** A part sounds as its title (if it has one) and then its passage. */
   private async playCurrent() {
     const part = this.queue[this.i];
     if (!part) return;
     this.emit(this.fallback ? "device voice" : undefined);
     this.focusSection(part);
+    this.stage = part.title ? "title" : "body";
+    if (this.stage === "title") await this.playTitle();
+    else await this.playBody();
+  }
 
+  private async playTitle() {
+    const part = this.queue[this.i];
+    if (!part?.title) return this.playBody();
+    if (!this.fallback) {
+      try {
+        const clip = await this.fetchTitle(this.i);
+        if (clip) {
+          if (!this.playing) return;
+          this.clearHighlight();
+          this.audio.src = clip.url;
+          await this.audio.play();
+          this.startTracking();
+          this.emit();
+          this.fetchPart(this.i).catch(() => {}); // the passage, ready by the time the title ends
+          return;
+        }
+        this.fallback = true;
+      } catch {
+        this.emit("voice unavailable, using device voice");
+        this.fallback = true;
+      }
+    }
+    this.speakFallback(part);
+  }
+
+  private async playBody() {
+    const part = this.queue[this.i];
+    if (!part) return;
+    this.stage = "body";
     if (!this.fallback) {
       try {
         const clip = await this.fetchPart(this.i);
@@ -430,7 +483,10 @@ class Player {
           this.armHighlight(part, clip);
           this.startTracking();
           this.emit();
-          if (this.i + 1 < this.queue.length) this.fetchPart(this.i + 1).catch(() => {});
+          if (this.i + 1 < this.queue.length) {
+            this.fetchTitle(this.i + 1).catch(() => {});
+            this.fetchPart(this.i + 1).catch(() => {});
+          }
           return;
         }
         this.fallback = true; // route not configured → device voices from here on
@@ -442,21 +498,29 @@ class Player {
     this.speakFallback(part);
   }
 
+  /** The device voice: the title as one utterance, then the passage. */
   private speakFallback(part: Part) {
     if (!("speechSynthesis" in window)) {
       this.playing = false;
       this.emit("no speech available on this device");
       return;
     }
-    const u = new SpeechSynthesisUtterance(part.text);
+    const title = this.stage === "title";
+    const u = new SpeechSynthesisUtterance(title ? part.title! : part.text);
     const bcp = LANG_BCP;
     u.lang = bcp;
     const v = speechSynthesis.getVoices().find((v) => v.lang.startsWith(bcp.slice(0, 2)));
     if (v) u.voice = v;
     u.rate = 0.95;
-    u.onend = () => this.advance();
+    u.onend = () => {
+      if (!this.playing) return;
+      if (title) {
+        this.stage = "body";
+        this.speakFallback(part);
+      } else this.advance();
+    };
     // No alignment from the device voice, so mark the passage without words.
-    if (part.anchor && part.highlight) {
+    if (!title && part.anchor && part.highlight) {
       const el = document.getElementById(part.anchor)?.querySelector<HTMLElement>(part.highlight);
       if (el) {
         this.target = el;
@@ -470,6 +534,20 @@ class Player {
 
 const player = new Player();
 const scape = new Soundscape();
+
+/** Whatever control is showing the ambience state, told to re-read it. */
+let syncAmbience: () => void = () => {};
+
+/**
+ * "Begin experience": the ambience comes on and the narration starts from the
+ * top. One gesture does both — the click is what unlocks the audio context and
+ * the first play, so they have to happen here rather than on scroll.
+ */
+export async function begin() {
+  if (!scape.on) scape.toggle();
+  syncAmbience();
+  await player.goTo(0);
+}
 
 /** Render the listen dock into `root` for the given script + scene. */
 export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
@@ -569,10 +647,14 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   dock.querySelector<HTMLInputElement>("input[data-vol]")!.addEventListener("input", (e) => {
     player.setVolume(Number((e.target as HTMLInputElement).value) / 100);
   });
+  syncAmbience = () => {
+    ambBtn.textContent = `ambience: ${scape.on ? "on" : "off"}`;
+    ambBtn.classList.toggle("on", scape.on);
+  };
+  syncAmbience();
   ambBtn.addEventListener("click", () => {
-    const on = scape.toggle();
-    ambBtn.textContent = `ambience: ${on ? "on" : "off"}`;
-    ambBtn.classList.toggle("on", on);
+    scape.toggle();
+    syncAmbience();
   });
   panel.querySelectorAll<HTMLInputElement>("input[data-layer]").forEach((input) => {
     input.addEventListener("input", () => {
@@ -661,11 +743,15 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
     if (e.key === "Escape" && !ambPanel.hidden) setOpen(false);
   });
 
+  syncAmbience = () => {
+    toggleBtn.textContent = `ambience: ${scape.on ? "on" : "off"}`;
+    toggleBtn.classList.toggle("on", scape.on);
+    amb.classList.toggle("sounding", scape.on);
+  };
+  syncAmbience();
   toggleBtn.addEventListener("click", () => {
-    const on = scape.toggle();
-    toggleBtn.textContent = `ambience: ${on ? "on" : "off"}`;
-    toggleBtn.classList.toggle("on", on);
-    amb.classList.toggle("sounding", on);
+    scape.toggle();
+    syncAmbience();
   });
   amb.querySelector<HTMLInputElement>("input[data-vol]")!.addEventListener("input", (e) => {
     player.setVolume(Number((e.target as HTMLInputElement).value) / 100);
@@ -685,5 +771,6 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
 /** Tear down on route change: stop speech, keep ambience running across pages. */
 export function unmountDock() {
   player.stop();
+  syncAmbience = () => {};
   document.querySelectorAll(".dock, .x-amb").forEach((d) => d.remove());
 }
