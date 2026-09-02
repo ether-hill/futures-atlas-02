@@ -284,6 +284,19 @@ input[type="color"] {
    the mono the rest of the site keeps for machine text, scrolling in its own
    box rather than stretching the card, and capped in height so a long field
    does not push the next card off the screen. */
+/* ── the listening point ───────────────────────────────────────────────────
+   A dot you drag over the field. It is a button so it is reachable without a
+   pointer, and it sits above the canvas but below the fullscreen chrome. */
+.probe {
+  position: absolute; z-index: 3; width: 22px; height: 22px; margin: -11px 0 0 -11px;
+  padding: 0; border-radius: 50%; cursor: grab; touch-action: none;
+  background: rgba(255, 255, 255, .92);
+  border: 2px solid rgba(0, 0, 0, .55);
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .18), 0 2px 10px rgba(0, 0, 0, .5);
+}
+.probe:active { cursor: grabbing; }
+.probe:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+
 .code { display: none; margin-top: 14px; padding-top: 13px; border-top: 1px solid var(--hairline); }
 .card.is-code .code { display: block; }
 .code__note {

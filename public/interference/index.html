@@ -67,6 +67,7 @@
 
 <script src="mp4-muxer.js"></script>
 <script src="field.js"></script>
+<script src="audio.js"></script>
 <script src="/atlas-nav.js" defer></script>
 <script>
 (function () {
@@ -151,6 +152,7 @@
     card.className = "card" + (v.draft ? " card--draft" : "");
     card.innerHTML =
       '<div class="stage"><canvas></canvas>' +
+        (v.audio === "probe" ? '<button class="probe" hidden aria-label="Move the listening point"></button>' : "") +
         '<span class="idx">' + (i < 9 ? "0" : "") + (i + 1) + '</span>' +
         '<span class="fshint">Fullscreen</span>' +
         '<div class="fsbar"><button class="btn" data-act="exit">Close</button></div>' +
@@ -185,6 +187,7 @@
           '</div>' +
           '<button class="btn" data-act="read">Read more</button>' +
           '<button class="btn" data-act="code">Behind it</button>' +
+          (v.audio && FIELD_AUDIO.supported() ? '<button class="btn" data-act="listen">Listen</button>' : "") +
           '<button class="btn" data-act="full">Fullscreen</button>' +
         '</div>' +
         '<div class="read">' + v.read.map(function (r) {
@@ -234,8 +237,49 @@
     };
     unit.refresh();
 
+    /* One panel sounds at a time, so starting this one silences another card's
+       button as well as its oscillator. Cheap to just re-read them all. */
+    function syncSound() {
+      Array.prototype.forEach.call(document.querySelectorAll(".card"), function (c) {
+        var u = units[Array.prototype.indexOf.call(document.querySelectorAll(".card"), c)];
+        var b = c.querySelector('[data-act="listen"]');
+        var dot = c.querySelector(".probe");
+        var on = !!(u && u.sound && u.sound.playing);
+        if (b) { b.textContent = on ? "Silence" : "Listen"; b.classList.toggle("is-on", on); }
+        if (dot) { dot.hidden = !on; }
+      });
+    }
+    unit.syncSound = syncSound;
+
+    var dot = card.querySelector(".probe");
+    if (dot) {
+      var place = function (e) {
+        var r = card.querySelector(".stage").getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        unit.sound.setPoint(x, y);
+        dot.style.left = (Math.max(0, Math.min(1, x)) * 100) + "%";
+        dot.style.top = (Math.max(0, Math.min(1, y)) * 100) + "%";
+      };
+      dot.style.left = "72%"; dot.style.top = "50%";
+      dot.addEventListener("pointerdown", function (e) {
+        e.stopPropagation();          // the stage's click opens fullscreen
+        dot.setPointerCapture(e.pointerId);
+        dot.dataset.drag = "1";
+      });
+      dot.addEventListener("pointermove", function (e) {
+        if (dot.dataset.drag !== "1" || !unit.sound) return;
+        place(e);
+      });
+      dot.addEventListener("pointerup", function (e) {
+        e.stopPropagation();
+        delete dot.dataset.drag;
+      });
+      dot.addEventListener("click", function (e) { e.stopPropagation(); });
+    }
+
     card.querySelector(".stage").addEventListener("click", function (e) {
       if (e.target.closest(".fsbar")) return;   // the overlay's own controls
+      if (e.target.closest(".probe")) return;   // dragging the listening point
       toggleFull(card);
     });
 
@@ -257,7 +301,11 @@
       unit.paint(canvas.width, canvas.height);
     });
 
-    spd.addEventListener("input", function () { unit.speed = parseFloat(spd.value); });
+    spd.addEventListener("input", function () {
+      unit.speed = parseFloat(spd.value);
+      // the beat is one cycle per loop, so it moves with the panel's clock
+      if (unit.sound && unit.sound.retune) unit.sound.retune();
+    });
     sel.addEventListener("change", function () {
       var i2 = parseInt(sel.value, 10);
       unit.setPalette(i2, stopsFor(i2));
@@ -287,6 +335,17 @@
         cb.textContent = card.classList.contains("is-code") ? "Close" : "Behind it";
         rb.classList.toggle("is-on", card.classList.contains("is-open"));
         cb.classList.toggle("is-on", card.classList.contains("is-code"));
+      } else if (act === "listen") {
+        if (unit.sound && unit.sound.playing) { unit.sound.stop(); }
+        else {
+          if (!unit.sound) {
+            unit.sound = v.audio === "beat"
+              ? FIELD_AUDIO.beat(function () { return unit.speed / v.loop; })
+              : FIELD_AUDIO.probe(canvas);
+          }
+          unit.sound.start();
+        }
+        syncSound();
       } else if (act === "full") {
         toggleFull(card);
       } else if (act === "dl") {
@@ -391,6 +450,8 @@
       var s = u.recSize || sizeFor(u);
       u.paint(s[0], s[1]);
       u.syncScrub();
+      // after paint, never before: the probe reads the pixels on the canvas
+      if (u.sound && u.sound.playing) u.sound.tick();
     }
     requestAnimationFrame(frame);
   }
@@ -663,7 +724,7 @@
   speedEl.addEventListener("input", function () {
     globalSpeed = parseFloat(speedEl.value);
     speedVal.textContent = globalSpeed.toFixed(2) + "×";
-    units.forEach(function (u) { u.speed = globalSpeed; u.refresh(); });
+    units.forEach(function (u) { u.speed = globalSpeed; u.refresh(); if (u.sound && u.sound.retune) u.sound.retune(); });
     remember();
   });
 
