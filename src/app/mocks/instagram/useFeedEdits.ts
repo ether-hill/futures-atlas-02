@@ -81,10 +81,19 @@ export function useFeedEdits() {
     setEdits((e) => ({ ...e, hidden: [] }));
   }, []);
 
-/**
+  /**
+   * Put the feed in an explicit order. A drag knows exactly where every post
+   * ended up, so it commits the whole list at once rather than replaying steps.
+   */
+  const reorder = useCallback((order: string[]) => {
+    setEdits((e) => ({ ...e, order }));
+  }, []);
+
+  /**
    * Step a post one place earlier or later. A plain swap with its neighbour,
    * which is the only reorder that is unambiguous to press and to undo — the
-   * earlier "insert before X" needed a target and got fiddly at the ends.
+   * earlier "insert before X" needed a target and got fiddly at the ends. This
+   * is the keyboard path now that dragging exists.
    */
   const step = useCallback((id: string, dir: -1 | 1, all: string[]) => {
     setEdits((e) => {
@@ -115,7 +124,7 @@ export function useFeedEdits() {
 
   const resetAll = useCallback(() => setEdits(EMPTY), []);
 
-  return { edits, loaded, hide, restoreAll, step, setCrop, resetCrop, resetAll };
+  return { edits, loaded, hide, restoreAll, reorder, step, setCrop, resetCrop, resetAll };
 }
 
 /** Apply the stored order and deletions to the authored list. */

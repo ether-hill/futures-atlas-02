@@ -18,6 +18,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { POSTS, SLIDE_KINDS, slideCount, postId, type Post } from "./posts";
 import { useFeedEdits, applyEdits, DEFAULT_CROP, type Crop } from "./useFeedEdits";
+import { useSortableGrid } from "./useSortableGrid";
 import { PostSlide, SlideFrame, SlideStyles, RATIOS, type Ratio } from "./Slide";
 import { DESIGN_W } from "./slide-css";
 
@@ -54,10 +55,11 @@ export default function FeedMock() {
   // 9:16 first: these go out as reels, and a reel is the tall format.
   const [ratio, setRatio] = useState<Ratio>("9:16");
   const [editing, setEditing] = useState(false);
-  const { edits, hide, restoreAll, step, setCrop, resetCrop, resetAll } = useFeedEdits();
+  const { edits, hide, restoreAll, reorder, step, setCrop, resetCrop, resetAll } = useFeedEdits();
   const posts = applyEdits(POSTS, postId, edits);
   const ids = posts.map(postId);
   const [open, setOpen] = useState<{ post: number; slide: number } | null>(null);
+  const sort = useSortableGrid({ ids, onCommit: reorder, enabled: editing });
 
   const move = useCallback((d: number) => {
     setOpen((o) => {
@@ -104,6 +106,10 @@ export default function FeedMock() {
               crop={edits.crops[postId(p)]}
               first={i === 0}
               last={i === posts.length - 1}
+              slotRef={sort.register(i)}
+              onDragStart={sort.handle(i)}
+              lifted={sort.dragging === i}
+              sorting={sort.dragging !== null}
               onOpen={() => setOpen({ post: i, slide: 0 })}
               onMoveLeft={() => step(ids[i]!, -1, ids)}
               onMoveRight={() => step(ids[i]!, 1, ids)}
@@ -159,7 +165,7 @@ function Chrome({
       <span style={lbl(15, BONE)}>Instagram preview</span>
       <span style={{ fontFamily: UI, fontSize: 14, color: FAINT }}>
         {editing
-          ? "Arrows reorder · sliders crop · ✕ deletes"
+          ? "Drag a tile to move it · arrows do it one step · sliders crop · ✕ deletes"
           : "Your order, deletions and crops are saved in this browser"}
       </span>
       <div style={{ display: "flex", gap: 8, marginLeft: 12 }}>
@@ -272,18 +278,18 @@ function useWidth<T extends HTMLElement>(fallback = DESIGN_W) {
 /**
  * A tile, and in edit mode the controls for it.
  *
- * Reordering is arrow buttons, not drag: HTML5 drag-and-drop on a grid of
- * images was unreliable — the drop target depended on where in the tile the
- * pointer happened to be, and the drag image obscured the thing you were
- * aiming at. One step per press is slower and always does what it says.
+ * In edit mode the picture is a drag handle: pick a tile up and drop it where
+ * you want it, and the rest of the grid moves out of the way as you go
+ * (useSortableGrid.ts, which also explains why this is pointer events and not
+ * the browser's own drag-and-drop). The arrow buttons stay for the keyboard.
  *
  * Cropping is sliders, not scroll-to-zoom-and-drag-to-pan. Wheel events fight
  * the page scroll and a drag inside a 120px tile is a guess; a slider you can
  * nudge with an arrow key is not.
  */
 function Tile({
-  post, ratio, editing, crop, first, last,
-  onOpen, onMoveLeft, onMoveRight, onHide, onCrop, onResetCrop,
+  post, ratio, editing, crop, first, last, slotRef, lifted, sorting,
+  onDragStart, onOpen, onMoveLeft, onMoveRight, onHide, onCrop, onResetCrop,
 }: {
   post: Post;
   ratio: Ratio;
@@ -291,6 +297,10 @@ function Tile({
   crop?: Crop;
   first: boolean;
   last: boolean;
+  slotRef: (el: HTMLDivElement | null) => void;
+  lifted: boolean;
+  sorting: boolean;
+  onDragStart: (e: React.PointerEvent) => void;
   onOpen: () => void;
   onMoveLeft: () => void;
   onMoveRight: () => void;
@@ -302,19 +312,43 @@ function Tile({
   const c = crop ?? DEFAULT_CROP;
   const edited = c.zoom !== 1 || c.x !== 0 || c.y !== 0;
 
+  // The sort hook owns `transform` and `transition` on this element and writes
+  // them straight to the node, so nothing here may set either.
+  const setRefs = useCallback(
+    (el: HTMLDivElement | null) => {
+      ref.current = el;
+      slotRef(el);
+    },
+    [ref, slotRef],
+  );
+
   return (
-    <div ref={ref} style={{ position: "relative" }}>
+    <div
+      ref={setRefs}
+      style={{
+        position: "relative",
+        zIndex: lifted ? 5 : 0,
+        // A tile in flight should not be the drop target for its own pointer,
+        // and the ones sliding underneath should not react to being passed over.
+        pointerEvents: sorting && !lifted ? "none" : undefined,
+      }}
+    >
       <div
         onClick={() => { if (!editing) onOpen(); }}
+        onPointerDown={editing ? onDragStart : undefined}
         role={editing ? undefined : "button"}
         aria-label={editing ? undefined : `Open ${post.name}`}
         tabIndex={editing ? -1 : 0}
         onKeyDown={(e) => { if (!editing && (e.key === "Enter" || e.key === " ")) onOpen(); }}
         style={{
           position: "relative",
-          boxShadow: `inset 0 0 0 1px rgba(242,237,226,.10)`,
+          boxShadow: lifted
+            ? `inset 0 0 0 1px rgba(242,237,226,.45), 0 18px 40px rgba(0,0,0,.55)`
+            : `inset 0 0 0 1px rgba(242,237,226,.10)`,
           background: INK_2,
-          cursor: editing ? "default" : "pointer",
+          cursor: editing ? (lifted ? "grabbing" : "grab") : "pointer",
+          // Without this a touch drag scrolls the page instead of moving a tile.
+          touchAction: editing ? "none" : undefined,
           display: "block",
           overflow: "hidden",
           lineHeight: 0,
