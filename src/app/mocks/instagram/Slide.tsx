@@ -220,60 +220,84 @@ function TermSlide({ post, ratio }: { post: TermPost; ratio: Ratio }) {
 }
 
 /**
- * One of Tegmark's twelve: the card's face, then the card's copy.
- *
- * Both slides sit on the Max Tegmark player's own ground — the purple with the
- * pink and teal glows from `.od-game` — so the pair reads as two views of one
- * object rather than a picture and a caption.
- *
- * Slide one is the game's tarot face in the game's own markup (`.od-tarot`,
- * `.od-tarot-art`, `.od-tarot-cap`), with the flip machinery dropped: a still
- * has no back to turn away from. Slide two is what the game prints once the
- * card has landed — the future's name as the heading, the deck's own copy under
- * it, unchanged — plus the one thing a feed cannot infer from a name, which is
- * whether anybody is left in this future. Six of the twelve sound benign and
- * are not, so that label is always shown and never softened.
- */
-/**
- * The reading is authored against 9:16, the format these go out in, and stepped
- * down for the crops that have less height to give it. Everything on that slide
- * is words, so there is no fallback of showing less of the picture.
+ * The back is authored against 9:16, the format these go out in, and stepped
+ * down for the crops with less height to give it. It is all words, so there is
+ * no fallback of showing less of a picture.
  */
 const READ_SCALE: Record<Ratio, number> = { "9:16": 1.1, "4:5": 0.92, "1:1": 0.74 };
 
+/**
+ * A name that would run past the paper is stepped down rather than clipped.
+ *
+ * The twelve names are one word or two, so there is nowhere for a long one to
+ * wrap: SELF-DESTRUCTION and CONQUERORS have to be set smaller or they run off
+ * the edge. Measured across all twelve, Bodoni 700 uppercase at .02em tracking
+ * never exceeds 0.74em a character, so the widest word decides the size. `avail`
+ * is the paper's width in cqw less its padding, with a little slack.
+ */
+const WIDEST_EM = 0.74;
+const fitName = (title: string, avail: number, max: number) => {
+  const longest = Math.max(...title.split(" ").map((w) => w.length));
+  return `${Math.min(max, avail / (WIDEST_EM * longest))}cqw`;
+};
+
+/**
+ * One of Tegmark's twelve: the card's face, then the card's back.
+ *
+ * The card IS the post. There is no ground behind it and no margin around it:
+ * a tarot card floating in the middle of a frame is a photograph of a card,
+ * and what the game deals you is the card itself. So the paper runs edge to
+ * edge on both slides and the pair reads as one object turned over.
+ *
+ * Slide one is the game's face, in its own markup (`.od-tarot`, `.od-tarot-art`,
+ * `.od-tarot-cap`), with the 3D flip dropped: a still has no back to hide. The
+ * art is 280 x 395 and a post is not, so it fills the frame and crops rather
+ * than letterboxing into bands of paper.
+ *
+ * Slide two is the back, in the same paper, carrying what the game prints once
+ * the card lands: the future's name, the deck's own copy, unchanged, and the
+ * one thing a name cannot tell you, which is whether anybody is left in this
+ * future. Six of the twelve sound benign and are not, so that line is always
+ * shown and never softened.
+ */
 function TegmarkSlide({
   post, index, ratio,
 }: { post: TegmarkPost; index: number; ratio: Ratio }) {
   const num = String(post.num).padStart(2, "0");
-  const eyebrow = `Aftermath ${num} of 12`;
   return (
     <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
       <div className={`tg${post.doom ? " doom" : ""}`}>
-        <div className="tg-eyebrow">{eyebrow}</div>
-        {index === 0 ? (
-          <div className="tg-face">
-            {/* The card's own box: it takes the height on offer and derives its
-                width from the game's 280 x 395, and opens a container so the
-                rules below are written against the CARD rather than the slide,
-                exactly as the game writes them against 280px. */}
-            <div className="tg-card">
-              <div className="od-tarot">
-                <div className="od-tarot-art">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={post.img} alt={post.title} />
-                </div>
-                <div className="od-tarot-cap"><div className="nm">{post.title}</div></div>
+        <div className="od-tarot">
+          {index === 0 ? (
+            <>
+              <div className="od-tarot-art">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={post.img} alt={post.title} />
               </div>
+              <div className="od-tarot-cap">
+                <div className="tg-num">{num} of 12</div>
+                <div className="nm" style={{ fontSize: fitName(post.title, 82, 8.4) }}>
+                  {post.title}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="tg-read" style={{ ["--tg" as string]: READ_SCALE[ratio] }}>
+              <div className="tg-num">{num} of 12</div>
+              <div className="tg-mid">
+                <div className="tg-fate">{post.doom ? "We\u2019re gone" : "We\u2019re still here"}</div>
+                <h2
+                  className="tg-name"
+                  style={{ fontSize: fitName(post.title, 82, 11 * READ_SCALE[ratio]) }}
+                >
+                  {post.title}
+                </h2>
+                <p className="tg-desc">{post.desc}</p>
+              </div>
+              <div className="tg-foot">Max Tegmark &middot; Life 3.0</div>
             </div>
-          </div>
-        ) : (
-          <div className="tg-read" style={{ ["--tg" as string]: READ_SCALE[ratio] }}>
-            <div className="tg-fate">{post.doom ? "We\u2019re gone" : "We\u2019re still here"}</div>
-            <h2 className="tg-name">{post.title}</h2>
-            <p className="tg-desc">{post.desc}</p>
-          </div>
-        )}
-        <div className="tg-foot">Max Tegmark &middot; Life 3.0</div>
+          )}
+        </div>
       </div>
     </div>
   );

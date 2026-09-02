@@ -1,4 +1,4 @@
-import { REEL_POSTS, SHOTS_POSTS } from "../fields";
+import { REEL_POSTS, SHOTS_POSTS, ODDS_CHOOSER } from "../fields";
 
 /**
  * The reel list, for `scripts/capture-instagram-thumbs.mjs`.
@@ -22,8 +22,10 @@ export function GET() {
     })),
     // A shots post contributes one capture per slide.
     // Only shots that name a route need capturing; one that already has a
-    // `src` is an image on disk.
-    ...SHOTS_POSTS.flatMap((p) =>
+    // `src` is an image on disk. ODDS_CHOOSER is the same shape but lives
+    // outside SHOTS_POSTS, because it is placed by hand rather than shuffled
+    // into the feed — it still has to be captured like the rest.
+    ...[...SHOTS_POSTS, ODDS_CHOOSER].flatMap((p) =>
       p.shots
         .filter((s) => s.path)
         .map((s) => ({

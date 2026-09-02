@@ -24,7 +24,7 @@
  */
 
 import {
-  REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, TEGMARK_POSTS,
+  REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, ODDS_CHOOSER, TEGMARK_POSTS,
   HOME_REEL, UNDERGROUND_REEL, STACK_REEL,
   type ReelPost, type ShotsPost, type OddsPost, type TermPost, type TegmarkPost,
 } from "./fields";
@@ -335,12 +335,14 @@ function interleave(reels: Post[], cards: Post[]): Post[] {
  * Tegmark's own order, and the whole point of a run of twelve is that it reads
  * as a run: interleaved they would be twelve near-identical tarot faces
  * scattered through the grid with nothing saying they belong together. So the
- * shuffle above applies to the feed as it was, and the deck sits under it.
+ * shuffle above applies to the feed as it was, and the deck sits under it,
+ * behind the post that introduces the three players it belongs to.
  */
 export const POSTS: Post[] = [
   ...interleave(
     [HOME_REEL, UNDERGROUND_REEL, STACK_REEL, ...REEL_POSTS],
     [...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
   ),
+  ODDS_CHOOSER,
   ...TEGMARK_POSTS,
 ];

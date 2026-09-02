@@ -603,6 +603,47 @@ export const REEL_POSTS: ReelPost[] = [
 ];
 
 /**
+ * The Odds, as you meet it: three people, three claims, three mechanics.
+ *
+ * A viewport screenshot of /theodds at phone width, which is the width the
+ * capture context already runs at, so this is the layout a reader gets rather
+ * than a desktop page squeezed into a portrait frame. The Atlas nav is hidden
+ * along with the padding it reserves, because a shared site bar on a post is
+ * chrome from a different product; the game's own header stays, since that is
+ * part of the thing.
+ *
+ * It sits directly before Tegmark's twelve. The run of cards makes more sense
+ * once you have seen that Tegmark is one of three players and the deck is his
+ * answer to the same question the other two answer with a die and a wheel.
+ */
+export const ODDS_CHOOSER: ShotsPost = {
+  kind: "shots",
+  name: "The Odds \u00B7 pick a player",
+  id: "odds-chooser",
+  shots: [
+    {
+      id: "odds-chooser",
+      path: "/theodds",
+      hide: MAG_CHROME,
+      // Hiding the bar is not enough: the bundle reserves its height on <body>
+      // and sizes the stage against it, so without this the page keeps a band
+      // of empty ground where the nav used to be. And the phone layout caps
+      // each player card at 163px, which is right on a phone with a browser
+      // bar and leaves a quarter of a 9:16 post empty; uncapped, the three
+      // cards share the stage they are already told to fill.
+      css:
+        "body{padding-top:0!important}" +
+        ".od-stage{min-height:100vh!important;height:100vh!important}" +
+        ".od-pcards .od-pcard{max-height:none!important}",
+      at: 3,
+    },
+  ],
+  caption:
+    "Three people who build and study AI, three numbers, three ways to feel one.\n\nDario Amodei runs Anthropic and puts it at a 25% chance things go really, really badly, so the game hands you a twelve-sided die. Elon Musk says only a 20% chance of annihilation, so you get a wheel. Max Tegmark does not give a number at all, so you get a deck of twelve futures and you draw one.\n\nThe mechanic is the argument every time. A die and a wheel are bets on a number. Tegmark is saying the number is the wrong question: not how likely, which one.",
+  hashtags: ["#aisafety", "#pdoom", "#seriousgames", "#speculativedesign", "#futuresatlas"],
+};
+
+/**
  * Tegmark's twelve, one card per post.
  *
  * WHERE THE WORDS COME FROM. `title`, `desc`, `img` and `doom` are copied

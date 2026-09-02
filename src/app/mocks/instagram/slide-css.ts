@@ -297,46 +297,26 @@ export const SLIDE_CSS = `
 }
 
 /* ── Tegmark's twelve ──────────────────────────────────────────────────────
-   The Max Tegmark player, in his own two states. The ground is .od-game
-   verbatim (odds-of-surviving-ai/index.html 151): the purple with a pink glow
-   top-left and a teal one bottom-right, which is the table these cards are
-   dealt on.
+   The card IS the post. No ground behind it, no margin around it: what the Max
+   Tegmark player deals you is a card, and a card photographed on a table is a
+   different object. So the paper runs edge to edge and both slides are two
+   sides of it.
 
-   Sizes are in cqw so the pair holds at 9:16, 4:5 and 1:1 alike. The tarot card
-   opens a container of its own, so its rules stay written against the card's
-   width the way the game writes them against 280px. */
-.stf .tg {
-  position: relative; width: 100%; height: 100%; box-sizing: border-box;
-  display: flex; flex-direction: column; align-items: center;
-  padding: 5.5cqw 5.5cqw 5cqw; gap: 3.2cqw; container-type: inline-size;
-  background:
-    radial-gradient(circle at 24% 16%, rgba(255,93,162,0.2), transparent 46%),
-    radial-gradient(circle at 82% 84%, rgba(52,229,196,0.16), transparent 48%),
-    #1A0B2E;
-}
-/* Letterspaced serif rather than the game's Space Mono, which is the one house
-   rule this studio's own chrome does not bend on. */
-.stf .tg-eyebrow, .stf .tg-fate, .stf .tg-foot {
-  font-family: var(--font-bodoni), Georgia, serif;
-  text-transform: uppercase; letter-spacing: .22em; line-height: 1;
-}
-.stf .tg-eyebrow { flex: 0 0 auto; font-size: 2.9cqw; color: rgba(251,239,255,.5); }
-.stf .tg-foot { flex: 0 0 auto; font-size: 2.6cqw; color: rgba(251,239,255,.34); }
-
-/* The face. The card takes the height it is given and derives its width from
-   the game's own 280 x 395, so no crop can squash it. */
-.stf .tg-face { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; align-items: center; justify-content: center; }
-.stf .tg-card { height: 100%; aspect-ratio: 280 / 395; max-width: 100%; container-type: inline-size; }
+   Sizes are in cqw, 1% of the slide's own width, so the pair holds at 9:16,
+   4:5 and 1:1 alike. */
+.stf .tg { position: relative; width: 100%; height: 100%; container-type: inline-size; }
 
 /* ── the tarot card (odds-of-surviving-ai/index.html 81-87) ────────────────
-   Copied, with the flip dropped: the game's card is one face of a 3D flip and
-   carries position:absolute, backface-visibility:hidden and a 180° rotate
-   for it. A still slide has no back. */
+   Copied, with two departures. The flip is dropped: the game's card is one face
+   of a 3D flip and carries position:absolute, backface-visibility:hidden and a
+   180 degree rotate for it, and a still slide has no back to turn away from.
+   And the game's card is 280 x 395 while a post is not, so the art fills the
+   frame it is given and crops, rather than letterboxing into bands of paper. */
 .stf .od-tarot {
-  width: 100%; height: 100%; box-sizing: border-box;
-  border-radius: 4.6cqw; background: #e9dfc4;
-  box-shadow: inset 0 0 0 .55cqw rgba(255,252,244,.55), 0 4.3cqw 12cqw rgba(0,0,0,.5);
-  display: flex; flex-direction: column; padding: 3.9cqw 3.9cqw 0;
+  position: absolute; inset: 0; box-sizing: border-box;
+  background: #e9dfc4; color: #241a0d;
+  box-shadow: inset 0 0 0 .9cqw rgba(255,252,244,.55);
+  display: flex; flex-direction: column; padding: 3.6cqw 3.6cqw 0;
 }
 .stf .od-tarot-art {
   flex: 1; min-height: 0; overflow: hidden;
@@ -344,34 +324,47 @@ export const SLIDE_CSS = `
   display: flex; align-items: center; justify-content: center;
 }
 .stf .od-tarot-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.stf .od-tarot-cap { display: flex; align-items: center; justify-content: center; padding: 3.2cqw 2.1cqw 4.3cqw; }
+.stf .od-tarot-cap {
+  flex: 0 0 auto; display: flex; flex-direction: column; align-items: center;
+  gap: 2.2cqw; padding: 4cqw 2cqw 4.6cqw;
+}
 .stf .od-tarot-cap .nm {
   font-family: var(--font-bodoni), "Playfair Display", Georgia, serif;
-  font-weight: 700; font-size: 6.8cqw; letter-spacing: .05em;
-  text-transform: uppercase; color: #241a0d; line-height: 1.02; text-align: center;
+  font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+  color: #241a0d; line-height: 1.02; text-align: center;
 }
 
-/* The reading. The game's result panel: the future's name, and the deck's copy
-   under it. --fate is the game's own pair (wheelGood1 / wheelDoomCol). */
-.stf .tg-read {
-  flex: 1 1 auto; min-height: 0; width: 100%; overflow: hidden;
-  display: flex; flex-direction: column; justify-content: center;
-  --fate: #2E6FE0;
+/* Letterspaced serif for the small labels rather than the game's Space Mono,
+   which is the one house rule this studio's chrome does not bend on. */
+.stf .tg-num, .stf .tg-fate, .stf .tg-foot {
+  font-family: var(--font-bodoni), Georgia, serif;
+  text-transform: uppercase; letter-spacing: .22em; line-height: 1;
 }
-.stf .tg.doom .tg-read { --fate: #E0331F; }
+.stf .tg-num { flex: 0 0 auto; font-size: 2.8cqw; color: rgba(36,26,13,.45); }
+.stf .tg-foot { flex: 0 0 auto; font-size: 2.6cqw; color: rgba(36,26,13,.4); }
+
+/* The back. Same paper, and the reading set on it. --fate is the game's own
+   pair (wheelGood1 / wheelDoomCol), which is the only colour on this side. */
+.stf .tg-read {
+  flex: 1; min-height: 0; display: flex; flex-direction: column;
+  padding: 4.4cqw 4.4cqw 5.6cqw; --fate: #2E6FE0;
+}
+.stf .tg.doom .tg-read { --fate: #C22B18; }
+.stf .tg-mid { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
 .stf .tg-fate { font-size: calc(3.1cqw * var(--tg)); color: var(--fate); }
 .stf .tg-name {
-  margin: calc(4cqw * var(--tg)) 0 0; font-family: var(--font-bodoni), "Playfair Display", Georgia, serif;
-  font-weight: 700; font-size: calc(11cqw * var(--tg)); line-height: 1.04; letter-spacing: .02em;
-  text-transform: uppercase; color: #FBEFFF;
+  margin: calc(4cqw * var(--tg)) 0 0;
+  font-family: var(--font-bodoni), "Playfair Display", Georgia, serif;
+  font-weight: 700; line-height: 1.04; letter-spacing: .02em;
+  text-transform: uppercase; color: #241a0d;
 }
 .stf .tg-name::after {
   content: ""; display: block; width: 14cqw; height: 1px;
   margin: calc(4.5cqw * var(--tg)) 0 0; background: var(--fate);
 }
 .stf .tg-desc {
-  margin: calc(4.5cqw * var(--tg)) 0 0; font-size: calc(4.9cqw * var(--tg)); line-height: 1.5;
-  letter-spacing: -.005em; color: rgba(251,239,255,.86);
+  margin: calc(4.5cqw * var(--tg)) 0 0; font-size: calc(4.9cqw * var(--tg));
+  line-height: 1.5; letter-spacing: -.005em; color: #4a4238;
 }
 
 /* ── the slide shell: the game's page ground, with the card in it ──────── */
