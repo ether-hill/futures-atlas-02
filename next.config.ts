@@ -83,6 +83,9 @@ const nextConfig: NextConfig = {
         // Interference — hand-authored static bundle (gallery + embed.html player)
         { source: "/interference", destination: "/interference/index.html" },
         { source: "/superposition", destination: "/superposition/index.html" },
+        // Throat singing and quantum physics — hand-authored static bundle (article + the Overtone instrument)
+        { source: "/throat-singing-quantum", destination: "/throat-singing-quantum/index.html" },
+        { source: "/throat-singing-quantum/visualiser", destination: "/throat-singing-quantum/visualiser.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
         // Generatives — Vite static app; the dashboard + a separate embed.html player

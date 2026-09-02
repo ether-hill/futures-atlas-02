@@ -114,18 +114,19 @@ export const projects: Project[] = [
   },
   {
     id: "throat-singing-quantum",
-    title: "Feynman's Tuva",
+    title: "Throat singing and quantum physics",
     tagline:
-      "Feynman spent a decade trying to reach Tuva and died weeks before the visas came. The physics, the throat singing, and the obsession.",
+      "Feynman spent a decade trying to reach Tuva and died two days before the invitation came. The physics, the singing, and an instrument that listens to a voice and draws the quantum picture it is a picture of.",
     year: "2026",
-    date: "2026-09-01",
+    date: "2026-09-02",
     field: "Sound & physics",
     topics: ["Quantum", "Society"],
     kind: "story",
-    status: "concept",
+    status: "live",
     visibility: "draft",
     path: "/throat-singing-quantum",
     image: "/projects/throat-singing-quantum.jpg",
+    cta: "Read the story",
   },
   /*
    * The studio's own toolchain, played rather than listed.

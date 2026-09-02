@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en" class="dark" data-fa-no-footer data-fa-no-offset>
+<head>
+<meta charset="utf-8">
+<base href="/throat-singing-quantum/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Overtone, the instrument. Futures Atlas</title>
+<meta name="description" content="A quantum visualiser that listens to Tuvan throat singing: the drone, its first sixteen harmonics, and three pictures of the sum. Built in honour of Richard Feynman.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Bodoni+Moda:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
+<link rel="stylesheet" href="/api/theme.css">
+</head>
+<body class="viz">
+<div id="viz">
+  <div class="viz__stage" data-fa-hero><canvas aria-label="The quantum visualiser"></canvas></div>
+  <div class="viz__title">
+    <span class="label">Feynman's Tuva</span>
+    <h1>Overtone</h1>
+    <a href="/throat-singing-quantum">Back to the article</a>
+  </div>
+  <div class="viz__ui">
+    <div class="tool">
+      <div class="grp"><span class="label">Source</span>
+        <button class="btn" data-src="audio/sygyt.mp3">Sygyt</button>
+        <button class="btn" data-src="audio/kargyraa.mp3">Kargyraa</button>
+        <button class="btn" data-src="audio/chylandyk.mp3">Chylandyk</button>
+        <button class="btn" data-src="audio/mongolian.mp3">Mongolian</button>
+        <button class="btn" data-src="mic">Your voice</button>
+      </div>
+      <span class="spacer"></span>
+      <div class="grp"><span class="label">View</span>
+        <button class="btn" data-view="levels">Levels</button>
+        <button class="btn" data-view="orbit">Orbit</button>
+        <button class="btn" data-view="arrows">Arrows</button>
+        <button class="btn" data-view="bars">Bars</button>
+      </div>
+    </div>
+    <div class="readout">
+      <span><span class="swatch"></span>Drone <b data-f0>idle</b> <span data-note></span></span>
+      <span>Strongest overtone <b data-top></b></span>
+      <span data-state>synthetic drone</span>
+      <span data-msg></span>
+    </div>
+    <p class="viewnote"></p>
+    <template data-note="levels"><b>Levels.</b> Standing waves in a box, mode n with n humps, summed with the measured weights: the line is the real part, the glow the density. The ladder is the harmonic series, spaced like a quantum oscillator's levels.</template>
+    <template data-note="orbit"><b>Orbit.</b> Bohr's rule: a whole number of wavelengths around a ring. Each ringing harmonic is an n-lobed wave on its own shell; the ink line is the sum.</template>
+    <template data-note="arrows"><b>Arrows.</b> Feynman's arrows from QED: sixteen hands, one per harmonic, turning n times as fast as the first, added tip to tail. The tip traces the voice's waveform.</template>
+    <template data-note="bars"><b>Bars.</b> Harmonics 1 to 16, relative strength, strongest overtone marked.</template>
+  </div>
+</div>
+<script src="overtone.js"></script>
+<script src="article.js"></script>
+<script src="/atlas-nav.js" defer></script>
+</body>
+</html>

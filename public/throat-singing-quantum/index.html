@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<base href="/throat-singing-quantum/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Throat singing and quantum physics. Futures Atlas</title>
+<meta name="description" content="Richard Feynman spent a decade trying to reach Tuva and died two days before the invitation came. The physics, the throat singing, and an instrument built from what they share.">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Futures Atlas">
+<meta property="og:title" content="Throat singing and quantum physics">
+<meta property="og:description" content="Feynman, Tuva, khöömei, and a quantum visualiser that listens to a singing voice.">
+<meta property="og:image" content="/projects/throat-singing-quantum.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/projects/throat-singing-quantum.jpg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Bodoni+Moda:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<script>
+  (function () { try { if (localStorage.getItem("fa-theme") === "light") document.documentElement.classList.remove("dark"); } catch (e) {} })();
+</script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
+<link rel="stylesheet" href="/api/theme.css">
+</head>
+<body>
+
+<!-- ─────────────────────────────────────────────── hero -->
+<header class="hero" id="hero">
+  <div class="hero__stage"><canvas aria-hidden="true"></canvas></div>
+  <div class="hero__veil"></div>
+  <div class="hero__inner wrap">
+    <div class="col--wide">
+      <span class="label">Feynman's Tuva</span>
+      <h1>Throat singing and quantum physics</h1>
+      <p class="hero__stand">Richard Feynman spent the last decade of his life trying to reach Tuva, and died two days before the invitation arrived. What reached him instead was a voice that sings two notes at once. The man, the country, the music, and an instrument built from the physics they share.</p>
+      <div class="hero__row">
+        <button class="btn btn--solid" data-src="audio/sygyt.mp3">Listen to the singing</button>
+        <div class="hero__read">
+          <span>Drone <b data-f0>idle</b> <span data-note></span></span>
+          <span>Strongest overtone <b data-top>n = 8</b></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ─────────────────────────────────────────────── one -->
+<section class="part" id="tuva">
+  <div class="wrap">
+    <div class="col part__head" data-reveal>
+      <span class="label">One · Summer 1977</span>
+      <h2>Whatever happened to Tannu Tuva?</h2>
+      <p class="lead">A dinner in Pasadena, a stamp album from the 1930s, and a capital city spelled with too many Ys.</p>
+    </div>
+    <div class="col prose" data-reveal>
+      <p>In the summer of 1977 Richard Feynman was at dinner with Ralph Leighton, a schoolteacher and drummer who had become his closest friend, and Leighton made the mistake of claiming to know every country in the world. Feynman had a question ready. When he was a boy in Far Rockaway his father had shown him a country on a map, a purple shape in the middle of the great green mass of Asia, and its stamps were the best things in his album: triangles and diamonds printed with camels, reindeer and horsemen, from a place called Tannu Tuva. Then it stopped appearing anywhere. So: whatever happened to Tannu Tuva?</p>
+      <p>Leighton assumed it was a joke. They got the encyclopaedia down. Tuva was real. It had been an independent republic from 1921 to 1944, and it had then been absorbed into the Soviet Union, where it sat on the Mongolian border, about as far from any ocean as it is possible to be. Then they saw the name of its capital.</p>
+    </div>
+    <blockquote class="quote" data-reveal>“K-Y-Z-Y-L. My wife and I and he at the same time looked at each other and grinned, because any place that's got a capital named Kyzyl has just got to be interesting.”<cite>Richard Feynman, The Quest for Tannu Tuva, 1988</cite></blockquote>
+    <div class="col prose" data-reveal>
+      <p>They shook hands on it. They would go. It took a while to understand how hard that would be. The library had shelves of accounts of travel through central Siberia, and none of the travellers had gone through Tuva. It was a bowl ringed by mountains, Feynman said, and everybody went around it. The one book they found had been published in Berlin in 1931 by Otto Mänchen-Helfen, the first non-Russian to set foot in the republic, who reported that the Kyzyl power station only ran while the cinema was showing a film, and that the audience, shown a close-up, shouted that they had paid full price and wanted to see the whole person. Feynman read that and decided they had discovered Shangri-La.</p>
+    </div>
+    <div class="grid grid--4" data-reveal>
+      <figure class="fig fig--stamp"><img src="img/stamp-1926-blue.jpg" alt="A blue Tannu Tuva postage stamp of 1926 with a traditional patterned design" loading="lazy"><figcaption>Tannu Tuva, 1926.<span class="credit">Public domain, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig fig--stamp"><img src="img/stamp-1927-reindeer.jpg" alt="A purple 2 kopeck Tannu Tuva stamp of 1927 showing a reindeer" loading="lazy"><figcaption>Two kopecks, 1927. The purple ones Feynman remembered.<span class="credit">Public domain, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig fig--stamp"><img src="img/stamp-1936-archer.jpg" alt="A triangular 8 kopeck Tannu Tuva stamp of 1936 showing an archer" loading="lazy"><figcaption>The triangles: an archer, 1936.<span class="credit">Public domain, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig fig--stamp fig--film"><img src="img/film/stamp-camel.jpg" alt="A diamond-shaped Touva stamp with a camel, as shown in the 1988 documentary" loading="lazy"><figcaption>And the diamonds: a camel, as the film opens.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+    </div>
+    <figure class="fig fig--wide" data-reveal><img src="img/steppe-road.jpg" alt="A straight empty road across the Tuvan steppe under a wide cloudy sky, with mountains on the horizon" loading="lazy"><figcaption>Tuva, near Khandagayty. A bowl ringed by mountains, and no particular reason to cross it.<span class="credit">Photo: AntonovAlexandr, CC BY-SA 3.0, via Wikimedia Commons.</span></figcaption></figure>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── two -->
+<section class="part" id="feynman">
+  <div class="wrap">
+    <div class="col part__head" data-reveal>
+      <span class="label">Two · 1918 to 1988</span>
+      <h2>The physicist</h2>
+      <p class="lead">Who he was, in the years the letters were going unanswered.</p>
+    </div>
+    <div class="col prose" data-reveal>
+      <p>Feynman was born in Queens in 1918, took his doctorate at Princeton in 1942 under John Wheeler, and spent the war at Los Alamos in Hans Bethe's theoretical division, where he ran the computing group, opened his colleagues' safes for sport, and watched the Trinity test through a truck windscreen because he had worked out that glass would stop the ultraviolet. At Cornell after the war he rebuilt quantum electrodynamics, the theory of how light and electrons interact, which at the time gave infinite answers to finite questions.</p>
+      <p>His fix came with two tools that physics still uses every day. The first was the path integral. Rather than following a particle along one route, you add up a contribution from every route it could possibly take and let the contributions interfere. The second was the diagram. A Feynman diagram is a cartoon of an interaction, straight lines for electrons and a wiggle for a photon, and every cartoon stands for an exact term in the calculation. In 1965 he shared the Nobel Prize with Julian Schwinger and Sin-Itiro Tomonaga for that work. He told the Horizon crew that the prize had been a pain in the neck.</p>
+    </div>
+    <figure class="diagram col--wide" data-reveal>
+      <svg viewBox="0 0 900 300" role="img" aria-labelledby="fd-title">
+        <title id="fd-title">A Feynman diagram: two electrons exchange a photon</title>
+        <defs>
+          <marker id="ah" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker>
+        </defs>
+        <g stroke="currentColor" stroke-width="1.6" fill="none">
+          <path d="M90 250 L300 150" marker-mid="url(#ah)"/>
+          <path d="M90 250 L195 200" marker-end="url(#ah)"/>
+          <path d="M300 150 L510 250"/>
+          <path d="M300 150 L405 200" marker-end="url(#ah)"/>
+          <path d="M90 50 L300 150"/>
+          <path d="M90 50 L195 100" marker-end="url(#ah)"/>
+          <path d="M300 150 L510 50"/>
+          <path d="M300 150 L405 100" marker-end="url(#ah)"/>
+        </g>
+        <g class="acc" stroke="currentColor" stroke-width="1.6" fill="none">
+          <path d="M300 150 q 15 -14 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0 t 30 0" transform="translate(0 0)"/>
+        </g>
+        <g fill="currentColor" font-size="15">
+          <text x="60" y="270" class="serif">e⁻</text>
+          <text x="60" y="44" class="serif">e⁻</text>
+          <text x="520" y="270" class="serif">e⁻</text>
+          <text x="520" y="44" class="serif">e⁻</text>
+          <text x="455" y="135" class="serif acc" fill="currentColor">γ</text>
+        </g>
+        <g fill="currentColor" font-size="13" opacity="0.7">
+          <text x="640" y="80">Two electrons come in, exchange a photon,</text>
+          <text x="640" y="102">and go out again. The wiggle is the photon.</text>
+          <text x="640" y="140">Every line and vertex is a factor in a sum,</text>
+          <text x="640" y="162">and the sum is the odds of the event.</text>
+          <text x="640" y="200">Time runs left to right. The drawing is</text>
+          <text x="640" y="222">the calculation, which is why it caught on.</text>
+        </g>
+      </svg>
+      <figcaption>The simplest Feynman diagram of electron–electron scattering, drawn after the ones in his 1949 papers.</figcaption>
+    </figure>
+    <div class="col prose" data-reveal>
+      <p>By then he was at Caltech, where he stayed for the rest of his life. The course he gave to first-year students from 1961 to 1963 became <em>The Feynman Lectures on Physics</em>, and the third volume, the quantum one, opens by saying that the double-slit experiment contains the only mystery, then spends the rest of the book on what follows from it. In 1959 he had given a talk called “There's Plenty of Room at the Bottom” that is usually counted as the beginning of nanotechnology. In May 1981, four years into the Tuva project, he gave another, “Simulating Physics with Computers”, which argued that an ordinary computer can never efficiently imitate a quantum system, so you would have to build a computer out of quantum parts. “Nature isn't classical, dammit,” the published version says, “and if you want to make a simulation of nature, you'd better make it quantum mechanical.” Every quantum computer now being built descends from that sentence.</p>
+      <p>He also played the drums, and not as a hobby that got a line in the obituary. He and Leighton were once hired in San Francisco to write and perform a percussion score for a ballet. The ballet went to a competition in Paris and came second, and when the choreographer asked the judges what had let it down, they said the music. “So we were found out,” Feynman told the camera, pleased. “In Paris, at last, somebody had enough cultural background to recognise the fakers.”</p>
+    </div>
+    <div class="grid grid--3" data-reveal>
+      <figure class="fig fig--portrait"><img src="img/feynman-badge-1943.jpg" alt="Richard Feynman's Los Alamos identity badge photograph, a young man in a white shirt" loading="lazy"><figcaption>Los Alamos badge, 1943.<span class="credit">Los Alamos National Laboratory, courtesy AIP Emilio Segrè Visual Archives. CC0.</span></figcaption></figure>
+      <figure class="fig"><img src="img/shelter-island-1947.jpg" alt="Physicists around a table at the 1947 Shelter Island conference, Feynman among them" loading="lazy"><figcaption>Shelter Island, June 1947, where the QED problem was set. Lamb, Pais, Wheeler, Feynman, Feshbach and Schwinger.<span class="credit">AIP Emilio Segrè Visual Archives, gift of Abraham Pais. Free use.</span></figcaption></figure>
+      <figure class="fig fig--portrait"><img src="img/feynman-1959.jpg" alt="Richard Feynman in 1959, seated in front of a blackboard covered in equations" loading="lazy"><figcaption>1959, the year of “Plenty of Room at the Bottom”.<span class="credit">Public domain, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig fig--portrait"><img src="img/dirac-feynman-1962.jpg" alt="Paul Dirac and Richard Feynman talking at a conference in Poland in 1962" loading="lazy"><figcaption>With Paul Dirac, Jabłonna, 1962.<span class="credit">Photo: Marek Holzman, CC BY 4.0, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig fig--portrait"><img src="img/feynman-1986.jpg" alt="Richard Feynman standing at a blackboard at Caltech in 1986" loading="lazy"><figcaption>Caltech, 1986.<span class="credit">Public domain, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig"><img src="img/feynman-drum.jpg" alt="Richard Feynman's drum on a plinth in a Caltech building" loading="lazy"><figcaption>His drum, on display at Caltech.<span class="credit">Photo: Antony-22, CC BY-SA 4.0, via Wikimedia Commons.</span></figcaption></figure>
+    </div>
+    <div class="col" data-reveal>
+      <ul class="timeline">
+        <li><span class="y">1918</span><span class="what">Born 11 May, Far Rockaway, Queens. A stamp album with Tannu Tuva in it.</span></li>
+        <li><span class="y">1942</span><span class="what">PhD, Princeton, under John Wheeler: <b>the principle of least action in quantum mechanics</b>, the seed of the path integral.</span></li>
+        <li><span class="y">1943</span><span class="what">Los Alamos, Bethe's theoretical division. The Bethe–Feynman yield formula. Trinity, July 1945.</span></li>
+        <li><span class="y">1948</span><span class="what"><b>Path integrals</b> published; the <b>diagrams</b> shown at Pocono, in print the next year.</span></li>
+        <li><span class="y">1959</span><span class="what">“There's Plenty of Room at the Bottom.”</span></li>
+        <li><span class="y">1961</span><span class="what">The Caltech introductory course that became <b>The Feynman Lectures on Physics</b>.</span></li>
+        <li><span class="y">1965</span><span class="what"><b>Nobel Prize in Physics</b>, with Schwinger and Tomonaga, for quantum electrodynamics.</span></li>
+        <li><span class="y">1977</span><span class="what">“Whatever happened to Tannu Tuva?”</span></li>
+        <li><span class="y">1978</span><span class="what">A liposarcoma the size of a football removed from his abdomen. Ten years of borrowed time begin.</span></li>
+        <li><span class="y">1981</span><span class="what">“Simulating Physics with Computers.” <b>Quantum computing</b> is proposed.</span></li>
+        <li><span class="y">1985</span><span class="what"><b>QED: The Strange Theory of Light and Matter</b>, the arrows book; and <b>Surely You're Joking, Mr. Feynman!</b>, edited by Leighton from tapes.</span></li>
+        <li><span class="y">1986</span><span class="what">The Rogers Commission. An O-ring in a glass of ice water.</span></li>
+        <li><span class="y">1988</span><span class="what">Dies 15 February, Los Angeles, aged 69. The invitation from the Academy of Sciences arrives two days later. <b>The Quest for Tannu Tuva</b> is broadcast on 4 July.</span></li>
+        <li><span class="y">1999</span><span class="what">Kongar-ool Ondar's <b>Back Tuva Future</b>, with Feynman's drumming and voice on two tracks.</span></li>
+        <li><span class="y">2009</span><span class="what">Michelle Feynman reaches Kyzyl, 8 June.</span></li>
+        <li><span class="y">2018</span><span class="what">His centenary is celebrated in Kyzyl, on the Yenisei, with throat singers and a ceremony at the centre of Asia.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── three -->
+<section class="part" id="letters">
+  <div class="wrap">
+    <div class="col part__head" data-reveal>
+      <span class="label">Three · 1977 to 1988</span>
+      <h2>Ten years of letters</h2>
+      <p class="lead">A phrasebook, a licence plate, a radio programme, and a plan involving an art exhibition.</p>
+    </div>
+    <div class="col prose" data-reveal>
+      <p>The first replies were from Intourist, the Soviet travel agency, and the answer was a form. A scholar of Tuvan studies wrote back more kindly to say that Leighton's interest alone doubled the number of people in the field, and that the obstacles were, in his opinion, insurmountable. Feynman's plan was to be invited to lecture in Moscow and make Tuva a condition. Leighton's was to learn Tuvan.</p>
+      <div class="letter"><div class="from">Intourist, Moscow</div><p>Dear Mr Leighton, we have received your letter requesting us to arrange a visit to Tuvinskaya. We regret to inform you that the subject area is beyond Intourist travel routes. Therefore we cannot arrange such a visit. Sincerely.</p></div>
+      <p>They got hold of a Tuvan–Russian phrasebook and a dictionary and built letters out of them, changing the printed phrases as little as they dared so that the mistakes would be few. Greetings to your country from ours. We have a great interest in Tuva. We hope one day to visit. If there is any way you could send us recordings of the language we would be grateful. They posted it, Feynman said, “into the vacuum, as usual”. Then one day Leighton came running over waving an envelope he had not dared to open. It had come from Kyzyl. It was in Tuvan. They worked through it word by word, from the phrasebook into Russian and from Russian into English.</p>
+      <div class="letter"><div class="from">Ondar Daryma, Kyzyl</div><p>Greetings from Tuva. Kyzyl is a nice city. You will find we have a monument to the centre of Asia.</p></div>
+      <p>“That was the beginning of hope,” Feynman said. It had taken years.</p>
+    </div>
+    <div class="grid grid--2" data-reveal>
+      <figure class="fig fig--film"><img src="img/film/tuvan-notes.jpg" alt="Handwritten Tuvan sentences with English glosses pencilled above them" loading="lazy"><figcaption>Tuvan built from a phrasebook, with the English above each word.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+      <figure class="fig fig--film"><img src="img/film/plate-kyzyl.jpg" alt="A blue California licence plate reading TOUVA with a frame that says Mongol Motors, Kyzyl" loading="lazy"><figcaption>Leighton's licence plate. The photograph of the two of them pushing the car ran in the Kyzyl newspaper.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+    </div>
+    <div class="col prose" data-reveal>
+      <p>Along the way the country came to them in pieces. A Los Angeles radio station played a record that a Russian ethnographer had posted to them, and the presenter warned listeners that what they were about to hear was one man, not a man and a flute. That was the first throat singing either of them had heard. A team of botanists got into Tuva to count leaf buds, which was maddening but instructive: you needed official business. Leighton found a throat-singing conference in western Mongolia, close to the border, and they signed up as delegates, imagining Tuvans who would carry them home in their wagons. Then the Mongolian minister of culture changed and the conference was cancelled.</p>
+      <p>In January 1986 the Challenger broke apart, and Feynman was asked to join the commission investigating it. He did not want to go. His wife Gweneth told him that eleven of the commissioners would move around in a knot and one would run everywhere like a mosquito, and that if there was anything strange to find, he would find it. He went, and on television he dropped a piece of the rocket's O-ring seal into a glass of ice water to show that it lost its spring in the cold. He wrote home from Washington.</p>
+      <div class="letter"><div class="from">Richard Feynman, Washington, 1986</div><p>Dearest Gweneth and Michelle, this is the first time I have had time to write to you. This is an adventure as good as some of the others in my book. I already smell certain rats that I will not forget, because I just love the smell of rats, for it is the spoor of exciting adventure. Tuva or Bust! Love, Richard.</p></div>
+      <p>The route that finally opened was an art exhibition. Leighton learned of a Soviet show of nomadic art with Tuvan objects in it and set about getting it to Los Angeles, on the understanding that whoever brought it over would have to travel to the places the objects came from. When the museum asked what his finder's fee was, he said there was none. The fee was Tuva. The Soviet delegation who came ahead of the exhibition understood the trick at once, since two thirds of their own protocol was gimmicks for getting Russians to Disneyland, and the senior man, delighted by an evening among Feynman's parrot-owning, music-making friends, said: you should come to Tuva, and I am going to guarantee it.</p>
+    </div>
+    <div class="grid grid--3" data-reveal>
+      <figure class="fig fig--film"><img src="img/film/drumming-together.jpg" alt="Feynman and Leighton playing drums together in a sunlit room" loading="lazy"><figcaption>Feynman and Leighton at the drums.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+      <figure class="fig fig--film"><img src="img/film/intourist.jpg" alt="The letterhead of Intourist, the USSR company for foreign travel" loading="lazy"><figcaption>The first answer.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+      <figure class="fig fig--film"><img src="img/film/tuvan-portrait.jpg" alt="Black and white archive portrait of a Tuvan man in a traditional hat" loading="lazy"><figcaption>Archive footage of Tuva in the film.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+    </div>
+
+    <div class="media-pair" data-reveal>
+      <div>
+        <div class="yt" id="yt-doc" data-id="Qeauwu2uIwM" data-title="Feynman: The Quest for Tannu Tuva (1988)">
+          <img src="https://i.ytimg.com/vi/Qeauwu2uIwM/hqdefault.jpg" alt="" loading="lazy">
+          <button class="yt__play" type="button" aria-label="Play The Quest for Tannu Tuva"><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l15 9-15 9z"/></svg></span><span class="t">Watch the film · 44 min</span></button>
+        </div>
+        <p class="yt__cap"><strong>The Quest for Tannu Tuva</strong>, BBC Horizon, first broadcast 4 July 1988, five months after Feynman's death. Directed by Christopher Sykes, who put it on his own channel. Shown here from YouTube; nothing loads until you press play.</p>
+      </div>
+      <div>
+        <span class="label label--muted">Moments</span>
+        <ul class="chapters">
+          <li><button data-for="yt-doc" data-t="258"><span class="tc">4:18</span>Whatever happened to Tannu Tuva?</button></li>
+          <li><button data-for="yt-doc" data-t="327"><span class="tc">5:27</span>K-Y-Z-Y-L</button></li>
+          <li><button data-for="yt-doc" data-t="420"><span class="tc">7:00</span>The 1931 book: Kyzyl's cinema</button></li>
+          <li><button data-for="yt-doc" data-t="609"><span class="tc">10:09</span>The Nobel Prize, a pain in the neck</button></li>
+          <li><button data-for="yt-doc" data-t="768"><span class="tc">12:48</span>A ballet score, found out in Paris</button></li>
+          <li><button data-for="yt-doc" data-t="880"><span class="tc">14:40</span>The letters begin</button></li>
+          <li><button data-for="yt-doc" data-t="1053"><span class="tc">17:33</span>Writing Tuvan from a phrasebook</button></li>
+          <li><button data-for="yt-doc" data-t="1123"><span class="tc">18:43</span>The reply from Kyzyl</button></li>
+          <li><button data-for="yt-doc" data-t="1427"><span class="tc">23:47</span>The record on the radio: two voices</button></li>
+          <li><button data-for="yt-doc" data-t="1503"><span class="tc">25:03</span>The licence plate</button></li>
+          <li><button data-for="yt-doc" data-t="1617"><span class="tc">26:57</span>A throat-singing conference in Mongolia</button></li>
+          <li><button data-for="yt-doc" data-t="1750"><span class="tc">29:10</span>Challenger</button></li>
+          <li><button data-for="yt-doc" data-t="2117"><span class="tc">35:17</span>The exhibition, and a finder's fee</button></li>
+          <li><button data-for="yt-doc" data-t="2330"><span class="tc">38:50</span>Two days after his death, a letter</button></li>
+          <li><button data-for="yt-doc" data-t="2383"><span class="tc">39:43</span>The T-shirts he never saw</button></li>
+          <li><button data-for="yt-doc" data-t="2492"><span class="tc">41:32</span>“It's a game. It's not serious.”</button></li>
+          <li><button data-for="yt-doc" data-t="2576"><span class="tc">42:56</span>The drums</button></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── four -->
+<section class="part" id="two-days">
+  <div class="wrap">
+    <div class="col part__head" data-reveal>
+      <span class="label">Four · February 1988</span>
+      <h2>Two days</h2>
+    </div>
+    <div class="col prose" data-reveal>
+      <p>Three days after that evening Feynman went into hospital. He had been living with cancer for ten years, since a tumour the size of a football was cut out of his abdomen in 1978, and a second, rarer cancer of the blood had followed. He died at the UCLA Medical Center on Monday 15 February 1988, aged 69. Two days later a letter arrived from Moscow.</p>
+      <div class="letter"><div class="from">Academy of Sciences of the USSR, Moscow</div><p>Dear Professor Feynman, I have the great pleasure to invite you, your wife and four of your colleagues to visit the Soviet Union. I was informed by Professor Kapitsa that you would like to visit Tuva and get acquainted with its sights. We consider the most favourable time for such a trip to be the period of May and June 1988. Your trip will take three to four weeks. Kindly note that the Academy of Sciences will cover your expenses.</p><p>Yours sincerely, Vice President Velikhov.</p></div>
+      <p>Leighton had kept a secret for the day they reached the monument: T-shirts printed with a map of Tuva, a shirt that said Kyzyl with a heart, souvenir hats reading Tuva, Centre of Asia. “The chief never knew about it,” he says in the film, and then, asked what happens to the project now, he stops being able to speak. Feynman, in the last interview, had already answered the question of what it had all been for.</p>
+    </div>
+    <blockquote class="quote" data-reveal>“It's a game. It's not serious. It doesn't involve some deep philosophical point of view about authorities or anything. It's just the fun of having an adventure, to try to go to a land that we never heard of.”<cite>Richard Feynman, the last interview, 1988</cite></blockquote>
+    <div class="col prose" data-reveal>
+      <p>The film ends with him at the drums. Leighton went to Kyzyl that year and stood at the centre of Asia without him. The exhibition, <em>Nomads: Masters of the Eurasian Steppe</em>, opened at the Natural History Museum of Los Angeles County in November 1989. Feynman's daughter Michelle made the trip in June 2009. On 11 May 2018, his hundredth birthday, Kyzyl held a celebration on the banks of the Yenisei, with Leighton, with physicists, with throat singers, and with a ceremony at the monument. By then the country he never reached had spent thirty years sending its music out into the world along the road he had opened.</p>
+    </div>
+    <div class="grid grid--3" data-reveal>
+      <figure class="fig fig--film"><img src="img/film/academy-envelope.jpg" alt="An envelope from the Academy of Sciences bearing two Lenin stamps" loading="lazy"><figcaption>The envelope from Moscow.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+      <figure class="fig fig--film"><img src="img/film/obituary.jpg" alt="A newspaper obituary of Richard Feynman, February 1988" loading="lazy"><figcaption>The New York Times, 17 February 1988. The day the letter came.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+      <figure class="fig fig--film"><img src="img/film/feynman-drums-3.jpg" alt="Richard Feynman drumming, eyes closed, in a grey jacket" loading="lazy"><figcaption>The last frames.<span class="credit">Still from The Quest for Tannu Tuva, BBC Horizon, 1988.</span></figcaption></figure>
+    </div>
+    <figure class="fig fig--full" data-reveal><img src="img/yenisei-kyzyl-pano.jpg" alt="A wide panorama of the Yenisei river at Kyzyl, mountains beyond" loading="lazy"><figcaption>The Yenisei at Kyzyl, where two rivers meet and the great one begins its run north to the Arctic.<span class="credit">Photo: Igrsan, CC BY-SA 4.0, via Wikimedia Commons.</span></figcaption></figure>
+    <div class="grid grid--2" data-reveal>
+      <figure class="fig"><img src="img/centre-of-asia-2015.jpg" alt="The Centre of Asia monument in Kyzyl, a globe and obelisk, with people gathered on the square" loading="lazy"><figcaption>The Centre of Asia monument, Kyzyl, the one Daryma promised them in his letter. Rebuilt in 2014.<span class="credit">Photo: Zamunu45, CC BY-SA 4.0, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig"><img src="img/centre-of-asia-dusk.jpg" alt="The Centre of Asia obelisk at dusk" loading="lazy"><figcaption>Where Leighton stood in 1988, and where the centenary ended in 2018.<span class="credit">Photo: Zamunu45, CC BY-SA 4.0, via Wikimedia Commons.</span></figcaption></figure>
+    </div>
+    <blockquote class="quote" data-reveal>“It was the adventure with my friend that this was all about.”<cite>Ralph Leighton, 1988</cite></blockquote>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── five -->
+<section class="part" id="khoomei">
+  <div class="wrap">
+    <div class="col part__head" data-reveal>
+      <span class="label">Five · Khöömei</span>
+      <h2>The music that came back</h2>
+      <p class="lead">One voice, several pitches, and the physics of a singer's mouth.</p>
+    </div>
+    <div class="col prose" data-reveal>
+      <p>Tuvan throat singing, khöömei, is a family of techniques for making one voice sound like two. The singer holds a low drone, and above it a second voice appears, a clear whistle that moves in a melody of its own while the drone stays put. There is no trick and no second person. Every sung note is already a stack of harmonics: the fundamental plus its whole-number multiples, two times, three times, four times the frequency and on up. Your ear normally fuses them into one note with a colour. The vocal tract shapes that colour. It is a tube with resonances, and moving the tongue and lips moves the resonances, which is how vowels work. A khöömei singer narrows the tract until one resonance becomes so sharp that it lets a single harmonic through and starves the rest. That harmonic, usually somewhere between the sixth and the thirteenth, is heard as a separate note. To play a melody the singer hops from one harmonic to the next, which means the melody is made of whole numbers: 8, then 9, then 10, then 12. The scale of a sygyt tune is the harmonic series.</p>
+      <p>There are three main styles and many small ones. Khöömei proper is soft and mid-range. Sygyt, the word means whistle, pushes the fundamental higher and gets the piercing, flute-like overtone. Kargyraa is the deep one. The singer brings the vestibular folds, the false vocal cords above the true ones, into vibration as well, and they lock in at exactly half the frequency, so a second fundamental appears an octave below. Chylandyk combines sygyt and kargyraa. Singers traditionally went out to the steppe and the rivers to do it, where the open country carries the sound a long way, and the styles are named for the things they imitate: wind over the grass, water over stones, the gait of a horse.</p>
+    </div>
+
+    <div class="clips" id="clips" data-reveal>
+      <div class="clips__bar">
+        <span class="label">Listen</span>
+        <button class="btn" data-src="audio/sygyt.mp3">Sygyt</button>
+        <button class="btn" data-src="audio/kargyraa.mp3">Kargyraa</button>
+        <button class="btn" data-src="audio/chylandyk.mp3">Chylandyk</button>
+        <button class="btn" data-src="audio/mongolian.mp3">Mongolian khöömii</button>
+        <button class="btn" data-src="mic">Your voice</button>
+      </div>
+      <div class="clips__stage"><canvas aria-label="The first sixteen harmonics of the voice, as bars"></canvas></div>
+      <div class="clips__read">
+        <span>Drone <b data-f0>idle</b> <span data-note></span></span>
+        <span>Strongest overtone <b data-top></b></span>
+        <span data-state>synthetic drone</span>
+        <span data-msg></span>
+      </div>
+      <p class="clips__note">Sixteen bars, one per harmonic of the drone the engine finds. Watch which bar jumps when the whistle appears. Sygyt and kargyraa clips by Cassa342, chylandyk by Giovanni Bortoluzzi, Mongolian tseejiin khöömii by Lufke, all CC BY-SA 4.0 via Wikimedia Commons. Your voice never leaves the page and is not played back.</p>
+    </div>
+
+    <div class="col prose" data-reveal>
+      <p>For a long time the route from Kyzyl to the wider world ran through Leighton's living room. After Feynman's death he founded Friends of Tuva, and in 1993 the society brought Kongar-ool Ondar to California. Ondar, born in 1962 by the Khemchik river, was already Tuva's most celebrated singer, a People's Khöömeizhi of the republic. At a reception in San Francisco a blind blues musician called Paul Pena, who had heard throat singing on a shortwave radio in 1984 and taught himself kargyraa from a record, stood up in the crowd and sang back at him. Two years later Friends of Tuva sent Pena to Kyzyl for the khöömei symposium, where he won the kargyraa prize, and the film of that journey, <em>Genghis Blues</em>, won the audience award at Sundance in 1999 and was nominated for an Oscar.</p>
+      <p>The same year Ondar released <em>Back Tuva Future</em> on Warner Bros., a record that put throat singing next to Willie Nelson and Randy Scruggs and, on two tracks, next to Richard Feynman. Leighton had tapes of Feynman drumming and chanting, and on “Tuva Groove” and “Kargyraa Rap” the drums under Ondar's voice are his, and so is the voice you hear talking. Feynman is credited as a co-writer. A hidden track at the end runs excerpts from his lectures with no music under them at all. He never heard a Tuvan sing in a room with him. The record put him in one.</p>
+    </div>
+
+    <div class="media-pair" data-reveal>
+      <div>
+        <div class="yt" id="yt-album" data-id="4tUrrm0LONo" data-title="Kongar-ool Ondar, Back Tuva Future (1999)">
+          <img src="https://i.ytimg.com/vi/4tUrrm0LONo/hqdefault.jpg" alt="" loading="lazy">
+          <button class="yt__play" type="button" aria-label="Play Back Tuva Future"><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l15 9-15 9z"/></svg></span><span class="t">Play the album · 48 min</span></button>
+        </div>
+        <p class="yt__cap"><strong>Back Tuva Future</strong>, Kongar-ool Ondar, Warner Bros., 1999. The whole record as uploaded to YouTube; the tracks with Feynman on them are listed alongside.</p>
+      </div>
+      <div>
+        <span class="label label--muted">Tracks</span>
+        <ul class="chapters">
+          <li><button data-for="yt-album" data-t="0"><span class="tc">0:00</span>Tuva Groove (Bolur Daa-Bol), with Feynman on drums and voice</button></li>
+          <li><button data-for="yt-album" data-t="196"><span class="tc">3:16</span>Good Horses (Eki A'ttar)</button></li>
+          <li><button data-for="yt-album" data-t="685"><span class="tc">11:25</span>Kargyraa Rap (Dürgen Chugaa), with Feynman</button></li>
+          <li><button data-for="yt-album" data-t="1259"><span class="tc">20:59</span>Two Lands, One Tribe (Alash Khem)</button></li>
+          <li><button data-for="yt-album" data-t="1627"><span class="tc">27:07</span>My Tuva (Meeng Tyvam)</button></li>
+          <li><button data-for="yt-album" data-t="2201"><span class="tc">36:41</span>Hidden track: the making of the album, and Feynman's lectures</button></li>
+        </ul>
+        <div class="yt" id="yt-gb" data-id="-_xlbCq0WTw" data-title="Genghis Blues, official trailer" style="margin-top:22px">
+          <img src="https://i.ytimg.com/vi/-_xlbCq0WTw/hqdefault.jpg" alt="" loading="lazy">
+          <button class="yt__play" type="button" aria-label="Play the Genghis Blues trailer"><span class="ring"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l15 9-15 9z"/></svg></span><span class="t">Genghis Blues · trailer</span></button>
+        </div>
+        <p class="yt__cap"><strong>Genghis Blues</strong>, dir. Roko Belic, 1999. Paul Pena and Ondar in Tuva.</p>
+      </div>
+    </div>
+
+    <div class="grid grid--2" data-reveal>
+      <figure class="fig"><img src="img/khoomei-masters.jpg" alt="A group of Tuvan throat singers in traditional dress at the Centre of Asia cultural complex in Kyzyl" loading="lazy"><figcaption>Masters of khöömei at the Centre of Asia, Kyzyl, 2016.<span class="credit">Photo: Agilight, CC BY-SA 4.0, via Wikimedia Commons.</span></figcaption></figure>
+      <figure class="fig fig--portrait"><img src="img/khovalyg.jpg" alt="Kaigal-ool Khovalyg singing on stage in a traditional robe" loading="lazy"><figcaption>Kaigal-ool Khovalyg of Huun-Huur-Tu, People's Khöömeizhi of Tuva.<span class="credit">Photo: Zamunu45, CC BY-SA 4.0, via Wikimedia Commons.</span></figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── six -->
+<section class="part" id="common">
+  <div class="wrap">
+    <div class="col part__head" data-reveal>
+      <span class="label">Six · The allegory</span>
+      <h2>What they have in common</h2>
+      <p class="lead">The ladder, the sum, and where the likeness stops.</p>
+    </div>
+    <div class="col prose" data-reveal>
+      <h3><span class="num">1</span>Only certain waves fit</h3>
+      <p>A string fixed at both ends can only vibrate in shapes that fit between the ends: one hump, two, three. Its frequencies are whole-number multiples of the lowest. The buzz of the vocal folds is the same kind of ladder. In 1913 Niels Bohr explained why atoms only emit certain colours with the same rule: an electron's wave has to fit a whole number of wavelengths around its orbit, so only certain orbits, and only certain energies, exist. Schrödinger's equation of 1926 made that exact. It is a wave equation, and its bound solutions are standing waves. “Quantised” means only certain modes fit. A throat singer's ladder of overtones and an atom's ladder of levels are quantised for the same reason, and the first view of the instrument below draws the two side by side.</p>
+      <h3><span class="num">2</span>A state is a sum</h3>
+      <p>Any sound is a sum of harmonics with weights: this much of the fundamental, that much of the eighth. That is Fourier's theorem, and it is exactly the form a quantum state takes, a sum of modes with weights, which is what superposition means. When a khöömei singer reshapes the mouth, they are adjusting the weights, preparing a state. A pure sygyt whistle is one weight dominating all the others, as close to a single mode as a voice gets.</p>
+      <h3><span class="num">3</span>The ladder Feynman built his career on</h3>
+      <p>The energy levels of a particle trapped in a box are not equally spaced; they go as one, four, nine. The levels of a quantum harmonic oscillator are equally spaced, like overtones. And in the quantum electrodynamics Feynman shared the Nobel Prize for, the electromagnetic field is a collection of harmonic oscillators, one for every colour of light, and a photon is one rung up the ladder. Two photons, two rungs. A sygyt singer stepping from the eighth harmonic to the ninth is stepping up a ladder with the same spacing as the one light climbs.</p>
+    </div>
+    <figure class="diagram col--wide" data-reveal>
+      <svg viewBox="0 0 900 360" role="img" aria-labelledby="ld-title">
+        <title id="ld-title">Two ladders with the same spacing: the harmonics of a voice and the energy levels of a quantum oscillator</title>
+        <g stroke="currentColor" stroke-width="1.2" opacity="0.9">
+          <line x1="120" y1="320" x2="330" y2="320"/><line x1="120" y1="290" x2="330" y2="290"/><line x1="120" y1="260" x2="330" y2="260"/><line x1="120" y1="230" x2="330" y2="230"/><line x1="120" y1="200" x2="330" y2="200"/><line x1="120" y1="170" x2="330" y2="170"/><line x1="120" y1="140" x2="330" y2="140"/><line x1="120" y1="110" x2="330" y2="110"/><line x1="120" y1="80" x2="330" y2="80"/><line x1="120" y1="50" x2="330" y2="50"/>
+        </g>
+        <g class="acc" stroke="currentColor" stroke-width="3.2"><line x1="120" y1="110" x2="330" y2="110"/></g>
+        <g stroke="currentColor" stroke-width="1.2" opacity="0.9">
+          <line x1="570" y1="320" x2="780" y2="320"/><line x1="570" y1="290" x2="780" y2="290"/><line x1="570" y1="260" x2="780" y2="260"/><line x1="570" y1="230" x2="780" y2="230"/><line x1="570" y1="200" x2="780" y2="200"/><line x1="570" y1="170" x2="780" y2="170"/><line x1="570" y1="140" x2="780" y2="140"/><line x1="570" y1="110" x2="780" y2="110"/><line x1="570" y1="80" x2="780" y2="80"/><line x1="570" y1="50" x2="780" y2="50"/>
+        </g>
+        <g class="acc" stroke="currentColor" stroke-width="3.2"><line x1="570" y1="110" x2="780" y2="110"/></g>
+        <g fill="currentColor" font-size="13" opacity="0.75">
+          <text x="60" y="324" text-anchor="end">f₀</text><text x="60" y="294" text-anchor="end">2f₀</text><text x="60" y="264" text-anchor="end">3f₀</text><text x="60" y="234" text-anchor="end">4f₀</text><text x="60" y="204" text-anchor="end">5f₀</text><text x="60" y="174" text-anchor="end">6f₀</text><text x="60" y="144" text-anchor="end">7f₀</text><text x="60" y="114" text-anchor="end" class="acc">8f₀</text><text x="60" y="84" text-anchor="end">9f₀</text><text x="60" y="54" text-anchor="end">10f₀</text>
+          <text x="800" y="324">½ħω</text><text x="800" y="294">1½ħω</text><text x="800" y="264">2½ħω</text><text x="800" y="234">3½ħω</text><text x="800" y="204">4½ħω</text><text x="800" y="174">5½ħω</text><text x="800" y="144">6½ħω</text><text x="800" y="114" class="acc">7½ħω</text><text x="800" y="84">8½ħω</text><text x="800" y="54">9½ħω</text>
+        </g>
+        <g fill="currentColor" font-size="14" font-weight="600">
+          <text x="120" y="24">The harmonics of a sung drone</text>
+          <text x="570" y="24">The levels of a quantum oscillator</text>
+        </g>
+        <g fill="currentColor" font-size="12.5" opacity="0.7">
+          <text x="120" y="350">A sygyt whistle on the eighth harmonic.</text>
+          <text x="570" y="350">A mode of light holding seven photons.</text>
+        </g>
+      </svg>
+      <figcaption>Equal rungs on both sides. The voice climbs by whole numbers of the fundamental; the oscillator climbs by whole numbers of ħω, with a half-step at the bottom that never goes away. In QED every colour of light is such an oscillator, and a photon is one rung.</figcaption>
+    </figure>
+    <div class="col prose" data-reveal>
+      <h3><span class="num">4</span>Feynman's arrows</h3>
+      <p>In <em>QED</em>, the 1985 book he wrote for readers with no mathematics, he explains the whole theory with little arrows. Every path a photon could take gets an arrow that turns like a stopwatch hand as the photon travels; you add the arrows tip to tail, and the length of the result, squared, is the probability. A Fourier sum is the same arithmetic. Each harmonic is an arrow turning n times as fast as the first. Add them tip to tail and the tip traces the singer's waveform. The third view of the instrument draws exactly that, with the sixteen measured harmonics as its sixteen hands.</p>
+      <h3>Where it stops</h3>
+      <p>The weights of a sound are real numbers, and you hear all of them at once. The weights of a quantum state are complex numbers, and their squares are the odds of what you would find if you looked; look, and you find one answer. No one's ear collapses a drone. The likeness is the ladder and the sum. The difference is what the sum means, and the instrument is built to keep that difference in view rather than lose it in the glow. It is a picture of a voice, drawn in the language of a state.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── seven: the instrument -->
+<section class="instrument" id="instrument">
+  <div class="wrap">
+    <div class="col part__head" data-reveal>
+      <span class="label">Seven · In honour of Feynman</span>
+      <h2>The instrument</h2>
+      <p class="lead">A quantum visualiser that listens to throat singing.</p>
+    </div>
+    <div class="col prose" data-reveal>
+      <p>It finds the drone, measures the first sixteen harmonics, and turns them into the weights of a sum of modes. Then it draws that sum three ways: as standing waves in a box beside their ladder, as Bohr's waves fitting around an orbit, and as Feynman's arrows added tip to tail. Play one of the recordings, or give it your own voice: hold a low note and slide the vowel slowly from <em>ee</em> to <em>oo</em>, and watch the rungs light in turn.</p>
+    </div>
+    <div class="instrument__frame" data-reveal>
+      <div class="tool">
+        <div class="grp"><span class="label">Source</span>
+          <button class="btn" data-src="audio/sygyt.mp3">Sygyt</button>
+          <button class="btn" data-src="audio/kargyraa.mp3">Kargyraa</button>
+          <button class="btn" data-src="audio/chylandyk.mp3">Chylandyk</button>
+          <button class="btn" data-src="audio/mongolian.mp3">Mongolian</button>
+          <button class="btn" data-src="mic">Your voice</button>
+        </div>
+        <span class="spacer"></span>
+        <div class="grp"><span class="label">View</span>
+          <button class="btn is-on" data-view="levels">Levels</button>
+          <button class="btn" data-view="orbit">Orbit</button>
+          <button class="btn" data-view="arrows">Arrows</button>
+          <button class="btn" data-view="bars">Bars</button>
+        </div>
+        <button class="btn" data-full>Full screen</button>
+      </div>
+      <div class="instrument__stage"><canvas aria-label="The quantum visualiser"></canvas></div>
+      <div class="readout">
+        <span><span class="swatch"></span>Drone <b data-f0>idle</b> <span data-note></span></span>
+        <span>Strongest overtone <b data-top></b></span>
+        <span data-state>synthetic drone</span>
+        <span data-msg></span>
+      </div>
+      <p class="viewnote"></p>
+      <template data-note="levels"><b>Levels.</b> The box on the right holds standing waves: mode n has n humps. The state is the sum of the modes with the measured weights, drawn as its real part (the line) and its density (the glow), each mode turning at n times the rate of the first. The ladder on the left is the harmonic series, lit by what is ringing, and spaced exactly like the levels of a quantum oscillator.</template>
+      <template data-note="orbit"><b>Orbit.</b> Bohr's picture: a wave that has to fit a whole number of times around a ring. Each ringing harmonic n is drawn as an n-lobed standing wave on its own shell, and the ink line is their sum on the strongest shell. When the singer isolates the ninth harmonic you see nine lobes.</template>
+      <template data-note="arrows"><b>Arrows.</b> Sixteen clock hands, one per harmonic, each turning n times as fast as the first and as long as its weight, added tip to tail. The tip traces the singer's own waveform, shown again at the right over one period of the drone. This is Feynman's arrow arithmetic from QED, applied to sound instead of to probability.</template>
+      <template data-note="bars"><b>Bars.</b> The plain readout: the relative strength of harmonics 1 to 16, with the strongest overtone marked. Everything else on this page is a picture of these sixteen numbers.</template>
+    </div>
+    <p class="open" data-reveal>Nothing you sing leaves the browser. The analysis runs on the page, the microphone is never played back, and the recordings are the Creative Commons clips credited above. <a href="/throat-singing-quantum/visualiser">Open the instrument on its own, full screen</a>.</p>
+  </div>
+</section>
+
+<!-- ─────────────────────────────────────────────── sources -->
+<section class="sources" id="sources">
+  <div class="wrap">
+    <div class="col--wide">
+      <h2 data-reveal>Where this comes from</h2>
+      <div class="cols" data-reveal>
+        <div>
+          <ul>
+            <li><b>The Quest for Tannu Tuva</b>, BBC Horizon, 4 July 1988, directed by Christopher Sykes; on YouTube from the director's own channel. The quotations from Feynman and Leighton, the letters, and the account of the last week are taken from the film. Rebroadcast in the United States as <i>The Last Journey of a Genius</i> (NOVA, 24 January 1989).</li>
+            <li><b>Ralph Leighton, Tuva or Bust! Richard Feynman's Last Journey</b>, W. W. Norton, 1991.</li>
+            <li><b>Richard Feynman, “Simulating Physics with Computers”</b>, International Journal of Theoretical Physics 21, 1982, from the talk given at MIT in May 1981.</li>
+            <li><b>Richard Feynman, QED: The Strange Theory of Light and Matter</b>, Princeton, 1985. The arrows.</li>
+            <li><b>The Feynman Lectures on Physics</b>, volume III, Caltech, 1965. Freely readable at feynmanlectures.caltech.edu.</li>
+            <li><b>Kongar-ool Ondar, Back Tuva Future</b>, Warner Bros., 1999. Feynman's drumming, chanting and speech on “Tuva Groove (Bolur Daa-Bol, Bolbas Daa-Bol)” and “Kargyraa Rap (Dürgen Chugaa)”; lecture excerpts on the hidden track.</li>
+            <li><b>Genghis Blues</b>, directed by Roko Belic, 1999. Sundance Audience Award 1999; Academy Award nomination 2000.</li>
+            <li><b>Feynman's centenary in Kyzyl</b>, 11 May 2018, reported by the physics department of Royal Holloway, University of London, whose Glen Cowan attended with Leighton.</li>
+            <li><b>Michelle Feynman's visit</b>, 8 June 2009, recorded at feynman.com.</li>
+            <li>On the acoustics of khöömei: the account here follows the standard description in Theodore Levin and Valentina Süzükei, <b>Where Rivers and Mountains Sing</b> (Indiana, 2006), and the Wikipedia article on Tuvan throat singing, which cites the harmonics 6 to 13 and the vestibular-fold mechanism of kargyraa.</li>
+          </ul>
+        </div>
+        <div>
+          <ul>
+            <li><b>Film stills</b> are frames from The Quest for Tannu Tuva, reproduced at low resolution for the purpose of commentary and criticism. Copyright BBC.</li>
+            <li><b>Photographs</b> are credited beneath each one. Public-domain images via Wikimedia Commons: the 1926, 1927 and 1936 Tuvan stamps; Feynman in 1959, 1974 and 1986. Los Alamos badge photograph: Los Alamos National Laboratory, courtesy AIP Emilio Segrè Visual Archives, released CC0. Shelter Island 1947: AIP Emilio Segrè Visual Archives, gift of Abraham Pais. Dirac and Feynman 1962: Marek Holzman, CC BY 4.0. Feynman's drum: Antony-22, CC BY-SA 4.0. Tuva: AntonovAlexandr (CC BY-SA 3.0), Igrsan, Zamunu45 and Agilight (CC BY-SA 4.0).</li>
+            <li><b>Recordings</b> in the instrument: “Overtone singing” (sygyt) and “Undertone singing” (kargyraa) by Cassa342; “Throat singing, Tuvan chylandyk style” by Giovanni Bortoluzzi; “Canto armónico” (Mongolian tseejiin khöömii) by Lufke. All CC BY-SA 4.0, via Wikimedia Commons, loudness-matched and otherwise unaltered.</li>
+            <li><b>Card photograph</b>: Richard Feynman, 1984, by Tamiko Thiel. CC BY-SA 3.0, via Wikimedia Commons.</li>
+            <li><b>The instrument</b> is written in plain JavaScript on the Web Audio API: a normalised autocorrelation for the drone, a windowed spectral peak for each of sixteen harmonics, and a 2-D canvas for the three views. Its source is the file overtone.js in this folder, with the physics and its limits set out in the header comment.</li>
+            <li><b>Two dates differ between accounts.</b> The film says the invitation arrived two days after Feynman's death; some later summaries say one day, or three. We follow the film, which was made that spring with Leighton and the letter in the room.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="overtone.js"></script>
+<script src="article.js"></script>
+<script src="/atlas-nav.js" defer></script>
+</body>
+</html>

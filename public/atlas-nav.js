@@ -30,6 +30,7 @@
     { name: "Shop", path: "/shelflife", draft: true },
     { name: "Quantum Interference Visuals", path: "/interference" },
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
+    { name: "Throat singing and quantum physics", path: "/throat-singing-quantum", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },
     { name: "Horizon Scan", path: "/horizon-scan", draft: "month-1" },
     { name: "Hypothetica Magnifica", path: "/magnifica", draft: "month-1" },
