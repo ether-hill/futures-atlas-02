@@ -90,7 +90,7 @@ export function Home({
 
         <div className="ql-hero__head">
           <span className="ql-label ql-label--wide" />
-          <span className="ql-label ql-label--wide">TU Delft</span>
+          <span className="ql-label ql-label--wide">Futures Atlas</span>
         </div>
 
         <h1 className="ql-title">

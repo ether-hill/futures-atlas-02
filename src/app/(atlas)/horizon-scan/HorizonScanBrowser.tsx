@@ -7,7 +7,6 @@ import { InterferenceField } from "@/components/InterferenceField";
 import {
   CLUSTERS,
   DIGEST_PER_SUBJECT,
-  HOME_INSTITUTIONS,
   MAX_HELD,
   MAX_PER_SUBJECT,
   SPARK,
@@ -69,7 +68,6 @@ const anchorOf = (p: ScannedPaper) => `p-${p.id.replace(/[^a-zA-Z0-9]+/g, "-").r
 export function HorizonScanBrowser({ result }: { result: ScanResult | null }) {
   const [cluster, setCluster] = useState<ClusterId | null>(null);
   const [convergentOnly, setConvergentOnly] = useState(false);
-  const [homeOnly, setHomeOnly] = useState(false);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<Sort>("rank");
   const [view, setView] = useState<View>("grid");
@@ -90,7 +88,6 @@ export function HorizonScanBrowser({ result }: { result: ScanResult | null }) {
     const list = papers.filter((p) => {
       if (cluster && !p.clusters.includes(cluster)) return false;
       if (convergentOnly && !p.convergent) return false;
-      if (homeOnly && !p.home) return false;
       if (!needle) return true;
       return (
         p.title.toLowerCase().includes(needle) ||
@@ -111,7 +108,7 @@ export function HorizonScanBrowser({ result }: { result: ScanResult | null }) {
     if (sort === "cited")
       sorted.sort((a, b) => (b.citedBy ?? 0) - (a.citedBy ?? 0) || b.score - a.score);
     return sorted;
-  }, [papers, cluster, convergentOnly, homeOnly, needle, sort]);
+  }, [papers, cluster, convergentOnly, needle, sort]);
 
   /*
    * The board is the top of whatever you are currently looking at, because the
@@ -163,8 +160,6 @@ export function HorizonScanBrowser({ result }: { result: ScanResult | null }) {
               items={papers}
               convergentOnly={convergentOnly}
               setConvergentOnly={setConvergentOnly}
-              homeOnly={homeOnly}
-              setHomeOnly={setHomeOnly}
             />
 
             {filtered.length === 0 ? (
@@ -504,15 +499,6 @@ function SubjectMarks({ paper, compact = false }: { paper: ScannedPaper; compact
           {clusterChip(c)}
         </span>
       ))}
-      {paper.home && (
-        <span
-          className={`rounded-[2px] border border-accent/60 px-1.5 py-0.5 font-mono uppercase tracking-[0.12em] text-accent-deep ${
-            compact ? "text-[9px]" : "text-[10px]"
-          }`}
-        >
-          {HOME_INSTITUTIONS.label}
-        </span>
-      )}
     </span>
   );
 }
@@ -533,8 +519,6 @@ function Controls({
   items,
   convergentOnly,
   setConvergentOnly,
-  homeOnly,
-  setHomeOnly,
 }: {
   q: string;
   setQ: (v: string) => void;
@@ -549,8 +533,6 @@ function Controls({
   items: ScannedPaper[];
   convergentOnly: boolean;
   setConvergentOnly: (v: boolean) => void;
-  homeOnly: boolean;
-  setHomeOnly: (v: boolean) => void;
 }) {
   return (
     <>
@@ -614,13 +596,6 @@ function Controls({
           count={items.filter((p) => p.convergent).length}
           active={convergentOnly}
           onClick={() => setConvergentOnly(!convergentOnly)}
-        />
-        <Chip
-          label={HOME_INSTITUTIONS.label}
-          title={`A ${HOME_INSTITUTIONS.label} byline`}
-          count={items.filter((p) => p.home).length}
-          active={homeOnly}
-          onClick={() => setHomeOnly(!homeOnly)}
         />
       </div>
 
@@ -1043,7 +1018,7 @@ function Links({ paper }: { paper: ScannedPaper }) {
  */
 function Marks({ paper }: { paper: ScannedPaper }) {
   const subjects = paper.strongClusters.length ? paper.strongClusters : paper.clusters.slice(0, 1);
-  if (subjects.length === 0 && !paper.home) return null;
+  if (subjects.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-1.5">
       {subjects.map((c) => (
@@ -1056,11 +1031,6 @@ function Marks({ paper }: { paper: ScannedPaper }) {
           {clusterChip(c)}
         </span>
       ))}
-      {paper.home && (
-        <span className="rounded-[2px] border border-accent/60 px-2 py-1 font-mono text-[9px] uppercase tracking-[0.14em] text-accent-deep">
-          {HOME_INSTITUTIONS.label}
-        </span>
-      )}
     </div>
   );
 }
@@ -1364,7 +1334,6 @@ function Rules({ result }: { result: ScanResult | null }) {
               top for saying &ldquo;quantum computing&rdquo; once.
             </li>
             <li>A match in the title beats one buried in an abstract.</li>
-            <li>A {HOME_INSTITUTIONS.label} byline gets a nudge.</li>
             <li>
               Standing gets a small one, worth less than freshness or crossover, and only
               upwards. See the panel beside this one for what it is and what it is not.
@@ -1491,8 +1460,7 @@ function Rules({ result }: { result: ScanResult | null }) {
             thousand a day, a flat ten for a search however many rows come back. So the cost
             is entirely in the number of queries and not at all in their size. The{" "}
             {TOPICS.length} topics are paired into {QUERY_GROUPS.length} calls of fifty rows
-            each, plus two for the {HOME_INSTITUTIONS.label} byline and one per arXiv
-            subject, and the whole run is cached for a day. Pairs rather than one call per
+            each, plus one per arXiv subject, and the whole run is cached for a day. Pairs rather than one call per
             subject, because climate futures publishes something like forty times what rural
             futures does and a merged date sort of the two is just climate. The standing
             lookups are filters by id rather than searches, which cost one credit apiece, so
@@ -1519,9 +1487,7 @@ function Rules({ result }: { result: ScanResult | null }) {
             is the opposite: things somebody actually read and had something to say about.
           </p>
           <p className="mt-2.5 max-w-[70ch] text-[11px] leading-[1.7] text-faint">
-            Sources: OpenAlex and arXiv, both queried without a key.{" "}
-            {HOME_INSTITUTIONS.names.join(" and ")} output is pulled by ROR id rather than by
-            name, so a paper does not have to mention the place to be found.
+            Sources: OpenAlex and arXiv, both queried without a key.
           </p>
         </div>
       </div>

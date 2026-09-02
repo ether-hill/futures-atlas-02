@@ -165,7 +165,7 @@ export const PROTOTYPES: Prototype[] = [
     description:
       "A living soundscape mixer built on the frequencies of sound healing — solfeggio, binaural & isochronic beats, Schumann and 40 Hz gamma, drones and noise beds — each a breathing channel. Power on, load a realm, randomise, save your own, or hit SPAWN and let the ecosystem grow itself — dial its SPEED and CHAOS. Best with headphones; a relaxation instrument, not a medical device.",
     posted: "2026-08-16",
-    visibility: "live",
+    visibility: "draft",
     image: "/feed/biome.png",
     // The project page itself, not the compact embed. The embed endpoint only
     // builds a 480px player strip, and stretched across a column it reads as an

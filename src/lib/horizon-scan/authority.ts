@@ -25,7 +25,7 @@ import { REVALIDATE_SECONDS } from "@/data/horizon-scan";
 import { REQUEST_TIMEOUT_MS, openAlexHeaders } from "./openalex";
 import type { RawRecord, Standing } from "./types";
 
-const MAILTO = process.env.OPENALEX_CONTACT_EMAIL || "hello@frond.studio";
+const MAILTO = process.env.OPENALEX_CONTACT_EMAIL || "";
 
 /** OpenAlex accepts up to 50 values in one OR'd filter. */
 const CHUNK = 50;
@@ -58,7 +58,7 @@ async function fetchEntities(path: string, ids: string[]): Promise<Map<string, E
         `https://api.openalex.org/${path}` +
         `?filter=openalex_id:${group.map(key).join("|")}` +
         `&select=id,display_name,summary_stats&per_page=${CHUNK}` +
-        `&mailto=${encodeURIComponent(MAILTO)}`;
+        (MAILTO ? `&mailto=${encodeURIComponent(MAILTO)}` : "");
       try {
         const res = await fetch(url, {
           next: { revalidate: REVALIDATE_SECONDS },

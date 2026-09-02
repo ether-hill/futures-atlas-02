@@ -344,7 +344,7 @@ export const projects: Project[] = [
     id: "manipulate-quantum",
     title: "Counterfactual Quantum",
     tagline:
-      "Quantum has no AI Index, so this one is assembled from OpenAlex and Quantum Delta NL. Dutch funding ends in 2028, and six levers ask what follows.",
+      "Quantum has no AI Index, so this one is assembled from OpenAlex and the Dutch programme's own reporting. Dutch funding ends in 2028, and six levers ask what follows.",
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",

@@ -1,4 +1,4 @@
-// The system contract — an EXTENSION of frond-algorithm-lab's GenerativeSystem,
+// The system contract — an EXTENSION of the shared GenerativeSystem contract,
 // not a replacement. Same pure (surface, params, rng) → State → render model and
 // the same declarative ParamSchema that drives both the panel and presets. The
 // quantum addition is `diagnostics()`: per-frame physics readouts (norm, energy,

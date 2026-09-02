@@ -1,5 +1,5 @@
 // physarum — Jeff Jones' agent-based slime-mould model (Physarum polycephalum)
-// on the GPU, mirroring the Frond sma-config engine. Agent state (x, y, heading,
+// on the GPU, mirroring the earlier slime-mould engine. Agent state (x, y, heading,
 // species) lives in a float texture; each frame, per agent: sense the pheromone
 // trail ahead / left / right, rotate toward the strongest, step, deposit; the
 // trail map then diffuses and decays. Up to three species are encoded in the

@@ -1,4 +1,4 @@
-// Seeded RNG — sfc32 with a string-seed hash, matching the Frond Studio harness
+// Seeded RNG — sfc32 with a string-seed hash, matching the shared generative harness
 // convention (deterministic runs, no Math.random). A given seed always plays
 // out the same sequence of events.
 

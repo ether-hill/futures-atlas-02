@@ -1,4 +1,4 @@
-// The Generatives studio page — same layout as the Frond "Algorithms" page:
+// The Generatives studio page — the studio layout:
 // a title + summary, the ALGORITHM selector below it, then a large live visual
 // with Presets (top-left) and Restart / Randomise (top-right) over it, a sticky
 // controls panel on the right (Settings — params + complexity/chaos + colours,

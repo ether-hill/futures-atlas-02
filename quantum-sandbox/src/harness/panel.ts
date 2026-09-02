@@ -1,6 +1,6 @@
 // Auto-builds a Tweakpane control panel from a system's ParamSchema. Changing a
 // param mutates the SHARED params object in place; `hot` params apply live,
-// cold params trigger a reset via the host. (Convention from frond-algorithm-lab;
+// cold params trigger a reset via the host. (Shared harness convention;
 // the same .d.ts shim note applies — Tweakpane v4 re-exports from @tweakpane/core.)
 
 import { Pane } from "tweakpane";

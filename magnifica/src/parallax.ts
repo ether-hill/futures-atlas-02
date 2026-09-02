@@ -11,7 +11,7 @@
  *
  * Travel is bounded here instead: `±AMPLITUDE × rate` across the trigger's
  * whole pass through the viewport, whatever its height. That is the figure
- * frond-studio.com uses on the same kind of plate (±120 × 0.08–0.12, so ~24px
+ * a portfolio site uses on the same kind of plate (±120 × 0.08–0.12, so ~24px
  * of drift), and it is the reason that page glides where this one stepped.
  * Depth then comes from the slow push-in on `scale` rather than from distance
  * travelled — a dropped frame is a fraction of a pixel and the eye cannot find

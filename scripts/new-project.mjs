@@ -83,8 +83,7 @@ export default function ${pascal}Research() {
 `;
 
 const intro =
-  `${title} is a project of the Futures Atlas, by Frond Studio in partnership ` +
-  `with the Centre for Quantum & Society, to make the futures we might live in ` +
+  `${title} is a project of the Futures Atlas, made to make the futures we might live in ` +
   `visible, tangible, and open to debate. Whether you'd like to collaborate, ` +
   `commission work, or simply share a thought or question, we'd be glad to hear from you.`;
 

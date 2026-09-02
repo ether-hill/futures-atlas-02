@@ -19,12 +19,12 @@ Build the **config + embed spine first**, then route every piece through it. Bea
 - **WebGL2 + raw GLSL** for shader fields — fragment-shader art, ping-pong feedback (reaction-diffusion, Physarum, fluid), float textures (`EXT_color_buffer_float`). Thin helper (`twgl.js` acceptable) or hand-rolled; no heavyweight engine.
 - **three.js** for 3D pieces (particle nebulae, lattices).
 - **Noise**: `simplex-noise` (or equivalent) + hand-rolled curl noise, fbm, and domain warping in `core/noise`.
-- **Colour**: reuse the OKLCH utilities from the Frond Studio harness (`frond-algorithm-lab` / quantum-sandbox `core/color`). Drive every piece's palette from **theme tokens** so visuals can be brand-matched to the futures project.
+- **Colour**: reuse the OKLCH utilities from the shared harness (quantum-sandbox `core/color`). Drive every piece's palette from **theme tokens** so visuals can be brand-matched to the futures project.
 - **Seeded PRNG** (`sfc32` + string-hash seed) for reproducibility — **no `Math.random()` in any piece**.
 - **WebGPU** as a stretch path for the heaviest sims (feature-detect, fall back to WebGL2).
 - **Export**: hi-res PNG, seamless WebM loop, optional GIF. **Embed**: an `<iframe>` to a standalone player route carrying the config in the URL hash.
 
-Reuse Frond Studio harness conventions wherever they exist; the contract below should **extend**, not replace, the existing generative-system pattern (declarative param schema, pure `(seed, params) → output`).
+Reuse the shared harness conventions wherever they exist; the contract below should **extend**, not replace, the existing generative-system pattern (declarative param schema, pure `(seed, params) → output`).
 
 ---
 

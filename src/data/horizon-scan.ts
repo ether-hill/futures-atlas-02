@@ -594,19 +594,6 @@ export const TOPICS: Topic[] = [
 ];
 
 /**
- * Institutions worth a lane of their own. The Atlas's quantum work grew out of a
- * TU Delft commission, so Delft output gets pulled in directly rather than
- * waiting for it to trip a keyword. It still has to match a topic to be kept:
- * this widens retrieval, not the standard.
- */
-export const HOME_INSTITUTIONS = {
-  label: "TU Delft",
-  /** ROR ids, OR'd in one OpenAlex filter. */
-  rors: ["02e2c7k09", "04wf30j82"], // Delft University of Technology, QuTech
-  names: ["Delft University of Technology", "QuTech"],
-};
-
-/**
  * The bin. Two blocklists, both applied AFTER a topic match, because the topic
  * terms are broad enough to drag in a neighbouring field: "quantum computing"
  * matches a paper on quantum chemistry for drug discovery, "automation bias"

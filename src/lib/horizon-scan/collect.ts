@@ -153,8 +153,7 @@ function ageDays(iso: string): number {
 /**
  * Ranking, in plain terms: fresh beats old, several topics beats one, several
  * subjects matched HARD beats several topics, a match in the title beats a match
- * buried in an abstract, and a paper with a Delft byline gets a nudge. Survey
- * papers take a hit, because a mega-journal produces a dozen a week and they are
+ * buried in an abstract. Survey papers take a hit, because a mega-journal produces a dozen a week and they are
  * not what anyone came for. Citations barely matter, because nothing published
  * inside the window has any yet.
  */
@@ -165,7 +164,6 @@ function score(rec: RawRecord, m: Match, spark: number): number {
   if (m.strong.length >= 2) s += 5;
   if (m.strong.length >= 3) s += 2;
   if (m.titleHit) s += 3;
-  if (rec.home) s += 3;
   if (rec.pdfUrl) s += 0.5;
   s += Math.min(3, Math.log10(1 + (rec.citedBy ?? 0)) * 2);
   // Does it read like a finding or like a framework? See interest.ts. A plain
@@ -359,7 +357,6 @@ export async function runScan(): Promise<ScanResult> {
       thin,
       binned: binnedCount,
       convergent: papers.filter((p) => p.convergent).length,
-      home: papers.filter((p) => p.home).length,
       withStanding: papers.filter((p) => p.standing !== null).length,
       capped: back.length,
       withFigure: papers.filter((p) => p.figure).length,

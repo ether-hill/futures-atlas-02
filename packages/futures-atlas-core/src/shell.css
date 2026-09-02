@@ -1,5 +1,5 @@
 /*
-  The one standard global nav — modelled on frond-studio.vercel.app:
+  The one standard global nav — one bar for every surface:
   • position: fixed, full-bleed, frosted glass (translucent + backdrop-blur)
   • hides on scroll-down, reveals on scroll-up (the `.is-hidden` transform)
   • light by default, dark under `html.dark` (the toggle flips that class)

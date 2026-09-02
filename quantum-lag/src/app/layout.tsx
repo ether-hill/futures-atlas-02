@@ -43,7 +43,7 @@ const saira = localFont({
 export const metadata: Metadata = {
   title: "Quantum lag",
   description:
-    "Place claims about quantum technology on a timeline, then find out where they actually sit. An instrument from the Centre for Quantum & Society, TU Delft.",
+    "Place claims about quantum technology on a timeline, then find out where they actually sit. An instrument in the Futures Atlas.",
 };
 
 export default function RootLayout({

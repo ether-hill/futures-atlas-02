@@ -34,8 +34,6 @@ export interface RawRecord {
    *  for very little more signal. */
   authorIds: string[];
   institutionIds: string[];
-  /** True if a home institution (see HOME_INSTITUTIONS) is on the byline. */
-  home: boolean;
   /** Which topic's query returned it. Retrieval only; the rules decide keeps. */
   viaTopic: string;
 }
@@ -113,7 +111,6 @@ export interface ScanResult {
     /** Rejected by the venue or text blocklists. */
     binned: number;
     convergent: number;
-    home: number;
     /** Queries that errored or timed out. Surfaced, never hidden. */
     failed: number;
     /** Held papers the authority pass found a venue, author or institution

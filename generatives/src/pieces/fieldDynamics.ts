@@ -1,6 +1,6 @@
 // fieldDynamics — invisible forces made visible. A handful of vortices, sources
 // and sinks compose a vector field; particles stream its field lines, dying and
-// respawning so the ghost-traced flow keeps renewing. Ported from the Frond
+// respawning so the ghost-traced flow keeps renewing. Ported from the earlier
 // "Algorithms" lab (Field Dynamics). complexity = particle count; chaos =
 // singularity strength spread. Continuous (non-looping).
 

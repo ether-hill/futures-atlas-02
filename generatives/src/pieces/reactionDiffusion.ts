@@ -1,4 +1,4 @@
-// reactionDiffusion — Gray–Scott morphogenesis (after the Frond Algorithms
+// reactionDiffusion — Gray–Scott morphogenesis (after the earlier algorithms
 // gray-scott demo). Two chemicals U and V diffuse and react on a grid:
 // U + 2V → 3V, with U fed in at `feed` and V removed at `kill`. The pattern
 // spreads and evolves — coral, mitosis, mazes, spots — depending on feed/kill.

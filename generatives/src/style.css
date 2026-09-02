@@ -48,7 +48,7 @@ button {
 
 :root { --fa-nav-h: 64px; }
 
-/* ── studio layout — mirrors the Frond "Algorithms" page ── */
+/* ── studio layout — the studio layout ── */
 .studio-root { font-family: var(--sans); }
 /*
  * The nav bar is FIXED, so it sits over the page rather than above it. Its

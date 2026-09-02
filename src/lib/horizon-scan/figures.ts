@@ -45,7 +45,8 @@ const PAGE_QUALITY = 68;
 /** Cap on how much PDF to pull before giving up. Some are 30MB of figures. */
 const MAX_PDF_BYTES = 12_000_000;
 
-const CONTACT = process.env.OPENALEX_CONTACT_EMAIL || "hello@frond.studio";
+const CONTACT = process.env.OPENALEX_CONTACT_EMAIL || "";
+const USER_AGENT = CONTACT ? `futures-atlas horizon-scan (${CONTACT})` : "futures-atlas horizon-scan";
 
 const PER_REQUEST_MS = 15_000;
 /** The whole pass. A cold run has to stay inside the page's maxDuration. */
@@ -94,7 +95,7 @@ async function fetchFigure(paper: ScannedPaper): Promise<{ url: string; caption?
   if (!id) return null;
   try {
     const res = await fetch(`https://arxiv.org/html/${id}`, {
-      headers: { "User-Agent": `futures-atlas horizon-scan (${CONTACT})` },
+      headers: { "User-Agent": USER_AGENT },
       signal: AbortSignal.timeout(PER_REQUEST_MS),
     });
     if (!res.ok) return null;
@@ -138,7 +139,7 @@ async function renderFirstPage(paper: ScannedPaper): Promise<string | null> {
      */
     const res = await fetch(paper.pdfUrl, {
       headers: {
-        "User-Agent": `Mozilla/5.0 futures-atlas horizon-scan (${CONTACT})`,
+        "User-Agent": `Mozilla/5.0 ${USER_AGENT}`,
         Accept: "application/pdf,application/octet-stream;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-GB,en;q=0.9",
       },

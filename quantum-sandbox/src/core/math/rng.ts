@@ -1,6 +1,6 @@
 // Seeded PRNG — sfc32 with an xmur3 string→state hash. Deterministic and fast.
 // Same seed ⇒ identical stream. NO `Math.random()` in any system; route every
-// stochastic choice through here. (Convention shared with frond-algorithm-lab.)
+// stochastic choice through here. (Shared convention across the generative harnesses.)
 
 export interface RNG {
   /** float in [0, 1) */

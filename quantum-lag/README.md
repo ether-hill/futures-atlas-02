@@ -1,7 +1,6 @@
 # Quantum lag
 
-An instrument from the Centre for Quantum & Society (TU Delft), part of the
-Futures Atlas. A player is shown a claim about quantum technology and places a
+An instrument in the Futures Atlas. A player is shown a claim about quantum technology and places a
 marker on a timeline to say when it happens or happened. After the run they are
 shown how far off they were, in which direction, and what the record actually is.
 

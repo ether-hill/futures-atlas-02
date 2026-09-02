@@ -347,30 +347,3 @@ export const OPEN = {
   cta: { label: "How it\u2019s built, and where every project\u2019s source lives", href: "/developers" },
   repo: { label: "ether-hill/futures-atlas-02", href: "https://github.com/ether-hill/futures-atlas-02" },
 };
-
-/**
- * Who the Atlas is made with. Marks render mono (currentColor) so they hold in
- * both themes, see components/about/Collaborators.
- */
-export const COLLAB = {
-  intro: "Made with",
-  body: "Futures Atlas is a collaboration between the Centre for Quantum and Society and Frond Studio.",
-  partners: [
-    {
-      id: "cqs",
-      name: "Centre for Quantum and Society",
-      org: "Quantum Delta NL",
-      url: "https://quantumdelta.nl/centre-for-quantum-and-society",
-      blurb:
-        "A knowledge and co-creation centre for the societal side of quantum technology: ethics, law, communication, and foresight.",
-    },
-    {
-      id: "frond",
-      name: "Frond Studio",
-      org: "Design and development",
-      url: "https://frond-studio.com",
-      blurb:
-        "Design that crosses disciplines and stays close to the natural world. Art direction, interface, and build.",
-    },
-  ],
-};

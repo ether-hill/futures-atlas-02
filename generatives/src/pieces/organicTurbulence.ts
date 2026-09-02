@@ -1,6 +1,6 @@
 // organicTurbulence — a layered-noise flow field; thousands of particles stream
 // along it, their additive trails accumulating while the field slowly evolves.
-// Ported from the Frond "Algorithms" lab (Organic Turbulence). complexity =
+// Ported from the earlier algorithms lab (Organic Turbulence). complexity =
 // particle count; chaos = flow turbulence + speed. Continuous (non-looping).
 
 import type { Piece, PieceContext, PieceFactory, Params, ParamSchema } from "../core/piece";

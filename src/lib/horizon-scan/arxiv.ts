@@ -18,7 +18,8 @@ import { REQUEST_TIMEOUT_MS } from "./openalex";
 import type { RawRecord } from "./types";
 
 const API = "https://export.arxiv.org/api/query";
-const CONTACT = process.env.OPENALEX_CONTACT_EMAIL || "hello@frond.studio";
+const CONTACT = process.env.OPENALEX_CONTACT_EMAIL || "";
+const USER_AGENT = CONTACT ? `futures-atlas horizon-scan (${CONTACT})` : "futures-atlas horizon-scan";
 
 /** Phrases per topic contributed to its cluster's arXiv query. */
 const PHRASES_PER_TOPIC = 3;
@@ -99,7 +100,6 @@ function parseEntry(entry: string, viaTopic: string): RawRecord | null {
     institutions: [], // arXiv metadata carries no affiliations, and no ids
     authorIds: [],
     institutionIds: [],
-    home: false,
     viaTopic,
   };
 }
@@ -131,7 +131,7 @@ async function run(target: string, viaTopic: string): Promise<RawRecord[] | null
   try {
     const res = await fetch(target, {
       next: { revalidate: REVALIDATE_SECONDS },
-      headers: { "User-Agent": `futures-atlas horizon-scan (${CONTACT})` },
+      headers: { "User-Agent": USER_AGENT },
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
     if (!res.ok) return null;

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
-import { Collaborators } from "@/components/about/Collaborators";
 import { SignalField } from "@/components/about/SignalField";
 import { StackGrid } from "@/components/about/StackGrid";
 import { TermField } from "@/components/about/TermField";
@@ -134,15 +133,6 @@ export default function AboutPage() {
         </Container>
       </section>
 
-      {/* ── Made with ───────────────────────────────────────────────────────
-          The sign-off, not the introduction. It used to sit second, directly
-          under the hero, which read as "here is who paid for this" before the
-          page had said what it was. Credit belongs at the end. */}
-      <section className="border-t border-ink/15 py-[clamp(40px,6vw,80px)]">
-        <Container>
-          <Collaborators />
-        </Container>
-      </section>
     </div>
   );
 }

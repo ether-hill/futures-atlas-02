@@ -5,7 +5,7 @@ import { ComposerPage } from "./composer-page";
 // the card art) load as ready frames. Users can still upload their own or
 // transmutate a URL on top of that.
 
-// Frond-style project page: title + summary up top, the composer (the tool)
+// Project page: title + summary up top, the composer (the tool)
 // framed below, then an About section — all on the global nav grid (28px sides).
 export default function Page() {
   return (

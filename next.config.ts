@@ -129,7 +129,7 @@ const nextConfig: NextConfig = {
         { source: "/quantum-spark", destination: "/quantum-spark/index.html" },
         // Magnifica — Vite bundle (one real encyclical, sixteen predicted answers)
         { source: "/magnifica", destination: "/magnifica/index.html" },
-        // Quantum Lag — Next static export (TU Delft timeline instrument). It is
+        // Quantum Lag — Next static export (the timeline instrument). It is
         // built into public/quantum-lag by build-subapps.sh but had no rewrite,
         // so its own path 404'd for everyone, editors included.
         { source: "/quantum-lag", destination: "/quantum-lag/index.html" },

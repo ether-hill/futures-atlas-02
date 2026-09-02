@@ -21,7 +21,6 @@
  */
 import {
   ABSTRACT_CHARS,
-  HOME_INSTITUTIONS,
   PER_QUERY,
   QUERY_GROUPS,
   REVALIDATE_SECONDS,
@@ -46,17 +45,17 @@ export const REQUEST_TIMEOUT_MS = 25_000;
 
 /** Burst 429s clear in well under a second, so a couple of backoffs is plenty. */
 const MAX_RETRIES = 3;
-const MAILTO = process.env.OPENALEX_CONTACT_EMAIL || "hello@frond.studio";
+const MAILTO = process.env.OPENALEX_CONTACT_EMAIL || "";
 
 /**
  * Optional, free, and worth setting.
  *
  * Keyless callers share a budget of $0.10 a day (1000 credits, measured off the
- * response headers). One run of this page is about 230 of those, which fits —
+ * response headers). One run of this page is about 210 of those, which fits —
  * except the keyless budget is not ours alone. On Vercel the egress IP is shared
  * with other customers, and openalex.org's own site draws on the same pool, so
  * in production the allowance can be gone before this page asks for anything.
- * That shows up as "N of 28 queries did not answer" and a short list.
+ * That shows up as "N of 26 queries did not answer" and a short list.
  *
  * A free OpenAlex account gives a key with ten times the budget, tied to the
  * account rather than to whoever else is behind the same IP. No payment method.
@@ -67,7 +66,7 @@ const API_KEY = process.env.OPENALEX_API_KEY;
 
 export function openAlexHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
-    "User-Agent": `futures-atlas horizon-scan (${MAILTO})`,
+    "User-Agent": MAILTO ? `futures-atlas horizon-scan (${MAILTO})` : "futures-atlas horizon-scan",
   };
   if (API_KEY) headers.Authorization = `Bearer ${API_KEY}`;
   return headers;
@@ -177,8 +176,6 @@ interface OaWork {
   }[];
 }
 
-const HOME_RORS = new Set(HOME_INSTITUTIONS.rors.map((r) => `https://ror.org/${r}`));
-
 function parse(work: OaWork, viaTopic: string): RawRecord | null {
   const title = stripMarkup(work.title ?? "");
   if (!title || !work.id) return null;
@@ -194,7 +191,6 @@ function parse(work: OaWork, viaTopic: string): RawRecord | null {
       authorships.flatMap((a) => (a.institutions ?? []).map((i) => i.display_name ?? "")).filter(Boolean),
     ),
   );
-  const home = authorships.some((a) => (a.institutions ?? []).some((i) => i.ror && HOME_RORS.has(i.ror)));
 
   // First and last author only; see the note on RawRecord.authorIds.
   const ends = authorships.length > 1 ? [authorships[0], authorships[authorships.length - 1]] : authorships;
@@ -256,7 +252,6 @@ function parse(work: OaWork, viaTopic: string): RawRecord | null {
     )?.landing_page_url ?? undefined,
     authorIds,
     institutionIds,
-    home,
     viaTopic,
   };
 }
@@ -267,7 +262,7 @@ function searchExpr(probes: string[]): string {
 }
 
 function url(params: Record<string, string>): string {
-  const q = new URLSearchParams({ ...params, select: SELECT, mailto: MAILTO });
+  const q = new URLSearchParams({ ...params, select: SELECT, ...(MAILTO ? { mailto: MAILTO } : {}) });
   return `${API}?${q.toString()}`;
 }
 
@@ -361,49 +356,6 @@ function assertGroupsCoverTopics(): void {
   }
 }
 
-/**
- * The home-institution lane. Delft publishes several thousand open papers a
- * year, most of them about something else, so this is still a keyword query;
- * it just uses one broad net per half of the taxonomy instead of the tight
- * per-topic ones, and lets the local rules do the sorting.
- */
-function homeQueries(): { url: string; via: string }[] {
-  const nets: [string, string[]][] = [
-    [
-      "home-hard",
-      ['"quantum"', '"semiconductor"', '"data center"', '"data centre"', '"photonic"', '"energy transition"'],
-    ],
-    [
-      "home-soft",
-      [
-        '"artificial intelligence"',
-        '"responsible innovation"',
-        '"design for values"',
-        '"foresight"',
-        '"scenario"',
-        '"public engagement"',
-        '"sociotechnical"',
-      ],
-    ],
-  ];
-  return nets.map(([via, probes]) => ({
-    via,
-    url: url({
-      filter: [
-        "open_access.is_oa:true",
-        "type:article",
-        "language:en",
-        `authorships.institutions.ror:${HOME_INSTITUTIONS.rors.map((r) => `https://ror.org/${r}`).join("|")}`,
-        `from_publication_date:${isoDaysAgo(WINDOW_DAYS)}`,
-        `to_publication_date:${today()}`,
-        `title_and_abstract.search:${searchExpr(probes)}`,
-      ].join(","),
-      sort: "publication_date:desc",
-      per_page: String(PER_QUERY),
-    }),
-  }));
-}
-
 /** Run `jobs` with at most `limit` in flight. OpenAlex meters credits per query
  *  rather than requests per second, so concurrency costs nothing and only the
  *  number of queries does. Five, not eight: these responses carry fifty
@@ -425,10 +377,7 @@ async function pool<T>(jobs: (() => Promise<T>)[], limit: number): Promise<T[]> 
 
 export async function fetchOpenAlex(): Promise<{ records: RawRecord[]; queries: number; failed: number }> {
   assertGroupsCoverTopics();
-  const jobs = [
-    ...QUERY_GROUPS.map((g) => () => run(groupQuery(g.topics), g.id)),
-    ...homeQueries().map((h) => () => run(h.url, h.via)),
-  ];
+  const jobs = QUERY_GROUPS.map((g) => () => run(groupQuery(g.topics), g.id));
   const pages = await pool(jobs, 5);
   const failed = pages.filter((p) => p === null).length;
   return {

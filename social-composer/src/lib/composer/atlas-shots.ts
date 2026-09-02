@@ -204,7 +204,7 @@ export const ATLAS_PROJECTS: AtlasProject[] = [
   {
     "id": "manipulate-quantum",
     "title": "Counterfactual Quantum",
-    "tagline": "Quantum has no AI Index, so this board is assembled: publication counts pulled from OpenAlex and queried by topic, next to the two endpoints Quantum Delta NL's own report actually publishes. The Dutch programme runs out of Growth Fund money in 2028 and that report ends by asking what happens next, so four of the six interventions are versions of that question. Delft's output inflected in 2017, three years before the programme existed.",
+    "tagline": "Quantum has no AI Index, so this board is assembled: publication counts pulled from OpenAlex and queried by topic, next to the two endpoints the Dutch programme's own report actually publishes. The Dutch programme runs out of Growth Fund money in 2028 and that report ends by asking what happens next, so four of the six interventions are versions of that question. Delft's output inflected in 2017, three years before the programme existed.",
     "field": "Manipulate the data",
     "path": "/manipulate-the-data/quantum",
     "cards": [
