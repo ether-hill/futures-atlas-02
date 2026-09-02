@@ -233,6 +233,76 @@ export const STOCK: FutureProduct[] = [
     },
   },
   {
+    id: "z-way-sub",
+    name: "Z-way Mobility Sub — Monthly Plan",
+    aisle: "Mobility",
+    // No year in the copy. 2038 for the world the specs describe rather than
+    // the service: rides logged on the pod because the network cannot be
+    // trusted, readers that drop for up to 40 seconds, a green surcharge with
+    // peak-surge windows. That is a grid people have stopped expecting to hold.
+    year: "2038",
+    price: "€64.00 / month",
+    line: "The ultimate green car share, one tap.",
+    // No image yet — the supplied photograph was of a different product, so the
+    // listing runs on the hatch plate like the other nineteen without one.
+    listing: {
+      delivery:
+        "Active within 10 minutes of sign-up. Cancel from the app, no notice period. First month €32.",
+      // The copy came as unlabelled bullets; the labels are the only thing here
+      // not in it, added because the quickview renders specs as label + value.
+      specs: [
+        {
+          label: "Coverage",
+          value:
+            "Unlimited rides on Z-way pods, shuttles and pool cars in 31 partner regions; rail included where the operator has joined the scheme",
+        },
+        {
+          label: "Bookings and guests",
+          value:
+            "Up to 3 pre-booked trips held at once, and 2 guest passes per month, added from your phone at the pod door",
+        },
+        {
+          label: "Pass",
+          value:
+            "Silver pass in the app with a hologram face showing your name, plan tier and last tap; works from the lock screen and stays readable for 30 seconds when the phone goes flat",
+        },
+        {
+          label: "Logging",
+          value:
+            "Rides are logged on the pod, not the network, so tap-on and tap-out still register through grid surges and reader outages of up to 40 seconds",
+        },
+        {
+          label: "Fees",
+          value:
+            "Green surcharge waived on peak-surge windows; off-peak rides earn 0.5 % back toward next month's fee, capped at €8",
+        },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "Stopped thinking about it",
+          body: "Switched from pay-as-you-go in March. The pass just sits on my lock screen and every pod I've tried reads it first time, including the older ones on the coast route. The guest passes are handy when my parents visit. Haven't opened the app to actually do anything in weeks.",
+        },
+        {
+          stars: 4,
+          title: "Worth it if you ride daily, check the map first",
+          body: "Costs less than my old commute once you're over about 20 trips a month. The pass showing my last tap has saved me twice when a reader dropped during a surge and I needed to prove I'd tapped out. Only real caveat is that \"31 regions\" doesn't mean everywhere in those regions — two of the villages on my usual route are pay-as-you-go only.",
+        },
+        {
+          stars: 3,
+          title: "Fine, but the pass is hard to read at night",
+          body: "Rides are fine, no issues there. But the hologram on the pass washes out under the orange platform lights, so the one time I wanted to check my tier I couldn't. Also the app logged me out after an update and I had to re-verify at a kiosk before my morning pod. Works, but I expected fewer small annoyances at this price.",
+        },
+      ],
+      qa: [
+        {
+          q: "Does the pass still work if my phone dies mid-journey?",
+          a: "Yes. Your trip is recorded on the pod at tap-on. If your phone is flat when you leave, tap out with any Z-way kiosk or reader within 24 hours and the fare is settled then. — Z-way Support",
+        },
+      ],
+    },
+  },
+  {
     id: "quantum-chocolate",
     name: "Quantum Chocolate — Multi tier",
     aisle: "Food & drink",
