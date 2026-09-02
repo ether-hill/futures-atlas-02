@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
-import { month1Candidates, projects, type Project } from "@/data/projects";
+import { liveProjects, month1Candidates, type Project } from "@/data/projects";
 
 export const metadata: Metadata = {
   title: "Plan. Futures Atlas",
@@ -31,28 +31,20 @@ const head = "font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep
 
 const CORE = ["Home", "About", "Contact", "Developer", "Projects (index)"];
 
-/** The launch six, in the order they are being reviewed. The sixth is unnamed. */
-const LAUNCH_IDS = ["swipe-the-future", "generatives", "odds-of-surviving-ai", "interference", "glossary"];
-
 type Item = { title: string; image?: string; path?: string; pending?: boolean };
 
 function itemOf(p: Project): Item {
   return { title: p.title, image: p.image, path: p.path };
 }
 
-const LAUNCH: Item[] = [
-  ...LAUNCH_IDS.map((id) => {
-    const p = projects.find((x) => x.id === id);
-    return p ? itemOf(p) : { title: id, pending: true };
-  }),
-  { title: "6th, once named", pending: true },
-];
+/** What launches: every live project, in the order the public shelf reads. */
+const LAUNCH: Item[] = liveProjects.map(itemOf);
 
 const MONTH_1: Item[] = month1Candidates.map(itemOf);
 
 /** Month 0's to-do list, everything that has to be true before the site ships. */
 const MONTH_0_TODO = [
-  "Get the first 6 projects ready for launch, plus a few ready to launch in month 1.",
+  "Get the 7 live projects ready for launch, plus a few ready to launch in month 1.",
   "Review the website copy.",
   "Review the project copy.",
   "Buy the domain.",
@@ -83,7 +75,7 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
       {
         track: "Projects",
         body: [
-          "Get the first 6 ready for launch. One review pass each against the checklist (mobile, load, title/blurb/thumb, links, console, credits). Fix or bump.",
+          "Get the 7 live projects ready for launch. One review pass each against the checklist (mobile, load, title/blurb/thumb, links, console, credits). Fix or bump.",
           "Get a few more ready to launch in month 1, so the site has something new on day 30.",
         ],
         list: { label: "Launch projects", items: LAUNCH },
