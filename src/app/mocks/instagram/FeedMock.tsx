@@ -17,7 +17,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { POSTS, SLIDE_KINDS, slideCount, postId, type Post } from "./posts";
-import { useFeedEdits, applyEdits, DEFAULT_CROP, type Crop } from "./useFeedEdits";
+import { useFeedEdits, applyEdits, DEFAULT_CROP, type Crop, type SyncState } from "./useFeedEdits";
 import { useSortableGrid } from "./useSortableGrid";
 import { PostSlide, SlideFrame, SlideStyles, RATIOS, type Ratio } from "./Slide";
 import { DESIGN_W } from "./slide-css";
@@ -55,7 +55,10 @@ export default function FeedMock() {
   // 9:16 first: these go out as reels, and a reel is the tall format.
   const [ratio, setRatio] = useState<Ratio>("9:16");
   const [editing, setEditing] = useState(false);
-  const { edits, hide, restoreAll, reorder, step, setCrop, resetCrop, resetAll } = useFeedEdits();
+  const {
+    edits, sync, stranded, hide, restoreAll, reorder, step, setCrop, resetCrop,
+    resetAll, publishStranded, discardStranded,
+  } = useFeedEdits();
   const posts = applyEdits(POSTS, postId, edits);
   const ids = posts.map(postId);
   const [open, setOpen] = useState<{ post: number; slide: number } | null>(null);
@@ -88,6 +91,8 @@ export default function FeedMock() {
         editing={editing} setEditing={setEditing}
         hiddenCount={edits.hidden.length}
         onRestore={restoreAll} onReset={resetAll}
+        sync={sync} stranded={stranded}
+        onPublishStranded={publishStranded} onDiscardStranded={discardStranded}
       />
 
       <div style={{ maxWidth: 1120, margin: "0 auto", padding: "48px 24px 120px" }}>
@@ -135,8 +140,37 @@ export default function FeedMock() {
   );
 }
 
+/** "Saved for everyone, by Laura, 4 minutes ago" — in as few words as that. */
+function ago(at: number | null): string {
+  if (!at) return "";
+  const s = Math.max(0, Math.round((Date.now() - at) / 1000));
+  if (s < 45) return "just now";
+  const m = Math.round(s / 60);
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  return h < 24 ? `${h}h ago` : `${Math.round(h / 24)}d ago`;
+}
+
+function syncLine(sync: SyncState): string {
+  switch (sync.kind) {
+    case "loading":
+      return "Loading the shared arrangement…";
+    case "local":
+      // No KV on the Development env, so there is nothing to share with.
+      return "This browser only (no shared store here)";
+    case "offline":
+      return "Saved in this browser — the shared copy could not be reached";
+    case "shared": {
+      if (!sync.at) return "Shared with everyone signed in";
+      const who = sync.by ? sync.by[0]!.toUpperCase() + sync.by.slice(1) : "someone";
+      return `Shared · last saved by ${who}, ${ago(sync.at)}`;
+    }
+  }
+}
+
 function Chrome({
   ratio, setRatio, editing, setEditing, hiddenCount, onRestore, onReset,
+  sync, stranded, onPublishStranded, onDiscardStranded,
 }: {
   ratio: Ratio;
   setRatio: (r: Ratio) => void;
@@ -145,6 +179,10 @@ function Chrome({
   hiddenCount: number;
   onRestore: () => void;
   onReset: () => void;
+  sync: SyncState;
+  stranded: boolean;
+  onPublishStranded: () => void;
+  onDiscardStranded: () => void;
 }) {
   return (
     <header
@@ -166,7 +204,7 @@ function Chrome({
       <span style={{ fontFamily: UI, fontSize: 14, color: FAINT }}>
         {editing
           ? "Drag a tile to move it · arrows do it one step · sliders crop · ✕ deletes"
-          : "Your order, deletions and crops are saved in this browser"}
+          : syncLine(sync)}
       </span>
       <div style={{ display: "flex", gap: 8, marginLeft: 12 }}>
         <button
@@ -207,6 +245,30 @@ function Chrome({
           </button>
         ))}
       </div>
+
+      {/* This browser is holding an arrangement that is not the shared one —
+          it was made before the feed was shared, or somebody else saved over
+          it. Say so and let the person decide, rather than quietly picking. */}
+      {stranded ? (
+        <div
+          style={{
+            flexBasis: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            flexWrap: "wrap",
+            paddingTop: 12,
+            borderTop: `1px solid ${HAIRLINE}`,
+          }}
+        >
+          <span style={{ fontFamily: UI, fontSize: 14, color: OXBLOOD }}>
+            This browser has a different arrangement saved. The one on screen is
+            the shared one.
+          </span>
+          <button onClick={onPublishStranded} style={ghost}>Publish mine to everyone</button>
+          <button onClick={onDiscardStranded} style={ghost}>Keep the shared one</button>
+        </div>
+      ) : null}
     </header>
   );
 }

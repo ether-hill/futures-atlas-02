@@ -39,6 +39,10 @@ const INTERNAL_PATHS = [
   "/home-lab",
   "/plan",
   "/mocks",
+  // The mock-ups' own endpoints: the Instagram grid's shared arrangement is
+  // read and written by a page that already required the cookie, so the same
+  // gate covers it, on both verbs.
+  "/api/mocks",
   "/logo-animator",
   "/design-system",
   "/style-guide",
@@ -56,6 +60,7 @@ const STAGING_ONLY = [
   "/home-lab",
   "/plan",
   "/mocks",
+  "/api/mocks",
   "/logo-animator",
   "/design-system",
   "/style-guide",

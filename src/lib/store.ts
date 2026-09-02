@@ -128,6 +128,56 @@ export async function writeCached(name: string, value: string): Promise<boolean>
   }
 }
 
+// ---- mock-up state, shared between editors ----
+
+/**
+ * State that belongs to the working mock-ups rather than to a browser: the
+ * Instagram grid's order, deletions and crops. It lives here and not in
+ * localStorage because two people arranging the same feed and seeing two
+ * different feeds is not an arrangement.
+ *
+ * Deliberately NOT in `fa:cache`. A cache is something you may drop; this is
+ * the only copy of a decision somebody made.
+ */
+const MKEY = "fa:mocks";
+
+export interface MockRecord<T> {
+  state: T;
+  /** Editor id of whoever last saved. */
+  by: string | null;
+  at: number;
+}
+
+export async function readMock<T>(name: string): Promise<MockRecord<T> | null> {
+  const s = getStore();
+  if (!s) return null;
+  try {
+    const all = await s.hgetall(MKEY);
+    const raw = all[name];
+    if (!raw) return null;
+    const v = typeof raw === "string" ? JSON.parse(raw) : (raw as MockRecord<T>);
+    return v && typeof v === "object" && "state" in v ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function writeMock<T>(
+  name: string,
+  state: T,
+  by: string | null,
+): Promise<MockRecord<T> | null> {
+  const s = getStore();
+  if (!s) return null;
+  const rec: MockRecord<T> = { state, by, at: Date.now() };
+  try {
+    await s.hset(MKEY, name, JSON.stringify(rec));
+    return rec;
+  } catch {
+    return null;
+  }
+}
+
 // ---- versions (saved snapshots) ----
 
 export interface VersionMeta {
