@@ -27,7 +27,7 @@ import {
   REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, ODDS_CHOOSER, TEGMARK_POSTS,
   HOME_REEL, UNDERGROUND_REEL, STACK_REEL,
   type ReelPost, type ShotsPost, type OddsPost, type TermPost, type TegmarkPost,
-  FIELD_DYNAMICS_REEL, TURBULENCE_POST,
+  FIELD_DYNAMICS_REEL, TURBULENCE_POST, SHIFTCOOL_REEL, SOLOCOOL_REEL,
 } from "./fields";
 
 export type { ReelPost, ShotsPost, OddsPost, TermPost, TegmarkPost };
@@ -398,7 +398,7 @@ function interleave(reels: Post[], cards: Post[]): Post[] {
  */
 export const POSTS: Post[] = [
   ...interleave(
-    [FIELD_DYNAMICS_REEL, HOME_REEL, UNDERGROUND_REEL, STACK_REEL, ...REEL_POSTS],
+    [FIELD_DYNAMICS_REEL, SHIFTCOOL_REEL, HOME_REEL, SOLOCOOL_REEL, UNDERGROUND_REEL, STACK_REEL, ...REEL_POSTS],
     [TURBULENCE_POST, ...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
   ),
   ODDS_CHOOSER,
