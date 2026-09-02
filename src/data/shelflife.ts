@@ -26,6 +26,7 @@ export const AISLES: ShelfLifeOption[] = [
   { id: "mobility", label: "Mobility", clause: "the Mobility aisle" },
   { id: "work", label: "Work & focus", clause: "the Work & focus aisle" },
   { id: "care", label: "Family & care", clause: "the Family & care aisle" },
+  { id: "fashion", label: "Fashion", clause: "the Fashion aisle" },
   { id: "play", label: "Play & escape", clause: "the Play & escape aisle" },
 ];
 
