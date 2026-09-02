@@ -26,6 +26,7 @@ export const AISLES: ShelfLifeOption[] = [
   { id: "mobility", label: "Mobility", clause: "the Mobility aisle" },
   { id: "work", label: "Work & focus", clause: "the Work & focus aisle" },
   { id: "care", label: "Family & care", clause: "the Family & care aisle" },
+  { id: "fashion", label: "Fashion", clause: "the Fashion aisle" },
   { id: "play", label: "Play & escape", clause: "the Play & escape aisle" },
 ];
 
@@ -227,6 +228,51 @@ export const STOCK: FutureProduct[] = [
         {
           q: "Do both people need to wear an earbud?",
           a: "No. One person can wear an earbud while the other speaks normally. For two-way conversations, two earbuds provide the most natural experience.",
+        },
+      ],
+    },
+  },
+  {
+    id: "dewpoint-40",
+    name: "DewPoint 40",
+    aisle: "Home & climate",
+    // No year in the copy. 2032 sits where this listing does: atmospheric water
+    // harvesters are sold today, at industrial prices and industrial sizes. The
+    // future part is a domestic one at €349 that a review can call noisy.
+    year: "2032",
+    price: "€349",
+    line: "Morning water for your home and garden.",
+    image: "/shelflife/dewpoint-40.jpg",
+    listing: {
+      delivery: "Standard delivery included. Delivered in 3–5 days.",
+      specs: [
+        { label: "Water capacity", value: "40 litres" },
+        { label: "Collection area", value: "2.4 m² coated aluminium mesh" },
+        { label: "Daily yield", value: "Up to 12 litres in suitable morning conditions" },
+        { label: "Power", value: "18 W solar panel with 48-hour battery backup" },
+        { label: "Size", value: "120 × 80 × 24 cm; wall or ground mounted" },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "Very happy",
+          body: "We installed ours beside the greenhouse in April. Most mornings there's enough water for the garden and we've cut down a lot on filling the watering cans.",
+        },
+        {
+          stars: 4,
+          title: "Works as expected",
+          body: "Straightforward to install and the tank is a good size. Collection varies quite a bit depending on the morning, but that's to be expected. Filter takes a few minutes to clean.",
+        },
+        {
+          stars: 3,
+          title: "Fine, but noisy",
+          body: "Does what it says, but the pump makes a noticeable noise when the tank is filling. Not a problem during the day, but I can hear it from the bedroom in the morning.",
+        },
+      ],
+      qa: [
+        {
+          q: "Can I use the water for drinking?",
+          a: "The DewPoint 40 is supplied for garden, cleaning and household non-drinking use. For drinking water, connect it to an approved household treatment system.",
         },
       ],
     },

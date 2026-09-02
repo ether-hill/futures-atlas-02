@@ -30,6 +30,8 @@ const AISLE_ICON: Record<string, ReactNode> = {
   mobility: <path d="M5 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19 17a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5 14l4-8h4l6 8M13 6l-2 8" />,
   work: <path d="M4 7h16v11H4zM9 7V5h6v2M4 12h16" />,
   care: <path d="M12 6a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM5 21a7 7 0 0 1 14 0" />,
+  // A t-shirt: shoulders, sleeves, body. The one garment that reads at 24px.
+  fashion: <path d="M9 4L5 6l1 4h2v10h8V10h2l1-4-4-2a3 3 0 0 1-6 0z" />,
   play: <path d="M4 8h16v10H4zM8 12v2M7 13h2M15 12h.01M17 14h.01" />,
 };
 
