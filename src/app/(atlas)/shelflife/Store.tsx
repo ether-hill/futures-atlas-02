@@ -166,7 +166,7 @@ export function Store() {
         <Container>
           <Reveal>
             <h2 className={h2}>
-              The latest. <span className="text-ink-70">Take a look at what&rsquo;s new right now.</span>
+              The latest. <span className="text-ink-70">Take a look at what&rsquo;s coming.</span>
             </h2>
           </Reveal>
           <div className={`${rail} mt-8`}>
