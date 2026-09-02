@@ -139,7 +139,7 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search terms, abbreviations, definitions…"
-            className="w-full rounded-[3px] border border-ink/25 bg-transparent px-4 py-3 font-mono text-[13px] text-ink outline-none transition-colors placeholder:text-faint focus:border-accent"
+            className="w-full rounded-[3px] border border-ink/25 bg-transparent px-4 py-3 font-mono text-[16px] text-ink outline-none transition-colors placeholder:text-faint focus:border-accent"
           />
         </div>
 

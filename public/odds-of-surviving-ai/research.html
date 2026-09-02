@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Research — The Odds</title>
-<meta name="description" content="The research behind The Odds — public p(doom) estimates from Amodei, Musk and Tegmark, with sources." />
+<title>Research: The Odds</title>
+<meta name="description" content="The research behind The Odds: public p(doom) estimates from Amodei, Musk and Tegmark, with sources." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Futures Atlas" />
-<meta property="og:title" content="The Odds · Research — Futures Atlas" />
-<meta property="og:description" content="The research behind The Odds — public p(doom) estimates from Amodei, Musk and Tegmark, with sources." />
+<meta property="og:title" content="The Odds · Research, Futures Atlas" />
+<meta property="og:description" content="The research behind The Odds: public p(doom) estimates from Amodei, Musk and Tegmark, with sources." />
 <meta property="og:url" content="https://futures-atlas-02.vercel.app/theodds/research" />
 <meta property="og:image" content="https://futures-atlas-02.vercel.app/og/the-odds.png" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -84,7 +84,7 @@ body{padding-top:var(--fa-nav-h)!important}
 <div class="wrap">
   <div class="eyebrow">The evidence base</div>
   <h1>Where the numbers come from.</h1>
-  <p class="lead">The piece plays three public p(doom) estimates as games of chance. Here are the real interviews, statements, talks and resources behind them — so you can trace each probability back to who said it, where, and what they actually meant. The estimates are differently defined and not comparable.</p>
+  <p class="lead">The piece plays three public p(doom) estimates as games of chance. Here are the real interviews, statements, talks and resources behind them, so you can trace each probability back to who said it, where, and what they actually meant. The estimates are differently defined and not comparable.</p>
 
   <div class="filters">
     <div class="frow" id="typebar" role="tablist" aria-label="Filter by type"></div>
@@ -96,45 +96,45 @@ body{padding-top:var(--fa-nav-h)!important}
 
 const R=[
 {type:'news',title:'Amodei: “there’s a 25% chance that things go really, really badly”',source:'Axios',year:'2025',
- summary:'Asked for his p(doom) at the Axios AI+DC Summit, Anthropic CEO Dario Amodei put the chance AI goes “really, really badly” at about 25% — and the chance it goes really well at 75%.',
+ summary:'Asked for his p(doom) at the Axios AI+DC Summit, Anthropic CEO Dario Amodei put the chance AI goes “really, really badly” at about 25%, and the chance it goes really well at 75%.',
  relation:'The die plays Amodei’s 25%: three doom faces in twelve.',
  url:'https://www.axios.com/2025/09/17/anthropic-dario-amodei-p-doom-25-percent',
  thumbnail:'/odds-of-surviving-ai/research/amodei.jpg', credit:'Wikipedia'},
 {type:'news',title:'Elon Musk: “only a 20% chance of annihilation” with AI',source:'Yahoo Finance',year:'2024',
- summary:'On the Joe Rogan podcast Musk pegged the odds of a good AI outcome at ~80% — leaving roughly a 20% chance of annihilation, a figure he has floated in the 10–20% range before.',
+ summary:'On the Joe Rogan podcast Musk pegged the odds of a good AI outcome at ~80%, leaving roughly a 20% chance of annihilation, a figure he has floated in the 10 to 20% range before.',
  relation:'The wheel plays Musk’s split: a blue 80% good outcome against a red annihilation wedge.',
  url:'https://finance.yahoo.com/news/elon-musk-says-theres-only-001804190.html',
  thumbnail:'/odds-of-surviving-ai/research/musk.jpg', credit:'Wikipedia'},
 {type:'research',title:'Statement on AI Risk',source:'Center for AI Safety',year:'2023',
- summary:'A single sentence — “Mitigating the risk of extinction from AI should be a global priority alongside other societal-scale risks such as pandemics and nuclear war” — signed by Hinton, Bengio, Altman, Hassabis and Amodei, among hundreds.',
+ summary:'A single sentence, “Mitigating the risk of extinction from AI should be a global priority alongside other societal-scale risks such as pandemics and nuclear war”, signed by Hinton, Bengio, Altman, Hassabis and Amodei, among hundreds.',
  relation:'The real consensus that makes these otherwise-flippant probabilities worth taking seriously.',
  url:'https://safe.ai/work/statement-on-ai-risk',
  thumbnail:'/odds-of-surviving-ai/research/cais.jpg', credit:'safe.ai'},
 {type:'video',title:'How to Keep AI Under Control',source:'TED',year:'2023',authors:'Max Tegmark',
  summary:'Tegmark’s TED talk argues superintelligence may arrive within a few years, and lays out why keeping it under control is the defining task of the moment.',
- relation:'Tegmark is the third player — no single number, a deck of twelve futures from Life 3.0.',
+ relation:'Tegmark is the third player. Instead of a single number he gets a deck of twelve futures from Life 3.0.',
  url:'https://www.youtube.com/watch?v=xUNx_PxNHrY'},
 {type:'video',title:'P(doom): the probability AI destroys civilization',source:'Lex Clips',year:'2024',authors:'Roman Yampolskiy',
  summary:'AI-safety researcher Roman Yampolskiy explains the p(doom) framing and why his own estimate sits far above the lab CEOs’.',
- relation:'The clearest primer on what a “p(doom)” number even is — the unit this whole piece plays with.',
+ relation:'The clearest primer on what a “p(doom)” number even is, the unit this whole piece plays with.',
  url:'https://www.youtube.com/watch?v=xW0xjAMD60c'},
 {type:'video',title:'Inside the Mind of Anthropic CEO Dario Amodei',source:'Bloomberg Originals',year:'2025',
  summary:'An extended profile interview with Amodei on building Claude, racing rivals, and his case that powerful AI is both imminent and genuinely dangerous.',
- relation:'Context for the 25% — where Amodei’s caution and ambition meet.',
+ relation:'Context for the 25%: where Amodei’s caution and ambition meet.',
  url:'https://www.youtube.com/watch?v=x2VHFgyawPE'},
 {type:'resource',title:'Future of Life Institute',source:'futureoflife.org',
- summary:'The non-profit Tegmark co-founded in 2014 to reduce existential risk from advanced AI — research, policy, and the open letters that shaped the debate.',
+ summary:'The non-profit Tegmark co-founded in 2014 to reduce existential risk from advanced AI: research, policy, and the open letters that shaped the debate.',
  relation:'The institutional home of the “define the future you want” argument behind Tegmark’s cards.',
  url:'https://futureoflife.org',
  thumbnail:'/odds-of-surviving-ai/research/fli.jpg', credit:'futureoflife.org'},
 {type:'resource',title:'Life 3.0: Being Human in the Age of Artificial Intelligence',source:'Max Tegmark',year:'2017',
- summary:'The book this piece’s third mechanic is drawn from — twelve qualitatively different AI futures, from benevolent utopias to extinction, none reduced to a single number.',
+ summary:'The book this piece’s third mechanic is drawn from: twelve qualitatively different AI futures, from benevolent utopias to extinction, none reduced to a single number.',
  relation:'The source of the twelve cards you pick from for Tegmark.',
  url:'https://www.goodreads.com/book/show/34272565-life-3-0',
  thumbnail:'/odds-of-surviving-ai/research/life30.jpg', credit:'Wikipedia'},
 {type:'resource',title:'p(doom)',source:'Wikipedia',
  summary:'The term itself: a (semi-serious) probability that AI causes human extinction or an irreversible global catastrophe, plus a survey of who estimates what.',
- relation:'The vocabulary this whole experience is built on — and a reminder the numbers are non-comparable.',
+ relation:'The vocabulary this whole experience is built on, and a reminder that the numbers are non-comparable.',
  url:'https://en.wikipedia.org/wiki/P(doom)',
  thumbnail:'/odds-of-surviving-ai/research/pdoom.jpg', credit:'Wikipedia'},
 ];

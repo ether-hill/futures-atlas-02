@@ -87,7 +87,7 @@ export function toSector(lines: ParsedLine[]): Sector {
 
 const SAMPLE = `A quantum computer has factored a number bigger than 100 | not yet
 Software has been reading cervical smear slides since 1995 | already
-An AI has sat as a judge in a binding case — not yet`;
+An AI has sat as a judge in a binding case - not yet`;
 
 export function CustomDeck({ onPlay, active }: { onPlay: (s: Sector) => void; active: boolean }) {
   const [open, setOpen] = useState(false);

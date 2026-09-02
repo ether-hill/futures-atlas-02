@@ -1,6 +1,6 @@
 /**
  * One component per slide type, all driven by the discriminated Slide union.
- * The same Deck object will drive the M1 PPTX/PDF builders — keep every piece
+ * The same Deck object will drive the M1 PPTX/PDF builders: keep every piece
  * of content here sourced from the Deck, never invented in the component.
  */
 
@@ -17,7 +17,7 @@ const SEV_TICKS: Record<Severity, number> = { low: 1, medium: 2, high: 3 };
 function VerdictStamp({ verdict }: { verdict: string }) {
   return (
     <span className="verdict-stamp">
-      Quantum verdict — <b>{verdict}</b>
+      Quantum verdict: <b>{verdict}</b>
     </span>
   );
 }
@@ -56,7 +56,7 @@ function Signal({ s }: { s: Extract<Slide, { type: "signal" }> }) {
       </div>
       <div className="notes">
         <div className="note-block">
-          <span className="kicker">Quantum — {s.verdict}</span>
+          <span className="kicker">Quantum: {s.verdict}</span>
           <p>{s.qnote}</p>
         </div>
         <div className="note-block note-block--ai">
@@ -70,8 +70,8 @@ function Signal({ s }: { s: Extract<Slide, { type: "signal" }> }) {
 
 function Horizons({ s }: { s: Extract<Slide, { type: "horizons" }> }) {
   const cols = [
-    { range: "Now—2028", text: s.near },
-    { range: "2028—2035", text: s.mid },
+    { range: "Now to 2028", text: s.near },
+    { range: "2028 to 2035", text: s.mid },
     { range: "2035+", text: s.far },
   ];
   return (
@@ -164,7 +164,7 @@ export function SlideBoard({ deck, index }: { deck: Deck; index: number }) {
       <div className="board-head">
         <span className="kicker kicker--accent">{SLIDE_SLUGS[slide.type]}</span>
         <span className="board-counter">
-          {String(index + 1).padStart(2, "0")} — {String(total).padStart(2, "0")}
+          {String(index + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}
         </span>
       </div>
       {/* key forces the entrance animation to re-run per slide */}

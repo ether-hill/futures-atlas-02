@@ -236,3 +236,8 @@ button {
   .studio-head { padding-left: 16px; padding-right: 16px; }
   .studio-wrap { padding-left: 16px; padding-right: 16px; }
 }
+
+/* iOS zooms the page when a focused field is set below 16px; hold every control at 16px on touch devices. */
+@media (pointer: coarse) {
+  input, select, textarea { font-size: 16px !important; }
+}

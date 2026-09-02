@@ -86,7 +86,7 @@ export default async function Home() {
             </h2>
             <p className="mb-[clamp(30px,5vw,56px)] mt-6 max-w-[620px] text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-ink/70">
               Tools, games and live simulations, mostly about compute and who
-              ends up owning it. Nothing here is a mockup: open one and it runs.
+              ends up owning it. Every one of them runs. Open one and try it.
             </p>
           </Reveal>
 

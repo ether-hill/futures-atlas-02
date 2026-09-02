@@ -424,7 +424,7 @@ export default function StatsView() {
           Two different things get muddled when someone gets a claim wrong. One is whether they can
           <em> tell the difference</em> at all between a thing that happened and a thing that hasn&apos;t.
           The other is which way they lean when they can&apos;t tell. Guessing in one direction is a
-          lean, not ignorance, and it is fixable in a way the first thing isn&apos;t. So they are
+          lean rather than ignorance, and it can be fixed in a way the first thing can&apos;t. So they are
           measured separately: they are <em>d′</em> and <em>criterion</em>, if you want the textbook names.
         </p>
 
@@ -501,7 +501,7 @@ export default function StatsView() {
                 <span className="st-key"><i style={{ background: C_MID }} />even-handed</span>
                 <span className="st-key"><i style={{ background: C_BELIEVE }} />leans toward buying it</span>
                 Bigger dot = more answers behind it.
-                {indistinguishable ? " At this sample size every sector's accuracy interval overlaps every other's, so treat their positions as one cluster, not a ranking." : ""}
+                {indistinguishable ? " At this sample size every sector's accuracy interval overlaps every other's, so treat their positions as one cluster rather than a ranking." : ""}
               </p>
               <div className="st-actions">
                 <button className="st-btn" onClick={() => downloadPng(rocRef.current, RW, RH, `sector-discrimination-${today()}.png`)}>Download plot (PNG)</button>
@@ -734,8 +734,8 @@ function Shell({ children, demo = false }: { children: React.ReactNode; demo?: b
         <p className="st-intro">
           Every swipe on Swipe the Future is one person&apos;s guess at whether a thing has
           <em className="yes"> already</em> happened or <em className="no">not yet</em>, checked
-          against a sourced answer. Enough of them together stop being a game and
-          start being a measurement: which futures we buy before they arrive, which ones arrived
+          against a sourced answer. Put enough of them together and you have a
+          measurement: which futures we buy before they arrive, which ones arrived
           without us noticing, and which sectors people can read at all.
         </p>
       </header>

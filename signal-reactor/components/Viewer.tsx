@@ -119,7 +119,7 @@ export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
         ))}
       </div>
       <span className="counter">
-        {String(index + 1).padStart(2, "0")} — {String(total).padStart(2, "0")}
+        {String(index + 1).padStart(2, "0")} of {String(total).padStart(2, "0")}
       </span>
       <button className="nav-btn" onClick={() => go(1)} disabled={index === total - 1} aria-label="Next slide">
         Next →
@@ -183,7 +183,7 @@ export function Viewer({ deck, onNew }: { deck: Deck; onNew: () => void }) {
         </div>
       )}
 
-      {/* full-screen lightbox — portaled to <body> so ancestor transforms
+      {/* full-screen lightbox, portaled to <body> so ancestor transforms
           (e.g. the Reveal entrance) can't hijack its fixed positioning */}
       {fullscreen &&
         createPortal(

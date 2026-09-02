@@ -224,7 +224,7 @@ window.FIELD = (function () {
       ["Where the quantum comes in",
        "This is the whole idea, and you can do it in a sink. Waves add up where they meet, and they can add up to nothing. Fire electrons at a wall with two holes in it, one electron at a time, and they land in exactly this pattern of stripes, including the dead lanes where none of them ever arrive. Whatever an electron is, it went through both holes and got in its own way."],
       ["How it is built",
-       "No video, no image file. A tiny program runs on your graphics card once for every pixel of the panel, sixty times a second. Each pixel measures how far it is from the two impact points, works out how high each ring lifts the water right there, and adds the two together. That number becomes a colour. No pixel knows what any other is doing, which is why a graphics card can do millions of them at once."]
+       "There is no video and no image file. A tiny program runs on your graphics card once for every pixel of the panel, sixty times a second. Each pixel measures how far it is from the two impact points, works out how high each ring lifts the water right there, and adds the two together. That number becomes a colour. No pixel knows what any other is doing, which is why a graphics card can do millions of them at once."]
     ],
     frag: DROP + [
       "const float HGAIN = 1.0;",
@@ -455,7 +455,7 @@ window.FIELD = (function () {
       ["Where the quantum comes in",
        "A trapped particle can only take certain wave shapes, in the same way a guitar string can only sound certain notes. Each shape cycles at its own speed, so a particle sharing itself between eight of them scrambles as they drift out of step. The speeds happen to be whole multiples of one rate, so sooner or later they all line up again and the original shape comes back. It has been watched happening in real trapped atoms."],
       ["How it is built",
-       "The wave shapes for a box are ordinary sines, so each pixel works out eight of them, turns each by an angle set by its energy, adds them and squares the total. Nothing is approximated, so the loop here is exactly one full cycle of the physics: the moment when all eight are back where they started. It repeats because the particle repeats, not because the animation was cut to fit."]
+       "The wave shapes for a box are ordinary sines, so each pixel works out eight of them, turns each by an angle set by its energy, adds them and squares the total. Nothing is approximated, so the loop here is exactly one full cycle of the physics: the moment when all eight are back where they started. It repeats because the particle repeats; the animation was never cut to fit."]
     ],
     frag: [
       "const float B = 0.88;",
@@ -807,7 +807,7 @@ window.FIELD = (function () {
     draft: true,
     title: "Speckle",
     loop: 6.0,
-    note: "Thirty scatterers, no two in step. The grain is the interference, not the noise floor.",
+    note: "Thirty scatterers, no two in step. The grain is the interference itself rather than a noise floor.",
     read: [
       ["What you are seeing",
        "A field of hard bright grains with black between them. It looks like noise and is the opposite: every grain is a place where thirty waves happened to arrive in step, and every black gap is a place where they cancelled. Shine a laser on any rough wall and this is what you get."],
@@ -902,9 +902,9 @@ window.FIELD = (function () {
     note: "The same pair as the first panel, drawn as the circles they are. Every bright bead is two crests arriving together.",
     read: [
       ["What you are seeing",
-       "Two sources side by side, each sending out circles. Not a surface, not water seen from above \u2014 just the crests themselves, drawn where they are. Two families of rings, and where a ring from one crosses a ring from the other, both are lifting at once and the crossing lights up. Follow those bright crossings outward and they line up along smooth curves fanning away from the pair."],
+       "Two sources side by side, each sending out circles. There is no surface here and no water seen from above, just the crests themselves, drawn where they are. Two families of rings, and where a ring from one crosses a ring from the other, both are lifting at once and the crossing lights up. Follow those bright crossings outward and they line up along smooth curves fanning away from the pair."],
       ["Where the quantum comes in",
-       "Those curves are the whole of it. A crossing happens where the two distances differ by a whole number of wavelengths, so the arrivals are in step; between them run the lanes where the difference is half a wavelength and nothing ever moves. Send electrons through two slits and they land on those same curves and never in the lanes. The pattern is fixed by geometry alone \u2014 two distances and one wavelength \u2014 which is why it comes out identical whether the thing doing the travelling is water, light or an atom."],
+       "Those curves are the whole of it. A crossing happens where the two distances differ by a whole number of wavelengths, so the arrivals are in step; between them run the lanes where the difference is half a wavelength and nothing ever moves. Send electrons through two slits and they land on those same curves and never in the lanes. The pattern is fixed by geometry alone (two distances and one wavelength), which is why it comes out identical whether the thing doing the travelling is water, light or an atom."],
       ["How it is built",
        "For each pixel, the distance to each source, and a band drawn wherever that distance sits near a crest. The two bands are kept apart rather than added: the picture shows one set of circles, the other set, and separately the places where both are true at once. That last term is the only thing lit brightly, so the crossings do the work. The rings are cut against their own on-screen width, so they stay one clean line whatever size the panel is drawn at."]
     ],

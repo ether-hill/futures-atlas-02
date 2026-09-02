@@ -1,6 +1,6 @@
 /**
  * Client mirror of the Deck contract. Source of truth lives in the host at
- * src/lib/signal-reactor/deck.ts (the generate route) — keep in sync.
+ * src/lib/signal-reactor/deck.ts (the generate route), keep in sync.
  */
 
 export type Severity = "low" | "medium" | "high";
@@ -41,6 +41,6 @@ export const SLIDE_SLUGS: Record<Slide["type"], string> = {
   monday: "What to Do Now",
 };
 
-/** The standing honesty frame — visible in viewer, cover and exports. */
+/** The standing honesty frame, visible in viewer, cover and exports. */
 export const HONESTY_LINE =
-  "AI-generated foresight, not verified analysis. Use it to structure a conversation, not to make the decision.";
+  "This is AI-generated foresight and has not been verified. Use it to structure a conversation. The decision stays with you.";

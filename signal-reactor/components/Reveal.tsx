@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
 
 /**
- * Scroll-reveal wrapper — the ATLAS-STANDARD text animation, copied verbatim
+ * Scroll-reveal wrapper, the ATLAS-STANDARD text animation, copied verbatim
  * from the host app (src/components/Reveal.tsx) so Signal Reactor's motion
  * matches the homepage exactly. Adds `.is-in` when the element enters view so
  * the CSS `rise` animation plays once; reduced-motion is handled in

@@ -1,7 +1,7 @@
 /*
-  Signal Reactor — Swiss Type-Driven system (the one committed lane).
+  Signal Reactor, Swiss Type-Driven system (the one committed lane).
   Archivo carries display; IBM Plex Mono carries every label, number and
-  kicker. One accent: ember. Restraint is load-bearing — the tool must not
+  kicker. One accent: ember. Restraint is load-bearing: the tool must not
   look more authoritative than its AI-generated content earns.
 */
 
@@ -73,7 +73,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   vertical-align: middle;
 }
 
-/* ---- page shell — the ATLAS-STANDARD global margins ---------------------------
+/* ---- page shell: the ATLAS-STANDARD global margins ---------------------------
    Mirrors the host Container exactly: full-width, mx-auto, px-4 below 680px and
    px-7 (28px) above. Content blocks constrain themselves (max-w in ch / px),
    never the shell. */
@@ -87,7 +87,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   padding: 0 var(--gutter) 48px;
 }
 
-/* ---- title banner — modelled on the Atlas homepage hero ----------------------- */
+/* ---- title banner, modelled on the Atlas homepage hero ----------------------- */
 .sr-hero {
   min-height: calc(78svh - var(--fa-nav-h, 64px));
   display: flex;
@@ -153,7 +153,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .cta-primary span { font-size: 14px; }
 .sr-hero .honesty { margin-top: 26px; max-width: 560px; }
 
-/* hero layout: 50/50 — text left, deck graphic right, evenly balanced */
+/* hero layout: 50/50, text left, deck graphic right, evenly balanced */
 .hero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -164,7 +164,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .hero-grid { grid-template-columns: 1fr; gap: 48px; }
 }
 
-/* hero graphic: the ACTUAL deck in a squared 2×2 arrangement — miniature
+/* hero graphic: the ACTUAL deck in a squared 2×2 arrangement, miniature
    renders of the sample briefing's first four slides, fluidly scaled */
 .deck-grid {
   display: grid;
@@ -306,7 +306,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   animation: blink 1s steps(1) infinite;
 }
 .gen-line[data-state="done"] { color: var(--fg-muted); }
-.gen-line[data-state="done"]::before { content: "— "; color: var(--accent); }
+.gen-line[data-state="done"]::before { content: "✓ "; color: var(--accent); }
 @keyframes blink { 50% { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) {
   .gen-line[data-state="active"]::after { animation: none; }
@@ -344,7 +344,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   margin-bottom: 22px;
   flex-wrap: wrap;
 }
-/* the deck's title — bright, clearly a heading, but not shouting */
+/* the deck's title: bright, clearly a heading, but not shouting */
 .deck-title {
   margin: 0;
   font-weight: 800;
@@ -355,7 +355,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   text-wrap: balance;
 }
 .viewer-top .actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-/* the deck's primary actions — proper buttons, clearly visible */
+/* the deck's primary actions: proper buttons, clearly visible */
 .action-btn {
   font: 600 11.5px var(--mono);
   text-transform: uppercase;
@@ -376,7 +376,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
 .stage-wrap { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .board-scale { transform-origin: center center; }
-/* The deck itself runs on PAPER — a white, print-ready style — while the app
+/* The deck itself runs on PAPER (a white, print-ready style) while the app
    chrome stays in the dark register. All slide styles read these variables,
    so the override here restyles every slide (and the PDF export) at once. */
 .board {
@@ -625,7 +625,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .export-stage .board { margin-bottom: 8px; }
 .export-stage .board-body > * { animation: none !important; opacity: 1 !important; transform: none !important; }
 
-/* floating full-screen affordance — a quiet circular icon on the board corner */
+/* floating full-screen affordance: a quiet circular icon on the board corner */
 .fs-btn {
   position: absolute;
   right: 14px;

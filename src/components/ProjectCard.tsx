@@ -108,7 +108,7 @@ export function ProjectCard({
 
   if (project.path) {
     return (
-      <Link href={project.path} className="fa-card fa-card--link group">
+      <Link href={project.path} prefetch={false} className="fa-card fa-card--link group">
         {inner}
       </Link>
     );

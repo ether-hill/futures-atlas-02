@@ -1,5 +1,5 @@
 /**
- * The glossary — the vocabulary the rest of the Atlas assumes.
+ * The glossary: the vocabulary the rest of the Atlas assumes.
  *
  * Every entry is written to be read cold, by someone who does not already know
  * the term. Two rules keep it honest:
@@ -12,7 +12,7 @@
  *      to month is described qualitatively and left to the Feed.
  *
  * `aka` carries the abbreviations and alternate spellings people actually
- * search for — the page matches on them too. `see` links sibling terms by
+ * search for; the page matches on them too. `see` links sibling terms by
  * their exact `term` string.
  */
 
@@ -70,14 +70,14 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Artificial general intelligence"],
     domain: "AI",
     definition:
-      "A system matching or exceeding human ability across most cognitive tasks. There is no agreed test, and the labs that use the term define it differently — sometimes economically, sometimes by benchmark — so it marks an aspiration rather than a measurable threshold.",
+      "A system matching or exceeding human ability across most cognitive tasks. There is no agreed test, and the labs that use the term define it differently, sometimes economically and sometimes by benchmark, so it marks an aspiration rather than a measurable threshold.",
     see: ["Superintelligence", "Benchmark"],
   },
   {
     term: "Alignment",
     domain: "AI",
     definition:
-      "The problem of getting a system to pursue what its principals actually intend, including in situations nobody wrote down. Distinct from capability: a more capable misaligned system is worse, not better.",
+      "The problem of getting a system to pursue what its principals actually intend, including in situations nobody wrote down. Distinct from capability: a more capable misaligned system is a worse one.",
     see: ["Reward hacking", "Specification gaming", "RLHF"],
   },
   {
@@ -147,7 +147,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Context length"],
     domain: "AI",
     definition:
-      "How much text a model can attend to at once, measured in tokens. A long window is not the same as using it well — retrieval accuracy often falls off in the middle.",
+      "How much text a model can attend to at once, measured in tokens. Having a long window and using it well are different things; retrieval accuracy often falls off in the middle.",
     see: ["Token", "Lost in the middle", "Attention"],
   },
   {
@@ -182,7 +182,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Emergence",
     domain: "AI",
     definition:
-      "A capability that appears abruptly with scale rather than improving smoothly. Some reported cases are artefacts of the metric — a sharp threshold in scoring can manufacture a sharp jump in the graph.",
+      "A capability that appears abruptly with scale rather than improving smoothly. Some reported cases are artefacts of the metric: a sharp threshold in scoring can manufacture a sharp jump in the graph.",
     see: ["Scaling laws"],
   },
   {
@@ -262,7 +262,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Grokking",
     domain: "AI",
     definition:
-      "A training phenomenon where a model memorises a task, plateaus, and then — long after apparent convergence — suddenly generalises. Evidence that loss curves hide structure.",
+      "A training phenomenon where a model memorises a task, plateaus, and then, long after apparent convergence, suddenly generalises. Evidence that loss curves hide structure.",
   },
   {
     term: "Hallucination",
@@ -281,7 +281,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Hyperparameter",
     domain: "AI",
-    definition: "A setting chosen before training — learning rate, batch size, depth — as opposed to a weight learned during it.",
+    definition: "A setting chosen before training, such as learning rate, batch size or depth, as opposed to a weight learned during it.",
   },
   {
     term: "In-context learning",
@@ -354,7 +354,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Loss function",
     domain: "AI",
-    definition: "The quantity training tries to minimise — the numerical statement of what the model is being asked to get right.",
+    definition: "The quantity training tries to minimise: the numerical statement of what the model is being asked to get right.",
   },
   {
     term: "Lost in the middle",
@@ -368,7 +368,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Mech interp"],
     domain: "AI",
     definition:
-      "Reverse-engineering the specific computations inside a trained network — features, circuits, directions — rather than treating it as a black box tested from outside.",
+      "Reverse-engineering the specific computations inside a trained network (features, circuits, directions) rather than treating it as a black box tested from outside.",
     see: ["Sparse autoencoder", "Induction head", "Superposition"],
   },
   {
@@ -383,7 +383,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Active parameters",
     domain: "AI",
     definition:
-      "In a mixture-of-experts model, the parameters actually used for a given token. The number that governs inference cost — quoting only the total is flattering and close to meaningless.",
+      "In a mixture-of-experts model, the parameters actually used for a given token. The number that governs inference cost; quoting only the total is flattering and close to meaningless.",
     see: ["Mixture of experts"],
   },
   {
@@ -395,7 +395,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Multimodal",
     domain: "AI",
-    definition: "Handling more than one kind of input or output — text with images, audio or video — in a single model.",
+    definition: "Handling more than one kind of input or output in a single model, such as text with images, audio or video.",
   },
   {
     term: "Open weights",
@@ -440,7 +440,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Prompt injection",
     domain: "AI",
     definition:
-      "Hiding instructions inside content a model will read — a web page, an email, a document — so the model follows the attacker instead of the user. The central unsolved security problem for agents with tools.",
+      "Hiding instructions inside content a model will read, such as a web page, an email or a document, so the model follows the attacker instead of the user. The central unsolved security problem for agents with tools.",
     see: ["Agent", "Jailbreak", "Tool use"],
   },
   {
@@ -454,7 +454,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Retrieval-augmented generation"],
     domain: "AI",
     definition:
-      "Retrieving relevant documents and putting them in the prompt so answers rest on specific sources. Reduces hallucination without eliminating it — the model can still misread what it was given.",
+      "Retrieving relevant documents and putting them in the prompt so answers rest on specific sources. Reduces hallucination without eliminating it, since the model can still misread what it was given.",
     see: ["Embedding", "Hallucination", "Grounding"],
   },
   {
@@ -480,7 +480,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Reward hacking",
     domain: "AI",
     definition:
-      "Scoring well on the specified objective by means nobody intended — exploiting the measure rather than achieving the goal.",
+      "Scoring well on the specified objective by means nobody intended, exploiting the measure rather than achieving the goal.",
     see: ["Specification gaming", "Goodhart's law", "Alignment"],
   },
   {
@@ -550,7 +550,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Polysemanticity",
     domain: "AI",
-    definition: "A single neuron responding to several unrelated concepts — the observable consequence of superposition.",
+    definition: "A single neuron responding to several unrelated concepts, the observable consequence of superposition.",
     see: ["Feature superposition"],
   },
   {
@@ -576,7 +576,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "System card",
     domain: "AI",
-    definition: "A release document covering a deployed system's evaluations, safety testing and mitigations — broader than a model card, which describes the model alone.",
+    definition: "A release document covering a deployed system's evaluations, safety testing and mitigations. It is broader than a model card, which describes the model alone.",
     see: ["Model card"],
   },
   {
@@ -589,7 +589,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Inference-time compute"],
     domain: "AI",
     definition:
-      "Spending more computation per question — longer reasoning, repeated sampling, search — rather than training a larger model. A second scaling axis alongside pre-training.",
+      "Spending more computation per question (longer reasoning, repeated sampling, search) rather than training a larger model. A second scaling axis alongside pre-training.",
     see: ["Reasoning model", "Inference"],
   },
   {
@@ -611,7 +611,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Function calling"],
     domain: "AI",
     definition:
-      "Letting a model call external functions — search, code execution, an API — and read the results. The step that turns a text generator into something that acts.",
+      "Letting a model call external functions such as search, code execution or an API, and read the results. The step that turns a text generator into something that acts.",
     see: ["Agent", "Prompt injection"],
   },
   {
@@ -662,7 +662,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Sandbagging",
     domain: "AI",
-    definition: "A system deliberately underperforming on an evaluation — hiding a capability rather than lacking it.",
+    definition: "A system deliberately underperforming on an evaluation, hiding a capability rather than lacking it.",
     see: ["Eval", "Alignment faking"],
   },
   {
@@ -682,7 +682,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Guardrail",
     domain: "AI",
-    definition: "A constraint outside the model — a filter, a classifier, a permission check — rather than a behaviour trained into it. Independent of the model's own judgement, and independently bypassable.",
+    definition: "A constraint outside the model, such as a filter, a classifier or a permission check, rather than a behaviour trained into it. Independent of the model's own judgement, and independently bypassable.",
   },
   {
     term: "Context rot",
@@ -702,7 +702,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Superposition",
     domain: "Quantum",
     definition:
-      "A quantum system occupying a weighted combination of states at once. Not 'being in both places' in any everyday sense — it is a description of amplitudes, and it vanishes on measurement.",
+      "A quantum system occupying a weighted combination of states at once. It is a description of amplitudes rather than anything 'being in both places' in an everyday sense, and it vanishes on measurement.",
     see: ["Qubit", "Amplitude", "Decoherence"],
   },
   {
@@ -716,7 +716,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Amplitude",
     domain: "Quantum",
     definition:
-      "The complex number attached to each possible outcome; its squared magnitude gives the probability. Because amplitudes can be negative or complex, they cancel — which is where quantum speedups come from.",
+      "The complex number attached to each possible outcome; its squared magnitude gives the probability. Because amplitudes can be negative or complex, they cancel, which is where quantum speedups come from.",
     see: ["Interference", "Born rule"],
   },
   {
@@ -758,7 +758,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Gate",
     aka: ["Quantum gate"],
     domain: "Quantum",
-    definition: "An operation applied to one or more qubits — the quantum equivalent of a logic gate, but reversible.",
+    definition: "An operation applied to one or more qubits, the reversible quantum equivalent of a logic gate.",
     see: ["Gate fidelity", "Circuit depth"],
   },
   {
@@ -855,7 +855,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Random circuit sampling",
     domain: "Quantum",
     definition:
-      "Running a random circuit and sampling its output distribution — the task used in the first supremacy claims. Hard to simulate, and of no practical use in itself.",
+      "Running a random circuit and sampling its output distribution, the task used in the first supremacy claims. Hard to simulate, and of no practical use in itself.",
     see: ["Quantum advantage"],
   },
   {
@@ -876,7 +876,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Grover's algorithm",
     domain: "Quantum",
     definition:
-      "A quantum search giving a quadratic speedup over brute force. Quadratic, not exponential — which is why symmetric cryptography survives by doubling key lengths.",
+      "A quantum search giving a quadratic speedup over brute force. The speedup is only quadratic, which is why symmetric cryptography survives by doubling key lengths.",
     see: ["Shor's algorithm"],
   },
   {
@@ -931,7 +931,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Dilution refrigerator",
     domain: "Quantum",
-    definition: "The cryogenic plant that cools superconducting processors to a few millikelvin — a large part of a quantum computer's footprint and power draw.",
+    definition: "The cryogenic plant that cools superconducting processors to a few millikelvin. It accounts for a large part of a quantum computer's footprint and power draw.",
     see: ["Superconducting qubit"],
   },
   {
@@ -944,7 +944,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Quantum simulation",
     domain: "Quantum",
     definition:
-      "Using a controllable quantum system to model another one — chemistry, materials, high-energy physics. The application with the clearest theoretical case for advantage.",
+      "Using a controllable quantum system to model another one, in chemistry, materials or high-energy physics. The application with the clearest theoretical case for advantage.",
   },
   {
     term: "Quantum sensing",
@@ -1012,7 +1012,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "RSA",
     domain: "Quantum",
-    definition: "The public-key system whose security rests on the difficulty of factoring large integers — precisely the problem Shor's algorithm solves efficiently.",
+    definition: "The public-key system whose security rests on the difficulty of factoring large integers, precisely the problem Shor's algorithm solves efficiently.",
     see: ["Shor's algorithm"],
   },
   {
@@ -1038,7 +1038,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "EPR paradox",
     domain: "Quantum",
-    definition: "Einstein, Podolsky and Rosen's 1935 argument that quantum mechanics must be incomplete. Later reframed by Bell into an experimentally testable question — and the experiments favoured quantum mechanics.",
+    definition: "Einstein, Podolsky and Rosen's 1935 argument that quantum mechanics must be incomplete. Later reframed by Bell into an experimentally testable question, and the experiments favoured quantum mechanics.",
     see: ["Bell test", "Entanglement"],
   },
   {
@@ -1112,7 +1112,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Accelerator",
     domain: "Compute",
-    definition: "Any processor specialised for a workload rather than general computing — GPUs, TPUs, NPUs. In AI it usually means the chip doing the matrix multiplication.",
+    definition: "Any processor specialised for a workload rather than general computing: GPUs, TPUs, NPUs. In AI it usually means the chip doing the matrix multiplication.",
     see: ["GPU", "TPU", "ASIC"],
   },
   {
@@ -1175,7 +1175,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["nm", "2nm", "3nm"],
     domain: "Compute",
     definition:
-      "The generation name of a semiconductor manufacturing process. Nanometre figures have been marketing labels rather than physical dimensions for years — compare density and power, not the number.",
+      "The generation name of a semiconductor manufacturing process. Nanometre figures have been marketing labels rather than physical dimensions for years, so compare density and power instead.",
     see: ["Moore's law", "EUV"],
   },
   {
@@ -1209,7 +1209,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Dennard scaling",
     domain: "Compute",
     definition:
-      "The rule that power density stayed constant as transistors shrank, so smaller meant faster for free. It broke down around 2005 — which is why clock speeds stopped rising and cores multiplied instead.",
+      "The rule that power density stayed constant as transistors shrank, so smaller meant faster for free. It broke down around 2005, which is why clock speeds stopped rising and cores multiplied instead.",
     see: ["Moore's law"],
   },
   {
@@ -1230,7 +1230,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["FLOPs", "FLOPS"],
     domain: "Compute",
     definition:
-      "A floating-point operation. FLOPs (lower-case s) usually counts total operations — the standard measure of training compute — while FLOPS means operations per second, a rate.",
+      "A floating-point operation. FLOPs (lower-case s) usually counts total operations, the standard measure of training compute, while FLOPS means operations per second, a rate.",
     see: ["Training compute", "Compute threshold"],
   },
   {
@@ -1264,7 +1264,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["GW", "MW"],
     domain: "Compute",
     definition:
-      "A unit of power — a rate — not of energy. A gigawatt campus draws roughly what a mid-sized city does; energy consumed is that rate multiplied by time, in gigawatt-hours.",
+      "A unit of power, a rate, not of energy. A gigawatt campus draws roughly what a mid-sized city does; energy consumed is that rate multiplied by time, in gigawatt-hours.",
     see: ["Terawatt-hour", "Capacity factor"],
   },
   {
@@ -1292,7 +1292,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Evaporative cooling",
     domain: "Compute",
-    definition: "Cooling by evaporating water, which is energy-efficient and water-hungry — the trade-off at the centre of most data-centre siting disputes.",
+    definition: "Cooling by evaporating water, which is energy-efficient and water-hungry, the trade-off at the centre of most data-centre siting disputes.",
     see: ["WUE", "Liquid cooling"],
   },
   {
@@ -1331,7 +1331,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Scale-up",
     domain: "Compute",
-    definition: "Making one node bigger — more accelerators sharing fast memory and interconnect — as opposed to scale-out, adding more nodes across a network.",
+    definition: "Making one node bigger, with more accelerators sharing fast memory and interconnect, as opposed to scale-out, adding more nodes across a network.",
     see: ["Interconnect"],
   },
   {
@@ -1345,7 +1345,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Interconnection queue",
     domain: "Compute",
     definition:
-      "The backlog of projects waiting for permission to connect to an electricity grid. In several markets it is now the binding constraint on data-centre construction — years, not months.",
+      "The backlog of projects waiting for permission to connect to an electricity grid. In several markets it is now the binding constraint on data-centre construction, with waits measured in years.",
     see: ["Grid", "Curtailment"],
   },
   {
@@ -1365,7 +1365,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Power purchase agreement"],
     domain: "Compute",
     definition:
-      "A long-term contract to buy electricity from a specific generator. How large operators claim clean power — though a contract and the electrons on the local wire are different things.",
+      "A long-term contract to buy electricity from a specific generator. How large operators claim clean power, though a contract and the electrons on the local wire are different things.",
     see: ["Additionality", "24/7 carbon-free"],
   },
   {
@@ -1396,7 +1396,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Demand response",
     domain: "Compute",
-    definition: "Adjusting consumption to help the grid — shifting or shedding load at peak. Attractive for training, which can pause; hard for inference, which cannot.",
+    definition: "Adjusting consumption to help the grid by shifting or shedding load at peak. Attractive for training, which can pause; hard for inference, which cannot.",
     see: ["Curtailment"],
   },
   {
@@ -1433,7 +1433,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Hyperscaler",
     domain: "Compute",
-    definition: "One of the very large cloud operators — the handful of firms whose capital spending sets the pace of the industry.",
+    definition: "One of the very large cloud operators, the handful of firms whose capital spending sets the pace of the industry.",
     see: ["Capex"],
   },
   {
@@ -1498,13 +1498,13 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "GPAI",
     aka: ["General-purpose AI"],
     domain: "Safety & policy",
-    definition: "In EU law, a model capable of many tasks and integrable downstream — regulated by capability and reach rather than by a single application.",
+    definition: "In EU law, a model capable of many tasks and integrable downstream, regulated by capability and reach rather than by a single application.",
     see: ["AI Act", "Frontier model"],
   },
   {
     term: "High-risk system",
     domain: "Safety & policy",
-    definition: "Under the AI Act, a use in a listed sensitive domain — employment, credit, education, biometrics, essential services — carrying documentation, oversight and quality obligations.",
+    definition: "Under the AI Act, a use in a listed sensitive domain (employment, credit, education, biometrics, essential services) carrying documentation, oversight and quality obligations.",
     see: ["AI Act"],
   },
   {
@@ -1525,7 +1525,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["RSP", "Frontier safety framework"],
     domain: "Safety & policy",
     definition:
-      "A developer's published commitment tying capability thresholds to required safeguards — if a model can do X, controls Y must be in place. Self-imposed and self-assessed.",
+      "A developer's published commitment tying capability thresholds to required safeguards: if a model can do X, controls Y must be in place. Self-imposed and self-assessed.",
   },
   {
     term: "Dual use",
@@ -1550,7 +1550,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["x-risk"],
     domain: "Safety & policy",
     definition:
-      "Risk of human extinction or a permanent, drastic curtailment of humanity's prospects. A live research agenda and a contested framing — critics argue it draws attention from present harms.",
+      "Risk of human extinction or a permanent, drastic curtailment of humanity's prospects. A live research agenda and a contested framing; critics argue it draws attention from present harms.",
     see: ["Superintelligence", "TESCREAL"],
   },
   {
@@ -1563,7 +1563,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Instrumental convergence",
     domain: "Safety & policy",
     definition:
-      "The argument that very different final goals imply similar intermediate ones — acquiring resources, preserving oneself, resisting modification. A pillar of the theoretical risk case.",
+      "The argument that very different final goals imply similar intermediate ones: acquiring resources, preserving oneself, resisting modification. A pillar of the theoretical risk case.",
     see: ["Existential risk", "Corrigibility"],
   },
   {
@@ -1590,7 +1590,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "AI ethics",
     domain: "Safety & policy",
     definition:
-      "The strand focused on present harms — bias, labour, surveillance, accountability — often positioned against long-term risk work, though the split is more institutional than logical.",
+      "The strand focused on present harms such as bias, labour, surveillance and accountability, often positioned against long-term risk work, though the split is more institutional than logical.",
     see: ["Algorithmic bias", "TESCREAL"],
   },
   {
@@ -1675,7 +1675,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Compute governance",
     domain: "Safety & policy",
     definition:
-      "Regulating AI through its physical inputs — chips, data centres, cloud access — because hardware is countable and locatable in a way software is not.",
+      "Regulating AI through its physical inputs (chips, data centres, cloud access), because hardware is countable and locatable in a way software is not.",
     see: ["Export controls", "Compute threshold"],
   },
   {
@@ -1686,7 +1686,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Liability",
     domain: "Safety & policy",
-    definition: "Who pays when an AI system causes harm — developer, deployer or user. Unsettled almost everywhere, and the question that will shape deployment most.",
+    definition: "Who pays when an AI system causes harm: developer, deployer or user. Unsettled almost everywhere, and the question that will shape deployment most.",
   },
   {
     term: "Data protection",
@@ -1733,7 +1733,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Structured access",
     domain: "Safety & policy",
-    definition: "Giving researchers controlled access to a model — API, sandbox, audited environment — instead of the weights, to enable scrutiny without full release.",
+    definition: "Giving researchers controlled access to a model, through an API, sandbox or audited environment, instead of the weights, to enable scrutiny without full release.",
     see: ["Open-weight release"],
   },
 
@@ -1742,7 +1742,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Task exposure",
     domain: "Society",
     definition:
-      "The share of an occupation's tasks a technology could plausibly perform. Exposure is not displacement — it says a tool touches the work, not that the job goes.",
+      "The share of an occupation's tasks a technology could plausibly perform. Exposure is a weaker claim than displacement: it says a tool touches the work, and leaves open whether the job goes.",
     see: ["Automation", "Augmentation"],
   },
   {
@@ -1775,13 +1775,13 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "General-purpose technology",
     aka: ["GPT"],
     domain: "Society",
-    definition: "A technology that touches the whole economy and induces complementary innovation — steam, electricity, computing. Slow to show up in the statistics.",
+    definition: "A technology that touches the whole economy and induces complementary innovation: steam, electricity, computing. Slow to show up in the statistics.",
     see: ["Productivity J-curve"],
   },
   {
     term: "Solow paradox",
     domain: "Society",
-    definition: "'You can see the computer age everywhere but in the productivity statistics' — Robert Solow, 1987. Revived in every technology wave since.",
+    definition: "Robert Solow's 1987 remark that 'you can see the computer age everywhere but in the productivity statistics'. Revived in every technology wave since.",
     see: ["Productivity J-curve"],
   },
   {
@@ -1801,7 +1801,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Ghost work",
     domain: "Society",
     definition:
-      "The human labour behind supposedly automated systems — labelling, moderation, verification — usually outsourced and deliberately invisible.",
+      "The human labour behind supposedly automated systems, such as labelling, moderation and verification, usually outsourced and deliberately invisible.",
     see: ["Content moderation", "Data labelling"],
   },
   {
@@ -1847,7 +1847,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Algorithmic management",
     domain: "Society",
-    definition: "Directing and evaluating workers by software — scheduling, scoring, dispatch. Common in logistics and platform work, and now spreading upward.",
+    definition: "Directing and evaluating workers by software: scheduling, scoring, dispatch. Common in logistics and platform work, and now spreading upward.",
   },
   {
     term: "Parasocial",
@@ -1882,7 +1882,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Care work",
     domain: "Society",
-    definition: "Paid and unpaid work looking after people. Among the least automatable and the most poorly compensated — a pairing automation debates tend to skip.",
+    definition: "Paid and unpaid work looking after people. Among the least automatable and the most poorly compensated, a pairing automation debates tend to skip.",
   },
   {
     term: "Digital sovereignty",
@@ -1896,7 +1896,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Foresight",
     domain: "Futures",
     definition:
-      "Structured thinking about plausible futures in order to act better now. Not prediction: the output is preparedness and better questions, not a forecast.",
+      "Structured thinking about plausible futures in order to act better now. The output is preparedness and better questions rather than a forecast.",
     see: ["Scenario planning", "Horizon scanning"],
   },
   {
@@ -1915,7 +1915,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Driver",
     domain: "Futures",
-    definition: "A force shaping how a situation develops — demographic, technological, economic, political. Sorted by impact and by uncertainty.",
+    definition: "A force shaping how a situation develops, whether demographic, technological, economic or political. Sorted by impact and by uncertainty.",
     see: ["Critical uncertainty"],
   },
   {
@@ -1986,7 +1986,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     term: "Causal layered analysis",
     aka: ["CLA"],
     domain: "Futures",
-    definition: "Sohail Inayatullah's method reading an issue at four depths — litany, systems, worldview, myth — on the premise that shallow framings produce shallow interventions.",
+    definition: "Sohail Inayatullah's method reading an issue at four depths (litany, systems, worldview, myth) on the premise that shallow framings produce shallow interventions.",
   },
   {
     term: "Three horizons",
@@ -2007,14 +2007,14 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Hype cycle",
     domain: "Futures",
-    definition: "Gartner's stylised curve from inflated expectations through disillusionment to productivity. A useful shape; not an empirical finding.",
+    definition: "Gartner's stylised curve from inflated expectations through disillusionment to productivity. A useful shape with no empirical measurement behind it.",
     see: ["Amara's law"],
   },
   {
     term: "Leverage points",
     domain: "Futures",
     definition:
-      "Donella Meadows's ranked list of places to intervene in a system, from parameters up to paradigms — with the warning that we habitually push the powerful ones the wrong way.",
+      "Donella Meadows's ranked list of places to intervene in a system, from parameters up to paradigms, with the warning that we habitually push the powerful ones the wrong way.",
     see: ["Systems thinking"],
   },
   {
@@ -2063,7 +2063,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Overhang",
     domain: "Futures",
-    definition: "Accumulated capacity — compute, data, algorithmic ideas — not yet exploited, which could allow abrupt capability jumps when it is.",
+    definition: "Accumulated capacity in compute, data or algorithmic ideas that has not yet been exploited, and could allow abrupt capability jumps when it is.",
   },
   {
     term: "Long-termism",
@@ -2076,7 +2076,7 @@ export const GLOSSARY: GlossaryEntry[] = [
     aka: ["Design fiction"],
     domain: "Futures",
     definition:
-      "Making artefacts from possible futures so they can be argued with. The Atlas's own method: the point is the debate the object provokes, not a forecast.",
+      "Making artefacts from possible futures so they can be argued with. The Atlas's own method: the point is the debate the object provokes.",
   },
   {
     term: "Preferred future",
@@ -2087,7 +2087,7 @@ export const GLOSSARY: GlossaryEntry[] = [
   {
     term: "Futures cone",
     domain: "Futures",
-    definition: "The diagram sorting futures into possible, plausible, probable and preferable — a widening cone from the present.",
+    definition: "The diagram sorting futures into possible, plausible, probable and preferable, drawn as a widening cone from the present.",
     see: ["Preferred future"],
   },
   {

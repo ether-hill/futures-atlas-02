@@ -1,5 +1,5 @@
 /**
- * PPTX export — native, EDITABLE text (never flattened images), one builder
+ * PPTX export: native, EDITABLE text (never flattened images), one builder
  * per slide type, driven by the same Deck object as the viewer so they can't
  * diverge. 16:9 (13.333in × 7.5in ≈ 1280×720 @96dpi). The honesty frame is
  * stamped into every slide's footer per the brief's honesty layer.
@@ -10,7 +10,7 @@ import type { Deck, Severity, Slide } from "./types";
 import { HONESTY_LINE, SLIDE_SLUGS } from "./types";
 import { toSlug } from "./sectors";
 
-// design tokens — the PAPER (white, print-ready) deck theme, matching the
+// design tokens, the PAPER (white, print-ready) deck theme, matching the
 // viewer's .board overrides (PPTX colors are hex without '#')
 const C = {
   bg: "FDFCF8",
@@ -37,7 +37,7 @@ function chrome(s: PSlide, slide: Slide, index: number, total: number): void {
     x: PAGE.mx, y: 0.42, w: 6, h: 0.3,
     fontFace: MONO, fontSize: 10, color: C.accent, charSpacing: 2,
   });
-  s.addText(`${String(index + 1).padStart(2, "0")} — ${String(total).padStart(2, "0")}`, {
+  s.addText(`${String(index + 1).padStart(2, "0")} of ${String(total).padStart(2, "0")}`, {
     x: PAGE.w - 2.1 - PAGE.mx, y: 0.42, w: 2.1, h: 0.3,
     fontFace: MONO, fontSize: 10, color: C.subtle, align: "right", charSpacing: 2,
   });
@@ -78,7 +78,7 @@ function cover(s: PSlide, sl: Extract<Slide, { type: "cover" }>, deck: Deck): vo
     fill: { color: C.bg }, line: { color: C.border, width: 1 },
   });
   s.addText([
-    { text: "QUANTUM VERDICT — ", options: { color: C.muted } },
+    { text: "QUANTUM VERDICT: ", options: { color: C.muted } },
     { text: sl.verdict.toUpperCase(), options: { color: C.accent } },
   ], {
     x: 9.4, y: 5.68, w: 3.15, h: 0.5,
@@ -104,7 +104,7 @@ function signal(s: PSlide, sl: Extract<Slide, { type: "signal" }>): void {
     fontFace: DISPLAY, fontSize: 19, color: C.fg, lineSpacing: 26, valign: "top",
   });
   accentRule(s, PAGE.mx, 4.75, colW);
-  s.addText(`QUANTUM — ${sl.verdict.toUpperCase()}`, { x: PAGE.mx, y: 4.9, w: colW, h: 0.3, fontFace: MONO, fontSize: 9, color: C.subtle, charSpacing: 2 });
+  s.addText(`QUANTUM: ${sl.verdict.toUpperCase()}`, { x: PAGE.mx, y: 4.9, w: colW, h: 0.3, fontFace: MONO, fontSize: 9, color: C.subtle, charSpacing: 2 });
   s.addText(sl.qnote, { x: PAGE.mx, y: 5.25, w: colW, h: 1.2, fontFace: DISPLAY, fontSize: 12.5, color: C.muted, lineSpacing: 18, valign: "top" });
   accentRule(s, x2, 4.75, colW, C.accent);
   s.addText("WHERE THE REAL DISRUPTION LANDS", { x: x2, y: 4.9, w: colW, h: 0.3, fontFace: MONO, fontSize: 9, color: C.accent, charSpacing: 2 });
@@ -113,8 +113,8 @@ function signal(s: PSlide, sl: Extract<Slide, { type: "signal" }>): void {
 
 function horizons(s: PSlide, sl: Extract<Slide, { type: "horizons" }>): void {
   const cols = [
-    { range: "Now—2028", text: sl.near },
-    { range: "2028—2035", text: sl.mid },
+    { range: "Now to 2028", text: sl.near },
+    { range: "2028 to 2035", text: sl.mid },
     { range: "2035+", text: sl.far },
   ];
   const w = 3.7, gap = 0.36;
@@ -191,8 +191,8 @@ export async function buildPptx(deck: Deck): Promise<void> {
   const p = new PptxGen();
   p.defineLayout({ name: "SR_WIDE", width: PAGE.w, height: PAGE.h });
   p.layout = "SR_WIDE";
-  p.author = "Signal Reactor — Futures Atlas";
-  p.title = `Signal Reactor — ${deck.sector}`;
+  p.author = "Signal Reactor, Futures Atlas";
+  p.title = `Signal Reactor: ${deck.sector}`;
   p.subject = HONESTY_LINE;
 
   const total = deck.slides.length;

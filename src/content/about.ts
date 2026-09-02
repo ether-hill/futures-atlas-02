@@ -44,7 +44,7 @@ export const OUTPUT_TYPES: { type: OutputType; label: string; title: string; bod
 export const WORK = {
   intro: "What we work on",
   body: "Compute and the power it is reorganising: where AI is actually heading, what the energy and infrastructure behind it costs, what quantum machines can demonstrably do as against what is claimed for them, and the labs, companies and ministries narrating all of it. The gap between a demonstrated capability and a projected trajectory is where most decisions go wrong, so that gap is the subject.",
-  note: "The terms this work keeps returning to. Size is emphasis, not a tally.",
+  note: "The terms this work keeps returning to. Size shows emphasis. There is no count behind it.",
   closing: "Across all of it: cite everything, substance over hype.",
 };
 
@@ -330,7 +330,7 @@ export const STACK: StackTool[] = [
   },
 ];
 
-export const STACK_INTRO = "The tools we use, in the open. Nothing here is an endorsement, it’s an inventory.";
+export const STACK_INTRO = "The tools we use, in the open. It’s an inventory, and nothing on it is an endorsement.";
 
 export const FOOTER_CTA = { label: "Browse the projects", href: "/projects" };
 

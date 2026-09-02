@@ -4,12 +4,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Quantum Spark · Five Sparks for What's Next · Futures Atlas",
   description:
-    "Type your industry — get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it. Inspiration, not fabrication.",
+    "Type your industry and get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it. Built to inspire, and kept honest about what the technology can really do.",
   openGraph: {
     siteName: "Futures Atlas",
-    title: "Quantum Spark — Futures Atlas",
+    title: "Quantum Spark · Futures Atlas",
     description:
-      "An inspirational quantum/AI insight generator: five electric, grounded provocations for any business — the kind that make a room lean forward.",
+      "An inspirational quantum/AI insight generator: five electric, grounded provocations for any business, the kind that make a room lean forward.",
     type: "website",
   },
 };

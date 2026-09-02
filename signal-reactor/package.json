@@ -2,7 +2,7 @@
   "name": "signal-reactor",
   "version": "0.1.0",
   "private": true,
-  "description": "Futures Atlas — Signal Reactor. Substance-first foresight briefings on quantum + advanced AI for any organization type, packaged as a presentable slide deck. Deflate the hype, extrapolate the real signal.",
+  "description": "Futures Atlas: Signal Reactor. Substance-first foresight briefings on quantum and advanced AI for any organization type, packaged as a presentable slide deck. Strips out the hype and follows the real signal through.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

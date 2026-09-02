@@ -88,7 +88,7 @@ export const projects: Project[] = [
     id: "slime-quantum",
     title: "Slime mould and quantum computing",
     tagline:
-      "A slime mould in a maze explores every corridor at once. So, we are told, does a quantum computer. Where the comparison breaks is the project.",
+      "A slime mould in a maze explores every corridor at once. So, we are told, does a quantum computer. The project is about where that comparison breaks down.",
     year: "2026",
     date: "2026-09-01",
     field: "Biology & computation",
@@ -153,7 +153,7 @@ export const projects: Project[] = [
     id: "superposition",
     title: "Quantum Superposition Visuals",
     tagline:
-      "Five branching processes from nature, running live. A picture of the possibility space, not of a fuzzy object.",
+      "Five branching processes from nature, running live. Each one pictures the possibility space rather than a fuzzy object.",
     year: "2026",
     date: "2026-09-01",
     field: "Waves & optics",
