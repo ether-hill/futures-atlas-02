@@ -127,7 +127,7 @@ function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-[70vh] bg-surface py-[clamp(40px,6vw,90px)]">
       <Container>
-        <p className="eyebrow tick mb-4">Editor</p>
+        <p className="eyebrow mb-4">Editor</p>
         <h1 className="mb-3 max-w-[20ch] text-[clamp(30px,4.4vw,60px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
           Swipe the Future desk
         </h1>

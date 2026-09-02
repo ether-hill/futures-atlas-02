@@ -81,6 +81,25 @@ editor sign-in and draft visibility. `STYLE_GUIDE_PASSWORD` exists only in
 Preview + Production, so **`/style-guide` returns 503 locally by design**; use
 `vercel env pull --environment=preview` if you actually need it.
 
+**Two dev servers on one checkout will break each other.** They share `.next`,
+and each compiler prunes the other's output, so a request lands on a route whose
+`page.js` the other process just deleted:
+
+```
+⨯ Error: ENOENT: no such file or directory, open
+  '…/.next/server/app/(atlas)/<route>/page.js'
+```
+
+It shows up as an intermittent 404 or 500 that clears on reload and comes
+straight back, and it looks like a bug in the page. It is not. Running
+`next build` while a dev server is up does the same thing (`Cannot find module
+'./NNNN.js'`), because the build rewrites the same directory.
+
+Give the second one its own tree: `NEXT_DIST_DIR=.next-b PORT=3xxx npm run dev`
+(`distDir` in `next.config.ts` reads it; `/.next-*/` is gitignored). Same for a
+build you need to run while someone is developing. This matters here because
+more than one person, and more than one agent session, works in this repo.
+
 npm 11 blocks install scripts by default: `sharp` and `ffmpeg-static` (the
 composer's MP4 export) need theirs, hence the `allowScripts` block in
 `package.json`.
@@ -250,6 +269,176 @@ report there or it will not appear.
   and canonicals to v1. **Every tally on v2 still counts the full set** — a
   short edit that also shrank its own numbers would misrepresent the evidence
   base, which is the exact failure the report is about.
+
+## Horizon Scan (`/horizon-scan`) — the standing search
+
+A draft project, and the only page on the site with **no editor**: it fetches
+open-access papers from OpenAlex and arXiv, filters them with a published rule
+set, and prints on each card which rules fired and on which words. The rules are
+the curation, so they are rendered on the page under "The rules". If a paper you
+expect is missing, widen a topic in `src/data/horizon-scan.ts`; never hand-add a
+record, there is nowhere to put one.
+
+- `src/data/horizon-scan.ts` is the whole editable surface: 9 `CLUSTERS`
+  (subjects), 40 `TOPICS`, the `QUERY_GROUPS` that decide which topics share a
+  call, the two blocklists, and the window/cache/cap constants. Each topic has
+  `probes` (what we ASK the indexes, wide) and `terms` (what we ACCEPT, narrow).
+  A record is kept if its own text contains an accept term, whichever query
+  found it, which is how a quantum paper picks up a power tag.
+- **`terms` are matched as lowercased substrings, and short ones are traps.**
+  Three that shipped and had to come out: `asic` matched every paper containing
+  "basic", `siting` matched "visiting", and `sport` in the venue blocklist was
+  throwing out every transport journal. Say a term inside a longer word before
+  adding it.
+- **Two bars, and they are what keep the page short.** (1) A topic counts as
+  *solid* only when its words are in the title or turn up more than once; a
+  record is held only if it has one solid topic or two mentioned ones
+  (`MIN_SOLID_TOPICS` / `MIN_WEAK_TOPICS`). That drops roughly a third of what
+  matches, all of it papers that used a phrase once in a methods section.
+  (2) Convergence counts solid subjects only. Without the second, the top of the
+  page was semiconductor papers that said "quantum computing" once in an opening
+  sentence. On a card, solid topics are marked and mentions are dimmed.
+- **Authority is a nudge, not a verdict** (`lib/horizon-scan/authority.ts`).
+  Three figures per paper: the journal's 2-year mean citedness, the higher
+  h-index of the first and last author, and the best-cited institution on the
+  byline, rolled into 0-1 and worth `AUTHORITY_WEIGHT` (4) against freshness's 6
+  and crossover's 5. All three are citation counts in costume, so they are
+  printed on the entry rather than folded into a hidden number, missing figures
+  count as neutral rather than zero (arXiv carries none of these ids at all and
+  must not be pushed down for it), and there is a caveat panel on the page
+  saying what they do and do not measure. **The lookups are filters by id, which
+  OpenAlex charges 1 credit for rather than 10**, so the whole pass is single
+  figures a day and can cover every held paper.
+- **Retrieval is cached to disk in development**
+  (`node_modules/.cache/horizon-scan-raw.json`, `readDevRaw` in collect.ts).
+  Editing rules, scoring or layout then costs nothing and takes no time; delete
+  the file for a fresh pull. Production never reads it.
+  **Never put a runtime-written file under `.next`.** The first version of this
+  wrote to `.next/cache/` and broke the dev server: `next dev` watches its own
+  output directory, so a mid-request write triggered a recompile that deleted
+  `.next/server/app/(atlas)/horizon-scan/page.js` out from under the following
+  request. The symptom is an intermittent 404, then a 500 with
+  `ENOENT … page.js`, then normal service until the next write.
+- **Every upstream call is on a timeout and the serial arXiv loop is on a
+  deadline** (`REQUEST_TIMEOUT_MS`, `LANE_BUDGET_MS`). A cold run is ~8s
+  healthy and is bounded at ~42s with every upstream refusing, which has to stay
+  inside the page's `maxDuration`. A 429 from OpenAlex is only retried when
+  credits remain: when the daily allowance is spent, waiting out `Retry-After`
+  on 22 queries turned an 8-second render into 66. arXiv wants 3s between
+  requests and starts refusing if crowded.
+- **A third rule reads for a finding vs a framework** (`SPARK` in the data file,
+  `lib/horizon-scan/interest.ts`). Keywords cannot tell a result from a scaffold
+  and academia produces far more scaffolds, so wording decides: *we find*, *for
+  the first time*, *contrary to* count for; *towards a*, *conceptual framework*,
+  *systematic review* count against, and **double in a title, because a title is
+  a promise**. Worth `SPARK_WEIGHT` (6), same as freshness. It never removes
+  anything, the phrases that fired are printed under each entry, and **Boldest**
+  sorts by it.
+- **Every entry carries the paper's own strongest sentence**, pulled from its
+  abstract by `keySentence()`. Extracted, never written: a generated summary
+  would be the one thing on the page nobody can check against the source. A
+  claim marker alone is not enough to pick a sentence — "Here we propose a
+  unified framework…" scores for *here we* and is exactly the sentence not to
+  quote — so dull markers cancel it out.
+- **No subject may take the page.** `MAX_PER_SUBJECT` (16 of 100) and
+  `DIGEST_PER_SUBJECT` (2 of 10). Quantum has the most distinctive vocabulary of
+  the nine, matches hardest, and was taking a third of the list on its own.
+  Over-cap papers are pushed behind the rest, never dropped, and the count is in
+  the ledger.
+- **The header says what the page is and nothing about the run.** One line: "Top
+  N relevant open research articles". All the accounting (retrieved, binned,
+  capped, last run) lives at the foot with the rules, because it is accounting
+  and it does not belong above the thing it accounts for.
+- **The grid is the projects grid.** Gapped `.fa-card`s, `sm:2 lg:3`, each with
+  a 3:2 plate on top and a body under it, same as `ProjectCard`. The plate is a
+  figure from the paper where there is one and the hatched ground with the
+  entry's number ghosted into it where there is not — exactly what a project
+  card does without a screenshot. Do not introduce a second card treatment.
+- **One grid, one order.** Controls sit ABOVE the board and govern both it and
+  the list, so "Start here" is the top of whatever you are looking at rather
+  than a fixed ten that ignores the chips beside it (the per-subject cap is
+  dropped when a subject filter is on, or the cap would be fighting the
+  request). The board and the grid below it are the same `Board` container — a
+  hairline grid, cells on a ruled ground — because two grid treatments on one
+  page reads as two pages. Grid is the default view; list is the alternative.
+  The ten never repeat in the list below.
+- **The page is a digest, not an archive.** `MAX_HELD` = 100 rendered, ranked;
+  `TOP_PICKS` = 10 on the board at the top, each with authors, venue and that
+  key sentence, ignoring the filters on purpose so it stays the same ten. Two
+  views: list (default, the reading layout, borrowed from myxo's research list
+  with the thumbnail rail replaced by metadata) and grid. Five orders: best
+  match, newest, crossover, boldest, standing, most cited.
+- **The ten at the top carry a figure from the paper** (`lib/horizon-scan/figures.ts`).
+  arXiv renders recent submissions to HTML at `arxiv.org/html/<id>` with the
+  paper's own images beside it; the first one is **hot-linked, never copied**,
+  same rule the feed follows for a publisher's artwork, and the entry silently
+  loses its picture if arXiv stops serving it. arXiv only, top ten only, on a
+  12s deadline: journal figures sit behind publisher HTML with no shape in
+  common, and rasterising a PDF's first page inside a serverless function to get
+  a picture of a title page is not worth it. Figures sit on a **light plate in
+  both themes** and use `object-contain` — they are drawn for white paper, and
+  cropping one loses the part that carried the point.
+- **No jargon on an entry.** The line reads `arXiv · 26 Aug 2026 · not peer
+  reviewed`, not `arXiv cs.AI · preprint`: the category code only repeated the
+  subject chips beside it, and "preprint" hides the one fact a reader needs.
+  arXiv metadata carries `journal_ref` when a preprint has since been published,
+  so those entries show the real journal and say *via arXiv*. `reviewed` on
+  RawRecord drives it. A rules panel explains both in plain English.
+- **There is no "convergent" badge.** A crossover paper shows two subject chips
+  filled in, which is the fact itself; the word on top was a label on a label.
+  The idea still drives the ranking, the Crossover sort and the Convergent
+  filter.
+- **arXiv text is LaTeX** and arrives that way (`detex()` in arxiv.ts), or a card
+  reads `two hybrid III--V/Si$_3$N_4$ integrated lasers`.
+- In development the finished run is memoised for two seconds only
+  (`DEV_MEMO_MS`): long enough that one render's passes share a scan, short
+  enough that editing a rule shows up on reload. Caching it for a day meant
+  edits changed nothing until a restart; not caching meant the two passes ran
+  separate scans, disagreed on `ranAt`, and tripped a hydration mismatch.
+- **The scan does NOT use the framework's fetch cache, and must not be moved
+  back onto it.** This app's root layout is `force-dynamic` (it reads the KV
+  token overrides per request), and under Next 15 that defaults every fetch
+  beneath it to no-store even when the fetch sets its own `next: { revalidate }`
+  — `fetchCache = "default-cache"` on the segment does not win it back. Measured
+  on a production build, the page was firing all 22 OpenAlex calls on EVERY view:
+  35 seconds a render and 220 credits a view against a 1000-a-day allowance, so
+  two visitors would have taken the day. `lib/horizon-scan/cache.ts` caches the
+  whole run instead, in the project's own KV (`fa:cache`, shared across
+  instances) plus a module memo, with single-flight. Cold 8s, warm 20ms.
+  **If you add another page that fans out to an API, it has the same problem.**
+- **`OPENALEX_API_KEY` is set and the page depends on it.** The keyless budget
+  is $0.10/day (1000 credits; one run is ~230) and it is **not ours alone** —
+  Vercel's egress IP is shared with other customers and openalex.org's own site
+  draws on the same pool, so the allowance can be gone before this page asks for
+  anything. A free OpenAlex account (no payment method) gives a key with 10× the
+  budget, tied to the account rather than the IP. `openAlexHeaders()` picks it up
+  from the env; unset, the page falls back to keyless and comes back mostly
+  empty. **It is in `.env.local` locally and must be added to the Vercel project
+  before this deploys.** A full run costs ~230 of 10,000. Nothing else on this
+  page costs money: arXiv is unmetered and there is no model call anywhere.
+- **A 429 does not carry `x-ratelimit-remaining`.** The guard that skips the
+  retry when the daily allowance is spent read `Number(null)` as 0, so every
+  momentary burst limit was treated as an exhausted budget and dropped — before
+  the logging, so seventeen of twenty-two queries vanished each run with no
+  error anywhere and it looked like OpenAlex refusing. Read that header as
+  absent, not as zero. Fixing it took retrieval from 200 records to 1,107.
+- **OpenAlex meters credits, not requests**: 1000 a day keyless, a flat 10 per
+  search whatever `per_page` is. So queries are the cost and rows are free,
+  hence 20 grouped calls of 50 rows plus 2 for the TU Delft ROR lane, cached 24
+  hours (`REVALIDATE_SECONDS`). Concurrency is therefore free too, which is why
+  the pool is 8. Going over returns 429; `run()` retries once on `Retry-After`.
+  Do not add per-topic queries back without redoing that sum.
+- `primary_location.source.is_core:true` is what makes the journal lane usable.
+  Without it a date-sorted query is mostly Zenodo self-deposits and pay-to-
+  publish titles, because those get date-stamped fastest. It also excludes
+  arXiv, which is why arXiv gets its own pass (`lib/horizon-scan/arxiv.ts`,
+  regex-parsed Atom, no XML dependency) and those cards say `preprint`.
+- `to_publication_date` is pinned to today. Journals stamp issues months ahead,
+  so without it the feed opens with papers "published" next December.
+- A failed run renders as a stated failure and a partial run says how many
+  queries did not answer. **There is no stored copy of a previous run**, and
+  there should not be: a page that says it re-ran twelve hours ago must not be
+  showing last week.
 
 ## Hypothetica Magnifica (`/magnifica`)
 

@@ -10,7 +10,7 @@
 
   1. ONE WebGL CONTEXT. Every field draws into a single offscreen GL canvas and
      is then blitted into that card's own 2D canvas. Browsers cap live WebGL
-     contexts (~16), so a page of fourteen fields each holding its own context is
+     contexts (~16), so a page of eighteen fields each holding its own context is
      one variant away from breaking. The scratch buffer is sized once and each
      draw takes the lower-left w×h corner of it.
 
@@ -206,6 +206,11 @@ window.FIELD = (function () {
 
   /* ------------------------------------------------------------------ fields */
 
+  /* draft: true = unpublished. Everything below "Losing coherence" is still
+     being worked on, so index.html lists those panels only for a signed-in
+     editor (the readable "fa_editor" cookie, same hint atlas-nav.js uses).
+     Drop the flag to publish one; the card numbering follows what is shown. */
+
   var VARIANTS = [
 
   {
@@ -253,7 +258,7 @@ window.FIELD = (function () {
     frag: [
       "const float HGAIN = 0.42;",
       "const float W = TAU/6.0;",
-      "const float K = 26.0;",
+      "const float K = 52.0;",
       "float height(vec2 p){",
       "  float h = 0.0;",
       "  for(int i=0;i<2;i++){",
@@ -323,13 +328,31 @@ window.FIELD = (function () {
       "const float W = TAU/2.5;",
       "const float D = 0.22;",
       "const float YB = -0.80;",
+      "const float AP = 0.045;   /* half-width of a gap, matching the one drawn */",
+      "",
+      "/* How strongly a gap radiates in a given direction.",
+      "",
+      "   A bare point source pushes out a full circle at equal strength, so the",
+      "   arcs ran all the way along the wall and it read as if the whole barrier",
+      "   were emitting rather than the two gaps. Two things fix that, and both",
+      "   are real: cos(theta) from the wall normal, which is the obliquity of a",
+      "   hole in a flat screen and goes to nothing along the wall; and the",
+      "   single-slit envelope of a gap that has width, sin(u)/u across the",
+      "   aperture. The second is what the note calls the missing refinement. */",
+      "float lobe(vec2 d){",
+      "  float ob = max(d.y, 0.0);",
+      "  float u  = K*AP*d.x;",
+      "  float sc = abs(u) < 1e-3 ? 1.0 : sin(u)/u;",
+      "  return ob*sc;",
+      "}",
       "",
       "vec3 render(vec2 p){",
       "  vec2 F = vec2(0.0);",
       "  for(int i=0;i<2;i++){",
       "    vec2 s = vec2((float(i)*2.0-1.0)*D, YB);",
-      "    float r = length(p-s);",
-      "    F += (1.0/sqrt(0.16+r*2.4))*vec2(cos(K*r), sin(K*r));",
+      "    vec2 v = p-s;",
+      "    float r = length(v);",
+      "    F += lobe(v/max(r,1e-4))*(1.0/sqrt(0.16+r*2.4))*vec2(cos(K*r), sin(K*r));",
       "  }",
       "  float inst = F.x*cos(W*uT) + F.y*sin(W*uT);",
       "  vec3 col;",
@@ -364,13 +387,27 @@ window.FIELD = (function () {
     frag: [
       "const float K = 34.0;",
       "const float W = TAU/2.5;",
+      "const float YB = -0.80;",
+      "const float AP = 0.030;   /* half-width of a gap, matching the ones drawn */",
+      "",
+      "/* Same aperture lobe as the two-slit panel: cos(theta) obliquity for a",
+      "   hole in a flat screen, times the single-slit envelope of a gap with",
+      "   width. Without it seven point sources radiate full circles and the",
+      "   arcs run along the wall as if the whole grating were emitting. */",
+      "float lobe(vec2 d){",
+      "  float ob = max(d.y, 0.0);",
+      "  float u  = K*AP*d.x;",
+      "  float sc = abs(u) < 1e-3 ? 1.0 : sin(u)/u;",
+      "  return ob*sc;",
+      "}",
       "",
       "vec2 fieldAt(vec2 q){",
       "  vec2 F = vec2(0.0);",
       "  for(int i=0;i<7;i++){",
-      "    vec2 s = vec2((float(i)-3.0)*0.145, -0.80);",
-      "    float r = length(q-s);",
-      "    F += (1.0/sqrt(0.16+r*2.2))*vec2(cos(K*r), sin(K*r));",
+      "    vec2 s = vec2((float(i)-3.0)*0.145, YB);",
+      "    vec2 v = q-s;",
+      "    float r = length(v);",
+      "    F += lobe(v/max(r,1e-4))*(1.0/sqrt(0.16+r*2.2))*vec2(cos(K*r), sin(K*r));",
       "  }",
       "  return F;",
       "}",
@@ -378,7 +415,17 @@ window.FIELD = (function () {
       "vec3 render(vec2 p){",
       "  vec2 F = fieldAt(p);",
       "  float inst = F.x*cos(W*uT) + F.y*sin(W*uT);",
-      "  vec3 col = rampI(tm(inst*inst*0.30));",
+      "  vec3 col;",
+      "  /* Below the wall is the wave ARRIVING, not the diffracted one. This",
+      "     panel had no such branch — the two-slit panel does — so the seven",
+      "     circular sources were drawn under the barrier too, and the region",
+      "     that should show a plane wave rolling in showed arcs fanning",
+      "     backwards out of the slits. */",
+      "  if(p.y < YB){",
+      "    float pw = 0.5+0.5*cos(K*(p.y-YB) + W*uT);",
+      "    return mix(rampI(0.03), rampI(0.30), pw);",
+      "  }",
+      "  col = rampI(tm(inst*inst*0.30));",
       "  col += rampI(tm(dot(F,F)*0.075))*0.22;",
       "  float band = smoothstep(0.855,0.870,p.y);",
       "  if(band > 0.0){",
@@ -583,6 +630,7 @@ window.FIELD = (function () {
 
   {
     slug: "vortex",
+    draft: true,
     title: "Vortex lattice",
     loop: 24.0,
     note: "Three plane waves at 120 degrees, coloured by phase. Each dark point is a singularity.",
@@ -616,6 +664,7 @@ window.FIELD = (function () {
 
   {
     slug: "one-at-a-time",
+    draft: true,
     kind: "2d",
     loop: null,
     title: "One at a time",
@@ -632,6 +681,7 @@ window.FIELD = (function () {
 
   {
     slug: "nodal-lines",
+    draft: true,
     title: "Nodal lines",
     loop: 20.0,
     note: "Only the silence, drawn. The sources drift apart and the fan opens.",
@@ -667,6 +717,7 @@ window.FIELD = (function () {
 
   {
     slug: "contours",
+    draft: true,
     title: "Contours",
     loop: 4.0,
     note: "The same field as a survey map. Every line is one height of water.",
@@ -696,6 +747,196 @@ window.FIELD = (function () {
       "  vec3 paper = rampI(0.96), ink = rampI(0.10);",
       "  vec3 col = mix(paper, ink, line*0.88);",
       "  col = mix(col, rampI(0.62), smoothstep(0.4,1.4,abs(f))*0.10);",
+      "  return col;",
+      "}"
+    ].join("\n")
+  },
+
+  {
+    slug: "moire",
+    draft: true,
+    title: "Moir\u00e9",
+    loop: 8.0,
+    note: "Two rulings of the same pitch, crossed by a degree. The pattern is far coarser than either.",
+    read: [
+      ["What you are seeing",
+       "Two sets of straight lines, ruled at exactly the same spacing, laid one over the other and turned very slightly against each other. Broad pale bands sweep across as the angle changes. Nothing in the picture is that wide: both rulings are fine, and the bands are the difference between them."],
+      ["Where the quantum comes in",
+       "Nothing quantum, and that is the reason it is here. Interference does not need waves in a medium or particles in a beam, only two regular things sampled against each other. The same arithmetic sets the beat of two detuned notes, the wagon-wheel effect in film, and the fringes across a photographed screen. Metrology takes it seriously: crossing a ruling against a copy of itself turns a misalignment far too small to see into a band you can count."],
+      ["How it is built",
+       "Two cosines of identical frequency, one along a fixed direction and one along a direction that turns. Each is cut to hard bars against its own on-screen width, so the lines stay crisp at any size instead of dissolving into grey, and the two are multiplied: light passes only where both rulings are open. The wide bands are not drawn at all. They are what the product does on its own."]
+    ],
+    frag: [
+      "const float N = 520.0;      /* rulings per unit, both gratings */",
+      "const float W = TAU/8.0;",
+      "",
+      "/* One ruling, as hard bars. FW is the width of a pixel in p-space, so the",
+      "   edges are one pixel wide whatever size the panel is drawn at; a fixed",
+      "   width turns the whole thing to flat grey on a small panel. */",
+      "float ruling(vec2 p, float a){",
+      "  vec2 d = vec2(cos(a), sin(a));",
+      "  float c = cos(N*dot(p,d));",
+      "  float w = max(FW(c), 0.05);",
+      "  return smoothstep(-w, w, c);",
+      "}",
+      "",
+      "vec3 render(vec2 p){",
+      "  /* the crossing angle breathes through a few tenths of a degree either",
+      "     side of parallel; the closer to parallel, the wider the bands */",
+      "  /* The swing never reaches parallel. At a few thousandths of a radian",
+      "     the beat is wider than the panel and there is nothing to see but one",
+      "     pale wash; held between these two the bands stay countable and the",
+      "     picture reads as a beat rather than as a gradient. */",
+      "  float a = 0.052 + 0.026*cos(W*uT);",
+      "  float g1 = ruling(p, 0.0);",
+      "  float g2 = ruling(p, a);",
+      "  float open = g1*g2;",
+      "  vec3 col = mix(rampI(0.03), rampI(0.88), open);",
+      "  /* a wash keyed to the beat itself, so the bands still read when the",
+      "     rulings are too fine for the screen to resolve one by one */",
+      "  vec2 d2 = vec2(cos(a), sin(a));",
+      "  float beat = 0.5+0.5*cos(N*(dot(p,vec2(1.0,0.0)) - dot(p,d2)));",
+      "  col = mix(col, rampI(0.55), beat*0.10);",
+      "  return col;",
+      "}"
+    ].join("\n")
+  },
+
+  {
+    slug: "speckle",
+    draft: true,
+    title: "Speckle",
+    loop: 6.0,
+    note: "Thirty scatterers, no two in step. The grain is the interference, not the noise floor.",
+    read: [
+      ["What you are seeing",
+       "A field of hard bright grains with black between them. It looks like noise and is the opposite: every grain is a place where thirty waves happened to arrive in step, and every black gap is a place where they cancelled. Shine a laser on any rough wall and this is what you get."],
+      ["Where the quantum comes in",
+       "Speckle is the signature of coherence. A torch produces none, because its light has no fixed phase relationship to itself; a laser produces it immediately. That makes the grain a test rather than a nuisance: if a source can speckle, its parts are in step. The same reasoning runs through quantum optics, where whether two paths can interfere is exactly the question of whether anything could have told them apart."],
+      ["How it is built",
+       "Thirty scattering points, positions fixed by index rather than stored, each sending out a circular wave. Every pixel adds the thirty complex amplitudes and takes the square. Each scatterer is also given its own whole number of turns per loop, so the phases drift against one another and the field boils, and after one loop every one of them is back exactly where it began."]
+    ],
+    frag: [
+      "const int NS = 30;",
+      "const float K = 26.0;",
+      "const float W = TAU/6.0;",
+      "",
+      "float h1(float i, float k){ return fract(sin(i*12.9898 + k*78.233)*43758.5453); }",
+      "",
+      "vec3 render(vec2 p){",
+      "  vec2 F = vec2(0.0);",
+      "  for(int j=0;j<NS;j++){",
+      "    float i = float(j);",
+      "    vec2 s = vec2(h1(i,1.0)*3.2 - 1.6, h1(i,2.0)*2.2 - 1.1);",
+      "    float r = length(p-s);",
+      "    /* an INTEGER number of turns per loop: anything else and the field",
+      "       does not come back to itself at the seam */",
+      "    float turns = floor(h1(i,3.0)*5.0) + 1.0;",
+      "    float ph = K*r + W*turns*uT;",
+      "    F += (1.0/sqrt(0.30 + r*1.6))*vec2(cos(ph), sin(ph));",
+      "  }",
+      "  float I = dot(F,F);",
+      "  /* The gain is set from the distribution, not by eye: the median of I",
+      "     over the panel lands about a quarter of the way up the ramp, so the",
+      "     field reads mostly dark with the constructive grains standing out.",
+      "     At 0.55 the whole panel sat at the top of the ramp and the thing",
+      "     looked like marbling rather than speckle. */",
+      "  vec3 col = rampI(tm(I*0.032));",
+      "  return col;",
+      "}"
+    ].join("\n")
+  },
+
+  {
+    slug: "thin-film",
+    draft: true,
+    title: "Thin film",
+    loop: 10.0,
+    note: "A soap film draining. Each band is one more half-wavelength of thickness.",
+    read: [
+      ["What you are seeing",
+       "A film of liquid held in a ring, seen in reflection. Light bounces off the front surface and off the back, and the two reflections meet again having travelled different distances. Where the extra distance is a whole number of wavelengths they add and the film is bright; half a wavelength out and they cancel. As the film drains and thins, the bands slide."],
+      ["Where the quantum comes in",
+       "Reflection off the back of the film adds half a wavelength that no distance accounts for, which is why the very thinnest part goes black rather than white just before it breaks. The colours are the same effect run once per wavelength: a thickness that cancels red will not cancel blue, so white light comes back split. This is the whole of what an anti-reflection coating does, and it is the oldest quantitative evidence that light is a wave."],
+      ["How it is built",
+       "A thickness map: a slow drain from the top, plus a couple of standing undulations across the surface. The brightness is the square of the cosine of the round-trip phase through that thickness, and the colour is the fringe order read around the palette as a closed cycle, so the bands run through the full sequence and rejoin without a seam."]
+    ],
+    frag: [
+      "const float W = TAU/10.0;",
+      "",
+      "/* thickness of the film at p, in units of half a wavelength */",
+      "float thickness(vec2 p){",
+      "  /* Gravity, not a ramp. A film held vertically pools at the bottom, so",
+      "     thickness grows faster than linearly downwards — which is why the",
+      "     bands crowd together low down and open out to a wide colourless",
+      "     wedge at the top just before it breaks. */",
+      "  float u = 0.5 - 0.5*p.y;                     /* 0 at the top, 1 at the foot */",
+      "  float drain = 0.45 + 13.5*u*u;",
+      "  drain += 0.40*cos(3.1*p.x + W*uT);           /* one turn per loop */",
+      "  drain += 0.26*cos(2.2*p.y - 2.0*W*uT);       /* two turns per loop */",
+      "  drain += 0.15*cos(5.3*p.x + 3.0*p.y + 3.0*W*uT);",
+      "  return max(drain, 0.0);",
+      "}",
+      "",
+      "vec3 render(vec2 p){",
+      "  float t = thickness(p);",
+      "  /* PI on reflection off the denser back surface: this is the term that",
+      "     sends the thinnest film black rather than bright */",
+      "  float phase = TAU*t + PI;",
+      "  float amp = 0.5 + 0.5*cos(phase);",
+      "  /* order around the palette as a closed cycle, so the bands rejoin */",
+      "  vec3 col = rampC(t*0.34);",
+      "  col *= 0.30 + 0.95*amp;",
+      "  /* the film thins to nothing at the top edge and goes dark */",
+      "  col *= smoothstep(0.0, 0.55, t);",
+      "  return col;",
+      "}"
+    ].join("\n")
+  },
+
+  {
+    slug: "wavefronts",
+    draft: true,
+    title: "Two sources",
+    loop: 3.0,
+    note: "The same pair as the first panel, drawn as the circles they are. Every bright bead is two crests arriving together.",
+    read: [
+      ["What you are seeing",
+       "Two sources side by side, each sending out circles. Not a surface, not water seen from above \u2014 just the crests themselves, drawn where they are. Two families of rings, and where a ring from one crosses a ring from the other, both are lifting at once and the crossing lights up. Follow those bright crossings outward and they line up along smooth curves fanning away from the pair."],
+      ["Where the quantum comes in",
+       "Those curves are the whole of it. A crossing happens where the two distances differ by a whole number of wavelengths, so the arrivals are in step; between them run the lanes where the difference is half a wavelength and nothing ever moves. Send electrons through two slits and they land on those same curves and never in the lanes. The pattern is fixed by geometry alone \u2014 two distances and one wavelength \u2014 which is why it comes out identical whether the thing doing the travelling is water, light or an atom."],
+      ["How it is built",
+       "For each pixel, the distance to each source, and a band drawn wherever that distance sits near a crest. The two bands are kept apart rather than added: the picture shows one set of circles, the other set, and separately the places where both are true at once. That last term is the only thing lit brightly, so the crossings do the work. The rings are cut against their own on-screen width, so they stay one clean line whatever size the panel is drawn at."]
+    ],
+    frag: [
+      "const float K = 30.0;",
+      "const float W = TAU/3.0;",
+      "const float D = 0.52;      /* half the separation of the two sources */",
+      "",
+      "/* One family of circles: a band wherever the distance sits near a crest.",
+      "   The threshold is cut against FW so a ring is one line wide on screen",
+      "   rather than one line wide in the field \u2014 without it the circles thicken",
+      "   into flat wash on a small panel and vanish on a large one. */",
+      "float ring(float r){",
+      "  float c = cos(K*r - W*uT);",
+      "  float w = max(FW(c)*1.2, 0.10);",
+      "  return smoothstep(0.58 - w, 0.58 + w, c);",
+      "}",
+      "",
+      "/* circular waves in two dimensions thin out as 1/sqrt(r) */",
+      "float fall(float r){ return 1.0/sqrt(0.45 + r*0.85); }",
+      "",
+      "vec3 render(vec2 p){",
+      "  float r1 = length(p - vec2(-D, 0.0));",
+      "  float r2 = length(p - vec2( D, 0.0));",
+      "  float a = ring(r1)*fall(r1);",
+      "  float b = ring(r2)*fall(r2);",
+      "",
+      "  vec3 col = rampI(0.02);",
+      "  /* the two families, drawn as themselves */",
+      "  col = mix(col, rampI(0.46), clamp(max(a,b), 0.0, 1.0));",
+      "  /* and the crossings, which are the point of the panel */",
+      "  col = mix(col, rampI(0.97), clamp(a*b*1.5, 0.0, 1.0));",
       "  return col;",
       "}"
     ].join("\n")
@@ -808,12 +1049,39 @@ window.FIELD = (function () {
     if (variant.kind === "2d") {
       var carry = 0, lastT = -1, painted = false;
 
+      /*
+       * Where a particle is likely to land: the same two-slit field the wave
+       * panels draw, summed as amplitudes and squared, so the two panels agree
+       * about the same experiment.
+       *
+       * It used to be cos^2(k*dr/2) over a falloff, with no aperture term at
+       * all. That is the right fringe pattern but the wrong envelope: a bare
+       * pair of point sources radiates a full circle, so dots landed evenly out
+       * along the wall to the far corners, where a screen behind a barrier
+       * would catch almost nothing. Each gap now carries the cos(theta)
+       * obliquity of a hole in a flat screen and the sin(u)/u envelope of a gap
+       * with width, exactly as in the two-slit shader.
+       *
+       * NORM keeps the peak just under 1. The old form peaked at 1.6 after the
+       * caller's 0.85, and everything above 1 is accepted unconditionally — a
+       * saturated patch draws uniform speckle no matter what the fringes are
+       * doing underneath it.
+       */
       unit.intensity = function (x, y) {
-        if (y < -0.72) return 0;
-        var d = 0.22, k = 30.0;
-        var r1 = Math.hypot(x + d, y + 0.8), r2 = Math.hypot(x - d, y + 0.8);
-        var c = Math.cos(k * (r1 - r2) * 0.5);
-        return (c * c) / (0.35 + 1.6 * Math.min(r1, r2));
+        var YB = -0.80, D = 0.22, K = 30.0, AP = 0.045, NORM = 0.37;
+        if (y < YB + 0.08) return 0;
+        var re = 0, im = 0;
+        for (var i = 0; i < 2; i++) {
+          var vx = x - (i * 2 - 1) * D, vy = y - YB;
+          var r = Math.hypot(vx, vy) || 1e-4;
+          var ob = Math.max(vy / r, 0);
+          var u = K * AP * (vx / r);
+          var sc = Math.abs(u) < 1e-3 ? 1 : Math.sin(u) / u;
+          var a = ob * sc / Math.sqrt(0.35 + 1.6 * r);
+          re += a * Math.cos(K * r);
+          im += a * Math.sin(K * r);
+        }
+        return (re * re + im * im) * NORM;
       };
 
       unit.paint = function (w, h) {

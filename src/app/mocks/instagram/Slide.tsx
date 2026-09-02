@@ -16,7 +16,7 @@
  */
 
 import { DESIGN_W, CARD_W, CARD_H, PAD, SLIDE_CSS } from "./slide-css";
-import type { Card, Post, ReelPost, SlideKind } from "./posts";
+import type { Card, OddsPost, Post, ReelPost, ShotsPost, SlideKind, TermPost } from "./posts";
 
 export const RATIOS = { "4:5": 5 / 4, "1:1": 1, "9:16": 16 / 9 } as const;
 export type Ratio = keyof typeof RATIOS;
@@ -64,16 +64,26 @@ export function SlideFrame({
  * is a wall of stills, exactly as a feed of videos is, and the embed is mounted
  * only for the post you actually opened.
  */
+export interface CropOverride { zoom: number; x: number; y: number }
+
 export function PostSlide({
-  post, index, ratio, live = false,
+  post, index, ratio, live = false, crop,
 }: {
   post: Post;
   index: number;
   ratio: Ratio;
   live?: boolean;
+  /** Set by the editor; overrides whatever the post was authored with. */
+  crop?: CropOverride;
 }) {
   return post.kind === "reel" ? (
-    <ReelSlide post={post} ratio={ratio} live={live} />
+    <ReelSlide post={post} ratio={ratio} live={live} crop={crop} />
+  ) : post.kind === "shots" ? (
+    <ShotSlide post={post} index={index} ratio={ratio} crop={crop} />
+  ) : post.kind === "odds" ? (
+    <OddsSlide post={post} index={index} ratio={ratio} live={live} crop={crop} />
+  ) : post.kind === "term" ? (
+    <TermSlide post={post} ratio={ratio} />
   ) : (
     <SlideBody card={post.card} kind={SLIDE_KINDS_LOCAL[index]!} ratio={ratio} />
   );
@@ -81,24 +91,155 @@ export function PostSlide({
 
 const SLIDE_KINDS_LOCAL = ["card", "reveal", "stats"] as const;
 
-function ReelSlide({ post, ratio, live }: { post: ReelPost; ratio: Ratio; live: boolean }) {
+/** The editor's crop if there is one, else whatever the post was authored with. */
+function cropStyle(post: { zoom?: number; focusY?: number }, crop?: CropOverride) {
+  if (crop) {
+    return {
+      transform: `translate(${crop.x * 100}%, ${crop.y * 100}%) scale(${crop.zoom})`,
+      transformOrigin: "center center",
+    };
+  }
+  return {
+    transform: `scale(${post.zoom ?? 1})`,
+    transformOrigin: `center ${(post.focusY ?? 0.5) * 100}%`,
+  };
+}
+
+function ReelSlide({
+  post, ratio, live, crop,
+}: { post: ReelPost; ratio: Ratio; live: boolean; crop?: CropOverride }) {
   const h = DESIGN_W * RATIOS[ratio];
   return (
     <div className="stf" style={{ width: DESIGN_W, height: h }}>
       <div className="fld">
-        {live ? (
-          <iframe
-            src={post.embed}
-            title={post.title}
-            scrolling="no"
-            /* The embed covers the whole frame; without this it swallows the
-               click and the post cannot be opened or closed. */
-            style={{ pointerEvents: "none" }}
-          />
-        ) : (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img className="fld-thumb" src={`/mocks/instagram/${post.id}.jpg`} alt="" />
-        )}
+        {/* One crop for the still and the live embed alike, or opening a post
+            would jump to a different framing than its tile showed. */}
+        <div className="fld-crop" style={cropStyle(post, crop)}>
+          {live && post.video ? (
+            <video className="fld-thumb" src={post.video} autoPlay loop muted playsInline />
+          ) : live ? (
+            <iframe
+              src={post.embed}
+              title={post.title}
+              scrolling="no"
+              /* The embed covers the whole frame; without this it swallows the
+                 click and the post cannot be opened or closed. */
+              style={{ pointerEvents: "none" }}
+            />
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img className="fld-thumb" src={`/mocks/instagram/${post.id}.jpg`} alt="" />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Redden one phrase inside the quote. The card used to shout the figure in
+ *  48pt above the name; the sentence says it better, and once the sentence is
+ *  there the big number is just the same fact twice. */
+function highlight(quote: string, needle: string) {
+  const i = needle ? quote.indexOf(needle) : -1;
+  if (i < 0) return quote;
+  return (
+    <>
+      {quote.slice(0, i)}
+      <b>{needle}</b>
+      {quote.slice(i + needle.length)}
+    </>
+  );
+}
+
+/**
+ * The Odds. Slide one is the player, laid out here from the game's own data so
+ * it fits the frame exactly; slide two is a recording of a real play-through.
+ */
+function OddsSlide({
+  post, index, ratio, live, crop,
+}: { post: OddsPost; index: number; ratio: Ratio; live: boolean; crop?: CropOverride }) {
+  const h = DESIGN_W * RATIOS[ratio];
+  const p = post.player;
+  if (index === 1) {
+    return (
+      <div className="stf" style={{ width: DESIGN_W, height: h }}>
+        <div className="fld">
+          <div className="fld-crop" style={cropStyle({}, crop)}>
+            {live ? (
+              <video className="fld-thumb" src={post.video} autoPlay loop muted playsInline />
+            ) : (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img className="fld-thumb" src={`/mocks/instagram/${post.id}-play.jpg`} alt="" />
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <div className="stf" style={{ width: DESIGN_W, height: h }}>
+      <div className="odds-card" style={{ ["--accent" as string]: p.accent }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="odds-photo" src={p.photo} alt="" style={{ objectPosition: p.photoPos }} />
+        <div className="odds-scrim" />
+        <div className="odds-body">
+          <div className="odds-who">{p.who}</div>
+          <div className="odds-role">{p.role}</div>
+          {p.quoteContext ? <div className="odds-ctx">{p.quoteContext}</div> : null}
+          <blockquote className="odds-quote">
+            &ldquo;{highlight(p.quote, p.hot)}&rdquo;
+          </blockquote>
+          <div className="odds-cta">
+            {p.cta}
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12h15M13 6l6 6-6 6" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** One word, set big. The vocabulary posts are typography, nothing else. */
+function TermSlide({ post, ratio }: { post: TermPost; ratio: Ratio }) {
+  return (
+    <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
+      <div className="term-card">
+        <div className="term-kind">{post.kind_}</div>
+        <div className="term-word">{post.term}</div>
+        <div className="term-pron">{post.pron}</div>
+        <p className="term-def">{post.definition}</p>
+        <p className="term-body">{post.body}</p>
+      </div>
+    </div>
+  );
+}
+
+/** A carousel of stills: no embed, because there is nothing running to show. */
+function ShotSlide({
+  post, index, ratio, crop,
+}: { post: ShotsPost; index: number; ratio: Ratio; crop?: CropOverride }) {
+  const shot = post.shots[Math.min(index, post.shots.length - 1)]!;
+  const cue = index === 0 && post.shots.length > 1;
+  return (
+    <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
+      <div className="fld">
+        <div className="fld-crop" style={cropStyle({}, crop)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="fld-thumb" src={shot.src ?? `/mocks/instagram/${shot.id}.jpg`} alt="" />
+        </div>
+        {/* Says there is more, in place of the page furniture that was cropped
+            out of the top of these captures. */}
+        {cue ? (
+          <div className="swipe-cue">
+            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
+              strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 12h15M13 6l6 6-6 6" />
+            </svg>
+          </div>
+        ) : null}
       </div>
     </div>
   );

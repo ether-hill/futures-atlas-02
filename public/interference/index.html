@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <base href="/interference/">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Interference. Futures Atlas</title>
-<meta name="description" content="Fourteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one loops seamlessly, re-colours to any palette, and can be saved as a still or a clip.">
+<title>Quantum Interference Visuals. Futures Atlas</title>
+<meta name="description" content="Ten live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one loops seamlessly, re-colours to any palette, and can be saved as a still or a clip.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Futures Atlas">
-<meta property="og:title" content="Interference">
-<meta property="og:description" content="Fourteen live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
+<meta property="og:title" content="Quantum Interference Visuals">
+<meta property="og:description" content="Ten live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
 <meta property="og:image" content="/projects/interference.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="/projects/interference.jpg">
@@ -27,10 +27,9 @@
 <div class="wrap">
   <header class="masthead">
     <div class="eyebrow">Wave optics, running live</div>
-    <h1>Interference</h1>
-    <p class="lede">Drop two stones in a pond and the ripples cross. Where two crests meet, the water jumps higher than either stone could manage alone. Where a crest meets a dip, nothing moves at all. That is interference, and it is the reason a single electron, fired at a wall with two holes in it, lands in stripes.</p>
-    <p class="lede lede--sub">Quantum mechanics is genuinely hard to hold in your head, and the honest reason is that nothing you have ever picked up behaves that way. These are not the equations. They are the part you can look at: the same adding up of waves, in water and in light, drawn large and slow enough to sit with. Some of these are quantum outright and some are a bucket of water, and each one tells you which it is.</p>
-    <p class="lede lede--sub">Fourteen of them, running live. None is a video. Each is a small program working out a colour for every pixel, sixty times a second, so you can slow it down, re-colour it, drag it back and forth in time, open it fullscreen, or take a copy away with you.</p>
+    <h1>Quantum Interference Visuals</h1>
+    <p class="lede">Drop two stones in a pond and the ripples cross. Where two crests meet, the water jumps higher than either stone managed alone. Where a crest meets a dip, nothing moves. That is interference, and it is why a single electron, fired at a wall with two holes in it, lands in stripes.</p>
+    <p class="lede lede--sub"><span id="count">Ten</span> of them, running live. Not videos: each is a small program working out a colour for every pixel, sixty times a second, so you can slow it down, re-colour it, drag it back and forth in time, or take a copy away. Some are quantum outright, some are a bucket of water, and each one tells you which.</p>
   </header>
 </div>
 
@@ -59,7 +58,7 @@
 
   <section class="colophon">
     <p>Colour is doing work here, not decoration. Where a field shows intensity, the darkest stop of the palette is zero and the lightest is the maximum for that field. Where it shows phase, the palette runs once round as a closed cycle and brightness falls to nothing wherever the phase has no single value, which is why the vortex cores read as black pinpricks rather than as gaps in the drawing.</p>
-    <p>Every field except <em>One at a time</em> is periodic, and the number beside its title is that period at normal speed. Recording a clip records exactly one period, so the file loops without a cut. The accumulating field has no period, only a history, so it records a fixed ten seconds instead.</p>
+    <p>Every field <span id="exceptOne">except <em>One at a time</em> </span>is periodic, and the number beside its title is that period at normal speed. Recording a clip records exactly one period, so the file loops without a cut.<span id="accumNote"> The accumulating field has no period, only a history, so it records a fixed ten seconds instead.</span></p>
     <p>Physics is simulated, not measured: these are the standard textbook fields evaluated per pixel, tuned for legibility rather than for a particular apparatus. Wavelengths and source spacings are chosen so the structure reads at this size. Where a panel names a real experiment, the experiment is real and the picture is an illustration of it.</p>
   </section>
 </div>
@@ -122,9 +121,28 @@
 
   var grid = document.getElementById("grid");
 
-  FIELD.VARIANTS.forEach(function (v, i) {
+  // Draft panels are listed only for a signed-in editor. The cookie is a hint,
+  // exactly as in atlas-nav.js: it decides what this page lists, nothing more.
+  var IS_EDITOR = /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
+  var SHOWN = FIELD.VARIANTS.filter(function (v) { return IS_EDITOR || !v.draft; });
+
+  var WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+               "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+               "Seventeen", "Eighteen"];
+  document.getElementById("count").textContent = WORDS[SHOWN.length] || String(SHOWN.length);
+
+  // The colophon's aside about the one field with no period only applies while
+  // that field is on the page.
+  if (SHOWN.every(function (v) { return v.loop; })) {
+    ["exceptOne", "accumNote"].forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.parentNode.removeChild(el);
+    });
+  }
+
+  SHOWN.forEach(function (v, i) {
     var card = document.createElement("section");
-    card.className = "card";
+    card.className = "card" + (v.draft ? " card--draft" : "");
     card.innerHTML =
       '<div class="stage"><canvas></canvas>' +
         '<span class="idx">' + (i < 9 ? "0" : "") + (i + 1) + '</span>' +
@@ -133,7 +151,7 @@
       '</div>' +
       '<div class="meta">' +
         '<div class="meta__top">' +
-          '<span class="name">' + v.title + '</span>' +
+          '<span class="name">' + v.title + (v.draft ? ' <span class="draftflag">Draft</span>' : "") + '</span>' +
           '<span class="loop">' + (v.loop ? v.loop.toFixed(1) + "s loop" : "no loop") + '</span>' +
         '</div>' +
         '<p class="note">' + v.note + '</p>' +

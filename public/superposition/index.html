@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+<meta charset="utf-8">
+<base href="/superposition/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quantum Superposition Visuals. Futures Atlas</title>
+<meta name="description" content="Five branching processes from the natural world, running live: mycelium, a river delta, dielectric breakdown, fracture and a murmuration. A picture of possibility space, not of a fuzzy object.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Futures Atlas">
+<meta property="og:title" content="Quantum Superposition Visuals">
+<meta property="og:description" content="Five branching processes from the natural world, running live. A picture of possibility space, not of a fuzzy object.">
+<meta property="og:image" content="/projects/superposition.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="/projects/superposition.jpg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=Saira+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
+<link rel="stylesheet" href="/api/theme.css">
+</head>
+<body>
+
+<div class="wrap">
+  <header class="masthead">
+    <div class="eyebrow">Branching, running live</div>
+    <h1>Quantum Superposition Visuals</h1>
+    <p class="lede">A quantum state written as a sum is not a blurred object waiting to sharpen up. It is a list of what could be found, with a weight on each. The picture worth having is of the options, all of them, laid out at once.</p>
+    <p class="lede lede--sub">Nature is full of processes that draw exactly that and nothing more: a fungus spreading into every corridor, a river dividing until it runs out of water, a spark testing every site on its rim, a crack too fast to stay single, a flock that has not settled. None of these is a superposition. Each one is a possibility space you can watch being made, and each panel says which half of the idea it is carrying and which half it is not.</p>
+    <p class="lede lede--sub">Five of them, running live. Nothing loops, because nothing here repeats: these grow, so the control that matters is the seed. Reseed any panel and you get another run of the same rules.</p>
+  </header>
+</div>
+
+<div class="bar">
+  <div class="bar__inner">
+    <span class="lab lab--head">All fields</span>
+    <div class="grp"><button class="btn" id="play" aria-pressed="true">Pause</button></div>
+    <div class="grp"><button class="btn" id="reseedAll">Reseed all</button></div>
+    <div class="grp">
+      <span class="lab">Speed</span>
+      <input id="speed" type="range" min="0.1" max="2.5" step="0.01" value="1" aria-label="Speed, all fields">
+      <span class="lab" id="speedVal">1.00&times;</span>
+    </div>
+    <div class="grp">
+      <span class="lab">Palette</span>
+      <div class="swatches" id="pals"></div>
+      <label class="swatches" title="Your own colour">
+        <input type="color" id="custom" value="#4aa3df" aria-label="Custom colour">
+      </label>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <main class="grid" id="grid"></main>
+
+  <section class="colophon">
+    <p>The honest version, stated once so no panel has to keep apologising: none of these five is a quantum superposition, and the page is not claiming that any of them is. A river really is in all of its channels, a fungus really is in all of its corridors, and neither is mysterious. What they share with the quantum picture is one half of it — the possibility space, the set of routes a process could take, drawn all at once so its shape is visible. They are a picture of the option set. They are not a picture of a fuzzy object, and reading them as one is the error this page exists to avoid.</p>
+    <p>Nothing here loops. Every field is a growth process with a history rather than a period, so there is no timeline to scrub and no clip that closes seamlessly. Every field is also stochastic, which is why each panel carries a seed: reseeding gives you another run of the same rules, and the same seed gives you the same run back.</p>
+    <p>The models are the standard ones and are named in each panel. Breakdown is the dielectric-breakdown model with the growth exponent stated; the flock is Reynolds boids; the delta and the fracture are simplified to what reads at this size, with the physics they simplify described rather than implied. Where a panel names a real effect, the effect is real and the picture is an illustration of it.</p>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="field.js"></script>
+<script src="/atlas-nav.js" defer></script>
+<script>
+(function () {
+  "use strict";
+
+  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var globalSpeed = 1, globalPlaying = !reduced, globalPal = 0;
+  var customStops = SUPER.rampFromHex("#4aa3df");
+  var units = [], last = performance.now();
+
+  try {
+    var saved = JSON.parse(localStorage.getItem("fa-superposition") || "{}");
+    if (typeof saved.pal === "number") globalPal = saved.pal;
+    if (typeof saved.speed === "number") globalSpeed = saved.speed;
+    if (typeof saved.hex === "string" && SUPER.rampFromHex(saved.hex)) customStops = SUPER.rampFromHex(saved.hex);
+  } catch (e) {}
+
+  function stopsFor(i) { return i === 4 ? customStops : SUPER.PALETTES[i].stops; }
+  function remember() {
+    try {
+      localStorage.setItem("fa-superposition", JSON.stringify({
+        pal: globalPal, speed: globalSpeed, hex: document.getElementById("custom").value
+      }));
+    } catch (e) {}
+  }
+
+  var toastEl = document.getElementById("toast"), toastTimer;
+  function toast(m) {
+    toastEl.textContent = m; toastEl.classList.add("is-up");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("is-up"); }, 2200);
+  }
+
+  function palOptions(sel) {
+    SUPER.PALETTES.forEach(function (p, i) {
+      var o = document.createElement("option");
+      o.value = String(i); o.textContent = p.name; sel.appendChild(o);
+    });
+    var o = document.createElement("option");
+    o.value = "4"; o.textContent = "Your colour"; sel.appendChild(o);
+  }
+
+  /* ------------------------------------------------------------------ cards */
+  var grid = document.getElementById("grid");
+
+  SUPER.VARIANTS.forEach(function (v, i) {
+    var card = document.createElement("section");
+    card.className = "card";
+    card.innerHTML =
+      '<div class="stage"><canvas></canvas>' +
+        '<span class="idx">0' + (i + 1) + '</span>' +
+        '<span class="fshint">Fullscreen</span>' +
+        '<div class="fsbar"><button class="btn" data-act="exit">Close</button></div>' +
+      '</div>' +
+      '<div class="meta">' +
+        '<div class="meta__top">' +
+          '<span class="name">' + v.title + '</span>' +
+          '<span class="loop seedlab">seed &mdash;</span>' +
+        '</div>' +
+        '<p class="note">' + v.note + '</p>' +
+        '<div class="ctl ctl--main">' +
+          '<button class="btn btn--play" data-act="play">Pause</button>' +
+          '<button class="btn" data-act="reseed">Reseed</button>' +
+          '<span class="lab">Speed</span>' +
+          '<input class="spd" type="range" min="0.1" max="2.5" step="0.01" aria-label="Speed">' +
+          '<select class="sel pal" aria-label="Palette"></select>' +
+          '<button class="btn" data-act="png">PNG</button>' +
+          '<button class="btn" data-act="read">Read more</button>' +
+          '<button class="btn" data-act="full">Fullscreen</button>' +
+        '</div>' +
+        '<div class="read">' + v.read.map(function (r) {
+          return '<p><span class="rlab">' + r[0] + '</span>' + r[1] + '</p>';
+        }).join("") + '</div>' +
+      '</div>';
+    grid.appendChild(card);
+
+    var canvas = card.querySelector("canvas");
+    var unit = SUPER.createUnit(canvas, v, {
+      speed: globalSpeed, playing: globalPlaying, pal: globalPal, stops: stopsFor(globalPal)
+    });
+    unit.card = card;
+    units.push(unit);
+
+    var spd = card.querySelector(".spd");
+    var sel = card.querySelector(".pal");
+    var playBtn = card.querySelector(".btn--play");
+    var seedLab = card.querySelector(".seedlab");
+
+    palOptions(sel);
+    sel.value = String(globalPal);
+    spd.value = String(globalSpeed);
+
+    unit.refresh = function () {
+      playBtn.textContent = unit.playing ? "Pause" : "Play";
+      spd.value = String(unit.speed);
+      sel.value = String(unit.pal);
+      seedLab.textContent = "seed " + (unit.seed % 100000);
+    };
+    unit.refresh();
+
+    card.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-act]");
+      if (!b) return;
+      var act = b.getAttribute("data-act");
+      if (act === "play") { unit.playing = !unit.playing; unit.refresh(); }
+      if (act === "reseed") { unit.reseed(); unit.refresh(); }
+      if (act === "read") { card.classList.toggle("is-open"); }
+      if (act === "full") { enterFull(card); }
+      if (act === "exit") { exitFull(); }
+      if (act === "png") {
+        var url = canvas.toDataURL("image/png");
+        var a = document.createElement("a");
+        a.href = url; a.download = "superposition-" + v.slug + ".png";
+        document.body.appendChild(a); a.click(); a.remove();
+        toast("Saved " + v.slug + ".png");
+      }
+    });
+    spd.addEventListener("input", function () { unit.speed = +spd.value; });
+    sel.addEventListener("change", function () {
+      unit.setPalette(+sel.value, stopsFor(+sel.value));
+    });
+  });
+
+  /* -------------------------------------------------------------- fullscreen */
+  function enterFull(card) {
+    card.classList.add("is-full");
+    document.documentElement.classList.add("has-full");
+    if (card.requestFullscreen) card.requestFullscreen().catch(function () {});
+  }
+  function exitFull() {
+    document.querySelectorAll(".card.is-full").forEach(function (c) { c.classList.remove("is-full"); });
+    document.documentElement.classList.remove("has-full");
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(function () {});
+  }
+  document.addEventListener("fullscreenchange", function () { if (!document.fullscreenElement) exitFull(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") exitFull(); });
+
+  /* ------------------------------------------------------------ global bar */
+  var playAll = document.getElementById("play");
+  playAll.addEventListener("click", function () {
+    globalPlaying = !globalPlaying;
+    playAll.textContent = globalPlaying ? "Pause" : "Play";
+    playAll.setAttribute("aria-pressed", String(globalPlaying));
+    units.forEach(function (u) { u.playing = globalPlaying; u.refresh(); });
+  });
+  document.getElementById("reseedAll").addEventListener("click", function () {
+    units.forEach(function (u) { u.reseed(); u.refresh(); });
+    toast("Reseeded");
+  });
+  var speedAll = document.getElementById("speed"), speedVal = document.getElementById("speedVal");
+  speedAll.value = String(globalSpeed);
+  speedVal.textContent = globalSpeed.toFixed(2) + "×";
+  speedAll.addEventListener("input", function () {
+    globalSpeed = +speedAll.value;
+    speedVal.textContent = globalSpeed.toFixed(2) + "×";
+    units.forEach(function (u) { u.speed = globalSpeed; u.refresh(); });
+    remember();
+  });
+
+  var palHost = document.getElementById("pals");
+  SUPER.PALETTES.forEach(function (p, i) {
+    var b = document.createElement("button");
+    b.className = "sw";
+    b.title = p.name;
+    b.style.background = "linear-gradient(90deg," + p.stops.map(SUPER.rgbToCss).join(",") + ")";
+    b.addEventListener("click", function () { setPal(i); });
+    palHost.appendChild(b);
+  });
+  var custom = document.getElementById("custom");
+  custom.addEventListener("input", function () {
+    var r = SUPER.rampFromHex(custom.value);
+    if (!r) return;
+    customStops = r; setPal(4);
+  });
+  function setPal(i) {
+    globalPal = i;
+    units.forEach(function (u) { u.setPalette(i, stopsFor(i)); u.refresh(); });
+    remember();
+  }
+  setPal(globalPal);
+
+  /* ------------------------------------------------------------------ loop */
+  function sizeAll() {
+    units.forEach(function (u) {
+      var r = u.canvas.getBoundingClientRect();
+      var dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      u.resize(Math.max(2, Math.round(r.width * dpr)), Math.max(2, Math.round(r.height * dpr)));
+    });
+  }
+  window.addEventListener("resize", sizeAll);
+
+  function frame(ts) {
+    var dt = Math.min(0.05, (ts - last) / 1000);
+    last = ts;
+    for (var i = 0; i < units.length; i++) {
+      var u = units[i];
+      var r = u.canvas.getBoundingClientRect();
+      // only run what is on screen: five simulations at once is otherwise a lot
+      var near = r.bottom > -200 && r.top < window.innerHeight + 200;
+      if (!near) continue;
+      u.tick(dt);
+      u.paint();
+    }
+    requestAnimationFrame(frame);
+  }
+  sizeAll();
+  if (reduced) { units.forEach(function (u) { for (var k = 0; k < 240; k++) { u.tick(0.016); } u.paint(); }); }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

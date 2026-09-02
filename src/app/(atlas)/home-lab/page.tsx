@@ -39,7 +39,7 @@ export default function HomeLabIndex() {
   return (
     <section className="py-[clamp(48px,8vw,110px)]">
       <Container>
-        <p className="eyebrow tick mb-6">Design exploration · not linked from the site</p>
+        <p className="eyebrow mb-6">Design exploration · not linked from the site</p>
         <h1 className="max-w-[16ch] text-[clamp(36px,5.4vw,80px)] font-extrabold leading-[0.96] tracking-[-0.025em] text-ink">
           Homepage lab
         </h1>
@@ -70,7 +70,7 @@ export default function HomeLabIndex() {
           ))}
         </div>
         <div className="mt-[clamp(28px,4vw,44px)] border-t border-ink/15 pt-8">
-          <p className="eyebrow tick mb-5">Design handoff. Claude × Netflix browse UI (own chrome, full-screen)</p>
+          <p className="eyebrow mb-5">Design handoff. Claude × Netflix browse UI (own chrome, full-screen)</p>
           <div className="flex flex-wrap gap-3">
             {[
               { name: "Observatory", href: "/mocks/observatory", note: "dark indigo · particle nebula" },

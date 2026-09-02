@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { TOPIC_ORDER, formatPostDate, type Post, type PostTopic } from "@/data/posts";
+import { REPORTS } from "@/data/reports";
 import type { Project } from "@/data/projects";
 
 /**
@@ -64,7 +65,6 @@ export function LeftRail({
   setMedia,
   reports,
   setReports,
-  reportCount,
 }: {
   items: Post[];
   topic: PostTopic | null;
@@ -76,7 +76,6 @@ export function LeftRail({
      link, which is the one thing every post must have. */
   reports: boolean;
   setReports: (v: boolean) => void;
-  reportCount: number;
 }) {
   return (
     // Offset from where the global bar actually IS, not from where it would be
@@ -107,9 +106,13 @@ export function LeftRail({
             setMedia(!media);
           }}
         />
+        {/* Counted from the same list ReportCards renders, not passed in. It
+            was a literal 1 for as long as there was one report, and stayed 1
+            through three more — the number on a filter has to come from the
+            thing it filters or it is decoration. */}
         <RailItem
           label="Reports"
-          count={reportCount}
+          count={REPORTS.length}
           active={reports}
           onClick={() => {
             setTopic(null);

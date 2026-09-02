@@ -23,9 +23,12 @@
  * numbers and set `sample: false`.
  */
 
-import { REEL_POSTS, type ReelPost } from "./fields";
+import {
+  REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, HOME_REEL, UNDERGROUND_REEL, STACK_REEL,
+  type ReelPost, type ShotsPost, type OddsPost, type TermPost,
+} from "./fields";
 
-export type { ReelPost };
+export type { ReelPost, ShotsPost, OddsPost, TermPost };
 
 export type Verdict = "notyet" | "already";
 
@@ -68,9 +71,143 @@ export interface DeckPost {
 }
 
 /** The feed carries two shapes of post. See fields.ts for the other one. */
-export type Post = DeckPost | ReelPost;
+export type Post = DeckPost | ReelPost | ShotsPost | OddsPost | TermPost;
 
 const DECK_POSTS: DeckPost[] = [
+  {
+    kind: "deck",
+    name: "Robot tax · hype trap",
+    card: {
+      id: "w6", sector: "Work & employment", pos: 6, deckSize: 10,
+      claim: "A national government has introduced a tax on companies that replace workers with AI.",
+      short: "Tax on replacing workers", verdict: "notyet",
+      lede: "South Korea trimmed a tax break for automation investment in 2017, widely miscalled a robot tax.",
+      note: "No direct tax exists anywhere, and the European Parliament voted one down.",
+      source: { label: "Stephensons, South Korea's robot tax", url: "https://www.stephensons.co.uk/site/news_and_events/uptodatenews/south-korea-introduces-worlds-first-robot-tax" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.54, n: 57, sample: true },
+      hue: "#D89A4E",
+    },
+    caption:
+      "Half the room is sure a robot tax exists somewhere. It does not exist anywhere.\n\nSouth Korea trimmed a tax break for automation investment in 2017 and the press called it the world's first robot tax. It was a smaller deduction, not a tax. The European Parliament voted an actual one down.\n\nThis is a hype trap: a policy discussed so often it starts to feel enacted. The discussion is real. The law is not.",
+    hashtags: ["#futureofwork", "#policy", "#automation", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "AI lawyer · hype trap",
+    card: {
+      id: "l6", sector: "Law & justice", pos: 6, deckSize: 10,
+      claim: "An AI system has been granted a licence to practise law.",
+      short: "AI licensed to practise law", verdict: "notyet",
+      lede: "No jurisdiction has licensed an AI to practise law.",
+      note: "The live question runs the other way: whether a chatbot giving legal answers is already the unauthorised practice of law.",
+      source: { label: "Thomson Reuters Institute, AI and unauthorized practice of law", url: "https://www.thomsonreuters.com/en-us/posts/government/ai-impacts-unauthorized-practice-of-law/" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.56, n: 86, sample: true },
+      hue: "#8B6FD4",
+    },
+    caption:
+      "More than half the room thinks some jurisdiction has licensed an AI to practise law. None has.\n\nAnd the real argument is pointing the other way entirely: not whether to admit an AI to the bar, but whether a chatbot answering legal questions is already the unauthorised practice of law. That is a prosecution question, not an admission one.\n\nA good hype trap does not just get the answer wrong. It gets the direction wrong.",
+    hashtags: ["#law", "#aigovernance", "#legaltech", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "Robot deliveries · blind spot",
+    card: {
+      id: "t4", sector: "Transport", pos: 4, deckSize: 10,
+      claim: "More than eight million deliveries have been completed by robots driving themselves along pavements.",
+      short: "Eight million robot deliveries", verdict: "already",
+      bigLabel: "Already real since", big: "2025",
+      lede: "Starship passed eight million autonomous deliveries by April.",
+      note: "More than 2,700 robots across 270+ locations.",
+      source: { label: "The Robot Report", url: "https://www.therobotreport.com/starship-technologies-surpasses-8m-autonomous-deliveries/" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.49, n: 45, sample: true },
+      hue: "#3E93D8",
+    },
+    caption:
+      "Eight million. Not a pilot, not a trial. Eight million deliveries already completed by robots driving themselves along pavements.\n\nStarship passed the mark in April 2025, running more than 2,700 robots across over 270 locations.\n\nBarely half the room believes it. That is a blind spot: not a thing that might happen, a thing that has been happening at scale, on ordinary streets, while everyone waited for it to start.",
+    hashtags: ["#robotics", "#lastmile", "#automation", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "Doctors got worse",
+    card: {
+      id: "h4",
+      sector: "Health & medicine",
+      pos: 4,
+      deckSize: 10,
+      claim: "A multi-centre study has found doctors got worse at their own job after months of using AI.",
+      short: "Doctors deskilled by AI",
+      verdict: "already",
+      bigLabel: "Already real since",
+      big: "2025",
+      lede: "Endoscopists' unassisted adenoma detection fell from 28.4% to 22.4% after routine AI exposure.",
+      note: "Published in Lancet Gastroenterology & Hepatology.",
+      source: {
+        label: "Lancet Gastro & Hep, endoscopist deskilling (2025)",
+        url: "https://www.thelancet.com/journals/langas/article/PIIS2468-1253(25)00289-4/abstract",
+      },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.44, n: 41, sample: true },
+      hue: "#8B6FD4",
+    },
+    caption:
+      "Give doctors an AI assistant for a few months, then take it away, and they are worse at the job than before they had it.\n\nA multi-centre study in Lancet Gastroenterology & Hepatology followed endoscopists through routine AI exposure. Their unassisted detection rate fell from 28.4% to 22.4%. Same doctors, same procedure, worse without the tool than they used to be.\n\nThis is not a story about AI being bad at the task. It was good at the task. It is a story about what happens to a skill you stop practising.",
+    hashtags: ["#aiinmedicine", "#deskilling", "#evidence", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "A billion and a half",
+    card: {
+      id: "l2",
+      sector: "Law & justice",
+      pos: 2,
+      deckSize: 10,
+      claim: "An AI company has agreed to pay authors more than a billion dollars for training on their books without permission.",
+      short: "Billion-dollar authors settlement",
+      verdict: "already",
+      bigLabel: "Already real since",
+      big: "2025",
+      lede: "Anthropic agreed $1.5 billion, the largest copyright class settlement on record.",
+      note: "Approved in 2026. About $3,000 a book across roughly 482,000 works.",
+      source: {
+        label: "Courthouse News Service",
+        url: "https://www.courthousenews.com/anthropic-to-pay-1-5-billion-copyright-settlement-to-authors-publishers/",
+      },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.61, n: 58, sample: true },
+      hue: "#3E93D8",
+    },
+    caption:
+      "One and a half billion dollars. The largest copyright class settlement on record, in any medium, ever.\n\nAnthropic agreed it with authors over training on their books without permission. Roughly 482,000 works, about $3,000 a book. Agreed 2025, approved 2026.\n\nThe number is the argument. Whatever you think about whether training is fair use, a company chose to pay that rather than find out in court.",
+    hashtags: ["#copyright", "#aiandart", "#publishing", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "No AI has judged you",
+    card: {
+      id: "l7",
+      sector: "Law & justice",
+      pos: 7,
+      deckSize: 10,
+      claim: "An AI has sat as a judge in a binding court proceeding.",
+      short: "AI sat as a judge",
+      verdict: "notyet",
+      lede: "China runs whole court systems where AI assists the judge and speeds the paperwork.",
+      note: "The decision stays with the judge.",
+      source: {
+        label: "ABA Journal, China's internet courts",
+        url: "https://www.abajournal.com/magazine/article/china-all-virtual-specialty-internet-courts",
+      },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.38, n: 47, sample: true },
+      hue: "#D89A4E",
+    },
+    caption:
+      "Everyone assumes this one has happened somewhere. It has not.\n\nChina has run internet courts since 2017 — filing to judgment online, with AI assistants added from 2019. They summarise, they route, they draft. They speed up the paperwork enormously.\n\nThe decision stays with the judge. Every time. No jurisdiction anywhere has let a machine hand down a binding ruling.\n\nThe gap between assisting a court and being one is the whole question, and so far nobody has crossed it.",
+    hashtags: ["#aigovernance", "#law", "#justice", "#futuresatlas", "#swipethefuture"],
+  },
   {
     kind: "deck",
     name: "Driverless trains, 1981",
@@ -147,25 +284,50 @@ const DECK_POSTS: DeckPost[] = [
 export const SLIDE_KINDS = ["card", "reveal", "stats"] as const;
 export type SlideKind = (typeof SLIDE_KINDS)[number];
 
-export const slideCount = (p: Post) => (p.kind === "deck" ? SLIDE_KINDS.length : 1);
+/** One stable id per post, whatever shape it is. Used by the editor. */
+export const postId = (p: Post) => (p.kind === "deck" ? p.card.id : p.id);
+
+export const slideCount = (p: Post) =>
+  p.kind === "deck" ? SLIDE_KINDS.length
+    : p.kind === "shots" ? p.shots.length
+    : p.kind === "odds" ? 2   // the player, then the play-through
+    : 1;
 
 /**
  * The grid, newest first — and deliberately interleaved.
  *
  * Grouped by kind, the feed read as two accounts stacked: a block of dark
- * moving pieces, then a block of identical bone cards. A grid is looked at as a
- * whole before any single post is, so the mix is the composition. Reels are the
- * majority, so they take two of every three slots and a card lands in the third.
+ * moving pieces, then a block of identical bone cards. A fixed one-in-three is
+ * no better on a three-wide grid, because every card then lands in the same
+ * COLUMN and the mix reads as a stripe down the page.
+ *
+ * Nor can a fixed run length fix it here. There are roughly two reels per card,
+ * so the gap between cards averages a bit over one row, and any constant gap of
+ * one row repeats the column. So the cards are placed by COLUMN instead: card i
+ * wants column i mod 3, and is dropped at the first free slot of that column at
+ * or after where an even spread would have put it. Two cards occasionally end up
+ * adjacent, which is what a real feed looks like anyway.
  */
+const COLS = 3;
+
 function interleave(reels: Post[], cards: Post[]): Post[] {
+  const total = reels.length + cards.length;
+  const taken = new Map<number, Post>();
+  cards.forEach((card, i) => {
+    let at = Math.round((i * total) / cards.length);
+    // Walk to the next slot in this card's column that nothing else has.
+    while (at < total && (at % COLS !== i % COLS || taken.has(at))) at++;
+    if (at >= total) { at = 0; while (taken.has(at)) at++; }
+    taken.set(at, card);
+  });
   const out: Post[] = [];
-  let r = 0, c = 0;
-  while (r < reels.length || c < cards.length) {
-    if (r < reels.length) out.push(reels[r++]!);
-    if (r < reels.length) out.push(reels[r++]!);
-    if (c < cards.length) out.push(cards[c++]!);
-  }
+  let r = 0;
+  for (let i = 0; i < total; i++) out.push(taken.get(i) ?? reels[r++]!);
   return out;
 }
 
-export const POSTS: Post[] = interleave(REEL_POSTS, DECK_POSTS);
+// The site's own reel leads: it is the one post that says what the account is.
+export const POSTS: Post[] = interleave(
+  [HOME_REEL, UNDERGROUND_REEL, STACK_REEL, ...REEL_POSTS],
+  [...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
+);

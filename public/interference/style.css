@@ -11,8 +11,8 @@
   --fa-bone-d: #211e18; --fa-panel-d: #2b2722; --fa-haze-d: #16130f; --fa-band-d: #17140f;
   --fa-ink-d: #f2ede2; --fa-ink-body-d: #d3ccbe; --fa-graphite-d: #a69f91; --fa-faint-d: #7d7668;
   /* accent (light / dark) */
-  --fa-accent: oklch(0.55 0.13 245); --fa-accent-soft: oklch(0.93 0.045 245); --fa-accent-deep: oklch(0.42 0.11 245);
-  --fa-accent-d: oklch(0.64 0.13 245); --fa-accent-soft-d: oklch(0.34 0.06 245); --fa-accent-deep-d: oklch(0.74 0.12 245);
+  --fa-accent: oklch(0.565 0.13 245); --fa-accent-soft: oklch(0.93 0.045 245); --fa-accent-deep: oklch(0.565 0.13 245);
+  --fa-accent-d: oklch(0.565 0.13 245); --fa-accent-soft-d: oklch(0.34 0.06 245); --fa-accent-deep-d: oklch(0.565 0.13 245);
   /* font families, resolved to the webfonts this bundle loads */
   --font-archivo: 'Archivo', system-ui, -apple-system, sans-serif;
   --font-saira: 'Saira Condensed', 'Arial Narrow', system-ui, sans-serif;
@@ -230,6 +230,10 @@ input[type="color"] {
 .meta__top { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
 .name { font-family: var(--font-year); font-size: 14px; letter-spacing: var(--track-label-wide); text-transform: uppercase; }
 .loop { font-family: var(--font-year); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); }
+.draftflag {
+  margin-left: 8px; padding: 2px 6px; border: 1px solid var(--accent); border-radius: 2px;
+  font-size: 10px; letter-spacing: 0.16em; color: var(--accent); vertical-align: 1px;
+}
 .note {
   margin: 7px 0 0; max-width: 62ch;
   font-size: var(--text-body-size); line-height: var(--lh-snug); color: var(--muted);

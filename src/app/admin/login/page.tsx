@@ -28,7 +28,7 @@ export default async function AdminLoginPage({
           className="mx-auto flex w-full max-w-[440px] flex-col gap-5 border border-ink bg-panel p-[clamp(28px,4vw,44px)]"
         >
           <div>
-            <p className="eyebrow tick mb-4">Editors</p>
+            <p className="eyebrow mb-4">Editors</p>
             <p className="text-[clamp(20px,2.4vw,28px)] font-extrabold leading-tight text-ink">
               This page is private
             </p>
@@ -63,7 +63,7 @@ export default async function AdminLoginPage({
 
           <button
             type="submit"
-            className="inline-flex items-center justify-center gap-2.5 self-start rounded-[2px] bg-accent px-7 py-3.5 font-mono text-[12.5px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-accent-deep"
+            className="inline-flex items-center justify-center gap-2.5 self-start rounded-[2px] bg-accent px-7 py-3.5 font-mono text-[12.5px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-accent-press"
           >
             Sign in <span className="text-[14px]">→</span>
           </button>

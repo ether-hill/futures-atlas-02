@@ -73,7 +73,7 @@ export default function V1() {
       <section className="py-[clamp(44px,7vw,96px)]">
         <Container>
           <Reveal>
-            <p className="eyebrow tick mb-8">Featured this month</p>
+            <p className="eyebrow mb-8">Featured this month</p>
             <Carousel intervalMs={7000}>
               {featured.map((p) => (
                 <Link key={p.id} href={p.path ?? "/projects"} className="group block">
@@ -90,7 +90,7 @@ export default function V1() {
                         <h2 className="mt-3 text-[clamp(24px,2.6vw,38px)] font-extrabold leading-[1.02] tracking-[-0.02em] !text-paper">{p.title}</h2>
                         <p className="mt-4 line-clamp-4 text-[12.5px] leading-[1.7] text-paper/70">{p.tagline}</p>
                       </div>
-                      <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-[2px] bg-accent px-5 py-3 font-mono text-[11.5px] uppercase tracking-[0.1em] text-paper transition-colors group-hover:bg-accent-deep">
+                      <span className="mt-6 inline-flex w-fit items-center gap-2 rounded-[2px] bg-accent px-5 py-3 font-mono text-[11.5px] uppercase tracking-[0.1em] text-paper transition-colors group-hover:bg-accent-press">
                         Open the project →
                       </span>
                     </div>

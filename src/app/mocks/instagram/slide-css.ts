@@ -131,7 +131,17 @@ export const SLIDE_CSS = `
    statement about the world, so TRUE means it has happened and FALSE means it
    has not — the same question the deck asks, in the form a feed understands. */
 .stf .tcard.ig { position: static; inset: auto; width: 100%; height: 100%; padding: 30px 28px 24px; }
-.stf .tq { flex: 0 0 auto; font-family: var(--ff-mono); font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: #8a8172; text-align: center; line-height: 1.4; }
+/* The card slide's ground. Both this and the term field were near-black on a
+   near-black page, so the post had no edge: a deliberate ground gives the paper
+   card something to sit on. */
+.stf-slide.card-ground { background: linear-gradient(168deg, #232b39 0%, #151a23 60%, #10141a 100%); }
+.stf .tq {
+  flex: 0 0 auto; align-self: center; display: inline-flex; align-items: center; gap: 10px;
+  background: #3b93d5; color: #fff; border-radius: 999px; padding: 11px 20px;
+  font-family: var(--ff-mono); font-size: 12.5px; font-weight: 700;
+  letter-spacing: .16em; text-transform: uppercase; line-height: 1;
+}
+.stf .tq svg { display: block; width: 15px; height: 15px; }
 
 /* The answer, said in both vocabularies at once. */
 .stf .vo-verdict { font-weight: 700; font-size: 46px; line-height: 1; letter-spacing: -.035em; }
@@ -203,14 +213,88 @@ export const SLIDE_CSS = `
 .stf .fa-url { margin-left: auto; font-family: var(--ff-mono); font-size: 11px; letter-spacing: .06em; color: var(--faint); }
 
 /* ── an interference slide: the live field, full bleed ─────────────────── */
-.stf .fld { position: relative; width: 100%; height: 100%; overflow: hidden; background: #05070a; }
+.stf .fld { container-type: inline-size; position: relative; width: 100%; height: 100%; overflow: hidden; background: #05070a; }
+.stf .fld.lift { background: #14181f; }
 /* pointer-events:none matters: the iframe covers the whole tile, so without it
    the embed swallows the click and the post never opens. The field is a post
    image here, not something to interact with. */
+.stf .fld-crop { position: absolute; inset: 0; transform-origin: center center; }
 .stf .fld iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
 /* The still. object-fit:cover because the capture is 4:5 and the slide may
    be asked for at 1:1 or 9:16. */
 .stf .fld-thumb { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── The Odds player card ──────────────────────────────────────────────────
+   Composed rather than screenshotted, so it maps to any frame exactly. Sizes
+   are in cqw — 1% of the card's own width — so the whole thing scales with the
+   slide instead of assuming one output size. */
+.stf .odds-card {
+  position: relative; width: 100%; height: 100%; overflow: hidden;
+  background: #08070a; container-type: inline-size;
+}
+.stf .odds-photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.stf .odds-scrim {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(8,7,10,.10) 0%, rgba(8,7,10,.30) 34%, rgba(8,7,10,.88) 66%, #08070a 100%);
+}
+.stf .odds-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 8cqw 7.5cqw 9cqw; }
+.stf .odds-who { margin-top: 0; font-size: 10cqw; font-weight: 800; letter-spacing: -.035em; line-height: 1.02; color: #fff; }
+.stf .odds-role {
+  margin-top: 2.6cqw; font-family: var(--ff-mono); font-size: 3.2cqw;
+  letter-spacing: .04em; color: rgba(242,237,226,.72);
+}
+/* One red throughout. The player accents (violet, coral, teal) belong to the
+   game's own chrome, not to a caption sitting on a photograph. */
+.stf .odds-ctx {
+  margin-top: 6cqw; font-family: var(--ff-mono); font-size: 3.1cqw; font-weight: 600;
+  letter-spacing: .13em; text-transform: uppercase; color: #FF5C33;
+}
+.stf .odds-quote {
+  margin: 3.4cqw 0 0; font-family: Georgia, "Times New Roman", serif; font-style: italic;
+  font-size: 6cqw; line-height: 1.32; letter-spacing: -.01em; color: #f2ede2;
+}
+.stf .odds-quote b { font-weight: inherit; font-style: inherit; color: #FF5C33; }
+.stf .odds-cta {
+  margin-top: 7cqw; display: inline-flex; align-items: center; gap: 2.4cqw;
+  background: #f7f0ff; color: #17121f; border-radius: 999px;
+  padding: 3.6cqw 5.6cqw; font-size: 4.2cqw; font-weight: 700; letter-spacing: -.01em;
+}
+.stf .odds-cta svg { display: block; width: 4.4cqw; height: 4.4cqw; }
+
+.stf .swipe-cue {
+  position: absolute; right: 5cqw; top: 50%; transform: translateY(-50%);
+  width: 12cqw; height: 12cqw; border-radius: 50%; background: #3b93d5; color: #fff;
+  display: grid; place-items: center; box-shadow: 0 4cqw 8cqw rgba(0,0,0,.45);
+}
+.stf .swipe-cue svg { width: 6cqw; height: 6cqw; display: block; }
+
+/* ── a vocabulary card ─────────────────────────────────────────────────── */
+.stf .term-card {
+  position: relative; width: 100%; height: 100%; box-sizing: border-box;
+  padding: 9cqw 8cqw; display: flex; flex-direction: column; justify-content: center;
+  background: radial-gradient(120% 80% at 20% 12%, #1b2330 0%, #101319 55%, #0a0c11 100%);
+  container-type: inline-size;
+}
+.stf .term-kind {
+  font-family: var(--ff-mono); font-size: 3cqw; letter-spacing: .16em;
+  text-transform: uppercase; color: #3b93d5;
+}
+.stf .term-word {
+  margin-top: 3cqw; font-size: 15cqw; font-weight: 800; letter-spacing: -.045em;
+  line-height: .96; color: #f2ede2;
+}
+.stf .term-pron {
+  margin-top: 2.4cqw; font-family: var(--ff-mono); font-size: 3.4cqw;
+  color: rgba(242,237,226,.5);
+}
+.stf .term-def {
+  margin: 7cqw 0 0; font-size: 5.4cqw; line-height: 1.3; letter-spacing: -.015em;
+  color: #f2ede2; font-weight: 600;
+}
+.stf .term-body {
+  margin: 4cqw 0 0; font-family: Georgia, "Times New Roman", serif; font-style: italic;
+  font-size: 4.4cqw; line-height: 1.38; color: rgba(242,237,226,.66);
+}
 
 /* ── the slide shell: the game's page ground, with the card in it ──────── */
 .stf-slide { position: relative; display: flex; flex-direction: column; box-sizing: border-box; padding: 16px; height: 100%; }

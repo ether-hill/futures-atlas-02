@@ -54,11 +54,95 @@ export interface Project {
 }
 
 export const projects: Project[] = [
+  /*
+   * Two concepts, and nothing more than that yet.
+   *
+   * status "concept" (not "in-progress") is the honest word: there is no work
+   * behind either of these, only a question worth asking. Their pages say so in
+   * as many words rather than dressing a placeholder up as a preview. Nothing
+   * here asserts an answer — the whole point is that the answer is not written.
+   */
+  {
+    id: "slime-quantum",
+    title: "Slime mould and quantum computing",
+    tagline:
+      "A slime mould in a maze explores every corridor at once. So, we are told, does a quantum computer. Where the comparison breaks is the project.",
+    year: "2026",
+    date: "2026-09-01",
+    field: "Biology & computation",
+    kind: "story",
+    status: "concept",
+    visibility: "draft",
+    path: "/slime-quantum",
+    image: "/projects/slime-quantum.jpg",
+  },
+  {
+    id: "throat-singing-quantum",
+    title: "Feynman's Tuva",
+    tagline:
+      "Feynman spent a decade trying to reach Tuva and died weeks before the visas came. The physics, the throat singing, and the obsession.",
+    year: "2026",
+    date: "2026-09-01",
+    field: "Sound & physics",
+    kind: "story",
+    status: "concept",
+    visibility: "draft",
+    path: "/throat-singing-quantum",
+    image: "/projects/throat-singing-quantum.jpg",
+  },
+  {
+    id: "horizon-scan",
+    title: "Horizon Scan",
+    tagline:
+      "A standing search across open research. Forty topic rules run against OpenAlex and arXiv once a day, and the ones that land in two subjects at once are what turn into projects.",
+    year: "2026",
+    date: "2026-08-31",
+    field: "Foresight & evidence",
+    kind: "tool",
+    // `status` is how finished the thing is, `visibility` is who may see it.
+    // The scan runs, so it is live work held back as a draft, which is what
+    // every other draft here is. status "in-progress" makes the card read
+    // "Forthcoming" instead of its cta.
+    status: "live",
+    visibility: "draft",
+    path: "/horizon-scan",
+    image: "/projects/horizon-scan.jpg",
+    cta: "Open the scan",
+  },
+  {
+    id: "glossary",
+    title: "Glossary",
+    tagline:
+      "315 plain definitions for the vocabulary the rest of the Atlas assumes: AI, quantum computing, compute and policy. Written to be read cold.",
+    year: "2026",
+    date: "2026-08-20",
+    field: "Reference",
+    kind: "tool",
+    status: "live",
+    visibility: "live",
+    path: "/glossary",
+    image: "/projects/glossary.jpg",
+  },
+  {
+    id: "superposition",
+    title: "Quantum Superposition Visuals",
+    tagline:
+      "Five branching processes from nature, running live. A picture of the possibility space, not of a fuzzy object.",
+    year: "2026",
+    date: "2026-09-01",
+    field: "Waves & optics",
+    kind: "visuals",
+    status: "live",
+    visibility: "draft",
+    path: "/superposition",
+    image: "/projects/superposition.jpg",
+    cta: "Open the fields",
+  },
   {
     id: "interference",
-    title: "Interference",
+    title: "Quantum Interference Visuals",
     tagline:
-      "Quantum mechanics is hard to picture, so here is the part you can look at. Fourteen live wave fields, tunable, recolourable, and yours to embed.",
+      "Quantum mechanics is hard to picture, so here is the part you can look at. Ten live wave fields, tunable, recolourable, and yours to embed.",
     year: "2026",
     date: "2026-08-31",
     field: "Waves & optics",
@@ -81,6 +165,7 @@ export const projects: Project[] = [
     status: "live",
     visibility: "draft",
     path: "/mappings",
+    image: "/projects/mappings.jpg",
   },
   {
     id: "magnifica",

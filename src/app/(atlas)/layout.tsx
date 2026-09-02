@@ -1,4 +1,5 @@
 import { Footer } from "@/components/Footer";
+import { PageIn } from "@/components/PageIn";
 
 /** Chrome for the Atlas's own pages (index, about, contact, style-guide).
  *  The global nav (the sticky fa-shell bar) is the one shared component injected
@@ -7,7 +8,9 @@ import { Footer } from "@/components/Footer";
 export default function AtlasLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <PageIn>{children}</PageIn>
+      </main>
       <Footer />
     </>
   );

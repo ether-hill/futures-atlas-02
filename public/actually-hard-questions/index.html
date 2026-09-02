@@ -331,7 +331,14 @@
   .jb-qr svg{display:block;border-radius:6px}
   body.s-map #joinChip{display:block}
 
-  #join,#room{position:fixed;inset:0;z-index:27;background:var(--cream);overflow-y:auto;display:none}
+  /* The two full-screen panels a phone lands on. They are position:fixed at
+     inset 0, so the body padding the global nav script reserves does nothing
+     for them and the injected bar sat straight over "Join the session" —
+     which is the first thing anyone scanning the QR code sees. --fa-nav-h
+     comes from atlas-nav.css (64px, 54px on a phone); running this bundle
+     standalone there is no bar and no variable, so the fallback is 0. */
+  #join,#room{position:fixed;inset:0;z-index:27;background:var(--cream);overflow-y:auto;display:none;
+    padding-top:var(--fa-nav-h,0px)}
   body.s-join #join,body.s-room #room{display:block}
   .wrap.narrow{max-width:580px;padding:38px 22px 80px}
   .big-h{font-size:clamp(28px,7vw,40px);font-weight:400;margin:0 0 8px;letter-spacing:-.015em}
@@ -1109,9 +1116,29 @@ function startPoll(){
     catch {}
   }, 2200);
 }
-function joinURL(){ return (NET.lan || location.origin) + '/?s=' + session.id + '#join' }
+/*
+ * Where THIS app lives, not where the domain root is.
+ *
+ * The join link (and so the QR code on the wall) used to be built as
+ * `location.origin + '/?s=' + code`. Standalone, served at the root on :8899,
+ * that is correct. Bundled into futures-atlas-02 the app is served at
+ * /actually-hard-questions, so every scan sent the room to the Atlas homepage —
+ * which knows nothing about `?s=` and drops it, so people arrived at a
+ * portfolio index with no way back to the session they were trying to join.
+ *
+ * Derived from the page's own pathname so it stays right in both places, and
+ * would stay right if the bundle moved again. `index.html` and any trailing
+ * slash come off so the result matches the rewrite's `source` exactly
+ * (/actually-hard-questions, no trailing slash); at the root the directory is
+ * empty and this falls back to '/', giving the original URL unchanged.
+ */
+function appBase(){
+  const dir = location.pathname.replace(/\/index\.html?$/i, '').replace(/\/+$/, '');
+  return (NET.lan || location.origin) + (dir || '/');
+}
+function joinURL(){ return appBase() + '?s=' + session.id + '#join' }
 function paintJoin(){
-  const url = live() ? joinURL() : (NET.lan || location.origin) + '/#join';
+  const url = live() ? joinURL() : appBase() + '#join';
   const code = live() ? session.id : 'one device';
   const bar = document.getElementById('joinBar');
   if (bar) bar.classList.toggle('off', !live());

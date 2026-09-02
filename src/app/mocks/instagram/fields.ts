@@ -32,6 +32,102 @@
 /** The Atlas accent, oklch(0.64 0.13 245), as the hex the embeds want. */
 export const ATLAS_BLUE = "#3b93d5";
 
+/**
+ * A carousel of stills captured from a page that is not a single moving piece.
+ *
+ * Actually Hard Questions is an app, not a field: it has a hero, a map and a
+ * grid, and the interesting post is the sequence of them. Each shot names the
+ * route to grab and the app chrome to hide first — the screen switcher, the
+ * session doors, the join and reference lines — none of which mean anything
+ * outside the app and all of which read as clutter in a feed.
+ */
+export interface ShotsPost {
+  kind: "shots";
+  name: string;
+  id: string;
+  /**
+   * Each slide is one still. Give it a `path` to capture from a live route, or
+   * a `src` when the image already exists — The Odds was screengrabbed for the
+   * social composer months ago, in states (the doom end, the survival end) that
+   * take driving the game to reach, and re-shooting them would be work for an
+   * identical result.
+   */
+  shots: {
+    id: string;
+    src?: string;
+    path?: string;
+    hide?: string;
+    at?: number;
+    /** Scroll down this many viewport heights before grabbing. */
+    scrollTo?: number;
+    /** Scroll to the first element containing this text. More robust than a
+     *  viewport count on a page whose length depends on its own data. */
+    scrollToText?: string;
+    /** Hide anything whose text starts with one of these. For chrome with no
+     *  stable class of its own. */
+    hideText?: string[];
+    /** Screenshot this element instead of the viewport, padded to the post
+     *  ratio. A finding card is an object; a viewport around one is a guess. */
+    el?: string;
+    elIndex?: number;
+    /** Arbitrary CSS for this shot. */
+    css?: string;
+  }[];
+  caption: string;
+  hashtags: string[];
+}
+
+/**
+ * An Odds post: the player, then the play.
+ *
+ * The first slide is COMPOSED here rather than screenshotted. Every earlier
+ * attempt cropped a screengrab of the game to a social ratio, and something was
+ * always cut off, because the game's layout answers to a browser window and a
+ * post answers to a fixed frame. Laying it out ourselves from the same data the
+ * game holds — the odds, the quote, the source, the accent, the portrait — means
+ * it maps to 9:16, 4:5 or 1:1 exactly, with nothing clipped.
+ *
+ * The second slide is a screen recording of a real play-through on a phone,
+ * through to the outcome, made by `scripts/record-odds.mjs`.
+ */
+export interface OddsPost {
+  kind: "odds";
+  name: string;
+  id: string;
+  player: {
+    photo: string;
+    /** Focus point for the portrait crop, as a CSS object-position. */
+    photoPos: string;
+    /** The phrase inside the quote that carries the red. */
+    hot: string;
+    who: string;
+    role: string;
+    quoteContext?: string;
+    quote: string;
+    source: string;
+    credit: string;
+    cta: string;
+    accent: string;
+  };
+  video: string;
+  caption: string;
+  hashtags: string[];
+}
+
+/** One word, set big, with what it means and why it is in the vocabulary. */
+export interface TermPost {
+  kind: "term";
+  name: string;
+  id: string;
+  term: string;
+  pron: string;
+  kind_: string;
+  definition: string;
+  body: string;
+  caption: string;
+  hashtags: string[];
+}
+
 export interface ReelPost {
   kind: "reel";
   /** Working title for the mock's chrome. Never rendered on a slide. */
@@ -41,16 +137,41 @@ export interface ReelPost {
   title: string;
   /** One line about the piece, in the source project's own words where it has them. */
   note: string;
-  /** The live embed, mounted only when the post is open. */
+  /** The live embed, mounted only when the post is open. Empty when `video` is
+   *  set: some posts are a recording, not a running piece. */
   embed: string;
+  /** A screen recording, played instead of the embed when the post is open. */
+  video?: string;
   /** Seconds to let the embed run before the thumbnail is grabbed. */
   thumbAt: number;
+  /**
+   * Scale the piece up inside the frame, cropping what falls outside.
+   * Some fields draw their subject in a box with dead ground around it (the
+   * carpet's bounding square, the accumulating field's empty screen below the
+   * fringes). On a page that is fine; in a 4:5 crop it is a picture of a margin.
+   */
+  zoom?: number;
+  /**
+   * Where the zoom is anchored vertically, 0 top to 1 bottom (default centre).
+   * Several fields draw a baseline — the screen the particles land on, the wall
+   * the slits are cut into — along the bottom edge. Scaling from the centre
+   * keeps it in frame; anchoring at the top pushes it out.
+   */
+  focusY?: number;
   caption: string;
   hashtags: string[];
 }
 
-const field = (slug: string) =>
-  `/interference/embed.html?v=${slug}&pal=4&hex=${encodeURIComponent(ATLAS_BLUE)}&speed=0.7&label=0`;
+/**
+ * `pal` 0 Ice · 1 Ember · 2 Verdigris · 3 Bone, or a custom hex. Blue leads,
+ * because it is the Atlas accent and the feed should read as one account, but
+ * every field was running the same blue and the palettes the project ships were
+ * going unused.
+ */
+const field = (slug: string, pal: number | string = ATLAS_BLUE) =>
+  typeof pal === "number"
+    ? `/interference/embed.html?v=${slug}&pal=${pal}&speed=0.7&label=0`
+    : `/interference/embed.html?v=${slug}&pal=4&hex=${encodeURIComponent(pal)}&speed=0.7&label=0`;
 
 /**
  * A Generatives config, base64 JSON in the hash, exactly as the dashboard
@@ -59,6 +180,233 @@ const field = (slug: string) =>
  * params renders nothing at all.
  */
 const gen = (hash: string) => `/generatives/embed.html#${hash}`;
+
+/**
+ * Everything that is app chrome rather than the thing itself: the screen
+ * switcher, the session doors and their join / reference lines, the in-screen
+ * Map|Grid|Session row, the zoom controls, and the Atlas's own site shell,
+ * which the bundled page loads on top of everything.
+ */
+const AHQ_CHROME =
+  "#nav, #choose, .joinline, .refline, .sp, #zoom, .chrome, .fa-shell, .fa-share, .fa-foot";
+
+const REPORT_CHROME = ["THE FEED", "REPORT ·", "PUBLISHED "];
+const MASTHEAD_FILL = "main section:first-of-type{min-height:100vh!important;height:100vh!important}";
+
+/** The Atlas site shell, which the bundled sub-apps load on top of themselves. */
+const MAG_CHROME = ".fa-shell, .fa-share, .fa-foot, .fixed.right-3, .fixed.right-4";
+
+export const ODDS_POSTS: OddsPost[] = [
+  {
+    kind: "odds",
+    name: "The Odds · Dario",
+    id: "odds-dario",
+    player: {
+      photo: "/odds-of-surviving-ai/research/dario-first.jpg",
+      photoPos: "50% 30%",
+      hot: "25% chance that things go really, really badly.",
+      who: "Dario Amodei",
+      role: "Co-founder & CEO, Anthropic",
+      quoteContext: "On the risks of advanced AI",
+      quote: "I think there\u2019s a 25% chance that things go really, really badly.",
+      source: "Axios AI+ DC Summit \u00B7 17 Sept 2025",
+      credit: "Photo: TechCrunch, CC BY 2.0",
+      cta: "Roll the dice",
+      accent: "#9B7BFF",
+    },
+    video: "/mocks/instagram/odds-dario.webm",
+    caption:
+      "\u201CI think there\u2019s a 25% chance that things go really, really badly.\u201D\n\nThat is Dario Amodei, who runs Anthropic, one of the three companies actually building this. On the record at the Axios AI+ summit, September 2025.\n\nSo the game hands you a twelve-sided die. Roll 1 to 9 and things go well. Roll 10 to 12 and they do not. Twenty-five percent, made physical, in your hand.\n\nSwipe for a full play-through. Hold to roll, watch it land, and read what it tells you.",
+    hashtags: ["#aisafety", "#pdoom", "#anthropic", "#speculativedesign", "#seriousgames"],
+  },
+  {
+    kind: "odds",
+    name: "The Odds \u00B7 Elon",
+    id: "odds-elon",
+    player: {
+      photo: "/odds-of-surviving-ai/research/elon-first.jpg",
+      photoPos: "50% 28%",
+      hot: "20% chance of annihilation.",
+      who: "Elon Musk",
+      role: "Founder, xAI",
+      quoteContext: "On the risks of advanced AI",
+      quote: "The probability of a good outcome is like 80%. Only a 20% chance of annihilation.",
+      source: "Joe Rogan Experience \u00B7 2025",
+      credit: "Image: AI-generated",
+      cta: "Spin the wheel",
+      accent: "#FF6F61",
+    },
+    video: "/mocks/instagram/odds-elon.webm",
+    caption:
+      "\u201CThe probability of a good outcome is like 80%. Only a 20% chance of annihilation.\u201D\n\nElon Musk, on the Joe Rogan Experience, 2025. Note the word only.\n\nSo the game gives you a wheel. Eighty percent of it is blue and Earth holds. Twenty percent is red and it does not. Click, hold, and let it land where it lands.\n\nA one in five chance of annihilation is a thing people say out loud on podcasts now. Spun as a wheel it stops sounding like a statistic and starts looking like a bet nobody would take.",
+    hashtags: ["#aisafety", "#pdoom", "#elonmusk", "#speculativedesign", "#seriousgames"],
+  },
+  {
+    kind: "odds",
+    name: "The Odds \u00B7 Max",
+    id: "odds-max",
+    player: {
+      photo: "/odds-of-surviving-ai/research/max-tegmark.jpg",
+      photoPos: "50% 22%",
+      hot: "if those goals aren\u2019t aligned with ours, we\u2019re in trouble.",
+      who: "Max Tegmark",
+      role: "MIT physicist \u00B7 author, Life 3.0",
+      quote: "The real risk with AGI isn\u2019t malice but competence. A superintelligent AI will be extremely good at accomplishing its goals, and if those goals aren\u2019t aligned with ours, we\u2019re in trouble.",
+      source: "Life 3.0 (2017)",
+      credit: "Photo: Web Summit, CC BY 2.0",
+      cta: "Pick a card",
+      accent: "#34E5C4",
+    },
+    video: "/mocks/instagram/odds-max.webm",
+    caption:
+      "Max Tegmark does not give you a percentage. He gives you twelve futures.\n\nThe MIT physicist, author of Life 3.0, lays out twelve possible worlds on the other side of superintelligence. Some are fine. Some are fine only if you are not fussy about who is in charge. Several end with no people in them.\n\nSo this one is not a die or a wheel, it is a deck. You pick a card and read the world you drew. Libertarian Utopia. Gatekeeper. Enslaved God.\n\nThe mechanic is the argument: the other two are betting on a number, and Tegmark is saying the number is the wrong question. Not how likely. Which one.",
+    hashtags: ["#aisafety", "#maxtegmark", "#life30", "#speculativedesign", "#futuresthinking"],
+  },
+];
+
+export const HOME_REEL: ReelPost = {
+  kind: "reel",
+  name: "Futures Atlas · the site",
+  id: "atlas-home",
+  title: "Futures Atlas",
+  note: "The hero, which draws itself.",
+  // The hero alone, held still. The field behind the headline is generative and
+  // never repeats, so there is something to watch without scrolling — and
+  // scrolling turned the reel into a tour of the reading feed below it.
+  embed: "",
+  video: "/mocks/instagram/atlas-home.webm",
+  thumbAt: 0,
+  caption:
+    "Mapping foresight.\n\nFutures Atlas is a speculative design practice that builds instruments rather than slide decks. A card game that asks which futures already arrived. A papal encyclical on AI, and fifteen imagined replies from other faiths. Eleven live wave fields. A cluster map of the questions a room actually has. Reports with a rule that every finding carries its own figure and its own scope, or it does not go in.\n\nThe throughline: most of what gets called the future is either already here and uncounted, or has been announced for a decade and has not happened. Both are worth knowing, and neither is settled by a forecast.\n\nEverything on the site is playable, readable or sourced. Usually all three.",
+  hashtags: ["#speculativedesign", "#designfiction", "#futuresthinking", "#studio", "#creativecoding"],
+};
+
+export const TERM_POSTS: TermPost[] = [
+  {
+    kind: "term",
+    name: "Stigmergy",
+    id: "stigmergy",
+    term: "Stigmergy",
+    pron: "/\u02C8st\u026Adz\u02CCm\u0259\u02D0d\u0292i/",
+    kind_: "noun \u00B7 biology, complex systems",
+    definition:
+      "Coordination through traces left in the environment, rather than through any communication between the participants.",
+    body:
+      "An ant does not tell another ant where to go. It leaves a chemical trail, and the trail tells the next ant. Nothing holds the plan.",
+    caption:
+      "Stigmergy. Coordination through traces left in the environment, rather than through any communication between the participants.\n\nAn ant does not tell another ant where to go. It leaves a chemical trail, the trail is followed, following it strengthens it, and a route appears that no ant chose. Termite mounds are built this way. So are slime mould networks, ocean paths, footpaths worn across a park, and most of the useful structure on the internet.\n\nThe word was coined by the French zoologist Pierre-Paul Grass\u00E9 in 1959, from the Greek stigma, a mark, and ergon, work. Work that marks, and marks that work.\n\nIt is in this studio's vocabulary because it is the honest answer to a question people keep asking about emergent systems: who is coordinating this? Usually nobody. The environment is.",
+    hashtags: ["#stigmergy", "#emergence", "#complexsystems", "#slimemould", "#futuresatlas"],
+  },
+];
+
+export const STACK_REEL: ReelPost = {
+  kind: "reel",
+  name: "The stack",
+  id: "stack",
+  title: "The stack",
+  note: "Everything this studio builds with, drifting past.",
+  embed: "",
+  // Built for this, at /mocks/stack-reel, and recorded: five rows on their own
+  // periods, none a multiple of another, so they never fall into step. The
+  // About page's stack grid is a table, and a screengrab of a table is a table.
+  video: "/mocks/instagram/stack.webm",
+  thumbAt: 0,
+  caption:
+    "Everything this studio is built with, named.\n\nThe work splits three ways and so does the stack. Language and code models for research, drafting and the agent work. Image and video models for the plates that are generated, which are always labelled as generated. And the web layer everything actually ships on: Next.js, Three.js, p5, D3, and a lot of hand-written shaders, because a fragment shader computed fresh every frame is smaller, sharper and more honest than a video of one.\n\nOpen weights sit next to the closed ones on purpose. Some pieces here run models locally because the piece is about what you can do without asking permission.\n\nUsed, not endorsed. It is on the About page rather than in a deck, because a studio that will not say what it uses is telling you something.",
+  hashtags: ["#techstack", "#creativecoding", "#webgl", "#nextjs", "#designstudio", "#futuresatlas"],
+};
+
+export const UNDERGROUND_REEL: ReelPost = {
+  kind: "reel",
+  name: "Underground Intelligence",
+  id: "underground",
+  title: "Underground Intelligence",
+  note: "What if the underground began to speak?",
+  embed: "",
+  // The project's real hero, recorded: everything but the question and the
+  // mycelium is hidden — the eyebrow, the standfirst, both buttons, and the two
+  // discovery cards, which live inside .home-hero rather than after it.
+  video: "/mocks/instagram/underground.webm",
+  thumbAt: 0,
+  caption:
+    "What if the underground began to speak?\n\nTwo discoveries are converging. In 2025 SPUN finished mapping the mycorrhizal networks beneath the planet for the first time — the largest living network on Earth, finally charted. And over 2024 and 2025 quantum sensing matured out of the lab into the field, precise enough to read the living earth without digging it up.\n\nUnderground Intelligence imagines the moment those two meet: when the network under your feet becomes something we can actually listen to, and what we would owe it once we could.\n\nThe thing moving behind the question is a real mycelial growth simulation, computed live, not a video.",
+  hashtags: ["#mycelium", "#quantumsensing", "#speculativedesign", "#morethanhuman", "#futuresatlas"],
+};
+
+export const SHOTS_POSTS: ShotsPost[] = [
+  {
+    kind: "shots",
+    name: "Where Compute Gets Built",
+    id: "rep-compute",
+    shots: [
+      { id: "rep-compute-1", path: "/feed/where-compute-gets-built", hide: MAG_CHROME, hideText: REPORT_CHROME, css: MASTHEAD_FILL, at: 6 },
+      { id: "rep-compute-2", path: "/feed/where-compute-gets-built", hide: MAG_CHROME, at: 4, el: "article", elIndex: 0 },
+      { id: "rep-compute-3", path: "/feed/where-compute-gets-built", hide: MAG_CHROME, at: 4, el: "article", elIndex: 1 },
+      { id: "rep-compute-4", path: "/feed/where-compute-gets-built", hide: MAG_CHROME, at: 4, el: "article", elIndex: 3 },
+    ],
+    caption:
+      "Where Compute Gets Built. A report on the datacentre buildout, and who pays for it.\n\nThe wall behind the title is not decoration. Every tile is a piece of coverage the report actually cites, and the masthead is made of them, so the hero is the evidence base rather than a picture of one.\n\nEvery finding in it carries a figure and a scope. If we cannot write the scope, we do not have the finding, and it does not go in.\n\nOn the Atlas.",
+    hashtags: ["#datacentres", "#compute", "#energy", "#aiinfrastructure", "#futuresatlas"],
+  },
+  {
+    kind: "shots",
+    name: "AI Hegemony",
+    id: "rep-hegemony",
+    shots: [
+      { id: "rep-hegemony-1", path: "/feed/ai-hegemony", hide: MAG_CHROME, hideText: REPORT_CHROME, css: MASTHEAD_FILL, at: 6 },
+      { id: "rep-hegemony-2", path: "/feed/ai-hegemony", hide: MAG_CHROME, at: 4, el: "article", elIndex: 0 },
+      { id: "rep-hegemony-3", path: "/feed/ai-hegemony", hide: MAG_CHROME, at: 4, el: "article", elIndex: 2 },
+      { id: "rep-hegemony-4", path: "/feed/ai-hegemony", hide: MAG_CHROME, at: 4, el: "article", elIndex: 7 },
+    ],
+    caption:
+      "AI Hegemony. Who holds the compute, the models and the rules, and what that concentration actually looks like when you count it.\n\nThe wall is the coverage the report cites, and the report has a rule it applies to itself: a chart is a re-presentation of a figure already stated in the finding, never an addition to it. One share is one mark against an empty track, not two summing to a hundred, because the remainder was never measured.\n\nIt also publishes what did not hold up. We checked this and it did not survive is a finding, and it is in there.\n\nTwo designs of the same evidence, side by side on the site.",
+    hashtags: ["#aipolicy", "#compute", "#concentration", "#datavisualisation", "#futuresatlas"],
+  },
+  // ── Hypothetica Magnifica ──────────────────────────────────────────────
+  {
+    kind: "shots",
+    name: "Magnifica · the project",
+    id: "mag-home",
+    shots: [
+      { id: "mag-home-1", path: "/magnifica/", hide: MAG_CHROME, at: 5 },
+      { id: "mag-home-2", path: "/magnifica/", hide: MAG_CHROME, at: 5, scrollTo: 1.9 },
+    ],
+    caption:
+      "In May 2026 Pope Leo XIV published Magnifica humanitas, the first papal encyclical on artificial intelligence. A real document, from a real office, about what AI does to the human person.\n\nSo we asked the obvious next question. What would the equivalent sound like from the world's other great faiths?\n\nSixteen documents. One is real. The other fifteen are speculative fiction, extrapolated from what each leader has actually said about technology and the human person, written in the form their tradition actually uses. A dharma talk is not an encyclical is not a ruling.\n\nEverything sourced is marked as sourced, and every invented line is marked as invented. That line is the project.",
+    hashtags: ["#speculativedesign", "#designfiction", "#aiethics", "#religion", "#futuresatlas"],
+  },
+  // A Leo XIV post was written and pulled: the encyclical is a section partway
+  // down the Magnifica home page, not a route, and every attempt to reach it
+  // (viewport offsets, then scroll-to-text) landed back on the hero — so all
+  // three of its shots were the same image the project post already uses, and
+  // the feed showed the Pope twice. Reaching it wants an anchor on the section
+  // itself rather than a guess from outside; the caption is in git history.
+
+  {
+    kind: "shots",
+    name: "Magnifica · Dalai Lama",
+    id: "mag-dalai",
+    shots: [
+      { id: "mag-dalai-1", path: "/magnifica/#/l/dalai-lama", hide: MAG_CHROME, at: 7 },
+    ],
+    caption:
+      "What would Tenzin Gyatso, the 14th Dalai Lama, write about artificial intelligence?\n\nHe has said a great deal about consciousness, compassion and what makes a mind a mind, over sixty years, on the record. He has not written this document.\n\nSo the project does two things at once and keeps them visibly apart. Under GROUNDED IN sit his actual statements, each one cited and linked. Above it sits a speculative document written in the form his tradition uses, extrapolated from that record, and labelled as invented everywhere it appears.\n\nThe portrait is a real Wikimedia photograph under a free licence, credited on screen. No generated likeness of a living person, in a project whose own subject matter is people objecting to being deepfaked.",
+    hashtags: ["#speculativedesign", "#dalailama", "#aiethics", "#buddhism", "#futuresatlas"],
+  },
+
+  {
+    kind: "shots",
+    name: "Actually Hard Questions",
+    id: "ahq",
+    shots: [
+      { id: "ahq-1", path: "/actually-hard-questions/", hide: AHQ_CHROME, at: 4 },
+      { id: "ahq-2", path: "/actually-hard-questions/#map", hide: AHQ_CHROME, at: 6 },
+    ],
+    caption:
+      "Anthropic has a page about the actually hard questions AI raises. It is a beautiful cluster map, and it answers none of them.\n\nSo: same map, same headings, your questions.\n\nWhat it is. Open a session, put it on a screen, and everyone in the room asks the thing they actually want to know. Questions land on the map live, grouped under Anthropic's own headings, alongside everyone else's.\n\nWhat it is not. It does not answer anything either. That is deliberate. The point is to see the shape of what a room is confused about, which is usually not the shape the roadmap assumes.\n\nBuilt for workshops. Works on one laptop or across forty phones.",
+    hashtags: ["#speculativedesign", "#workshop", "#aiethics", "#facilitation", "#designresearch"],
+  },
+];
 
 export const REEL_POSTS: ReelPost[] = [
   // ── Interference ───────────────────────────────────────────────────────
@@ -70,8 +418,11 @@ export const REEL_POSTS: ReelPost[] = [
     note: "Detections arriving singly. No fringe exists in any one of them.",
     embed: field("one-at-a-time"),
     // This one accumulates rather than looping, so the thumbnail wants to be
-    // late enough that the stripes have actually formed.
+    // late enough that the stripes have actually formed. The screen line and
+    // the empty band beneath it are cropped away.
     thumbAt: 22,
+    zoom: 1.5,
+    focusY: 0.28,
     caption:
       "Quantum mechanics is hard and I am not going to pretend otherwise. So here is a nice thing to look at. You can stop right there, that is a complete experience.\n\nIf you want the three lines:\n\nWhat you are seeing. Every dot is one particle arriving at a screen, landing somewhere at random. No single dot means anything.\n\nHow it is made. A fragment shader, computed fresh every frame rather than a video. Each dot is dropped at a random position weighted by the two-slit probability pattern, and they simply pile up.\n\nThe quantum part. Send the particles through so slowly that only one is ever inside the apparatus, and the stripes still appear. G. I. Taylor did a version of this in 1909 with an exposure that ran for three months, and Tonomura's team at Hitachi filmed single electrons building the pattern in 1989. The stripes are not in any particle. They only exist in the pile.",
     hashtags: ["#quantum", "#interference", "#doubleslit", "#generativeart", "#shaders", "#physics"],
@@ -82,8 +433,10 @@ export const REEL_POSTS: ReelPost[] = [
     id: "carpet",
     title: "Quantum carpet",
     note: "A particle in a square box. Eight standing modes, beating in and out of step.",
-    embed: field("carpet"),
+    embed: field("carpet", 2),
     thumbAt: 7,
+    // The carpet draws its box centred with ground all around it.
+    zoom: 1.75,
     caption:
       "You do not need to know what a wavefunction is to enjoy this one. Genuinely, just watch it.\n\nFor anyone who wants the three lines:\n\nWhat you are seeing. A particle shut in a square box, and the odds of finding it at each point in that box, sloshing around.\n\nHow it is made. Eight standing waves added together, each turning in phase at its own rate, then squared. About forty lines of maths in a fragment shader, redrawn every frame.\n\nThe idea. The energies are whole numbers times a common unit, so every phase falls back into step at the same instant and the whole pattern snaps back to where it started. That is why it loops, and nothing is edited or cut. It is the same mathematics as the Talbot effect in optics, where a grating reprints its own image at regular distances behind itself, and the revivals have been seen for real in Rydberg atoms and in cold atoms in optical lattices.",
     hashtags: ["#quantum", "#talboteffect", "#waves", "#generativeart", "#shaders", "#physics"],
@@ -94,7 +447,7 @@ export const REEL_POSTS: ReelPost[] = [
     id: "packets",
     title: "Cat state",
     note: "Two coherent states in one trap, swinging in antiphase. The fringes are finest as they pass.",
-    embed: field("packets"),
+    embed: field("packets", 1),
     // The fringes only exist at the crossing, which is the whole point of the
     // piece, so the still is taken mid-pass rather than at a turning point.
     thumbAt: 4,
@@ -108,11 +461,51 @@ export const REEL_POSTS: ReelPost[] = [
     id: "coherence",
     title: "Losing coherence",
     note: "The same two slits, with the visibility dialled from one to zero and back.",
-    embed: field("coherence"),
+    embed: field("coherence", 3),
     thumbAt: 3,
     caption:
       "Most quantum visuals show you the effect. This one shows you it stopping, which is somehow nicer to watch.\n\nThe three lines:\n\nWhat you are seeing. A two-slit pattern with its contrast turned from full down to nothing and back. Notice that nothing else moves.\n\nHow it is made. The same two-source shader as the classic pattern, with one number multiplying the interference term and running from one to zero.\n\nThe idea. Both slits stay open the whole time and each keeps passing exactly as much light. The only thing that disappears is the interference. That is decoherence, and the price is exact: Englert's relation says visibility squared plus path information squared cannot exceed one. Find out which way it went and you lose precisely that much contrast.",
     hashtags: ["#quantum", "#decoherence", "#physics", "#generativeart", "#shaders"],
+  },
+
+  {
+    kind: "reel",
+    name: "Two slits",
+    id: "two-slits",
+    title: "Two slits",
+    note: "A plane wave meets a wall with two gaps. Beyond it, one pattern instead of two.",
+    embed: field("two-slits"),
+    thumbAt: 5,
+    zoom: 1.35,
+    focusY: 0.3,
+    caption:
+      "The most famous experiment in physics, and it is genuinely just this. Two holes.\n\nThe three lines:\n\nWhat you are seeing. A wave arriving at a wall with two gaps in it. Past the wall there is one pattern, not two, and the bright fans are where the two routes differ by a whole number of wavelengths.\n\nHow it is made. Each gap is treated as a fresh source spreading in every direction, the two are added as complex amplitudes, and the result is squared. A fragment shader, every frame. The faint steady glow under the moving crests is the time average, which is all a photographic plate ever sees.\n\nThe idea. Thomas Young ran it with sunlight around 1801 and used it to argue that light is a wave. The same geometry has since been run with electrons, neutrons, whole atoms, and molecules of several hundred atoms. Every one of them draws this figure.",
+    hashtags: ["#quantum", "#doubleslit", "#optics", "#physics", "#generativeart", "#shaders"],
+  },
+  {
+    kind: "reel",
+    name: "Vortex lattice",
+    id: "vortex",
+    title: "Vortex lattice",
+    note: "Three plane waves at 120 degrees, coloured by phase. Each dark point is a singularity.",
+    embed: field("vortex", "#8B6FD4"),
+    thumbAt: 6,
+    caption:
+      "Look at the dark dots. Every one of them is a place where a quantity genuinely has no value.\n\nThe three lines:\n\nWhat you are seeing. Three flat waves crossing at 120 degrees to each other, coloured by phase rather than by brightness, so the colour wheel around each dark point is the phase turning through a full circle.\n\nHow it is made. Three plane waves summed as complex amplitudes; the hue is the argument of that sum and the brightness is its size. Slowly rotating, so the whole lattice turns.\n\nThe idea. Where the amplitude falls to exactly zero the phase is undefined, the way longitude is undefined at the pole. Those are phase singularities, and they cannot simply vanish, only move or annihilate in pairs. Spin a superfluid or a Bose-Einstein condensate fast enough and it forms a lattice of exactly these, which is one of the more direct pictures of quantum mechanics you can photograph.",
+    hashtags: ["#quantum", "#vortices", "#superfluid", "#physics", "#generativeart", "#shaders"],
+  },
+
+  {
+    kind: "reel",
+    name: "Two droplets",
+    id: "droplets",
+    title: "Two droplets",
+    note: "Two drips in a sink, and the pattern every one of these is built from.",
+    embed: field("droplets"),
+    thumbAt: 5,
+    caption:
+      "Before any of the quantum ones, this. Two drips in a sink.\n\nThe three lines:\n\nWhat you are seeing. Two sources, each sending out rings, and the place where the rings cross. Where two crests meet you get a taller crest. Where a crest meets a trough you get flat water.\n\nHow it is made. Two expanding sine waves added together and squared, in a fragment shader, redrawn every frame. That is the entire calculation.\n\nThe idea. This is interference, and there is nothing quantum about it. It is water. Every other field in this project — the two slits, the carpet, the cat state — is this same arithmetic with something stranger doing the waving. Which is why physicists reach for a ripple tank first: the maths does not care what is doing the waving.",
+    hashtags: ["#interference", "#waves", "#physics", "#generativeart", "#shaders"],
   },
 
   // ── Generatives ────────────────────────────────────────────────────────
@@ -123,7 +516,7 @@ export const REEL_POSTS: ReelPost[] = [
     title: "Reaction diffusion",
     note: "Two chemicals, one feeding on the other, spreading at different speeds.",
     embed: gen(
-      "eyJwaWVjZUlkIjoicmVhY3Rpb24tZGlmZnVzaW9uIiwic2VlZCI6InNwb3JlLTI0OTkiLCJwYXJhbXMiOnsiZmVlZCI6MC4wMzcsImtpbGwiOjAuMDYsInNwZWVkIjoxMH0sInNpemUiOnsidyI6MTA4MCwiaCI6MTM1MH0sIm1ldGEiOnsiY29tcGxleGl0eSI6MC40NSwiY2hhb3MiOjAuNDV9LCJ0aGVtZSI6InF1YW50dW0taW5rIiwiY29sb3JzIjp7ImJnIjoiIzBiMGUxMyIsImxvIjoiIzFjNGE3NSIsImhpIjoiIzdmYzBmMCJ9fQ",
+      "eyJwaWVjZUlkIjoicmVhY3Rpb24tZGlmZnVzaW9uIiwic2VlZCI6InNwb3JlLTI0OTkiLCJwYXJhbXMiOnsiZmVlZCI6MC4wMzcsImtpbGwiOjAuMDYsInNwZWVkIjoxMH0sInNpemUiOnsidyI6MTA4MCwiaCI6MTM1MH0sIm1ldGEiOnsiY29tcGxleGl0eSI6MC40NSwiY2hhb3MiOjAuNDV9LCJ0aGVtZSI6InF1YW50dW0taW5rIiwiY29sb3JzIjp7ImJnIjoiIzA4MTIxYSIsImxvIjoiIzE2NmI3NCIsImhpIjoiIzhmZTZkZCJ9fQ",
     ),
     thumbAt: 12,
     caption:
@@ -137,10 +530,10 @@ export const REEL_POSTS: ReelPost[] = [
     title: "Slime mould",
     note: "Agents with three rules each, and a network nobody designed.",
     embed: gen(
-      "eyJwaWVjZUlkIjoicGh5c2FydW0iLCJzZWVkIjoic3BvcmUtODkzNCIsInBhcmFtcyI6eyJzcGF3biI6InJpbmciLCJzcGVjaWVzIjoxLCJkaXNwbGF5TW9kZSI6InBhbGV0dGUiLCJzZW5zb3JEaXN0Ijo5LCJzZW5zb3JBbmdsZSI6MjIsInR1cm5TcGVlZCI6MjgsImRlY2F5IjowLjkzLCJkaWZmdXNlIjowLjM1LCJhdm9pZCI6MCwiaW50ZW5zaXR5IjoxLjYsInNwZWVkIjoxLCJjb2xSIjoiI2ZmMmQ2YiIsImNvbEciOiIjMjJlMGM4IiwiY29sQiI6IiNmZmQyM2QifSwic2l6ZSI6eyJ3IjoxMDgwLCJoIjoxMzUwfSwibWV0YSI6eyJjb21wbGV4aXR5IjowLjQ1LCJjaGFvcyI6MC40NX0sInRoZW1lIjoicXVhbnR1bS1pbmsiLCJjb2xvcnMiOnsiYmciOiIjMGIwZTEzIiwibG8iOiIjMWM0YTc1IiwiaGkiOiIjN2ZjMGYwIn19",
+      "eyJwaWVjZUlkIjoicGh5c2FydW0iLCJzZWVkIjoic3BvcmUtODkzNCIsInBhcmFtcyI6eyJzcGF3biI6InJhbmRvbSIsInNwZWNpZXMiOjEsImRpc3BsYXlNb2RlIjoicGFsZXR0ZSIsInNlbnNvckRpc3QiOjksInNlbnNvckFuZ2xlIjoyMiwidHVyblNwZWVkIjoyOCwiZGVjYXkiOjAuOTgsImRpZmZ1c2UiOjAuMjIsImF2b2lkIjowLCJpbnRlbnNpdHkiOjIuMCwic3BlZWQiOjIsImNvbFIiOiIjZmYyZDZiIiwiY29sRyI6IiMyMmUwYzgiLCJjb2xCIjoiI2ZmZDIzZCJ9LCJzaXplIjp7InciOjEwODAsImgiOjEzNTB9LCJtZXRhIjp7ImNvbXBsZXhpdHkiOjEuMCwiY2hhb3MiOjAuMzV9LCJ0aGVtZSI6InF1YW50dW0taW5rIiwiY29sb3JzIjp7ImJnIjoiIzBkMTAxNyIsImxvIjoiIzVjNWEyYSIsImhpIjoiI2ZmZDlhMCJ9fQ",
     ),
-    // Slow to build: the network is barely there before ~20s.
-    thumbAt: 26,
+    // Slow to build even at speed 3; the network is not worth a still before this.
+    thumbAt: 45,
     caption:
       "No physics degree needed for this one. It is mould. Extremely good-looking mould.\n\nThe three lines:\n\nWhat you are seeing. A few hundred thousand particles crawling around, each leaving a faint trail that slowly fades.\n\nHow it is made. Every particle follows three rules and nothing else: sniff straight ahead and slightly to each side, turn toward whichever smells strongest, drop a little trail behind you. The trail blurs and decays each frame. It runs on the GPU because there are far too many agents to move one at a time.\n\nThe idea. Nothing in there knows what a network is. The branching, the loops, the way paths thicken and others starve, all of it comes from the trail being shared. Real Physarum polycephalum does this on a petri dish, and in 2010 a team in Japan laid oat flakes out in the pattern of Tokyo's suburbs and watched it grow something close to the actual rail network.",
     hashtags: ["#generativeart", "#physarum", "#slimemould", "#emergence", "#creativecoding", "#webgl"],
@@ -151,13 +544,47 @@ export const REEL_POSTS: ReelPost[] = [
     id: "curl-flow",
     title: "Curl flow",
     note: "Particles let go in a field that cannot have sources or sinks.",
+    // speed 1 -> 0.3, and a shorter trail with it. At full rate the whole frame
+    // churns and reads as noise; slowed down you can follow one line around a
+    // vortex, which is the thing worth watching.
     embed: gen(
-      "eyJwaWVjZUlkIjoiY3VybC1mbG93Iiwic2VlZCI6ImRyaWZ0LTQ5NzciLCJwYXJhbXMiOnsic3BlZWQiOjEsIm5vaXNlU2NhbGUiOjEuNCwidHJhaWwiOjAuMDcsImxpbmVXaWR0aCI6MS4xLCJodWVTaGlmdCI6MCwibGlmZSI6MTcwfSwic2l6ZSI6eyJ3IjoxMDgwLCJoIjoxMzUwfSwibWV0YSI6eyJjb21wbGV4aXR5IjowLjQ1LCJjaGFvcyI6MC40NX0sInRoZW1lIjoicXVhbnR1bS1pbmsiLCJjb2xvcnMiOnsiYmciOiIjMGIwZTEzIiwibG8iOiIjMWM0YTc1IiwiaGkiOiIjN2ZjMGYwIn19",
+      "eyJwaWVjZUlkIjoiY3VybC1mbG93Iiwic2VlZCI6ImN5YW4tMTAzNCIsInBhcmFtcyI6eyJzcGVlZCI6MC4xMiwibm9pc2VTY2FsZSI6MS40LCJ0cmFpbCI6MC4wMywibGluZVdpZHRoIjoxLjMsImh1ZVNoaWZ0IjowLCJsaWZlIjozMjB9LCJzaXplIjp7InciOjEwODAsImgiOjEzNTB9LCJtZXRhIjp7ImNvbXBsZXhpdHkiOjAuNDUsImNoYW9zIjowLjQ1fSwidGhlbWUiOiJxdWFudHVtLWluayIsImNvbG9ycyI6eyJiZyI6IiMwYjBlMTMiLCJsbyI6IiMxYzRhNzUiLCJoaSI6IiM3ZmMwZjAifX0",
     ),
-    thumbAt: 14,
+    thumbAt: 30,
     caption:
       "Smoke, basically. Free to watch, nothing to understand.\n\nThe three lines:\n\nWhat you are seeing. Thousands of particles dropped into an invisible current and left to drift, each dragging a thin trail behind it.\n\nHow it is made. A field of smooth random noise, then the curl of that field is taken and used as the velocity. Particles get a lifespan and are respawned when it runs out, which is the only thing stopping the picture silting up into mush.\n\nThe idea. Taking the curl guarantees the flow has zero divergence, which in plain terms means nothing is created or destroyed anywhere in it. No sources, no drains. That one constraint is the whole reason it reads as smoke or water rather than as particles wandering about, and it is the same condition real incompressible fluids obey.",
     hashtags: ["#generativeart", "#curlnoise", "#flowfield", "#creativecoding", "#webgl"],
+  },
+
+  {
+    kind: "reel",
+    name: "Voronoi cells",
+    id: "voronoi-cells",
+    title: "Voronoi cells",
+    note: "Every point on screen coloured by which seed it is nearest.",
+    embed: gen(
+      "eyJwaWVjZUlkIjoidm9yb25vaS1jZWxscyIsInNlZWQiOiJjeWFuLTUyNjQiLCJwYXJhbXMiOnsidURlbnNpdHkiOjEsInVFZGdlIjowLjE2LCJ1V2FycCI6MC45LCJ1Q2VsbFNoYWRlIjowLjU1LCJ1RWRnZUdsb3ciOjF9LCJzaXplIjp7InciOjEwODAsImgiOjEzNTB9LCJtZXRhIjp7ImNvbXBsZXhpdHkiOjAuNDUsImNoYW9zIjowLjQ1fSwidGhlbWUiOiJxdWFudHVtLWluayIsImNvbG9ycyI6eyJiZyI6IiMwYjBkMTgiLCJsbyI6IiMyZjNmOWMiLCJoaSI6IiNhOGM0ZmYifX0",
+    ),
+    thumbAt: 8,
+    caption:
+      "One rule, applied to every pixel. That is the entire piece.\n\nThe three lines:\n\nWhat you are seeing. A scatter of invisible seed points, and every pixel coloured by which seed happens to be closest to it. The bright edges are simply the places where the answer changes.\n\nHow it is made. For each pixel the shader measures the distance to the nearest few seeds and takes the difference between the closest two. Where that difference is near zero you are on a boundary, so it is drawn bright. The seeds drift, so the cells breathe.\n\nThe idea. This is a Voronoi diagram, and it turns up wherever something grows outward from scattered starting points at the same rate: giraffe markings, dried mud, foam, crystal grains in cooled metal, the coverage areas of phone masts. Descartes drew one in 1644 to carve up the solar system.",
+    hashtags: ["#generativeart", "#voronoi", "#creativecoding", "#webgl", "#patterns"],
+  },
+  {
+    kind: "reel",
+    name: "Differential growth",
+    id: "differential-growth",
+    title: "Differential growth",
+    note: "A line that keeps lengthening inside a space that never does.",
+    embed: gen(
+      "eyJwaWVjZUlkIjoiZGlmZmVyZW50aWFsLWdyb3d0aCIsInNlZWQiOiJwaGFzZS0yNzU1IiwicGFyYW1zIjp7ImxpbmVXaWR0aCI6MSwiZmxvdyI6MC4wNSwiZmllbGRTY2FsZSI6MS40fSwic2l6ZSI6eyJ3IjoxMDgwLCJoIjoxMzUwfSwibWV0YSI6eyJjb21wbGV4aXR5IjoxLjAsImNoYW9zIjowLjV9LCJ0aGVtZSI6InF1YW50dW0taW5rIiwiY29sb3JzIjp7ImJnIjoiIzBiMGUxMyIsImxvIjoiIzFjNGE3NSIsImhpIjoiIzdmYzBmMCJ9fQ",
+    ),
+    // flow 0.35 -> 0.03. Smaller steps are both slower and smoother; the jutter
+    // was the curve jumping a long way each frame, not a frame-rate problem.
+    thumbAt: 70,
+    caption:
+      "A line with nowhere left to go. That is the whole idea and it is oddly stressful to watch.\n\nThe three lines:\n\nWhat you are seeing. A single closed curve that keeps adding length to itself while the space it lives in stays exactly the same size.\n\nHow it is made. The curve is a list of points. Each step, every point is pushed away from its neighbours, pulled along the line to stay evenly spaced, and repelled by any other point that comes too close. Where a gap opens past a threshold, a new point is inserted. Nothing is choreographed.\n\nThe idea. Length grows, area does not, so the only way out is to fold. That constraint alone produces the convolutions, and it is why the result looks like a brain, a gut lining, a kale leaf or a coral. Those are all the same trick: more surface than the container has room for.",
+    hashtags: ["#generativeart", "#differentialgrowth", "#emergence", "#creativecoding", "#webgl"],
   },
 
   // ── The Atlas's own vocabulary ─────────────────────────────────────────

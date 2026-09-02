@@ -1,5 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<!-- data-fa-no-footer is REQUIRED here and was missing, which is what made the
+     whole project render as a bare nav over a blue slab. The note above this
+     page's own <footer> (in #tab-research) already describes the arrangement —
+     the tab panels are position:fixed, so the footer atlas-nav.js appends to
+     <body> has nowhere correct to land — but the attribute it refers to was not
+     on the tag. Without it the injector also DELETES the page's own footer
+     (it removes every stale .fa-foot before appending its own) and replaces it
+     with one carrying z-index:5, deliberately set so the shared footer sits
+     above the full-viewport canvases other projects use as a backdrop. Over an
+     app that is entirely fixed panels, that covers everything. -->
+<html lang="en" class="dark" data-fa-no-footer>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">

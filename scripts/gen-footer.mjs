@@ -45,7 +45,6 @@ const SECTIONS = [
   ["/", "Home"],
   ["/feed", "Feed"],
   ["/projects", "Projects"],
-  ["/glossary", "Glossary"],
   ["/developers", "Developers"],
   ["/about", "About"],
   ["/contact", "Contact"],
@@ -80,18 +79,9 @@ const INTERNAL = [
 const projects = liveProjects.filter((p) => p.path || p.url).slice(0, 12);
 const recent = livePosts.slice(0, 6);
 
-/**
- * "Last updated", baked once here rather than filled in per page.
- *
- * It used to be stamped client-side from document.lastModified, which gives
- * each static bundle its OWN date — so the host said one day and a sub-app
- * built in the same deploy said another, and the footer read as two different
- * footers even though the markup was identical. Everything ships together, so
- * there is one true date: this build's.
- */
+/* The copyright year. The "last updated" stamp that used to sit beside it is
+   gone with the rest of that line, so the month table went with it. */
 const now = new Date();
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const updated = `${now.getUTCDate()} ${MONTHS[now.getUTCMonth()]} ${now.getUTCFullYear()}`;
 
 const link = (href, label, cls = "fa-foot__link") =>
   `<a class="${cls}" href="${esc(href)}">${esc(label)}</a>`;
@@ -149,8 +139,7 @@ const html = `<div class="fa-foot__inner">
 </div>
 </div>
 <div class="fa-foot__row">
-<span class="fa-foot__tag">&copy; ${now.getUTCFullYear()} Futures Atlas &middot; A living project. Things change, break and improve. Last updated ${updated}.</span>
-<span class="fa-foot__tag">Built with Next.js, Claude Code and an evolving stack. <a class="fa-foot__a" href="/about#stack">see the full inventory &rarr;</a></span>
+<span class="fa-foot__tag">&copy; ${now.getUTCFullYear()} Futures Atlas</span>
 </div>
 </div>`;
 

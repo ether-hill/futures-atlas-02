@@ -35,12 +35,54 @@
   --fa-faint-d: #74777f;
 
   /* accent (light / dark) */
-  --fa-accent: oklch(0.55 0.13 245);
+  /*
+    THE BRAND BLUE IS ONE COLOUR. It does not follow the light/dark toggle.
+
+    It used to be four: 0.55 light / 0.64 dark for --accent, and 0.42 / 0.74 for
+    --accent-deep — so the blue a reader saw on a page shifted from a navy to a
+    sky depending on a setting that has nothing to do with the brand.
+
+    0.565 is not a compromise picked by eye. A single blue on hue 245 was scored
+    against BOTH grounds (bone #f4efe4 and ink #17181b) across lightness and
+    chroma; 0.565 is where the worse of the two contrasts peaks, at 3.92 on bone
+    and 3.95 on ink. Nothing does better: the ceiling for one blue against a
+    near-white AND a near-black ground is 3.93, whatever the chroma. That clears
+    the 3.0 WCAG AA needs for large text and for UI, and sits under the 4.5 for
+    small body copy — a property of insisting on one colour, not of this one.
+  */
+  --fa-accent: oklch(0.565 0.13 245);
+  --fa-accent-d: oklch(0.565 0.13 245);
+  --fa-accent-deep: oklch(0.565 0.13 245);
+  --fa-accent-deep-d: oklch(0.565 0.13 245);
+
+  /*
+    The pressed/hover shade, also ONE value. Backgrounds only — never text, so
+    it has no contrast duty of its own and can simply be a step down from the
+    brand blue. --accent-deep used to double as this, which is why the buttons
+    lost their hover the moment the blues were unified.
+  */
+  --fa-accent-press: oklch(0.475 0.13 245);
+
+  /*
+    The sign-off band at the foot of every page. Also a shade of the one blue —
+    same hue, same chroma, lower lightness — rather than the separate colour it
+    used to be (oklch 0.42 0.11 245, a hair off the brand's chroma and arrived
+    at independently).
+
+    It is not the brand blue itself because the footer sets 12.5px body copy on
+    it: --paper over the brand blue is 3.92, which is not a reading contrast.
+    At this lightness it is 7.22, matching the 7.30 the old band gave, so
+    nothing is lost by bringing it into the family.
+  */
+  --fa-accent-band: oklch(0.42 0.13 245);
+
+  /*
+    --accent-soft is the exception, and deliberately: it is a SURFACE, not the
+    brand colour. A pale blue chip reads as a tint on bone and as a white box on
+    black, so this one still flips.
+  */
   --fa-accent-soft: oklch(0.93 0.045 245);
-  --fa-accent-deep: oklch(0.42 0.11 245);
-  --fa-accent-d: oklch(0.64 0.13 245);
   --fa-accent-soft-d: oklch(0.34 0.06 245);
-  --fa-accent-deep-d: oklch(0.74 0.12 245);
 
   /* font families (consumer loads these via next/font and sets the --font-* vars) */
   --fa-font-display: var(--font-archivo), system-ui, sans-serif;
@@ -58,11 +100,11 @@
   --paper: #f4efe4; /* ALWAYS light: text/veils on dark — single value */
   /* The sign-off band. Like --paper, ONE value in both themes and deliberately
      so: the footer is the same block of brand at the bottom of every page,
-     rather than another surface that follows the toggle. Written as a literal
-     because public/atlas-nav.css carries the same colour and is self-contained
-     by design — the vanilla sub-apps load it WITHOUT this sheet and still have
-     to render the identical footer. Change one, change the other. */
-  --brand: oklch(0.42 0.11 245);
+     rather than another surface that follows the toggle. public/atlas-nav.css
+     carries the same colour as a literal and is self-contained by design — the
+     vanilla sub-apps load it WITHOUT this sheet and still have to render the
+     identical footer. Change one, change the other. */
+  --brand: var(--fa-accent-band);
   --text: var(--fa-ink);
   --text-body: var(--fa-ink-body);
   --muted: var(--fa-graphite);
@@ -70,6 +112,7 @@
   --accent: var(--fa-accent);
   --accent-soft: var(--fa-accent-soft);
   --accent-deep: var(--fa-accent-deep);
+  --accent-press: var(--fa-accent-press);
   --hairline: color-mix(in srgb, var(--text) 16%, transparent);
 
   /* fonts */
@@ -169,8 +212,9 @@ html.dark {
   --text-body: var(--fa-ink-body-d);
   --muted: var(--fa-graphite-d);
   --faint: var(--fa-faint-d);
-  --accent: var(--fa-accent-d);
+  /* --accent and --accent-deep are NOT re-stated here: the brand blue is one
+     value and re-declaring it under html.dark is how it drifted before. Only
+     the soft surface tint flips. */
   --accent-soft: var(--fa-accent-soft-d);
-  --accent-deep: var(--fa-accent-deep-d);
   color-scheme: dark;
 }

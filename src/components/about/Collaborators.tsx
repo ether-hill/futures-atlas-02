@@ -59,7 +59,7 @@ export function Collaborators() {
   return (
     <div className="grid grid-cols-1 gap-x-[clamp(24px,5vw,80px)] gap-y-8 lg:grid-cols-[1fr_1.6fr]">
       <Reveal>
-        <p className="eyebrow tick mb-5">{COLLAB.intro}</p>
+        <p className="eyebrow mb-5">{COLLAB.intro}</p>
         <p className="max-w-[42ch] text-[13.5px] leading-[1.8] text-ink-70">{COLLAB.body}</p>
       </Reveal>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
