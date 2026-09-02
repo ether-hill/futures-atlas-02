@@ -34,7 +34,12 @@ const PROJECTS = [
   "6th, once named",
 ];
 
-type Track = { track: string; body: string[] };
+type Track = {
+  track: string;
+  body: string[];
+  /** An inventory that belongs to this track, listed inside its card. */
+  list?: { label: string; items: string[] };
+};
 
 const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
   {
@@ -47,13 +52,15 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
           "Build the 11 pages. Nav and footer finalised.",
           "Full QA — mobile, 404, favicon, meta, OG tags, analytics.",
         ],
+        list: { label: "Core pages", items: CORE },
       },
       {
         track: "Projects",
         body: [
           "Lock the 6. One review pass each against the checklist (mobile, load, title/blurb/thumb, links, console, credits). Fix or bump.",
-          "Start the month-1 batch (3-ish) in parallel so it isn't cold on day 30.",
+          "Start the month-2 batch (3-ish) in parallel so it isn't cold on day 30.",
         ],
+        list: { label: "Project pages", items: PROJECTS },
       },
       {
         track: "Social",
@@ -81,10 +88,7 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
       },
       {
         track: "Social",
-        body: [
-          "Daily until 9–12 posts are up, then 3x/week.",
-          "Begin capturing process footage from projects in build.",
-        ],
+        body: ["Daily until 9–12 posts are up, then 3x/week."],
       },
     ],
   },
@@ -129,7 +133,7 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
       },
       {
         track: "Social",
-        body: ["3x/week, now fed by work in progress rather than the bank."],
+        body: ["3x/week both platforms."],
       },
     ],
   },
@@ -143,7 +147,7 @@ const READINGS = [
   { what: "Social progress", detail: "what drives clicks through to the site" },
 ];
 
-function TrackCard({ track, body }: Track) {
+function TrackCard({ track, body, list }: Track) {
   return (
     <div className="flex h-full flex-col border border-ink/15 p-[clamp(18px,2.2vw,26px)]">
       <span className={head}>{track}</span>
@@ -154,6 +158,30 @@ function TrackCard({ track, body }: Track) {
           </p>
         ))}
       </div>
+      {list && (
+        <div className="mt-6 border-t border-ink/15 pt-5">
+          <div className="flex items-baseline justify-between">
+            <span className={head}>{list.label}</span>
+            <span className="font-mono text-[11px] text-ink/40">{list.items.length}</span>
+          </div>
+          <ol className="mt-3 divide-y divide-ink/10">
+            {list.items.map((item, i) => (
+              <li key={item} className="flex items-baseline gap-4 py-2.5">
+                <span className="font-mono text-[11px] tabular-nums text-ink/40">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span
+                  className={`text-[15px] font-extrabold tracking-[-0.015em] ${
+                    item.startsWith("6th") ? "text-ink/40" : "text-ink"
+                  }`}
+                >
+                  {item}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
     </div>
   );
 }
@@ -173,59 +201,6 @@ export default function PlanPage() {
             projects, the social feed — and each one is a month ahead of what the
             public sees.
           </p>
-        </Container>
-      </section>
-
-      <section className="scroll-mt-24 border-t border-ink/15 py-[clamp(44px,7vw,96px)]">
-        <Container>
-          <Reveal>
-            <span className={head}>Scope</span>
-            <h2 className="mt-3 text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
-              Pages live at launch <span className="text-ink/35">(11)</span>
-            </h2>
-          </Reveal>
-          <div className="mt-[clamp(26px,4vw,48px)] grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div className="border border-ink/15 p-[clamp(18px,2.2vw,26px)]">
-              <div className="flex items-baseline justify-between">
-                <span className={head}>Core pages</span>
-                <span className="font-mono text-[11px] text-ink/40">{CORE.length}</span>
-              </div>
-              <ol className="mt-5 divide-y divide-ink/10">
-                {CORE.map((p, i) => (
-                  <li key={p} className="flex items-baseline gap-4 py-3">
-                    <span className="font-mono text-[11px] tabular-nums text-ink/40">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span className="text-[16px] font-extrabold tracking-[-0.015em] text-ink">
-                      {p}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-            <div className="border border-ink/15 p-[clamp(18px,2.2vw,26px)]">
-              <div className="flex items-baseline justify-between">
-                <span className={head}>Project pages</span>
-                <span className="font-mono text-[11px] text-ink/40">{PROJECTS.length}</span>
-              </div>
-              <ol className="mt-5 divide-y divide-ink/10">
-                {PROJECTS.map((p, i) => (
-                  <li key={p} className="flex items-baseline gap-4 py-3">
-                    <span className="font-mono text-[11px] tabular-nums text-ink/40">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <span
-                      className={`text-[16px] font-extrabold tracking-[-0.015em] ${
-                        p.startsWith("6th") ? "text-ink/40" : "text-ink"
-                      }`}
-                    >
-                      {p}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          </div>
         </Container>
       </section>
 
