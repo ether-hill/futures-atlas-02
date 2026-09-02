@@ -231,34 +231,94 @@ export function InterferenceField({
     // by 3 and every ring on screen teleported. That was the visible stutter.
     const LOOP = 9.0; // = const float TR in the shader above; keep them equal
 
+    /*
+      The canvas is measured by a ResizeObserver, NOT by asking the layout on
+      every frame.
+
+      This used to call getBoundingClientRect() inside the frame loop. That is a
+      forced synchronous reflow, sixty times a second, and the browser cannot do
+      it while it is already laying the page out — so every frame of the sim
+      made the scroll wait for a layout it had just invalidated. On the contact
+      page, where the field is the full ground, that was the whole reason
+      scrolling felt like it was dragging. The size only changes when the
+      element changes size, which is exactly what a ResizeObserver is for.
+
+      Same dpr cap as the project's own panel (interference/index.html): with a
+      pixel-derived epsilon a lower ratio is no longer an aliasing problem, just
+      a softer one, but there is no reason for the two to disagree.
+    */
+    let cw = 0;
+    let ch = 0;
+    const measure = (rw: number, rh: number) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      cw = Math.max(2, Math.round(rw * dpr));
+      ch = Math.max(2, Math.round(rh * dpr));
+    };
+    const ro = new ResizeObserver(([e]) => {
+      const box = e.contentRect;
+      measure(box.width, box.height);
+    });
+    ro.observe(canvas);
+    // One read at start-up, so the first frame is not drawn at 2x2 while the
+    // observer's first callback is still queued.
+    const first = canvas.getBoundingClientRect();
+    measure(first.width, first.height);
+
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
       if (!still) t = (t + dt * speed) % LOOP;
 
-      const r = canvas.getBoundingClientRect();
-      // Same cap as the project's own panel (interference/index.html): with a
-      // pixel-derived epsilon a lower ratio is no longer an aliasing problem,
-      // just a softer one, but there is no reason for the two to disagree.
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
-      const w = Math.max(2, Math.round(r.width * dpr));
-      const h = Math.max(2, Math.round(r.height * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-        gl.viewport(0, 0, w, h);
+      if (canvas.width !== cw || canvas.height !== ch) {
+        canvas.width = cw;
+        canvas.height = ch;
+        gl.viewport(0, 0, cw, ch);
       }
-      gl.uniform2f(uRes, w, h);
+      gl.uniform2f(uRes, cw, ch);
       gl.uniform1f(uT, t);
       gl.uniform3f(uA, accent[0], accent[1], accent[2]);
       gl.uniform3f(uB, ground[0], ground[1], ground[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       raf = requestAnimationFrame(frame);
     };
-    raf = requestAnimationFrame(frame);
+
+    /*
+      And it only runs while it is on screen and the tab is in front, the same
+      gating HeroField has. A decorative field has no business holding a core at
+      sixty frames a second behind the rest of the page, or in a tab nobody is
+      looking at. `last` is reset on resume so the ripples do not jump forward
+      by however long the pause was.
+    */
+    let running = false;
+    const start = () => {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    let onScreen = true;
+    const sync = () => (onScreen && !document.hidden ? start() : stop());
+    const io = new IntersectionObserver(
+      ([e]) => {
+        onScreen = e.isIntersecting;
+        sync();
+      },
+      { threshold: 0 },
+    );
+    io.observe(canvas);
+    document.addEventListener("visibilitychange", sync);
+    start();
 
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
+      ro.disconnect();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", sync);
       themeWatch.disconnect();
     };
   }, [speed]);

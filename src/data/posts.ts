@@ -20,16 +20,18 @@ export type PostLength = "short" | "medium" | "long";
 export type PostVisibility = "live" | "draft";
 
 /** The controlled topic vocabulary. Keep it small — these are the filter chips. */
-export type PostTopic =
-  | "Quantum"
-  | "AI"
-  | "Compute & energy"
-  | "Safety & policy"
-  | "Society"
-  | "Futures"
-  // Added for the feed's rail. No post carries it yet, so the filter is
-  // present and empty until items are tagged — tag them here, not ad hoc.
-  | "Government";
+/**
+ * The feed's topics are the Atlas's topics. The list moved to data/topics.ts
+ * when the projects joined it, so there is one subject vocabulary and a reader
+ * who filters Quantum here finds the same word on /projects. The values are
+ * unchanged, so nothing in this file needed retagging.
+ *
+ * "Government" is in the list and no post carries it yet, so that filter is
+ * present and empty until posts are tagged — tag them here, not ad hoc.
+ */
+import type { Topic } from "./topics";
+
+export type PostTopic = Topic;
 
 export interface Post {
   slug: string;

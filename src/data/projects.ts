@@ -16,12 +16,18 @@ export type ProjectStatus = "live" | "in-progress" | "concept";
  * sees it listed, and the public is turned away from its URL (see
  * `src/middleware.ts`). Flip a project by changing this one word.
  */
+import { TOPIC_ORDER, type Topic } from "./topics";
+
 export type ProjectVisibility = "live" | "draft";
 
 /**
- * What a project IS, as opposed to what it is about. `field` stays the subject
- * tag on the card ("Waves & optics", "AI & risk"); this is the shelf it sits
- * on, and it is what the listing groups by.
+ * What a project IS, as opposed to what it is about.
+ *
+ * Two axes filter the listing and they answer different questions. This one is
+ * "what will I be doing here" — reading, playing, looking, using. `topics` is
+ * "what is it about", on the Atlas's shared vocabulary (data/topics.ts).
+ * `field` is neither: it is the caption line on the card, kept because
+ * "Waves & optics" reads better under a title than "Quantum" does.
  */
 export type ProjectKind = "visuals" | "game" | "tool" | "story";
 
@@ -41,8 +47,16 @@ export interface Project {
   tagline: string;
   year: string;
   date: string; // full date YYYY-MM-DD (used for ordering + display)
-  field: string; // short subject tag, e.g. "Rural futures"
-  kind: ProjectKind; // what it is: the listing groups by this
+  field: string; // caption line on the card, e.g. "Rural futures". Not a filter.
+  kind: ProjectKind; // what it is: one of four, a filter row
+  /**
+   * What it is about, on the shared vocabulary. One or two, occasionally three.
+   * MAY BE EMPTY, and four of them are: Generatives, Trajectories, Literal
+   * Frequency and Social Composer are craft rather than argument, and a subject
+   * invented for the sake of a filled row would be worse than an empty one.
+   * They are still reachable — the topic row is a filter, not a requirement.
+   */
+  topics: Topic[];
   status: ProjectStatus;
   visibility: ProjectVisibility; // live = public; draft = editors only
   url?: string; // external link if it exists
@@ -70,6 +84,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-09-01",
     field: "Biology & computation",
+    topics: ["Quantum"],
     kind: "story",
     status: "concept",
     visibility: "draft",
@@ -84,6 +99,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-09-01",
     field: "Sound & physics",
+    topics: ["Quantum", "Society"],
     kind: "story",
     status: "concept",
     visibility: "draft",
@@ -98,6 +114,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-31",
     field: "Foresight & evidence",
+    topics: ["Futures"],
     kind: "tool",
     // `status` is how finished the thing is, `visibility` is who may see it.
     // The scan runs, so it is live work held back as a draft, which is what
@@ -117,6 +134,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-20",
     field: "Reference",
+    topics: ["Quantum", "AI", "Compute & energy"],
     kind: "tool",
     status: "live",
     visibility: "live",
@@ -131,6 +149,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-09-01",
     field: "Waves & optics",
+    topics: ["Quantum"],
     kind: "visuals",
     status: "live",
     visibility: "draft",
@@ -146,6 +165,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-31",
     field: "Waves & optics",
+    topics: ["Quantum"],
     kind: "visuals",
     status: "live",
     visibility: "live",
@@ -161,6 +181,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-31",
     field: "Data & evidence",
+    topics: ["Futures"],
     kind: "tool",
     status: "live",
     visibility: "draft",
@@ -175,6 +196,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-11",
     field: "AI & faith",
+    topics: ["AI", "Society"],
     kind: "story",
     status: "live",
     visibility: "draft",
@@ -189,6 +211,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-02-14",
     field: "AI & risk",
+    topics: ["AI", "Safety & policy"],
     kind: "game",
     status: "live",
     visibility: "live",
@@ -204,6 +227,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-07-02",
     field: "AI & risk",
+    topics: ["Quantum", "AI"],
     kind: "tool",
     status: "live",
     visibility: "live",
@@ -218,6 +242,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-07-03",
     field: "AI & risk",
+    topics: ["Quantum", "AI"],
     kind: "tool",
     status: "live",
     visibility: "live",
@@ -232,6 +257,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
+    topics: ["AI"],
     kind: "tool",
     status: "live",
     visibility: "draft",
@@ -246,6 +272,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
+    topics: ["Quantum", "Government"],
     kind: "tool",
     status: "live",
     visibility: "draft",
@@ -260,6 +287,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "Manipulate the data",
+    topics: ["AI", "Compute & energy"],
     kind: "tool",
     status: "live",
     visibility: "draft",
@@ -274,6 +302,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-07-01",
     field: "Simulation",
+    topics: ["AI", "Compute & energy"],
     kind: "game",
     status: "live",
     visibility: "draft",
@@ -288,6 +317,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-04-10",
     field: "Rural futures",
+    topics: ["Futures", "Society"],
     kind: "story",
     status: "live",
     visibility: "draft",
@@ -302,6 +332,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-19",
     field: "Generative visuals",
+    topics: [],
     kind: "visuals",
     status: "in-progress",
     visibility: "live",
@@ -316,6 +347,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
+    topics: ["Futures"],
     kind: "game",
     status: "live",
     visibility: "live",
@@ -330,6 +362,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",
+    topics: ["Futures"],
     kind: "game",
     status: "live",
     visibility: "draft",
@@ -344,6 +377,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-28",
     field: "Generative visuals",
+    topics: [],
     kind: "visuals",
     status: "live",
     visibility: "draft",
@@ -358,6 +392,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "AI & risk",
+    topics: ["Quantum", "Futures"],
     kind: "game",
     status: "live",
     visibility: "draft",
@@ -372,6 +407,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-24",
     field: "AI & risk",
+    topics: ["Quantum", "Government"],
     kind: "story",
     status: "live",
     visibility: "draft",
@@ -386,6 +422,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-23",
     field: "AI & risk",
+    topics: ["Government", "Society"],
     kind: "game",
     status: "live",
     visibility: "draft",
@@ -400,6 +437,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-08-13",
     field: "Public engagement",
+    topics: ["AI", "Society"],
     kind: "tool",
     status: "live",
     visibility: "draft",
@@ -414,6 +452,7 @@ export const projects: Project[] = [
     year: "2025",
     date: "2025-11-30",
     field: "Systems & evidence",
+    topics: ["Society"],
     kind: "story",
     status: "live",
     visibility: "draft",
@@ -428,6 +467,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-05-28",
     field: "Quantum & computation",
+    topics: ["Quantum"],
     kind: "visuals",
     status: "in-progress",
     visibility: "draft",
@@ -442,6 +482,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-22",
     field: "Data visualisation",
+    topics: [],
     kind: "visuals",
     status: "in-progress",
     visibility: "draft",
@@ -456,6 +497,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-09-01",
     field: "History & foresight",
+    topics: ["Futures", "Society"],
     kind: "tool",
     status: "live",
     visibility: "draft",
@@ -471,6 +513,7 @@ export const projects: Project[] = [
     year: "2026",
     date: "2026-06-17",
     field: "Creative tools",
+    topics: [],
     kind: "tool",
     status: "live",
     visibility: "draft",
@@ -559,6 +602,12 @@ export function fieldsOf(items: Project[]): string[] {
 export function kindsOf(items: Project[]): ProjectKind[] {
   const present = new Set(items.map((p) => p.kind));
   return KIND_ORDER.filter((k) => present.has(k));
+}
+
+/** The topics present in a list, in the vocabulary's order. */
+export function projectTopicsOf(items: Project[]): Topic[] {
+  const present = new Set(items.flatMap((p) => p.topics));
+  return TOPIC_ORDER.filter((t) => present.has(t));
 }
 
 /** The distinct category tags across the public listing. */
