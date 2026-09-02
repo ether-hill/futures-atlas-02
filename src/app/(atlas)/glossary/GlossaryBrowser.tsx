@@ -122,7 +122,7 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
             color: "var(--text-body)",
           }}
         >
-          The vocabulary the rest of the Atlas assumes — {entries.length} terms across AI,
+          The vocabulary the rest of the Atlas assumes: {entries.length} terms across AI,
           quantum computing, the compute underneath them, and the policy and social
           questions they raise. Written to be read cold. Where a word is contested or
           used loosely, the entry says so rather than picking the flattering reading.
