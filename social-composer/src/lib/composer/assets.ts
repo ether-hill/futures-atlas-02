@@ -54,6 +54,18 @@ export function deleteAsset(id: string): Promise<unknown> {
   return tx("readwrite", (s) => s.delete(id));
 }
 
+/**
+ * Empty the store in ONE transaction.
+ *
+ * Deleting assets one id at a time could only ever remove what the page
+ * happened to have in state: anything the library failed to load, or was
+ * written by another tab, survived and came back on the next refresh. Clearing
+ * the store removes the orphans too, which is what "delete all" has to mean.
+ */
+export function clearAssets(): Promise<unknown> {
+  return tx("readwrite", (s) => s.clear());
+}
+
 export async function loadAssets(): Promise<StoredAsset[]> {
   const all = (await tx<StoredAsset[]>("readonly", (s) => s.getAll() as IDBRequest<StoredAsset[]>)) ?? [];
   // Newest first, matching the upload prepend order.

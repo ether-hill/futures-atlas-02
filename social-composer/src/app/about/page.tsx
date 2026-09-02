@@ -25,8 +25,8 @@ export default function AboutPage() {
 
         <Section title="What it does">
           <ul className="space-y-2 text-ink/75 text-[14px] leading-[1.7] list-disc pl-5">
-            <li><strong className="text-ink">Post types</strong> — Single, Carousel, Story, Reel / Short, and Quote Card, each at its native aspect ratio.</li>
-            <li><strong className="text-ink">Compose</strong> — aspect ratio, headline &amp; sub-text, type size, placement, alignment, layout (full-bleed, card, split, circle), background and text colour.</li>
+            <li><strong className="text-ink">Post types</strong> — Single, Carousel, Reel / Short and Desktop. Single, Carousel and Reel all offer 9:16 portrait (1080 × 1920) alongside their own ratios.</li>
+            <li><strong className="text-ink">Compose</strong> — aspect ratio, an optional eyebrow, headline, an optional second headline and sub-text, type size, placement, alignment, layout (full-bleed, card, split, circle), background and text colour. A field left blank takes no space, so the block stays balanced whichever lines you use.</li>
             <li><strong className="text-ink">Motion</strong> — background zoom/drift plus text animations (fade, rise, type-on, word cascade), tuned per slide.</li>
             <li><strong className="text-ink">Export</strong> — PNG still, animated GIF, MP4/WebM video, or a per-slide ZIP. Sequences render every slide into one file with cross-fades.</li>
             <li><strong className="text-ink">Transmutate a URL</strong> — paste any article or page and it pulls the images, headline, pull-quotes, section overviews and references straight into your library.</li>

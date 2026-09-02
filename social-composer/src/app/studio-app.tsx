@@ -15,10 +15,10 @@ import {
   MOTION_PRESETS, TEXT_ANIMS, LAYOUTS, STILL, type MotionId, type TextAnimId, type Placement, type Align, type LayoutId, type Style,
 } from "@/lib/composer/render";
 import { blobToBytes, dataUrlToBytes, downloadBlob, exportGIF, exportVideo, renderVideoBlob, zipDownload } from "@/lib/composer/export";
-import { loadAssets, saveAsset, deleteAsset } from "@/lib/composer/assets";
+import { loadAssets, saveAsset, deleteAsset, clearAssets } from "@/lib/composer/assets";
 
 type Aspect = "4:5" | "1:1" | "9:16" | "3:2" | "16:9";
-type PostTypeId = "single" | "carousel" | "story" | "reel" | "quote" | "desktop";
+type PostTypeId = "single" | "carousel" | "reel" | "desktop";
 type TypeSize = "S" | "M" | "L" | "XL";
 type Mode = "single" | "batch";
 
@@ -27,11 +27,9 @@ const ASPECT_DIMS: Record<Aspect, { w: number; h: number }> = {
   "3:2": { w: 1620, h: 1080 }, "16:9": { w: 1920, h: 1080 },   // desktop / landscape
 };
 const POST_TYPES: Array<{ id: PostTypeId; label: string; glyph: string; dims: string; aspects: Aspect[]; multi?: boolean; video?: boolean }> = [
-  { id: "single", label: "Single", glyph: "▭", dims: "1080 × 1350", aspects: ["4:5", "1:1"] },
-  { id: "carousel", label: "Carousel", glyph: "▦", dims: "1080 × 1350 · 2–10", aspects: ["4:5", "1:1"], multi: true },
-  { id: "story", label: "Story", glyph: "▯", dims: "1080 × 1920", aspects: ["9:16"], video: true },
-  { id: "reel", label: "Reel / Short", glyph: "▶", dims: "1080 × 1920 · video", aspects: ["9:16"], multi: true, video: true },
-  { id: "quote", label: "Quote Card", glyph: "❝", dims: "1080 × 1080", aspects: ["1:1"] },
+  { id: "single", label: "Single", glyph: "▭", dims: "1080 × 1350 · portrait 1080 × 1920", aspects: ["4:5", "1:1", "9:16"] },
+  { id: "carousel", label: "Carousel", glyph: "▦", dims: "1080 × 1350 · 2–10 · portrait 1080 × 1920", aspects: ["4:5", "1:1", "9:16"], multi: true },
+  { id: "reel", label: "Reel / Short", glyph: "▶", dims: "1080 × 1920 · video", aspects: ["9:16", "4:5", "1:1"], multi: true, video: true },
   { id: "desktop", label: "Desktop", glyph: "▬", dims: "1620 × 1080 · landscape", aspects: ["3:2", "16:9"] },
 ];
 const TYPE_SIZES: TypeSize[] = ["S", "M", "L", "XL"];
@@ -46,7 +44,7 @@ const TEXT_SWATCHES = [
   { name: "Ink", value: "#f2ede2" }, { name: "White", value: "#FFFFFF" }, { name: "Dark", value: "#211e18" }, { name: "Blue", value: "#3B93D5" },
 ];
 
-type Override = { headline?: string; sub?: string; body?: string; value?: string; motion?: MotionId; textAnim?: TextAnimId; typeSize?: TypeSize; placement?: Placement; align?: Align; layout?: LayoutId; bgColor?: string; textColor?: string; durationSec?: number };
+type Override = { eyebrow?: string; headline?: string; headline2?: string; sub?: string; body?: string; value?: string; motion?: MotionId; textAnim?: TextAnimId; typeSize?: TypeSize; placement?: Placement; align?: Align; layout?: LayoutId; bgColor?: string; textColor?: string; durationSec?: number };
 const ALIGNS: Align[] = ["left", "center", "right"];
 // Each library frame arrives as a real, editable composer configuration: a
 // sensible per-kind starting layout / placement / alignment that every
@@ -559,17 +557,39 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     setPreviewIdx(0);
   }, [userFrames, hidden, disposeUserFrame, persistTm, persistHidden]);
 
-  const deleteAll = useCallback(() => {
+  /**
+   * Empty the library for good.
+   *
+   * Deleting the frames the page happens to be holding is not enough: an asset
+   * that failed to load, or one written by another tab, stayed in IndexedDB and
+   * came back on the next refresh. So the whole object store is cleared in one
+   * transaction, and the clear is AWAITED before the toast — otherwise a
+   * refresh a moment later could beat the delete and restore everything.
+   */
+  const deleteAll = useCallback(async () => {
     if (!frames.length) return;
     if (!window.confirm(`Delete all ${frames.length} assets? This can't be undone.`)) return;
-    for (const f of userFrames) disposeUserFrame(f);
+
+    // Release the object URLs first; the blobs behind them are about to go.
+    for (const f of userFrames) {
+      const url = frameMediaUrl(f);
+      if (typeof url === "string" && url.startsWith("blob:")) URL.revokeObjectURL(url);
+    }
+
     const next = new Set(hidden);
     for (const f of source.frames) next.add(f.id);
     setUserFrames([]); persistTm([]);
     setHidden(next); persistHidden(next);
     setSelected([]); setOverrides({}); setPreviewIdx(0);
+
+    try {
+      await clearAssets();
+    } catch {
+      showToast("Could not clear stored uploads");
+      return;
+    }
     showToast("Library cleared");
-  }, [frames.length, userFrames, hidden, source.frames, disposeUserFrame, persistTm, persistHidden, showToast]);
+  }, [frames.length, userFrames, hidden, source.frames, persistTm, persistHidden, showToast]);
 
   // Transmutate a URL — scan a page and pull its key elements into the library.
   const runTransmutate = useCallback(async (raw: string) => {
@@ -612,7 +632,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     }
     // optional starting format from the Share tool (e.g. Instagram → Story)
     const fmt = sp.get("format");
-    if (fmt === "story") { setPostType("story"); setAspect("9:16"); }
+    // Story was removed as a post type; a vertical single covers the same frame.
+    if (fmt === "story") { setPostType("single"); setAspect("9:16"); }
     else if (fmt === "reel") { setPostType("reel"); setAspect("9:16"); }
     else if (fmt === "square") { setPostType("single"); setAspect("1:1"); }
     else if (fmt === "portrait") { setPostType("single"); setAspect("4:5"); }
@@ -808,7 +829,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
   const setActiveTextColor = useCallback((v: string) => patchActive({ textColor: v }), [patchActive]);
 
   const previewMax = aspect === "9:16" ? 300 : 380;
-  const activeText = activeFrame ? tFor(activeFrame) : { headline: "", sub: "", body: "", value: "" };
+  const activeText = activeFrame ? tFor(activeFrame) : { eyebrow: "", headline: "", headline2: "", sub: "", body: "", value: "" };
   const aDur = activeFrame ? durFor(activeFrame) : defDur;
   // Effective per-slide style values shown in the controls.
   const aStyle = activeFrame ? styleFor(activeFrame) : null;
@@ -844,7 +865,7 @@ export function StudioApp({ source }: { source: ComposerSource }) {
                 <p className="font-docket text-[12px] uppercase tracking-[0.1em] text-ink">Assets</p>
               </div>
               {frames.length > 0 && (
-                <button type="button" onClick={deleteAll} className="font-docket text-[9px] uppercase tracking-[0.1em] text-ink/45 hover:text-oxblood">✕ Delete all</button>
+                <button type="button" onClick={() => void deleteAll()} className="font-docket text-[9px] uppercase tracking-[0.1em] text-ink/45 hover:text-oxblood">✕ Delete all</button>
               )}
             </div>
             <p className="font-script text-[12px] text-ink/52 leading-snug mb-3">{frames.length} assets · {selected.length} picked · drag &amp; drop to add.</p>
@@ -944,9 +965,21 @@ export function StudioApp({ source }: { source: ComposerSource }) {
                   {typeDef.aspects.length > 1 && (
                     <Control label="Aspect ratio"><Segmented options={typeDef.aspects.map((a) => ({ id: a, label: a }))} value={aspect} onChange={(v) => setAspect(v as Aspect)} /></Control>
                   )}
+                  {/* Optional. Left blank it takes no space at all — the block
+                      is measured from the fields that actually have text. */}
+                  <Control label="Eyebrow · optional">
+                    <input value={activeText.eyebrow} onChange={(e) => setActiveText({ eyebrow: e.target.value })} disabled={!activeFrame}
+                      placeholder="Small label above the headline"
+                      className="font-script text-[14px] leading-snug bg-bone text-ink border border-ink/17 focus:border-ink/72 px-3 py-2 outline-none disabled:opacity-50" />
+                  </Control>
                   <Control label="Headline" action={source.headlineOptions.length > 0 ? <button type="button" onClick={onRandomise} className="font-docket text-[10px] uppercase tracking-[0.1em] text-ink/64 hover:text-oxblood">⤺ Randomise</button> : null}>
                     <textarea rows={3} value={activeText.headline} onChange={(e) => setActiveText({ headline: e.target.value })} disabled={!activeFrame}
                       className="font-script text-[16px] leading-snug bg-bone text-ink border border-ink/17 focus:border-ink/72 px-3 py-2.5 outline-none resize-y disabled:opacity-50" />
+                  </Control>
+                  <Control label="Headline 2 · optional">
+                    <textarea rows={2} value={activeText.headline2} onChange={(e) => setActiveText({ headline2: e.target.value })} disabled={!activeFrame}
+                      placeholder="Bold, smaller than the headline"
+                      className="font-script text-[15px] leading-snug bg-bone text-ink border border-ink/17 focus:border-ink/72 px-3 py-2.5 outline-none resize-y disabled:opacity-50" />
                   </Control>
                   <Control label="Sub text">
                     <textarea rows={3} value={activeText.sub} onChange={(e) => setActiveText({ sub: e.target.value })} disabled={!activeFrame}
