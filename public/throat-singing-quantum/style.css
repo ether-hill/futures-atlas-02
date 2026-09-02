@@ -281,3 +281,44 @@ body.viz .viz__title a { pointer-events: auto; font-size: 12.5px; color: #9da0a8
 body.viz .btn { color: #f2ede2; border-color: rgba(242,237,226,0.2); }
 body.viz .btn.is-on { background: color-mix(in srgb, var(--accent) 30%, transparent); border-color: var(--accent); }
 @media (min-width: 680px) { body.viz .viz__ui { padding: 12px 28px 22px; } body.viz .viz__title { left: 28px; } }
+
+/* ── horizontal strips: the timeline and the filmstrip ──────────────────── */
+.strip-wrap { margin: clamp(28px, 4vw, 48px) 0; }
+.strip-wrap .strip-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 12px; }
+.strip-wrap .strip-head .hint { font-size: 12px; color: var(--faint); }
+.strip {
+  display: flex; gap: 12px; overflow-x: auto; overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory; padding: 2px 0 14px; scrollbar-width: thin; scrollbar-color: var(--hairline) transparent;
+  margin-left: calc(-1 * var(--gutter)); margin-right: calc(-1 * var(--gutter)); padding-left: var(--gutter); padding-right: var(--gutter);
+}
+@media (min-width: 680px) { .strip { margin-left: calc(-1 * var(--gutter-wide)); margin-right: calc(-1 * var(--gutter-wide)); padding-left: var(--gutter-wide); padding-right: var(--gutter-wide); } }
+.strip::-webkit-scrollbar { height: 4px; }
+.strip::-webkit-scrollbar-thumb { background: var(--hairline); border-radius: 2px; }
+.strip > * { scroll-snap-align: start; flex: 0 0 auto; }
+.tl { width: clamp(200px, 22vw, 260px); border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--panel); padding: 18px 18px 20px; display: flex; flex-direction: column; gap: 10px; min-height: 150px; }
+.tl .y { font-family: var(--font-bodoni); font-weight: 500; font-size: 30px; line-height: 1; color: var(--accent); }
+.tl .what { font-size: 14px; line-height: 1.5; color: var(--text-body); }
+.tl .what b { color: var(--text); font-weight: 600; }
+.tl--mark { border-color: var(--accent); }
+.tl--q { background: color-mix(in srgb, var(--accent) 12%, var(--panel)); }
+.tl .tag { font-family: var(--font-bodoni); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.strip .fig { width: clamp(260px, 32vw, 420px); margin: 0; }
+.strip .fig img { aspect-ratio: 16 / 9; object-fit: cover; }
+
+/* ── the four cards of the allegory ─────────────────────────────────────── */
+.cards { display: grid; grid-template-columns: 1fr; gap: 14px; max-width: var(--wide); margin: clamp(24px, 3vw, 40px) auto; }
+@media (min-width: 720px) { .cards { grid-template-columns: 1fr 1fr; } }
+.card { border: 1px solid var(--hairline); border-radius: var(--radius); background: var(--panel); padding: clamp(18px, 2.4vw, 28px); }
+.card .num { font-family: var(--font-bodoni); font-weight: 500; font-size: 26px; color: var(--accent); line-height: 1; margin-bottom: 10px; }
+.card h3 { margin: 0 0 8px; font-size: clamp(17px, 1.8vw, 21px); }
+.card p { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--text-body); }
+.card p b { color: var(--text); font-weight: 600; }
+
+/* ── the record ─────────────────────────────────────────────────────────── */
+.tracks { display: grid; grid-template-columns: 1fr; gap: clamp(14px, 2vw, 24px); max-width: var(--wide); margin: clamp(24px, 3vw, 40px) auto; }
+@media (min-width: 720px) { .tracks { grid-template-columns: 1fr 1fr; } }
+.tracks--3 { grid-template-columns: 1fr; }
+@media (min-width: 860px) { .tracks--3 { grid-template-columns: 1fr 1fr 1fr; } }
+.track .who { display: inline-block; margin-bottom: 8px; font-family: var(--font-bodoni); font-size: 11.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+.chapters--tight { grid-template-columns: 1fr; margin-top: 10px; }
+.chapters--tight button { font-size: 13px; padding: 6px 0; }
