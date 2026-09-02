@@ -303,6 +303,24 @@ export const ODDS_POSTS: OddsPost[] = [
  * the captions stay in that register and let the reader notice what is being
  * sold rather than being told.
  */
+export const JONES_SLIME_REEL: ReelPost = {
+  kind: "reel",
+  name: "Jones's physarum model",
+  id: "jones-slime",
+  title: "Jones's physarum model",
+  // The piece's own description, from generatives/src/pieces/physarum.ts.
+  note: "Agent-based slime mould on the GPU: sense the trail ahead, left and right, rotate toward the strongest, step, deposit.",
+  // A recording, framed 9:16 with the three update rules burned in, so it is
+  // letterboxed rather than cropped in the squarer ratios.
+  embed: "",
+  video: "/mocks/instagram/jones-slime.webm",
+  fit: "contain",
+  thumbAt: 4,
+  caption:
+    "Three rules per agent, no plan anywhere, and it builds a transport network.\n\nWhat you are seeing. Thousands of agents on a plane, each one carrying nothing but a position and a heading. Every frame an agent smells the trail ahead of it and slightly to each side, turns toward whichever smells strongest, steps forward, and leaves a little trail of its own. The trail blurs and fades. That is the entire model, and it is all three lines on screen: turn, step, then decay and deposit.\n\nWhy it matters. This is Jeff Jones's model of Physarum polycephalum, a slime mould with no brain and no central anything. Set the real organism loose on a map of Tokyo with food at the stations and it grows a network close to the rail network engineers designed. The behaviour is not in any agent. It is in what they leave behind for each other.\n\nRunning here on the GPU, four passes a frame, up to three species in the red, green and blue channels with optional avoidance between them. It is one of the treatments in Generatives on the Atlas, where you can change the sensor angle, the turn speed and the decay and watch a different network grow.",
+  hashtags: ["#physarum", "#slimemould", "#emergence", "#agentbased", "#generativeart", "#creativecoding", "#futuresatlas"],
+};
+
 export const SHIFTCOOL_REEL: ReelPost = {
   kind: "reel",
   name: "NESTA ShiftCool 1",
