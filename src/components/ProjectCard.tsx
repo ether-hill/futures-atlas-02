@@ -1,13 +1,15 @@
 import Link from "next/link";
-import { liveProjects, formatProjectDate, type Project } from "@/data/projects";
+import { liveProjects, formatProjectDate, STAGE_LABEL, type Project } from "@/data/projects";
 
 // Fully token-driven (futures-atlas-core): every size/space/colour/font references
 // a semantic token, so the style-guide panel drives every dimension. Structural
 // utilities (flex/grid/absolute/aspect) are layout, not design values.
 
-/** The LIVE / DRAFT flag, only ever rendered for a signed-in editor. */
+/** The LIVE / DRAFT flag, only ever rendered for a signed-in editor. A draft
+ *  with a place in the launch plan says so: "Draft · Month 1 candidate". */
 function VisibilityTag({ project }: { project: Project }) {
   const draft = project.visibility === "draft";
+  const label = draft ? (project.stage ? `Draft · ${STAGE_LABEL[project.stage]}` : "Draft") : "Live";
   return (
     <span
       className="absolute left-0 top-0 z-[2] inline-flex items-center gap-1.5"
@@ -23,7 +25,7 @@ function VisibilityTag({ project }: { project: Project }) {
         letterSpacing: "var(--track-label)",
       }}
     >
-      {draft ? "Draft" : "Live"}
+      {label}
     </span>
   );
 }

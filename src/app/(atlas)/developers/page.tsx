@@ -82,7 +82,10 @@ function SourceRow({ project, draft }: { project: Project; draft?: boolean }) {
       {/* The same plate the project card carries. A source index that is only
           folder names makes you hold seven projects in your head to read it. */}
       {project.image && (
-        <div className="relative aspect-[3/2] overflow-hidden border-b border-ink/15">
+        // shrink-0: the body below is flex-1, and without it the plate gave up
+        // height to the text and stopped being 3:2 (a wider, shorter crop than
+        // the same image on /projects).
+        <div className="relative aspect-[3/2] shrink-0 overflow-hidden border-b border-ink/15">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={project.image}
@@ -92,7 +95,7 @@ function SourceRow({ project, draft }: { project: Project; draft?: boolean }) {
           />
         </div>
       )}
-      <div className="flex h-full flex-col gap-4 p-[clamp(18px,2.2vw,26px)]">
+      <div className="flex flex-1 flex-col gap-4 p-[clamp(18px,2.2vw,26px)]">
       <div>
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-2">
           <h3 className="text-[clamp(17px,1.9vw,22px)] font-extrabold tracking-[-0.018em] text-ink">
@@ -302,9 +305,13 @@ export default async function DevelopersPage() {
         lede={SOURCES_INTRO}
       >
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
-          {liveProjects.map((p) => (
-            <SourceRow key={p.id} project={p} />
-          ))}
+          {liveProjects
+            // The glossary is a page of the site rather than a project with its
+            // own source, so it has no place in a source index.
+            .filter((p) => p.id !== "glossary")
+            .map((p) => (
+              <SourceRow key={p.id} project={p} />
+            ))}
         </div>
 
         {editor && (

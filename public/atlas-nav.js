@@ -22,6 +22,8 @@
   // is only a hint for this list, the server gates every draft URL itself, so
   // faking it here reveals nothing. Mirror src/data/projects.ts when you flip a
   // project between live and draft.
+  // draft: "month-1" is still a draft, one the launch plan (/plan) expects to
+  // publish in the month after launch; it only changes the tag an editor sees.
   var FA_PROJECTS = [
     { name: "Glossary", path: "/glossary" },
     { name: "Dramaturge", path: "/dramaturge", draft: true },
@@ -29,8 +31,8 @@
     { name: "Quantum Interference Visuals", path: "/interference" },
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },
-    { name: "Horizon Scan", path: "/horizon-scan", draft: true },
-    { name: "Hypothetica Magnifica", path: "/magnifica", draft: true },
+    { name: "Horizon Scan", path: "/horizon-scan", draft: "month-1" },
+    { name: "Hypothetica Magnifica", path: "/magnifica", draft: "month-1" },
     { name: "Trajectories", path: "/trajectories", draft: true },
     { name: "The Counterfactual Index", path: "/manipulate-the-data", draft: true },
     { name: "Counterfactual Quantum", path: "/manipulate-the-data/quantum", draft: true },
@@ -145,7 +147,9 @@
   if (isProject) {
     var items = FA_LISTED.map(function (x) {
       var c = x.path === cur.path;
-      var tag = x.draft ? ' <span class="fa-shell__draft">Draft</span>' : "";
+      var tag = x.draft
+        ? ' <span class="fa-shell__draft">' + (x.draft === "month-1" ? "Draft · Month 1" : "Draft") + "</span>"
+        : "";
       return '<a role="menuitem" href="' + x.path + '" class="fa-shell__item' + (c ? " is-current" : "") + '"' + (c ? ' aria-current="true"' : "") + ">" + x.name + tag + "</a>";
     }).join("");
     crumbHtml =

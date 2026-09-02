@@ -29,6 +29,18 @@ import type { Topic } from "./topics";
 export type ProjectVisibility = "live" | "draft";
 
 /**
+ * A draft's place in the launch plan (see /plan). Only "month-1" exists so far:
+ * a draft the plan expects to publish in the month after launch. Visibility is
+ * unchanged, a candidate is still a draft, gated and unlisted for the public;
+ * this only labels it for editors and groups it in their listings.
+ */
+export type ProjectStage = "month-1";
+
+export const STAGE_LABEL: Record<ProjectStage, string> = {
+  "month-1": "Month 1 candidate",
+};
+
+/**
  * What a project IS, as opposed to what it is about.
  *
  * Two axes filter the listing and they answer different questions. This one is
@@ -67,6 +79,7 @@ export interface Project {
   topics: Topic[];
   status: ProjectStatus;
   visibility: ProjectVisibility; // live = public; draft = editors only
+  stage?: ProjectStage; // drafts only: where the launch plan puts it
   url?: string; // external link if it exists
   path?: string; // internal path served within this site (e.g. "/coastlines-2100")
   image?: string; // card thumbnail (else a hatch plate)
@@ -153,6 +166,7 @@ export const projects: Project[] = [
     // "Forthcoming" instead of its cta.
     status: "live",
     visibility: "draft",
+    stage: "month-1",
     path: "/horizon-scan",
     image: "/projects/horizon-scan.jpg",
     cta: "Open the scan",
@@ -261,6 +275,7 @@ export const projects: Project[] = [
     kind: "story",
     status: "live",
     visibility: "draft",
+    stage: "month-1",
     path: "/magnifica",
     image: "/projects/magnifica.jpg",
   },
@@ -642,8 +657,17 @@ export const homepageProjects: Project[] = liveProjects.filter(
   (p) => !OFF_HOMEPAGE.includes(p.id),
 );
 
-/** Unpublished work, listed only for a signed-in editor. */
-export const draftProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "draft");
+/** Unpublished work, listed only for a signed-in editor. Month-1 candidates
+ *  first, since they are the drafts nearest to publishing. */
+export const draftProjects: Project[] = projectsOrdered
+  .filter((p) => p.visibility === "draft")
+  .sort((a, b) => Number(Boolean(b.stage)) - Number(Boolean(a.stage)));
+
+/** The drafts the plan expects to publish in the month after launch. */
+export const month1Candidates: Project[] = draftProjects.filter((p) => p.stage === "month-1");
+
+/** Drafts with no place in the plan yet. */
+export const unscheduledDrafts: Project[] = draftProjects.filter((p) => !p.stage);
 
 /** The list for the current viewer: editors get everything, the public gets live only. */
 export function visibleProjects(isEditor: boolean): Project[] {

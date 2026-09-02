@@ -6,7 +6,7 @@ import { Collaborators } from "@/components/about/Collaborators";
 import { SignalField } from "@/components/about/SignalField";
 import { StackGrid } from "@/components/about/StackGrid";
 import { TermField } from "@/components/about/TermField";
-import { FOOTER_CTA, HERO, OPEN, STACK_INTRO, WORK } from "@/content/about";
+import { HERO, OPEN, STACK_INTRO, WORK } from "@/content/about";
 
 export const metadata: Metadata = {
   title: "About. Futures Atlas",
@@ -131,20 +131,6 @@ export default function AboutPage() {
               </Reveal>
             </div>
           </div>
-        </Container>
-      </section>
-
-      {/* ── Footer CTA ──────────────────────────────────────────────────── */}
-      <section className="border-t border-ink/15 py-[clamp(40px,6vw,80px)]">
-        <Container>
-          <Reveal>
-            <Link
-              href={FOOTER_CTA.href}
-              className="inline-flex items-center gap-2.5 font-mono text-[14px] uppercase tracking-[0.1em] text-ink underline-offset-4 transition-colors hover:text-accent-deep hover:underline"
-            >
-              {FOOTER_CTA.label} <span aria-hidden="true">→</span>
-            </Link>
-          </Reveal>
         </Container>
       </section>
 

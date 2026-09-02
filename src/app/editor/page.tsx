@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
-import { draftProjects, formatProjectDate, liveProjects, type Project } from "@/data/projects";
+import { formatProjectDate, liveProjects, month1Candidates, unscheduledDrafts, type Project } from "@/data/projects";
 import { getEditor } from "@/lib/editor";
 
 export const metadata: Metadata = {
@@ -38,9 +38,14 @@ export default async function EditorPage() {
           items={liveProjects}
         />
         <Section
+          title="Draft · month 1 candidates"
+          note="Still drafts, gated like the rest, but the plan expects to publish these in the month after launch."
+          items={month1Candidates}
+        />
+        <Section
           title="Draft"
           note="Editors only, hidden from every public listing, and their URLs are closed."
-          items={draftProjects}
+          items={unscheduledDrafts}
         />
 
         <p className="mt-[clamp(36px,5vw,64px)] max-w-[62ch] text-[12px] leading-[1.7] text-graphite">
@@ -48,7 +53,9 @@ export default async function EditorPage() {
           <code className="text-ink">visibility</code> in{" "}
           <code className="text-ink">src/data/projects.ts</code> to{" "}
           <code className="text-ink">&quot;live&quot;</code> or{" "}
-          <code className="text-ink">&quot;draft&quot;</code> and deploy.
+          <code className="text-ink">&quot;draft&quot;</code> and deploy. To mark a
+          draft as a month 1 candidate, give it{" "}
+          <code className="text-ink">stage: &quot;month-1&quot;</code>.
         </p>
       </Container>
     </div>

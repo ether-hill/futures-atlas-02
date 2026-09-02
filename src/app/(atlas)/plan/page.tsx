@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
+import { month1Candidates, projects, type Project } from "@/data/projects";
 
 export const metadata: Metadata = {
   title: "Plan. Futures Atlas",
@@ -19,26 +21,53 @@ export const metadata: Metadata = {
  * The shape is three tracks — website, projects, social — carried across four
  * months, and the layout says so: each month is a row, each track a column, so
  * a reader can follow one track down the page or one month across it.
+ *
+ * The project lists are read from src/data/projects.ts rather than typed here,
+ * so a card's thumbnail and title are the ones the site actually shows. The
+ * month-1 list is every draft carrying `stage: "month-1"`.
  */
 
 const head = "font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep";
 
 const CORE = ["Home", "About", "Contact", "Developer", "Projects (index)"];
 
-const PROJECTS = [
-  "Swipe the Future",
-  "Generatives",
-  "The Odds",
-  "Interference",
-  "Glossary",
-  "6th, once named",
+/** The launch six, in the order they are being reviewed. The sixth is unnamed. */
+const LAUNCH_IDS = ["swipe-the-future", "generatives", "odds-of-surviving-ai", "interference", "glossary"];
+
+type Item = { title: string; image?: string; path?: string; pending?: boolean };
+
+function itemOf(p: Project): Item {
+  return { title: p.title, image: p.image, path: p.path };
+}
+
+const LAUNCH: Item[] = [
+  ...LAUNCH_IDS.map((id) => {
+    const p = projects.find((x) => x.id === id);
+    return p ? itemOf(p) : { title: id, pending: true };
+  }),
+  { title: "6th, once named", pending: true },
+];
+
+const MONTH_1: Item[] = month1Candidates.map(itemOf);
+
+/** Month 0's to-do list, everything that has to be true before the site ships. */
+const MONTH_0_TODO = [
+  "Get the first 6 projects ready for launch, plus a few ready to launch in month 1.",
+  "Review the website copy.",
+  "Review the project copy.",
+  "Buy the domain.",
+  "Set up the social media account.",
+  "Around 12 posts ready to go in the drafts.",
+  "Secure the next round of project budget.",
 ];
 
 type Track = {
   track: string;
   body: string[];
   /** An inventory that belongs to this track, listed inside its card. */
-  list?: { label: string; items: string[] };
+  list?: { label: string; items: Item[] };
+  /** A preview that belongs to this track, shown inside its card. */
+  preview?: { src: string; href: string; label: string; alt: string };
 };
 
 const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
@@ -48,26 +77,29 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
     tracks: [
       {
         track: "Website",
-        body: [
-          "Build the 11 pages. Nav and footer finalised.",
-          "Full QA — mobile, 404, favicon, meta, OG tags, analytics.",
-        ],
-        list: { label: "Core pages", items: CORE },
+        body: ["Full QA — mobile, 404, favicon, meta, OG tags, analytics."],
+        list: { label: "Core pages", items: CORE.map((title) => ({ title })) },
       },
       {
         track: "Projects",
         body: [
-          "Lock the 6. One review pass each against the checklist (mobile, load, title/blurb/thumb, links, console, credits). Fix or bump.",
-          "Start the month-2 batch (3-ish) in parallel so it isn't cold on day 30.",
+          "Get the first 6 ready for launch. One review pass each against the checklist (mobile, load, title/blurb/thumb, links, console, credits). Fix or bump.",
+          "Get a few more ready to launch in month 1, so the site has something new on day 30.",
         ],
-        list: { label: "Project pages", items: PROJECTS },
+        list: { label: "Launch projects", items: LAUNCH },
       },
       {
         track: "Social",
         body: [
           "Handles, bios, profile images.",
-          "Build the 12 posts — 6 hero, 3 process, 2 stills, 1 intro. Written, designed, queued before launch.",
+          "Build the 12 posts. Written, designed, queued before launch.",
         ],
+        preview: {
+          src: "/plan/instagram-preview.jpg",
+          href: "/mocks/instagram",
+          label: "Instagram preview",
+          alt: "The Instagram preview mock: the @futuresatlas profile and the first rows of the post grid",
+        },
       },
     ],
   },
@@ -82,9 +114,10 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
       {
         track: "Projects",
         body: [
-          "Publish nothing new.",
+          "Launch a few of the month-1 candidates.",
           "Finish and review the month-2 batch. Start the month-3 batch.",
         ],
+        list: { label: "Month 1 candidates", items: MONTH_1 },
       },
       {
         track: "Social",
@@ -98,7 +131,7 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
     tracks: [
       {
         track: "Website",
-        body: ["Feed ships. Index grows to 9-ish."],
+        body: ["Feed ships."],
       },
       {
         track: "Projects",
@@ -119,10 +152,7 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
     tracks: [
       {
         track: "Website",
-        body: [
-          "No new features. Read the data now that there's enough of it.",
-          "Iterate on what that shows rather than on instinct.",
-        ],
+        body: ["Review the analytics and consider how to increase engagement."],
       },
       {
         track: "Projects",
@@ -140,14 +170,66 @@ const MONTHS: { n: string; name: string; tracks: Track[] }[] = [
 ];
 
 /** The three readings month 3 is spent on, pulled out of the prose so the room
- *  can see what "read the data" actually means. */
+ *  can see what "review the analytics" actually means. */
 const READINGS = [
   { what: "Site analytics", detail: "traffic, entry pages, drop-off" },
   { what: "Per-project stats", detail: "which projects hold attention, which get skipped" },
   { what: "Social progress", detail: "what drives clicks through to the site" },
 ];
 
-function TrackCard({ track, body, list }: Track) {
+function Thumb({ item }: { item: Item }) {
+  return (
+    <span
+      className={`relative block aspect-[3/2] w-[72px] shrink-0 overflow-hidden border border-ink/10 ${
+        item.image ? "" : "fa-hatch"
+      }`}
+    >
+      {item.image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={item.image}
+          alt=""
+          loading="lazy"
+          className="absolute inset-0 h-full w-full object-cover object-top"
+        />
+      )}
+    </span>
+  );
+}
+
+function ItemRow({ item, i, thumbs }: { item: Item; i: number; thumbs: boolean }) {
+  const title = (
+    <span
+      className={`text-[15px] font-extrabold tracking-[-0.015em] ${
+        item.pending ? "text-ink/40" : "text-ink"
+      }`}
+    >
+      {item.title}
+    </span>
+  );
+  return (
+    <li className="flex items-center gap-4 py-2.5">
+      <span className="font-mono text-[11px] tabular-nums text-ink/40">
+        {String(i + 1).padStart(2, "0")}
+      </span>
+      {thumbs && <Thumb item={item} />}
+      {item.path ? (
+        <Link
+          href={item.path}
+          prefetch={false}
+          className="underline-offset-4 transition-colors hover:text-accent-deep hover:underline"
+        >
+          {title}
+        </Link>
+      ) : (
+        title
+      )}
+    </li>
+  );
+}
+
+function TrackCard({ track, body, list, preview }: Track) {
+  const thumbs = Boolean(list?.items.some((x) => x.image || x.pending));
   return (
     <div className="flex h-full flex-col border border-ink/15 p-[clamp(18px,2.2vw,26px)]">
       <span className={head}>{track}</span>
@@ -166,20 +248,31 @@ function TrackCard({ track, body, list }: Track) {
           </div>
           <ol className="mt-3 divide-y divide-ink/10">
             {list.items.map((item, i) => (
-              <li key={item} className="flex items-baseline gap-4 py-2.5">
-                <span className="font-mono text-[11px] tabular-nums text-ink/40">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span
-                  className={`text-[15px] font-extrabold tracking-[-0.015em] ${
-                    item.startsWith("6th") ? "text-ink/40" : "text-ink"
-                  }`}
-                >
-                  {item}
-                </span>
-              </li>
+              <ItemRow key={item.title} item={item} i={i} thumbs={thumbs} />
             ))}
           </ol>
+        </div>
+      )}
+      {preview && (
+        <div className="mt-6 border-t border-ink/15 pt-5">
+          <Link
+            href={preview.href}
+            prefetch={false}
+            className="group block"
+          >
+            <span className="relative block aspect-[4/3] w-full overflow-hidden border border-ink/10">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={preview.src}
+                alt={preview.alt}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.02]"
+              />
+            </span>
+            <span className="mt-3 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ink underline-offset-4 transition-colors group-hover:text-accent-deep group-hover:underline">
+              {preview.label} <span aria-hidden="true">→</span>
+            </span>
+          </Link>
         </div>
       )}
     </div>
@@ -227,6 +320,27 @@ export default function PlanPage() {
                     <TrackCard key={t.track} {...t} />
                   ))}
                 </div>
+                {m.n === "Month 0" && (
+                  <div className="mt-3 border border-ink/15 p-[clamp(18px,2.2vw,26px)]">
+                    <div className="flex items-baseline justify-between">
+                      <span className={head}>To do</span>
+                      <span className="font-mono text-[11px] text-ink/40">{MONTH_0_TODO.length}</span>
+                    </div>
+                    <ol className="mt-3 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
+                      {MONTH_0_TODO.map((item, i) => (
+                        <li
+                          key={item}
+                          className="flex items-baseline gap-4 border-t border-ink/10 py-2.5"
+                        >
+                          <span className="font-mono text-[11px] tabular-nums text-ink/40">
+                            {String(i + 1).padStart(2, "0")}
+                          </span>
+                          <span className="text-[14px] leading-[1.6] text-ink">{item}</span>
+                        </li>
+                      ))}
+                    </ol>
+                  </div>
+                )}
                 {m.n === "Month 3" && (
                   <div className="mt-3 border border-ink/15 p-[clamp(18px,2.2vw,26px)]">
                     <span className={head}>What gets read</span>

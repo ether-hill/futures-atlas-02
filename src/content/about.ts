@@ -332,8 +332,6 @@ export const STACK: StackTool[] = [
 
 export const STACK_INTRO = "The tools we use, in the open. It’s an inventory, and nothing on it is an endorsement.";
 
-export const FOOTER_CTA = { label: "Browse the projects", href: "/projects" };
-
 /**
  * The open-code signpost under the stack. Deliberately NOT a second copy of
  * the licence table: /developers owns that, this is three labels and a way in.
