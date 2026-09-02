@@ -46,6 +46,33 @@ const TEXT_SWATCHES = [
 
 type Override = { eyebrow?: string; headline?: string; headline2?: string; sub?: string; body?: string; value?: string; motion?: MotionId; textAnim?: TextAnimId; typeSize?: TypeSize; placement?: Placement; align?: Align; layout?: LayoutId; bgColor?: string; textColor?: string; durationSec?: number };
 const ALIGNS: Align[] = ["left", "center", "right"];
+
+/**
+ * Saved state can name a post type that no longer exists.
+ *
+ * Story and Quote Card were removed, but a draft or an autosaved session in
+ * someone's browser still names one, and restoring it left `typeDef` undefined
+ * behind a non-null assertion. The read threw during render, React unmounted
+ * the tree — and because the App Router renders the stylesheet links as part of
+ * that tree, it took the CSS with it. The page appeared for an instant and then
+ * became unstyled text. Anything restored from storage goes through here first.
+ */
+const LEGACY_POST_TYPES: Record<string, { id: PostTypeId; aspect: Aspect }> = {
+  story: { id: "single", aspect: "9:16" },   // a vertical single is the same frame
+  quote: { id: "single", aspect: "1:1" },    // the square it always was
+};
+
+function coercePostType(id: unknown): { id: PostTypeId; aspect?: Aspect } {
+  const key = String(id ?? "");
+  if (POST_TYPES.some((p) => p.id === key)) return { id: key as PostTypeId };
+  return LEGACY_POST_TYPES[key] ?? { id: "single" };
+}
+
+/** An aspect saved against one post type may not be offered by another. */
+function coerceAspect(type: PostTypeId, aspect: unknown): Aspect {
+  const def = POST_TYPES.find((p) => p.id === type) ?? POST_TYPES[0];
+  return def.aspects.includes(aspect as Aspect) ? (aspect as Aspect) : def.aspects[0];
+}
 // Each library frame arrives as a real, editable composer configuration: a
 // sensible per-kind starting layout / placement / alignment that every
 // per-slide control can then override or vary.
@@ -212,7 +239,8 @@ export function StudioApp({ source }: { source: ComposerSource }) {
 
   const [mode] = useState<Mode>("single"); // batch UI removed; always single
   const [postType, setPostType] = useState<PostTypeId>("single");
-  const typeDef = POST_TYPES.find((p) => p.id === postType)!;
+  // Never assert here: an unknown id must degrade, not throw mid-render.
+  const typeDef = POST_TYPES.find((p) => p.id === postType) ?? POST_TYPES[0];
   const [aspect, setAspect] = useState<Aspect>("4:5");
   const { w, h } = ASPECT_DIMS[aspect];
 
@@ -319,8 +347,13 @@ export function StudioApp({ source }: { source: ComposerSource }) {
         const raw = window.localStorage.getItem(wKey(slugKey));
         if (raw) {
           const s = JSON.parse(raw) as Partial<Draft>;
-          if (s.postType) setPostType(s.postType);
-          if (s.aspect) setAspect(s.aspect);
+          if (s.postType) {
+            const t = coercePostType(s.postType);
+            setPostType(t.id);
+            setAspect(t.aspect ?? coerceAspect(t.id, s.aspect));
+          } else if (s.aspect) {
+            setAspect(coerceAspect("single", s.aspect));
+          }
           // Only restore selections that still exist (incl. rehydrated uploads).
           if (Array.isArray(s.selected)) { const valid = s.selected.filter((id) => validIds.has(id)); if (valid.length) setSelected(valid); }
           if (s.overrides) setOverrides(s.overrides);
@@ -805,7 +838,10 @@ export function StudioApp({ source }: { source: ComposerSource }) {
     showToast("Draft saved");
   }, [persist, postType, aspect, selected, overrides, typeSize, bgColor, textColor, defBg, defText, defDur, drafts, showToast]);
   const onRestore = useCallback((d: Draft) => {
-    setPostType(d.postType); setAspect(d.aspect); setSelected(d.selected); setOverrides(d.overrides || {});
+    const t = coercePostType(d.postType);
+    setPostType(t.id);
+    setAspect(t.aspect ?? coerceAspect(t.id, d.aspect));
+    setSelected(d.selected); setOverrides(d.overrides || {});
     setTypeSize(d.typeSize); setBgColor(d.bgColor); setTextColor(d.textColor);
     setDefBg(d.defBg || "none"); setDefText(d.defText || "none"); setDefDur(d.defDur || 5);
     showToast("Draft restored");
