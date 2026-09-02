@@ -61,6 +61,12 @@ const STAGING_ONLY = [
   "/plan",
   "/mocks",
   "/api/mocks",
+  // The reading log and everything it is made of. It is not part of the site
+  // being launched, so on production it is absent rather than hidden — same
+  // treatment as the working pages, and NOT in INTERNAL_PATHS, because on
+  // staging the feed is for anyone looking, not only a signed-in editor.
+  "/feed",
+  "/api/feed",
   "/logo-animator",
   "/design-system",
   "/style-guide",

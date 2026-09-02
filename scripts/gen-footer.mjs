@@ -41,14 +41,25 @@ const { GLOSSARY } = await import("../src/data/glossary.ts");
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+const IS_PRODUCTION = process.env.VERCEL_ENV === "production";
+const INTERNAL_ONLY = !IS_PRODUCTION;
+
+/**
+ * The feed is staging-only too (STAGING_ONLY in src/middleware.ts), so on
+ * production neither its column nor its Sections link is in the markup. The
+ * footer's job here is the same as with the internal column: never link to a
+ * page that is not there.
+ */
+const FEED_HERE = !IS_PRODUCTION;
+
 const SECTIONS = [
   ["/", "Home"],
-  ["/feed", "Feed"],
+  ["/feed", "Feed", "feed"],
   ["/projects", "Projects"],
   ["/developers", "Developers"],
   ["/about", "About"],
   ["/contact", "Contact"],
-];
+].filter(([, , only]) => only !== "feed" || FEED_HERE);
 
 /**
  * The internal column: the working pages, listed only where they exist.
@@ -62,7 +73,6 @@ const SECTIONS = [
  * VERCEL_ENV is set by the platform: "production", "preview", or absent when
  * running locally.
  */
-const INTERNAL_ONLY = process.env.VERCEL_ENV !== "production";
 
 const INTERNAL = [
   ["/plan", "Plan"],
@@ -78,7 +88,7 @@ const INTERNAL = [
 ];
 
 const projects = liveProjects.filter((p) => p.path || p.url).slice(0, 12);
-const recent = livePosts.slice(0, 6);
+const recent = FEED_HERE ? livePosts.slice(0, 6) : [];
 
 /* The copyright year. The "last updated" stamp that used to sit beside it is
    gone with the rest of that line, so the month table went with it. */
@@ -88,7 +98,7 @@ const link = (href, label, cls = "fa-foot__link") =>
   `<a class="${cls}" href="${esc(href)}">${esc(label)}</a>`;
 
 const html = `<div class="fa-foot__inner">
-<div class="fa-foot__grid${INTERNAL_ONLY ? " fa-foot__grid--5" : ""}">
+<div class="fa-foot__grid fa-foot__grid--${3 + (FEED_HERE ? 1 : 0) + (INTERNAL_ONLY ? 1 : 0)}">
 <div class="fa-foot__col">
 <a class="fa-foot__home" href="/" aria-label="Futures Atlas home"><span class="fa-foot__mark" aria-hidden="true"><img src="/fa.svg" alt="" width="22" height="22"></span><span class="fa-foot__word">Futures Atlas</span></a>
 <p class="fa-foot__body">Building frameworks for foresight. Speculative-design projects, open-source tools, apps and prototypes exploring compute: quantum systems, AI, and the power structures driving them.</p>
@@ -109,7 +119,7 @@ const html = `<div class="fa-foot__inner">
   .join("")}</nav>
 <p class="fa-foot__meta">${link("/projects", "All projects →", "fa-foot__a")}</p>
 </div>
-<div class="fa-foot__col">
+${FEED_HERE ? `<div class="fa-foot__col">
 <p class="fa-foot__h">Recent from the feed</p>
 <nav class="fa-foot__list">${recent
   .map(
@@ -120,7 +130,7 @@ const html = `<div class="fa-foot__inner">
   )
   .join("")}</nav>
 <p class="fa-foot__meta">${link("/feed", "The whole feed →", "fa-foot__a")}</p>
-</div>${INTERNAL_ONLY ? `
+</div>` : ""}${INTERNAL_ONLY ? `
 <div class="fa-foot__col fa-foot__internal">
 <p class="fa-foot__h">Internal &middot; staging only</p>
 <nav class="fa-foot__list">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>

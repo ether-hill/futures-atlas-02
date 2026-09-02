@@ -19,6 +19,10 @@ export default async function Home() {
   // signed-in editor. Drafts are visible on /projects, not here.
   const isEditor = Boolean(await getEditor());
   const recent = liveProjects.slice(0, 6);
+  // The feed is staging-only (STAGING_ONLY in src/middleware.ts). Production
+  // does not link to it, so the homepage does not carry it either — a masonry
+  // of posts whose every card leads to a 404 is worse than no masonry.
+  const feedHere = process.env.VERCEL_ENV !== "production";
   // Newest fifteen, but never a set with no video in it: the masonry plays them
   // in place, and chronology alone can leave every one of them just out of range.
   const source = isEditor ? editorPosts : livePosts;
@@ -101,12 +105,14 @@ export default async function Home() {
       </section>
 
       {/* The feed, as a masonry of the newest posts — videos play in place */}
-      <FeedMasonry
-        posts={latestPosts}
-        showVisibility={isEditor}
-        benchSeed={benchSeed}
-        prototypes={prototypesFor(isEditor)}
-      />
+      {feedHere ? (
+        <FeedMasonry
+          posts={latestPosts}
+          showVisibility={isEditor}
+          benchSeed={benchSeed}
+          prototypes={prototypesFor(isEditor)}
+        />
+      ) : null}
 
       {/* Tech banner, the whole band links to the About page's stack + workflow */}
       <section className="border-t border-ink/15 bg-band">

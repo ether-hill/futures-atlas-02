@@ -660,6 +660,12 @@ html .fa-shell.is-clear,
 .fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.6; }
 .fa-foot__split { display: grid; gap: 32px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4.5vw, 56px); border-top: 1px solid rgba(243, 241, 236, 0.18); padding-top: clamp(28px, 4vw, 44px); }
 @media (min-width: 640px) { .fa-foot__split { grid-template-columns: 1fr 1fr; } }
+/* The footer's column count varies with the environment: brand, sections and
+   projects always, plus the feed column and the internal column where those
+   exist (see scripts/gen-footer.mjs). --4 is the default four-column rule. */
+.fa-foot__grid--3 { grid-template-columns: 1.4fr 0.8fr 1.4fr; }
+@media (max-width: 900px) { .fa-foot__grid--3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .fa-foot__grid--3 { grid-template-columns: 1fr; } }
 @media (min-width: 1180px) { .fa-foot__grid--5 { grid-template-columns: 1.15fr 0.65fr 1.1fr 1fr 0.85fr; } }
 /* The internal column is not part of the site — it is the working drawer, and
    only exists on preview and local builds. Boxing it says so: without a border

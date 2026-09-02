@@ -23,6 +23,11 @@ import { renderMarkdown } from "@/lib/markdown";
 // as HTML in the build output at all. Drafts still resolve for a signed-in
 // editor — they're rendered on demand, behind the middleware gate.
 export function generateStaticParams() {
+  // The feed is staging-only (STAGING_ONLY in src/middleware.ts). On production
+  // the middleware answers every /feed path as though it were never built, so
+  // prerendering the posts there would put HTML in the output that nothing can
+  // reach — the same reasoning that already keeps draft posts out of the build.
+  if (process.env.VERCEL_ENV === "production") return [];
   return livePosts.map((p) => ({ slug: p.slug }));
 }
 

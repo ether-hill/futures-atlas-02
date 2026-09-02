@@ -177,7 +177,7 @@ export const projects: Project[] = [
     field: "AI & faith",
     kind: "story",
     status: "live",
-    visibility: "live",
+    visibility: "draft",
     path: "/magnifica",
     image: "/projects/magnifica.jpg",
   },
@@ -402,7 +402,7 @@ export const projects: Project[] = [
     field: "Public engagement",
     kind: "tool",
     status: "live",
-    visibility: "live",
+    visibility: "draft",
     path: "/actually-hard-questions", // hand-authored static bundle, served within this site
     image: "/projects/actually-hard-questions.jpg",
   },

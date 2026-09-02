@@ -28,7 +28,7 @@
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },
     { name: "Horizon Scan", path: "/horizon-scan", draft: true },
-    { name: "Hypothetica Magnifica", path: "/magnifica" },
+    { name: "Hypothetica Magnifica", path: "/magnifica", draft: true },
     { name: "Trajectories", path: "/trajectories", draft: true },
     { name: "The Counterfactual Index", path: "/manipulate-the-data", draft: true },
     { name: "Counterfactual Quantum", path: "/manipulate-the-data/quantum", draft: true },
@@ -56,7 +56,7 @@
       { name: "Oracle", path: "/village-oracle/oracle" },
       { name: "Research", path: "/village-oracle/research" },
     ] },
-    { name: "Hard Questions", path: "/actually-hard-questions", pages: [
+    { name: "Hard Questions", path: "/actually-hard-questions", draft: true, pages: [
       { name: "Map", path: "/actually-hard-questions#map" },
       { name: "Grid", path: "/actually-hard-questions#grid" },
       { name: "Ask", path: "/actually-hard-questions#session" },
@@ -70,13 +70,24 @@
   // FA_PROJECTS above and in src/data/projects.ts), so it appears in the
   // switcher and in the footer's Projects column. The bar stays the places you
   // go, not the things you look up.
+  /*
+    stagingOnly: the page exists on staging and is ABSENT on production (the
+    middleware's STAGING_ONLY list). The hub's root layout sets window.FA_ENV
+    before this script runs; anything that does not set it is treated as
+    production, so a page that never declares itself can only ever under-link,
+    never point at a dead end. That is why the static zone bundles do not show
+    the Feed link even on staging: they are separate builds with their own HTML
+    and they do not set the flag.
+  */
+  var IS_PRODUCTION = (window.FA_ENV || "production") === "production";
+
   var LINKS = [
     { name: "Home", path: "/" },
     { name: "Projects", path: "/projects" },
-    { name: "Feed", path: "/feed" },
+    { name: "Feed", path: "/feed", stagingOnly: true },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
-  ];
+  ].filter(function (l) { return !(l.stagingOnly && IS_PRODUCTION); });
 
   // current project = longest project path that prefixes the URL (null on the hub)
   var p = location.pathname, cur = null, best = 0;
