@@ -299,64 +299,78 @@ export const SLIDE_CSS = `
 /* ── Tegmark's twelve ──────────────────────────────────────────────────────
    The card IS the post. No ground behind it, no margin around it: what the Max
    Tegmark player deals you is a card, and a card photographed on a table is a
-   different object. So the paper runs edge to edge and both slides are two
+   different object. So the card runs edge to edge and both slides are two
    sides of it.
 
    Sizes are in cqw, 1% of the slide's own width, so the pair holds at 9:16,
-   4:5 and 1:1 alike. */
+   4:5 and 1:1 alike.
+
+   TYPE. Everything here is --font-heading, the Atlas display face, which is
+   also what the game itself sets a drawn card's name in (.od-pcard-name and
+   .od-rhead are both Archivo 800). The earlier cut set the names in the serif
+   and they were unreadable at a card's size: a didone's hairlines vanish under
+   a heavy weight and wide tracking, which is exactly the combination a card
+   name wants. No serif on these slides. */
 .stf .tg { position: relative; width: 100%; height: 100%; container-type: inline-size; }
 
 /* ── the tarot card (odds-of-surviving-ai/index.html 81-87) ────────────────
-   Copied, with two departures. The flip is dropped: the game's card is one face
-   of a 3D flip and carries position:absolute, backface-visibility:hidden and a
-   180 degree rotate for it, and a still slide has no back to turn away from.
-   And the game's card is 280 x 395 while a post is not, so the art fills the
-   frame it is given and crops, rather than letterboxing into bands of paper. */
+   The game's structure, in the dark. Three departures, all deliberate:
+
+   The flip is dropped. The game's card is one face of a 3D flip and carries
+   position:absolute, backface-visibility:hidden and a 180 degree rotate for it;
+   a still slide has no back to turn away from.
+
+   The card is 280 x 395 and a post is not, so the art fills the frame it is
+   given and crops, rather than letterboxing into bands of card.
+
+   And the paper is dark. The game deals a cream tarot card, which is right on
+   its own purple table and wrong as a whole post: a bright rectangle is the
+   loudest thing in a feed of dark work. The ground is the game's own card
+   colour (.od-pcard, #15151a) and the ink its own bone (#ECEAE6). */
 .stf .od-tarot {
   position: absolute; inset: 0; box-sizing: border-box;
-  background: #e9dfc4; color: #241a0d;
-  box-shadow: inset 0 0 0 .9cqw rgba(255,252,244,.55);
+  background: #15151a; color: #ECEAE6;
+  box-shadow: inset 0 0 0 1px rgba(236,234,230,.14);
   display: flex; flex-direction: column; padding: 3.6cqw 3.6cqw 0;
 }
 .stf .od-tarot-art {
   flex: 1; min-height: 0; overflow: hidden;
-  border: 1px solid rgba(48,36,18,.6); background: #12102a;
+  border: 1px solid rgba(236,234,230,.16); background: #0b0b0f;
   display: flex; align-items: center; justify-content: center;
 }
 .stf .od-tarot-art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .stf .od-tarot-cap {
-  flex: 0 0 auto; display: flex; flex-direction: column; align-items: center;
-  gap: 2.2cqw; padding: 4cqw 2cqw 4.6cqw;
+  flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+  padding: 4.4cqw 2cqw 5cqw;
 }
 .stf .od-tarot-cap .nm {
-  font-family: var(--font-bodoni), "Playfair Display", Georgia, serif;
-  font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-  color: #241a0d; line-height: 1.02; text-align: center;
+  font-family: var(--font-heading); font-weight: 800; letter-spacing: -.01em;
+  text-transform: uppercase; color: #ECEAE6; line-height: 1.02; text-align: center;
 }
 
-/* Letterspaced serif for the small labels rather than the game's Space Mono,
-   which is the one house rule this studio's chrome does not bend on. */
-.stf .tg-num, .stf .tg-fate, .stf .tg-foot {
-  font-family: var(--font-bodoni), Georgia, serif;
-  text-transform: uppercase; letter-spacing: .22em; line-height: 1;
+/* The two small labels. Letterspaced caps in the display face; the serif they
+   used to be set in is not used on these slides at all. */
+.stf .tg-fate, .stf .tg-foot {
+  font-family: var(--font-heading); font-weight: 600;
+  text-transform: uppercase; letter-spacing: .18em; line-height: 1;
 }
-.stf .tg-num { flex: 0 0 auto; font-size: 2.8cqw; color: rgba(36,26,13,.45); }
-.stf .tg-foot { flex: 0 0 auto; font-size: 2.6cqw; color: rgba(36,26,13,.4); }
+.stf .tg-foot { flex: 0 0 auto; font-size: 2.6cqw; color: rgba(236,234,230,.38); }
 
-/* The back. Same paper, and the reading set on it. --fate is the game's own
-   pair (wheelGood1 / wheelDoomCol), which is the only colour on this side. */
+/* The back. Same card, and the reading set on it. --fate is the one colour on
+   this side: the player's own teal for a future with people in it, the game's
+   red for one without. The wheel's blue was the earlier pair and it sank into
+   the dark ground. */
 .stf .tg-read {
   flex: 1; min-height: 0; display: flex; flex-direction: column;
-  padding: 4.4cqw 4.4cqw 5.6cqw; --fate: #2E6FE0;
+  padding: 4.4cqw 4.4cqw 5.6cqw; --fate: #34E5C4;
 }
-.stf .tg.doom .tg-read { --fate: #C22B18; }
+.stf .tg.doom .tg-read { --fate: #FF5C33; }
 .stf .tg-mid { flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
 .stf .tg-fate { font-size: calc(3.1cqw * var(--tg)); color: var(--fate); }
 .stf .tg-name {
   margin: calc(4cqw * var(--tg)) 0 0;
-  font-family: var(--font-bodoni), "Playfair Display", Georgia, serif;
-  font-weight: 700; line-height: 1.04; letter-spacing: .02em;
-  text-transform: uppercase; color: #241a0d;
+  font-family: var(--font-heading); font-weight: 800; line-height: 1.02;
+  letter-spacing: -.02em; text-transform: uppercase; color: #ECEAE6;
 }
 .stf .tg-name::after {
   content: ""; display: block; width: 14cqw; height: 1px;
@@ -364,7 +378,7 @@ export const SLIDE_CSS = `
 }
 .stf .tg-desc {
   margin: calc(4.5cqw * var(--tg)) 0 0; font-size: calc(4.9cqw * var(--tg));
-  line-height: 1.5; letter-spacing: -.005em; color: #4a4238;
+  line-height: 1.5; letter-spacing: -.005em; color: rgba(236,234,230,.74);
 }
 
 /* ── the slide shell: the game's page ground, with the card in it ──────── */

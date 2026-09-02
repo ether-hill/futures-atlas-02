@@ -227,15 +227,18 @@ function TermSlide({ post, ratio }: { post: TermPost; ratio: Ratio }) {
 const READ_SCALE: Record<Ratio, number> = { "9:16": 1.1, "4:5": 0.92, "1:1": 0.74 };
 
 /**
- * A name that would run past the paper is stepped down rather than clipped.
+ * A name that would run past the card is stepped down rather than clipped.
  *
  * The twelve names are one word or two, so there is nowhere for a long one to
  * wrap: SELF-DESTRUCTION and CONQUERORS have to be set smaller or they run off
- * the edge. Measured across all twelve, Bodoni 700 uppercase at .02em tracking
- * never exceeds 0.74em a character, so the widest word decides the size. `avail`
- * is the paper's width in cqw less its padding, with a little slack.
+ * the edge. Measured across all twelve, the display face at 800 uppercase never
+ * exceeds WIDEST_EM per character, so the widest word decides the size. `avail`
+ * is the card's width in cqw less its padding, with a little slack.
+ *
+ * Re-measure this if the face changes: scratchpad measured it by rendering each
+ * name at 100px and dividing by its length.
  */
-const WIDEST_EM = 0.74;
+const WIDEST_EM = 0.7;
 const fitName = (title: string, avail: number, max: number) => {
   const longest = Math.max(...title.split(" ").map((w) => w.length));
   return `${Math.min(max, avail / (WIDEST_EM * longest))}cqw`;
@@ -263,7 +266,6 @@ const fitName = (title: string, avail: number, max: number) => {
 function TegmarkSlide({
   post, index, ratio,
 }: { post: TegmarkPost; index: number; ratio: Ratio }) {
-  const num = String(post.num).padStart(2, "0");
   return (
     <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
       <div className={`tg${post.doom ? " doom" : ""}`}>
@@ -275,7 +277,6 @@ function TegmarkSlide({
                 <img src={post.img} alt={post.title} />
               </div>
               <div className="od-tarot-cap">
-                <div className="tg-num">{num} of 12</div>
                 <div className="nm" style={{ fontSize: fitName(post.title, 82, 8.4) }}>
                   {post.title}
                 </div>
@@ -283,7 +284,6 @@ function TegmarkSlide({
             </>
           ) : (
             <div className="tg-read" style={{ ["--tg" as string]: READ_SCALE[ratio] }}>
-              <div className="tg-num">{num} of 12</div>
               <div className="tg-mid">
                 <div className="tg-fate">{post.doom ? "We\u2019re gone" : "We\u2019re still here"}</div>
                 <h2
