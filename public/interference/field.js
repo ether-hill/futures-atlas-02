@@ -290,7 +290,11 @@ window.FIELD = (function () {
     "  float pack  = exp(-d*d*4.0);",
     "  float birth = smoothstep(0.0, 0.45, tau);",
     "  float fade  = smoothstep(win, win*0.72, tau)*birth;",
-    "  float decay = exp(-tau*0.13)*exp(-r*0.62)/sqrt(0.30 + r*2.0);",
+    /* Ages a ring by the clock, so slowing a panel down would otherwise make
+       its oldest generation a third dimmer than it used to be. Scaled with the
+       1.5x that Two droplets and Rain both took, so a ring of a given SIZE is
+       as bright as it was, which is what the eye is comparing. */
+    "  float decay = exp(-tau*0.087)*exp(-r*0.62)/sqrt(0.30 + r*2.0);",
     "  return sin(KD*d + 1.1)*pack*decay*fade;",
     "}",
     ""
@@ -308,7 +312,7 @@ window.FIELD = (function () {
   {
     slug: "droplets",
     title: "Two droplets",
-    loop: 6.0,
+    loop: 9.0,
     note: "Two drips into still water, landing together. Where the rings cross, they add.",
     read: [
       ["What you are seeing",
@@ -320,13 +324,13 @@ window.FIELD = (function () {
     ],
     frag: DROP + [
       "const float HGAIN = 1.0;",
-      "const float TD = 6.0;",
+      "const float TD = 9.0;   /* the drip period, and the loop */",
       "float height(vec2 p){",
       "  float h = 0.0;",
       "  for(int i=0;i<2;i++){",
       "    vec2 s = mix(vec2(-0.55, 0.06), vec2(0.55,-0.06), float(i));",
       "    for(int n=0;n<5;n++){",
-      "      h += dropWave(p, s, uT + float(n)*TD, 0.30, 30.0, 5.0*TD);",
+      "      h += dropWave(p, s, uT + float(n)*TD, 0.20, 30.0, 5.0*TD);",
       "    }",
       "  }",
       "  return h;",
@@ -366,7 +370,7 @@ window.FIELD = (function () {
   {
     slug: "rain",
     title: "Rain",
-    loop: 9.0,
+    loop: 13.5,
     note: "Seven drops of different sizes, out of step with each other. Every crossing is an interference.",
     read: [
       ["What you are seeing",
@@ -378,7 +382,7 @@ window.FIELD = (function () {
     ],
     frag: DROP + [
       "const float HGAIN = 0.75;",
-      "const float TR = 9.0;",
+      "const float TR = 13.5;   /* the interval between drops, and the loop */",
       "",
       "/* every drop is a different size: its own strength, wavelength and ring",
       "   speed, all fixed functions of its index so the loop still repeats */",
@@ -386,7 +390,7 @@ window.FIELD = (function () {
       "vec2  srcOf(float i){ return vec2(rnd(i,1.0)*2.7 - 1.35, rnd(i,2.0)*1.7 - 0.85); }",
       "float ampOf(float i){ return 0.55 + 0.70*rnd(i,3.0); }",
       "float kOf(float i){ return 22.0 + 14.0*rnd(i,4.0); }",
-      "float cOf(float i){ return 0.24 + 0.12*rnd(i,5.0); }",
+      "float cOf(float i){ return 0.16 + 0.08*rnd(i,5.0); }",
       "",
       "float height(vec2 p){",
       "  float h = 0.0;",
@@ -539,7 +543,7 @@ window.FIELD = (function () {
   {
     slug: "carpet",
     title: "Quantum carpet",
-    loop: 20.0,
+    loop: 30.0,
     note: "A particle in a square box. Eight standing modes, beating in and out of step.",
     read: [
       ["What you are seeing",
@@ -551,7 +555,7 @@ window.FIELD = (function () {
     ],
     frag: [
       "const float B = 0.88;",
-      "const float C = TAU/20.0;",
+      "const float C = TAU/30.0;",
       "",
       "vec2 mode(vec2 uv, float n, float m, float w){",
       "  float a = w*sin(n*PI*uv.x)*sin(m*PI*uv.y);",
@@ -1036,9 +1040,8 @@ window.FIELD = (function () {
 
   {
     slug: "point-slits",
-    draft: true,
     title: "Point source, two slits",
-    loop: 2.5,
+    loop: 5.0,
     note: "One lamp on the left, and a wall with two gaps. What arrives at the wall is already curved.",
     read: [
       ["What you are seeing",
@@ -1046,11 +1049,11 @@ window.FIELD = (function () {
       ["Where the quantum comes in",
        "This is Young's experiment as it is actually done. A single small source first, then the pair of slits, because the two slits have to be lit by the same wave or there are no fringes to see at all: that is the coherence requirement, and it is the reason the lamp is a point rather than a strip. Beyond the wall the arithmetic is the familiar one. A fan is bright where the two routes to it differ by a whole number of wavelengths, dark where they differ by half. And because this lamp sits on the axis, the extra distance out to each gap is the same for both, cancels, and changes nothing about where the fans land. Slide the lamp off the axis and the whole pattern slides with it."],
       ["How it is built",
-       "Each gap is treated as one point that re-emits with the phase the incoming wave hands it, so the phase carried out to a pixel is the whole path, lamp to gap to pixel. That total is what fixes where the fans go. Two direction terms shape what a gap radiates, and both are real: the obliquity of a hole in a flat screen, which falls to nothing along the wall, and the spreading of a gap that has width. The reflection on the near side is drawn as a second lamp the same distance behind the wall, which is exact for a flat mirror and ignores the fact that this one has holes in it. Nothing scatters back through the gaps: they are driven by the incoming wave alone."]
+       "Each gap is treated as one point that re-emits with the phase the incoming wave hands it, so the phase carried out to a pixel is the whole path, lamp to gap to pixel. That total is what fixes where the fans go. Two direction terms shape what a gap radiates, and both are real: the obliquity of a hole in a flat screen, which falls to nothing along the wall, and the spreading of a gap that has width. The wall absorbs rather than reflects. It was built the other way first, and the wave coming back off the wall scalloped every ring on the near side by a seventh of full brightness, so the circles stopped being circles. A barrier in a real ripple tank is damped for that reason and the textbook treatment assumes an absorbing screen, so the honest version is also the legible one. A gap radiates at the strength the wave delivers to it and no more: given a bare point it fires a bead several times brighter than what feeds it, so it carries a softened core the size of the gap, because nothing inside an aperture is a point."]
     ],
     frag: [
       "const float K  = 34.0;",
-      "const float W  = TAU/2.5;",
+      "const float W  = TAU/5.0;",
       "const float XB = 0.10;     /* the wall */",
       "const float SX = -0.72;    /* the lamp, on the axis */",
       "const float D  = 0.155;    /* half the separation of the gaps */",
@@ -1134,9 +1137,8 @@ window.FIELD = (function () {
 
   {
     slug: "closing-a-slit",
-    draft: true,
     title: "Closing a slit",
-    loop: 12.0,
+    loop: 20.0,
     note: "The same wall, with one gap shutting and opening again. Fringes into a single smear, and back.",
     read: [
       ["What you are seeing",
@@ -1148,7 +1150,7 @@ window.FIELD = (function () {
     ],
     frag: [
       "const float K  = 34.0;",
-      "const float W  = TAU*5.0/12.0;   /* five turns to the loop */",
+      "const float W  = TAU*5.0/20.0;   /* five turns to the loop */",
       "const float XB = 0.10;",
       "const float SX = -0.72;",
       "const float D  = 0.155;",
@@ -1196,7 +1198,7 @@ window.FIELD = (function () {
       "  /* how far the lower gap is open, once round per loop. Everything about",
       "     that gap is this number: what is drawn, what it radiates, and how",
       "     wide it spreads what it radiates. */",
-      "  float g = 0.5 + 0.5*cos(TAU*uT/12.0);",
+      "  float g = 0.5 + 0.5*cos(TAU*uT/20.0);",
       "",
       "  /* absorbing wall, as on the panel before this one */",
       "  vec2 near = circ(p, lamp);",
