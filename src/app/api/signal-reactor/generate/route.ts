@@ -21,6 +21,7 @@ import {
   FacilitationSchema,
   assemble,
   extractJson,
+  sanitizeDeep,
   type Analysis,
 } from "@/lib/signal-reactor/deck";
 import { deckKey, readDeck, writeDeck } from "@/lib/signal-reactor/store";
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
     if (archived) {
       console.log(JSON.stringify({ tool: "signal-reactor", call: "archive-hit", key }));
       return NextResponse.json(
-        { ok: true, deck: archived, cached: true },
+        { ok: true, deck: sanitizeDeep(archived), cached: true },
         { headers: { "cache-control": "no-store" } },
       );
     }
@@ -116,7 +117,7 @@ export async function POST(req: Request) {
         .join("");
       try {
         const parsed = schema.safeParse(extractJson(text));
-        if (parsed.success) return parsed.data;
+        if (parsed.success) return sanitizeDeep(parsed.data);
         corrective = `Your previous response failed validation: ${parsed.error.issues
           .slice(0, 3)
           .map((i) => `${i.path.join(".")}: ${i.message}`)

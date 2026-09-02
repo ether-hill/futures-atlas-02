@@ -1,5 +1,5 @@
 /**
- * The sample fallback deck (brief §12) — pre-assembled into the Deck shape.
+ * The sample fallback deck (brief §12), pre-assembled into the Deck shape.
  * Loaded when generation fails in front of an audience, and the reference for
  * what "good, deflated, specific" output reads like.
  */
@@ -15,16 +15,16 @@ export const SAMPLE_DECK: Deck = {
     {
       type: "cover",
       sector: "Regional Credit Union",
-      one: "The real near-term threat isn't a quantum codebreaker — it's AI-native fintechs underwriting a loan in the time it takes you to open a case file.",
+      one: "The real near-term threat is an AI-native fintech underwriting a loan in the time it takes you to open a case file. A quantum codebreaker is a much later problem.",
       verdict: "narrow",
     },
     {
       type: "signal",
       hype: "Quantum computers will break your encryption and revolutionize member banking overnight.",
       substance:
-        "Quantum's only concrete near-term issue for you is cryptographic migration; the actual disruption is advanced AI in fraud, underwriting, and service — where nimble fintechs already outpace incumbents.",
+        "Quantum's only concrete near-term issue for you is cryptographic migration. The actual disruption is advanced AI in fraud, underwriting, and service, where nimble fintechs already outpace incumbents.",
       verdict: "narrow",
-      qnote: "Real risk is 'harvest now, decrypt later' data theft, not an imminent live break of today's traffic.",
+      qnote: "The real risk is 'harvest now, decrypt later' data theft. A live break of today's traffic is years away.",
       ainote: "Fraud detection, member-service automation, and 90-second AI underwriting are reshaping competitiveness right now.",
     },
     {
@@ -66,7 +66,7 @@ export const SAMPLE_DECK: Deck = {
       type: "assumptions",
       items: [
         { claim: "AI underwriting becomes table-stakes by 2028.", condition: "regulators permit model-driven credit decisions at consumer scale.", provenance: "projection" },
-        { claim: "Post-quantum migration is urgent now.", condition: "your data must stay confidential for 7+ years — which for financial records, it must.", provenance: "projection" },
+        { claim: "Post-quantum migration is urgent now.", condition: "your data must stay confidential for 7+ years, which for financial records it must.", provenance: "projection" },
         { claim: "Relationship banking remains a moat.", condition: "members keep valuing human trust over pure speed and price.", provenance: "projection" },
       ],
     },

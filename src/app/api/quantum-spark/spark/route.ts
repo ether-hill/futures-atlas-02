@@ -11,7 +11,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { PROMPT_VERSION, SYS_SPARK } from "@/lib/quantum-spark/prompts";
-import { SparkSchema, extractJson, type SparkResult } from "@/lib/quantum-spark/schema";
+import { SparkSchema, extractJson, sanitizeDeep, type SparkResult } from "@/lib/quantum-spark/schema";
 import { readSpark, sparkKey, writeSpark } from "@/lib/quantum-spark/store";
 
 export const runtime = "nodejs";
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     if (archived) {
       console.log(JSON.stringify({ tool: "quantum-spark", call: "archive-hit", key }));
       return NextResponse.json(
-        { ok: true, result: archived, cached: true },
+        { ok: true, result: sanitizeDeep(archived), cached: true },
         { headers: { "cache-control": "no-store" } },
       );
     }
@@ -98,9 +98,10 @@ export async function POST(req: Request) {
       try {
         const parsed = SparkSchema.safeParse(extractJson(text));
         if (parsed.success) {
+          const clean = sanitizeDeep(parsed.data);
           const result: SparkResult = {
-            business_display: parsed.data.business_display,
-            insights: parsed.data.insights.slice(0, 5), // exactly 5, clamped defensively
+            business_display: clean.business_display,
+            insights: clean.insights.slice(0, 5), // exactly 5, clamped defensively
             generatedAt: new Date().toISOString(),
             promptVersion: PROMPT_VERSION,
           };

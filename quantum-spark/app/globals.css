@@ -1,5 +1,5 @@
 /*
-  Quantum Spark — Cosmic / Energized lane (the one committed lane; Swiss stays
+  Quantum Spark, Cosmic / Energized lane (the one committed lane; Swiss stays
   in Signal Reactor). Sora everywhere; near-black space layered with violet /
   cyan / magenta glows; one signature gradient carrying numerals, key words
   and primary buttons. Keynote energy, never clip-art.
@@ -96,7 +96,7 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   [data-reveal] { opacity: 1 !important; transform: none !important; animation: none !important; }
 }
 
-/* ---- hero: full-width 50/50 — text left, picker right --------------------------- */
+/* ---- hero: full-width 50/50, text left, picker right --------------------------- */
 .hero {
   min-height: calc(70svh - var(--fa-nav-h, 64px));
   display: flex;
@@ -110,8 +110,12 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   align-items: center;
   width: 100%;
 }
+/* minmax(0, 1fr) + min-width: 0: a grid track defaults to min-content, so one wide
+   child (the picker's input row, the big h1) pushed the column 18px past a phone
+   viewport in Safari and the page scrolled sideways. */
+.hero-grid > * { min-width: 0; }
 @media (max-width: 1023px) {
-  .hero-grid { grid-template-columns: 1fr; gap: 44px; }
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 44px; }
 }
 .picker-panel {
   padding: clamp(18px, 2vw, 28px);

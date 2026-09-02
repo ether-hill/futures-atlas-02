@@ -25,21 +25,21 @@ const DOMAIN = 'https://futures-atlas-02.vercel.app';
 const ROUTES = [
   {
     slug: 'dario-amodei',
-    title: "The Odds — Dario Amodei's 25%",
+    title: "The Odds: Dario Amodei's 25%",
     ogTitle: 'Dario Amodei gives it a 25% chance of going really, really badly.',
     desc: "Roll the die on the Anthropic CEO's odds for humanity. Real, sourced, not a prediction.",
     image: '/og/dario-amodei.png',
   },
   {
     slug: 'elon-musk',
-    title: "The Odds — Elon Musk's 1-in-5",
+    title: "The Odds: Elon Musk's 1-in-5",
     ogTitle: 'Elon Musk puts annihilation at up to 1 in 5.',
     desc: "Spin the wheel on the xAI founder's odds for humanity. Real, sourced, not a prediction.",
     image: '/og/elon-musk.png',
   },
   {
     slug: 'max-tegmark',
-    title: 'The Odds — Max Tegmark’s twelve futures',
+    title: 'The Odds: Max Tegmark’s twelve futures',
     ogTitle: 'Max Tegmark maps twelve possible futures. Some without us.',
     desc: "Draw a card from the MIT physicist's twelve AI futures. Real, sourced, not a prediction.",
     image: '/og/max-tegmark.png',

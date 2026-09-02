@@ -1,6 +1,6 @@
 /**
  * Client mirror of the Spark contract. Source of truth lives in the host at
- * src/lib/quantum-spark/schema.ts (the spark route) — keep in sync.
+ * src/lib/quantum-spark/schema.ts (the spark route), keep in sync.
  */
 
 export interface Insight {
@@ -20,9 +20,9 @@ export type SparkResponse =
   | { ok: true; result: SparkResult; cached?: boolean }
   | { ok: false; code: string; message: string };
 
-/** The one restrained honesty line (brief §9 — verbatim, never inflated). */
+/** The one restrained honesty line (brief §9, never inflated). */
 export const HONESTY_LINE =
-  "Forward-looking, inspirational scenarios grounded in real quantum and AI capabilities — provocations to spark imagination and conversation, not forecasts or investment advice.";
+  "Forward-looking, inspirational scenarios grounded in real quantum and AI capabilities. They are provocations meant to spark imagination and conversation. Please treat them as neither forecasts nor investment advice.";
 
 /** The leading grid: 20 curated industries; "Other…" reveals free text. */
 export const INDUSTRY_OPTIONS = [

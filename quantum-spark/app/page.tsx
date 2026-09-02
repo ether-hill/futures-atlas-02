@@ -1,11 +1,11 @@
 "use client";
 
 /**
- * Quantum Spark — one screen: hero (input + chips) → glowing loading orb →
+ * Quantum Spark, one screen: hero (input + chips) → glowing loading orb →
  * five staggered insight cards with Spark-more / Copy-all / reset. Business
  * is URL-serialized (?b=), generation runs in the HOST app at
  * /api/quantum-spark/spark, and any failure falls back to the sample set
- * with a quiet toast — never a dead end.
+ * with a quiet toast, never a dead end.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -36,7 +36,7 @@ function toSlug(s: string): string {
 function stashComposerHandoff(result: SparkResult): void {
   const ts = Date.now();
   const payload = {
-    name: `Quantum Spark — ${result.business_display}`,
+    name: `Quantum Spark: ${result.business_display}`,
     url: window.location.href,
     bgColor: "#07080f",
     textColor: "#f2f3fb",
@@ -53,7 +53,7 @@ function stashComposerHandoff(result: SparkResult): void {
   try {
     window.localStorage.setItem("social-composer:import:quantum-spark", JSON.stringify(payload));
   } catch {
-    /* storage full/blocked — the composer will simply open empty */
+    /* storage full/blocked, the composer will simply open empty */
   }
 }
 
@@ -134,7 +134,7 @@ export default function Page() {
     } catch {
       // never dead-end: show the sample set with a quiet note
       setPhase({ name: "results", result: SAMPLE_SPARK, business, fallback: true });
-      quietToast("Live generation is unavailable right now — showing a sample spark.");
+      quietToast("Live generation is unavailable right now, so this is the sample spark.");
     } finally {
       if (msgTimer.current) clearInterval(msgTimer.current);
       requestAnimationFrame(() => {
@@ -146,9 +146,9 @@ export default function Page() {
 
   function copyAll(result: SparkResult) {
     const text = [
-      `Quantum Spark — ${result.business_display}`,
+      `Quantum Spark: ${result.business_display}`,
       "",
-      ...result.insights.flatMap((ins, i) => [`${i + 1}. ${ins.tag} — ${ins.headline}`, ins.insight, ""]),
+      ...result.insights.flatMap((ins, i) => [`${i + 1}. ${ins.tag}: ${ins.headline}`, ins.insight, ""]),
       HONESTY_LINE,
     ].join("\n");
     navigator.clipboard
@@ -157,7 +157,7 @@ export default function Page() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       })
-      .catch(() => quietToast("Couldn't access the clipboard — select and copy the cards directly."));
+      .catch(() => quietToast("Couldn't access the clipboard. Select and copy the cards directly."));
   }
 
   function reset() {
@@ -180,8 +180,9 @@ export default function Page() {
               Five <span className="grad-text">sparks</span> for what&rsquo;s next.
             </h1>
             <p className="sub">
-              Name your business — get five bold, grounded glimpses of how quantum computing and
-              next-wave AI will transform it. Inspiration, not fabrication.
+              Name your business and get five bold, grounded glimpses of how quantum computing and
+              next-wave AI will transform it. Built to inspire, and kept honest about what the
+              technology can really do.
             </p>
           </div>
 
@@ -280,7 +281,7 @@ export default function Page() {
   );
 }
 
-/** The same share functions as the global Atlas Share tool — with the
+/** The same share functions as the global Atlas Share tool, with the
  *  Social Composer paths carrying the five sparks as ready-made post frames
  *  (stashed just before navigation, picked up at ?import=quantum-spark). */
 function ShareMenu({
@@ -293,7 +294,7 @@ function ShareMenu({
   onToast: (t: string) => void;
 }) {
   const u = typeof window !== "undefined" ? window.location.href : "";
-  const t = `Quantum Spark — ${result.business_display}`;
+  const t = `Quantum Spark: ${result.business_display}`;
   const enc = encodeURIComponent;
   const composerHref = (format?: string) =>
     `/social-composer?import=quantum-spark${format ? `&format=${format}` : ""}`;

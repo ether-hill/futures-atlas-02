@@ -4,12 +4,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Signal Reactor · Foresight Briefings · Futures Atlas",
   description:
-    "Enter your organization type, get a substance-first foresight briefing on quantum + advanced AI as a presentable slide deck. Deflate the hype, extrapolate the real signal.",
+    "Enter your organization type and get a substance-first foresight briefing on quantum and advanced AI, delivered as a presentable slide deck. It strips out the hype and shows where the real signal is.",
   openGraph: {
     siteName: "Futures Atlas",
-    title: "Signal Reactor — Futures Atlas",
+    title: "Signal Reactor · Futures Atlas",
     description:
-      "A substance-first foresight instrument: honest, AI-generated briefings on what quantum and advanced AI actually mean for your organization — built to structure a conversation, not to make the decision.",
+      "A substance-first foresight instrument: honest, AI-generated briefings on what quantum and advanced AI actually mean for your organization. Built to structure a conversation. The decision stays with you.",
     type: "website",
   },
 };

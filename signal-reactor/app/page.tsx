@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Signal Reactor — one scrolling flow: title banner (modelled on the Atlas
+ * Signal Reactor, one scrolling flow: title banner (modelled on the Atlas
  * homepage hero) → sector picker → deck viewer. "Let's begin" scrolls to the
  * picker; choosing an industry scrolls to the deck section, where staged
  * generation plays and the briefing lands. State is URL-serialized
@@ -23,7 +23,7 @@ const API = "/api/signal-reactor/generate";
 // honest labels for the real pipeline stages (two model calls + assembly)
 const STAGES = [
   "reading the sector's real mechanisms",
-  "deflating the hype, isolating the signal",
+  "separating the hype from the signal",
   "mapping horizons and impact vectors",
   "engineering questions for the room",
   "assembling the eight-slide briefing",
@@ -35,7 +35,7 @@ type Phase =
   | { name: "error"; sector: string; message: string }
   | { name: "deck"; deck: Deck; sector: string; cached: boolean };
 
-/** A fluid miniature of one real slide — measures itself and scales the
+/** A fluid miniature of one real slide: measures itself and scales the
  *  1280×720 board down to fit. */
 function MiniSlide({ index }: { index: number }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -127,7 +127,7 @@ export default function Page() {
 
   return (
     <main className="shell">
-      {/* title banner — same vocabulary as the Atlas homepage hero */}
+      {/* title banner, same vocabulary as the Atlas homepage hero */}
       <section className="sr-hero">
         <Reveal className="sr-hero__inner">
           <div className="hero-grid">
@@ -137,8 +137,8 @@ export default function Page() {
               <p className="sr-hero__lede">
                 A public foresight instrument. Name your organization and it builds an honest,
                 presentable eight-slide briefing on what quantum computing and advanced AI actually
-                mean for you — hype deflated, the real signal extrapolated. A deck you can run a
-                stakeholder discussion from, exportable as PPTX or PDF.
+                mean for you, with the hype stripped out and the real signal followed through. You
+                can run a stakeholder discussion straight from the deck and export it as PPTX or PDF.
               </p>
               <div className="sr-hero__ctas">
                 <button className="cta-primary" onClick={() => scrollTo(pickerRef.current)}>
@@ -168,7 +168,7 @@ export default function Page() {
         {phase.name === "generating" && (
           <section className="gen-stage" aria-live="polite">
             <Reveal>
-              <span className="kicker kicker--accent">Generating briefing — {phase.sector}</span>
+              <span className="kicker kicker--accent">Generating briefing: {phase.sector}</span>
               {STAGES.map((label, i) => (
                 <div
                   key={label}

@@ -32,8 +32,8 @@ export function Picker({
           </h1>
           <p className="lede">
             Name your organization and get an eight-slide foresight briefing you can run a
-            stakeholder discussion from — one that tells you plainly when quantum barely matters to
-            you, and where the genuine disruption actually lands.
+            stakeholder discussion from. It tells you plainly when quantum barely matters to you,
+            and where the genuine disruption actually lands.
           </p>
         </Reveal>
       </section>

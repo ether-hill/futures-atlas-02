@@ -66,7 +66,7 @@ export class Dashboard {
       <div class="studio-root">
         <header class="studio-head">
           <h1 class="studio-title">Generatives</h1>
-          <p class="studio-intro">A generative-visual lab — an array of animated, embeddable treatments for the visual language of a quantum-computing futures project. Pick a treatment, tune it in real time, and capture it.</p>
+          <p class="studio-intro">A generative-visual lab: an array of animated, embeddable treatments for the visual language of a quantum-computing futures project. Pick a treatment, tune it in real time, and capture it.</p>
         </header>
         <div class="studio-wrap">
           <div class="studio-selectbar">
@@ -320,7 +320,7 @@ export class Dashboard {
     this.aboutTitle.textContent = d.title;
     this.aboutBody.innerHTML =
       `<p>${d.title} is a ${d.tags.join(" · ")} system, animated live and built to be embedded. ` +
-      `Open Presets for tuned starting points, hit Randomise to switch it up, or shape it by hand in Settings — ` +
+      `Open Presets for tuned starting points, hit Randomise to switch it up, or shape it by hand in Settings: ` +
       `its own parameters plus complexity, chaos and the background / low / high colours. ` +
       `Render a clip at any size from Export Video.</p>`;
   }

@@ -20,7 +20,7 @@ export const SECTORS = [
 ] as const;
 
 export const OTHER_PLACEHOLDER =
-  "Describe your organization — e.g. 'regional water utility', 'independent bookshop chain', 'maritime insurer'…";
+  "Describe your organization, e.g. 'regional water utility', 'independent bookshop chain', 'maritime insurer'…";
 
 export function toSlug(s: string): string {
   return s
