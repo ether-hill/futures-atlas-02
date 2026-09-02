@@ -146,7 +146,7 @@ unpublish, change that word and deploy — nothing else.
   middleware.
 - `src/app/api/admin/login/route.ts` — Node runtime; `crypto.timingSafeEqual`
   against every configured account, sets the httpOnly · secure · sameSite=lax
-  cookie (12h) plus the readable `fa_editor` flag, then redirects to the
+  cookie (7 days) plus the readable `fa_editor` flag, then redirects to the
   validated `next`. `…/logout/route.ts` clears both (POST only).
 - `src/components/EditorBar.tsx` — the "you are not seeing the public site" bar;
   renders nothing for the public. `/editor` is the full live-vs-draft overview.

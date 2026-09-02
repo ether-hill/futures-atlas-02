@@ -16,15 +16,14 @@ export const EDITOR_FLAG_COOKIE = "fa_editor";
 /**
  * How long a sign-in lasts, in seconds.
  *
- * Was twelve hours, which meant signing in again most mornings. Now that the
- * whole of staging sits behind this cookie rather than only its drafts, that
- * became a toll on every visit, so it is thirty days: long enough to stay
- * signed in through a stretch of work, short enough that a borrowed or
- * forgotten browser does not stay signed in indefinitely. Signing out still
+ * Was twelve hours, which meant signing in again most mornings; then thirty
+ * days once the whole of staging sat behind this cookie. A week is the
+ * compromise: long enough to stay signed in through a stretch of work, short
+ * enough that a client's or a borrowed browser is asked again before long. Signing out still
  * ends it immediately, and the expiry is inside the signed payload, so a
  * cookie cannot be edited to outlive it.
  */
-export const ADMIN_MAX_AGE = 30 * 24 * 60 * 60;
+export const ADMIN_MAX_AGE = 7 * 24 * 60 * 60; // one week
 
 function b64url(bytes: ArrayBuffer): string {
   const bin = String.fromCharCode(...new Uint8Array(bytes));
