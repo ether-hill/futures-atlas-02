@@ -232,6 +232,58 @@ export const STOCK: FutureProduct[] = [
     },
   },
   {
+    id: "meadow-wagyu",
+    name: "MeadowWagyu – Lab Grown",
+    aisle: "Food & drink",
+    // No year came with the copy. 2030 is the earliest bracket the generator
+    // offers and the one this listing reads as: cultured meat is already
+    // approved for sale in Singapore and the US, so the future part is not the
+    // technology, it is a whole cut on a supermarket shelf at this price.
+    year: "2030",
+    price: "€24.90 / 250 g",
+    line: "Wagyu-style beef grown from cells, portioned and ready to cook.",
+    image: "/shelflife/meadow-wagyu.jpg",
+    listing: {
+      delivery: "Refrigerated delivery included. Delivered in 1–2 days.",
+      specs: [
+        { label: "Weight", value: "250 g per pack" },
+        { label: "Cut", value: "2 × 125 g sirloin portions" },
+        {
+          label: "Material",
+          value: "Beef muscle and fat cells, cultured and formed into whole-cut portions",
+        },
+        { label: "Fat content", value: "22 g per 100 g" },
+        {
+          label: "Storage",
+          value: "0–4°C; use within 3 days of delivery or freeze for up to 6 months",
+        },
+      ],
+      reviews: [
+        {
+          stars: 5,
+          title: "Very good",
+          body: "Bought these for dinner with friends. Cooked them in the pan for about 4 minutes each side and they came out really tender. Will order again.",
+        },
+        {
+          stars: 4,
+          title: "As expected",
+          body: "Good beef and easy to prepare. Two 125 g pieces is about right for us with potatoes and vegetables. Packaging arrived cold.",
+        },
+        {
+          stars: 3,
+          title: "Fine, but small",
+          body: "Nothing wrong with the meat, but the portions looked a bit smaller than expected. Would prefer 150 g pieces.",
+        },
+      ],
+      qa: [
+        {
+          q: "Does this need to be cooked differently from regular beef?",
+          a: "No. Cook in a hot pan or on a grill as you would a similar beef cut. Follow the cooking instructions on the package.",
+        },
+      ],
+    },
+  },
+  {
     id: "solocool-1",
     name: "NESTA SoloCool 1",
     aisle: "Home & climate",
