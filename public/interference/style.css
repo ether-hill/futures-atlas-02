@@ -183,6 +183,9 @@ input[type="color"] {
   overflow: hidden; cursor: pointer;
 }
 .stage canvas { display: block; width: 100%; height: 100%; }
+/* While a fixed-size clip records, the canvas is a 9:16 or 16:9 frame inside
+   a 16:10 stage: show it whole rather than stretched. */
+.stage.is-fixed canvas { object-fit: contain; background: #000; }
 
 /* ── fullscreen ──────────────────────────────────────────────────────────── */
 .fshint {

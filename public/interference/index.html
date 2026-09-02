@@ -171,6 +171,8 @@
               '<button data-act="png2400">PNG, 2400px wide</button>' +
               '<button data-act="jpg">JPG</button>' +
               '<button data-act="rec">Video, one loop</button>' +
+              '<button data-act="rec1080x1920">Video, 1080 &times; 1920, 10s</button>' +
+              '<button data-act="rec1920x1080">Video, 1920 &times; 1080, 10s</button>' +
               '<button data-act="embed">Copy embed code</button>' +
               '<a href="/interference/embed.html?v=' + v.slug + '" target="_blank" rel="noopener">Open on its own &#8599;</a>' +
             '</div>' +
@@ -271,6 +273,10 @@
       } else if (act === "rec") {
         closeMenus();
         record(unit, dlBtn);
+      } else if (act === "rec1080x1920" || act === "rec1920x1080") {
+        closeMenus();
+        var wh = act.slice(3).split("x");
+        record(unit, dlBtn, { w: +wh[0], h: +wh[1], seconds: 10 });
       } else if (act === "embed") {
         closeMenus();
         copyEmbed(unit);
@@ -346,11 +352,16 @@
   function frame(now) {
     var dt = Math.min(0.05, (now - last) / 1000);
     last = now;
+    // While one field records, the others hold still: ten fields painting at
+    // once halved the frame rate of the clip on an integrated GPU.
+    var recording = null;
+    for (var j = 0; j < units.length; j++) if (units[j].rec) recording = units[j];
     for (var i = 0; i < units.length; i++) {
       var u = units[i];
       if (!u.visible) continue;
+      if (recording && u !== recording) continue;
       u.tick(dt);
-      var s = sizeFor(u);
+      var s = u.recSize || sizeFor(u);
       u.paint(s[0], s[1]);
       u.syncScrub();
     }
@@ -383,6 +394,12 @@
   // MediaRecorder writes MP4 where the browser can (Chrome 130+), WebM
   // otherwise, and the file is named for whatever it actually produced. The
   // clip runs exactly one loop, so it cuts back to its own first frame.
+  //
+  // A fixed-size clip (`fixed`: w, h, seconds) is for the socials, where the
+  // frame is 9:16 or 16:9 and ten seconds regardless of the loop. The canvas
+  // is painted at that size for the duration instead of its on-screen size
+  // (`unit.recSize`, read by the frame loop) and the stage letterboxes it
+  // meanwhile, so what you watch while it records is what the file gets.
   var RECORD_TYPES = [
     ["video/mp4;codecs=avc1.42E01E", "mp4"],
     ["video/mp4", "mp4"],
@@ -390,7 +407,7 @@
     ["video/webm", "webm"]
   ];
 
-  function record(unit, btn) {
+  function record(unit, btn, fixed) {
     if (unit.rec) { unit.rec.stop(); return; }
     if (!window.MediaRecorder || !unit.canvas.captureStream) { toast("Recording is not supported in this browser"); return; }
     var pick = null;
@@ -401,6 +418,14 @@
 
     var period = unit.variant.loop ? unit.variant.loop / Math.max(0.05, unit.speed) : 10;
     period = Math.min(period, 40);
+    var stage = unit.canvas.parentNode;
+    if (fixed) {
+      period = fixed.seconds;
+      unit.recSize = [fixed.w, fixed.h];
+      unit.paint(fixed.w, fixed.h);
+      stage.classList.add("is-fixed");
+    }
+    var suffix = fixed ? "-" + fixed.w + "x" + fixed.h : "";
 
     var stream = unit.canvas.captureStream(30);
     var rec = new MediaRecorder(stream, { mimeType: pick[0], videoBitsPerSecond: 12000000 });
@@ -414,15 +439,17 @@
     rec.onstop = function () {
       clearInterval(unit.recTick);
       unit.rec = null;
+      unit.recSize = null;
+      stage.classList.remove("is-fixed");
       unit.playing = wasPlaying;
       unit.refresh();
       btn.classList.remove("is-rec");
       btn.innerHTML = "Download &#9662;";
       var blob = new Blob(chunks, { type: pick[0] });
       var url = URL.createObjectURL(blob);
-      download(url, "interference-" + unit.variant.slug + "." + pick[1]);
+      download(url, "interference-" + unit.variant.slug + suffix + "." + pick[1]);
       setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
-      toast("One loop saved as " + pick[1].toUpperCase());
+      toast((fixed ? fixed.w + " \u00d7 " + fixed.h + " saved as " : "One loop saved as ") + pick[1].toUpperCase());
     };
 
     rec.start();
@@ -433,7 +460,8 @@
       btn.textContent = "Recording " + Math.max(0, left).toFixed(0) + "s";
       if (left <= 0) rec.stop();
     }, 200);
-    toast("Recording one loop, " + period.toFixed(0) + "s");
+    toast(fixed ? "Recording " + fixed.w + " \u00d7 " + fixed.h + ", " + period + "s"
+                : "Recording one loop, " + period.toFixed(0) + "s");
   }
 
   function copyEmbed(unit) {
