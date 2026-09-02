@@ -20,6 +20,20 @@ export interface RenderOpts {
   onProgress?: (p: number) => void;
 }
 
+/*
+ * A note on supersampling, because it is the obvious next idea and it is wrong
+ * here. Rendering at 2x and resolving down would antialias beautifully for a
+ * fixed image — but these pieces are resolution-adaptive: they read
+ * surface.width/height to decide how many particles to run and how fine the
+ * strokes are. Double the buffer and curl-flow does not draw the same picture
+ * more smoothly, it draws a DIFFERENT, denser picture. Tried and measured; the
+ * two frames were not the same composition.
+ *
+ * The live canvas renders at dpr 1, so an export at dpr 1 is the one that
+ * matches what you are looking at. Quality here comes from resolution and
+ * bitrate instead, neither of which changes the work.
+ */
+
 export function isVideoExportSupported(): boolean {
   return typeof VideoEncoder !== "undefined" && typeof VideoFrame !== "undefined";
 }
@@ -71,7 +85,12 @@ export async function renderVideoMp4(config: Config, opts: RenderOpts): Promise<
   });
   piece.applyMeta(config.meta.complexity, config.meta.chaos);
 
-  const bitrate = Math.round(Math.min(40e6, Math.max(6e6, width * height * fps * 0.12)));
+  // Bits per pixel per second. The old 0.12 left 1080p30 on roughly 7 Mbps,
+  // which these pieces exhaust immediately — fine noise and thin strokes are
+  // the hardest thing to encode, and starving them is what produced the
+  // blocking. 0.30 is a little over double, with the floor and ceiling raised
+  // to match so short clips and large frames both get the headroom.
+  const bitrate = Math.round(Math.min(80e6, Math.max(12e6, width * height * fps * 0.3)));
   const codec = await pickCodec(width, height, fps, bitrate);
   if (!codec) {
     piece.dispose();
@@ -88,7 +107,17 @@ export async function renderVideoMp4(config: Config, opts: RenderOpts): Promise<
     output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
     error: (e) => (encError = e),
   });
-  encoder.configure({ codec, width, height, bitrate, framerate: fps });
+  encoder.configure({
+    codec,
+    width,
+    height,
+    bitrate,
+    framerate: fps,
+    // Offline render: spend time for quality, and let the rate vary so a busy
+    // frame can take the bits a still one did not need.
+    latencyMode: "quality",
+    bitrateMode: "variable",
+  });
 
   const total = Math.max(1, Math.round(fps * opts.seconds));
   const dt = 1 / fps;
