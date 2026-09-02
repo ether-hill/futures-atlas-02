@@ -94,7 +94,7 @@ export function PostCarousel({
       <Container>
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
           <div>
-            {eyebrow && <p className="eyebrow tick mb-6">{eyebrow}</p>}
+            {eyebrow && <p className="eyebrow mb-6">{eyebrow}</p>}
             <h2 className="max-w-[22ch] text-[clamp(28px,4.2vw,60px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
               {title}
             </h2>

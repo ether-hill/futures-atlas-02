@@ -21,11 +21,13 @@
  * already installed; pass PLAYWRIGHT_PATH to point at another copy.
  */
 
-import { mkdirSync, existsSync } from "node:fs";
+import { mkdirSync, existsSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+const sharp = createRequire(join(ROOT, "package.json"))("sharp");
 
 const PW_CANDIDATES = [
   process.env.PLAYWRIGHT_PATH,
@@ -48,10 +50,15 @@ const PASSWORD = process.env.MOCK_PASSWORD || "";
 mkdirSync(OUT, { recursive: true });
 
 const browser = await chromium.launch({ channel: "chrome", headless: true });
-// 4:5 at half the export size: sharp enough for a grid tile, small on disk.
+// 9:16 at phone width. Two reasons: it is the ratio the feed defaults to, so a
+// still is not cover-cropped on the sides to fit; and a phone viewport makes the
+// wide app layouts (Actually Hard Questions especially) reflow to one column
+// rather than being a desktop page squeezed into a portrait frame.
 const ctx = await browser.newContext({
-  viewport: { width: 540, height: 675 },
-  deviceScaleFactor: 2,
+  viewport: { width: 432, height: 768 },
+  deviceScaleFactor: 3,
+  isMobile: true,
+  hasTouch: true,
 });
 const page = await ctx.newPage();
 
@@ -82,9 +89,60 @@ for (const post of REEL_POSTS) {
   // first silently captured the first piece still on screen.
   await page.goto("about:blank");
   await page.goto(url, { waitUntil: "networkidle" });
+  // App chrome — screen switchers, session doors, join and reference lines —
+  // means nothing outside the app and reads as clutter in a feed.
+  if (post.hide) {
+    await page.addStyleTag({ content: `${post.hide} { display: none !important; }` });
+  }
+  // Some chrome has no stable class to aim at — the back link and the
+  // "REPORT · PUBLISHED …" line are utility-class soup. Match on their text.
+  if (post.css) await page.addStyleTag({ content: post.css }).catch(() => {});
+  if (post.hideText?.length) {
+    await page.evaluate((needles) => {
+      for (const el of document.querySelectorAll("a,p,span,div,nav,button")) {
+        const t = (el.textContent || "").trim().toUpperCase();
+        if (t.length < 80 && needles.some((n) => t.includes(n))) {
+          (el).style.setProperty("display", "none", "important");
+        }
+      }
+    }, post.hideText.map((n) => n.toUpperCase()));
+  }
+  if (post.scrollToText) {
+    const node = page.getByText(post.scrollToText, { exact: false }).first();
+    await node.scrollIntoViewIfNeeded({ timeout: 8000 }).catch(() => {});
+    await page.evaluate(() => window.scrollBy(0, -60));
+    await page.waitForTimeout(700);
+  }
+  if (post.scrollTo) {
+    await page.evaluate((n) => window.scrollBy(0, window.innerHeight * n), post.scrollTo);
+  }
   await page.waitForTimeout(post.thumbAt * 1000);
   const file = join(OUT, `${post.id}.jpg`);
-  await page.screenshot({ path: file, type: "jpeg", quality: 82 });
+
+  if (post.el) {
+    // A finding card is its own object; screenshot the element and pad it out to
+    // the post ratio, rather than framing a viewport around it and hoping. Its
+    // figures count up when it scrolls into view, so it has to be seen first.
+    const node = page.locator(post.el).nth(post.elIndex ?? 0);
+    await node.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(2600);
+    const raw = `${file}.el.png`;
+    await node.screenshot({ path: raw });
+    const m = await sharp(raw).metadata();
+    const target = Math.round(m.width * 16 / 9);
+    const pad = Math.max(0, target - m.height);
+    const bg = await sharp(raw).extract({ left: 2, top: 2, width: 1, height: 1 })
+      .raw().toBuffer();
+    await sharp(raw)
+      .extend({
+        top: Math.floor(pad / 2), bottom: Math.ceil(pad / 2),
+        background: { r: bg[0], g: bg[1], b: bg[2] },
+      })
+      .jpeg({ quality: 88 }).toFile(file);
+    rmSync(raw, { force: true });
+  } else {
+    await page.screenshot({ path: file, type: "jpeg", quality: 82 });
+  }
   console.log(`✓ ${post.id}.jpg  (${post.thumbAt}s)`);
 }
 

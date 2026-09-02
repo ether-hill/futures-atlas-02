@@ -65,6 +65,49 @@
 
 .fa-shell__home { display: inline-flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
 .fa-shell__mark { display: inline-flex; }
+/*
+  One ring roll of the mark on ARRIVING at the homepage from elsewhere on the
+  site (atlas-nav.js decides when). Not on a reload, and not on every page: it
+  marks the transition, and firing it constantly would make it wallpaper.
+
+  This is the bench's own "Ring rolls" preset (/logo-animator), baked to frames.
+  The mark is a 3-D construction — a tilted tube ring turning inside a sphere —
+  so a CSS rotate of the flat artwork is a different animation altogether, and
+  that is what the first attempt was. Shipping the bench's renderer instead
+  would put a few hundred lines of 3-D maths on every page of the site, and on
+  every sub-app bundle, for 900ms of motion.
+
+  24 frames, sampled from the running preset. The ease-in-out lives in WHICH
+  moments were sampled, because a sprite can only be stepped through linearly.
+  steps(23) rather than steps(24): 24 frames are 23 intervals, and stepping 24
+  lands every frame a fraction off its cell.
+
+  Drawn as a mask filled with currentColor, so it takes the bar's own colour and
+  needs none of the invert() the flat <img> does.
+*/
+@keyframes fa-mark-roll {
+  from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+  to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+}
+.fa-shell__mark { position: relative; }
+.fa-shell__mark.is-rolling img { visibility: hidden; }
+.fa-shell__mark.is-rolling::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: currentColor;
+  -webkit-mask-image: url(/fa-mark-roll.png);
+  mask-image: url(/fa-mark-roll.png);
+  -webkit-mask-size: 2400% 100%;
+  mask-size: 2400% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: fa-mark-roll 900ms steps(23, end) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fa-shell__mark.is-rolling img { visibility: visible; }
+  .fa-shell__mark.is-rolling::after { display: none; }
+}
 .fa-shell__word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; }
 /* The "Futures Atlas" wordmark shows alongside the logo on every page, including
    project pages, where the breadcrumb names the project after it. (Hidden only on
@@ -108,7 +151,14 @@
 .fa-shell__item { display: block; padding: 9px 11px; border-radius: 6px; color: #141518; text-decoration: none; font-size: 14px; white-space: nowrap; }
 .fa-shell__item:hover { background: rgba(20, 21, 24, 0.06); }
 .fa-shell__item.is-current { color: rgba(20, 21, 24, 0.45); cursor: default; }
-.fa-shell__item--accent { color: #b4541e; }
+/* The brand blue, written out because this stylesheet is self-contained by
+   design — the vanilla project bundles load it WITHOUT the core tokens. One
+   value, both themes: this file used to accent light mode in a burnt orange
+   (#b4541e) and dark mode in a pale blue (#7fb2e6), so the "accent" was not
+   even the same hue from one setting to the next. Matches
+   oklch(0.565 0.13 245) in futures-atlas-core/src/tokens.css; change one,
+   change the other. */
+.fa-shell__item--accent { color: #1e7cbd; }
 /* Editor-only marker in the switcher (drafts are listed for signed-in editors). */
 .fa-shell__draft { margin-left: 6px; border-radius: 3px; background: rgba(20, 21, 24, 0.1); padding: 1px 5px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: 1px; }
 .fa-shell__menusep { height: 1px; margin: 6px 4px; background: rgba(20, 21, 24, 0.1); }
@@ -172,7 +222,6 @@ html.dark .fa-shell__menu { background: #0c0d10; border-color: rgba(255, 255, 25
 html.dark .fa-shell__item { color: #f3f1ec; }
 html.dark .fa-shell__item:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-shell__item.is-current { color: rgba(243, 241, 236, 0.45); }
-html.dark .fa-shell__item--accent { color: #7fb2e6; }
 html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 
 @media (max-width: 680px) {
@@ -200,7 +249,10 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
      --fa-accent-deep from the core tokens, written out because this stylesheet
      is self-contained by design — the vanilla sub-apps load it without the
      token sheet and must render the same footer. */
-  background: oklch(0.42 0.11 245);
+  /* a shade of the one brand blue: same hue and chroma as
+     oklch(0.565 0.13 245), darker so 12.5px copy still reads on it (7.22).
+     Mirrors --fa-accent-band in futures-atlas-core/src/tokens.css. */
+  background: oklch(0.42 0.13 245);
   color: #f3f1ec;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   transition: background-color 0.5s, color 0.5s;
@@ -279,9 +331,8 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
   cursor: pointer;
 }
 .fa-subnav__link:hover { opacity: 0.9; }
-.fa-subnav__link.is-active { opacity: 1; color: #b4541e; }
+.fa-subnav__link.is-active { opacity: 1; color: #1e7cbd; }
 html.dark .fa-subnav { background: rgba(12, 13, 16, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
-html.dark .fa-subnav__link.is-active { color: #7fb2e6; }
 /* On pages with a sub-nav, keep the master bar put (it never travels) so the
    slim tab row never floats with a gap above it. atlas-nav.js skips the scroll
    handling entirely on these pages, and this backs it up. */
@@ -320,10 +371,19 @@ body:has(.fa-subnav) .fa-shell { transform: none !important; }
 
 .fa-sheet {
   position: fixed;
-  inset: var(--fa-nav-h) 0 0 0;
+  /* Full bleed, not inset below the bar. Starting at --fa-nav-h left a strip of
+     the page's own frosted bar across the top of an otherwise full-screen
+     panel, so the menu read as a box that had failed to reach the top rather
+     than as a screen. The bar stays ON TOP of the sheet (see .fa-menu-open
+     below) and loses its plate, so its controls still work and the sheet's
+     ground runs behind them. */
+  inset: 0;
   z-index: 9990; /* above zone content incl. the Odds stage (z 9000) */
   display: flex;
-  background: rgba(243, 241, 236, 0.97);
+  /* Bone with a blue cast pulled towards --brand, rather than the page's plain
+     ground: the menu is the one full-screen surface the site owns, and it
+     should feel like the brand rather than like a page that lost its content. */
+  background: rgba(232, 236, 248, 0.975);
   -webkit-backdrop-filter: blur(22px);
   backdrop-filter: blur(22px);
   color: #141518;
@@ -334,9 +394,55 @@ body:has(.fa-subnav) .fa-shell { transform: none !important; }
   overflow-y: auto;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
 }
+/*
+  A very quiet interference figure behind the menu: two ring systems from two
+  sources, crossing. Static, not animated — this thing is on screen for three
+  seconds at a time and a moving backdrop behind navigation is just noise. It
+  is two repeating-radial-gradients rather than a canvas or an image because
+  this stylesheet is loaded by the vanilla project bundles too and has to stay
+  self-contained; drawn in currentColor, so it inverts with the theme for free.
+  The mask keeps it off the left edge where the link column sits.
+*/
+.fa-sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Two sources CLOSE together, not one in each corner. Far apart and at the
+     same pitch, two ring systems cross at a constant angle and tile the screen
+     with a diamond lattice — technically interference, visually a quilt. Placed
+     a couple of wavelengths apart they give the hyperbolic fringes that fan out
+     from a two-slit pattern, which is the figure this site is actually about.
+     The pitch is in vmin so the fan is the same size relative to any viewport;
+     fixed in px it was clean rings on a phone and a halftone screen on a
+     desktop. */
+  background-image:
+    repeating-radial-gradient(circle at 34% 6%, transparent 0, currentColor 4.5vmin, transparent 9vmin),
+    repeating-radial-gradient(circle at 58% 6%, transparent 0, currentColor 4.5vmin, transparent 9vmin);
+  opacity: 0.055;
+  -webkit-mask-image: radial-gradient(120% 88% at 62% 4%, #000 0%, rgba(0,0,0,0.5) 44%, transparent 82%);
+  mask-image: radial-gradient(120% 88% at 62% 4%, #000 0%, rgba(0,0,0,0.5) 44%, transparent 82%);
+}
+html.dark .fa-sheet::before { opacity: 0.075; }
+.fa-sheet__inner { position: relative; z-index: 1; }
+
 .fa-sheet.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
-html.dark .fa-sheet { background: rgba(10, 11, 13, 0.975); color: #f3f1ec; }
+html.dark .fa-sheet { background: rgba(9, 13, 24, 0.978); color: #f3f1ec; }
 html.fa-menu-open { overflow: hidden; } /* lock scroll while the sheet is open */
+
+/* While the menu is open the bar keeps its position and its controls but gives
+   up its surface, so there is no seam between the two. It has to outrank the
+   sheet's z-index or the burger — the only way to close the thing — would be
+   underneath it. */
+html.fa-menu-open .fa-shell {
+  z-index: 9991;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom-color: transparent;
+}
+html.fa-menu-open .fa-shell.is-clear { color: #141518; }
+html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
 
 .fa-sheet__inner {
   width: 100%;
@@ -344,7 +450,8 @@ html.fa-menu-open { overflow: hidden; } /* lock scroll while the sheet is open *
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  padding: clamp(20px, 5vw, 40px) clamp(22px, 7vw, 48px) 48px;
+  /* the sheet runs under the bar now, so the links start below it */
+  padding: calc(var(--fa-nav-h) + clamp(20px, 5vw, 40px)) clamp(22px, 7vw, 48px) 48px;
 }
 .fa-sheet__sec {
   display: flex;
@@ -378,8 +485,7 @@ html.fa-menu-open { overflow: hidden; } /* lock scroll while the sheet is open *
   font-weight: 500;
   opacity: 0.6;
 }
-.fa-sheet__sublink.is-active { opacity: 1; color: #b4541e; }
-html.dark .fa-sheet__sublink.is-active { color: #7fb2e6; }
+.fa-sheet__sublink.is-active { opacity: 1; color: #1e7cbd; }
 .fa-sheet__theme {
   display: inline-flex;
   align-items: center;
@@ -471,25 +577,53 @@ html.dark .fa-share.is-open .fa-share__btn { background: rgba(255, 255, 255, 0.0
   border-radius: 9px; color: #141518; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; white-space: nowrap;
 }
 .fa-share__opt:hover { background: rgba(20, 21, 24, 0.07); }
-.fa-share__opt--accent { color: #b4541e; font-weight: 600; }
+.fa-share__opt--accent { color: #1e7cbd; font-weight: 600; }
 .fa-share__sep { height: 1px; margin: 5px 8px; background: rgba(20, 21, 24, 0.1); }
 html.dark .fa-share__sep { background: rgba(255, 255, 255, 0.1); }
 .fa-share__ig { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 13px 8px; }
-.fa-share__iglbl { color: #b4541e; font-weight: 600; font-size: 13px; margin-right: 2px; }
+.fa-share__iglbl { color: #1e7cbd; font-weight: 600; font-size: 13px; margin-right: 2px; }
 .fa-share__chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(20, 21, 24, 0.18); color: #141518; text-decoration: none; }
-.fa-share__chip:hover { border-color: #b4541e; color: #b4541e; }
-html.dark .fa-share__iglbl { color: #7fb2e6; }
+.fa-share__chip:hover { border-color: #1e7cbd; color: #1e7cbd; }
+html.dark .fa-share__iglbl { color: #1e7cbd; }
 html.dark .fa-share__chip { border-color: rgba(255, 255, 255, 0.18); color: #f3f1ec; }
-html.dark .fa-share__chip:hover { border-color: #7fb2e6; color: #7fb2e6; }
+html.dark .fa-share__chip:hover { border-color: #1e7cbd; color: #1e7cbd; }
 html.dark .fa-share__btn { background: rgba(12, 13, 16, 0.92); color: #f3f1ec; border-color: rgba(255, 255, 255, 0.16); }
 html.dark .fa-share.is-open .fa-share__btn { background: #f3f1ec; color: #0c0d10; }
 html.dark .fa-share__panel { background: rgba(12, 13, 16, 0.96); border-color: rgba(255, 255, 255, 0.12); }
 html.dark .fa-share__opt { color: #f3f1ec; }
 html.dark .fa-share__opt:hover { background: rgba(255, 255, 255, 0.08); }
-html.dark .fa-share__opt--accent { color: #7fb2e6; }
+
+/* ── the share tool as a menu row ──────────────────────────────────────────
+   Same node as the bar's circular button, restyled into a pill that matches
+   the theme and account rows beside it. The panel flips its anchor because in
+   the sheet the trigger is left-aligned, not tucked into the right edge. */
+.fa-share__lbl { display: none; }
+.fa-share--sheet { display: block; margin: 0; }
+.fa-share--sheet .fa-share__btn {
+  width: auto; height: auto;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 11px 18px 11px 20px;
+  border-radius: 999px;
+  border-color: color-mix(in srgb, currentColor 28%, transparent);
+  font: inherit;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.fa-share--sheet .fa-share__lbl { display: inline; }
+.fa-share--sheet .fa-share__panel {
+  left: 0; right: auto;
+  transform-origin: top left;
+  min-width: min(280px, calc(100vw - 56px));
+}
+html.dark .fa-share--sheet .fa-share__btn { background: transparent; color: inherit; }
+html.dark .fa-share--sheet.is-open .fa-share__btn { background: rgba(255, 255, 255, 0.08); color: inherit; }
 
 @media (max-width: 900px) {
   .fa-share__btn { width: 34px; height: 34px; }
+  /* the bar's own circle goes with it — the tool is in the menu at this width */
+  .fa-share--sheet .fa-share__btn { width: auto; height: auto; }
 }
 
 /* Transparent over a full-bleed hero — see atlas-nav.js. The bar keeps its
@@ -506,6 +640,12 @@ html .fa-shell.is-clear,
 .fa-shell.is-clear .fa-shell__toggle,
 .fa-shell.is-clear .fa-shell__profile,
 .fa-shell.is-clear .fa-share__btn { border-color: rgba(255, 255, 255, 0.34); }
+/* The mark is a black <img>, inverted to white only under html.dark. Over a
+   full-bleed dark hero the bar is clear and its type is forced light in BOTH
+   themes — but the mark was not, so in LIGHT mode the homepage lost its logo
+   entirely: black artwork on a black stage. The bar is now identical in both
+   themes on a hero page, which is the point of the clear variant. */
+.fa-shell.is-clear .fa-shell__mark img { filter: invert(1); }
 
 /* Left over from when the share tool was a fixed floating button: `top` and
    `right` on what is now a RELATIVE element offset it, which pushed it exactly
@@ -520,7 +660,29 @@ html .fa-shell.is-clear,
 .fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.6; }
 .fa-foot__split { display: grid; gap: 32px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4.5vw, 56px); border-top: 1px solid rgba(243, 241, 236, 0.18); padding-top: clamp(28px, 4vw, 44px); }
 @media (min-width: 640px) { .fa-foot__split { grid-template-columns: 1fr 1fr; } }
+/* The footer's column count varies with the environment: brand, sections and
+   projects always, plus the feed column and the internal column where those
+   exist (see scripts/gen-footer.mjs). --4 is the default four-column rule. */
+/* The internal column's sign-out is a form button, so it has to be un-styled
+   back down to the plain link the rest of that column is set in. */
+.fa-foot__signout { margin: 10px 0 0; }
+.fa-foot__signout button { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+
+.fa-foot__grid--3 { grid-template-columns: 1.4fr 0.8fr 1.4fr; }
+@media (max-width: 900px) { .fa-foot__grid--3 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .fa-foot__grid--3 { grid-template-columns: 1fr; } }
 @media (min-width: 1180px) { .fa-foot__grid--5 { grid-template-columns: 1.15fr 0.65fr 1.1fr 1fr 0.85fr; } }
+/* The internal column is not part of the site — it is the working drawer, and
+   only exists on preview and local builds. Boxing it says so: without a border
+   it reads as a fifth public section that happens to be full of dead ends on
+   production. Dashed rather than solid, because it is scaffolding. */
+.fa-foot__internal {
+  border: 1px dashed rgba(243, 241, 236, 0.28);
+  border-radius: 6px;
+  padding: 16px 18px 18px;
+  margin-top: -4px;
+  align-self: start;
+}
 .fa-foot__internal .fa-foot__h { opacity: 0.75; }
 .fa-foot__internal .fa-foot__meta { opacity: 0.45; }
 .fa-foot__post { display: block; text-decoration: none; color: inherit; }

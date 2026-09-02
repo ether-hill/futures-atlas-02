@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-fa-no-footer>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Stats — The Odds</title>
-<meta name="description" content="How everyone's plays of The Odds have actually gone — a real, running tally." />
+<title>Results — The Odds</title>
+<meta name="description" content="How everyone's plays of The Odds have actually gone, and how many people kept rolling until the world ended." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Futures Atlas" />
-<meta property="og:title" content="The Odds · Stats — Futures Atlas" />
-<meta property="og:description" content="How everyone's plays of The Odds have actually gone — a real, running tally." />
+<meta property="og:title" content="The Odds · Results — Futures Atlas" />
+<meta property="og:description" content="How many people kept rolling until the world ended. A real, running tally." />
 <meta property="og:url" content="https://futures-atlas-02.vercel.app/theodds/stats" />
 <meta property="og:image" content="https://futures-atlas-02.vercel.app/og/the-odds.png" />
 <meta name="twitter:card" content="summary_large_image" />
@@ -20,44 +20,142 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#08080a;--panel:#141416;--line:rgba(236,234,230,0.12);--line2:rgba(236,234,230,0.24);--text:#ECEAE6;--muted:rgba(236,234,230,0.62);--faint:rgba(236,234,230,0.4);--accent:#E0481B}
+:root{
+  --bg:#08080a;--panel:#141416;--panel2:#0e0e11;
+  --line:rgba(236,234,230,0.12);--line2:rgba(236,234,230,0.24);
+  --text:#ECEAE6;--muted:rgba(236,234,230,0.62);--faint:rgba(236,234,230,0.4);
+  --accent:#E0481B;
+  --dario:#9B7BFF;--elon:#FF6F61;--tegmark:#34E5C4;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;padding-top:50px;-webkit-font-smoothing:antialiased}
-.wrap{max-width:720px;margin:0 auto;padding:clamp(40px,8vh,84px) clamp(20px,5vw,40px) 90px}
+body{background:var(--bg);color:var(--text);font-family:'Space Mono',monospace;-webkit-font-smoothing:antialiased}
+.wrap{max-width:820px;margin:0 auto;padding:clamp(36px,7vh,72px) clamp(20px,5vw,40px) 110px}
+
 .eyebrow{font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:var(--accent)}
-h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(30px,5vw,46px);line-height:1.02;letter-spacing:-0.02em;margin:14px 0 0}
-.lead{font-size:14.5px;line-height:1.65;color:var(--muted);max-width:56ch;margin-top:16px}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:44px}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px 20px}
-.stat b{display:block;font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,7vw,52px);line-height:1;color:var(--accent)}
-.stat.is-good b{color:#ECEAE6}
-.stat span{display:block;margin-top:8px;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint)}
-.note{margin-top:22px;font-size:12.5px;line-height:1.6;color:var(--faint)}
-.unconfigured{margin-top:44px;padding:20px;border:1px dashed var(--line2);border-radius:14px;font-size:13px;line-height:1.6;color:var(--muted)}
-.back{display:inline-block;margin-top:40px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(30px,5.2vw,50px);line-height:1.0;letter-spacing:-0.025em;margin:14px 0 0;max-width:16ch}
+.lead{font-size:14px;line-height:1.7;color:var(--muted);max-width:60ch;margin-top:18px}
+.lead b{color:var(--text);font-weight:400}
+
+h2{font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;letter-spacing:-0.01em;margin:0}
+section{margin-top:clamp(44px,7vh,72px)}
+.sec-head{display:flex;align-items:baseline;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.sec-head span{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--faint)}
+
+/* the headline number, on its own */
+.hero{margin-top:38px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:clamp(24px,4vw,38px)}
+.hero b{display:block;font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(64px,15vw,132px);line-height:0.86;letter-spacing:-0.04em;color:var(--accent)}
+.hero .cap{margin-top:16px;font-family:'Archivo',sans-serif;font-weight:700;font-size:clamp(16px,2.4vw,21px);line-height:1.35;color:var(--text);max-width:30ch}
+.hero .sub{margin-top:12px;font-size:12.5px;line-height:1.65;color:var(--muted);max-width:56ch}
+/* the bar under the headline: doomed players against the rest */
+.split{margin-top:22px;display:flex;height:9px;border-radius:99px;overflow:hidden;background:rgba(236,234,230,0.08)}
+.split i{display:block;height:100%;background:var(--accent);transition:width .8s cubic-bezier(.22,1,.36,1)}
+.split-key{margin-top:10px;display:flex;justify-content:space-between;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--faint)}
+
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:20px 18px}
+.stat b{display:block;font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(26px,4.4vw,38px);line-height:1;letter-spacing:-0.02em}
+.stat span{display:block;margin-top:9px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--faint);line-height:1.5}
+
+/* how many tries it took */
+.hist{margin-top:24px;display:flex;flex-direction:column;gap:9px}
+.row{display:grid;grid-template-columns:64px 1fr 56px;align-items:center;gap:12px}
+.row .k{font-size:11px;color:var(--muted);letter-spacing:0.04em}
+.row .track{height:22px;background:rgba(236,234,230,0.05);border-radius:4px;overflow:hidden}
+.row .track i{display:block;height:100%;background:linear-gradient(90deg,rgba(224,72,27,0.55),var(--accent));border-radius:4px;transition:width .8s cubic-bezier(.22,1,.36,1)}
+.row .v{font-size:11px;color:var(--faint);text-align:right}
+
+/* per thinker */
+.thinkers{margin-top:22px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.tk{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:20px 18px}
+.tk .nm{font-family:'Archivo',sans-serif;font-weight:700;font-size:14px;letter-spacing:-0.01em}
+.tk .dot{display:inline-block;width:7px;height:7px;border-radius:99px;margin-right:8px;vertical-align:middle}
+.tk .big{margin-top:14px;font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(24px,4vw,34px);line-height:1;letter-spacing:-0.02em}
+.tk .cmp{margin-top:9px;font-size:10.5px;line-height:1.6;color:var(--faint)}
+.tk .cmp em{font-style:normal;color:var(--muted)}
+.tk .gauge{margin-top:20px;height:6px;border-radius:99px;background:rgba(236,234,230,0.08);position:relative}
+.tk .gauge i{position:absolute;left:0;top:0;bottom:0;border-radius:99px;transition:width .8s cubic-bezier(.22,1,.36,1)}
+/* The stated odds, as a notch across the gauge: observed rate against claimed
+   rate. It sits OUTSIDE the track's rounding, so the gauge cannot clip it —
+   with overflow:hidden the notch vanished exactly when the two agreed, which is
+   the one reading the mark exists to show. */
+.tk .gauge u{position:absolute;top:-6px;bottom:-6px;width:2px;margin-left:-1px;background:var(--text);box-shadow:0 0 0 1px rgba(8,8,10,0.85)}
+.tk .gauge b{position:absolute;top:-19px;transform:translateX(-50%);font-size:9px;letter-spacing:0.1em;color:var(--faint);white-space:nowrap}
+
+.note{margin-top:22px;font-size:12px;line-height:1.75;color:var(--faint);max-width:62ch}
+.note a{color:var(--muted)}
+.unconfigured,.empty{margin-top:38px;padding:22px;border:1px dashed var(--line2);border-radius:14px;font-size:13px;line-height:1.7;color:var(--muted)}
+.back{display:inline-block;margin-top:48px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
 .back:hover{color:var(--text)}
-@media(max-width:520px){.stat-grid{grid-template-columns:1fr}}
+.hidden{display:none}
+@media(max-width:760px){
+  .stat-grid{grid-template-columns:repeat(2,1fr)}
+  .thinkers{grid-template-columns:1fr}
+}
+/* six tiles one under another is a very long scroll for very little; two up
+   holds until the label wraps to three lines */
+@media(max-width:430px){
+  .stat-grid{grid-template-columns:1fr}
+  .row{grid-template-columns:56px 1fr 46px}
+}
+@media(prefers-reduced-motion:reduce){.split i,.row .track i,.tk .gauge i{transition:none}}
 </style>
 <link rel="stylesheet" href="/atlas-nav.css">
-<style>body{padding-top:var(--fa-nav-h,50px)!important}</style>
+<style>body{padding-top:var(--fa-nav-h,50px)}</style>
 <script src="/atlas-nav.js" defer></script>
 </head>
 <body>
 
 <div class="wrap">
-  <div class="eyebrow">The Odds</div>
-  <h1>How it's actually gone.</h1>
-  <p class="lead">A real, running tally of every roll, spin and card pick since this launched — not a projection, not a guess. Nothing about who played is stored, just the outcome.</p>
+  <div class="eyebrow">The Odds · Results</div>
+  <h1>How far people go before it ends.</h1>
+  <p class="lead">Every roll, spin and card pick since this went up, counted as it happened. Not a projection, not a sample, not a guess. Nothing about who played is stored: the page keeps a tally, and the tally keeps no names.</p>
 
-  <div id="loaded" style="display:none">
-    <div class="stat-grid">
-      <div class="stat is-good"><b id="playsN">—</b><span>plays recorded</span></div>
-      <div class="stat"><b id="doomPct">—</b><span>ended in doom — things went really, really badly</span></div>
+  <!-- ── the headline: players who kept going until doom ── -->
+  <div id="loaded" class="hidden">
+    <div class="hero">
+      <b id="doomPlayersPct">—</b>
+      <div class="cap" id="heroCap">of players kept rolling until they got the ending where we don't make it.</div>
+      <div class="split"><i id="splitBar" style="width:0%"></i></div>
+      <div class="split-key"><span id="splitLeft">reached doom</span><span id="splitRight">stopped before it</span></div>
+      <p class="sub">Nobody is asked to keep going. The odds are, by design, survivable: roughly three plays in four come out fine. Doom is something you have to keep playing for, and the number above is how many people did. Build the thing, see it go well, build it again. That is the shape of AI policy right now, which is why this is the number on the wall.</p>
     </div>
-    <p class="note" id="doomN"></p>
+
+    <section>
+      <div class="sec-head"><h2>The room</h2><span>everyone who has played</span></div>
+      <!-- one grid, not two rows of three: two stacked grids orphan a tile at
+           every width where the column count is not three -->
+      <div class="stat-grid">
+        <div class="stat"><b id="playersN">—</b><span>players</span></div>
+        <div class="stat"><b id="playsN">—</b><span>plays resolved</span></div>
+        <div class="stat"><b id="perPlayer">—</b><span>plays per player, average</span></div>
+        <div class="stat"><b id="doomPct">—</b><span>of plays came up doom</span></div>
+        <div class="stat"><b id="livedN">—</b><span>played again, and walked away alive</span></div>
+        <div class="stat"><b id="afterDoomN">—</b><span>plays made after doom had already landed</span></div>
+      </div>
+    </section>
+
+    <!-- ── how stubborn: tries needed to reach doom ── -->
+    <section id="histSec">
+      <div class="sec-head"><h2>How many tries it took</h2><span>players who reached doom</span></div>
+      <div class="hist" id="hist"></div>
+      <p class="note" id="histNote"></p>
+    </section>
+
+    <!-- ── observed rate against the rate each of them actually stated ── -->
+    <section id="tkSec">
+      <div class="sec-head"><h2>Against their own numbers</h2><span>observed vs stated</span></div>
+      <div class="thinkers" id="thinkers"></div>
+      <p class="note">The bar is what has actually come up here. The line is the odds that person put on the record. They converge with enough plays, which is the only claim this piece makes about probability.</p>
+    </section>
+
+    <p class="note">Counted server-side, one tally shared by everyone. A player is one browser session, so the same person on two days counts twice, and a shared laptop counts once. Plays from private windows land in the totals but not in the per-player numbers.</p>
   </div>
 
-  <div id="unconfigured" class="unconfigured" style="display:none">
+  <div id="empty" class="empty hidden">
+    Nobody has played yet. <a href="/theodds">Be the first</a> and this page will have something to say.
+  </div>
+
+  <div id="unconfigured" class="unconfigured hidden">
     Plays aren't being recorded right now — the stats store isn't configured on this deployment.
   </div>
 
@@ -65,18 +163,108 @@ h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(30px,5vw,46p
 </div>
 
 <script>
-fetch('/api/theodds/stats', { cache: 'no-store' })
-  .then(function(r){ return r.json(); })
-  .then(function(d){
-    if (!d || !d.ok || !d.configured) { document.getElementById('unconfigured').style.display = 'block'; return; }
-    var plays = d.plays || 0, doom = d.doom || 0;
-    var pct = plays ? Math.round((doom / plays) * 100) : 0;
-    document.getElementById('playsN').textContent = plays.toLocaleString();
-    document.getElementById('doomPct').textContent = pct + '%';
-    document.getElementById('doomN').textContent = doom.toLocaleString() + ' of ' + plays.toLocaleString() + ' plays reached a doom scenario.';
-    document.getElementById('loaded').style.display = 'block';
-  })
-  .catch(function(){ document.getElementById('unconfigured').style.display = 'block'; });
+(function () {
+  var show = function (id) { document.getElementById(id).classList.remove('hidden'); };
+  var txt = function (id, v) { document.getElementById(id).textContent = v; };
+  var num = function (v) { return (v || 0).toLocaleString(); };
+  var pct = function (a, b) { return b ? Math.round((a / b) * 100) : 0; };
+
+  // Stated odds, from the same sources the game quotes. Tegmark names twelve
+  // futures rather than a probability; three of the twelve are ones we don't
+  // survive, so the deck itself is the number.
+  var THINKERS = [
+    { key: 'dario-amodei', name: 'Dario Amodei', colour: 'var(--dario)', stated: 25, statedLabel: '25% stated' },
+    { key: 'elon-musk', name: 'Elon Musk', colour: 'var(--elon)', stated: 20, statedLabel: '20% stated' },
+    { key: 'max-tegmark', name: 'Max Tegmark', colour: 'var(--tegmark)', stated: 25, statedLabel: '3 of 12 cards' }
+  ];
+
+  fetch('/api/theodds/stats', { cache: 'no-store' })
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      if (!d || !d.ok) { show('unconfigured'); return; }
+      if (!d.configured) { show('unconfigured'); return; }
+
+      var plays = d.plays || 0;
+      var players = d.players || 0;
+      if (!plays) { show('empty'); return; }
+
+      // ── headline ──
+      var doomPlayers = d.doomPlayers || 0;
+      var p = pct(doomPlayers, players);
+      txt('doomPlayersPct', players ? p + '%' : '—');
+      document.getElementById('splitBar').style.width = p + '%';
+      txt('splitLeft', num(doomPlayers) + ' reached doom');
+      txt('splitRight', num(Math.max(0, players - doomPlayers)) + ' stopped before it');
+      if (!players) {
+        txt('doomPlayersPct', '—');
+        document.getElementById('heroCap').textContent =
+          'Plays are being counted, but none of them carried a session, so there is nothing to say about players yet.';
+      }
+
+      // ── the room ──
+      txt('playersN', num(players));
+      txt('playsN', num(plays));
+      txt('perPlayer', players ? (plays / players).toFixed(1) : '—');
+      txt('doomPct', pct(d.doom || 0, plays) + '%');
+      txt('livedN', num(d.rerolledAndLived));
+      txt('afterDoomN', num(d.playsAfterDoom));
+
+      // ── how many tries it took ──
+      var buckets = ['1', '2', '3', '4', '5', '6-10', '11+'];
+      var label = { '1': '1st try', '2': '2nd', '3': '3rd', '4': '4th', '5': '5th', '6-10': '6-10th', '11+': '11th+' };
+      var until = d.untilDoom || {};
+      var max = 0, total = 0, weighted = 0;
+      // midpoint of the open buckets, so the average stays honest about being one
+      var mid = { '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6-10': 8, '11+': 13 };
+      buckets.forEach(function (b) {
+        var v = until[b] || 0;
+        if (v > max) max = v;
+        total += v;
+        weighted += v * mid[b];
+      });
+      if (!total) {
+        document.getElementById('histSec').classList.add('hidden');
+      } else {
+        var html = '';
+        buckets.forEach(function (b) {
+          var v = until[b] || 0;
+          var w = max ? Math.round((v / max) * 100) : 0;
+          html += '<div class="row"><div class="k">' + label[b] + '</div>' +
+                  '<div class="track"><i style="width:' + w + '%"></i></div>' +
+                  '<div class="v">' + num(v) + '</div></div>';
+        });
+        document.getElementById('hist').innerHTML = html;
+        txt('histNote', 'Across ' + num(total) + ' players who got there, it took ' +
+          (weighted / total).toFixed(1) + ' plays on average. ' +
+          Math.round((until['1'] || 0) / total * 100) + '% got it on the first go.');
+      }
+
+      // ── against their own numbers ──
+      var by = d.byThinker || {};
+      var anyThinker = false;
+      var tkHtml = '';
+      THINKERS.forEach(function (t) {
+        var row = by[t.key] || { plays: 0, doom: 0 };
+        if (row.plays) anyThinker = true;
+        var obs = pct(row.doom, row.plays);
+        tkHtml += '<div class="tk">' +
+          '<div class="nm"><span class="dot" style="background:' + t.colour + '"></span>' + t.name + '</div>' +
+          '<div class="big" style="color:' + t.colour + '">' + (row.plays ? obs + '%' : '—') + '</div>' +
+          '<div class="cmp"><em>' + num(row.plays) + '</em> plays · ' + t.statedLabel + '</div>' +
+          '<div class="gauge"><i style="width:' + Math.min(100, obs) + '%;background:' + t.colour + '"></i>' +
+          '<u style="left:' + t.stated + '%"></u><b style="left:' + t.stated + '%">stated</b></div>' +
+          '</div>';
+      });
+      if (!anyThinker) {
+        document.getElementById('tkSec').classList.add('hidden');
+      } else {
+        document.getElementById('thinkers').innerHTML = tkHtml;
+      }
+
+      show('loaded');
+    })
+    .catch(function () { show('unconfigured'); });
+})();
 </script>
 </body>
 </html>

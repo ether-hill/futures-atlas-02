@@ -23,11 +23,14 @@
   // faking it here reveals nothing. Mirror src/data/projects.ts when you flip a
   // project between live and draft.
   var FA_PROJECTS = [
+    { name: "Glossary", path: "/glossary" },
     { name: "Dramaturge", path: "/dramaturge", draft: true },
-  { name: "ShelfLife", path: "/shelflife", draft: true },
-    { name: "Interference", path: "/interference" },
+    { name: "ShelfLife", path: "/shelflife", draft: true },
+    { name: "Quantum Interference Visuals", path: "/interference" },
+    { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },
-    { name: "Hypothetica Magnifica", path: "/magnifica" },
+    { name: "Horizon Scan", path: "/horizon-scan", draft: true },
+    { name: "Hypothetica Magnifica", path: "/magnifica", draft: true },
     { name: "Trajectories", path: "/trajectories", draft: true },
     { name: "The Counterfactual Index", path: "/manipulate-the-data", draft: true },
     { name: "Counterfactual Quantum", path: "/manipulate-the-data/quantum", draft: true },
@@ -55,26 +58,43 @@
       { name: "Oracle", path: "/village-oracle/oracle" },
       { name: "Research", path: "/village-oracle/research" },
     ] },
-    { name: "Hard Questions", path: "/actually-hard-questions", pages: [
+    { name: "Source Library × Futures Atlas Recommended Reading", path: "/ancestors", draft: true },
+    { name: "Hard Questions", path: "/actually-hard-questions", draft: true, pages: [
       { name: "Map", path: "/actually-hard-questions#map" },
       { name: "Grid", path: "/actually-hard-questions#grid" },
       { name: "Ask", path: "/actually-hard-questions#session" },
     ] },
   ];
 
-  var IS_EDITOR = /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
+  // The cookie is a hint about who is looking; FA_ENV is the fact about where.
+  // On production there are no drafts to list at all — the middleware answers
+  // their URLs as though they were never built — so a stale editor cookie can
+  // never put a dead link in the switcher.
+  var IS_EDITOR = !IS_PRODUCTION && /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
   // What the switcher offers: drafts only once signed in.
   var FA_LISTED = FA_PROJECTS.filter(function (x) { return IS_EDITOR || !x.draft; });
-  // Glossary is deliberately NOT here. It lives in the footer's Explore column
-  // (scripts/gen-footer.mjs), which is where reference material belongs — the
-  // bar is for the places you go, not the things you look up.
+  // Glossary is deliberately NOT here. It is a PROJECT now (it is in
+  // FA_PROJECTS above and in src/data/projects.ts), so it appears in the
+  // switcher and in the footer's Projects column. The bar stays the places you
+  // go, not the things you look up.
+  /*
+    stagingOnly: the page exists on staging and is ABSENT on production (the
+    middleware's STAGING_ONLY list). The hub's root layout sets window.FA_ENV
+    before this script runs; anything that does not set it is treated as
+    production, so a page that never declares itself can only ever under-link,
+    never point at a dead end. That is why the static zone bundles do not show
+    the Feed link even on staging: they are separate builds with their own HTML
+    and they do not set the flag.
+  */
+  var IS_PRODUCTION = (window.FA_ENV || "production") === "production";
+
   var LINKS = [
     { name: "Home", path: "/" },
     { name: "Projects", path: "/projects" },
-    { name: "Feed", path: "/feed" },
+    { name: "Feed", path: "/feed", stagingOnly: true },
     { name: "About", path: "/about" },
     { name: "Contact", path: "/contact" },
-  ];
+  ].filter(function (l) { return !(l.stagingOnly && IS_PRODUCTION); });
 
   // current project = longest project path that prefixes the URL (null on the hub)
   var p = location.pathname, cur = null, best = 0;
@@ -150,10 +170,10 @@
     '<nav class="fa-shell__right" aria-label="Primary">' +
       '<div class="fa-shell__nav">' + navlinks + "</div>" +
       '<button type="button" class="fa-shell__toggle" aria-label="Toggle theme"></button>' +
-      '<button type="button" class="fa-shell__profile" aria-label="' + (IS_EDITOR ? "Sign out" : "Sign in") + '">' +
-        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">' +
-          '<circle cx="12" cy="8" r="3.4"/><path d="M4.5 20a7.5 7.5 0 0 1 15 0"/>' +
-        "</svg></button>" +
+      // No account button. The bar is the site's front door and a profile icon
+      // on it offers a sign-in to people who have nothing to sign in to. Sign
+      // out lives in the mobile sheet and in the footer's internal column,
+      // both of which only exist where there is a session to end.
       '<button type="button" class="fa-shell__burger" aria-label="Open menu" aria-expanded="false" aria-controls="fa-sheet"><span></span><span></span><span></span></button></nav>';
 
   // build the mobile sheet contents (primary links + this project's pages + theme)
@@ -174,14 +194,64 @@
       out.push("</div>");
     }
     out.push('<button type="button" class="fa-sheet__theme" style="--i:' + (i++) + '"><span class="fa-sheet__themelabel">Theme</span><span class="fa-sheet__themeicon" aria-hidden="true"></span></button>');
-    out.push('<button type="button" class="fa-sheet__theme fa-sheet__profile" style="--i:' + (i++) + '"><span>' + (IS_EDITOR ? "Sign out" : "Sign in") + "</span></button>");
+    // No "Sign in" here, and none in the bar either: the menu is the site's
+    // public front door and editor sign-in is not a thing a visitor is being
+    // offered. Anyone who wants it goes to /admin/login. Sign OUT stays,
+    // because without it there is no way off an editor session on a phone.
+    if (IS_EDITOR) {
+      out.push('<button type="button" class="fa-sheet__theme fa-sheet__profile" style="--i:' + (i++) + '"><span>Sign out</span></button>');
+    }
+    // Empty host: the ONE share widget is moved in here at menu widths rather
+    // than a second copy being built. Two share tools would be two sets of
+    // handlers to keep in step, and they already drifted once as two footers.
+    out.push('<div class="fa-sheet__sharehost" style="--i:' + (i++) + '"></div>');
     out.push("</div>");
     return out.join("");
+  }
+
+  /*
+   * Reserve the bar's height, on every page, without being asked.
+   *
+   * The bar is position:fixed, so it takes no space and simply lies on top of
+   * whatever is at the top of the document. Every page was expected to hold a
+   * gap for it itself, and most do — but a page whose own header padding is a
+   * clamp() that bottoms out below 64px (Interference's masthead is
+   * clamp(44px, 7vw, 96px)) is fine on a desktop and eats its own title on a
+   * phone and tablet, which is exactly where the clamp is smallest. That
+   * failure is invisible to whoever wrote the page unless they narrow the
+   * window, so it has happened more than once across these bundles.
+   *
+   * This makes the guarantee global rather than per page. It only ever ADDS
+   * the shortfall, so a page that already reserves the height (or more) is
+   * untouched, and re-running it is a no-op.
+   *
+   * Two deliberate exemptions:
+   *   • [data-fa-hero] — a full-bleed stage MEANT to run under a clear bar.
+   *   • [data-fa-no-offset] on <html> — a fixed, non-scrolling stage that
+   *     positions everything itself and would only be knocked askew.
+   */
+  function reserveBarHeight() {
+    if (root.hasAttribute("data-fa-no-offset")) return;
+    if (document.querySelector("[data-fa-hero]")) return;
+    var body = document.body;
+    if (!body) return;
+    var need = h.offsetHeight || 64;
+    var have = parseFloat(getComputedStyle(body).paddingTop) || 0;
+    // 1px of slack: sub-pixel rounding on a page that already reserves exactly
+    // the right amount should not add another 64.
+    if (have >= need - 1) return;
+    body.style.paddingTop = need + "px";
   }
 
   function mount() {
     if (document.querySelector("header.fa-shell")) return; // guard against double-mount
     document.body.insertBefore(h, document.body.firstChild);
+    reserveBarHeight();
+    // The stylesheet is injected, so on a cold load the bar can measure 0 here
+    // and the page's own padding can still be the pre-CSS value. Re-check once
+    // it has landed, and once more after fonts settle the layout.
+    window.addEventListener("load", reserveBarHeight);
+    setTimeout(reserveBarHeight, 0);
 
     var sheet = document.createElement("div");
     sheet.className = "fa-sheet";
@@ -208,6 +278,62 @@
 
     var sheetProfile = sheet.querySelector(".fa-sheet__profile");
     if (sheetProfile) sheetProfile.addEventListener("click", function () { doProfile(); });
+
+    /*
+     * One roll of the mark on ARRIVING at the homepage from another page.
+     *
+     * Two ways to arrive, and both have to be caught:
+     *   • A full document load. The bar's own links are plain <a href>, so
+     *     every click through the nav is one of these. document.referrer tells
+     *     us where we came from; if it is this site and it was not already the
+     *     homepage, roll.
+     *   • A client-side navigation. The host is a Next app, so a <Link> in the
+     *     page body swaps the URL with history.pushState and fires no event of
+     *     its own. Wrapping pushState/replaceState is the portable way for a
+     *     vanilla script to hear about that (the Navigation API would be
+     *     tidier, but Safari does not have it). Both wrappers call through and
+     *     return the original result, so nothing else changes.
+     *
+     * Deliberately NOT on a reload of the homepage, and not on arriving from
+     * outside the site: it marks a transition between our own pages.
+     */
+    var markWrap = h.querySelector(".fa-shell__mark");
+    function rollMark() {
+      if (!markWrap) return;
+      markWrap.classList.remove("is-rolling");
+      void markWrap.offsetWidth;          // reflow, so a second roll restarts
+      markWrap.classList.add("is-rolling");
+    }
+    if (markWrap) {
+      markWrap.addEventListener("animationend", function () {
+        markWrap.classList.remove("is-rolling");
+      });
+    }
+
+    var lastPath = location.pathname;
+    function onRoute() {
+      var now = location.pathname;
+      if (now === lastPath) return;
+      var arrivedHome = now === "/" && lastPath !== "/";
+      lastPath = now;
+      if (arrivedHome) rollMark();
+    }
+    ["pushState", "replaceState"].forEach(function (m) {
+      var orig = history[m];
+      history[m] = function () {
+        var r = orig.apply(this, arguments);
+        onRoute();
+        return r;
+      };
+    });
+    window.addEventListener("popstate", onRoute);
+
+    if (location.pathname === "/" && document.referrer) {
+      try {
+        var from = new URL(document.referrer);
+        if (from.origin === location.origin && from.pathname !== "/") rollMark();
+      } catch (e) {}
+    }
 
     // shared theme control (drives both the bar toggle and the sheet toggle)
     var barToggle = h.querySelector(".fa-shell__toggle");
@@ -317,7 +443,8 @@
           '<a class="fa-share__opt" data-act="li" target="_blank" rel="noopener" href="#">Share to LinkedIn</a>' +
           '<a class="fa-share__opt" data-act="email" href="#">Email a link</a>' +
         "</div>" +
-        '<button class="fa-share__btn" type="button" aria-label="Share this page" aria-haspopup="menu" aria-expanded="false">' + shareIcon + "</button>";
+        '<button class="fa-share__btn" type="button" aria-label="Share this page" aria-haspopup="menu" aria-expanded="false">' +
+          '<span class="fa-share__lbl">Share this page</span>' + shareIcon + "</button>";
       // In the bar rather than floating: a fixed button had to be nudged around
       // whenever the bar hid on scroll, and it never belonged to anything. Falls
       // back to the body if the bar has not been built (it always has by here).
@@ -330,6 +457,32 @@
       if (shareAnchor) barRight.insertBefore(sh, shareAnchor);
       else if (barRight) barRight.appendChild(sh);
       else document.body.appendChild(sh);
+
+      /*
+       * At menu widths the share tool lives IN the menu, with the theme and
+       * account controls, rather than as a lone circle in the bar. It is the
+       * same node either way — moved, not duplicated — so there is one set of
+       * handlers and one panel to keep correct. matchMedia rather than a
+       * resize listener: it fires only on the crossing.
+       */
+      var sheetHost = document.querySelector(".fa-sheet__sharehost");
+      var shareMq = window.matchMedia("(max-width: 900px)");
+      function placeShare() {
+        if (!sheetHost) return;
+        if (shareMq.matches) {
+          sh.classList.add("fa-share--sheet");
+          if (sh.parentNode !== sheetHost) sheetHost.appendChild(sh);
+        } else {
+          sh.classList.remove("fa-share--sheet");
+          if (sh.parentNode !== barRight && barRight) {
+            if (shareAnchor) barRight.insertBefore(sh, shareAnchor);
+            else barRight.appendChild(sh);
+          }
+        }
+      }
+      placeShare();
+      if (shareMq.addEventListener) shareMq.addEventListener("change", placeShare);
+      else if (shareMq.addListener) shareMq.addListener(placeShare);
       var sBtn = sh.querySelector(".fa-share__btn");
       var sPanel = sh.querySelector(".fa-share__panel");
       var sCopy = sh.querySelector('[data-act="copy"]');

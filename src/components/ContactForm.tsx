@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { contactProjects } from "@/data/projects";
 
+// 16px on small screens is not a style choice: below it, iOS Safari zooms the
+// whole page in when a field takes focus and never zooms back out.
 const fieldCls =
-  "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 text-[13px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent";
+  "w-full rounded-[3px] border border-ink/25 bg-surface px-4 py-3 text-[16px] leading-[1.5] text-ink placeholder:text-faint focus:border-accent sm:text-[13px]";
 const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graphite";
 
 /**
@@ -23,7 +25,7 @@ export function ContactForm({
 
   if (sent) {
     return (
-      <div className="flex flex-col items-start gap-4 border border-ink bg-panel p-[clamp(28px,4vw,44px)]">
+      <div className="flex flex-col items-start gap-4 border border-ink bg-panel p-[clamp(28px,4vw,44px)] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)]">
         <span className="flex h-12 w-12 items-center justify-center rounded-full border-[1.5px] border-accent-deep bg-accent-soft text-2xl text-accent-deep">
           ✓
         </span>
@@ -50,7 +52,7 @@ export function ContactForm({
         e.preventDefault();
         setSent(true);
       }}
-      className="flex flex-col gap-5 border border-ink bg-panel p-[clamp(28px,4vw,44px)]"
+      className="flex flex-col gap-5 border border-ink bg-panel p-[clamp(28px,4vw,44px)] shadow-[0_24px_60px_-24px_rgba(0,0,0,0.6)]"
     >
       <div>
         <p className="text-[clamp(20px,2.4vw,28px)] font-extrabold leading-tight text-ink">
@@ -94,7 +96,7 @@ export function ContactForm({
 
       <button
         type="submit"
-        className="inline-flex items-center justify-center gap-2.5 self-start rounded-[2px] bg-accent px-7 py-3.5 font-mono text-[12.5px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-accent-deep"
+        className="inline-flex items-center justify-center gap-2.5 self-start rounded-[2px] bg-accent px-7 py-3.5 font-mono text-[12.5px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-accent-press"
       >
         Send <span className="text-[14px]">→</span>
       </button>

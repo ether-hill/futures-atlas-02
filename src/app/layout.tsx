@@ -97,13 +97,22 @@ export default async function RootLayout({
             __html: `(function(){try{if(localStorage.getItem('fa-theme')!=='light'){document.documentElement.classList.add('dark');}}catch(e){}})();`,
           }}
         />
+        {/* Which environment the nav is drawing for, set BEFORE the deferred
+            nav script runs. It decides whether staging-only entries (the feed)
+            are listed at all; atlas-nav.js treats an unset flag as production,
+            so it can only ever under-link. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.FA_ENV=${JSON.stringify(process.env.VERCEL_ENV ?? "development")};`,
+          }}
+        />
         {/* The one global nav, shared with every project bundle. The stylesheet
             is linked blocking in the head (not left to atlas-nav.js's async
             self-inject) so the bar + mobile sheet are fully styled at first
             paint, otherwise the unstyled sheet/burger flash on every load.
             atlas-nav.js sees this data-fa-nav-css link and skips re-injecting. */}
-        <link rel="stylesheet" href="/atlas-nav.css?v=20" data-fa-nav-css />
-        <script src="/atlas-nav.js?v=20" defer />
+        <link rel="stylesheet" href="/atlas-nav.css?v=21" data-fa-nav-css />
+        <script src="/atlas-nav.js?v=21" defer />
         {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
       </head>
       <body

@@ -23,6 +23,11 @@ import { renderMarkdown } from "@/lib/markdown";
 // as HTML in the build output at all. Drafts still resolve for a signed-in
 // editor — they're rendered on demand, behind the middleware gate.
 export function generateStaticParams() {
+  // The feed is staging-only (STAGING_ONLY in src/middleware.ts). On production
+  // the middleware answers every /feed path as though it were never built, so
+  // prerendering the posts there would put HTML in the output that nothing can
+  // reach — the same reasoning that already keeps draft posts out of the build.
+  if (process.env.VERCEL_ENV === "production") return [];
   return livePosts.map((p) => ({ slug: p.slug }));
 }
 
@@ -151,7 +156,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               href={post.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-4 inline-flex items-center gap-2 rounded-[2px] bg-accent px-5 py-3 font-mono text-[11.5px] uppercase tracking-[0.14em] text-paper transition-colors hover:bg-accent-deep"
+              className="mt-4 inline-flex items-center gap-2 rounded-[2px] bg-accent px-5 py-3 font-mono text-[11.5px] uppercase tracking-[0.14em] text-paper transition-colors hover:bg-accent-press"
             >
               Read the original <span aria-hidden>↗</span>
             </a>

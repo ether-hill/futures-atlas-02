@@ -41,15 +41,25 @@ const { GLOSSARY } = await import("../src/data/glossary.ts");
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+const IS_PRODUCTION = process.env.VERCEL_ENV === "production";
+const INTERNAL_ONLY = !IS_PRODUCTION;
+
+/**
+ * The feed is staging-only too (STAGING_ONLY in src/middleware.ts), so on
+ * production neither its column nor its Sections link is in the markup. The
+ * footer's job here is the same as with the internal column: never link to a
+ * page that is not there.
+ */
+const FEED_HERE = !IS_PRODUCTION;
+
 const SECTIONS = [
   ["/", "Home"],
-  ["/feed", "Feed"],
+  ["/feed", "Feed", "feed"],
   ["/projects", "Projects"],
-  ["/glossary", "Glossary"],
   ["/developers", "Developers"],
   ["/about", "About"],
   ["/contact", "Contact"],
-];
+].filter(([, , only]) => only !== "feed" || FEED_HERE);
 
 /**
  * The internal column: the working pages, listed only where they exist.
@@ -63,9 +73,9 @@ const SECTIONS = [
  * VERCEL_ENV is set by the platform: "production", "preview", or absent when
  * running locally.
  */
-const INTERNAL_ONLY = process.env.VERCEL_ENV !== "production";
 
 const INTERNAL = [
+  ["/plan", "Plan"],
   ["/design-system", "Design system"],
   ["/style-guide", "Style guide"],
   ["/logo-animator", "Logo animator"],
@@ -78,26 +88,17 @@ const INTERNAL = [
 ];
 
 const projects = liveProjects.filter((p) => p.path || p.url).slice(0, 12);
-const recent = livePosts.slice(0, 6);
+const recent = FEED_HERE ? livePosts.slice(0, 6) : [];
 
-/**
- * "Last updated", baked once here rather than filled in per page.
- *
- * It used to be stamped client-side from document.lastModified, which gives
- * each static bundle its OWN date — so the host said one day and a sub-app
- * built in the same deploy said another, and the footer read as two different
- * footers even though the markup was identical. Everything ships together, so
- * there is one true date: this build's.
- */
+/* The copyright year. The "last updated" stamp that used to sit beside it is
+   gone with the rest of that line, so the month table went with it. */
 const now = new Date();
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const updated = `${now.getUTCDate()} ${MONTHS[now.getUTCMonth()]} ${now.getUTCFullYear()}`;
 
 const link = (href, label, cls = "fa-foot__link") =>
   `<a class="${cls}" href="${esc(href)}">${esc(label)}</a>`;
 
 const html = `<div class="fa-foot__inner">
-<div class="fa-foot__grid${INTERNAL_ONLY ? " fa-foot__grid--5" : ""}">
+<div class="fa-foot__grid fa-foot__grid--${3 + (FEED_HERE ? 1 : 0) + (INTERNAL_ONLY ? 1 : 0)}">
 <div class="fa-foot__col">
 <a class="fa-foot__home" href="/" aria-label="Futures Atlas home"><span class="fa-foot__mark" aria-hidden="true"><img src="/fa.svg" alt="" width="22" height="22"></span><span class="fa-foot__word">Futures Atlas</span></a>
 <p class="fa-foot__body">Building frameworks for foresight. Speculative-design projects, open-source tools, apps and prototypes exploring compute: quantum systems, AI, and the power structures driving them.</p>
@@ -118,7 +119,7 @@ const html = `<div class="fa-foot__inner">
   .join("")}</nav>
 <p class="fa-foot__meta">${link("/projects", "All projects →", "fa-foot__a")}</p>
 </div>
-<div class="fa-foot__col">
+${FEED_HERE ? `<div class="fa-foot__col">
 <p class="fa-foot__h">Recent from the feed</p>
 <nav class="fa-foot__list">${recent
   .map(
@@ -129,11 +130,16 @@ const html = `<div class="fa-foot__inner">
   )
   .join("")}</nav>
 <p class="fa-foot__meta">${link("/feed", "The whole feed →", "fa-foot__a")}</p>
-</div>${INTERNAL_ONLY ? `
+</div>` : ""}${INTERNAL_ONLY ? `
 <div class="fa-foot__col fa-foot__internal">
 <p class="fa-foot__h">Internal &middot; staging only</p>
 <nav class="fa-foot__list">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>
 <p class="fa-foot__meta">Not built on production.</p>
+<!-- Sign out. It has to be a POST (it clears an httpOnly cookie) so it is a
+     one-button form rather than a link, and it works with no JavaScript. This
+     is the desktop way off a session now that the bar has no account button;
+     the mobile sheet still carries its own. -->
+<form class="fa-foot__signout" method="POST" action="/api/admin/logout"><button type="submit" class="fa-foot__a">Sign out</button></form>
 </div>` : ""}
 </div>
 <div class="fa-foot__split">
@@ -149,8 +155,7 @@ const html = `<div class="fa-foot__inner">
 </div>
 </div>
 <div class="fa-foot__row">
-<span class="fa-foot__tag">&copy; ${now.getUTCFullYear()} Futures Atlas &middot; A living project. Things change, break and improve. Last updated ${updated}.</span>
-<span class="fa-foot__tag">Built with Next.js, Claude Code and an evolving stack. <a class="fa-foot__a" href="/about#stack">see the full inventory &rarr;</a></span>
+<span class="fa-foot__tag">&copy; ${now.getUTCFullYear()} Futures Atlas</span>
 </div>
 </div>`;
 

@@ -3,11 +3,11 @@ import { Container } from "@/components/Container";
 import { HeroField } from "@/components/HeroField";
 import { Reveal } from "@/components/Reveal";
 import { ProjectGrid } from "@/components/ProjectCard";
-import { liveProjects } from "@/data/projects";
+import { homepageProjects } from "@/data/projects";
 import { FeedMasonry } from "@/components/FeedMasonry";
 import { editorPosts, livePosts } from "@/data/posts";
 import { prototypesFor } from "@/data/prototypes";
-import { getEditor } from "@/lib/editor";
+import { getListingEditor } from "@/lib/editor";
 import { LOGOS } from "@/lib/logos";
 
 // The stack strip: which marks headline the homepage tech banner (all render
@@ -17,8 +17,12 @@ const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "veo", "nextjs"
 export default async function Home() {
   // The homepage strip is public-facing: always live projects only, even for a
   // signed-in editor. Drafts are visible on /projects, not here.
-  const isEditor = Boolean(await getEditor());
-  const recent = liveProjects.slice(0, 6);
+  const isEditor = Boolean(await getListingEditor());
+  const recent = homepageProjects.slice(0, 6);
+  // The feed is staging-only (STAGING_ONLY in src/middleware.ts). Production
+  // does not link to it, so the homepage does not carry it either — a masonry
+  // of posts whose every card leads to a 404 is worse than no masonry.
+  const feedHere = process.env.VERCEL_ENV !== "production";
   // Newest fifteen, but never a set with no video in it: the masonry plays them
   // in place, and chronology alone can leave every one of them just out of range.
   const source = isEditor ? editorPosts : livePosts;
@@ -64,7 +68,7 @@ export default async function Home() {
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Link
                 href="#projects"
-                className="inline-flex items-center gap-2.5 rounded-[2px] bg-accent px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-accent-deep"
+                className="inline-flex items-center gap-2.5 rounded-[2px] bg-accent px-[22px] py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper transition-colors hover:bg-accent-press"
               >
                 Browse the atlas <span className="text-[14px]">↓</span>
               </Link>
@@ -77,9 +81,13 @@ export default async function Home() {
       <section id="projects" className="scroll-mt-20 bg-surface py-[clamp(58px,9vw,130px)]">
         <Container>
           <Reveal>
-            <h2 className="mb-[clamp(30px,5vw,56px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
+            <h2 className="max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
               Recent projects
             </h2>
+            <p className="mb-[clamp(30px,5vw,56px)] mt-6 max-w-[620px] text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-ink/70">
+              Tools, games and live simulations, mostly about compute and who
+              ends up owning it. Nothing here is a mockup: open one and it runs.
+            </p>
           </Reveal>
 
           <Reveal>
@@ -97,19 +105,21 @@ export default async function Home() {
       </section>
 
       {/* The feed, as a masonry of the newest posts — videos play in place */}
-      <FeedMasonry
-        posts={latestPosts}
-        showVisibility={isEditor}
-        benchSeed={benchSeed}
-        prototypes={prototypesFor(isEditor)}
-      />
+      {feedHere ? (
+        <FeedMasonry
+          posts={latestPosts}
+          showVisibility={isEditor}
+          benchSeed={benchSeed}
+          prototypes={prototypesFor(isEditor)}
+        />
+      ) : null}
 
       {/* Tech banner, the whole band links to the About page's stack + workflow */}
       <section className="border-t border-ink/15 bg-band">
         <Container className="py-[clamp(56px,9vw,120px)]">
           <Reveal>
             <Link href="/about" className="group block">
-              <p className="eyebrow tick mb-6 !text-paper/50">Built in the open</p>
+              <p className="eyebrow mb-6">Built in the open</p>
               <h2 className="max-w-[24ch] text-[clamp(28px,4.2vw,60px)] font-extrabold leading-[1.02] tracking-[-0.022em] !text-paper text-balance">
                 Every project documents the AI systems and creative code it&rsquo;s
                 made with.

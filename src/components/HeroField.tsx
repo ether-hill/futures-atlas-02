@@ -43,7 +43,10 @@ function makeSrc(): string {
     seed: Math.random().toString(36).slice(2, 10),
     params: {
       singularities: randInt(2, 7),
-      speed: rand(1.2, 5.5),
+      // Slower than the piece's own default range. At 1.2–5.5 the field
+      // churned: behind a headline it read as noise rather than as weather,
+      // and the eye went to the motion instead of the words.
+      speed: rand(0.45, 1.6),
       fade: rand(0.006, 0.04),
       lineWidth: rand(0.8, 2.2),
     },

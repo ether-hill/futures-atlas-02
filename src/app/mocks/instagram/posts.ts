@@ -23,9 +23,13 @@
  * numbers and set `sample: false`.
  */
 
-import { REEL_POSTS, type ReelPost } from "./fields";
+import {
+  REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, ODDS_CHOOSER, TEGMARK_POSTS,
+  HOME_REEL, UNDERGROUND_REEL, STACK_REEL,
+  type ReelPost, type ShotsPost, type OddsPost, type TermPost, type TegmarkPost,
+} from "./fields";
 
-export type { ReelPost };
+export type { ReelPost, ShotsPost, OddsPost, TermPost, TegmarkPost };
 
 export type Verdict = "notyet" | "already";
 
@@ -68,9 +72,143 @@ export interface DeckPost {
 }
 
 /** The feed carries two shapes of post. See fields.ts for the other one. */
-export type Post = DeckPost | ReelPost;
+export type Post = DeckPost | ReelPost | ShotsPost | OddsPost | TermPost | TegmarkPost;
 
 const DECK_POSTS: DeckPost[] = [
+  {
+    kind: "deck",
+    name: "Robot tax · hype trap",
+    card: {
+      id: "w6", sector: "Work & employment", pos: 6, deckSize: 10,
+      claim: "A national government has introduced a tax on companies that replace workers with AI.",
+      short: "Tax on replacing workers", verdict: "notyet",
+      lede: "South Korea trimmed a tax break for automation investment in 2017, widely miscalled a robot tax.",
+      note: "No direct tax exists anywhere, and the European Parliament voted one down.",
+      source: { label: "Stephensons, South Korea's robot tax", url: "https://www.stephensons.co.uk/site/news_and_events/uptodatenews/south-korea-introduces-worlds-first-robot-tax" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.54, n: 57, sample: true },
+      hue: "#D89A4E",
+    },
+    caption:
+      "Half the room is sure a robot tax exists somewhere. It does not exist anywhere.\n\nSouth Korea trimmed a tax break for automation investment in 2017 and the press called it the world's first robot tax. It was a smaller deduction, not a tax. The European Parliament voted an actual one down.\n\nThis is a hype trap: a policy discussed so often it starts to feel enacted. The discussion is real. The law is not.",
+    hashtags: ["#futureofwork", "#policy", "#automation", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "AI lawyer · hype trap",
+    card: {
+      id: "l6", sector: "Law & justice", pos: 6, deckSize: 10,
+      claim: "An AI system has been granted a licence to practise law.",
+      short: "AI licensed to practise law", verdict: "notyet",
+      lede: "No jurisdiction has licensed an AI to practise law.",
+      note: "The live question runs the other way: whether a chatbot giving legal answers is already the unauthorised practice of law.",
+      source: { label: "Thomson Reuters Institute, AI and unauthorized practice of law", url: "https://www.thomsonreuters.com/en-us/posts/government/ai-impacts-unauthorized-practice-of-law/" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.56, n: 86, sample: true },
+      hue: "#8B6FD4",
+    },
+    caption:
+      "More than half the room thinks some jurisdiction has licensed an AI to practise law. None has.\n\nAnd the real argument is pointing the other way entirely: not whether to admit an AI to the bar, but whether a chatbot answering legal questions is already the unauthorised practice of law. That is a prosecution question, not an admission one.\n\nA good hype trap does not just get the answer wrong. It gets the direction wrong.",
+    hashtags: ["#law", "#aigovernance", "#legaltech", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "Robot deliveries · blind spot",
+    card: {
+      id: "t4", sector: "Transport", pos: 4, deckSize: 10,
+      claim: "More than eight million deliveries have been completed by robots driving themselves along pavements.",
+      short: "Eight million robot deliveries", verdict: "already",
+      bigLabel: "Already real since", big: "2025",
+      lede: "Starship passed eight million autonomous deliveries by April.",
+      note: "More than 2,700 robots across 270+ locations.",
+      source: { label: "The Robot Report", url: "https://www.therobotreport.com/starship-technologies-surpasses-8m-autonomous-deliveries/" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.49, n: 45, sample: true },
+      hue: "#3E93D8",
+    },
+    caption:
+      "Eight million. Not a pilot, not a trial. Eight million deliveries already completed by robots driving themselves along pavements.\n\nStarship passed the mark in April 2025, running more than 2,700 robots across over 270 locations.\n\nBarely half the room believes it. That is a blind spot: not a thing that might happen, a thing that has been happening at scale, on ordinary streets, while everyone waited for it to start.",
+    hashtags: ["#robotics", "#lastmile", "#automation", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "Doctors got worse",
+    card: {
+      id: "h4",
+      sector: "Health & medicine",
+      pos: 4,
+      deckSize: 10,
+      claim: "A multi-centre study has found doctors got worse at their own job after months of using AI.",
+      short: "Doctors deskilled by AI",
+      verdict: "already",
+      bigLabel: "Already real since",
+      big: "2025",
+      lede: "Endoscopists' unassisted adenoma detection fell from 28.4% to 22.4% after routine AI exposure.",
+      note: "Published in Lancet Gastroenterology & Hepatology.",
+      source: {
+        label: "Lancet Gastro & Hep, endoscopist deskilling (2025)",
+        url: "https://www.thelancet.com/journals/langas/article/PIIS2468-1253(25)00289-4/abstract",
+      },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.44, n: 41, sample: true },
+      hue: "#8B6FD4",
+    },
+    caption:
+      "Give doctors an AI assistant for a few months, then take it away, and they are worse at the job than before they had it.\n\nA multi-centre study in Lancet Gastroenterology & Hepatology followed endoscopists through routine AI exposure. Their unassisted detection rate fell from 28.4% to 22.4%. Same doctors, same procedure, worse without the tool than they used to be.\n\nThis is not a story about AI being bad at the task. It was good at the task. It is a story about what happens to a skill you stop practising.",
+    hashtags: ["#aiinmedicine", "#deskilling", "#evidence", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "A billion and a half",
+    card: {
+      id: "l2",
+      sector: "Law & justice",
+      pos: 2,
+      deckSize: 10,
+      claim: "An AI company has agreed to pay authors more than a billion dollars for training on their books without permission.",
+      short: "Billion-dollar authors settlement",
+      verdict: "already",
+      bigLabel: "Already real since",
+      big: "2025",
+      lede: "Anthropic agreed $1.5 billion, the largest copyright class settlement on record.",
+      note: "Approved in 2026. About $3,000 a book across roughly 482,000 works.",
+      source: {
+        label: "Courthouse News Service",
+        url: "https://www.courthousenews.com/anthropic-to-pay-1-5-billion-copyright-settlement-to-authors-publishers/",
+      },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.61, n: 58, sample: true },
+      hue: "#3E93D8",
+    },
+    caption:
+      "One and a half billion dollars. The largest copyright class settlement on record, in any medium, ever.\n\nAnthropic agreed it with authors over training on their books without permission. Roughly 482,000 works, about $3,000 a book. Agreed 2025, approved 2026.\n\nThe number is the argument. Whatever you think about whether training is fair use, a company chose to pay that rather than find out in court.",
+    hashtags: ["#copyright", "#aiandart", "#publishing", "#futuresatlas", "#swipethefuture"],
+  },
+  {
+    kind: "deck",
+    name: "No AI has judged you",
+    card: {
+      id: "l7",
+      sector: "Law & justice",
+      pos: 7,
+      deckSize: 10,
+      claim: "An AI has sat as a judge in a binding court proceeding.",
+      short: "AI sat as a judge",
+      verdict: "notyet",
+      lede: "China runs whole court systems where AI assists the judge and speeds the paperwork.",
+      note: "The decision stays with the judge.",
+      source: {
+        label: "ABA Journal, China's internet courts",
+        url: "https://www.abajournal.com/magazine/article/china-all-virtual-specialty-internet-courts",
+      },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.38, n: 47, sample: true },
+      hue: "#D89A4E",
+    },
+    caption:
+      "Everyone assumes this one has happened somewhere. It has not.\n\nChina has run internet courts since 2017 — filing to judgment online, with AI assistants added from 2019. They summarise, they route, they draft. They speed up the paperwork enormously.\n\nThe decision stays with the judge. Every time. No jurisdiction anywhere has let a machine hand down a binding ruling.\n\nThe gap between assisting a court and being one is the whole question, and so far nobody has crossed it.",
+    hashtags: ["#aigovernance", "#law", "#justice", "#futuresatlas", "#swipethefuture"],
+  },
   {
     kind: "deck",
     name: "Driverless trains, 1981",
@@ -144,19 +282,11 @@ const DECK_POSTS: DeckPost[] = [
   {
     kind: "deck",
     name: "Lawyers fined, 2023",
-    caption:
-      "The machine makes up a case. The lawyer files it. The judge looks it up.\n\nCourts have been fining lawyers for citing cases an AI invented since 2023, and the sanctions run from a thousand dollars to more than thirty. It is not a rare embarrassment either: filings carrying fabricated citations went up sevenfold in 2025.\n\nCard 01 of the Law deck. Swipe for what everyone else answered.",
-    hashtags: ["#futuresatlas", "#swipethefuture", "#law", "#hallucination", "#speculativedesign"],
     card: {
-      id: "l1",
-      sector: "Law & justice",
-      pos: 1,
-      deckSize: 10,
+      id: "l1", sector: "Law & justice", pos: 1, deckSize: 10,
       claim: "Lawyers have been fined by courts for citing cases an AI invented.",
-      short: "Lawyers fined for AI citations",
-      verdict: "already",
-      bigLabel: "Already real since",
-      big: "2023",
+      short: "Lawyers fined for AI citations", verdict: "already",
+      bigLabel: "Already real since", big: "2023",
       lede: "Hundreds of filings have carried fabricated AI citations, up sevenfold in 2025.",
       note: "Sanctions run from $1,000 to more than $30,000.",
       source: { label: "Bloomberg Law · court records", url: "https://news.bloomberglaw.com/" },
@@ -164,60 +294,47 @@ const DECK_POSTS: DeckPost[] = [
       crowd: { pctReal: 0.65, n: 40, sample: true },
       hue: "#4E9E86",
     },
+    caption:
+      "The machine makes up a case. The lawyer files it. The judge looks it up.\n\nCourts have been fining lawyers for citing cases an AI invented since 2023, and the sanctions run from a thousand dollars to more than thirty. It is not a rare embarrassment either: filings carrying fabricated citations went up sevenfold in 2025.",
+    hashtags: ["#law", "#hallucination", "#futuresatlas", "#swipethefuture", "#speculativedesign"],
   },
   {
     kind: "deck",
     name: "Automated ports, 1993",
-    caption:
-      "A container terminal with nobody operating the cranes sounds like a rendering of 2040. Rotterdam opened one in 1993.\n\nECT Delta ran driverless vehicles and automated stacking cranes around the clock, and it has been doing it for thirty-three years. The ports were automated before the cars, before the warehouses, before any of the things we now call the automation debate.\n\nCard 05 of the Transport deck. Swipe for what everyone else answered.",
-    hashtags: ["#futuresatlas", "#swipethefuture", "#automation", "#logistics", "#speculativedesign"],
     card: {
-      id: "t5",
-      sector: "Transport",
-      pos: 5,
-      deckSize: 10,
+      id: "t5", sector: "Transport", pos: 5, deckSize: 10,
       claim: "Container terminals have moved cargo with no human operating the cranes.",
-      short: "Automated container terminals",
-      verdict: "already",
-      bigLabel: "Already real since",
-      big: "1993",
+      short: "Automated container terminals", verdict: "already",
+      bigLabel: "Already real since", big: "1993",
       lede: "Rotterdam's ECT Delta opened as the world's first automated container terminal.",
       note: "Driverless vehicles and automated stacking cranes, running around the clock.",
-      source: {
-        label: "ECT Hutchison Ports, 30 years of the first automated terminal",
-        url: "https://www.ect.nl/en/news/fast-forward/30-years-ago-ect-opened-very-first-automated-terminal-world",
-      },
+      source: { label: "ECT Hutchison Ports, 30 years of the first automated terminal", url: "https://www.ect.nl/en/news/fast-forward/30-years-ago-ect-opened-very-first-automated-terminal-world" },
       checked: "2026-08-09",
       crowd: { pctReal: 0.59, n: 92, sample: true },
       hue: "#3E93D8",
     },
+    caption:
+      "A container terminal with nobody operating the cranes sounds like a rendering of 2040. Rotterdam opened one in 1993.\n\nECT Delta ran driverless vehicles and automated stacking cranes around the clock, and it has been doing it for thirty-three years. The ports were automated before the cars, before the warehouses, before any of the things we now call the automation debate.",
+    hashtags: ["#automation", "#logistics", "#futuresatlas", "#swipethefuture", "#speculativedesign"],
   },
   {
     kind: "deck",
     name: "No AI drug approved",
-    caption:
-      "Everyone has read that AI is designing drugs. Ask whether one has actually been approved and prescribed, and the answer is still no.\n\nThe furthest any has got is phase 2a: Insilico's lung-fibrosis drug published positive results in Nature Medicine in 2025, which was a first. Late-stage trials and general prescription are both still ahead of it.\n\nThis is the shape the deck keeps finding. The thing that sounds inevitable has not happened, and the thing that sounds like science fiction shipped decades ago.\n\nCard 07 of the Health deck. Swipe for what everyone else answered.",
-    hashtags: ["#futuresatlas", "#swipethefuture", "#drugdiscovery", "#health", "#speculativedesign"],
     card: {
-      id: "h7",
-      sector: "Health & medicine",
-      pos: 7,
-      deckSize: 10,
+      id: "h7", sector: "Health & medicine", pos: 7, deckSize: 10,
       claim: "A drug designed by AI has completed late-stage trials and been approved for general prescription.",
-      short: "AI-designed drug approved",
-      verdict: "notyet",
-      bigLabel: "Furthest any has got",
-      big: "Phase 2a",
+      short: "AI-designed drug approved", verdict: "notyet",
+      bigLabel: "Furthest any has got", big: "Phase 2a",
       lede: "Insilico's lung-fibrosis drug reached positive phase 2a results in Nature Medicine in 2025, a first.",
       note: "Nothing AI-designed has been approved for general prescription.",
-      source: {
-        label: "Insilico / Nature Medicine (2025)",
-        url: "https://www.prnewswire.com/news-releases/insilico-medicine-announces-nature-medicine-publication-of-phase-iia-results-evaluating-rentosertib-the-novel-tnik-inhibitor-for-idiopathic-pulmonary-fibrosis-ipf-discovered-and-designed-with-a-pioneering-ai-approach-302472070.html",
-      },
+      source: { label: "Insilico / Nature Medicine (2025)", url: "https://www.prnewswire.com/news-releases/insilico-medicine-announces-nature-medicine-publication-of-phase-iia-results-evaluating-rentosertib-the-novel-tnik-inhibitor-for-idiopathic-pulmonary-fibrosis-ipf-discovered-and-designed-with-a-pioneering-ai-approach-302472070.html" },
       checked: "2026-08-09",
       crowd: { pctReal: 0.31, n: 45, sample: true },
       hue: "#8B6FD4",
     },
+    caption:
+      "Everyone has read that AI is designing drugs. Ask whether one has actually been approved and prescribed, and the answer is still no.\n\nThe furthest any has got is phase 2a: Insilico's lung-fibrosis drug published positive results in Nature Medicine in 2025, which was a first. Late-stage trials and general prescription are both still ahead of it.",
+    hashtags: ["#drugdiscovery", "#health", "#futuresatlas", "#swipethefuture", "#speculativedesign"],
   },
 ];
 
@@ -225,36 +342,64 @@ const DECK_POSTS: DeckPost[] = [
 export const SLIDE_KINDS = ["card", "reveal", "stats"] as const;
 export type SlideKind = (typeof SLIDE_KINDS)[number];
 
-export const slideCount = (p: Post) => (p.kind === "deck" ? SLIDE_KINDS.length : 1);
+/** One stable id per post, whatever shape it is. Used by the editor. */
+export const postId = (p: Post) => (p.kind === "deck" ? p.card.id : p.id);
+
+export const slideCount = (p: Post) =>
+  p.kind === "deck" ? SLIDE_KINDS.length
+    : p.kind === "shots" ? p.shots.length
+    : p.kind === "odds" ? 2   // the player, then the play-through
+    : p.kind === "tegmark" ? 2   // the card's face, then the card's copy
+    : 1;
 
 /**
  * The grid, newest first — and deliberately interleaved.
  *
  * Grouped by kind, the feed read as two accounts stacked: a block of dark
- * moving pieces, then a block of identical bone cards. A grid is looked at as a
- * whole before any single post is, so the mix is the composition. Reels are the
- * majority, so they take two of every three slots and a card lands in the third.
+ * moving pieces, then a block of identical bone cards. A fixed one-in-three is
+ * no better on a three-wide grid, because every card then lands in the same
+ * COLUMN and the mix reads as a stripe down the page.
+ *
+ * Nor can a fixed run length fix it here. There are roughly two reels per card,
+ * so the gap between cards averages a bit over one row, and any constant gap of
+ * one row repeats the column. So the cards are placed by COLUMN instead: card i
+ * wants column i mod 3, and is dropped at the first free slot of that column at
+ * or after where an even spread would have put it. Two cards occasionally end up
+ * adjacent, which is what a real feed looks like anyway.
  */
+const COLS = 3;
+
 function interleave(reels: Post[], cards: Post[]): Post[] {
-  // Spread the cards evenly through the reels rather than dealing a fixed
-  // two-then-one. The fixed pattern only held while the counts happened to sit
-  // at 2:1; add a card or two and it ran out of reels early and dropped the
-  // remaining cards next to each other at the end, which is the exact clumping
-  // the mix exists to avoid. This places each card at its proportional slot, so
-  // the composition survives any ratio.
-  const out: Post[] = [];
   const total = reels.length + cards.length;
-  let r = 0, c = 0;
-  for (let i = 0; i < total; i++) {
-    // Take a card once fewer than its share have been dealt. The +0.5 centres
-    // each card in its slot rather than dealing them all at an edge.
-    const share = ((i + 1) * cards.length) / total;
-    const cardIsDue = cards.length > 0 && c + 0.5 < share;
-    if (cardIsDue && c < cards.length) out.push(cards[c++]!);
-    else if (r < reels.length) out.push(reels[r++]!);
-    else if (c < cards.length) out.push(cards[c++]!);
-  }
+  const taken = new Map<number, Post>();
+  cards.forEach((card, i) => {
+    let at = Math.round((i * total) / cards.length);
+    // Walk to the next slot in this card's column that nothing else has.
+    while (at < total && (at % COLS !== i % COLS || taken.has(at))) at++;
+    if (at >= total) { at = 0; while (taken.has(at)) at++; }
+    taken.set(at, card);
+  });
+  const out: Post[] = [];
+  let r = 0;
+  for (let i = 0; i < total; i++) out.push(taken.get(i) ?? reels[r++]!);
   return out;
 }
 
-export const POSTS: Post[] = interleave(REEL_POSTS, DECK_POSTS);
+/**
+ * The site's own reel leads: it is the one post that says what the account is.
+ *
+ * Tegmark's twelve are appended rather than mixed in. They are one series, in
+ * Tegmark's own order, and the whole point of a run of twelve is that it reads
+ * as a run: interleaved they would be twelve near-identical tarot faces
+ * scattered through the grid with nothing saying they belong together. So the
+ * shuffle above applies to the feed as it was, and the deck sits under it,
+ * behind the post that introduces the three players it belongs to.
+ */
+export const POSTS: Post[] = [
+  ...interleave(
+    [HOME_REEL, UNDERGROUND_REEL, STACK_REEL, ...REEL_POSTS],
+    [...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
+  ),
+  ODDS_CHOOSER,
+  ...TEGMARK_POSTS,
+];

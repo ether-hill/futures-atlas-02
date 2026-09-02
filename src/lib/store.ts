@@ -12,6 +12,10 @@ import { Redis as UpstashRedis } from "@upstash/redis";
 
 const KEY = "fa:tokens";
 const VKEY = "fa:versions";
+/** Generic server-side blob cache, one field per named payload. Currently the
+ *  Horizon Scan run; see lib/horizon-scan/cache.ts for why it does not use the
+ *  framework's fetch cache. */
+const CKEY = "fa:cache";
 
 const restUrl = process.env.KV_REST_API_URL;
 const restToken = process.env.KV_REST_API_TOKEN;
@@ -97,6 +101,81 @@ export async function replaceOverrides(map: Record<string, string>): Promise<boo
   await s.del(KEY);
   if (Object.keys(map).length) await s.hsetMany(KEY, map);
   return true;
+}
+
+// ---- generic blob cache ----
+
+/** Returns the stored string for `name`, or null if absent / no store. */
+export async function readCached(name: string): Promise<string | null> {
+  const s = getStore();
+  if (!s) return null;
+  try {
+    const all = await s.hgetall(CKEY);
+    return all[name] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function writeCached(name: string, value: string): Promise<boolean> {
+  const s = getStore();
+  if (!s) return false;
+  try {
+    await s.hset(CKEY, name, value);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// ---- mock-up state, shared between editors ----
+
+/**
+ * State that belongs to the working mock-ups rather than to a browser: the
+ * Instagram grid's order, deletions and crops. It lives here and not in
+ * localStorage because two people arranging the same feed and seeing two
+ * different feeds is not an arrangement.
+ *
+ * Deliberately NOT in `fa:cache`. A cache is something you may drop; this is
+ * the only copy of a decision somebody made.
+ */
+const MKEY = "fa:mocks";
+
+export interface MockRecord<T> {
+  state: T;
+  /** Editor id of whoever last saved. */
+  by: string | null;
+  at: number;
+}
+
+export async function readMock<T>(name: string): Promise<MockRecord<T> | null> {
+  const s = getStore();
+  if (!s) return null;
+  try {
+    const all = await s.hgetall(MKEY);
+    const raw = all[name];
+    if (!raw) return null;
+    const v = typeof raw === "string" ? JSON.parse(raw) : (raw as MockRecord<T>);
+    return v && typeof v === "object" && "state" in v ? v : null;
+  } catch {
+    return null;
+  }
+}
+
+export async function writeMock<T>(
+  name: string,
+  state: T,
+  by: string | null,
+): Promise<MockRecord<T> | null> {
+  const s = getStore();
+  if (!s) return null;
+  const rec: MockRecord<T> = { state, by, at: Date.now() };
+  try {
+    await s.hset(MKEY, name, JSON.stringify(rec));
+    return rec;
+  } catch {
+    return null;
+  }
 }
 
 // ---- versions (saved snapshots) ----

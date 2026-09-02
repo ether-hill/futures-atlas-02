@@ -71,7 +71,7 @@ export default function V4() {
             </p>
             <div className="mx-auto mt-9 flex max-w-[420px] items-center gap-2 rounded-full border border-paper/25 bg-black/60 p-1.5 backdrop-blur-sm">
               <span className="flex-1 pl-4 text-left font-mono text-[12px] text-paper/45">What future are you weighing?</span>
-              <Link href="/quantum-spark" className="rounded-full bg-accent px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.1em] text-paper hover:bg-accent-deep">
+              <Link href="/quantum-spark" className="rounded-full bg-accent px-5 py-2.5 font-mono text-[11px] uppercase tracking-[0.1em] text-paper hover:bg-accent-press">
                 Spark it
               </Link>
             </div>

@@ -22,7 +22,7 @@ export default function V2() {
         <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.55)_60%,rgba(0,0,0,0.3)_100%)] md:hidden" />
         <Container className="relative z-[1] py-[clamp(80px,14vh,160px)]">
           <Reveal>
-            <p className="eyebrow mb-6 !text-paper/50">Futures Atlas</p>
+            <p className="eyebrow mb-6">Futures Atlas</p>
             <h1 className="max-w-[14ch] text-[clamp(38px,6vw,88px)] font-extrabold leading-[0.96] tracking-[-0.028em] !text-paper text-balance">
               An observatory for possible worlds
             </h1>
@@ -31,7 +31,7 @@ export default function V2() {
               futures specific enough to argue with.
             </p>
             <div className="mt-9 flex gap-3">
-              <Link href="/projects" className="rounded-[2px] bg-accent px-6 py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper hover:bg-accent-deep">
+              <Link href="/projects" className="rounded-[2px] bg-accent px-6 py-3.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper hover:bg-accent-press">
                 Enter the atlas
               </Link>
               <Link href="/about" className="rounded-[2px] border-[1.5px] border-paper/30 px-6 py-3 font-mono text-[12px] uppercase tracking-[0.1em] text-paper hover:border-paper">

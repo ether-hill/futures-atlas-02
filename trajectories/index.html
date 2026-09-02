@@ -1,5 +1,11 @@
 <!doctype html>
-<html lang="en">
+<!-- data-fa-no-footer: this app fills the viewport with a fixed simulation
+     shell and never scrolls, so the footer atlas-nav.js appends to <body> on
+     project pages cannot be reached — and it carries z-index:5 (deliberately,
+     so the shared footer sits above the full-viewport canvases other projects
+     use as a backdrop), which laid it straight over the whole app. The page
+     rendered as a nav and a blue slab. -->
+<html lang="en" data-fa-no-footer>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />

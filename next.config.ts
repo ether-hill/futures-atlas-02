@@ -1,8 +1,29 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /*
+   * Let a second dev server use its own build directory.
+   *
+   * Two `next dev` processes on one checkout share `.next`, and each one's
+   * compiler prunes the other's output: a request lands on a route whose
+   * `page.js` the other process has just deleted and you get
+   *   ENOENT ... .next/server/app/(atlas)/<route>/page.js
+   * as an intermittent 404 or 500 that clears on reload and comes straight
+   * back. It looks like a bug in the page and is not.
+   *
+   * That happens whenever two editors, or two agent sessions, have this repo
+   * open at once. `NEXT_DIST_DIR=.next-b PORT=3xxx npm run dev` gives the second
+   * one its own tree. Unset, nothing changes.
+   */
+  distDir: process.env.NEXT_DIST_DIR || ".next",
+
   // futures-atlas-core ships TSX source; Next must transpile it.
   transpilePackages: ["futures-atlas-core"],
+
+  // mupdf is a wasm bundle (the horizon scan renders a paper's first page for a
+  // thumbnail). Left to webpack it gets rewritten and the glue code breaks at
+  // runtime; leave it to Node's own resolver.
+  serverExternalPackages: ["mupdf"],
 
   /*
    * Take webpack off its WebAssembly hasher.
@@ -61,6 +82,7 @@ const nextConfig: NextConfig = {
         { source: "/theodds/stats", destination: "/odds-of-surviving-ai/stats.html" },
         // Interference — hand-authored static bundle (gallery + embed.html player)
         { source: "/interference", destination: "/interference/index.html" },
+        { source: "/superposition", destination: "/superposition/index.html" },
         // Quantum Sandbox — single-page Vite static app (base path baked in)
         { source: "/quantum-sandbox", destination: "/quantum-sandbox/index.html" },
         // Generatives — Vite static app; the dashboard + a separate embed.html player

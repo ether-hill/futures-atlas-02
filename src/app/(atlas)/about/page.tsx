@@ -22,7 +22,7 @@ export default function AboutPage() {
         <SignalField />
         <Container className="relative z-[1] py-[clamp(72px,12vh,150px)]">
           <Reveal>
-            <p className="eyebrow tick mb-6">{HERO.eyebrow}</p>
+            <p className="eyebrow mb-6">{HERO.eyebrow}</p>
             <h1 className="max-w-[16ch] text-[clamp(40px,6.4vw,96px)] font-extrabold leading-[0.94] tracking-[-0.028em] text-ink text-balance">
               {HERO.headline}
             </h1>
@@ -33,13 +33,6 @@ export default function AboutPage() {
               {HERO.kicker}
             </p>
           </Reveal>
-        </Container>
-      </section>
-
-      {/* ── Made with ───────────────────────────────────────────────────── */}
-      <section className="border-t border-ink/15 py-[clamp(40px,6vw,80px)]">
-        <Container>
-          <Collaborators />
         </Container>
       </section>
 
@@ -95,7 +88,7 @@ export default function AboutPage() {
         <Container>
           <div className="grid grid-cols-1 gap-x-[clamp(24px,5vw,80px)] gap-y-10 lg:grid-cols-[1fr_1.6fr]">
             <Reveal>
-              <p className="eyebrow tick mb-5">{OPEN.eyebrow}</p>
+              <p className="eyebrow mb-5">{OPEN.eyebrow}</p>
               <h2 className="text-[clamp(26px,3.4vw,44px)] font-extrabold leading-[1.02] tracking-[-0.022em] text-ink">
                 {OPEN.intro}
               </h2>
@@ -152,6 +145,16 @@ export default function AboutPage() {
               {FOOTER_CTA.label} <span aria-hidden="true">→</span>
             </Link>
           </Reveal>
+        </Container>
+      </section>
+
+      {/* ── Made with ───────────────────────────────────────────────────────
+          The sign-off, not the introduction. It used to sit second, directly
+          under the hero, which read as "here is who paid for this" before the
+          page had said what it was. Credit belongs at the end. */}
+      <section className="border-t border-ink/15 py-[clamp(40px,6vw,80px)]">
+        <Container>
+          <Collaborators />
         </Container>
       </section>
     </div>

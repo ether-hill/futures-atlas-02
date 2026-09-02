@@ -151,7 +151,6 @@ export function FeedTimeline({
           setMedia={setMedia}
           reports={reports}
           setReports={setReports}
-          reportCount={1}
         />
 
         <main className="min-w-0 flex-1">

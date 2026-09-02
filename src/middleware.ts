@@ -1,5 +1,10 @@
 /**
- * Two gates, both keyed on the same signed session cookie (lib/admin-session.ts):
+ * Three gates, all keyed on the same signed session cookie (lib/admin-session.ts):
+ *
+ * 0. On a PREVIEW deployment, everything. Staging is where unfinished work is
+ *    looked at, so having the link is not the same as being allowed to read it.
+ *    Production is deliberately exempt — it is the public site. The two gates
+ *    below still do the work on production, and on a developer's machine.
  *
  * 1. The working pages: /admin/*, the editor overview /editor, the unlinked
  *    design experiments (/home-lab, /mocks), the logo animator, the design
@@ -9,9 +14,11 @@
  *
  * 2. Draft projects and draft posts: every path belonging to a project marked
  *    `visibility: "draft"` in src/data/projects.ts, and every unpublished post
- *    in src/data/posts.ts. The public never renders one; unauthenticated
- *    requests are rewritten to the sign-in form, so the page's markup is never
- *    sent.
+ *    in src/data/posts.ts. On staging an unauthenticated request is rewritten
+ *    to the sign-in form, so the page's markup is never sent. On PRODUCTION
+ *    they are not gated but absent, like the staging-only paths above: a
+ *    sign-in form sitting on a draft project's URL still announces the project
+ *    and its name.
  *
  * There used to be a third, HTTP Basic against STYLE_GUIDE_PASSWORD, guarding
  * the panel. It meant a second password and a browser dialog that looked like
@@ -37,7 +44,12 @@ const INTERNAL_PATHS = [
   "/admin",
   "/editor",
   "/home-lab",
+  "/plan",
   "/mocks",
+  // The mock-ups' own endpoints: the Instagram grid's shared arrangement is
+  // read and written by a page that already required the cookie, so the same
+  // gate covers it, on both verbs.
+  "/api/mocks",
   "/logo-animator",
   "/design-system",
   "/style-guide",
@@ -54,7 +66,15 @@ const INTERNAL_PATHS = [
  */
 const STAGING_ONLY = [
   "/home-lab",
+  "/plan",
   "/mocks",
+  "/api/mocks",
+  // The reading log and everything it is made of. It is not part of the site
+  // being launched, so on production it is absent rather than hidden — same
+  // treatment as the working pages, and NOT in INTERNAL_PATHS, because on
+  // staging the feed is for anyone looking, not only a signed-in editor.
+  "/feed",
+  "/api/feed",
   "/logo-animator",
   "/design-system",
   "/style-guide",
@@ -80,11 +100,35 @@ export async function middleware(req: NextRequest) {
   // there, so on production the working pages answer as though they were never
   // built. The footer's internal column is built to match, so production never
   // links to a dead end either.
+  //
+  // Draft projects and posts get the same treatment on production, and for a
+  // stronger reason: a sign-in form on /some-unreleased-project still tells the
+  // world the project exists and what it is called. On production a draft is
+  // absent, and that holds for a signed-in editor too — the listings drop them
+  // there as well (draftsVisible() in lib/editor.ts), so production never shows
+  // a card pointing at a page it will not serve.
   if (
     process.env.VERCEL_ENV === "production" &&
-    STAGING_ONLY.some((base) => pathname === base || pathname.startsWith(`${base}/`))
+    (STAGING_ONLY.some((base) => pathname === base || pathname.startsWith(`${base}/`)) ||
+      isDraftPath(pathname) ||
+      isDraftPostPath(pathname))
   ) {
     return NextResponse.rewrite(new URL("/_internal-not-here", req.url));
+  }
+
+  // On a PREVIEW deployment the whole site is behind the sign-in, not only its
+  // drafts. Staging is where unfinished work is looked at, and a link to it
+  // should not be a way to read the site. Production is untouched: it is the
+  // public site, and gating it would close the Atlas to its readers.
+  //
+  // The sign-in machinery itself has to stay reachable or nobody can ever get
+  // in — the form is handled by sessionGate, this is the endpoint it posts to.
+  if (
+    process.env.VERCEL_ENV === "preview" &&
+    pathname !== "/api/admin/login" &&
+    pathname !== "/api/admin/logout"
+  ) {
+    return sessionGate(req);
   }
 
   // /api/tokens is the style-guide panel writing an override. It is a fetch from
@@ -111,6 +155,12 @@ async function sessionGate(req: NextRequest) {
 
   const editor = await readSession(req.cookies.get(ADMIN_COOKIE)?.value, secret);
   if (editor) return NextResponse.next();
+
+  // A fetch wants an answer it can read, not the sign-in page's markup with a
+  // 200 on it. Only the browser gets redirected to the form.
+  if (req.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.json({ error: "not signed in" }, { status: 401 });
+  }
 
   // Rewrite (not redirect) so the requested URL stays in the address bar and
   // the visitor lands on it directly once they sign in.

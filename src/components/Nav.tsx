@@ -89,7 +89,7 @@ export function Nav() {
             })}
             <Link
               href="/about"
-              className="rounded-[2px] bg-accent px-4 py-2.5 font-mono text-[11.5px] uppercase tracking-[0.14em] text-paper transition-colors hover:bg-accent-deep"
+              className="rounded-[2px] bg-accent px-4 py-2.5 font-mono text-[11.5px] uppercase tracking-[0.14em] text-paper transition-colors hover:bg-accent-press"
             >
               The Atlas
             </Link>

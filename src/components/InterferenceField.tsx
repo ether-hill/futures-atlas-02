@@ -19,8 +19,28 @@ import { useEffect, useRef } from "react";
 
 const VS = "attribute vec2 a; void main(){ gl_Position = vec4(a,0.0,1.0); }";
 
-const FS = `
+const FS = `#extension GL_OES_standard_derivatives : enable
 precision highp float;
+
+/*
+  The slope epsilon has to be ONE PIXEL WIDE, not one fixed distance.
+
+  This shader is a port of the Rain field from /interference, and it arrived
+  here with the project's #else fallback (a hardcoded 0.006) baked in as if it
+  were the real value — the extension was never requested, so fwidth was never
+  available to ask for. On the project's own full-bleed panel that constant is
+  roughly a pixel and it looks fine. Here the field is a small masked band AND
+  it was pulled back further than the project's, so a fixed epsilon sampled the
+  surface at well under one ripple per step: the normals came out of step with
+  the screen grid and the water grew a scaly, quilted moiré of lens shapes that
+  is not in the wave field at all. FW gives the real on-screen pixel size, so
+  the sampling follows the panel however it is sized.
+*/
+#ifdef GL_OES_standard_derivatives
+#define FW(x) fwidth(x)
+#else
+#define FW(x) 0.006
+#endif
 uniform vec2 uRes;
 uniform float uT;
 uniform vec3 uA;   /* accent */
@@ -75,10 +95,19 @@ float height(vec2 p){
   return h;
 }
 
+/* cheap per-pixel hash, for the grain */
+float hash21(vec2 p){
+  p = fract(p*vec2(123.34,345.45));
+  p += dot(p,p+34.345);
+  return fract(p.x*p.y);
+}
+
 void main(){
-  /* pulled back: the page is a tall panel, so more of the field fits */
-  vec2 p = (gl_FragCoord.xy - 0.5*uRes)/min(uRes.x,uRes.y)*3.4;
-  float e = 0.006;
+  /* Same framing as the project's own panel. It used to be 3.4, to fit more of
+     the field into a tall page — which put 1.7x as many rings across every
+     pixel and is half of why the surface aliased. */
+  vec2 p = (gl_FragCoord.xy - 0.5*uRes)/min(uRes.x,uRes.y)*2.0;
+  float e = max(FW(p.x)*1.3, 0.0032);
   float h  = height(p);
   float hx = height(p+vec2(e,0.0)) - h;
   float hy = height(p+vec2(0.0,e)) - h;
@@ -94,6 +123,12 @@ void main(){
   vec3 col = mix(rampI(0.02), rampI(0.46), clamp(fres*1.9, 0.0, 1.0));
   col += rampI(0.68)*diff*0.13;
   col += rampI(clamp(h*h*6.5*0.75, 0.0, 1.0))*0.46;
+  /* A grain of noise and a soft vignette, as on the project's panel. The grain
+     is doing real work: without it the shallow parts of the ramp band into
+     visible steps on a large flat area. */
+  col += (hash21(gl_FragCoord.xy + fract(uT)*137.0)-0.5)*0.016;
+  vec2 q = p*vec2(0.56,0.70);
+  col *= 1.0 - 0.26*dot(q,q);
   gl_FragColor = vec4(max(col,0.0), 1.0);
 }`;
 
@@ -116,9 +151,18 @@ function readToken(el: HTMLElement, name: string, fallback: [number, number, num
   return [d[0] / 255, d[1] / 255, d[2] / 255] as [number, number, number];
 }
 
-const SPEED = 0.34; // a drop every four seconds or so, well under the project's pace
+// A drop every seven seconds or so, and a 47-second loop. Well under the
+// project's pace: this one is the ground behind a page of text, not the exhibit.
+const SPEED = 0.19;
 
-export function InterferenceField({ className = "" }: { className?: string }) {
+export function InterferenceField({
+  className = "",
+  speed = SPEED,
+}: {
+  className?: string;
+  /** Ripple pace. Lower where the field is a watermark behind other content. */
+  speed?: number;
+}) {
   const ref = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -126,6 +170,9 @@ export function InterferenceField({ className = "" }: { className?: string }) {
     if (!canvas) return;
     const gl = canvas.getContext("webgl", { antialias: false, alpha: false, depth: false });
     if (!gl) return;
+    // Without this the #ifdef above takes the fallback branch and we are back to
+    // a fixed epsilon. Requesting it is what makes fwidth exist in WebGL 1.
+    gl.getExtension("OES_standard_derivatives");
 
     const compile = (type: number, src: string) => {
       const s = gl.createShader(type)!;
@@ -159,9 +206,13 @@ export function InterferenceField({ className = "" }: { className?: string }) {
     const root = document.documentElement;
     let accent: [number, number, number] = [0.36, 0.56, 0.78];
     let ground: [number, number, number] = [0.13, 0.12, 0.09];
+    // Read off the CANVAS, not <html>. Custom properties inherit, so this still
+    // picks up the global theme by default — but a section that pins its own
+    // --bg / --accent (the contact page keeps a dark ground in both themes) now
+    // reaches the field too, instead of the field reading past it to the root.
     const readTheme = () => {
-      accent = readToken(root, "--accent", accent);
-      ground = readToken(root, "--bg", ground);
+      accent = readToken(canvas, "--accent", accent);
+      ground = readToken(canvas, "--bg", ground);
     };
     readTheme();
 
@@ -173,35 +224,104 @@ export function InterferenceField({ className = "" }: { className?: string }) {
     let raf = 0;
     let t = 1.4; // start mid-ripple rather than on flat water
     let last = performance.now();
+    // The shader's drip cycle. Everything in height() is mod TR, and the oldest
+    // generation is faded to nothing before it leaves the two-TR window, so the
+    // field is exactly periodic in uT with period TR — and only TR. This used to
+    // wrap at 6.0, which is not a period of anything: every 17 seconds uT jumped
+    // by 3 and every ring on screen teleported. That was the visible stutter.
+    const LOOP = 9.0; // = const float TR in the shader above; keep them equal
+
+    /*
+      The canvas is measured by a ResizeObserver, NOT by asking the layout on
+      every frame.
+
+      This used to call getBoundingClientRect() inside the frame loop. That is a
+      forced synchronous reflow, sixty times a second, and the browser cannot do
+      it while it is already laying the page out — so every frame of the sim
+      made the scroll wait for a layout it had just invalidated. On the contact
+      page, where the field is the full ground, that was the whole reason
+      scrolling felt like it was dragging. The size only changes when the
+      element changes size, which is exactly what a ResizeObserver is for.
+
+      Same dpr cap as the project's own panel (interference/index.html): with a
+      pixel-derived epsilon a lower ratio is no longer an aliasing problem, just
+      a softer one, but there is no reason for the two to disagree.
+    */
+    let cw = 0;
+    let ch = 0;
+    const measure = (rw: number, rh: number) => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      cw = Math.max(2, Math.round(rw * dpr));
+      ch = Math.max(2, Math.round(rh * dpr));
+    };
+    const ro = new ResizeObserver(([e]) => {
+      const box = e.contentRect;
+      measure(box.width, box.height);
+    });
+    ro.observe(canvas);
+    // One read at start-up, so the first frame is not drawn at 2x2 while the
+    // observer's first callback is still queued.
+    const first = canvas.getBoundingClientRect();
+    measure(first.width, first.height);
 
     const frame = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      if (!still) t = (t + dt * SPEED) % 6.0; // the field's own loop period
+      if (!still) t = (t + dt * speed) % LOOP;
 
-      const r = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-      const w = Math.max(2, Math.round(r.width * dpr));
-      const h = Math.max(2, Math.round(r.height * dpr));
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w;
-        canvas.height = h;
-        gl.viewport(0, 0, w, h);
+      if (canvas.width !== cw || canvas.height !== ch) {
+        canvas.width = cw;
+        canvas.height = ch;
+        gl.viewport(0, 0, cw, ch);
       }
-      gl.uniform2f(uRes, w, h);
+      gl.uniform2f(uRes, cw, ch);
       gl.uniform1f(uT, t);
       gl.uniform3f(uA, accent[0], accent[1], accent[2]);
       gl.uniform3f(uB, ground[0], ground[1], ground[2]);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
       raf = requestAnimationFrame(frame);
     };
-    raf = requestAnimationFrame(frame);
+
+    /*
+      And it only runs while it is on screen and the tab is in front, the same
+      gating HeroField has. A decorative field has no business holding a core at
+      sixty frames a second behind the rest of the page, or in a tab nobody is
+      looking at. `last` is reset on resume so the ripples do not jump forward
+      by however long the pause was.
+    */
+    let running = false;
+    const start = () => {
+      if (running) return;
+      running = true;
+      last = performance.now();
+      raf = requestAnimationFrame(frame);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(raf);
+    };
+
+    let onScreen = true;
+    const sync = () => (onScreen && !document.hidden ? start() : stop());
+    const io = new IntersectionObserver(
+      ([e]) => {
+        onScreen = e.isIntersecting;
+        sync();
+      },
+      { threshold: 0 },
+    );
+    io.observe(canvas);
+    document.addEventListener("visibilitychange", sync);
+    start();
 
     return () => {
-      cancelAnimationFrame(raf);
+      stop();
+      ro.disconnect();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", sync);
       themeWatch.disconnect();
     };
-  }, []);
+  }, [speed]);
 
   return <canvas ref={ref} aria-hidden className={className} />;
 }

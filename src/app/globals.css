@@ -37,6 +37,7 @@
   --color-accent: var(--c-accent);
   --color-accent-soft: var(--c-accent-soft);
   --color-accent-deep: var(--c-accent-deep);
+  --color-accent-press: var(--c-accent-press);   /* hover/pressed fills only */
 
   /* legacy accent aliases */
   --color-blueprint: var(--c-accent);
@@ -73,6 +74,7 @@
   --c-accent: var(--accent);
   --c-accent-soft: var(--accent-soft);
   --c-accent-deep: var(--accent-deep);
+  --c-accent-press: var(--accent-press);
 
   --background: var(--c-surface);
   --foreground: var(--c-ink);
@@ -137,7 +139,8 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
   will-change: transform, opacity;
   transition: color 200ms ease;
 }
-/* the small leading dot, same trick as the eyebrow tick */
+/* the small leading dot on a term chip (unrelated to the leader, which no
+   longer carries a dash) */
 .term-field .term::before {
   content: "";
   display: inline-block;
@@ -224,13 +227,23 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 }
 
 .annot,
+/*
+  THE leader. One style, used everywhere a section announces itself: the brand
+  blue, uppercase, letterspaced, and nothing else.
+
+  There were three of these. This one in graphite with a short blue dash in
+  front of it (.tick), and two hand-built variants on /projects and /contact
+  that set the type in accent and then ran a hairline across the rest of the
+  column. Three marks doing one job, none of them agreeing on the colour. The
+  rule and the dash are gone; the colour carries it.
+*/
 .eyebrow {
   font-family: var(--font-mono), ui-monospace, monospace;
-  letter-spacing: 0.14em;
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-graphite);
+  color: var(--color-accent);
 }
-.eyebrow { font-size: 0.7rem; letter-spacing: 0.18em; }
 .annot { font-size: 0.72rem; }
 
 /* quiet, set-apart aside */
@@ -264,16 +277,6 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
   background-image: repeating-linear-gradient(135deg, rgba(23, 24, 27, 0.06) 0 1px, transparent 1px 12px);
 }
 
-.tick::before {
-  content: "";
-  display: inline-block;
-  width: 0.7rem;
-  height: 1px;
-  margin-right: 0.5rem;
-  vertical-align: middle;
-  background: var(--color-accent);
-}
-
 ::selection {
   background: var(--color-accent);
   color: var(--color-paper);
@@ -288,6 +291,20 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 [data-reveal] { opacity: 0; }
 [data-reveal].is-in {
   animation: rise 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+/*
+  Page arrival. See components/PageIn.tsx for why this is opacity and nothing
+  else. It is short and it starts from 0.35 rather than 0: a page that fades all
+  the way up from nothing reads as slow even when it is fast, and on a cached
+  navigation it flashes the ground colour before the content.
+*/
+@keyframes page-in {
+  from { opacity: 0.35; }
+  to { opacity: 1; }
+}
+.fa-page-in {
+  animation: page-in 0.42s cubic-bezier(0.2, 0.6, 0.2, 1) both;
 }
 
 @keyframes pulse-dot {
@@ -312,6 +329,10 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 }
 
 /* ---------- About page instrumentation (workflow pulse + stack stagger) ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .fa-page-in { animation: none; }
+}
+
 @keyframes wf-travel {
   from { left: 24px; }
   to { left: calc(100% - 30px); }
@@ -505,3 +526,166 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
 .fa-reportcard .fa-rc-dim { color: color-mix(in oklab, var(--paper) 55%, transparent); }
 .fa-reportcard .fa-rc-accent { color: var(--accent); }
 .fa-reportcard a:hover h2 { color: var(--accent); }
+
+/* ---------- Contact: a dark ground in both themes, a card that flips ----------
+   The rain field IS the page here, and it is a dark body of water lit from
+   above. In light mode it used to be redrawn on bone, which turned still water
+   into pale marbling and lost the thing the page is for. So the section pins
+   the DARK values of the surface tokens in both themes — no new colours, just
+   core's dark primitives stated instead of inherited.
+
+   The form does not follow it. `.fa-contact-card` restores the light tokens
+   when the site is in light mode, so the panel reads as a sheet of paper laid
+   on the water; in dark mode it inherits the dark ones and reads as a recess.
+   That is the whole intent: the ground is the artwork and does not flip, the
+   form is interface and does.
+
+   THREE families of name have to be restated together, which is why this looks
+   repetitive. `--c-*` (the app's aliases), the core semantic names (`--text`,
+   `--panel`, … — what the fa-* classes and InterferenceField read), and
+   Tailwind's `--color-*`. All three are declared on :root as `var(<the next one
+   down>)`, and a custom property's value is RESOLVED at the element that
+   declares it: :root already computed `--color-ink` to light ink, and every
+   descendant inherits that computed colour, not the indirection. Overriding one
+   layer therefore does nothing on its own — the h1 stayed ink-on-ink and the
+   input grounds stayed dark inside the light card. Re-map each layer at the
+   scope and they resolve here instead. */
+.fa-contact {
+  --c-surface: var(--fa-bone-d);
+  --c-band: var(--fa-band-d);
+  --c-panel: var(--fa-panel-d);
+  --c-haze: var(--fa-haze-d);
+  --c-ink: var(--fa-ink-d);
+  --c-ink70: var(--fa-ink-body-d);
+  --c-graphite: var(--fa-graphite-d);
+  --c-faint: var(--fa-faint-d);
+  --c-accent: var(--fa-accent-d);
+  --c-accent-soft: var(--fa-accent-soft-d);
+  --c-accent-deep: var(--fa-accent-deep-d);
+  --c-accent-press: var(--fa-accent-press);
+
+  background: var(--fa-bone-d);
+  color-scheme: dark;
+}
+
+/*
+  The rain field's own edges.
+
+  It used to be one linear mask fading leftward, which left three hard cuts:
+  the top and bottom of the section, where the water simply stopped mid-ripple,
+  and the right gutter. Two masks intersected instead — one across, one down —
+  feather all four sides, so the field has no edge of its own and the page
+  ground is what you see it fade into.
+
+  Opacity is the other half. At 0.45 this pattern is high-contrast enough to
+  compete with the heading sitting on top of it; it is texture, not an image.
+*/
+.fa-contact-field {
+  opacity: 0.3;
+  --fa-field-x: linear-gradient(to left, #000 0%, #000 26%, transparent 88%);
+  --fa-field-y: linear-gradient(to bottom, transparent 0%, #000 16%, #000 74%, transparent 100%);
+  -webkit-mask-image: var(--fa-field-x), var(--fa-field-y);
+  mask-image: var(--fa-field-x), var(--fa-field-y);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+/*
+  The same field as a watermark on /projects: a band across the top that is
+  gone before the first row of cards. Much fainter than the contact page's —
+  there it is the page's ground and can carry the eye, here it sits behind a
+  headline, a row of filter chips and then twenty thumbnails, and anything
+  strong enough to notice is strong enough to fight them.
+*/
+.fa-projects-field {
+  opacity: 0.17;
+}
+/* The same alpha reads considerably louder on bone than on near-black, because
+   the ramp's bright end is close to the light ground's own value. */
+html:not(.dark) .fa-projects-field {
+  opacity: 0.12;
+}
+.fa-projects-field {
+  --fa-pf-x: linear-gradient(to right, transparent 0%, #000 12%, #000 84%, transparent 100%);
+  --fa-pf-y: linear-gradient(to bottom, #000 0%, #000 30%, transparent 96%);
+  -webkit-mask-image: var(--fa-pf-x), var(--fa-pf-y);
+  mask-image: var(--fa-pf-x), var(--fa-pf-y);
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+html:not(.dark) .fa-contact-card {
+  --c-surface: var(--fa-bone);
+  --c-band: var(--fa-ink);
+  --c-panel: var(--fa-panel);
+  --c-haze: var(--fa-haze);
+  --c-ink: var(--fa-ink);
+  --c-ink70: var(--fa-ink-body);
+  --c-graphite: var(--fa-graphite);
+  --c-faint: var(--fa-faint);
+  --c-accent: var(--fa-accent);
+  --c-accent-soft: var(--fa-accent-soft);
+  --c-accent-deep: var(--fa-accent-deep);
+  --c-accent-press: var(--fa-accent-press);
+
+  color-scheme: light;
+}
+
+/* The other two layers, re-pointed at whichever --c-* is in scope. */
+.fa-contact,
+html:not(.dark) .fa-contact-card {
+  /* core semantic names: fa-* components, and the two the rain field reads */
+  --bg: var(--c-surface);
+  --panel: var(--c-panel);
+  --haze: var(--c-haze);
+  --band: var(--c-band);
+  --text: var(--c-ink);
+  --text-body: var(--c-ink70);
+  --muted: var(--c-graphite);
+  --faint: var(--c-faint);
+  --accent: var(--c-accent);
+  --accent-soft: var(--c-accent-soft);
+  --accent-deep: var(--c-accent-deep);
+  --accent-press: var(--c-accent-press);
+  --hairline: color-mix(in srgb, var(--c-ink) 16%, transparent);
+
+  /* Tailwind's generated names */
+  --color-surface: var(--c-surface);
+  --color-band: var(--c-band);
+  --color-panel: var(--c-panel);
+  --color-bone: var(--c-panel);
+  --color-mist: var(--c-panel);
+  --color-haze: var(--c-haze);
+  --color-line: var(--c-ink);
+  --color-ink: var(--c-ink);
+  --color-ink-70: var(--c-ink70);
+  --color-graphite: var(--c-graphite);
+  --color-faint: var(--c-faint);
+  --color-accent: var(--c-accent);
+  --color-accent-soft: var(--c-accent-soft);
+  --color-accent-deep: var(--c-accent-deep);
+  --color-accent-press: var(--c-accent-press);
+  --color-blueprint: var(--c-accent);
+  --color-blueprint-deep: var(--c-accent-deep);
+  --color-amber: var(--c-accent);
+  --color-amber-deep: var(--c-accent-deep);
+  --color-render: var(--c-accent-deep);
+
+  --background: var(--c-surface);
+  --foreground: var(--c-ink);
+}
+
+
+/* Horizon Scan masthead watermark ------------------------------------------
+   The same rain field the projects index carries, but it starts under the bar
+   rather than at a section edge, so its mask fades in at the top as well as out
+   at the bottom (that part is done with Tailwind arbitrary properties on the
+   component). Only the alpha lives here, because it has to differ by theme for
+   the reason .fa-projects-field's does: the ramp's bright end sits close to
+   bone's own value, so the same alpha reads far louder on the light ground. */
+.fa-scan-field {
+  opacity: 0.15;
+}
+html:not(.dark) .fa-scan-field {
+  opacity: 0.085;
+}

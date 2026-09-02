@@ -13,7 +13,7 @@ export const HERO = {
 };
 
 export const ARCHITECTURE_INTRO =
-  "One Next.js app hosts a set of smaller, self-contained apps. Each was written in whatever suited it, and each is served from the same domain. That decision shapes everything else here, so it's worth knowing before you clone anything.";
+  "One Next.js app hosts a set of smaller, self-contained apps. Each was written in whatever suited it.";
 
 export interface Layer {
   n: string;
@@ -32,20 +32,8 @@ export const LAYERS: Layer[] = [
   {
     n: "02",
     title: "The sub-apps",
-    body: "Each project is its own app in a top-level directory with its own package.json and its own framework. On every deploy they are compiled straight into public/ and served as static bundles. The built output is never committed, so two people can't overwrite each other's build.",
-    detail: "scripts/build-subapps.sh · Vite or Next static export",
-  },
-  {
-    n: "03",
-    title: "The static bundles",
-    body: "A few projects have no build step at all. Hand-authored HTML, CSS and JavaScript, committed whole under public/. Interference is fifteen fragment shaders and a file that runs them, and that's genuinely the entire source.",
-    detail: "public/<slug> · committed as-is",
-  },
-  {
-    n: "04",
-    title: "The design system",
-    body: "Colour, type scale, spacing, motion, as a package rather than a stylesheet. It is vendored into the repo and consumed by the host and every sub-app, so one token change reaches all of them.",
-    detail: "futures-atlas-core · tokens.css + components",
+    body: "Each project is its own app in a top-level directory with its own package.json and its own framework. On every deploy they are compiled straight into public/ and served as static bundles. The built output is never committed, so two people can't overwrite each other's build. A few have no build step at all: hand-authored HTML, CSS and JavaScript, committed whole. Interference is fifteen fragment shaders and a file that runs them, and that's genuinely the entire source.",
+    detail: "scripts/build-subapps.sh · Vite, Next static export, or committed as-is",
   },
 ];
 
@@ -76,60 +64,6 @@ export const RUN_STEPS: { cmd: string; note: string }[] = [
 
 export const ENV_NOTE =
   "Nothing above needs a secret. The environment variables the deployed site uses (the theming store, the editor sign-in, the two generation endpoints) are all optional and degrade gracefully: without them the theme falls back to its defaults, the gated routes stay closed, and Signal Reactor and Quantum Spark render but cannot generate.";
-
-export const OPENNESS_INTRO =
-  "“Open” means different things for the code and for the site, and the difference is deliberate rather than an oversight. Here is exactly where the line sits.";
-
-export interface OpennessRow {
-  thing: string;
-  state: "open" | "closed" | "unlisted";
-  detail: string;
-}
-
-export const OPENNESS: OpennessRow[] = [
-  {
-    thing: "The source code",
-    state: "open",
-    detail:
-      "The repository is public on GitHub. Clone it, run it, fork it; there is no access to request.",
-  },
-  {
-    thing: "The research and data",
-    state: "open",
-    detail:
-      "Every report, every finding and every glossary entry is a plain TypeScript data file in the repo, with its sources attached. Free to cite, free to check, free to disagree with.",
-  },
-  {
-    thing: "The design system",
-    state: "closed",
-    detail:
-      "A package in the repo, vendored into the sub-apps, driven by one set of tokens.",
-  },
-  {
-    thing: "The site in search engines",
-    state: "unlisted",
-    detail:
-      "The Atlas is draft work, shared by link. Every response carries a noindex header and robots.txt disallows everything, so nothing here is findable by searching. That lifts when the site launches properly.",
-  },
-  {
-    thing: "Unpublished projects",
-    state: "closed",
-    detail:
-      "Work in progress isn't listed anywhere on the site, and its URLs are closed. An anonymous visitor gets a sign-in form, never the page. It goes public when it's finished, not before.",
-  },
-  {
-    thing: "The editor and theming panels",
-    state: "closed",
-    detail:
-      "The publishing overview, the internal pages and the live theming control panel sit behind a password, and fail closed if it is not configured.",
-  },
-  {
-    thing: "Keys and credentials",
-    state: "closed",
-    detail:
-      "Never in the repo. Every key lives in the deployment's environment, and no environment file has ever been committed.",
-  },
-];
 
 export const LICENCE = {
   intro:
