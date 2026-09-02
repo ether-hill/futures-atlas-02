@@ -53,6 +53,7 @@ const INTERNAL_PATHS = [
   "/logo-animator",
   "/design-system",
   "/style-guide",
+  "/listen", // audio-reel build page (see src/components/audio-reel)
 ];
 
 /**

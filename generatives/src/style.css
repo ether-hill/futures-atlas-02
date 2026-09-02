@@ -50,7 +50,18 @@ button {
 
 /* ── studio layout — mirrors the Frond "Algorithms" page ── */
 .studio-root { font-family: var(--sans); }
-.studio-head { padding: 44px 28px clamp(24px, 4vw, 40px); }
+/*
+ * The nav bar is FIXED, so it sits over the page rather than above it. Its
+ * height has to be reserved by whatever comes first or the title slides under
+ * it — which it was doing: 44px of padding against a 64px bar clipped the top
+ * 20px off the ascenders, and only on this app, because every other project
+ * page reserves the space one way or another.
+ *
+ * Reserved here rather than on <body> on purpose: body is height:100% and the
+ * embed view (embed.html) draws the piece full-bleed with no bar at all, so
+ * padding the body would put a dead band in every embed.
+ */
+.studio-head { padding: calc(var(--fa-nav-h) + 44px) 28px clamp(24px, 4vw, 40px); }
 .studio-title {
   margin: 0;
   font-family: var(--sans);

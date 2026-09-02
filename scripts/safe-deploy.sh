@@ -3,8 +3,11 @@
 # safe-deploy.sh — the ONLY sanctioned way to ship futures-atlas-02.
 #
 # Branch-aware:
-#   • on `staging` → pushes the STAGING preview (safe to ship freely; does NOT
-#     touch the public site). Preview URL:
+#   • on `mike` / `laura` → pushes YOUR OWN preview; nobody else's pushes touch
+#     it. This is where day-to-day work belongs.
+#        https://futures-atlas-02-git-<branch>-frond-studio.vercel.app
+#   • on `staging` → pushes the shared INTEGRATION preview (safe to ship freely;
+#     does NOT touch the public site). Preview URL:
 #        https://futures-atlas-02-git-staging-frond-studio.vercel.app
 #   • on `main`    → deploys PRODUCTION (https://futures-atlas-02.vercel.app)
 #
@@ -23,11 +26,13 @@ git fetch origin --quiet
 
 BRANCH=$(git rev-parse --abbrev-ref HEAD)
 case "$BRANCH" in
-  staging) WHERE="STAGING preview → https://futures-atlas-02-git-staging-frond-studio.vercel.app" ;;
+  mike|laura) WHERE="YOUR preview → https://futures-atlas-02-git-$BRANCH-frond-studio.vercel.app" ;;
+  staging) WHERE="STAGING integration preview → https://futures-atlas-02-git-staging-frond-studio.vercel.app" ;;
   main)    WHERE="PRODUCTION → https://futures-atlas-02.vercel.app" ;;
   *)
-    echo "✘ You are on '$BRANCH'. Deploy from 'staging' (preview) or 'main' (production)." >&2
-    echo "  Day-to-day work goes on staging:  git checkout staging" >&2
+    echo "✘ You are on '$BRANCH', which has no sanctioned target." >&2
+    echo "  Day-to-day work goes on your own branch:  git checkout mike   (or laura)" >&2
+    echo "  Then merge into staging when a piece is ready to be seen together." >&2
     exit 1 ;;
 esac
 

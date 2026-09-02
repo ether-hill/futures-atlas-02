@@ -15,6 +15,7 @@
  * shows the same block smaller on more ground.
  */
 
+import type { CSSProperties } from "react";
 import { DESIGN_W, CARD_W, CARD_H, PAD, SLIDE_CSS } from "./slide-css";
 import type { Card, OddsPost, Post, ReelPost, ShotsPost, SlideKind, TegmarkPost, TermPost } from "./posts";
 
@@ -79,7 +80,7 @@ export function PostSlide({
   return post.kind === "reel" ? (
     <ReelSlide post={post} ratio={ratio} live={live} crop={crop} />
   ) : post.kind === "shots" ? (
-    <ShotSlide post={post} index={index} ratio={ratio} crop={crop} />
+    <ShotSlide post={post} index={index} ratio={ratio} live={live} crop={crop} />
   ) : post.kind === "odds" ? (
     <OddsSlide post={post} index={index} ratio={ratio} live={live} crop={crop} />
   ) : post.kind === "term" ? (
@@ -118,7 +119,7 @@ function ReelSlide({
             would jump to a different framing than its tile showed. */}
         <div className="fld-crop" style={cropStyle(post, crop)}>
           {live && post.video ? (
-            <video className="fld-thumb" src={post.video} autoPlay loop muted playsInline />
+            <video className="fld-thumb" src={post.video} style={fitStyle(post)} autoPlay loop muted playsInline />
           ) : live ? (
             <iframe
               src={post.embed}
@@ -130,12 +131,17 @@ function ReelSlide({
             />
           ) : (
             /* eslint-disable-next-line @next/next/no-img-element */
-            <img className="fld-thumb" src={post.thumb ?? `/mocks/instagram/${post.id}.jpg`} alt="" />
+            <img className="fld-thumb" src={post.thumb ?? `/mocks/instagram/${post.id}.jpg`} style={fitStyle(post)} alt="" />
           )}
         </div>
       </div>
     </div>
   );
+}
+
+/** Cover unless the post says otherwise; see `ReelPost.fit`. */
+function fitStyle(post: ReelPost): CSSProperties | undefined {
+  return post.fit === "contain" ? { objectFit: "contain" } : undefined;
 }
 
 /** Redden one phrase inside the quote. The card used to shout the figure in
@@ -401,27 +407,20 @@ function TegmarkSlide({
 
 /** A carousel of stills: no embed, because there is nothing running to show. */
 function ShotSlide({
-  post, index, ratio, crop,
-}: { post: ShotsPost; index: number; ratio: Ratio; crop?: CropOverride }) {
+  post, index, ratio, live, crop,
+}: { post: ShotsPost; index: number; ratio: Ratio; live?: boolean; crop?: CropOverride }) {
   const shot = post.shots[Math.min(index, post.shots.length - 1)]!;
-  const cue = index === 0 && post.shots.length > 1;
   return (
     <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
       <div className="fld">
         <div className="fld-crop" style={cropStyle({}, crop)}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className="fld-thumb" src={shot.src ?? `/mocks/instagram/${shot.id}.jpg`} alt="" />
+          {live && shot.video ? (
+            <video className="fld-thumb" src={shot.video} autoPlay loop muted playsInline />
+          ) : (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="fld-thumb" src={shot.src ?? `/mocks/instagram/${shot.id}.jpg`} alt="" />
+          )}
         </div>
-        {/* Says there is more, in place of the page furniture that was cropped
-            out of the top of these captures. */}
-        {cue ? (
-          <div className="swipe-cue">
-            <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor"
-              strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 12h15M13 6l6 6-6 6" />
-            </svg>
-          </div>
-        ) : null}
       </div>
     </div>
   );

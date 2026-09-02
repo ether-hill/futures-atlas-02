@@ -211,29 +211,113 @@ function wordmark(ctx: CanvasRenderingContext2D, w: number, padX: number, padY: 
   void [ctx, w, padX, padY, color, label];
 }
 
+
 /**
- * Headline + sub laid out inside a region [rx,ry,rw,rh], with generous
- * safe-area padding (~10% of the region) so text never crowds the edges.
+ * Draw tracked-out text without touching canvas state.
+ *
+ * `ctx.letterSpacing` looks like the obvious tool and is a trap: it is part of
+ * the drawing state, so it survives past the call that set it and silently
+ * widens every later line — a spaced eyebrow made the headline beneath it
+ * overflow its own wrap, because the wrap measured unspaced text and the paint
+ * drew spaced text. Advancing character by character keeps the effect local
+ * and measurable, and behaves the same in every browser and in export.
+ */
+function trackedWidth(ctx: CanvasRenderingContext2D, text: string, track: number): number {
+  let w = 0;
+  for (const ch of text) w += ctx.measureText(ch).width + track;
+  return Math.max(0, w - track);
+}
+
+function fillTracked(
+  ctx: CanvasRenderingContext2D, text: string, x: number, y: number, track: number, align: Align,
+) {
+  const total = trackedWidth(ctx, text, track);
+  let cx = align === "center" ? x - total / 2 : align === "right" ? x - total : x;
+  const prev = ctx.textAlign;
+  ctx.textAlign = "left";
+  for (const ch of text) {
+    ctx.fillText(ch, cx, y);
+    cx += ctx.measureText(ch).width + track;
+  }
+  ctx.textAlign = prev;
+}
+
+/**
+ * The four lines of copy a frame can carry, in the order they are set.
+ *
+ * Every one except the headline is optional, and an empty one takes NO space:
+ * the block is measured from what is actually there, so a frame with only a
+ * headline sits exactly where a headline alone should sit rather than floating
+ * against a gap left for text that was never written.
+ */
+export type Copy = { eyebrow?: string; headline: string; headline2?: string; sub?: string };
+
+/**
+ * Copy laid out inside a region [rx,ry,rw,rh], with generous safe-area padding
+ * (~10% of the region) so text never crowds the edges.
+ *
+ * The voices, largest to smallest: EYEBROW, small and tracked out; the
+ * headline; a second headline, bold but smaller, for the line that qualifies
+ * the first; then sub-text in mono. Gaps are proportional to the type they
+ * follow, so the rhythm holds at every aspect and type size.
  */
 function textBlock(
   ctx: CanvasRenderingContext2D, rx: number, ry: number, rw: number, rh: number,
-  headline: string, sub: string, style: Style, m: MotionState,
+  copy: Copy, style: Style, m: MotionState,
 ) {
   const padX = Math.round(rw * 0.1);
   const padY = Math.round(rh * 0.1);
   const portrait = rh > rw;
   const maxW = rw - padX * 2;
+
+  const eyebrow = (copy.eyebrow ?? "").trim();
+  const headline = copy.headline ?? "";
+  const headline2 = (copy.headline2 ?? "").trim();
+  const sub = (copy.sub ?? "").trim();
+
+  // Eyebrow — the smallest voice on the frame, tracked out so it reads as a
+  // label rather than a short sentence. One line only; it is a tag, not copy.
+  const eSize = Math.max(11, Math.round(rw * 0.019 * style.sizeMul));
+  const eFont = mono(eSize, 600);
+  const eTrack = Math.round(eSize * 0.14);
+  // Measured with the tracking included, so a long eyebrow is trimmed to the
+  // width it will actually occupy rather than the width it would unspaced.
+  let eText = eyebrow ? eyebrow.toUpperCase() : "";
+  if (eText) {
+    ctx.font = eFont;
+    while (eText.length > 1 && trackedWidth(ctx, eText, eTrack) > maxW) eText = eText.slice(0, -1);
+  }
+  const eLines = eText ? [eText] : [];
+  const eLh = Math.round(eSize * 1.3);
+  const eBlock = eLines.length ? eLines.length * eLh : 0;
+
   const hSize = Math.round(rw * 0.075 * style.sizeMul);
   const hFont = heading(hSize);
   const hLines = wrap(ctx, headline, maxW, hFont, portrait ? 14 : 10);
   const hLh = Math.round(hSize * 1.06);
   const hBlock = hLines.length * hLh;
+
+  // Second headline — the same bold voice, stepped down. Big enough to still
+  // be a headline, small enough that it cannot be mistaken for the first.
+  const h2Size = Math.round(hSize * 0.62);
+  const h2Font = heading(h2Size);
+  const h2Lines = headline2 ? wrap(ctx, headline2, maxW, h2Font, portrait ? 8 : 6) : [];
+  const h2Lh = Math.round(h2Size * 1.12);
+  const h2Block = h2Lines.length ? h2Lines.length * h2Lh : 0;
+
   const aSize = Math.round(rw * 0.034);
   const aFont = mono(aSize);
   const aLines = sub ? wrap(ctx, sub, maxW, aFont, 10) : [];
   const aLh = Math.round(aSize * 1.4);
-  const aBlock = aLines.length ? aLines.length * aLh + Math.round(hSize * 0.5) : 0;
-  const totalH = hBlock + aBlock;
+  const aBlock = aLines.length ? aLines.length * aLh : 0;
+
+  // Gaps belong to the thing above them, so an empty field removes its own
+  // gap with it and nothing has to special-case which fields are present.
+  const gapAfterE = eBlock ? Math.round(eSize * 1.05) : 0;
+  const gapAfterH = h2Block ? Math.round(hSize * 0.34) : 0;
+  const gapBeforeSub = aBlock ? Math.round(hSize * 0.5) : 0;
+
+  const totalH = eBlock + gapAfterE + hBlock + gapAfterH + h2Block + gapBeforeSub + aBlock;
 
   let y: number;
   if (style.placement === "top") y = ry + padY;
@@ -245,12 +329,39 @@ function textBlock(
   ctx.save();
   ctx.globalAlpha = m.textProgress;
   ctx.translate(0, rise);
-  ctx.font = hFont;
   ctx.textBaseline = "top";
+
+  if (eLines.length) {
+    ctx.font = eFont;
+    ctx.fillStyle = style.textColor;
+    ctx.globalAlpha = m.textProgress * 0.72;
+    ctx.textAlign = style.align;
+    // Letter-spacing is not on every canvas implementation, so it is set when
+    // available and simply skipped when it is not — the eyebrow still reads.
+    eLines.forEach((ln, i) => fillTracked(ctx, ln, anchorX, y + i * eLh, eTrack, style.align));
+    ctx.textAlign = "left";
+    ctx.globalAlpha = m.textProgress;
+    y += eBlock + gapAfterE;
+  }
+
+  ctx.font = hFont;
   paintLines(ctx, hLines, anchorX, y, hLh, m, style.textColor, style.align);
   y += hBlock;
+
+  if (h2Lines.length) {
+    y += gapAfterH;
+    ctx.font = h2Font;
+    ctx.fillStyle = style.textColor;
+    ctx.globalAlpha = m.textProgress * 0.92;
+    ctx.textAlign = style.align;
+    h2Lines.forEach((ln, i) => ctx.fillText(ln, anchorX, y + i * h2Lh));
+    ctx.textAlign = "left";
+    ctx.globalAlpha = m.textProgress;
+    y += h2Block;
+  }
+
   if (aLines.length) {
-    y += Math.round(hSize * 0.5);
+    y += gapBeforeSub;
     ctx.font = aFont;
     ctx.fillStyle = style.textColor;
     ctx.globalAlpha = m.textProgress * 0.78;
@@ -294,7 +405,7 @@ function scrim(ctx: CanvasRenderingContext2D, w: number, h: number, placement: P
 function drawImageFrame(
   ctx: CanvasRenderingContext2D, w: number, h: number,
   img: Drawable | null, isLogo: boolean, label: string,
-  headline: string, sub: string, style: Style, m: MotionState,
+  copy: Copy, style: Style, m: MotionState,
 ) {
   void label;
   ctx.fillStyle = style.bgColor;
@@ -305,11 +416,11 @@ function drawImageFrame(
     if (h >= w) {
       const ih = Math.round(h * 0.5);
       drawPhoto(ctx, img, 0, 0, w, ih, isLogo, m);
-      textBlock(ctx, 0, ih, w, h - ih, headline, sub, style, m);
+      textBlock(ctx, 0, ih, w, h - ih, copy, style, m);
     } else {
       const iw = Math.round(w * 0.5);
       drawPhoto(ctx, img, 0, 0, iw, h, isLogo, m);
-      textBlock(ctx, iw, 0, w - iw, h, headline, sub, style, m);
+      textBlock(ctx, iw, 0, w - iw, h, copy, style, m);
     }
     return;
   }
@@ -317,7 +428,7 @@ function drawImageFrame(
     // Image on top, text on the solid-colour panel below.
     const ih = Math.round(h * (h >= w ? 0.56 : 0.6));
     drawPhoto(ctx, img, 0, 0, w, ih, isLogo, m);
-    textBlock(ctx, 0, ih, w, h - ih, headline, sub, style, m);
+    textBlock(ctx, 0, ih, w, h - ih, copy, style, m);
     return;
   }
   if (style.layout === "circle") {
@@ -333,7 +444,7 @@ function drawImageFrame(
       ctx.beginPath(); ctx.arc(cx, cy, d / 2, 0, Math.PI * 2); ctx.stroke();
     }
     const ty = Math.round(cy + d / 2 + h * 0.02);
-    textBlock(ctx, 0, ty, w, h - ty, headline, sub, style, m);
+    textBlock(ctx, 0, ty, w, h - ty, copy, style, m);
     return;
   }
   // full-bleed (default): image fills the canvas, text overlaid on a scrim.
@@ -341,7 +452,7 @@ function drawImageFrame(
     drawPhoto(ctx, img, 0, 0, w, h, isLogo, m);
     if (!isLogo) scrim(ctx, w, h, style.placement, style.bgColor);
   }
-  textBlock(ctx, 0, 0, w, h, headline, sub, style, m);
+  textBlock(ctx, 0, 0, w, h, copy, style, m);
 }
 
 /** Draw a video cover-fit into a region with zoom motion. Falls back to the
@@ -363,7 +474,7 @@ function drawVideoInto(ctx: CanvasRenderingContext2D, vid: HTMLVideoElement | nu
 function drawVideoFrame(
   ctx: CanvasRenderingContext2D, w: number, h: number,
   vid: HTMLVideoElement | null, poster: HTMLImageElement | null, label: string,
-  headline: string, sub: string, style: Style, m: MotionState,
+  copy: Copy, style: Style, m: MotionState,
 ) {
   void label;
   ctx.fillStyle = style.bgColor;
@@ -373,18 +484,18 @@ function drawVideoFrame(
     if (h >= w) {
       const ih = Math.round(h * 0.5);
       drawVideoInto(ctx, vid, poster, 0, 0, w, ih, m);
-      textBlock(ctx, 0, ih, w, h - ih, headline, sub, style, m);
+      textBlock(ctx, 0, ih, w, h - ih, copy, style, m);
     } else {
       const iw = Math.round(w * 0.5);
       drawVideoInto(ctx, vid, poster, 0, 0, iw, h, m);
-      textBlock(ctx, iw, 0, w - iw, h, headline, sub, style, m);
+      textBlock(ctx, iw, 0, w - iw, h, copy, style, m);
     }
     return;
   }
   if (style.layout === "card") {
     const ih = Math.round(h * (h >= w ? 0.56 : 0.6));
     drawVideoInto(ctx, vid, poster, 0, 0, w, ih, m);
-    textBlock(ctx, 0, ih, w, h - ih, headline, sub, style, m);
+    textBlock(ctx, 0, ih, w, h - ih, copy, style, m);
     return;
   }
   if (style.layout === "circle") {
@@ -397,24 +508,24 @@ function drawVideoFrame(
     ctx.lineWidth = Math.max(3, Math.round(w * 0.004)); ctx.strokeStyle = ACCENT;
     ctx.beginPath(); ctx.arc(cx, cy, d / 2, 0, Math.PI * 2); ctx.stroke();
     const ty = Math.round(cy + d / 2 + h * 0.02);
-    textBlock(ctx, 0, ty, w, h - ty, headline, sub, style, m);
+    textBlock(ctx, 0, ty, w, h - ty, copy, style, m);
     return;
   }
   // full-bleed (default): video fills the canvas, text over a scrim.
   drawVideoInto(ctx, vid, poster, 0, 0, w, h, m);
   scrim(ctx, w, h, style.placement, style.bgColor);
-  textBlock(ctx, 0, 0, w, h, headline, sub, style, m);
+  textBlock(ctx, 0, 0, w, h, copy, style, m);
 }
 
 /* ─── text frames ────────────────────────────────────────────────────── */
 
 function drawFinding(
   ctx: CanvasRenderingContext2D, w: number, h: number,
-  body: string, headline: string, sub: string, style: Style, m: MotionState,
+  body: string, copy: Copy, style: Style, m: MotionState,
 ) {
-  void body; // body text intentionally not shown — only headline + sub
-  groundBg(ctx, w, h, style.bgColor, style.textColor, headline, m);
-  textBlock(ctx, 0, 0, w, h, headline, sub, style, m);
+  void body; // body text intentionally not shown — only the copy block
+  groundBg(ctx, w, h, style.bgColor, style.textColor, copy.headline, m);
+  textBlock(ctx, 0, 0, w, h, copy, style, m);
 }
 
 /**
@@ -527,9 +638,14 @@ function drawCentered(
  *  other frame (one face across all assets), over an optional mosaic. */
 function drawSummary(
   ctx: CanvasRenderingContext2D, w: number, h: number, label: string,
-  headline: string, sub: string, style: Style, m: MotionState,
+  copy: Copy, style: Style, m: MotionState,
   getImg?: ImageGetter, thumbUrls?: string[],
 ) {
+  const headline = copy.headline;
+  const eyebrow = (copy.eyebrow ?? "").trim();
+  const headline2 = (copy.headline2 ?? "").trim();
+  const sub = (copy.sub ?? "").trim();
+
   const onMosaic = !!(thumbUrls && thumbUrls.length && getImg);
   if (onMosaic) mosaicBg(ctx, w, h, thumbUrls!, getImg!, m, 0.78);
   else groundBg(ctx, w, h, style.bgColor, style.textColor, label + headline, m);
@@ -545,16 +661,56 @@ function drawSummary(
   const size = Math.round(w * base * style.sizeMul);
   const lines = wrap(ctx, headline, w - padX * 2, heading(size), h > w ? 24 : 16);
   const lh = Math.round(size * 1.28);
+
+  const eSize = Math.max(11, Math.round(w * 0.019 * style.sizeMul));
+  const eLh = Math.round(eSize * 1.3);
+  const eTrack = Math.round(eSize * 0.14);
+  let eText = eyebrow ? eyebrow.toUpperCase() : "";
+  if (eText) {
+    ctx.font = mono(eSize, 600);
+    while (eText.length > 1 && trackedWidth(ctx, eText, eTrack) > w - padX * 2) eText = eText.slice(0, -1);
+  }
+  const eLines = eText ? [eText] : [];
+  const h2Size = Math.round(size * 0.62);
+  const h2Lh = Math.round(h2Size * 1.16);
+  const h2Lines = headline2 ? wrap(ctx, headline2, w - padX * 2, heading(h2Size), h > w ? 8 : 6) : [];
+
   const subSize = Math.round(w * 0.032);
   const subLh = Math.round(subSize * 1.4);
   const subLines = sub ? wrap(ctx, sub, w - padX * 2, mono(subSize), 10) : [];
-  const total = ruleAndBlock(lines.length, lh, subLines.length ? subLines.length * subLh + size * 0.5 : 0, size * 0.5);
+
+  // Each optional voice carries its own gap, so a blank field costs no space.
+  const eBlock = eLines.length ? eLines.length * eLh + Math.round(eSize * 1.05) : 0;
+  const h2Block = h2Lines.length ? h2Lines.length * h2Lh + Math.round(size * 0.34) : 0;
+  const subBlock = subLines.length ? subLines.length * subLh + size * 0.5 : 0;
+  const total = eBlock + ruleAndBlock(lines.length, lh, subBlock + h2Block, size * 0.5);
+
   let y = style.placement === "top" ? padY + Math.round(h * 0.08) : style.placement === "bottom" ? h - padY - total : Math.max(padY + size, (h - total) / 2);
   const anchorX = style.align === "center" ? w / 2 : style.align === "right" ? w - padX : padX;
+
+  ctx.textBaseline = "top";
+  if (eLines.length) {
+    ctx.font = mono(eSize, 600); ctx.fillStyle = textCol;
+    ctx.globalAlpha = m.textProgress * 0.72; ctx.textAlign = style.align;
+    eLines.forEach((ln, i) => fillTracked(ctx, ln, anchorX, y + i * eLh, eTrack, style.align));
+    ctx.textAlign = "left"; ctx.globalAlpha = m.textProgress;
+    y += eBlock;
+  }
+
   y += Math.round(size * 0.5);
-  ctx.font = heading(size); ctx.textBaseline = "top";
+  ctx.font = heading(size);
   paintLines(ctx, lines, anchorX, y, lh, m, textCol, style.align);
   y += lines.length * lh;
+
+  if (h2Lines.length) {
+    y += Math.round(size * 0.34);
+    ctx.font = heading(h2Size); ctx.fillStyle = textCol;
+    ctx.globalAlpha = m.textProgress * 0.92; ctx.textAlign = style.align;
+    h2Lines.forEach((ln, i) => ctx.fillText(ln, anchorX, y + i * h2Lh));
+    ctx.textAlign = "left"; ctx.globalAlpha = m.textProgress;
+    y += h2Lines.length * h2Lh;
+  }
+
   if (subLines.length) {
     y += Math.round(size * 0.5);
     ctx.font = mono(subSize); ctx.globalAlpha = m.textProgress * 0.78; ctx.fillStyle = textCol;
@@ -564,6 +720,7 @@ function drawSummary(
   }
   ctx.restore();
 }
+
 function ruleAndBlock(nLines: number, lh: number, subBlock: number, ruleH: number): number {
   return Math.round(ruleH) + nLines * lh + subBlock;
 }
@@ -757,33 +914,47 @@ export function frameImageUrls(f: ComposerFrame): string[] {
   return [];
 }
 
-export type FrameText = { headline: string; sub: string; body: string; value: string };
-export function frameText(f: ComposerFrame, ov?: { headline?: string; sub?: string; body?: string; value?: string }): FrameText {
+export type FrameText = { eyebrow: string; headline: string; headline2: string; sub: string; body: string; value: string };
+export function frameText(
+  f: ComposerFrame,
+  ov?: { eyebrow?: string; headline?: string; headline2?: string; sub?: string; body?: string; value?: string },
+): FrameText {
+  // Eyebrow and the second headline are composer-only: no library frame
+  // arrives with them, so they exist only where someone has typed one.
+  const eyebrow = ov?.eyebrow ?? "";
+  const headline2 = ov?.headline2 ?? "";
   const headline = ov?.headline ?? f.headline;
   const sub = ov?.sub ?? (f.kind === "timeline" ? "" : (f as { sub?: string }).sub ?? "");
   const body = ov?.body ?? (f.kind === "finding" ? f.body : "");
   const value = ov?.value ?? (f.kind === "stat" ? f.value : "");
-  return { headline, sub, body, value };
+  return { eyebrow, headline, headline2, sub, body, value };
 }
 
 export function drawFrame(
   ctx: CanvasRenderingContext2D, w: number, h: number,
   frame: ComposerFrame, getImg: ImageGetter, isLogo: boolean,
-  text: { headline: string; sub: string; body?: string; value?: string }, style: Style, m: MotionState = STILL,
+  text: { eyebrow?: string; headline: string; headline2?: string; sub?: string; body?: string; value?: string },
+  style: Style, m: MotionState = STILL,
   getVideo?: VideoGetter,
 ) {
+  const copy: Copy = {
+    eyebrow: text.eyebrow,
+    headline: text.headline,
+    headline2: text.headline2,
+    sub: text.sub ?? "",
+  };
   switch (frame.kind) {
-    case "mosaic-hero": return drawImageFrame(ctx, w, h, flattenMosaic(frame.thumbUrls, getImg), false, frame.label, text.headline, text.sub, style, m);
-    case "video": return drawVideoFrame(ctx, w, h, getVideo?.(frame.videoUrl) ?? null, getImg(frame.posterUrl), frame.label, text.headline, text.sub, style, m);
+    case "mosaic-hero": return drawImageFrame(ctx, w, h, flattenMosaic(frame.thumbUrls, getImg), false, frame.label, copy, style, m);
+    case "video": return drawVideoFrame(ctx, w, h, getVideo?.(frame.videoUrl) ?? null, getImg(frame.posterUrl), frame.label, copy, style, m);
     case "cover":
     case "portrait":
-    case "gallery": return drawImageFrame(ctx, w, h, getImg(frame.imageUrl), isLogo, frame.label, text.headline, text.sub, style, m);
-    case "profile-banner": return drawImageFrame(ctx, w, h, getImg(frame.imageUrl), isLogo, frame.label, text.headline, text.sub, style, m);
-    case "finding": return drawFinding(ctx, w, h, text.body ?? "", text.headline, text.sub, style, m);
-    case "quote": return drawCentered(ctx, w, h, "Pull quote", text.headline, text.sub, style, true, m, getImg, frame.thumbUrls);
-    case "banner": return drawCentered(ctx, w, h, "Banner", text.headline, text.sub, style, false, m, getImg, frame.thumbUrls);
-    case "summary": return drawSummary(ctx, w, h, frame.label, text.headline, text.sub, style, m, getImg, frame.thumbUrls);
-    case "stat": return drawStat(ctx, w, h, text.value ?? "", text.headline, text.sub, style, m);
+    case "gallery": return drawImageFrame(ctx, w, h, getImg(frame.imageUrl), isLogo, frame.label, copy, style, m);
+    case "profile-banner": return drawImageFrame(ctx, w, h, getImg(frame.imageUrl), isLogo, frame.label, copy, style, m);
+    case "finding": return drawFinding(ctx, w, h, text.body ?? "", copy, style, m);
+    case "quote": return drawCentered(ctx, w, h, "Pull quote", text.headline, copy.sub ?? "", style, true, m, getImg, frame.thumbUrls);
+    case "banner": return drawCentered(ctx, w, h, "Banner", text.headline, copy.sub ?? "", style, false, m, getImg, frame.thumbUrls);
+    case "summary": return drawSummary(ctx, w, h, frame.label, copy, style, m, getImg, frame.thumbUrls);
+    case "stat": return drawStat(ctx, w, h, text.value ?? "", text.headline, copy.sub ?? "", style, m);
     case "timeline": return drawTimeline(ctx, w, h, frame, text.headline, style, m);
     case "video-grid": return drawVideoGrid(ctx, w, h, frame, getImg, style, m);
     case "press-grid": return drawPressGrid(ctx, w, h, frame, getImg, style, m);

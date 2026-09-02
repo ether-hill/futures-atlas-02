@@ -1,75 +1,94 @@
 /**
- * The mini sound board: five loopable ambience layers with per-layer levels.
- * Each layer prefers a produced audio loop at /magnifica/media/sfx/<name>.mp3
- * (dropped in by the ElevenLabs sound-effects pipeline, see ASSETS.md) and
- * falls back to a procedural Web Audio version so the board works with no
- * assets at all. Everything is created lazily on first user gesture.
+ * The mini sound board: a leader's own ambience layers with per-layer levels.
+ * Each layer prefers its produced loop at /magnifica/media/sfx/<scene>/<id>.mp3
+ * (generated from the layer's prompt by scripts/sfx.mjs, see ASSETS.md) and
+ * falls back to a procedural version of its family so the board works with
+ * no assets at all. Everything is created lazily on first user gesture.
  */
 
-export type LayerName = "village" | "drone" | "bells" | "rain" | "temple";
-export const LAYER_LABELS: Record<LayerName, string> = {
-  village: "Village",
-  drone: "Drone",
-  bells: "Bells",
-  rain: "Rain",
-  temple: "Temple",
-};
+import type { SoundFamily, SoundLayer } from "./scenes";
 
 interface Layer {
-  gain: GainNode;
+  def: SoundLayer;
+  gain: GainNode | null;
   level: number;
   started: boolean;
-  start: () => void;
 }
 
 export class Soundscape {
   private ctx: AudioContext | null = null;
   /** Loop bytes, fetched before the first toggle so it can be instant. */
-  private files = new Map<LayerName, ArrayBuffer>();
+  private files = new Map<string, ArrayBuffer>();
   private preloading = false;
   private master: GainNode | null = null;
-  private layers = new Map<LayerName, Layer>();
+  private layers = new Map<string, Layer>();
+  private sources: AudioScheduledSourceNode[] = [];
   private timers: number[] = [];
+  private sceneId = "";
   on = false;
 
-  levels: Record<LayerName, number> = { village: 0, drone: 0, bells: 0, rain: 0, temple: 0 };
+  /** Point the board at a scene's layers. Silences whatever was playing. */
+  load(sceneId: string, layers: SoundLayer[]) {
+    this.silence();
+    this.sceneId = sceneId;
+    this.files.clear();
+    this.preloading = false;
+    this.layers.clear();
+    for (const def of layers) this.layers.set(def.id, { def, gain: null, level: def.level, started: false });
+    if (this.ctx) this.wire();
+  }
 
-  setLevel(name: LayerName, v: number) {
-    this.levels[name] = v;
-    const l = this.layers.get(name);
-    if (l && this.ctx) {
-      l.level = v;
-      if (this.on) {
-        if (v > 0 && !l.started) l.start();
-        l.gain.gain.setTargetAtTime(v * baseLevel(name), this.ctx.currentTime, 0.4);
-      }
+  get defs(): SoundLayer[] {
+    return Array.from(this.layers.values(), (l) => l.def);
+  }
+
+  setLevel(id: string, v: number) {
+    const l = this.layers.get(id);
+    if (!l) return;
+    l.level = v;
+    if (l.gain && this.ctx && this.on) {
+      if (v > 0 && !l.started) this.start(l);
+      l.gain.gain.setTargetAtTime(v * baseLevel(l.def.family), this.ctx.currentTime, 0.4);
     }
+  }
+
+  private url(id: string) {
+    return `/magnifica/media/sfx/${this.sceneId}/${id}.mp3`;
   }
 
   /**
    * Fetch the loop files ahead of time. Without this the first toggle pays for
-   * five downloads and five decodes before anything is audible — the whole of
-   * the lag. Only the bytes are cached here; decoding needs an AudioContext,
+   * the downloads and decodes before anything is audible — the whole of the
+   * lag. Only the bytes are cached here; decoding needs an AudioContext,
    * which needs a gesture, and is fast once the network is out of the way.
    */
   preload(force = false): void {
     if (this.preloading) return;
-    // The five loops are ~1.7 MB. Speculating that much is fine on a desktop
+    // Four loops are ~1.4 MB. Speculating that much is fine on a desktop
     // connection and rude on a metered one, so a saver or a slow link waits
     // until the button is actually approached (force).
     const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
       .connection;
     if (!force && conn && (conn.saveData || /^(slow-)?2g$|^3g$/.test(conn.effectiveType ?? ""))) return;
     this.preloading = true;
-    (Object.keys(LAYER_LABELS) as LayerName[]).forEach(async (name) => {
-      try {
-        const res = await fetch(`/magnifica/media/sfx/${name}.mp3`);
-        const type = res.headers.get("content-type") || "";
-        if (res.ok && type.startsWith("audio")) this.files.set(name, await res.arrayBuffer());
-      } catch {
-        /* no asset — the procedural layer covers it */
+    for (const id of this.layers.keys()) void this.fetchLoop(id);
+  }
+
+  private async fetchLoop(id: string): Promise<ArrayBuffer | undefined> {
+    const hit = this.files.get(id);
+    if (hit) return hit;
+    try {
+      const res = await fetch(this.url(id));
+      const type = res.headers.get("content-type") || "";
+      if (res.ok && type.startsWith("audio")) {
+        const bytes = await res.arrayBuffer();
+        this.files.set(id, bytes);
+        return bytes;
       }
-    });
+    } catch {
+      /* no asset — the procedural layer covers it */
+    }
+    return undefined;
   }
 
   toggle(): boolean {
@@ -77,18 +96,14 @@ export class Soundscape {
     if (this.on) {
       this.ensure();
       this.ctx?.resume();
-      for (const [name, l] of this.layers) {
-        if (this.levels[name] > 0 && !l.started) l.start();
+      for (const l of this.layers.values()) {
+        if (l.level > 0 && !l.started) this.start(l);
         // Short constant: 0.6 took roughly two seconds to reach level, which
         // read as the button not having worked.
-        l.gain.gain.setTargetAtTime(
-          this.on ? this.levels[name] * baseLevel(name) : 0,
-          this.ctx!.currentTime,
-          0.12,
-        );
+        l.gain?.gain.setTargetAtTime(l.level * baseLevel(l.def.family), this.ctx!.currentTime, 0.12);
       }
     } else if (this.ctx) {
-      for (const l of this.layers.values()) l.gain.gain.setTargetAtTime(0, this.ctx.currentTime, 0.35);
+      for (const l of this.layers.values()) l.gain?.gain.setTargetAtTime(0, this.ctx.currentTime, 0.35);
     }
     return this.on;
   }
@@ -100,39 +115,33 @@ export class Soundscape {
     this.master = ctx.createGain();
     this.master.gain.value = 0.9;
     this.master.connect(ctx.destination);
-
-    (Object.keys(LAYER_LABELS) as LayerName[]).forEach((name) => {
-      const gain = ctx.createGain();
-      gain.gain.value = 0;
-      gain.connect(this.master!);
-      const layer: Layer = {
-        gain,
-        level: this.levels[name],
-        started: false,
-        start: () => {
-          if (layer.started) return;
-          layer.started = true;
-          this.startLayer(name, gain);
-        },
-      };
-      this.layers.set(name, layer);
-    });
+    this.wire();
   }
 
-  /** Prefer a produced loop file; fall back to the procedural layer. */
-  private async startLayer(name: LayerName, out: GainNode) {
+  /** A gain per layer on the current context. */
+  private wire() {
+    for (const l of this.layers.values()) {
+      if (l.gain) continue;
+      const gain = this.ctx!.createGain();
+      gain.gain.value = 0;
+      gain.connect(this.master!);
+      l.gain = gain;
+    }
+  }
+
+  private start(l: Layer) {
+    if (l.started || !l.gain) return;
+    l.started = true;
+    void this.startLayer(l);
+  }
+
+  /** Prefer the produced loop; fall back to the procedural family. */
+  private async startLayer(l: Layer) {
     const ctx = this.ctx!;
+    const out = l.gain!;
     try {
-      let bytes = this.files.get(name);
-      if (!bytes) {
-        const res = await fetch(`/magnifica/media/sfx/${name}.mp3`);
-        const type = res.headers.get("content-type") || "";
-        if (res.ok && type.startsWith("audio")) {
-          bytes = await res.arrayBuffer();
-          this.files.set(name, bytes);
-        }
-      }
-      if (bytes) {
+      const bytes = await this.fetchLoop(l.def.id);
+      if (bytes && this.layers.get(l.def.id) === l) {
         // decodeAudioData detaches its input, so decode a copy and keep ours
         const buf = await ctx.decodeAudioData(bytes.slice(0));
         const src = ctx.createBufferSource();
@@ -140,27 +149,47 @@ export class Soundscape {
         src.loop = true;
         src.connect(out);
         src.start();
+        this.sources.push(src);
         return;
       }
+      if (!bytes && this.layers.get(l.def.id) !== l) return;
     } catch {
       /* no asset — procedural fallback below */
     }
-    PROCEDURAL[name](ctx, out, this.timers);
+    PROCEDURAL[l.def.family](ctx, out, this.timers, this.sources);
+  }
+
+  /** Stop every source and forget the layers' state, keeping the context. */
+  private silence() {
+    this.timers.forEach((t) => clearTimeout(t));
+    this.timers = [];
+    for (const s of this.sources) {
+      try {
+        s.stop();
+      } catch {
+        /* already stopped */
+      }
+    }
+    this.sources = [];
+    for (const l of this.layers.values()) {
+      l.gain?.disconnect();
+      l.gain = null;
+      l.started = false;
+    }
+    this.on = false;
   }
 
   destroy() {
-    this.timers.forEach((t) => clearTimeout(t));
-    this.timers = [];
+    this.silence();
     this.ctx?.close();
     this.ctx = null;
     this.layers.clear();
-    this.on = false;
   }
 }
 
-/** Per-layer gain trim so sliders feel balanced. */
-function baseLevel(name: LayerName): number {
-  return { village: 0.5, drone: 0.4, bells: 0.6, rain: 0.4, temple: 0.4 }[name];
+/** Per-family gain trim so sliders feel balanced. */
+function baseLevel(family: SoundFamily): number {
+  return { wind: 0.5, drone: 0.4, bells: 0.6, rain: 0.4, hum: 0.4 }[family];
 }
 
 function noiseBuffer(ctx: AudioContext, seconds = 2): AudioBuffer {
@@ -170,11 +199,11 @@ function noiseBuffer(ctx: AudioContext, seconds = 2): AudioBuffer {
   return buf;
 }
 
-type Proc = (ctx: AudioContext, out: GainNode, timers: number[]) => void;
+type Proc = (ctx: AudioContext, out: GainNode, timers: number[], sources: AudioScheduledSourceNode[]) => void;
 
-const PROCEDURAL: Record<LayerName, Proc> = {
+const PROCEDURAL: Record<SoundFamily, Proc> = {
   // filtered noise with a slow breathing LFO
-  village: (ctx, out) => {
+  wind: (ctx, out, _t, sources) => {
     const src = ctx.createBufferSource();
     src.buffer = noiseBuffer(ctx, 4);
     src.loop = true;
@@ -192,9 +221,10 @@ const PROCEDURAL: Record<LayerName, Proc> = {
     src.connect(lp).connect(g).connect(out);
     src.start();
     lfo.start();
+    sources.push(src, lfo);
   },
   // two detuned low oscillators + a fifth, heavily lowpassed
-  drone: (ctx, out) => {
+  drone: (ctx, out, _t, sources) => {
     const lp = ctx.createBiquadFilter();
     lp.type = "lowpass";
     lp.frequency.value = 300;
@@ -207,6 +237,7 @@ const PROCEDURAL: Record<LayerName, Proc> = {
       g.gain.value = i === 2 ? 0.12 : 0.2;
       o.connect(g).connect(lp);
       o.start();
+      sources.push(o);
     });
   },
   // sparse struck tones with long decay, loosely pentatonic
@@ -238,7 +269,7 @@ const PROCEDURAL: Record<LayerName, Proc> = {
     timers.push(window.setTimeout(strike, 800));
   },
   // bright noise, highpassed, with amplitude shimmer
-  rain: (ctx, out) => {
+  rain: (ctx, out, _t, sources) => {
     const src = ctx.createBufferSource();
     src.buffer = noiseBuffer(ctx, 3);
     src.loop = true;
@@ -255,9 +286,10 @@ const PROCEDURAL: Record<LayerName, Proc> = {
     src.connect(hp).connect(g).connect(out);
     src.start();
     lfo.start();
+    sources.push(src, lfo);
   },
-  // a low vocal-ish hum with slow vibrato
-  temple: (ctx, out) => {
+  // a low room tone with slow vibrato
+  hum: (ctx, out, _t, sources) => {
     const o = ctx.createOscillator();
     o.frequency.value = 86;
     const o2 = ctx.createOscillator();
@@ -280,5 +312,6 @@ const PROCEDURAL: Record<LayerName, Proc> = {
     o.start();
     o2.start();
     vib.start();
+    sources.push(o, o2, vib);
   },
 };

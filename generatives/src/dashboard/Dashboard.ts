@@ -58,7 +58,9 @@ export class Dashboard {
 
   private metaState = { complexity: 0.45, chaos: 0.45 };
   private colorState: Colors = { ...DEFAULT_COLORS };
-  private rec = { width: 1280, height: 720, fps: 30, seconds: 10 };
+  // 1080p by default. The old 720p was most of why exported clips looked soft:
+  // these pieces are full of hairlines, and 720p simply has nowhere to put them.
+  private rec = { width: 1920, height: 1080, fps: 30, seconds: 10 };
   private remountTimer = 0;
 
   constructor(host: HTMLElement) {

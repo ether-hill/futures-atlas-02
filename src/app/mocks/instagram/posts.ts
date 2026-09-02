@@ -27,6 +27,7 @@ import {
   REEL_POSTS, SHOTS_POSTS, ODDS_POSTS, TERM_POSTS, ODDS_CHOOSER, TEGMARK_POSTS,
   HOME_REEL, UNDERGROUND_REEL, STACK_REEL, BREAK_REEL,
   type ReelPost, type ShotsPost, type OddsPost, type TermPost, type TegmarkPost,
+  FIELD_DYNAMICS_REEL, TURBULENCE_POST, SHIFTCOOL_REEL, SOLOCOOL_REEL,
 } from "./fields";
 
 export type { ReelPost, ShotsPost, OddsPost, TermPost, TegmarkPost };
@@ -279,6 +280,63 @@ const DECK_POSTS: DeckPost[] = [
       hue: "#D89A4E",
     },
   },
+  {
+    kind: "deck",
+    name: "Lawyers fined, 2023",
+    card: {
+      id: "l1", sector: "Law & justice", pos: 1, deckSize: 10,
+      claim: "Lawyers have been fined by courts for citing cases an AI invented.",
+      short: "Lawyers fined for AI citations", verdict: "already",
+      bigLabel: "Already real since", big: "2023",
+      lede: "Hundreds of filings have carried fabricated AI citations, up sevenfold in 2025.",
+      note: "Sanctions run from $1,000 to more than $30,000.",
+      source: { label: "Bloomberg Law · court records", url: "https://news.bloomberglaw.com/" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.65, n: 40, sample: true },
+      hue: "#4E9E86",
+    },
+    caption:
+      "The machine makes up a case. The lawyer files it. The judge looks it up.\n\nCourts have been fining lawyers for citing cases an AI invented since 2023, and the sanctions run from a thousand dollars to more than thirty. It is not a rare embarrassment either: filings carrying fabricated citations went up sevenfold in 2025.",
+    hashtags: ["#law", "#hallucination", "#futuresatlas", "#swipethefuture", "#speculativedesign"],
+  },
+  {
+    kind: "deck",
+    name: "Automated ports, 1993",
+    card: {
+      id: "t5", sector: "Transport", pos: 5, deckSize: 10,
+      claim: "Container terminals have moved cargo with no human operating the cranes.",
+      short: "Automated container terminals", verdict: "already",
+      bigLabel: "Already real since", big: "1993",
+      lede: "Rotterdam's ECT Delta opened as the world's first automated container terminal.",
+      note: "Driverless vehicles and automated stacking cranes, running around the clock.",
+      source: { label: "ECT Hutchison Ports, 30 years of the first automated terminal", url: "https://www.ect.nl/en/news/fast-forward/30-years-ago-ect-opened-very-first-automated-terminal-world" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.59, n: 92, sample: true },
+      hue: "#3E93D8",
+    },
+    caption:
+      "A container terminal with nobody operating the cranes sounds like a rendering of 2040. Rotterdam opened one in 1993.\n\nECT Delta ran driverless vehicles and automated stacking cranes around the clock, and it has been doing it for thirty-three years. The ports were automated before the cars, before the warehouses, before any of the things we now call the automation debate.",
+    hashtags: ["#automation", "#logistics", "#futuresatlas", "#swipethefuture", "#speculativedesign"],
+  },
+  {
+    kind: "deck",
+    name: "No AI drug approved",
+    card: {
+      id: "h7", sector: "Health & medicine", pos: 7, deckSize: 10,
+      claim: "A drug designed by AI has completed late-stage trials and been approved for general prescription.",
+      short: "AI-designed drug approved", verdict: "notyet",
+      bigLabel: "Furthest any has got", big: "Phase 2a",
+      lede: "Insilico's lung-fibrosis drug reached positive phase 2a results in Nature Medicine in 2025, a first.",
+      note: "Nothing AI-designed has been approved for general prescription.",
+      source: { label: "Insilico / Nature Medicine (2025)", url: "https://www.prnewswire.com/news-releases/insilico-medicine-announces-nature-medicine-publication-of-phase-iia-results-evaluating-rentosertib-the-novel-tnik-inhibitor-for-idiopathic-pulmonary-fibrosis-ipf-discovered-and-designed-with-a-pioneering-ai-approach-302472070.html" },
+      checked: "2026-08-09",
+      crowd: { pctReal: 0.31, n: 45, sample: true },
+      hue: "#8B6FD4",
+    },
+    caption:
+      "Everyone has read that AI is designing drugs. Ask whether one has actually been approved and prescribed, and the answer is still no.\n\nThe furthest any has got is phase 2a: Insilico's lung-fibrosis drug published positive results in Nature Medicine in 2025, which was a first. Late-stage trials and general prescription are both still ahead of it.",
+    hashtags: ["#drugdiscovery", "#health", "#futuresatlas", "#swipethefuture", "#speculativedesign"],
+  },
 ];
 
 /** The three slides a DECK post is made of, in order. A field post has one. */
@@ -340,8 +398,8 @@ function interleave(reels: Post[], cards: Post[]): Post[] {
  */
 export const POSTS: Post[] = [
   ...interleave(
-    [HOME_REEL, UNDERGROUND_REEL, STACK_REEL, BREAK_REEL, ...REEL_POSTS],
-    [...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
+    [FIELD_DYNAMICS_REEL, SHIFTCOOL_REEL, HOME_REEL, SOLOCOOL_REEL, UNDERGROUND_REEL, STACK_REEL, BREAK_REEL, ...REEL_POSTS],
+    [TURBULENCE_POST, ...ODDS_POSTS, ...SHOTS_POSTS, ...TERM_POSTS, ...DECK_POSTS],
   ),
   ODDS_CHOOSER,
   ...TEGMARK_POSTS,

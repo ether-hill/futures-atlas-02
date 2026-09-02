@@ -150,3 +150,19 @@ next-env.d.ts
 /hollow-villages/vendor/futures-atlas-core/
 /manipulate-the-data/vendor/futures-atlas-core/
 /quantum-lag/vendor/futures-atlas-core/
+
+# Dramaturge studio — local authoring only.
+# The page cache is metered reads remembered on disk, the collections and
+# storyboards are working files, and the frames are photographed here. Only a
+# finished clip in public/dramaturge and its record in src/data are committed.
+/data/cache/
+/data/dramaturge/collections/
+/data/dramaturge/storyboards/
+/data/dramaturge/clips/
+/data/dramaturge/*.mp4
+/data/dramaturge/*.png
+
+# Social video masters. The full-quality exports live here for re-cutting; what
+# ships is the encoded webm under public/mocks/instagram, which is a fraction of
+# the size. Committing both would put the same footage in the repo twice.
+/projects/socials/

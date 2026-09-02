@@ -1,0 +1,14 @@
+{
+  "id": "care",
+  "name": "Care",
+  "role": "health, neighbourhoods, the people systems forget",
+  "audio": "/audio-reel/amara.mp3",
+  "peaks": "/audio-reel/amara.peaks.json",
+  "scenes": [
+    { "type": "quote", "start": 0, "text": "Who looks after the people the system forgets?" },
+    { "type": "media", "start": 4, "src": "/audio-reel/amara-portrait.jpg", "depth": 0.65 },
+    { "type": "media", "start": 8, "src": "/audio-reel/amara-scene.jpg" },
+    { "type": "quote", "start": 13, "text": "Care is not a dataset." },
+    { "type": "media", "start": 16.5, "src": "/audio-reel/scott-scene.jpg", "depth": 0.7 }
+  ]
+}

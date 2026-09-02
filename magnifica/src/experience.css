@@ -557,19 +557,21 @@ body:has(.x) .dock-voice-fixed { color: oklch(0.58 0.014 80); }
 .x .x-quote blockquote [data-w].is-now { border-bottom-width: 1.5px; }
 
 @media (max-width: 680px) {
-  body:has(.x) .dock { padding: 0 var(--gutter) 8px; }
-  body:has(.x) .dock-row { gap: 8px 10px; }
-  body:has(.x) .dock-play { padding: 8px 14px; font-size: 10px; }
+  /* The phone dock: play is its icon alone (a 40px disc, like the sound
+     button), and the timeline keeps the row's full height so its track and
+     markers sit on the same centre line as the buttons — nothing is pinned
+     to a fixed top. Marker labels would overlap at this width; the one for
+     the passage being read still shows. */
+  body:has(.x) .dock { padding: 0 12px 8px; }
+  body:has(.x) .dock-row { gap: 10px; }
+  body:has(.x) .dock-play { padding: 0; width: 40px; height: 40px; font-size: 12px; }
   body:has(.x) .dock-part,
   body:has(.x) .dock-voice-fixed { display: none; }
   body:has(.x) .dock-ctl > span { display: none; }
   body:has(.x) .dock-ctl select { padding: 6px 9px; font-size: 12px; }
-  body:has(.x) .dock-sound { padding: 7px 11px; }
-  /* labels would overlap at this width; the dots still work as a scrubber */
+  body:has(.x) .dock-sound { padding: 0; }
   body:has(.x) .dock-node span { display: none; }
-  body:has(.x) .dock-timeline { height: 26px; }
-  body:has(.x) .dock-track { top: 17px; }
-  body:has(.x) .dock-node { top: 9px; }
+  body:has(.x) .dock-node.on span { display: block; }
 }
 
 /* ---------- responsive ---------- */
@@ -607,41 +609,6 @@ body:has(.x) .dock-voice-fixed { color: oklch(0.58 0.014 80); }
   .x-polaroid { transform: none !important; }
 }
 
-/* ---------- version switcher ----------
-   v1 and v2 are both live at their own URLs so they can be compared directly
-   rather than from memory. Sits clear of the Atlas nav and the share button. */
-.x-versions {
-  position: fixed;
-  right: 16px;
-  top: calc(var(--fa-nav-h) + 62px);
-  z-index: 45;
-  display: flex;
-  gap: 2px;
-  padding: 3px;
-  border-radius: 999px;
-  background: oklch(0.14 0.016 260 / 0.94);
-  border: 1px solid oklch(1 0 0 / 0.14);
-  /* No backdrop-filter. It is fixed over a page whose backdrop moves, so the
-     compositor re-reads and re-blurs the region behind it on every frame of
-     every scroll — four of these together were a large part of the chug.
-     An opaque-enough panel reads the same and costs nothing. */
-}
-.x-versions a {
-  padding: 5px 11px;
-  border-radius: 999px;
-  font: 700 9px var(--mono);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: oklch(0.66 0.014 80);
-}
-.x-versions a:hover { color: oklch(0.95 0.012 85); }
-.x-versions a.on {
-  background: oklch(0.79 0.085 78);
-  color: oklch(0.14 0.02 260);
-}
-@media (max-width: 680px) {
-  .x-versions { top: auto; bottom: 150px; right: 12px; }
 }
 
 /* The index in cinematic dress, matching the dock. */
@@ -718,7 +685,7 @@ body:has(.x) .open .mg-burger {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   cursor: pointer;
-  /* see .x-versions: no backdrop-filter over a moving plate */
+  /* no backdrop-filter over a moving plate: it would re-blur on every frame */
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
 .x-play:hover { border-color: var(--x-gold); color: var(--x-ink); }

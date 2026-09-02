@@ -189,6 +189,36 @@ export const projects: Project[] = [
     cta: "Open the fields",
   },
   {
+    id: "dramaturge",
+    title: "Dramaturge",
+    tagline:
+      "Short films cut from photographs of the pages of old books. There is no footage: every shot is a scanned leaf and the only movement is the camera crossing it. Every caption is a verbatim sentence from the page behind it, and the model never types one — it cites a sentence and the renderer substitutes the wording, so what is burned into a frame cannot drift from the book.",
+    year: "2026",
+    date: "2026-09-01",
+    field: "Source texts",
+    kind: "tool",
+    topics: ["Society", "Futures"],
+    status: "in-progress",
+    visibility: "draft",
+    path: "/dramaturge",
+    cta: "See the clips",
+  },
+  {
+    id: "shelflife",
+    title: "ShelfLife",
+    tagline:
+      "Pick the aisle, the year and what changed about the world, and take away two prompts that turn a hunch into a product listing from the marketplaces of the future. The keepers land on the shelf.",
+    year: "2026",
+    date: "2026-08-31",
+    field: "Speculative commerce",
+    kind: "tool",
+    topics: ["Futures", "Society"],
+    status: "concept",
+    visibility: "draft",
+    path: "/shelflife",
+    cta: "Open the shop",
+  },
+  {
     id: "interference",
     title: "Quantum Interference Visuals",
     tagline:

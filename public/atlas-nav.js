@@ -24,6 +24,8 @@
   // project between live and draft.
   var FA_PROJECTS = [
     { name: "Glossary", path: "/glossary" },
+    { name: "Dramaturge", path: "/dramaturge", draft: true },
+    { name: "ShelfLife", path: "/shelflife", draft: true },
     { name: "Quantum Interference Visuals", path: "/interference" },
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },

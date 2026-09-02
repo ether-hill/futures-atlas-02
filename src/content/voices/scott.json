@@ -1,0 +1,14 @@
+{
+  "id": "scott",
+  "name": "Scott",
+  "role": "engineering manager and father",
+  "audio": "/audio-reel/scott.mp3",
+  "peaks": "/audio-reel/scott.peaks.json",
+  "scenes": [
+    { "type": "portrait", "start": 0, "src": "/audio-reel/scott-portrait.jpg", "caption": "Scott is a father and engineering test and manufacturing manager." },
+    { "type": "media", "start": 5, "src": "/audio-reel/scott-scene.jpg", "parallax": 0.75 },
+    { "type": "quote", "start": 8, "text": "Will AI give me more time to spend with my girls?" },
+    { "type": "media", "start": 13, "src": "/audio-reel/scott-clip.mp4", "kind": "video", "parallax": 0.75 },
+    { "type": "quote", "start": 18, "text": "Who is in control, overseeing its use and misuse?" }
+  ]
+}

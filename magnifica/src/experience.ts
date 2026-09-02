@@ -18,7 +18,7 @@
  * real record" is built from `grounding` rather than from a life story.
  */
 import type { Leader } from "./leaders";
-import type { Part } from "./listen";
+import { begin, type Part } from "./listen";
 import { mountParallax, readLayers, type ParLayer } from "./parallax";
 import { portraitOf, type Portrait } from "./portraits";
 
@@ -55,6 +55,18 @@ export const EXPERIENCES: Record<string, ExperienceSpec> = {
     stills: ["dl-monastery", "dl-lamps", "dl-night", "dl-plateau"],
     chapterStills: ["dl-library", "dl-block"],
     videos: ["dalai-lama-02", "dalai-lama-03", "dalai-lama-04"],
+  },
+  sadhguru: {
+    displayName: "Sadhguru",
+    displayTitle: "Jaggi Vasudev, founder of the Isha Foundation",
+    // Media not yet generated: the briefs are in scenes.ts (SCENES.sadhguru
+    // for the hero loop, STILL_BRIEFS for the six stills). Until the files
+    // land the hero is a plain masthead and every plate is plain — the page
+    // reads the same; it just does not move.
+    hero: { v1: "sadhguru", v2: "sadhguru-hero", v3: "sadhguru-hero", v4: "" },
+    stills: ["sg-velliangiri", "sg-lamp", "sg-dhyanalinga", "sg-monsoon"],
+    chapterStills: ["sg-workshop", "sg-fields"],
+    videos: [],
   },
 };
 
@@ -135,26 +147,32 @@ export function sections(l: Leader): Section[] {
 
 const yearOf = (claim: string) => claim.match(/\b(19|20)\d{2}\b/)?.[0] ?? "";
 
-/** How a section reads aloud, and which element the marker follows. */
+/**
+ * How a section reads aloud, and which element the marker follows. The title
+ * is spoken first, as its own clip (`title`), never folded into the passage:
+ * the read-along maps spoken words onto page words, and prefixing anything to
+ * the passage would desynchronise it.
+ */
 function partOf(s: Section): Part {
   const anchor = anchorOf(s);
   const label = s.n ? `${s.n} · ${s.label}` : s.label;
+  const title = s.label;
 
   switch (s.kind) {
     case "gate":
-      return { label, text: s.body, anchor, highlight: ".x-gate-in" };
+      return { label, title, text: s.body, anchor, highlight: ".x-gate-in" };
     case "chapter":
-      return { label, text: s.body, anchor, highlight: ".x-body" };
+      return { label, title, text: s.body, anchor, highlight: ".x-body" };
     case "quote":
-      return { label, text: s.text, anchor, highlight: "blockquote" };
+      return { label, title, text: s.text, anchor, highlight: "blockquote" };
     case "list":
       // Spoken text is exactly the items, in order, so the marker can run
-      // straight across the list. Anything prefixed here would desynchronise it.
-      return { label, text: s.items.join(" "), anchor, highlight: ".x-points" };
+      // straight across the list.
+      return { label, title, text: s.items.join(" "), anchor, highlight: ".x-points" };
     case "record":
       // The year chips and the Source links carry data-nospeak, so they are
       // skipped by the wrapper and the claims map one-to-one.
-      return { label, text: s.items.map((i) => i.claim).join(" "), anchor, highlight: ".x-timeline" };
+      return { label, title, text: s.items.map((i) => i.claim).join(" "), anchor, highlight: ".x-timeline" };
   }
 }
 
@@ -352,7 +370,7 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
           <h1 data-reveal>${esc(spec.displayName)}</h1>
           <p class="x-hero-title" data-reveal>${esc(spec.displayTitle)}</p>
           <p class="x-hero-doc" data-reveal>
-            <span lang="bo">${esc(l.docTitle)}</span>
+            <span lang="${esc(l.docLang ?? "en")}">${esc(l.docTitle)}</span>
             ${l.docTitleTranslation ? `<em>${esc(l.docTitleTranslation)}</em>` : ""}
           </p>
           <button type="button" class="x-begin" data-reveal>
@@ -365,7 +383,7 @@ export function experienceView(l: Leader, variant: Variant = "v2"): string {
       <span class="x-scroll" aria-hidden="true">Scroll to explore</span>
     </section>
 
-    ${variant === "v3" ? "" : `<nav class="x-rail" aria-label="Chapters">${rail}</nav>`}
+    ${variant === "v1" ? `<nav class="x-rail" aria-label="Chapters">${rail}</nav>` : ""}
 
     ${body}
   </div>`;
@@ -398,6 +416,17 @@ export function mountExperience(root: HTMLElement) {
     video.addEventListener("error", () => video.remove(), { once: true });
     bg?.appendChild(video);
   }
+
+  // A still that is not there yet (see EXPERIENCES) must not leave a broken
+  // image: the plate falls back to plain, as if no still had been named.
+  root.querySelectorAll<HTMLImageElement>(".x-bg img").forEach((img) => {
+    const plain = () => {
+      img.parentElement?.classList.add("x-bg-plain");
+      img.remove();
+    };
+    if (img.complete && img.naturalWidth === 0 && img.src) plain();
+    else img.addEventListener("error", plain, { once: true });
+  });
 
   // v1 only: section backdrops are loops. They are created as their section
   // approaches and paused the moment it leaves — a page of simultaneously
@@ -454,10 +483,12 @@ export function mountExperience(root: HTMLElement) {
   }
 
   // The hero itself carries data-x-sect="home", so "first section" has to skip
-  // it — otherwise Begin scrolls you to where you already are.
+  // it — otherwise Begin scrolls you to where you already are. Begin is also
+  // the one gesture that starts the sound: ambience on, narration from the top.
   const first = root.querySelector<HTMLElement>('[data-x-sect]:not([data-x-sect="home"])');
   root.querySelector(".x-begin")?.addEventListener("click", () => {
     first?.scrollIntoView({ behavior: "smooth", block: "start" });
+    void begin();
   });
 
   const rail = root.querySelector(".x-rail");

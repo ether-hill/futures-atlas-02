@@ -20,11 +20,15 @@
  * speech synthesis, labelled as such, with no alignment and so no highlight.
  */
 
-import { Soundscape, LAYER_LABELS, type LayerName } from "./soundscape";
+import { Soundscape } from "./soundscape";
 import type { Scene } from "./scenes";
 
 export interface Part {
   label: string;
+  /** Spoken before `text`, as its own short clip: the section's title. Not
+   *  folded into `text`, because the read-along maps spoken words onto page
+   *  words and the title is not part of the passage it would be mapped to. */
+  title?: string;
   text: string;
   /** id of the page section this part narrates; scrolled to when it starts. */
   anchor?: string;
@@ -137,6 +141,14 @@ class Player {
   private lastWord = -1;
   private lastFollow = 0;
   private target: HTMLElement | null = null;
+  /** Which clip of the current part is sounding: its title, or the passage. */
+  private stage: "title" | "body" = "body";
+  /**
+   * Whether the page follows the narration. The reader's own scroll (wheel,
+   * touch, keys) hands the page back to them for as long as they like; a
+   * click on a timeline marker is the one thing that re-engages the follow.
+   */
+  autoScroll = true;
 
   i = 0;
   playing = false;
@@ -155,7 +167,20 @@ class Player {
   onprogress: (fraction: number) => void = () => {};
 
   constructor() {
-    this.audio.addEventListener("ended", () => this.advance());
+    this.audio.addEventListener("ended", () => {
+      if (this.stage === "title") this.playBody();
+      else this.advance();
+    });
+    // The reader's own scrolling — never the page's smooth scrolls, which fire
+    // `scroll` but none of these — switches the follow off.
+    const release = () => {
+      this.autoScroll = false;
+    };
+    window.addEventListener("wheel", release, { passive: true });
+    window.addEventListener("touchmove", release, { passive: true });
+    window.addEventListener("keydown", (e) => {
+      if (["ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End", " "].includes(e.key)) release();
+    });
   }
 
   load(parts: Part[]) {
@@ -199,9 +224,10 @@ class Player {
     await this.playCurrent();
   }
 
-  /** Jump to a part from the timeline. */
+  /** Jump to a part from the timeline — and take the page along again. */
   async goTo(i: number) {
     if (i < 0 || i >= this.queue.length) return;
+    this.autoScroll = true;
     this.clearHighlight();
     this.audio.pause();
     speechSynthesis.cancel();
@@ -254,24 +280,33 @@ class Player {
     return `${i}:${this.lang}`;
   }
 
-  private async fetchPart(i: number): Promise<Clip | null> {
-    const k = this.key(i);
+  private fetchPart(i: number): Promise<Clip | null> {
+    return this.fetchText(this.queue[i].text, this.key(i));
+  }
+
+  /** The title clip of part i, if it has a title. */
+  private fetchTitle(i: number): Promise<Clip | null> {
+    const t = this.queue[i]?.title;
+    return t ? this.fetchText(t, `${this.key(i)}:title`) : Promise.resolve(null);
+  }
+
+  private async fetchText(text: string, k: string): Promise<Clip | null> {
     const hit = this.cache.get(k);
     if (hit) return hit;
     // Coalesce: hovering a node while it is already being fetched must not
     // start a second identical request.
     const pending = this.inflight.get(k);
     if (pending) return pending;
-    const p = this.request(i, k).finally(() => this.inflight.delete(k));
+    const p = this.request(text, k).finally(() => this.inflight.delete(k));
     this.inflight.set(k, p);
     return p;
   }
 
-  private async request(i: number, k: string): Promise<Clip | null> {
+  private async request(text: string, k: string): Promise<Clip | null> {
     const res = await fetch("/api/magnifica/tts", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify({ text: this.queue[i].text, lang: this.lang }),
+      body: JSON.stringify({ text, lang: this.lang }),
     });
     if (!res.ok) {
       let code = "";
@@ -287,7 +322,7 @@ class Player {
     const bytes = Uint8Array.from(atob(data.audio), (c) => c.charCodeAt(0));
     const clip: Clip = {
       url: URL.createObjectURL(new Blob([bytes], { type: "audio/mpeg" })),
-      spoken: data.spoken ?? this.queue[i].text,
+      spoken: data.spoken ?? text,
       alignment: data.alignment ?? null,
     };
     this.cache.set(k, clip);
@@ -319,6 +354,7 @@ class Player {
       while (this.warmQueue.length) {
         const i = this.warmQueue.shift()!;
         if (this.cache.has(this.key(i))) continue;
+        await this.fetchTitle(i).catch(() => {});
         await this.fetchPart(i).catch(() => {});
       }
     } finally {
@@ -326,10 +362,22 @@ class Player {
     }
   }
 
-  /** Bring the section this part narrates into view. */
+  /**
+   * Bring the passage this part narrates into view — one smooth move that
+   * leaves it centred, or, when it is taller than the viewport can centre,
+   * with its opening sitting a little above the middle. The word-follow is
+   * then held off for a moment so it never stacks a second move on top.
+   */
   private focusSection(part: Part) {
-    if (!part.anchor) return;
-    document.getElementById(part.anchor)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!this.autoScroll || !part.anchor) return;
+    const section = document.getElementById(part.anchor);
+    if (!section) return;
+    const el = (part.highlight && section.querySelector<HTMLElement>(part.highlight)) || section;
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const top = r.height < vh * 0.7 ? r.top - (vh - r.height) / 2 : r.top - vh * 0.22;
+    window.scrollTo({ top: window.scrollY + top, behavior: "smooth" });
+    this.lastFollow = performance.now() + 900; // let this move land before any nudge
   }
 
   /**
@@ -371,13 +419,14 @@ class Player {
    * fights the reader or stacks smooth-scrolls on top of each other.
    */
   private follow(word: HTMLElement) {
+    if (!this.autoScroll) return;
     const now = performance.now();
-    if (now - this.lastFollow < 1000) return;
+    if (now - this.lastFollow < 1200) return;
     const r = word.getBoundingClientRect();
     const vh = window.innerHeight;
-    if (r.top > vh * 0.3 && r.bottom < vh * 0.68) return; // already well placed
+    if (r.top > vh * 0.22 && r.bottom < vh * 0.7) return; // already well placed
     this.lastFollow = now;
-    window.scrollBy({ top: r.top - vh * 0.42, behavior: "smooth" });
+    window.scrollTo({ top: window.scrollY + r.top - vh * 0.42, behavior: "smooth" });
   }
 
   private startTracking() {
@@ -414,12 +463,46 @@ class Player {
     this.raf = 0;
   }
 
+  /** A part sounds as its title (if it has one) and then its passage. */
   private async playCurrent() {
     const part = this.queue[this.i];
     if (!part) return;
     this.emit(this.fallback ? "device voice" : undefined);
     this.focusSection(part);
+    this.stage = part.title ? "title" : "body";
+    if (this.stage === "title") await this.playTitle();
+    else await this.playBody();
+  }
 
+  private async playTitle() {
+    const part = this.queue[this.i];
+    if (!part?.title) return this.playBody();
+    if (!this.fallback) {
+      try {
+        const clip = await this.fetchTitle(this.i);
+        if (clip) {
+          if (!this.playing) return;
+          this.clearHighlight();
+          this.audio.src = clip.url;
+          await this.audio.play();
+          this.startTracking();
+          this.emit();
+          this.fetchPart(this.i).catch(() => {}); // the passage, ready by the time the title ends
+          return;
+        }
+        this.fallback = true;
+      } catch {
+        this.emit("voice unavailable, using device voice");
+        this.fallback = true;
+      }
+    }
+    this.speakFallback(part);
+  }
+
+  private async playBody() {
+    const part = this.queue[this.i];
+    if (!part) return;
+    this.stage = "body";
     if (!this.fallback) {
       try {
         const clip = await this.fetchPart(this.i);
@@ -430,7 +513,10 @@ class Player {
           this.armHighlight(part, clip);
           this.startTracking();
           this.emit();
-          if (this.i + 1 < this.queue.length) this.fetchPart(this.i + 1).catch(() => {});
+          if (this.i + 1 < this.queue.length) {
+            this.fetchTitle(this.i + 1).catch(() => {});
+            this.fetchPart(this.i + 1).catch(() => {});
+          }
           return;
         }
         this.fallback = true; // route not configured → device voices from here on
@@ -442,21 +528,29 @@ class Player {
     this.speakFallback(part);
   }
 
+  /** The device voice: the title as one utterance, then the passage. */
   private speakFallback(part: Part) {
     if (!("speechSynthesis" in window)) {
       this.playing = false;
       this.emit("no speech available on this device");
       return;
     }
-    const u = new SpeechSynthesisUtterance(part.text);
+    const title = this.stage === "title";
+    const u = new SpeechSynthesisUtterance(title ? part.title! : part.text);
     const bcp = LANG_BCP;
     u.lang = bcp;
     const v = speechSynthesis.getVoices().find((v) => v.lang.startsWith(bcp.slice(0, 2)));
     if (v) u.voice = v;
     u.rate = 0.95;
-    u.onend = () => this.advance();
+    u.onend = () => {
+      if (!this.playing) return;
+      if (title) {
+        this.stage = "body";
+        this.speakFallback(part);
+      } else this.advance();
+    };
     // No alignment from the device voice, so mark the passage without words.
-    if (part.anchor && part.highlight) {
+    if (!title && part.anchor && part.highlight) {
       const el = document.getElementById(part.anchor)?.querySelector<HTMLElement>(part.highlight);
       if (el) {
         this.target = el;
@@ -471,10 +565,27 @@ class Player {
 const player = new Player();
 const scape = new Soundscape();
 
+/** Whatever control is showing the ambience state, told to re-read it. */
+let syncAmbience: () => void = () => {};
+/** Has the experience been begun on this page — by Begin, or by the first Listen. */
+let begun = false;
+
+/**
+ * "Begin experience": the ambience comes on and the narration starts from the
+ * top. One gesture does both — the click is what unlocks the audio context and
+ * the first play, so they have to happen here rather than on scroll.
+ */
+export async function begin() {
+  begun = true;
+  if (!scape.on) scape.toggle();
+  syncAmbience();
+  await player.goTo(0);
+}
+
 /** Render the listen dock into `root` for the given script + scene. */
 export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   player.load(parts);
-  (Object.keys(LAYER_LABELS) as LayerName[]).forEach((n) => scape.setLevel(n, scene.sound[n] ?? 0));
+  scape.load(scene.id, scene.layers);
 
   const offsets = player.offsets();
   const nodes = parts
@@ -491,7 +602,7 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   dock.className = "dock";
   dock.innerHTML = `
     <div class="dock-row">
-      <button type="button" class="dock-play" aria-label="Listen">▶&nbsp; Listen</button>
+      <button type="button" class="dock-play" aria-label="Listen"><span class="dock-play-ico" aria-hidden="true">▶</span><span class="dock-play-lbl">Listen</span></button>
       <div class="dock-timeline">
         <div class="dock-track"><div class="dock-fill"></div></div>
         ${nodes}
@@ -509,15 +620,15 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
       <div class="dock-amb-row">
         <button type="button" class="dock-amb">ambience: off</button>
       </div>
-      ${(Object.keys(LAYER_LABELS) as LayerName[])
+      ${scene.layers
         .map(
-          (n) => `
-        <label class="dock-slider"><span>${LAYER_LABELS[n]}</span>
-          <input type="range" min="0" max="100" value="${Math.round((scene.sound[n] ?? 0) * 100)}" data-layer="${n}" />
+          (l) => `
+        <label class="dock-slider"><span>${esc(l.label)}</span>
+          <input type="range" min="0" max="100" value="${Math.round(l.level * 100)}" data-layer="${esc(l.id)}" />
         </label>`,
         )
         .join("")}
-      <p class="dock-hint">Layered ambience loops, mixed in the browser over the produced beds.</p>
+      <p class="dock-hint">This place's own sounds, mixed in the browser.</p>
     </div>`;
   root.appendChild(dock);
 
@@ -527,8 +638,12 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   const fill = dock.querySelector<HTMLDivElement>(".dock-fill")!;
   const nodeEls = Array.from(dock.querySelectorAll<HTMLButtonElement>(".dock-node"));
 
+  const playIco = playBtn.querySelector<HTMLElement>(".dock-play-ico")!;
+  const playLbl = playBtn.querySelector<HTMLElement>(".dock-play-lbl")!;
   player.onstate = (s) => {
-    playBtn.innerHTML = s.playing ? "❚❚&nbsp; Pause" : "▶&nbsp; Listen";
+    playIco.textContent = s.playing ? "❚❚" : "▶";
+    playLbl.textContent = s.playing ? "Pause" : "Listen";
+    playBtn.setAttribute("aria-label", s.playing ? "Pause" : "Listen");
     // The section name lives on the timeline node, so the transport stays bare.
     nodeEls.forEach((n, i) => {
       n.classList.toggle("on", i === s.index && s.playing);
@@ -539,7 +654,20 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
     fill.style.transform = `scaleX(${f})`;
   };
 
-  playBtn.addEventListener("click", () => player.toggle());
+  // Listen is the whole sound: the narration and the ambience pause and
+  // resume together. (The ambience toggle in the panel remains a separate
+  // override.) On a phone the hero has no Begin button, so the first Listen
+  // is the beginning — ambience on, narration from the top.
+  playBtn.addEventListener("click", () => {
+    if (!begun && !player.playing && player.i === 0) {
+      void begin();
+      return;
+    }
+    const resuming = !player.playing;
+    void player.toggle();
+    if (scape.on !== resuming) scape.toggle();
+    syncAmbience();
+  });
 
   // Warm the first passage the moment the pointer reaches the button, and the
   // loop files as soon as the browser is idle — between them, both Listen and
@@ -569,14 +697,18 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
   dock.querySelector<HTMLInputElement>("input[data-vol]")!.addEventListener("input", (e) => {
     player.setVolume(Number((e.target as HTMLInputElement).value) / 100);
   });
+  syncAmbience = () => {
+    ambBtn.textContent = `ambience: ${scape.on ? "on" : "off"}`;
+    ambBtn.classList.toggle("on", scape.on);
+  };
+  syncAmbience();
   ambBtn.addEventListener("click", () => {
-    const on = scape.toggle();
-    ambBtn.textContent = `ambience: ${on ? "on" : "off"}`;
-    ambBtn.classList.toggle("on", on);
+    scape.toggle();
+    syncAmbience();
   });
   panel.querySelectorAll<HTMLInputElement>("input[data-layer]").forEach((input) => {
     input.addEventListener("input", () => {
-      scape.setLevel(input.dataset.layer as LayerName, Number(input.value) / 100);
+      scape.setLevel(input.dataset.layer!, Number(input.value) / 100);
     });
   });
 }
@@ -589,7 +721,7 @@ export function mountDock(root: HTMLElement, parts: Part[], scene: Scene) {
  */
 export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
   player.load(parts);
-  (Object.keys(LAYER_LABELS) as LayerName[]).forEach((n) => scape.setLevel(n, scene.sound[n] ?? 0));
+  scape.load(scene.id, scene.layers);
 
   const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-play]"));
 
@@ -634,11 +766,11 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
         <input type="range" min="0" max="100" value="100" data-vol />
       </label>
       <div class="dock-amb-row"><button type="button" class="dock-amb">ambience: off</button></div>
-      ${(Object.keys(LAYER_LABELS) as LayerName[])
+      ${scene.layers
         .map(
-          (n) => `
-        <label class="dock-slider"><span>${LAYER_LABELS[n]}</span>
-          <input type="range" min="0" max="100" value="${Math.round((scene.sound[n] ?? 0) * 100)}" data-layer="${n}" />
+          (l) => `
+        <label class="dock-slider"><span>${esc(l.label)}</span>
+          <input type="range" min="0" max="100" value="${Math.round(l.level * 100)}" data-layer="${esc(l.id)}" />
         </label>`,
         )
         .join("")}
@@ -661,18 +793,22 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
     if (e.key === "Escape" && !ambPanel.hidden) setOpen(false);
   });
 
+  syncAmbience = () => {
+    toggleBtn.textContent = `ambience: ${scape.on ? "on" : "off"}`;
+    toggleBtn.classList.toggle("on", scape.on);
+    amb.classList.toggle("sounding", scape.on);
+  };
+  syncAmbience();
   toggleBtn.addEventListener("click", () => {
-    const on = scape.toggle();
-    toggleBtn.textContent = `ambience: ${on ? "on" : "off"}`;
-    toggleBtn.classList.toggle("on", on);
-    amb.classList.toggle("sounding", on);
+    scape.toggle();
+    syncAmbience();
   });
   amb.querySelector<HTMLInputElement>("input[data-vol]")!.addEventListener("input", (e) => {
     player.setVolume(Number((e.target as HTMLInputElement).value) / 100);
   });
   amb.querySelectorAll<HTMLInputElement>("input[data-layer]").forEach((input) => {
     input.addEventListener("input", () => {
-      scape.setLevel(input.dataset.layer as LayerName, Number(input.value) / 100);
+      scape.setLevel(input.dataset.layer!, Number(input.value) / 100);
     });
   });
 
@@ -682,8 +818,11 @@ export function mountPanels(root: HTMLElement, parts: Part[], scene: Scene) {
   else setTimeout(() => scape.preload(), 1200);
 }
 
-/** Tear down on route change: stop speech, keep ambience running across pages. */
+/** Tear down on route change: every sound stops — the narration and the ambience both. */
 export function unmountDock() {
   player.stop();
+  if (scape.on) scape.toggle();
+  begun = false;
+  syncAmbience = () => {};
   document.querySelectorAll(".dock, .x-amb").forEach((d) => d.remove());
 }

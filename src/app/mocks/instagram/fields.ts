@@ -56,6 +56,12 @@ export interface ShotsPost {
     id: string;
     src?: string;
     path?: string;
+    /**
+     * A recording, played instead of the still when the post is open. The grid
+     * tile stays a still either way — a feed of videos is a wall of stills
+     * until you tap one — so a slide with a video still needs its <id>.jpg.
+     */
+    video?: string;
     hide?: string;
     at?: number;
     /** Scroll down this many viewport heights before grabbing. */
@@ -149,6 +155,14 @@ export interface ReelPost {
    * saved arrangement is keyed on.
    */
   thumb?: string;
+  /**
+   * How the still and the recording sit in a frame of a different ratio.
+   * Default cover: a running piece fills whatever it is given. A recording
+   * that was framed for one ratio with type burned in is different: cover at
+   * 9:16 slices the sides off a 4:5 cut and takes the words with it, so those
+   * say `contain` and sit letterboxed on the frame's own black.
+   */
+  fit?: "cover" | "contain";
   /** Seconds to let the embed run before the thumbnail is grabbed. */
   thumbAt: number;
   /**
@@ -270,6 +284,84 @@ export const ODDS_POSTS: OddsPost[] = [
     hashtags: ["#aisafety", "#maxtegmark", "#life30", "#speculativedesign", "#futuresthinking"],
   },
 ];
+
+/**
+ * A two-slide carousel, both slides video.
+ *
+ * The cut is already framed 4:5 with its own titles burned in, so there is no
+ * live route to capture: each slide names a recording and carries a still for
+ * the grid. The second slide is the call to action that came with it, kept as
+ * its own slide rather than folded into the caption, because that is how it
+ * was cut.
+ */
+/**
+ * Two ShelfLife listings, one post each.
+ *
+ * Both are real entries in src/data/shelflife.ts — the name, the price, the
+ * ship year and the one-line description are the shelf's, not written for the
+ * post. The shelf's whole joke is that these read as ordinary retail copy, so
+ * the captions stay in that register and let the reader notice what is being
+ * sold rather than being told.
+ */
+export const SHIFTCOOL_REEL: ReelPost = {
+  kind: "reel",
+  name: "NESTA ShiftCool 1",
+  id: "shiftcool-1",
+  title: "NESTA ShiftCool 1",
+  note: "A cooled break space for one person. Work & focus aisle, ships 2033, €2,890.",
+  embed: "",
+  video: "/mocks/instagram/shiftcool-1.webm",
+  fit: "contain",
+  thumbAt: 3,
+  caption:
+    "NESTA ShiftCool 1. €2,890. Ships 2033.\n\nA cooled break space for one person. Maintains 20 to 24°C in ambient conditions up to 45°C. Delivery and placement from €120, ground floor only, site access check available before order.\n\nThe product listing is the argument. Nobody in this catalogue is alarmed: the copy is warranty terms and clearance requirements, written the way a workplace supplier would write them, for a workplace where the ambient temperature is 45°C and the cooling is sold per person rather than per building.\n\nFrom ShelfLife on the Atlas, a shop of things that do not exist yet. You assemble an aisle, a year and what changed about the world, and it hands you the prompts to make your own. The ones that land on the shelf are the keepers.",
+  hashtags: ["#designfiction", "#speculativedesign", "#climateadaptation", "#futureofwork", "#futuresatlas", "#shelflife"],
+};
+
+export const SOLOCOOL_REEL: ReelPost = {
+  kind: "reel",
+  name: "NESTA SoloCool 1",
+  id: "solocool-1",
+  title: "NESTA SoloCool 1",
+  note: "A cool, quiet place to sit when the rest of the house is too warm. Home & climate aisle, ships 2035, €1,249.",
+  embed: "",
+  video: "/mocks/instagram/solocool-1.webm",
+  fit: "contain",
+  thumbAt: 3,
+  caption:
+    "NESTA SoloCool 1. €1,249. Ships 2035.\n\nA cool, quiet place to sit when the rest of the house is too warm. One seated or reclining adult. Room-of-choice delivery from €49, five to eight working days, assembly available at checkout.\n\nTwo years after the ShiftCool, and the same idea has moved from the workplace to the living room. The thing worth noticing is not the pod. It is that cooling one chair became a product category before cooling the house did, and that the listing treats it as unremarkable.\n\nFrom ShelfLife on the Atlas, a shop of things that do not exist yet.",
+  hashtags: ["#designfiction", "#speculativedesign", "#climateadaptation", "#heatwave", "#futuresatlas", "#shelflife"],
+};
+
+export const TURBULENCE_POST: ShotsPost = {
+  kind: "shots",
+  name: "Organic Turbulence",
+  id: "organic-turbulence",
+  shots: [
+    { id: "organic-turbulence-1", video: "/mocks/instagram/organic-turbulence-1.webm" },
+    { id: "organic-turbulence-2", video: "/mocks/instagram/organic-turbulence-2.webm" },
+  ],
+  caption:
+    "A few rules and some randomness, and this falls out of it.\n\nWhat you are seeing. A flow field built from layered noise, with thousands of particles streaming along it. Nothing here is drawn: every shape is the accumulated trail of particles following a field that is itself slowly changing, so the structure builds up and then dissolves as the field moves under it.\n\nWhy it is worth looking at. The question underneath it — how much structure you get from simple rules plus noise — is the same one under a lot of things that do not look like this. Transformers. Quantum error correction. Why hardware built to push pixels turned out to be the hardware for building minds.\n\nOrganic Turbulence is one of the treatments in Generatives, on the Atlas. You can change the particle count, the turbulence and the trail length, watch it run, and export your own clip. Free, no account.",
+  hashtags: ["#generativeart", "#creativecoding", "#flowfield", "#noise", "#mathart", "#futuresatlas"],
+};
+
+export const FIELD_DYNAMICS_REEL: ReelPost = {
+  kind: "reel",
+  name: "Field dynamics",
+  id: "field-dynamics",
+  title: "Field Dynamics",
+  // The piece's own description, from generatives/src/pieces/fieldDynamics.ts.
+  note: "Invisible forces made visible. Vortices, sources and sinks compose a vector field; particles stream its field lines.",
+  // A recording rather than the live embed: this cut is already framed 9:16 with
+  // the title and the equation burned in, which the running piece does not draw.
+  embed: "",
+  video: "/mocks/instagram/field-dynamics.webm",
+  thumbAt: 0,
+  caption:
+    "Four singularities and nothing else. Everything you can see is six thousand particles being carried by them.\n\nWhat you are seeing. Vortices, sources and sinks placed on a plane. Each one pulls the flow around it, and the particles trace the field lines they are standing in, dying and respawning so the picture keeps renewing rather than settling.\n\nHow it is made. The equation on screen is the whole model: the velocity at any point is the sum of one term per singularity, each falling off with distance. Complex numbers do the work, because a single complex constant carries both the strength of a source and the spin of a vortex at once. That is why the same expression draws a drain and a whirlpool depending on one coefficient.\n\nIt is drawn live in the browser, a few thousand particles a frame on a 2D canvas, and it never repeats. Field Dynamics is one of the treatments in Generatives, where you can change the singularity count, the speed and the trail length and export your own.",
+  hashtags: ["#generativeart", "#creativecoding", "#vectorfield", "#fluiddynamics", "#mathart", "#futuresatlas"],
+};
 
 export const HOME_REEL: ReelPost = {
   kind: "reel",
