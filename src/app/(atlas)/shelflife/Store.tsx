@@ -146,7 +146,7 @@ export function Store() {
         <Container>
           <Reveal>
             <h1 className="max-w-[24ch] text-[clamp(34px,5vw,56px)] font-extrabold leading-[1.08] tracking-[-0.03em] text-ink">
-              The best way to buy the products you&rsquo;ll love, whenever they arrive.
+              Collectively curating the products to come.
             </h1>
           </Reveal>
         </Container>
