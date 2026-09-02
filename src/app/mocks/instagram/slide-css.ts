@@ -385,7 +385,7 @@ export const SLIDE_CSS = `
   letter-spacing: .16em; text-transform: uppercase; color: #3b93d5;
 }
 .stf .term-word {
-  margin-top: 3cqw; font-size: 15cqw; font-weight: 800; letter-spacing: -.045em;
+  margin-top: 3cqw; font-weight: 800; letter-spacing: -.045em;
   line-height: .96; color: #f2ede2;
 }
 /* A rule under the word, in the accent, the width of the word's own stem. */

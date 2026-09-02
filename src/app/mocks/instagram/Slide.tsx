@@ -310,7 +310,12 @@ function TermSlide({ post, ratio }: { post: TermPost; ratio: Ratio }) {
         <Texture seed={post.id} />
         <div className="term-body-col">
           <div className="term-kind">{post.kind_}</div>
-          <div className="term-word">{post.term}</div>
+          {/* Same clamp the card names use: a long word is set smaller, never
+              cut off. "Stigmergy" fits at the full size and "Solastalgia" does
+              not, and a vocabulary card that crops its own word is a joke. */}
+          <div className="term-word" style={{ fontSize: fitName(post.term, 84, 15, WIDEST_EM_MIXED) }}>
+            {post.term}
+          </div>
           <div className="term-pron">{post.pron}</div>
           <p className="term-def">{post.definition}</p>
           <p className="term-body">{post.body}</p>
@@ -345,9 +350,14 @@ const READ_SCALE: Record<Ratio, number> = { "9:16": 1.1, "4:5": 0.92, "1:1": 0.7
  * name at 100px and dividing by its length.
  */
 const WIDEST_EM = 0.7;
-const fitName = (title: string, avail: number, max: number) => {
+/** The vocabulary card sets its word in the same face, mixed case and tighter,
+ *  which measures much narrower: 0.55 across the three terms, against 0.7 for
+ *  the uppercase card names. One constant for both would either clip a name or
+ *  set every word smaller than it needs to be. */
+const WIDEST_EM_MIXED = 0.56;
+const fitName = (title: string, avail: number, max: number, em = WIDEST_EM) => {
   const longest = Math.max(...title.split(" ").map((w) => w.length));
-  return `${Math.min(max, avail / (WIDEST_EM * longest))}cqw`;
+  return `${Math.min(max, avail / (em * longest))}cqw`;
 };
 
 /**

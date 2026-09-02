@@ -413,6 +413,36 @@ export const TERM_POSTS: TermPost[] = [
       "Stigmergy. Coordination through traces left in the environment, rather than through any communication between the participants.\n\nAn ant does not tell another ant where to go. It leaves a chemical trail, the trail is followed, following it strengthens it, and a route appears that no ant chose. Termite mounds are built this way. So are slime mould networks, ocean paths, footpaths worn across a park, and most of the useful structure on the internet.\n\nThe word was coined by the French zoologist Pierre-Paul Grass\u00E9 in 1959, from the Greek stigma, a mark, and ergon, work. Work that marks, and marks that work.\n\nIt is in this studio's vocabulary because it is the honest answer to a question people keep asking about emergent systems: who is coordinating this? Usually nobody. The environment is.",
     hashtags: ["#stigmergy", "#emergence", "#complexsystems", "#slimemould", "#futuresatlas"],
   },
+  {
+    kind: "term",
+    name: "Umwelt",
+    id: "umwelt",
+    term: "Umwelt",
+    pron: "/\u02C8\u028Amv\u025Blt/",
+    kind_: "noun \u00B7 biology, phenomenology",
+    definition:
+      "The world as one creature\u2019s own senses assemble it. Not the environment, but the slice of it a particular body can register at all.",
+    body:
+      "A tick\u2019s world holds three things: the smell of butyric acid, warmth, and something to grip. Everything else visible from its branch is not there.",
+    caption:
+      "Umwelt. The world as one creature\u2019s senses assemble it, which is never the whole world and never the same world twice.\n\nJakob von Uexk\u00FCll\u2019s example is a tick and it is still the best one. Hanging on a branch, it waits for three signals and no others: butyric acid, which mammals sweat; a temperature near 37 degrees; and something to grip once it lands. A tick can wait years for the first of them. The forest around it, the light, the birds, the person walking underneath: none of that is in its world. It is not that the tick ignores them. They are not there.\n\nHe introduced the idea in 1909 and made the tick famous in 1934. The German means surrounding world, and \u2018environment\u2019 is the translation that loses it. An environment is what is out there. An Umwelt is what gets in.\n\nIt is in this studio\u2019s vocabulary because every instrument has one. A model\u2019s world is its training data and whatever fits in its context window. A sensor\u2019s world is its band. Ask what a system is missing and the answer is usually nothing, in exactly the sense that the tick is missing nothing.",
+    hashtags: ["#umwelt", "#morethanhuman", "#perception", "#speculativedesign", "#futuresatlas"],
+  },
+  {
+    kind: "term",
+    name: "Solastalgia",
+    id: "solastalgia",
+    term: "Solastalgia",
+    pron: "/\u02CCs\u0252l\u0259\u02C8stald\u0292\u0259/",
+    kind_: "noun \u00B7 environmental philosophy",
+    definition:
+      "The distress of watching the place you live change around you while you are still living in it. Homesickness without having left home.",
+    body:
+      "Nostalgia is the pain of not being able to go back. This is the pain of never having gone anywhere, and home going without you.",
+    caption:
+      "Solastalgia. The distress of watching the place you live change around you while you are still living in it.\n\nNostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did. The mine widened. The river dropped. The season stopped arriving when it used to. Nothing is missing from your life except the place it happens in.\n\nThe philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed. Latin solacium, comfort, and the Greek -algia, pain. The pain of losing your comfort while sitting inside it.\n\nIt is in this studio\u2019s vocabulary because most futures work is about arrival, and this is the word for what an arrival costs the people who do not move.",
+    hashtags: ["#solastalgia", "#climategrief", "#environmentalphilosophy", "#futuresthinking", "#futuresatlas"],
+  },
 ];
 
 export const STACK_REEL: ReelPost = {
