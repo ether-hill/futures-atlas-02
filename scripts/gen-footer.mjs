@@ -65,6 +65,7 @@ const SECTIONS = [
 const INTERNAL_ONLY = process.env.VERCEL_ENV !== "production";
 
 const INTERNAL = [
+  ["/plan", "Plan"],
   ["/design-system", "Design system"],
   ["/style-guide", "Style guide"],
   ["/logo-animator", "Logo animator"],

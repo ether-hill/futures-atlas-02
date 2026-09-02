@@ -37,6 +37,7 @@ const INTERNAL_PATHS = [
   "/admin",
   "/editor",
   "/home-lab",
+  "/plan",
   "/mocks",
   "/logo-animator",
   "/design-system",
@@ -53,6 +54,7 @@ const INTERNAL_PATHS = [
  */
 const STAGING_ONLY = [
   "/home-lab",
+  "/plan",
   "/mocks",
   "/logo-animator",
   "/design-system",
