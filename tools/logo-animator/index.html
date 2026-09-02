@@ -1751,6 +1751,32 @@
     b.addEventListener("click", function () { setView(b.dataset.view); });
   });
 
+  // ------------------------------------------------------------- bake
+  // The nav's roll (atlas-nav.css, .fa-shell__mark.is-rolling) is this bench's
+  // "Ring rolls" preset baked to a sprite strip. One whole turn, eased in and
+  // out with smooth(), so the first and last cells are the resting pose, which
+  // is the flat mark. Drawn bare, white ink on a black stage: the strip is
+  // read as a luminance mask, so the core's interior (painted stage) comes out
+  // transparent and only the ink is opaque. scripts/bake-mark-roll.mjs drives
+  // this headlessly and writes public/fa-mark-roll.png.
+  window.faBakeRoll = function (frames, size, fit) {
+    var keepEls = els, keepScene = scene, keepT = T, keepInk = theme.ink, keepStage = theme.stage;
+    var strip = document.createElement("canvas"), cell = document.createElement("canvas");
+    strip.width = size * frames; strip.height = size; cell.width = cell.height = size;
+    var sctx = strip.getContext("2d"), cctx = cell.getContext("2d");
+    PRESETS[1].apply();
+    var period = 1 / els[RING].rate;
+    theme.ink = [255, 255, 255]; theme.stage = [0, 0, 0];
+    sctx.fillStyle = "#000"; sctx.fillRect(0, 0, strip.width, strip.height);
+    for (var k = 0; k < frames; k++) {
+      T = smooth(k / (frames - 1)) * period;
+      drawScene(cctx, size, { bare: true, n: 720, fit: fit || 0.9 });
+      sctx.drawImage(cell, k * size, 0);
+    }
+    els = keepEls; scene = keepScene; T = keepT; theme.ink = keepInk; theme.stage = keepStage;
+    return strip.toDataURL("image/png");
+  };
+
   PRESETS[1].apply();
   syncUI();
   var savedTheme = "system", savedView = "sheet";

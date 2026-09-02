@@ -70,27 +70,44 @@
   site (atlas-nav.js decides when). Not on a reload, and not on every page: it
   marks the transition, and firing it constantly would make it wallpaper.
 
-  This is the bench's own "Ring rolls" preset (/logo-animator), baked to frames.
-  The mark is a 3-D construction — a tilted tube ring turning inside a sphere —
-  so a CSS rotate of the flat artwork is a different animation altogether, and
-  that is what the first attempt was. Shipping the bench's renderer instead
-  would put a few hundred lines of 3-D maths on every page of the site, and on
-  every sub-app bundle, for 900ms of motion.
+  This is the bench's own "Ring rolls" preset (/logo-animator), baked to a
+  sprite strip by scripts/bake-mark-roll.mjs. The mark is a 3-D construction —
+  a tilted tube ring turning inside a sphere — so a CSS rotate of the flat
+  artwork is a different animation altogether, and that is what the first
+  attempt was. Shipping the bench's renderer instead would put a few hundred
+  lines of 3-D maths on every page of the site for 900ms of motion.
 
-  24 frames, sampled from the running preset. The ease-in-out lives in WHICH
-  moments were sampled, because a sprite can only be stepped through linearly.
-  steps(23) rather than steps(24): 24 frames are 23 intervals, and stepping 24
-  lands every frame a fraction off its cell.
+  48 cells, one whole turn eased in and out, so the first and last cells ARE
+  the resting pose, which is the flat mark: the roll starts from what is on
+  the page and lands back on it. steps(47) rather than steps(48): 48 cells are
+  47 intervals, and stepping 48 lands every frame a fraction off its cell.
 
-  Drawn as a mask filled with currentColor, so it takes the bar's own colour and
-  needs none of the invert() the flat <img> does.
+  The strip is an alpha mask filled with currentColor, so it takes the bar's
+  own colour in either theme. Only the ink is opaque: the core's interior is
+  transparent, so the page shows through it exactly as it does through the
+  flat mark. A 3-D render is never pixel-identical to the artwork, so the
+  sprite fades in OVER the flat <img> for the first ~70ms and out over it for
+  the last ~70ms, and the flat mark is hidden only while the sprite is fully
+  opaque. Not a cross-fade: two half-transparent copies of one shape never add
+  up to solid, and the mark would dip grey for a frame. Same 900ms clock.
 */
 @keyframes fa-mark-roll {
   from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
   to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
 }
+@keyframes fa-mark-sprite-fade {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes fa-mark-flat-hide {
+  0%, 8% { visibility: visible; }
+  8.01%, 91.99% { visibility: hidden; }
+  92%, 100% { visibility: visible; }
+}
 .fa-shell__mark { position: relative; }
-.fa-shell__mark.is-rolling img { visibility: hidden; }
+.fa-shell__mark.is-rolling img { animation: fa-mark-flat-hide 900ms step-end both; }
 .fa-shell__mark.is-rolling::after {
   content: "";
   position: absolute;
@@ -98,14 +115,16 @@
   background-color: currentColor;
   -webkit-mask-image: url(/fa-mark-roll.png);
   mask-image: url(/fa-mark-roll.png);
-  -webkit-mask-size: 2400% 100%;
-  mask-size: 2400% 100%;
+  -webkit-mask-size: 4800% 100%;
+  mask-size: 4800% 100%;
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  animation: fa-mark-roll 900ms steps(23, end) both;
+  animation:
+    fa-mark-roll 900ms steps(47, end) both,
+    fa-mark-sprite-fade 900ms linear both;
 }
 @media (prefers-reduced-motion: reduce) {
-  .fa-shell__mark.is-rolling img { visibility: visible; }
+  .fa-shell__mark.is-rolling img { animation: none; }
   .fa-shell__mark.is-rolling::after { display: none; }
 }
 .fa-shell__word { font-size: 19px; font-weight: 500; letter-spacing: -0.01em; }
