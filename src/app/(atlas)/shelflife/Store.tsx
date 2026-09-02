@@ -33,18 +33,19 @@ const AISLE_ICON: Record<string, ReactNode> = {
   play: <path d="M4 8h16v10H4zM8 12v2M7 13h2M15 12h.01M17 14h.01" />,
 };
 
+/** One of seven across the full width on a laptop; a scrolling rail below that. */
 function AisleTile({ id, label }: { id: string; label: string }) {
   return (
     <a
       href="#shelf"
-      className="group flex w-[128px] shrink-0 snap-start flex-col items-center gap-3 rounded-[18px] px-3 py-5 text-center transition-colors hover:bg-panel"
+      className="group flex w-[148px] shrink-0 snap-start flex-col items-center gap-4 rounded-[20px] px-3 py-6 text-center transition-colors hover:bg-panel lg:w-auto lg:flex-1 lg:shrink"
     >
-      <span className="grid h-16 w-16 place-items-center rounded-full bg-panel text-ink transition-transform duration-300 group-hover:scale-105">
-        <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <span className="grid h-[clamp(88px,8.5vw,128px)] w-[clamp(88px,8.5vw,128px)] place-items-center rounded-full bg-panel text-ink transition-transform duration-300 group-hover:scale-105">
+        <svg viewBox="0 0 24 24" className="h-[46%] w-[46%]" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           {AISLE_ICON[id]}
         </svg>
       </span>
-      <span className="text-[13px] font-medium leading-tight text-ink">{label}</span>
+      <span className="text-[14px] font-medium leading-tight text-ink">{label}</span>
     </a>
   );
 }
@@ -115,7 +116,7 @@ export function Store() {
   return (
     <>
       {/* store bar */}
-      <div className="sticky top-[var(--fa-nav-h,0px)] z-40 border-b border-ink/10 bg-surface/85 backdrop-blur-md">
+      <div className="border-b border-ink/10 bg-surface">
         <Container className="flex h-14 items-center justify-between gap-4">
           <a href="#top" className="text-[19px] font-extrabold tracking-[-0.03em] text-ink">
             Shelf<span className="text-accent">Life</span>
@@ -140,36 +141,11 @@ export function Store() {
 
       {/* hero */}
       <section id="top" className="pt-[clamp(40px,6vw,80px)] pb-[clamp(24px,4vw,48px)]">
-        <Container className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <Container>
           <Reveal>
-            <h1 className="text-[clamp(34px,5vw,56px)] font-extrabold leading-[1.08] tracking-[-0.03em] text-ink">
-              Store.{" "}
-              <span className="text-ink-70">
-                The best way to buy the products you&rsquo;ll love, whenever they arrive.
-              </span>
+            <h1 className="max-w-[24ch] text-[clamp(34px,5vw,56px)] font-extrabold leading-[1.08] tracking-[-0.03em] text-ink">
+              The best way to buy the products you&rsquo;ll love, whenever they arrive.
             </h1>
-          </Reveal>
-          <Reveal delay={80} className="shrink-0">
-            <ul className="grid gap-3 text-[13px] text-ink-70">
-              <li className="flex items-center gap-3">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-panel text-ink">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden="true"><path d="M12 6a3 3 0 1 1 0 6 3 3 0 0 1 0-6zM5 21a7 7 0 0 1 14 0" /></svg>
-                </span>
-                <span>
-                  Need help choosing a decade?{" "}
-                  <a href="#create" className="text-accent-deep underline-offset-2 hover:underline">Ask a Specialist ↗</a>
-                </span>
-              </li>
-              <li className="flex items-center gap-3">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-panel text-ink">
-                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg>
-                </span>
-                <span>
-                  Visit a store{" "}
-                  <a href="#shelf" className="text-accent-deep underline-offset-2 hover:underline">Find one near your future ↗</a>
-                </span>
-              </li>
-            </ul>
           </Reveal>
         </Container>
       </section>
@@ -177,7 +153,7 @@ export function Store() {
       {/* aisles */}
       <section className="pb-[clamp(24px,4vw,48px)]">
         <Container>
-          <div className={`${rail} -mx-2 px-2`}>
+          <div className={`${rail} -mx-2 px-2 lg:mx-0 lg:justify-between lg:overflow-visible lg:px-0`}>
             {AISLES.map((a) => (
               <AisleTile key={a.id} id={a.id} label={a.label} />
             ))}
