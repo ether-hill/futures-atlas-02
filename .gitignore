@@ -161,3 +161,8 @@ next-env.d.ts
 /data/dramaturge/clips/
 /data/dramaturge/*.mp4
 /data/dramaturge/*.png
+
+# Social video masters. The full-quality exports live here for re-cutting; what
+# ships is the encoded webm under public/mocks/instagram, which is a fraction of
+# the size. Committing both would put the same footage in the repo twice.
+/projects/socials/

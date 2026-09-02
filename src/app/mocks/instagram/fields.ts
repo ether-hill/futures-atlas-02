@@ -264,6 +264,23 @@ export const ODDS_POSTS: OddsPost[] = [
   },
 ];
 
+export const FIELD_DYNAMICS_REEL: ReelPost = {
+  kind: "reel",
+  name: "Field dynamics",
+  id: "field-dynamics",
+  title: "Field Dynamics",
+  // The piece's own description, from generatives/src/pieces/fieldDynamics.ts.
+  note: "Invisible forces made visible. Vortices, sources and sinks compose a vector field; particles stream its field lines.",
+  // A recording rather than the live embed: this cut is already framed 9:16 with
+  // the title and the equation burned in, which the running piece does not draw.
+  embed: "",
+  video: "/mocks/instagram/field-dynamics.webm",
+  thumbAt: 0,
+  caption:
+    "Four singularities and nothing else. Everything you can see is six thousand particles being carried by them.\n\nWhat you are seeing. Vortices, sources and sinks placed on a plane. Each one pulls the flow around it, and the particles trace the field lines they are standing in, dying and respawning so the picture keeps renewing rather than settling.\n\nHow it is made. The equation on screen is the whole model: the velocity at any point is the sum of one term per singularity, each falling off with distance. Complex numbers do the work, because a single complex constant carries both the strength of a source and the spin of a vortex at once. That is why the same expression draws a drain and a whirlpool depending on one coefficient.\n\nIt is drawn live in the browser, a few thousand particles a frame on a 2D canvas, and it never repeats. Field Dynamics is one of the treatments in Generatives, where you can change the singularity count, the speed and the trail length and export your own.",
+  hashtags: ["#generativeart", "#creativecoding", "#vectorfield", "#fluiddynamics", "#mathart", "#futuresatlas"],
+};
+
 export const HOME_REEL: ReelPost = {
   kind: "reel",
   name: "Futures Atlas · the site",
