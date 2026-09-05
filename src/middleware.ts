@@ -84,6 +84,25 @@ export const config = {
   matcher: ["/((?!_next/static|_next/image|.*\\.[^/]+$).*)"],
 };
 
+/**
+ * The one exception to gate 0: paths anyone may open on a PREVIEW deployment
+ * without signing in.
+ *
+ * Staging is closed by default and that stays the default — having the link
+ * should not be the same as being allowed to read the site. But a single page
+ * sometimes has to go to someone outside, on its own, with everything else
+ * still behind the sign-in. A path listed here is open; every other path on
+ * staging is untouched.
+ *
+ * Exact matches, not prefixes. A prefix would open everything beneath it, and
+ * the whole point of /interference/solo is that /interference — the page with
+ * the bar, the footer and the way into the rest of the Atlas — is NOT what the
+ * visitor gets. The bundle's own JS and CSS never reach this file (the matcher
+ * above skips anything with an extension), so naming the page is enough.
+ */
+const PREVIEW_PUBLIC = ["/interference/solo"];
+
+
 const LOGIN_PATH = "/admin/login";
 
 export async function middleware(req: NextRequest) {
@@ -123,8 +142,13 @@ export async function middleware(req: NextRequest) {
   //
   // The sign-in machinery itself has to stay reachable or nobody can ever get
   // in — the form is handled by sessionGate, this is the endpoint it posts to.
+  // Trailing slash normalised so /interference/solo/ is the same page to the
+  // list below as /interference/solo.
+  const bare = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
+
   if (
     process.env.VERCEL_ENV === "preview" &&
+    !PREVIEW_PUBLIC.includes(bare) &&
     pathname !== "/api/admin/login" &&
     pathname !== "/api/admin/logout"
   ) {
