@@ -82,6 +82,9 @@ const nextConfig: NextConfig = {
         { source: "/theodds/stats", destination: "/odds-of-surviving-ai/stats.html" },
         // Interference — hand-authored static bundle (gallery + embed.html player)
         { source: "/interference", destination: "/interference/index.html" },
+        // …/solo is the same bundle with the global bar and footer left off, for
+        // sharing the fields on their own. The page reads the path itself.
+        { source: "/interference/solo", destination: "/interference/index.html" },
         { source: "/superposition", destination: "/superposition/index.html" },
         // Throat singing and quantum physics — hand-authored static bundle (article + the Overtone instrument)
         { source: "/throat-singing-quantum", destination: "/throat-singing-quantum/index.html" },

@@ -19,7 +19,25 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;900&family=Saira+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
+<script>
+/*
+  Solo mode: /interference/solo, or ?solo=1 on any of these URLs.
+
+  The same page with nothing that leads anywhere else — no global bar, no
+  footer, no breadcrumb back to the atlas. It exists so the fields can be
+  handed to someone on their own, without handing them the whole site.
+  It is a presentation switch, not a lock: the page is public either way.
+*/
+window.FA_SOLO = /[?&]solo=1(?:&|$)/.test(location.search)
+  || /^\/interference\/solo\/?$/.test(location.pathname);
+if (window.FA_SOLO) {
+  document.documentElement.setAttribute("data-fa-solo", "");
+  document.documentElement.setAttribute("data-fa-no-footer", "");
+  document.write('<meta name="robots" content="noindex">');
+} else {
+  document.write('<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>');
+}
+</script>
 <link rel="stylesheet" href="/api/theme.css">
 </head>
 <body>
@@ -68,7 +86,14 @@
 <script src="mp4-muxer.js"></script>
 <script src="field.js"></script>
 <script src="audio.js"></script>
-<script src="/atlas-nav.js" defer></script>
+<script>
+// The global bar mounts itself on load; in solo mode it is simply never fetched.
+if (!window.FA_SOLO) {
+  var faNav = document.createElement("script");
+  faNav.src = "/atlas-nav.js";
+  document.head.appendChild(faNav);
+}
+</script>
 <script>
 (function () {
   "use strict";
