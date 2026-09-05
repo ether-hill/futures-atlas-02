@@ -155,7 +155,13 @@ if (!window.FA_SOLO) {
 
   // Draft panels are listed only for a signed-in editor. The cookie is a hint,
   // exactly as in atlas-nav.js: it decides what this page lists, nothing more.
-  var IS_EDITOR = /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
+  //
+  // Solo mode is the exception, and never lists a draft. It is the page as it
+  // reaches someone outside, so it has to look the same to whoever made the
+  // link: opening your own share URL while signed in should show you what the
+  // person you sent it to gets, not ten unfinished fields they will never see.
+  var IS_EDITOR = !window.FA_SOLO
+    && /(?:^|;\s*)fa_editor=1(?:;|$)/.test(document.cookie || "");
   var SHOWN = FIELD.VARIANTS.filter(function (v) { return IS_EDITOR || !v.draft; });
 
   var WORDS = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
