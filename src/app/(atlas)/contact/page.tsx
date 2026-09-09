@@ -31,7 +31,10 @@ export default async function ContactPage({
       {/* Rain into still water, very slowly, as the page's ground. Decorative,
           and quiet: the mask feathers all four edges (globals.css) so it reads
           as a field the page fades into rather than a rectangle of video. */}
-      <InterferenceField className="fa-contact-field pointer-events-none absolute inset-0 hidden h-full w-full md:block" />
+      {/* On phones too. It was `hidden md:block`, so the one page whose whole
+          background is the field had a plain ground on the device most people
+          open it on. It is aria-hidden and holds still under reduced motion. */}
+      <InterferenceField className="fa-contact-field pointer-events-none absolute inset-0 h-full w-full" />
       <div className="relative">
         <Container>
           {/*

@@ -469,14 +469,26 @@ body:has(.fa-subnav) .fa-shell { transform: none !important; }
      below) and loses its plate, so its controls still work and the sheet's
      ground runs behind them. */
   inset: 0;
+  /* svh, not the default 100% of inset:0. On phones the layout viewport is the
+     LARGE viewport, the one measured with the browser chrome retracted, so a
+     full-bleed fixed panel ends up taller than what you can actually see and
+     the difference becomes dead scrollable space inside the menu. */
+  height: 100svh;
+  max-height: 100svh;
   z-index: 9990; /* above zone content incl. the Odds stage (z 9000) */
   display: flex;
+  /* nothing chains to the page behind, on the rare page whose menu does scroll */
+  overscroll-behavior: contain;
   /* Bone with a blue cast pulled towards --brand, rather than the page's plain
      ground: the menu is the one full-screen surface the site owns, and it
      should feel like the brand rather than like a page that lost its content. */
-  background: rgba(232, 236, 248, 0.975);
-  -webkit-backdrop-filter: blur(22px);
-  backdrop-filter: blur(22px);
+  /* Opaque, not a 0.975 veil over a blur. backdrop-filter is the first thing
+     to be dropped (older WebKit, low-power mode, a GPU-blocked context), and
+     when it goes the page underneath reads straight through the menu. In light
+     especially, body text behind the links made the whole panel look broken.
+     The blur stays as an enhancement on the frosted edge, it is no longer what
+     makes the panel legible. */
+  background: #eef1f8;
   color: #141518;
   opacity: 0;
   visibility: hidden;
@@ -518,8 +530,10 @@ html.dark .fa-sheet::before { opacity: 0.075; }
 .fa-sheet__inner { position: relative; z-index: 1; }
 
 .fa-sheet.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
-html.dark .fa-sheet { background: rgba(9, 13, 24, 0.978); color: #f3f1ec; }
-html.fa-menu-open { overflow: hidden; } /* lock scroll while the sheet is open */
+html.dark .fa-sheet { background: #0b101c; color: #f3f1ec; }
+/* Lock the page while the sheet is open. overflow alone is not enough on
+   iOS, where the scroll chains through to the document anyway. */
+html.fa-menu-open, html.fa-menu-open body { overflow: hidden; overscroll-behavior: none; touch-action: none; }
 
 /* While the menu is open the bar keeps its position and its controls but gives
    up its surface, so there is no seam between the two. It has to outrank the
@@ -538,11 +552,16 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
 .fa-sheet__inner {
   width: 100%;
   max-width: 620px;
-  margin: 0 auto;
+  /* Centred in the panel rather than stacked at the top. Four links and two
+     buttons filled about half the screen and left the rest empty, which read
+     as a menu that had lost some of itself. `auto` margins centre it while
+     still letting it scroll from the top if a project page adds enough
+     sublinks to overflow. */
+  margin: auto;
   display: flex;
   flex-direction: column;
-  /* the sheet runs under the bar now, so the links start below it */
-  padding: calc(var(--fa-nav-h) + clamp(20px, 5vw, 40px)) clamp(22px, 7vw, 48px) 48px;
+  /* the sheet runs under the bar, so the links clear it */
+  padding: calc(var(--fa-nav-h) + clamp(16px, 4vw, 28px)) clamp(22px, 7vw, 48px) clamp(24px, 6vw, 40px);
 }
 .fa-sheet__sec {
   display: flex;
@@ -708,7 +727,17 @@ html.dark .fa-share__opt:hover { background: rgba(255, 255, 255, 0.08); }
   left: 0; right: auto;
   transform-origin: top left;
   min-width: min(280px, calc(100vw - 56px));
+  /*
+    Closed, this panel is only visibility:hidden, and an absolutely positioned
+    box still counts towards its scroll container's scrollHeight. Inside the
+    mobile menu that added ~100px of scrollable nothing below the last button,
+    which is the phantom scroll space in the open menu. Taking it out of layout
+    costs its 0.18s fade in the menu (the bar's own copy keeps it) and buys a
+    sheet that does not scroll at all.
+  */
+  display: none;
 }
+.fa-share--sheet.is-open .fa-share__panel { display: flex; }
 html.dark .fa-share--sheet .fa-share__btn { background: transparent; color: inherit; }
 html.dark .fa-share--sheet.is-open .fa-share__btn { background: rgba(255, 255, 255, 0.08); color: inherit; }
 
@@ -824,21 +853,22 @@ html .fa-shell.is-clear,
   the pop did. The footer is below the fold on arrival, so it can afford the
   small lift.
 */
-@keyframes fa-shell-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
 @keyframes fa-foot-in {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: none; }
 }
 
-.fa-shell { animation: fa-shell-in 0.3s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
+/*
+  The bar deliberately does NOT animate. It is injected by script, so a fade
+  reads as it arriving late rather than as an entrance, and it made one project
+  behave differently from the rest. The fix for a late bar is to stop it being
+  late (reserve its height in CSS, load the page's blocking scripts in the
+  head), not to decorate the lateness.
+*/
 .fa-foot  { animation: fa-foot-in 0.5s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
 
 @media (prefers-reduced-motion: reduce) {
-  .fa-shell, .fa-foot { animation: none; }
+  .fa-foot { animation: none; }
 }
 
 body {
