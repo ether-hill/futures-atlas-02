@@ -141,8 +141,7 @@ export function ContactForm({
           Thanks, your message is in.
         </h2>
         <p className="max-w-[46ch] text-[13px] leading-[1.7] text-ink-70">
-          We read everything that comes in and reply when we can. If you pitched
-          a project or a collaboration, expect a slower, more considered answer.
+          We will get back to you soon.
         </p>
         <Link
           href="/"
