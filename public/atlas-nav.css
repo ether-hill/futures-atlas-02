@@ -754,3 +754,40 @@ html .fa-shell.is-clear,
 .fa-foot__ptitle { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; line-height: 1.4; opacity: 0.85; }
 .fa-foot__post:hover .fa-foot__ptitle { opacity: 1; }
 .fa-foot__mark img { display: block; width: 22px; height: auto; }
+
+/* ---------------------------------------------------------------------------
+   Arrival, shared by every bundle.
+
+   The host app fades each page up with `.fa-page-in` (src/app/globals.css).
+   The project bundles are separate apps that never pass through its layout, so
+   until now the Atlas eased in and its projects snapped in, which read as two
+   different sites. This is the same 0.42s and the same curve, deliberately, so
+   crossing from a listing into a project feels like one place.
+
+   Three choices worth keeping:
+
+   OPACITY ONLY, and starting at 0.35 rather than 0. Fading the whole way up
+   from nothing reads as slow even at this duration, and a transform here would
+   make body the containing block for the fixed shell bar, which would then
+   jump on arrival and snap back. Opacity creates a stacking context but not a
+   containing block, so the bar stays put.
+
+   ON BODY, not a wrapper. Twenty-four bundles built by different tools share
+   this stylesheet and agree on nothing below <body>.
+
+   PURE CSS, with `both`. It needs no script and cannot leave a page stuck
+   invisible if one fails to load, which is the usual way an entrance animation
+   turns into a blank screen.
+--------------------------------------------------------------------------- */
+@keyframes fa-arrive {
+  from { opacity: 0.35; }
+  to   { opacity: 1; }
+}
+
+body {
+  animation: fa-arrive 0.42s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none; }
+}

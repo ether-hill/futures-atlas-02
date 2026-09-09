@@ -667,3 +667,69 @@
   if (document.body) mount();
   else document.addEventListener("DOMContentLoaded", mount);
 })();
+
+/* ---------------------------------------------------------------------------
+   Shared scroll reveal for the bundles.
+
+   Mark blocks with `data-fa-reveal` and they rise into place as they arrive,
+   matching the host app's <Reveal> (rise, 0.8s, same curve). Add
+   `data-fa-reveal-stagger` to a parent and its marked children are dealt out
+   one after another instead of together.
+
+   THE HIDDEN STATE IS SET FROM SCRIPT, NEVER FROM THE STYLESHEET. The host app
+   parks `[data-reveal] { opacity: 0 }` in CSS and relies on React to add the
+   class that brings it back, so a page whose JavaScript never runs is a blank
+   one. Here the stylesheet leaves everything visible and this file hides the
+   blocks a frame before it starts observing them, so the failure mode of every
+   part of this is simply no animation.
+
+   IntersectionObserver is checked rather than assumed, and a reduced-motion
+   preference skips the whole thing, leaving the page at rest and readable.
+--------------------------------------------------------------------------- */
+(function () {
+  var STAGGER_MS = 90;
+  var MAX_STAGGER = 6; // beyond this the last card waits noticeably; cap it
+
+  function reveal() {
+    var nodes = document.querySelectorAll("[data-fa-reveal]");
+    if (!nodes.length) return;
+
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || !("IntersectionObserver" in window)) return;
+
+    var style = document.createElement("style");
+    style.textContent =
+      "@keyframes fa-rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}" +
+      "[data-fa-reveal].fa-armed{opacity:0}" +
+      "[data-fa-reveal].fa-in{animation:fa-rise .8s cubic-bezier(.2,.6,.2,1) both}";
+    document.head.appendChild(style);
+
+    for (var i = 0; i < nodes.length; i++) nodes[i].classList.add("fa-armed");
+
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var el = e.target;
+        var parent = el.parentElement;
+        var delay = 0;
+        if (parent && parent.hasAttribute("data-fa-reveal-stagger")) {
+          var sibs = parent.querySelectorAll(":scope > [data-fa-reveal]");
+          var idx = Array.prototype.indexOf.call(sibs, el);
+          delay = Math.min(idx, MAX_STAGGER) * STAGGER_MS;
+        }
+        el.style.animationDelay = delay + "ms";
+        el.classList.remove("fa-armed");
+        el.classList.add("fa-in");
+        io.unobserve(el);
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0 });
+    /* threshold 0, not a fraction: a fraction is of the TARGET, so a block
+       taller than the window can never reach one and simply never appears.
+       The negative bottom margin is what holds the trigger inside the fold. */
+
+    for (var j = 0; j < nodes.length; j++) io.observe(nodes[j]);
+  }
+
+  if (document.body) reveal();
+  else document.addEventListener("DOMContentLoaded", reveal);
+})();

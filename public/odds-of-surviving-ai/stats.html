@@ -120,7 +120,7 @@ section{margin-top:clamp(44px,7vh,72px)}
       <p class="sub">Nobody is asked to keep going. The odds are, by design, survivable: roughly three plays in four come out fine. Doom is something you have to keep playing for, and the number above is how many people did.</p>
     </div>
 
-    <section>
+    <section data-fa-reveal>
       <div class="sec-head"><h2>The room</h2><span>everyone who has played</span></div>
       <!-- one grid, not two rows of three: two stacked grids orphan a tile at
            every width where the column count is not three -->
@@ -135,20 +135,20 @@ section{margin-top:clamp(44px,7vh,72px)}
     </section>
 
     <!-- ── how stubborn: tries needed to reach doom ── -->
-    <section id="histSec">
+    <section id="histSec" data-fa-reveal>
       <div class="sec-head"><h2>How many tries it took</h2><span>players who reached doom</span></div>
       <div class="hist" id="hist"></div>
       <p class="note" id="histNote"></p>
     </section>
 
     <!-- ── observed rate against the rate each of them actually stated ── -->
-    <section id="tkSec">
+    <section id="tkSec" data-fa-reveal>
       <div class="sec-head"><h2>Against their own numbers</h2><span>observed vs stated</span></div>
       <div class="thinkers" id="thinkers"></div>
       <p class="note">The bar is what has actually come up here. The line is the odds that person put on the record. They converge with enough plays.</p>
     </section>
 
-    <p class="note">Counted server-side, one tally shared by everyone. A player is one browser session, so the same person on two days counts twice, and a shared laptop counts once. Plays from private windows land in the totals but not in the per-player numbers.</p>
+    <p class="note" data-fa-reveal>Counted server-side, one tally shared by everyone. A player is one browser session, so the same person on two days counts twice, and a shared laptop counts once. Plays from private windows land in the totals but not in the per-player numbers.</p>
   </div>
 
   <div id="empty" class="empty hidden">

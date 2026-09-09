@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { DOMAIN_ORDER, type GlossaryDomain, type GlossaryEntry } from "@/data/glossary";
 
 /**
@@ -104,17 +105,24 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
   return (
     <div className="min-h-[70vh] bg-surface py-[clamp(48px,8vw,110px)]">
       <Container>
-        <div className="mb-3.5 flex flex-wrap items-baseline gap-4">
+        {/*
+          The header arrives, the 315 entries below do not. Revealing a list
+          this long would stagger for most of a minute and fight the search
+          box, which filters as you type. Only the masthead moves.
+        */}
+        <Reveal className="mb-3.5 flex flex-wrap items-baseline gap-4">
           <span className="h-px min-w-10 flex-1 bg-ink/[0.18]" />
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-graphite">
             {filtered.length} of {entries.length} terms
           </span>
-        </div>
+        </Reveal>
 
-        <h1 className="max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
+        <Reveal delay={70} as="h1" className="max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
           Glossary
-        </h1>
-        <p
+        </Reveal>
+        <Reveal
+          as="p"
+          delay={130}
           className="mt-[clamp(16px,2vw,24px)] max-w-[64ch]"
           style={{
             fontSize: "var(--text-body-size)",
@@ -126,7 +134,7 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
           quantum computing, the compute underneath them, and the policy and social
           questions they raise. Written to be read cold. Where a word is contested or
           used loosely, the entry says so rather than picking the flattering reading.
-        </p>
+        </Reveal>
 
         {/* search */}
         <div className="mt-[clamp(28px,4vw,44px)] max-w-[520px]">

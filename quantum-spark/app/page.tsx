@@ -9,7 +9,6 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Reveal } from "../components/Reveal";
 import { SAMPLE_SPARK } from "../lib/sample";
 import { HONESTY_LINE, INDUSTRY_OPTIONS, type SparkResponse, type SparkResult } from "../lib/types";
 
@@ -174,7 +173,11 @@ export default function Page() {
 
   return (
     <main className="shell">
-      <Reveal className="hero">
+      {/* Not a <Reveal>: this is the first thing on the page and a reveal here
+         is gated on hydration, so the hero was blank until the bundle loaded,
+         and it collected two entrances once the shared body arrival fade in
+         atlas-nav.css landed. The fade alone brings it in. */}
+      <div className="hero">
         <div className="hero-grid">
           <div className="hero-text">
             <p className="eyebrow">Quantum Spark</p>
@@ -228,7 +231,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-      </Reveal>
+      </div>
 
       <div ref={resultsRef} style={{ scrollMarginTop: "calc(var(--fa-nav-h, 64px) + 16px)" }}>
         {phase.name === "loading" && (

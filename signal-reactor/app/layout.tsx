@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script
           dangerouslySetInnerHTML={{
             __html:
-              '(function(){try{if(localStorage.getItem("fa-theme")!=="light")document.documentElement.classList.add("dark")}catch(e){}})();',
+              '(function(){var r=document.documentElement;try{if(localStorage.getItem("fa-theme")!=="light")r.classList.add("dark")}catch(e){}r.classList.add("fa-js")})();',
           }}
         />
       </head>

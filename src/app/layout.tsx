@@ -128,6 +128,16 @@ export default async function RootLayout({
         <link rel="stylesheet" href="/atlas-nav.css?v=21" data-fa-nav-css />
         <script src="/atlas-nav.js?v=21" defer />
         {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
+        {/*
+          Without a script, every <Reveal> block stays at the opacity: 0 that
+          globals.css parks it at, waiting for an IntersectionObserver that will
+          never run: the home page, About, Developers and the whole projects
+          grid render as empty space. Reduced motion is already covered further
+          up that file; this covers the other way it can fail.
+        */}
+        <noscript>
+          <style>{`[data-reveal]{opacity:1!important;transform:none!important}.fa-page-in{animation:none!important}`}</style>
+        </noscript>
       </head>
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}

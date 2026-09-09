@@ -129,7 +129,11 @@ export default function Page() {
     <main className="shell">
       {/* title banner, same vocabulary as the Atlas homepage hero */}
       <section className="sr-hero">
-        <Reveal className="sr-hero__inner">
+        {/* Not a <Reveal>: this is the first thing on the page and a reveal here
+           is gated on hydration, so the hero was blank until the bundle loaded,
+           and it collected two entrances once the shared body arrival fade in
+           atlas-nav.css landed. The fade alone brings it in. */}
+        <div className="sr-hero__inner">
           <div className="hero-grid">
             <div>
               <p className="eyebrow tick">Organisational foresight · quantum + advanced AI</p>
@@ -155,7 +159,7 @@ export default function Page() {
               ))}
             </div>
           </div>
-        </Reveal>
+        </div>
       </section>
 
       {/* start screen */}

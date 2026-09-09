@@ -22,6 +22,9 @@ const labelCls = "font-mono text-[10.5px] uppercase tracking-[0.14em] text-graph
  */
 export const CONTACT_PROJECTS = contactProjects;
 
+/** Public by design: Web3Forms keys are meant to sit in the page. */
+const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "";
+
 export function ContactForm({
   defaultProject = "Futures Atlas",
 }: {
@@ -43,29 +46,85 @@ export function ContactForm({
     setState("sending");
     setError("");
     setBadField(null);
+    /*
+     * Posted from the BROWSER, straight to Web3Forms, which is how the studio's
+     * other site does it and the only way their free plan accepts.
+     *
+     * This used to POST /api/contact, which validated, rate-limited and then
+     * called Web3Forms from the Vercel function. Web3Forms refuses that: their
+     * free plan answers a server-side call with 403 "Use our API in client
+     * side... (Pro plan is required)", whatever the site or its domain. So the
+     * key is public here (NEXT_PUBLIC_), and the honeypot and the checks below
+     * are a courtesy rather than a guarantee: anyone can read the key off the
+     * page and post directly. That is the same deal the other site lives with,
+     * and the exposure is a submission quota rather than money, since nothing
+     * on this path calls a paid model. The route is still in the repo for
+     * whenever this moves to a provider that welcomes server-side sending.
+     */
+    const email = String(data.get("email") ?? "").trim();
+    const message = String(data.get("message") ?? "").trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      setState("error");
+      setBadField("email");
+      setError("That address doesn't look right.");
+      return;
+    }
+    if (!message || message.length > 5000) {
+      setState("error");
+      setBadField("message");
+      setError("Write a message before sending, up to 5000 characters.");
+      return;
+    }
+    // the honeypot: a field no person sees, so anything in it is a bot. Answer
+    // exactly as a success would, and send nothing.
+    if (String(data.get("website") ?? "").trim()) {
+      setSent(true);
+      return;
+    }
+    if (!ACCESS_KEY) {
+      setState("error");
+      setError("The contact form is not connected on this deployment.");
+      return;
+    }
+
+    const project = String(data.get("project") ?? "");
+    const subject = String(data.get("subject") ?? "").trim();
     try {
-      const res = await fetch("/api/contact", {
+      /*
+       * FormData, not JSON, and that is the whole reason this works.
+       *
+       * A JSON body sets content-type: application/json, which is not a
+       * CORS-safelisted value, so the browser sends a preflight OPTIONS first.
+       * Web3Forms does not answer that preflight, so the real POST is never
+       * sent and fetch rejects with a bare "Failed to fetch". FormData sends
+       * multipart/form-data, which IS safelisted, so there is no preflight and
+       * the request goes straight out. Do not "tidy" this into JSON.
+       */
+      const payload = new FormData();
+      payload.append("access_key", ACCESS_KEY);
+      payload.append("from_name", "Futures Atlas");
+      payload.append(
+        "subject",
+        subject
+          ? `Futures Atlas: ${subject}`
+          : `Futures Atlas: a message${project ? ` about ${project}` : ""}`,
+      );
+      payload.append("name", String(data.get("name") ?? ""));
+      payload.append("email", email);
+      if (project) payload.append("project", project);
+      payload.append("message", message);
+
+      const res = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          project: String(data.get("project") ?? ""),
-          name: String(data.get("name") ?? ""),
-          email: String(data.get("email") ?? ""),
-          subject: String(data.get("subject") ?? ""),
-          message: String(data.get("message") ?? ""),
-          website: String(data.get("website") ?? ""),
-        }),
+        body: payload,
       });
-      const body = (await res.json().catch(() => null)) as
-        | { ok?: boolean; code?: string; message?: string }
-        | null;
-      if (res.ok && body?.ok) {
+      const body = (await res.json().catch(() => null)) as { success?: boolean } | null;
+      if (res.ok && body?.success) {
         setSent(true);
         return;
       }
       setState("error");
-      setBadField(body?.code === "bad_email" ? "email" : body?.code === "bad_message" ? "message" : null);
-      setError(body?.message || "The message didn't go through. Try again in a moment.");
+      setError("The message didn't go through. Try again in a moment.");
     } catch {
       setState("error");
       setError("Couldn't reach the server. Check your connection and try again.");
