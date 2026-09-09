@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     siteName: "Futures Atlas",
     title: "Swipe the Future · what everyone believes",
     description: DESC,
-    images: ["https://futures-atlas.vercel.app/projects/swipe-the-future.jpg"],
+    images: ["https://futures-atlas.com/projects/swipe-the-future.jpg"],
   },
 };
 

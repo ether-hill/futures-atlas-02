@@ -20,7 +20,7 @@ import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BUNDLE = join(__dirname, '..', 'public', 'odds-of-surviving-ai');
-const DOMAIN = 'https://futures-atlas.vercel.app';
+const DOMAIN = 'https://futures-atlas.com';
 
 const ROUTES = [
   {

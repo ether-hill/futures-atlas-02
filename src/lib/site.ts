@@ -11,7 +11,7 @@
  * which stopped being the production host, so every absolute image URL on the
  * live site pointed somewhere the images no longer were.
  */
-export const SITE_URL = "https://futures-atlas.vercel.app";
+export const SITE_URL = "https://futures-atlas.com";
 
 /**
  * The origin the current deployment should call itself.

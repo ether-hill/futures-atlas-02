@@ -228,6 +228,21 @@ const nextConfig: NextConfig = {
         destination: "https://futures-atlas-staging.vercel.app/:path*",
         permanent: true,
       },
+      /*
+       * The site's address is futures-atlas.com. The .vercel.app that served it
+       * before the domain landed cannot be switched off, so it forwards rather
+       * than standing as a second front door to the same pages: two hostnames
+       * serving one site splits links and, once indexing opens, duplicates
+       * every page. The host is matched EXACTLY, so preview and branch
+       * deployments (…-git-<branch>-….vercel.app) are untouched and can still
+       * be opened directly.
+       */
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "futures-atlas.vercel.app" }],
+        destination: "https://futures-atlas.com/:path*",
+        permanent: true,
+      },
       { source: "/prism", destination: "/generatives", permanent: true },
       // The Counterfactual Index became Manipulate the data, and its
       // single-figure story stopped being called /one. The old paths were only

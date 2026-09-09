@@ -21,11 +21,11 @@ export const metadata: Metadata = {
     // host is written out because this sub-app is a separate npm project and
     // cannot import the host's src/lib/site.ts — change it there first, then
     // here and in the other bundles.
-    images: ["https://futures-atlas.vercel.app/projects/signal-reactor-2.jpg"],
+    images: ["https://futures-atlas.com/projects/signal-reactor-2.jpg"],
   },
   twitter: {
     card: "summary_large_image",
-    images: ["https://futures-atlas.vercel.app/projects/signal-reactor-2.jpg"],
+    images: ["https://futures-atlas.com/projects/signal-reactor-2.jpg"],
   },
 };
 
