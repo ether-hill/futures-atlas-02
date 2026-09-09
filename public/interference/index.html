@@ -45,6 +45,20 @@ if (window.FA_SOLO) {
 }
 </script>
 <link rel="stylesheet" href="/api/theme.css">
+<!--
+  The twelve cards are built by the inline script below, which cannot run until
+  field.js, audio.js and mp4-muxer.js have been fetched and executed, because
+  they are synchronous. So the page painted the heading and the colophon, then
+  the grid filled in and shoved everything down: a 0.21 layout shift, most of
+  this page's total, and the reason it appeared to assemble itself in stages.
+  Loading them here costs a little before first paint and buys a page that
+  arrives whole. None of the three touches the DOM at load. Preloading was
+  tried first and did nothing: the problem is the order of paint and parse,
+  not the speed of the fetch.
+-->
+<script src="mp4-muxer.js"></script>
+<script src="field.js"></script>
+<script src="audio.js"></script>
 </head>
 <body>
 
@@ -89,9 +103,7 @@ if (window.FA_SOLO) {
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="mp4-muxer.js"></script>
-<script src="field.js"></script>
-<script src="audio.js"></script>
+<!-- mp4-muxer.js, field.js and audio.js load in the head; see the note there. -->
 <script>
 // The global bar mounts itself on load; in solo mode it is simply never fetched.
 if (!window.FA_SOLO) {

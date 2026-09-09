@@ -62,6 +62,16 @@ html.dark {
 /* ── page ─────────────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; }
+/*
+  Reserve the shared bar's height HERE rather than letting atlas-nav.js apply
+  it. The script is deferred, so it set this padding after first paint and
+  pushed the whole page down 64px on arrival. The variable is declared in
+  atlas-nav.css, which is a render-blocking stylesheet, so it is available
+  before anything paints. The script's own check (`have >= need`) sees the
+  padding already in place and leaves it alone.
+*/
+body { padding-top: var(--fa-nav-h, 64px); }
+
 body {
   background: var(--bg);
   color: var(--text);
