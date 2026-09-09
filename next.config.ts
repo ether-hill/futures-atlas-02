@@ -156,8 +156,49 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: [
           { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" },
+          // Browsers must take our word for what a response is. Several routes
+          // return JSON assembled from model output and the sub-app bundles
+          // serve a lot of user-supplied-looking strings, and sniffing is how
+          // one of those gets re-read as HTML and run.
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          // The full URL of a page here can name an unreleased project, so it
+          // goes to other origins as the bare origin. Same-origin navigation
+          // keeps the whole path, which is what the internal pages rely on.
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // Nothing on the site takes a picture or asks where you are, so those
+          // are switched off outright, for this page and for anything it frames.
+          // The microphone is (self) rather than () because the Overtone
+          // visualiser at /throat-singing-quantum listens to you sing; denying
+          // it here would break that page silently, with no console error that
+          // points back at this file. interest-cohort is the legacy FLoC opt
+          // out: ignored by current browsers, harmless, still worth stating.
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), geolocation=(), microphone=(self), interest-cohort=()",
+          },
         ],
       },
+      // Framing, and only where it is safe to forbid.
+      //
+      // There is deliberately no site-wide X-Frame-Options or frame-ancestors:
+      // /interference/embed.html and /generatives/embed.html EXIST to be put in
+      // someone else's page, and /prism/embed.html redirects to the second of
+      // them for embeds already out in the world. A blanket rule would break
+      // all three, and it would break them on other people's sites, where
+      // nobody here would see it happen.
+      //
+      // What is worth denying is the handful of pages with a session behind
+      // them: the sign-in form, the editor overview and the style-guide panel
+      // that writes token overrides. Those are the only surfaces where a
+      // click landing somewhere the visitor did not intend would do anything,
+      // and none of them is ever embedded.
+      ...["/admin", "/editor", "/style-guide"].map((base) => ({
+        source: `${base}/:path*`,
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+        ],
+      })),
       {
         source: "/atlas-nav.:ext(js|css)",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],

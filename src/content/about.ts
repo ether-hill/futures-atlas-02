@@ -10,7 +10,7 @@ export const HERO = {
   eyebrow: "About",
   headline: "A prototype lab for foresight",
   standfirst:
-    "Futures Atlas is a showcase and prototype lab. We build frameworks and modular components for foresight, mostly around compute: quantum computing and where its applications are going, emerging AI, the power and infrastructure behind it, and the organisations and people driving all of it. Some of what we post is editorial. Some is a working prototype with code you can copy. Some is a full, tested suite of tools and workshops. Take a piece, wire several together, or start your own path from one.",
+    "Futures Atlas is a showcase and a prototype lab. We build frameworks and modular components for foresight, mostly around compute: quantum computing and where its applications are going, emerging AI, the infrastructure and power behind it, and the organisations and people driving all of it. Some of it is editorial, some a prototype with code you can copy, some a tested suite of tools and workshops.",
   kicker: "It’s meant to be used.",
 };
 
@@ -45,7 +45,6 @@ export const WORK = {
   intro: "What we work on",
   body: "Compute and the power it is reorganising: where AI is actually heading, what the energy and infrastructure behind it costs, what quantum machines can demonstrably do as against what is claimed for them, and the labs, companies and ministries narrating all of it. The gap between a demonstrated capability and a projected trajectory is where most decisions go wrong, so that gap is the subject.",
   note: "The terms this work keeps returning to. Size shows emphasis. There is no count behind it.",
-  closing: "Across all of it: cite everything, substance over hype.",
 };
 
 export type TermCluster = "futures" | "quantum" | "ai" | "society" | "craft";

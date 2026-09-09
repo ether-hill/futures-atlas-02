@@ -9,8 +9,8 @@
 <meta property="og:site_name" content="Futures Atlas" />
 <meta property="og:title" content="The Odds · Research, Futures Atlas" />
 <meta property="og:description" content="The research behind The Odds: public p(doom) estimates from Amodei, Musk and Tegmark, with sources." />
-<meta property="og:url" content="https://futures-atlas-02.vercel.app/theodds/research" />
-<meta property="og:image" content="https://futures-atlas-02.vercel.app/og/the-odds.png" />
+<meta property="og:url" content="https://futures-atlas.vercel.app/theodds/research" />
+<meta property="og:image" content="https://futures-atlas.vercel.app/og/the-odds.png" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:image" content="/projects/odds-of-surviving-ai.jpg" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -53,6 +53,15 @@ h1{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(34px,6vw,62p
 .faxis{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--faint);min-width:42px}
 .fbtn{cursor:pointer;font-family:inherit;background:none;border:1px solid var(--line2);color:var(--muted);font-size:12px;padding:7px 14px;border-radius:20px;transition:border-color .15s,color .15s}
 .fbtn:hover{border-color:var(--muted);color:var(--text)}
+/* The way back. This page is reached from the landing head, from the
+   choose-player overlay and from the end of a doom run, and until it had this
+   it was a page you could only leave through the Atlas bar. Same link, same
+   styling as the one at the foot of stats.html. */
+.back{display:inline-block;margin-top:48px;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.back:hover{color:var(--text)}
+.toplinks{display:flex;justify-content:space-between;align-items:baseline;gap:16px}
+.toplinks a{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.toplinks a:hover{color:var(--text)}
 .fbtn.active{border-color:var(--accent);color:var(--accent)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:18px}
 .card{display:flex;flex-direction:column;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden;text-decoration:none;color:inherit;transition:border-color .2s,transform .2s}
@@ -82,7 +91,7 @@ body{padding-top:var(--fa-nav-h)!important}
 <body>
 
 <div class="wrap">
-  <div class="eyebrow">The evidence base</div>
+  <div class="toplinks"><span class="eyebrow">The evidence base</span><a href="/theodds/stats">Stats →</a></div>
   <h1>Where the numbers come from.</h1>
   <p class="lead">The piece plays three public p(doom) estimates as games of chance. Here are the real interviews, statements, talks and resources behind them, so you can trace each probability back to who said it, where, and what they actually meant. The estimates are differently defined and not comparable.</p>
 
@@ -90,6 +99,7 @@ body{padding-top:var(--fa-nav-h)!important}
     <div class="frow" id="typebar" role="tablist" aria-label="Filter by type"></div>
   </div>
   <div class="grid" id="grid"></div>
+  <a href="/theodds" class="back">← Back to The Odds</a>
 </div>
 
 <script>
@@ -100,7 +110,7 @@ const R=[
  relation:'The die plays Amodei’s 25%: three doom faces in twelve.',
  url:'https://www.axios.com/2025/09/17/anthropic-dario-amodei-p-doom-25-percent',
  thumbnail:'/odds-of-surviving-ai/research/amodei.jpg', credit:'Wikipedia'},
-{type:'news',title:'Elon Musk: “only a 20% chance of annihilation” with AI',source:'Yahoo Finance',year:'2024',
+{type:'news',title:'Elon Musk: “only a 20% chance of annihilation” with AI',source:'Yahoo Finance',year:'2025',
  summary:'On the Joe Rogan podcast Musk pegged the odds of a good AI outcome at ~80%, leaving roughly a 20% chance of annihilation, a figure he has floated in the 10 to 20% range before.',
  relation:'The wheel plays Musk’s split: a blue 80% good outcome against a red annihilation wedge.',
  url:'https://finance.yahoo.com/news/elon-musk-says-theres-only-001804190.html',

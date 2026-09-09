@@ -124,7 +124,7 @@ export const ATLAS_PROJECTS: AtlasProject[] = [
   {
     "id": "signal-reactor",
     "title": "Signal Reactor",
-    "tagline": "An organizational foresight instrument: name your organization, get an honest eight-slide briefing on what quantum and advanced AI actually mean for it, deflating the hype, redirecting to the real signal. AI-generated and labeled as such; built to structure a stakeholder conversation, not to make the decision.",
+    "tagline": "An organisational foresight instrument. Name your organisation and get an eight-slide briefing on what quantum and advanced AI actually mean for it, deflating the hype, redirecting to the real signal.",
     "field": "AI & risk",
     "path": "/signal-reactor",
     "cards": [
@@ -152,7 +152,7 @@ export const ATLAS_PROJECTS: AtlasProject[] = [
   {
     "id": "quantum-spark",
     "title": "Quantum Spark",
-    "tagline": "Signal Reactor's energized companion: type your industry and get five bold, grounded glimpses of how quantum computing and next-wave AI will transform it, the kind of insight that makes a room lean forward. Grounded hype with an honest label: provocations to spark conversation, not forecasts.",
+    "tagline": "Signal Reactor's energised companion. Type your industry, get five glimpses of how quantum and next-wave AI could change it. Speculative, not predictive.",
     "field": "AI & risk",
     "path": "/quantum-spark",
     "cards": [
@@ -362,7 +362,7 @@ export const ATLAS_PROJECTS: AtlasProject[] = [
   {
     "id": "swipe-the-future",
     "title": "Swipe the Future",
-    "tagline": "A calibration game with one question: has this already happened, or not yet? Forty sourced claims, half of them older than you would guess. Swipe, then see which futures everyone buys early and which ones arrived while nobody was looking.",
+    "tagline": "A calibration game with one question: has this already happened, or not yet? Forty sourced claims, half of them older than you might guess. Swipe, see where you land, and see what is commonly guessed wrong.",
     "field": "Calibration",
     "path": "/swipe-the-future",
     "cards": [

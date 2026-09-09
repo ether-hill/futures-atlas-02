@@ -270,7 +270,10 @@ function PostCardFeed({ post, showVisibility }: { post: Post; showVisibility: bo
       {yt ? (
         <YouTubeCard id={yt} title={post.title} />
       ) : hasImage(post) ? (
-        <Link href={`/feed/${post.slug}`} className="group block">
+        /* Image-only anchor: the picture is decorative and the title sits in a
+           sibling, so there is nothing for the name to be computed from. The
+           post's title says where the link goes. */
+        <Link href={`/feed/${post.slug}`} className="group block" aria-label={post.title}>
           <div className="relative aspect-video overflow-hidden border-b border-ink/[0.12]">
             <PostImage
               post={post}

@@ -68,9 +68,9 @@ export default async function Home() {
               Mapping foresight
             </h1>
             <p className="mt-7 max-w-[620px] text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-paper/70">
-              Building frameworks for foresight. Speculative-design projects,
-              open-source tools, apps and prototypes exploring compute: quantum
-              systems, AI, and the power structures driving them.
+              Speculative-design projects, open-source tools, apps and
+              prototypes exploring compute: quantum systems, AI, and the power
+              structures driving them.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
               <Link
@@ -93,7 +93,7 @@ export default async function Home() {
             </h2>
             <p className="mb-[clamp(30px,5vw,56px)] mt-6 max-w-[620px] text-[clamp(13px,1.4vw,16px)] leading-[1.7] text-ink/70">
               Tools, games and live simulations, mostly about compute and who
-              ends up owning it. Every one of them runs. Open one and try it.
+              ends up owning it.
             </p>
           </Reveal>
 
@@ -154,7 +154,7 @@ export default async function Home() {
                 })}
               </div>
               <span className="mt-[clamp(28px,4vw,44px)] inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper/80 underline-offset-4 transition-colors group-hover:text-paper group-hover:underline">
-                The stack, the workflow, the lab <span className="text-[14px]">→</span>
+                The full stack <span className="text-[14px]">→</span>
               </span>
             </Link>
           </Reveal>

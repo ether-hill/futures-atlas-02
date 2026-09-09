@@ -20,9 +20,10 @@ export type SparkResponse =
   | { ok: true; result: SparkResult; cached?: boolean }
   | { ok: false; code: string; message: string };
 
-/** The one restrained honesty line (brief §9, never inflated). */
+/** The one restrained honesty line (brief §9, never inflated). It has to say
+ *  plainly that the output is AI-generated, the way Signal Reactor's does. */
 export const HONESTY_LINE =
-  "Forward-looking, inspirational scenarios grounded in real quantum and AI capabilities. They are provocations meant to spark imagination and conversation. Please treat them as neither forecasts nor investment advice.";
+  "These five sparks are AI-generated and unverified. Treat them as speculation, not as forecasts and not as investment advice.";
 
 /** The leading grid: 20 curated industries; "Other…" reveals free text. */
 export const INDUSTRY_OPTIONS = [
@@ -38,7 +39,7 @@ export const INDUSTRY_OPTIONS = [
   "Telecommunications",
   "Pharma & Biotech",
   "Automotive",
-  "Aerospace & Defense",
+  "Aerospace & Defence",
   "Construction",
   "Education",
   "Legal services",

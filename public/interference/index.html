@@ -5,14 +5,20 @@
 <base href="/interference/">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Quantum Interference Visuals. Futures Atlas</title>
-<meta name="description" content="Ten live wave fields, from two drips in a sink to the moment a fringe pattern stops existing. Each one loops seamlessly, re-colours to any palette, and can be saved as a still or a clip.">
+<meta name="description" content="Some of quantum mechanics resists visualising. Interference doesn't: live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Futures Atlas">
 <meta property="og:title" content="Quantum Interference Visuals">
-<meta property="og:description" content="Ten live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
-<meta property="og:image" content="/projects/interference.jpg">
+<meta property="og:description" content="Some of quantum mechanics resists visualising. Interference doesn't: live wave fields, from two drips in a sink to the moment a fringe pattern stops existing.">
+<!-- Absolute, on the production host. A scraper reads this markup away from the
+     page it came from, so a root-relative path has no origin to resolve against
+     and most of them drop the image; the file was there all along and the share
+     card was still blank. The host is repeated here because this bundle is
+     hand-authored HTML with no build step and cannot import src/lib/site.ts —
+     change it there first, then here and in the other bundles. -->
+<meta property="og:image" content="https://futures-atlas.vercel.app/projects/interference.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="/projects/interference.jpg">
+<meta name="twitter:image" content="https://futures-atlas.vercel.app/projects/interference.jpg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -47,7 +53,7 @@ if (window.FA_SOLO) {
     <div class="eyebrow">Wave optics, running live</div>
     <h1>Quantum Interference Visuals</h1>
     <p class="lede">Drop two stones in a pond and the ripples cross. Where two crests meet, the water jumps higher than either stone managed alone. Where a crest meets a dip, nothing moves. That is interference, and it is why a single electron, fired at a wall with two holes in it, lands in stripes.</p>
-    <p class="lede lede--sub"><span id="count">Ten</span> of them, running live. Each one is a small program rather than a video: it works out a colour for every pixel, sixty times a second, so you can slow it down, re-colour it, drag it back and forth in time, or take a copy away. Some are quantum outright, some are a bucket of water, and each one tells you which.</p>
+    <p class="lede lede--sub"><span id="count">Twelve</span> of them, running live. Each one is a small program rather than a video: it works out a colour for every pixel, sixty times a second, so you can slow it down, re-colour it, drag it back and forth in time, or take a copy away. Some are quantum outright, some are a bucket of water, and each one tells you which.</p>
   </header>
 </div>
 

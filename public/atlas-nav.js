@@ -251,7 +251,19 @@
 
   function mount() {
     if (document.querySelector("header.fa-shell")) return; // guard against double-mount
-    document.body.insertBefore(h, document.body.firstChild);
+    // Behind the skip link when there is one, first child otherwise.
+    //
+    // The bar used to go in as body.firstChild unconditionally, which put its
+    // seven controls ahead of the skip link in the tab order and made the link
+    // pointless. The first fix moved the bar afterwards, from a script that ran
+    // on DOMContentLoaded; that raced React's hydration and produced an
+    // intermittent mismatch in Firefox. Choosing the insertion point here
+    // instead touches nothing React has already placed, so there is no race and
+    // no node to move. The bar is position: fixed, so where it sits among the
+    // body's children has no visual effect either way.
+    var skip = document.getElementById("fa-skip-link");
+    var at = skip && skip.parentNode === document.body ? skip.nextSibling : document.body.firstChild;
+    document.body.insertBefore(h, at);
     reserveBarHeight();
     // The stylesheet is injected, so on a cold load the bar can measure 0 here
     // and the page's own padding can still be the pre-CSS value. Re-check once

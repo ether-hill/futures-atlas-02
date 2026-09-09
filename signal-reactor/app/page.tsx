@@ -132,10 +132,10 @@ export default function Page() {
         <Reveal className="sr-hero__inner">
           <div className="hero-grid">
             <div>
-              <p className="eyebrow tick">Organizational foresight · quantum + advanced AI</p>
+              <p className="eyebrow tick">Organisational foresight · quantum + advanced AI</p>
               <h1>Signal Reactor</h1>
               <p className="sr-hero__lede">
-                A public foresight instrument. Name your organization and it builds an honest,
+                A public foresight instrument. Name your organisation and it builds an honest,
                 presentable eight-slide briefing on what quantum computing and advanced AI actually
                 mean for you, with the hype stripped out and the real signal followed through. You
                 can run a stakeholder discussion straight from the deck and export it as PPTX or PDF.

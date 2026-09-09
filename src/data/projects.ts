@@ -46,8 +46,7 @@ export const STAGE_LABEL: Record<ProjectStage, string> = {
  * Two axes filter the listing and they answer different questions. This one is
  * "what will I be doing here" — reading, playing, looking, using. `topics` is
  * "what is it about", on the Atlas's shared vocabulary (data/topics.ts).
- * `field` is neither: it is the caption line on the card, kept because
- * "Waves & optics" reads better under a title than "Quantum" does.
+ * `field` is neither, and is no longer public: see its declaration below.
  */
 export type ProjectKind = "visuals" | "game" | "tool" | "story";
 
@@ -67,7 +66,21 @@ export interface Project {
   tagline: string;
   year: string;
   date: string; // full date YYYY-MM-DD (used for ordering + display)
-  field: string; // caption line on the card, e.g. "Rural futures". Not a filter.
+  /**
+   * INTERNAL ONLY. Nothing a visitor sees reads this any more.
+   *
+   * It was the caption line on the card, and it had grown to 22 values across
+   * 32 projects with 16 used exactly once: a caption that said something
+   * different on every card and nothing across the set, which is the same
+   * failure data/topics.ts was written to fix, left unfixed on this axis. It
+   * was wrong on the live ones too, "AI & risk" captioning both briefing
+   * tools. ProjectCard captions with `kind` now, four typed values.
+   *
+   * It survives only because the staging-only design pages (/home-lab/v4,
+   * /mocks) group by it. Do not put it back on anything public, and do not
+   * invent a 23rd value for a new project.
+   */
+  field: string;
   kind: ProjectKind; // what it is: one of four, a filter row
   /**
    * What it is about, on the shared vocabulary. One or two, occasionally three.
@@ -237,7 +250,7 @@ export const projects: Project[] = [
     id: "interference",
     title: "Quantum Interference Visuals",
     tagline:
-      "Quantum mechanics is hard to picture, so here is the part you can look at. Ten live wave fields, tunable, recolourable, and yours to embed.",
+      "Some of quantum mechanics resists visualising. Interference doesn’t. A set of live wave fields, tunable and recolourable, ready to embed.",
     year: "2026",
     date: "2026-08-31",
     field: "Waves & optics",
@@ -300,7 +313,7 @@ export const projects: Project[] = [
     id: "signal-reactor",
     title: "Signal Reactor",
     tagline:
-      "Name your organisation and get an eight-slide briefing on what quantum and advanced AI actually mean for it. AI-written, labelled as such.",
+      "Name your organisation and get an eight-slide briefing on what quantum and advanced AI actually mean for it.",
     year: "2026",
     date: "2026-07-02",
     field: "AI & risk",
@@ -315,7 +328,7 @@ export const projects: Project[] = [
     id: "quantum-spark",
     title: "Quantum Spark",
     tagline:
-      "Type your industry, get five bold glimpses of how quantum and next-wave AI could change it. Provocations to open a room, labelled as such.",
+      "Type your industry, get five glimpses of how quantum and next-wave AI could change it. Speculative, not predictive.",
     year: "2026",
     date: "2026-07-03",
     field: "AI & risk",
@@ -405,22 +418,30 @@ export const projects: Project[] = [
     id: "generatives",
     title: "Generatives",
     tagline:
-      "A lab of animated treatments for the Atlas's visual language. Tune one, size it to any banner, and paste the embed wherever you need it.",
+      "A lab of animated treatments as a part of the Atlas's visual language. Tune one, size it to any banner, and paste the embed wherever you need it.",
     year: "2026",
     date: "2026-06-19",
     field: "Generative visuals",
     topics: [],
     kind: "visuals",
-    status: "in-progress",
+    /*
+     * Was "in-progress", which made the card read "Forthcoming" while the card
+     * still linked through (status only sets the label, ProjectCard wraps any
+     * entry with a `path`). So a working tool, listed publicly and linked from
+     * the footer, told visitors it did not exist yet, under a tagline telling
+     * them to paste the embed. It ships and it works, so it is live.
+     */
+    status: "live",
     visibility: "live",
     path: "/generatives", // self-contained Vite static bundle (dashboard + embed player)
     image: "/projects/generatives-4.jpg",
+    cta: "Open the lab",
   },
   {
     id: "swipe-the-future",
     title: "Swipe the Future",
     tagline:
-      "Has this already happened, or not yet? Forty sourced claims, half of them older than you would guess. Swipe, then see where the room landed.",
+      "Has this already happened, or not yet? Forty sourced claims, half of them older than you might guess. Swipe, see where you land, and see what is commonly guessed wrong.",
     year: "2026",
     date: "2026-06-23",
     field: "Calibration",

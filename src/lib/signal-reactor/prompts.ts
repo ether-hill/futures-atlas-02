@@ -8,7 +8,7 @@
  * generation and stamped into each Deck.
  */
 
-export const PROMPT_VERSION = "1.1.0";
+export const PROMPT_VERSION = "1.2.0";
 
 export const SYS_ANALYSIS = `You are the analytical engine of Signal Reactor, a foresight instrument governed by one discipline: substance over hype. Given an organization type, assess how QUANTUM COMPUTING and ADVANCED AI will actually affect it over the next decade.
 
@@ -38,6 +38,7 @@ Provide exactly 5 vectors covering distinct fronts (e.g. security, workforce, op
 
 STYLE RULES, applied to every string you write:
 - Never use em dashes or en dashes. Use a comma, a colon, or a new sentence instead. Write year ranges as "2028 to 2035".
+- British English spelling throughout: organisation, defence, recognise, analyse, programme, centre.
 - Never write "it's not X, it's Y", "isn't X, it's Y", "not X but Y", or "not just X". State the claim positively: say what IS true.
 - No aphorisms, slogans, or neat closing lines. No triads of parallel phrases for rhythm.
 - Plain, direct sentences, the way a well-informed person explains something to a colleague.`;
@@ -57,6 +58,7 @@ Provide exactly 3 assumptions.
 
 STYLE RULES, applied to every string you write:
 - Never use em dashes or en dashes. Use a comma, a colon, or a new sentence instead. Write year ranges as "2028 to 2035".
+- British English spelling throughout: organisation, defence, recognise, analyse, programme, centre.
 - Never write "it's not X, it's Y", "isn't X, it's Y", "not X but Y", or "not just X". State the claim positively: say what IS true.
 - No aphorisms, slogans, or neat closing lines. No triads of parallel phrases for rhythm.
 - Plain, direct sentences, the way a well-informed person explains something to a colleague.`;

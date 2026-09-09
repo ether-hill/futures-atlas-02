@@ -20,7 +20,7 @@ export const SAMPLE_DECK: Deck = {
     },
     {
       type: "signal",
-      hype: "Quantum computers will break your encryption and revolutionize member banking overnight.",
+      hype: "Quantum computers will break your encryption and revolutionise member banking overnight.",
       substance:
         "Quantum's only concrete near-term issue for you is cryptographic migration. The actual disruption is advanced AI in fraud, underwriting, and service, where nimble fintechs already outpace incumbents.",
       verdict: "narrow",
@@ -30,7 +30,7 @@ export const SAMPLE_DECK: Deck = {
     {
       type: "horizons",
       near: "Post-quantum migration becomes a board-level compliance item; AI fraud tools and chat-based member service move from pilot to expected baseline.",
-      mid: "AI-native lenders compress underwriting to near-instant; regulators formalize PQC mandates; differentiation shifts to trust and local relationship.",
+      mid: "AI-native lenders compress underwriting to near-instant; regulators formalise PQC mandates; differentiation shifts to trust and local relationship.",
       far: "Cryptographically-relevant quantum machines plausibly arrive; institutions that didn't migrate early face exposure on long-lived data.",
     },
     {
@@ -38,7 +38,7 @@ export const SAMPLE_DECK: Deck = {
       vectors: [
         { area: "Cryptographic Risk", note: "'Harvest now, decrypt later' puts today's long-lived member data at future risk.", severity: "medium" },
         { area: "Underwriting", note: "AI-native fintechs approve in seconds; manual review becomes a competitive liability.", severity: "high" },
-        { area: "Fraud & AML", note: "AI both powers new synthetic-identity attacks and the best defenses against them.", severity: "high" },
+        { area: "Fraud & AML", note: "AI both powers new synthetic-identity attacks and the best defences against them.", severity: "high" },
         { area: "Workforce", note: "Routine member-service and back-office roles shift toward oversight of AI systems.", severity: "medium" },
         { area: "Regulation", note: "Post-quantum crypto standards move from guidance toward mandate on an uncertain clock.", severity: "low" },
       ],

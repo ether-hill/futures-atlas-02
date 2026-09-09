@@ -18,7 +18,10 @@
  *    to the sign-in form, so the page's markup is never sent. On PRODUCTION
  *    they are not gated but absent, like the staging-only paths above: a
  *    sign-in form sitting on a draft project's URL still announces the project
- *    and its name.
+ *    and its name. A draft project's ENDPOINTS get the same treatment, via
+ *    DRAFT_PROJECT_APIS below — the page path never covered them, so /api/…
+ *    routes belonging to unreleased work were public while their pages were
+ *    not.
  *
  * There used to be a third, HTTP Basic against STYLE_GUIDE_PASSWORD, guarding
  * the panel. It meant a second password and a browser dialog that looked like
@@ -102,6 +105,51 @@ export const config = {
  */
 const PREVIEW_PUBLIC = ["/interference/solo"];
 
+/**
+ * A draft project's ENDPOINTS, which its page path does not cover.
+ *
+ * `isDraftPath` closes a draft project's pages, and until this map existed that
+ * was the whole gate. But a project's API does not live under its page path:
+ * Hypothetica Magnifica's read-aloud is POST /api/magnifica/tts while its pages
+ * are at /magnifica, and Manipulate the data's interpreter is
+ * POST /api/manipulate/interpret while its pages are at /manipulate-the-data.
+ * So on production the page was absent and the endpoint behind it was not —
+ * public, unauthenticated, and in those two cases spending on an ElevenLabs or
+ * a model key on behalf of anyone who found the URL.
+ *
+ * Each entry maps an /api/<namespace> prefix to the project path that owns it,
+ * and the namespace is closed exactly when `isDraftPath` says that project is a
+ * draft. Publishing a project therefore opens its API in the same edit that
+ * opens its pages: one word in src/data/projects.ts, no second list to keep in
+ * step. The namespace is spelled out rather than derived from the slug because
+ * the two rarely match (/api/ahq serves /actually-hard-questions, /api/sl
+ * serves /literal-frequency).
+ *
+ * What is deliberately NOT here, and must stay reachable on production:
+ * /api/signal-reactor, /api/quantum-spark, /api/swipe and /api/theodds belong to
+ * live projects, and /api/admin, /api/tokens and /api/theme.css are the site's
+ * own machinery. /api/feed and /api/mocks are absent on production already, by
+ * name, in STAGING_ONLY above.
+ */
+const DRAFT_PROJECT_APIS: Record<string, string> = {
+  "/api/ahq": "/actually-hard-questions",
+  "/api/dramaturge": "/dramaturge",
+  "/api/magnifica": "/magnifica",
+  "/api/manipulate": "/manipulate-the-data",
+  "/api/sl": "/literal-frequency",
+  "/api/social-composer": "/social-composer",
+};
+
+/** True if `pathname` is an endpoint belonging to a project that is a draft. */
+function isDraftProjectApi(pathname: string): boolean {
+  for (const prefix in DRAFT_PROJECT_APIS) {
+    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
+      return isDraftPath(DRAFT_PROJECT_APIS[prefix]!);
+    }
+  }
+  return false;
+}
+
 
 const LOGIN_PATH = "/admin/login";
 
@@ -130,6 +178,7 @@ export async function middleware(req: NextRequest) {
     process.env.VERCEL_ENV === "production" &&
     (STAGING_ONLY.some((base) => pathname === base || pathname.startsWith(`${base}/`)) ||
       isDraftPath(pathname) ||
+      isDraftProjectApi(pathname) ||
       isDraftPostPath(pathname))
   ) {
     return NextResponse.rewrite(new URL("/_internal-not-here", req.url));
@@ -159,7 +208,13 @@ export async function middleware(req: NextRequest) {
   // a page that already required the editor cookie, so the same gate covers it.
   const isTokenWrite = pathname === "/api/tokens" && req.method === "POST";
 
-  if (isInternal || isTokenWrite || isDraftPath(pathname) || isDraftPostPath(pathname)) {
+  if (
+    isInternal ||
+    isTokenWrite ||
+    isDraftPath(pathname) ||
+    isDraftProjectApi(pathname) ||
+    isDraftPostPath(pathname)
+  ) {
     return sessionGate(req);
   }
 

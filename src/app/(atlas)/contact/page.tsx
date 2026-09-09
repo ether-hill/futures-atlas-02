@@ -59,9 +59,8 @@ export default async function ContactPage({
               </Reveal>
               <Reveal delay={200}>
                 <p className="mt-7 max-w-[42ch] text-[14px] leading-[1.75] text-ink-70">
-                  Whether you&rsquo;d like to collaborate, commission work, or
-                  simply share a thought or question, we&rsquo;d be glad to hear
-                  from you.
+                  For collaborations, commissions, or a question about
+                  something on the site.
                 </p>
               </Reveal>
             </header>

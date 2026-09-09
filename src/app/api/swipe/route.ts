@@ -17,6 +17,7 @@ import {
   trackAnswerV1, trackAnswerV2, trackRound, readStats,
   VERDICTS_V1, VERDICTS_V2, type VerdictV1, type VerdictV2,
 } from "@/lib/swipe-stats";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,6 +34,30 @@ export async function POST(req: Request) {
   try { body = await req.json(); } catch { return NextResponse.json({ ok: false }, { status: 400 }); }
 
   const version = body.v === 2 ? 2 : 1;
+
+  /*
+   * A vote and a round close are both Redis writes, so both are counted. This
+   * one is not about spend, it is about ballot stuffing: the tallies on
+   * /swipe-the-future/stats are the only real numbers on the site, and a script
+   * posting the same verdict in a loop would turn them into a made-up figure.
+   *
+   * 200 an hour is roughly ten full rounds, far more than anyone plays and far
+   * less than a script manages in a minute. The daily 20,000 is a runaway
+   * catch, well above any traffic this deck has ever seen, because the counter
+   * that stops a bad actor must not also stop a real audience mid-session.
+   */
+  const gate = await rateLimit(req, "swipe", {
+    perIp: 200,
+    perIpWindowSec: 3600,
+    budget: 20000,
+  });
+  if (!gate.ok) {
+    return NextResponse.json(
+      { ok: false, code: "rate_limited" },
+      { status: 429, headers: { "retry-after": String(gate.retryAfter) } },
+    );
+  }
+
   if (body.round) { await trackRound(version); return NextResponse.json({ ok: true }); }
 
   const cardId = clean(body.cardId);

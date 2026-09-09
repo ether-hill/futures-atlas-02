@@ -228,7 +228,6 @@ export default async function DevelopersPage() {
                 ["repositories", "Repositories"],
                 ["projects", "Project source"],
                 ["run", "Run it yourself"],
-                ["open", "Open & closed"],
                 ["licence", "Licence"],
               ].map(([id, label]) => (
                 <a
@@ -370,11 +369,6 @@ export default async function DevelopersPage() {
             </Reveal>
           ))}
         </div>
-        <Reveal>
-          <p className="mt-6 max-w-[70ch] text-[13px] leading-[1.85] text-ink-70">
-            {LICENCE.closing}
-          </p>
-        </Reveal>
       </Section>
 
       {/* ── Contact ─────────────────────────────────────────────────────── */}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { liveProjects, formatProjectDate, STAGE_LABEL, type Project } from "@/data/projects";
+import { liveProjects, formatProjectDate, KIND_LABEL, STAGE_LABEL, type Project } from "@/data/projects";
 
 // Fully token-driven (futures-atlas-core): every size/space/colour/font references
 // a semantic token, so the style-guide panel drives every dimension. Structural
@@ -72,7 +72,14 @@ export function ProjectCard({
       {/* body */}
       <div className="flex flex-1 flex-col" style={{ padding: "var(--space-card)" }}>
         <div className="flex items-center justify-between" style={{ gap: "var(--space-3)", marginBottom: "var(--space-4)" }}>
-          <span className="fa-card__meta">{project.field}</span>
+          {/* The caption is `kind`, not `field`. `field` was free text and had
+              grown to 22 values across 32 projects, 16 of them used once, so it
+              said something different on every card and nothing across the set.
+              It was also wrong on the live ones: "AI & risk" captioned both
+              briefing tools, neither of which is about risk. `kind` is four
+              typed values and answers the question someone scanning an index
+              actually has, which is what they will be doing here. */}
+          <span className="fa-card__meta">{KIND_LABEL[project.kind]}</span>
           <span
             style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-label)", textTransform: "uppercase", letterSpacing: "var(--track-label)", color: "var(--muted)" }}
           >

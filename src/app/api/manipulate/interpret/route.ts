@@ -21,6 +21,7 @@ import {
   systemPrompt,
   type ModelIntervention,
 } from "@/lib/manipulate/contract";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -74,6 +75,31 @@ export async function POST(req: Request) {
       ? body.text.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 240)
       : "";
   if (text.length < 4) return fail(400, "too_short", "Say what you would change, in a few words.");
+
+  /*
+   * The in-memory counter above stays the per-caller cap; what it cannot do is
+   * hold a number across serverless instances, and no per-caller limit answers
+   * the other question anyway, which is what EVERYONE together may spend in a
+   * day. So this adds only that: a daily ceiling on interpretations, shared
+   * across instances in Redis. `perIp` is set past anything the hourly cap
+   * above can let through, so it never fires here and the caller keeps the one
+   * message already written for them.
+   */
+  const gate = await rateLimit(req, "manipulate-interpret", {
+    perIp: 1_000_000,
+    perIpWindowSec: 3600,
+    budget: 300,
+  });
+  if (!gate.ok) {
+    console.error("[manipulate] daily budget spent");
+    const res = fail(
+      429,
+      "rate_limited",
+      "Free text has used up today's allowance. It resets tomorrow, and the authored interventions all still work.",
+    );
+    res.headers.set("retry-after", String(gate.retryAfter));
+    return res;
+  }
 
   /* One corrective retry, because the failure mode is nearly always a shape
      slip rather than a bad idea: a lever spelled differently, a rationale one

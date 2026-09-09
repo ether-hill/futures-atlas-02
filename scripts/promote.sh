@@ -56,4 +56,4 @@ if ! git push origin HEAD:main; then
   echo "    git pull --rebase origin main && ./scripts/safe-deploy.sh && ./scripts/promote.sh" >&2
   exit 1
 fi
-echo "✓ Promoted. Production building → https://futures-atlas-02.vercel.app"
+echo "✓ Promoted. Production building → https://futures-atlas.vercel.app"

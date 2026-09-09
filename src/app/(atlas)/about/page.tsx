@@ -10,7 +10,7 @@ import { HERO, OPEN, STACK_INTRO, WORK } from "@/content/about";
 export const metadata: Metadata = {
   title: "About. Futures Atlas",
   description:
-    "Futures Atlas is a showcase and prototype lab: frameworks and modular components for foresight around quantum computing, quantum applications, and emerging AI. It's meant to be used.",
+    "Speculative-design projects, open-source tools, apps and prototypes exploring compute: quantum systems, AI, and the power structures driving them.",
 };
 
 export default function AboutPage() {
@@ -45,9 +45,6 @@ export default function AboutPage() {
               </h2>
               <p className="mt-6 text-[13.5px] leading-[1.85] text-ink-70">{WORK.body}</p>
               <p className="mt-6 text-[12.5px] leading-[1.75] text-ink/50">{WORK.note}</p>
-              <p className="mt-6 font-mono text-[12.5px] uppercase tracking-[0.08em] text-accent-deep">
-                {WORK.closing}
-              </p>
             </div>
           </Reveal>
         </Container>

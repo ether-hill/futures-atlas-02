@@ -98,20 +98,27 @@ const now = new Date();
 const link = (href, label, cls = "fa-foot__link") =>
   `<a class="${cls}" href="${esc(href)}">${esc(label)}</a>`;
 
+/*
+ * Every column's link list is a <nav>, and a landmark with no name is a
+ * landmark a screen reader cannot tell apart from the three beside it — the
+ * rotor just lists four entries called "navigation". Each one carries the
+ * label its visible heading already gives it, so navigating the footer by
+ * landmark says which column you have landed in.
+ */
 const html = `<div class="fa-foot__inner">
 <div class="fa-foot__grid fa-foot__grid--${3 + (FEED_HERE ? 1 : 0) + (INTERNAL_ONLY ? 1 : 0)}">
 <div class="fa-foot__col">
 <a class="fa-foot__home" href="/" aria-label="Futures Atlas home"><span class="fa-foot__mark" aria-hidden="true"><img src="/fa.svg" alt="" width="22" height="22"></span><span class="fa-foot__word">Futures Atlas</span></a>
-<p class="fa-foot__body">Building frameworks for foresight. Speculative-design projects, open-source tools, apps and prototypes exploring compute: quantum systems, AI, and the power structures driving them.</p>
-<p class="fa-foot__body"><a class="fa-foot__a" href="https://github.com/ether-hill" target="_blank" rel="noopener">GitHub &#8599;</a> &middot; <a class="fa-foot__a" href="/about">License</a> &middot; <a class="fa-foot__a" href="/contact">Contact</a></p>
+<p class="fa-foot__body">Speculative-design projects, open-source tools, apps and prototypes exploring compute: quantum systems, AI, and the power structures driving them.</p>
+<p class="fa-foot__body"><a class="fa-foot__a" href="https://github.com/ether-hill" target="_blank" rel="noopener">GitHub &#8599;</a> &middot; <a class="fa-foot__a" href="/developers">Licence</a> &middot; <a class="fa-foot__a" href="/contact">Contact</a></p>
 </div>
 <div class="fa-foot__col">
 <p class="fa-foot__h">Sections</p>
-<nav class="fa-foot__list">${SECTIONS.map(([h, l]) => link(h, l)).join("")}</nav>
+<nav class="fa-foot__list" aria-label="Sections">${SECTIONS.map(([h, l]) => link(h, l)).join("")}</nav>
 </div>
 <div class="fa-foot__col">
 <p class="fa-foot__h">Projects</p>
-<nav class="fa-foot__list">${projects
+<nav class="fa-foot__list" aria-label="Projects">${projects
   .map((p) =>
     p.path
       ? link(p.path, p.title)
@@ -122,7 +129,7 @@ const html = `<div class="fa-foot__inner">
 </div>
 ${FEED_HERE ? `<div class="fa-foot__col">
 <p class="fa-foot__h">Recent from the feed</p>
-<nav class="fa-foot__list">${recent
+<nav class="fa-foot__list" aria-label="Recent from the feed">${recent
   .map(
     (p) =>
       `<a class="fa-foot__post" href="/feed/${esc(p.slug)}"><span class="fa-foot__date">${esc(
@@ -134,7 +141,7 @@ ${FEED_HERE ? `<div class="fa-foot__col">
 </div>` : ""}${INTERNAL_ONLY ? `
 <div class="fa-foot__col fa-foot__internal">
 <p class="fa-foot__h">Internal &middot; staging only</p>
-<nav class="fa-foot__list">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>
+<nav class="fa-foot__list" aria-label="Internal, staging only">${INTERNAL.map(([h, l]) => link(h, l)).join("")}</nav>
 <p class="fa-foot__meta">Not built on production.</p>
 <!-- Sign out. It has to be a POST (it clears an httpOnly cookie) so it is a
      one-button form rather than a link, and it works with no JavaScript. This
@@ -146,12 +153,12 @@ ${FEED_HERE ? `<div class="fa-foot__col">
 <div class="fa-foot__split">
 <div class="fa-foot__col">
 <p class="fa-foot__h">Use the work</p>
-<p class="fa-foot__body">Open where it counts. Fork a project, adapt it, wire it into your own work. Attribution appreciated, permission not required. Research is free to cite and every source is linked. Project code is MIT, the research is CC BY 4.0.</p>
+<p class="fa-foot__body">Fork a project, adapt it, wire it into your own work. Project code is MIT and the research is CC BY 4.0: credit the source, no permission needed. Every source behind the research is linked.</p>
 <p class="fa-foot__body"><a class="fa-foot__a" href="/developers">How it&rsquo;s built, and where every project&rsquo;s source lives &rarr;</a></p>
 </div>
 <div class="fa-foot__col">
 <p class="fa-foot__h">Get in touch</p>
-<p class="fa-foot__body">Used something from the Atlas in a workshop, a project or a classroom? We&rsquo;d like to hear how it went. Collaboration inquiries welcome.</p>
+<p class="fa-foot__body">Collaboration enquiries, commissions, and questions.</p>
 <p class="fa-foot__body"><a class="fa-foot__a" href="/contact">Contact form &rarr;</a></p>
 </div>
 </div>

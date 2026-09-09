@@ -10,7 +10,7 @@
 #     does NOT touch the public site). Preview URL:
 #        https://futures-atlas-staging.vercel.app
 #     (the auto-minted git-staging-frond-studio alias redirects there)
-#   • on `main`    → deploys PRODUCTION (https://futures-atlas-02.vercel.app)
+#   • on `main`    → deploys PRODUCTION (https://futures-atlas.vercel.app)
 #
 # Either way it fetches origin and REFUSES if your branch is behind origin (you'd
 # overwrite a teammate) or if you have uncommitted changes, then pushes and lets
@@ -29,7 +29,7 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 case "$BRANCH" in
   mike|laura) WHERE="YOUR preview → https://futures-atlas-02-git-$BRANCH-frond-studio.vercel.app" ;;
   staging) WHERE="STAGING integration preview → https://futures-atlas-staging.vercel.app" ;;
-  main)    WHERE="PRODUCTION → https://futures-atlas-02.vercel.app" ;;
+  main)    WHERE="PRODUCTION → https://futures-atlas.vercel.app" ;;
   *)
     echo "✘ You are on '$BRANCH', which has no sanctioned target." >&2
     echo "  Day-to-day work goes on your own branch:  git checkout mike   (or laura)" >&2

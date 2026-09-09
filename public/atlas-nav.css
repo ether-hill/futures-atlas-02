@@ -171,13 +171,26 @@
 .fa-shell__item:hover { background: rgba(20, 21, 24, 0.06); }
 .fa-shell__item.is-current { color: rgba(20, 21, 24, 0.45); cursor: default; }
 /* The brand blue, written out because this stylesheet is self-contained by
-   design — the vanilla project bundles load it WITHOUT the core tokens. One
-   value, both themes: this file used to accent light mode in a burnt orange
-   (#b4541e) and dark mode in a pale blue (#7fb2e6), so the "accent" was not
-   even the same hue from one setting to the next. Matches
-   oklch(0.565 0.13 245) in futures-atlas-core/src/tokens.css; change one,
-   change the other. */
-.fa-shell__item--accent { color: #1e7cbd; }
+   design — the vanilla project bundles load it WITHOUT the core tokens. This
+   file used to accent light mode in a burnt orange (#b4541e) and dark mode in a
+   pale blue (#7fb2e6), so the "accent" was not even the same hue from one
+   setting to the next; that is fixed and stays fixed.
+
+   Every use of it in this file is small TEXT — a switcher item, an active tab,
+   an active sheet link, the share chips — and the brand blue #1e7cbd (matching
+   oklch(0.565 0.13 245) in core) is 3.91 on bone and 3.95 on ink, under the 4.5
+   that small type owes. One blue cannot clear 4.5 on both grounds at any
+   chroma, so the TEXT blue moves with the theme while the fill blue does not.
+   Same hue, same chroma, lightness only:
+
+     light  #0067a6 = oklch(0.495 0.13 245) — 5.25 on bone, 6.02 on the menu's white
+     dark   #3b93d5 = oklch(0.64  0.13 245) — 5.34 on ink, 5.85 on the menu's #0c0d10
+
+   These mirror --fa-accent-deep / --fa-accent-deep-d in
+   futures-atlas-core/src/tokens.css; change one, change the other. */
+:root { --fa-nav-accent: #0067a6; }
+html.dark { --fa-nav-accent: #3b93d5; }
+.fa-shell__item--accent { color: var(--fa-nav-accent); }
 /* Editor-only marker in the switcher (drafts are listed for signed-in editors). */
 .fa-shell__draft { margin-left: 6px; border-radius: 3px; background: rgba(20, 21, 24, 0.1); padding: 1px 5px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: 1px; }
 .fa-shell__menusep { height: 1px; margin: 6px 4px; background: rgba(20, 21, 24, 0.1); }
@@ -286,11 +299,27 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 .fa-foot__nav { display: flex; flex-wrap: wrap; gap: 22px; }
 .fa-foot__link { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.72); text-decoration: none; }
 .fa-foot__link:hover { color: #fff; }
-.fa-foot__tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.55); }
+/*
+  THE FLOOR ON THIS BAND IS 0.72, and every quiet tier below runs into it.
+
+  The band is fixed (oklch 0.42 0.13 245, #00508e) and the type on it is one
+  colour, #f3f1ec, so opacity is the only lever there is — and at full strength
+  that pair is 7.33. Solve backwards and 4.5 lands at alpha 0.711. Everything
+  under that was failing: the column headings at 0.55 (3.34), the post dates at
+  0.5 (3.02), the meta lines at 0.6 (3.67) and 0.45 (2.69).
+
+  So the quiet end is lifted to 0.72 / 0.74 / 0.76 (4.59 / 4.75 / 4.91), which
+  keeps the tiers in their old order but compresses them hard: the footer's
+  range used to run 0.45→1.0 and now runs 0.72→1.0. That is a real loss of
+  quietness and it is not recoverable by colour, because on a mid-blue ground
+  4.5 IS a light value. Anything that wants to read softer than this has to get
+  it from size or weight, not from alpha.
+*/
+.fa-foot__tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.74); /* was 0.55 → 3.34; now 4.75 */ }
 .fa-foot__grid { display: grid; grid-template-columns: 1.3fr 0.7fr 1.3fr 1fr; gap: 40px clamp(28px, 4vw, 64px); }
 @media (max-width: 900px) { .fa-foot__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .fa-foot__grid { grid-template-columns: 1fr; } }
-.fa-foot__h { margin: 0 0 14px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.55; }
+.fa-foot__h { margin: 0 0 14px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.74; /* was 0.55 → 3.34; now 4.75 */ }
 .fa-foot__body { margin: 0 0 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; line-height: 1.75; opacity: 0.78; }
 .fa-foot__body b { font-weight: 600; opacity: 1; }
 .fa-foot__list { display: flex; flex-direction: column; gap: 10px; }
@@ -310,6 +339,21 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 @media (max-width: 680px) {
   .fa-foot { padding-top: clamp(40px, 12vw, 70px); }
   .fa-foot__inner { padding: 0 16px; } /* match the page gutter at this breakpoint */
+}
+
+/* Touch targets in the footer.
+
+   The footer's link columns are set at 12.5px with a 10px gap: a 19px-tall box
+   with a 10px dead band under it. Fine for a cursor, tight for a thumb. The
+   padding below grows each link's hit area into that dead band and the equal
+   negative margin puts the box back where it was, so on a phone the whole
+   column is tappable and nothing moves by a pixel on any screen. Adjacent
+   links end up exactly contiguous rather than overlapping, so a tap still
+   lands on the link it looks like it landed on. */
+@media (pointer: coarse) {
+  .fa-foot__list .fa-foot__a,
+  .fa-foot__list > a { display: block; padding: 5px 0; margin: -5px 0; }
+  .fa-foot__nav .fa-foot__link { display: inline-block; padding: 10px 0; margin: -10px 0; }
 }
 
 /* ── Project sub-nav ────────────────────────────────────────────────────────
@@ -350,7 +394,7 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
   cursor: pointer;
 }
 .fa-subnav__link:hover { opacity: 0.9; }
-.fa-subnav__link.is-active { opacity: 1; color: #1e7cbd; }
+.fa-subnav__link.is-active { opacity: 1; color: var(--fa-nav-accent); }
 html.dark .fa-subnav { background: rgba(12, 13, 16, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
 /* On pages with a sub-nav, keep the master bar put (it never travels) so the
    slim tab row never floats with a gap above it. atlas-nav.js skips the scroll
@@ -504,7 +548,7 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
   font-weight: 500;
   opacity: 0.6;
 }
-.fa-sheet__sublink.is-active { opacity: 1; color: #1e7cbd; }
+.fa-sheet__sublink.is-active { opacity: 1; color: var(--fa-nav-accent); }
 .fa-sheet__theme {
   display: inline-flex;
   align-items: center;
@@ -596,16 +640,17 @@ html.dark .fa-share.is-open .fa-share__btn { background: rgba(255, 255, 255, 0.0
   border-radius: 9px; color: #141518; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; white-space: nowrap;
 }
 .fa-share__opt:hover { background: rgba(20, 21, 24, 0.07); }
-.fa-share__opt--accent { color: #1e7cbd; font-weight: 600; }
+.fa-share__opt--accent { color: var(--fa-nav-accent); font-weight: 600; }
 .fa-share__sep { height: 1px; margin: 5px 8px; background: rgba(20, 21, 24, 0.1); }
 html.dark .fa-share__sep { background: rgba(255, 255, 255, 0.1); }
 .fa-share__ig { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 13px 8px; }
-.fa-share__iglbl { color: #1e7cbd; font-weight: 600; font-size: 13px; margin-right: 2px; }
+.fa-share__iglbl { color: var(--fa-nav-accent); font-weight: 600; font-size: 13px; margin-right: 2px; }
 .fa-share__chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(20, 21, 24, 0.18); color: #141518; text-decoration: none; }
-.fa-share__chip:hover { border-color: #1e7cbd; color: #1e7cbd; }
-html.dark .fa-share__iglbl { color: #1e7cbd; }
+.fa-share__chip:hover { border-color: var(--fa-nav-accent); color: var(--fa-nav-accent); }
+html.dark .fa-share__iglbl { color: var(--fa-nav-accent); }
 html.dark .fa-share__chip { border-color: rgba(255, 255, 255, 0.18); color: #f3f1ec; }
-html.dark .fa-share__chip:hover { border-color: #1e7cbd; color: #1e7cbd; }
+/* the var already flips; these two only restate what :root/html.dark set */
+html.dark .fa-share__chip:hover { border-color: var(--fa-nav-accent); color: var(--fa-nav-accent); }
 html.dark .fa-share__btn { background: rgba(12, 13, 16, 0.92); color: #f3f1ec; border-color: rgba(255, 255, 255, 0.16); }
 html.dark .fa-share.is-open .fa-share__btn { background: #f3f1ec; color: #0c0d10; }
 html.dark .fa-share__panel { background: rgba(12, 13, 16, 0.96); border-color: rgba(255, 255, 255, 0.12); }
@@ -676,7 +721,7 @@ html .fa-shell.is-clear,
 /* the shared footer's extra pieces — the host used to style these with Tailwind
    utilities, but there is one footer now and one stylesheet for it, loaded by
    host and sub-app alike */
-.fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.6; }
+.fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.76; /* was 0.6 → 3.67; now 4.91. .fa-foot__a inherits this one. */ }
 .fa-foot__split { display: grid; gap: 32px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4.5vw, 56px); border-top: 1px solid rgba(243, 241, 236, 0.18); padding-top: clamp(28px, 4vw, 44px); }
 @media (min-width: 640px) { .fa-foot__split { grid-template-columns: 1fr 1fr; } }
 /* The footer's column count varies with the environment: brand, sections and
@@ -703,9 +748,9 @@ html .fa-shell.is-clear,
   align-self: start;
 }
 .fa-foot__internal .fa-foot__h { opacity: 0.75; }
-.fa-foot__internal .fa-foot__meta { opacity: 0.45; }
+.fa-foot__internal .fa-foot__meta { opacity: 0.72; } /* was 0.45 → 2.69; now 4.59 */
 .fa-foot__post { display: block; text-decoration: none; color: inherit; }
-.fa-foot__date { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.5; }
+.fa-foot__date { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.72; /* was 0.5 → 3.02; now 4.59 */ }
 .fa-foot__ptitle { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; line-height: 1.4; opacity: 0.85; }
 .fa-foot__post:hover .fa-foot__ptitle { opacity: 1; }
 .fa-foot__mark img { display: block; width: 22px; height: auto; }

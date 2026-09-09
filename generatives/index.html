@@ -6,18 +6,29 @@
     <title>Generatives · Generative Visual Lab · Futures Atlas</title>
     <meta
       name="description"
-      content="An array of animated, embeddable generative visuals: the visual language of a quantum-computing futures project."
+      content="An array of animated, embeddable generative visuals: the visual language of the Futures Atlas."
     />
-    <!-- Open Graph: go-to image + summary (used by the Share tool's transmutate) -->
+    <!-- Open Graph: go-to image + summary (used by the Share tool's transmutate)
+
+         Absolute URLs on the production host, twice over. A scraper reads this
+         markup away from the page it came from, so a root-relative path has no
+         origin to resolve against and most of them simply drop the image. And
+         the lead card was /projects/generatives.jpg, a file that does not exist:
+         the atlas's own card for this project points at generatives-4.jpg, which
+         does, so that is what a share of this page now shows.
+
+         The host is repeated here because this sub-app is a separate npm project
+         and cannot import the host's src/lib/site.ts. Change it there first,
+         then here and in the other bundles. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Futures Atlas" />
     <meta property="og:title" content="Generatives, Futures Atlas" />
-    <meta property="og:description" content="A generative-visual lab: an array of animated, embeddable treatments (flow fields, noise, interference, agent systems) for a quantum-computing futures project." />
-    <meta property="og:image" content="/projects/generatives.jpg" />
-    <meta property="og:image" content="/projects/generatives-2.jpg" />
-    <meta property="og:image" content="/projects/generatives-3.jpg" />
+    <meta property="og:description" content="A generative-visual lab: an array of animated, embeddable treatments (flow fields, noise, interference, agent systems) for the Futures Atlas." />
+    <meta property="og:image" content="https://futures-atlas.vercel.app/projects/generatives-4.jpg" />
+    <meta property="og:image" content="https://futures-atlas.vercel.app/projects/generatives-2.jpg" />
+    <meta property="og:image" content="https://futures-atlas.vercel.app/projects/generatives-3.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:image" content="/projects/generatives.jpg" />
+    <meta name="twitter:image" content="https://futures-atlas.vercel.app/projects/generatives-4.jpg" />
     <script>
       // default the global nav to dark, before first paint (no flash)
       (function () { try { if (localStorage.getItem("fa-theme") !== "light") document.documentElement.classList.add("dark"); } catch (e) {} })();
@@ -33,7 +44,7 @@
          transmutate importer real page content to pull. Hidden from users. -->
     <section hidden data-fa-seed>
       <h2>Generatives, a generative-visual lab</h2>
-      <p>Generatives is a live lab of animated, embeddable visual treatments for the visual language of a quantum-computing futures project. Flow fields, layered noise, wave interference, agent systems, slime-mould networks and reaction-diffusion all run in real time in the browser.</p>
+      <p>Generatives is a live lab of animated, embeddable visual treatments for the visual language of the Futures Atlas. Flow fields, layered noise, wave interference, agent systems, slime-mould networks and reaction-diffusion all run in real time in the browser.</p>
       <p>Every treatment is tunable: shape it with its own parameters plus the universal complexity and chaos knobs, recolour it with the background, low and high colour pickers, then reseed or randomise for endless variations.</p>
       <p>Any treatment can be lifted out as a self-contained, copy-paste embed and dropped into a banner, hero section or web page, or exported as an MP4 at any size.</p>
       <p>The gallery includes Domain Warp, Plasma Flow, Voronoi Cells, Wave Interference, Physarum (the Jones agent model), Boids, Field Dynamics, Organic Turbulence and Reaction Diffusion.</p>

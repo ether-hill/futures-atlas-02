@@ -67,7 +67,7 @@ export const ENV_NOTE =
 
 export const LICENCE = {
   intro:
-    "There are four kinds of material here and they carry four different permissions. Find the one that covers what you want.",
+    "There are three kinds of material here and they carry three different permissions. Find the one that covers what you want.",
   terms: [
     {
       label: "Project code",
@@ -85,12 +85,10 @@ export const LICENCE = {
       body: "Fonts under the SIL Open Font License, and the Wikimedia portraits in Hypothetica Magnifica under their individual CC licences. We pass those along rather than relicensing them, so check the credit before you reuse one.",
     },
   ],
-  closing:
-    "Take a project's code and take the research, and build your own thing with them.",
 };
 
 export const CONTACT = {
-  title: "Used any of it?",
+  title: "What you make with it",
   body: "If you forked something, wired a component into your own work, or used a prototype in a workshop or a classroom, we would like to hear how it went. Bug reports and pull requests are welcome on GitHub; anything longer is better as a message.",
   cta: { label: "Get in touch", href: "/contact" },
 };
