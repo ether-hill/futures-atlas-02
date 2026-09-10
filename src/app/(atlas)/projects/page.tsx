@@ -8,10 +8,17 @@ import { getListingEditor } from "@/lib/editor";
 // far as a share card, a browser tab or a search result was concerned. The
 // description names what is in the grid; it used to advertise the two filter
 // rows, which a visitor no longer sees at this length (see FILTER_FROM).
+const PROJECTS_TITLE = "Projects. Futures Atlas";
+const PROJECTS_DESC =
+  "Everything the Atlas has built in one grid: visuals, games and tools about compute, quantum computing and AI. Every one of them runs.";
+
 export const metadata: Metadata = {
-  title: "Projects. Futures Atlas",
-  description:
-    "Everything the Atlas has built in one grid: visuals, games and tools about compute, quantum computing and AI. Every one of them runs.",
+  title: PROJECTS_TITLE,
+  description: PROJECTS_DESC,
+  // Without these the page inherits the root layout's Open Graph title and
+  // description, so every hub page unfurled as the home page.
+  openGraph: { title: PROJECTS_TITLE, description: PROJECTS_DESC },
+  twitter: { title: PROJECTS_TITLE, description: PROJECTS_DESC },
 };
 
 // Full project listing: a 3-column grid. Chrome (nav + footer) comes from the

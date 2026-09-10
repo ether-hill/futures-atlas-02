@@ -27,6 +27,10 @@
     <meta property="og:image" content="https://futures-atlas.com/projects/generatives-4.jpg" />
     <meta property="og:image" content="https://futures-atlas.com/projects/generatives-2.jpg" />
     <meta property="og:image" content="https://futures-atlas.com/projects/generatives-3.jpg" />
+    <!-- Self-referential canonical. The bundle is served at /generatives by a
+         host rewrite, so the file's own path is not the page's address; absolute
+         because a scraper resolving a relative one would get it wrong. -->
+    <link rel="canonical" href="https://futures-atlas.com/generatives" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:image" content="https://futures-atlas.com/projects/generatives-4.jpg" />
     <script>

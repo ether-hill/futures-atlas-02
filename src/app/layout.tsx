@@ -63,15 +63,22 @@ export const metadata: Metadata = {
   // with no per-page list to keep in step. A route that needs a different
   // canonical overrides `alternates` in its own metadata.
   alternates: { canonical: "./" },
-  // Draft work, shared by link only: every page tells crawlers to stay out.
-  // Mirrored by robots.ts (Disallow: /) and the X-Robots-Tag header in
-  // next.config.ts, so the instruction survives however a bot arrives.
-  robots: {
-    index: false,
-    follow: false,
-    nocache: true,
-    googleBot: { index: false, follow: false, noimageindex: true },
-  },
+  /*
+   * Production invites crawlers, everything else refuses them. Preview and
+   * staging serve the same routes from another hostname and an indexed copy
+   * of one is a duplicate of the real site. Mirrored by app/robots.ts and the
+   * X-Robots-Tag header in next.config.ts; all three move together or a bot
+   * that reads one and not another gets a contradiction.
+   */
+  robots:
+    process.env.VERCEL_ENV === "production"
+      ? { index: true, follow: true, googleBot: { index: true, follow: true } }
+      : {
+          index: false,
+          follow: false,
+          nocache: true,
+          googleBot: { index: false, follow: false, noimageindex: true },
+        },
   title: "Futures Atlas, a catalogue of possible worlds",
   description: SITE_DESC,
   // Default Open Graph so any page (and the Share → Social Composer transmutate)
@@ -84,6 +91,38 @@ export const metadata: Metadata = {
     images: ["/og/home.jpg"],
   },
   twitter: { card: "summary_large_image", images: ["/og/home.jpg"] },
+};
+
+/*
+ * The one piece of structured data on the site: what this thing is called and
+ * where it lives.
+ *
+ * Nothing here is a claim the site does not already make in plain markup — the
+ * name and the description are the same two strings the <title> and the meta
+ * description carry. Deliberately no logo, no sameAs, no founder, no address:
+ * an Organization block is only worth having if every field in it is true, and
+ * inventing the rest to fill the shape is how a knowledge panel ends up wrong.
+ * Add those when there is a real logo file and real profile URLs to point at.
+ */
+const STRUCTURED_DATA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": `${siteOrigin()}/#website`,
+      name: "Futures Atlas",
+      url: `${siteOrigin()}/`,
+      description: SITE_DESC,
+      inLanguage: "en-GB",
+      publisher: { "@id": `${siteOrigin()}/#organization` },
+    },
+    {
+      "@type": "Organization",
+      "@id": `${siteOrigin()}/#organization`,
+      name: "Futures Atlas",
+      url: `${siteOrigin()}/`,
+    },
+  ],
 };
 
 // Render per-request so the SSR-injected token overrides always reflect the
@@ -104,6 +143,10 @@ export default async function RootLayout({
         {/* Adaptive "F" favicon, light/dark by browser colour scheme. The svg
             self-adapts via @media (Safari/Firefox); the dark media link covers
             browsers that switch on the <link> instead. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+        />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
         <script
@@ -125,8 +168,8 @@ export default async function RootLayout({
             self-inject) so the bar + mobile sheet are fully styled at first
             paint, otherwise the unstyled sheet/burger flash on every load.
             atlas-nav.js sees this data-fa-nav-css link and skips re-injecting. */}
-        <link rel="stylesheet" href="/atlas-nav.css?v=21" data-fa-nav-css />
-        <script src="/atlas-nav.js?v=21" defer />
+        <link rel="stylesheet" href="/atlas-nav.css?v=22" data-fa-nav-css />
+        <script src="/atlas-nav.js?v=22" defer />
         {overrideCss && <style id="fa-overrides" dangerouslySetInnerHTML={{ __html: overrideCss }} />}
         {/*
           Without a script, every <Reveal> block stays at the opacity: 0 that
@@ -141,6 +184,14 @@ export default async function RootLayout({
       </head>
       <body
         className={`${archivo.variable} ${bodoni.variable} ${saira.variable} ${plexMono.variable} min-h-screen flex flex-col`}
+        // atlas-nav.js's reserveBarHeight() runs before hydration and, when it
+        // reads the body's padding as 0 because globals.css has not applied
+        // yet, writes an inline padding-top. WebKit hits that window on
+        // /contact and React reported the extra attribute as a hydration
+        // mismatch on every iPhone. The value it writes is the same 54px the
+        // stylesheet gives, so there is nothing to reconcile — same reason
+        // <html> above carries this.
+        suppressHydrationWarning
       >
         {/* Skip link, the first thing in the document, so a keyboard user can
             jump the shared nav bar (brand, four links, Share, theme toggle)

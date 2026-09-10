@@ -5,6 +5,12 @@ export const metadata: Metadata = {
   title: "Quantum Spark · Five Sparks for What's Next · Futures Atlas",
   description:
     "Type your industry, get five glimpses of how quantum and next-wave AI could change it. Speculative, not predictive.",
+  // Self-referential canonical, written out in full. The bundle is a static
+  // export with basePath + trailingSlash, so a relative form would resolve to
+  // /quantum-spark/ and disagree with the URL the host actually serves and the
+  // sitemap actually names. Change the host in src/lib/site.ts first, then here
+  // and in the other bundles.
+  alternates: { canonical: "https://futures-atlas.com/quantum-spark" },
   openGraph: {
     siteName: "Futures Atlas",
     title: "Quantum Spark · Futures Atlas",

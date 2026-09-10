@@ -6,6 +6,8 @@ const DESC = "Which futures the public over-believes, which have already arrived
 export const metadata: Metadata = {
   title: "Swipe the Future · what everyone believes",
   description: DESC,
+  // Overrides the layout's canonical, which names the deck rather than this page.
+  alternates: { canonical: "https://futures-atlas.com/swipe-the-future/stats" },
   openGraph: {
     type: "website",
     siteName: "Futures Atlas",

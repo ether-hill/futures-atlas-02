@@ -62,6 +62,7 @@ const block = (r) => `<!-- OD:ROUTE-META:START (generated for /theodds/${r.slug}
 <meta property="og:url" content="${DOMAIN}/theodds/${r.slug}" />
 <meta property="og:image" content="${DOMAIN}${r.image}" />
 <meta name="twitter:image" content="${DOMAIN}${r.image}" />
+<link rel="canonical" href="${DOMAIN}/theodds/${r.slug}" />
 <!-- OD:ROUTE-META:END -->`;
 
 mkdirSync(join(BUNDLE, 'p'), { recursive: true });

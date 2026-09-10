@@ -84,7 +84,7 @@ const nextConfig: NextConfig = {
         { source: "/interference", destination: "/interference/index.html" },
         // …/solo is the same bundle with the global bar and footer left off, for
         // sharing the fields on their own. The page reads the path itself.
-        { source: "/interference/solo", destination: "/interference/index.html" },
+        // /interference/solo REDIRECTS now; see redirects() below.
         { source: "/superposition", destination: "/superposition/index.html" },
         // Throat singing and quantum physics — hand-authored static bundle (article + the Overtone instrument)
         { source: "/throat-singing-quantum", destination: "/throat-singing-quantum/index.html" },
@@ -155,7 +155,15 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
-          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" },
+          /*
+           * Production is indexable; every other environment is not. Preview
+           * and staging serve the same routes from another hostname, so an
+           * indexed copy of them is a duplicate of the real site. Moves
+           * together with app/robots.ts and `robots` in app/layout.tsx.
+           */
+          ...(process.env.VERCEL_ENV === "production"
+            ? []
+            : [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" }]),
           // Browsers must take our word for what a response is. Several routes
           // return JSON assembled from model output and the sub-app bundles
           // serve a lot of user-supplied-looking strings, and sniffing is how
@@ -243,6 +251,30 @@ const nextConfig: NextConfig = {
         destination: "https://futures-atlas.com/:path*",
         permanent: true,
       },
+      /*
+       * The project's ORIGINAL Vercel alias, and the same argument. This one was
+       * missed: futures-atlas-02.vercel.app was still answering 200 with the
+       * production build, so the site had two open front doors rather than one.
+       * The canonical link on each page already named futures-atlas.com, which
+       * is a hint a crawler may ignore; a 308 is not a hint. Matched exactly, so
+       * branch deployments (futures-atlas-02-git-<branch>-….vercel.app) are
+       * untouched and staging can still be opened directly.
+       */
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "futures-atlas-02.vercel.app" }],
+        destination: "https://futures-atlas.com/:path*",
+        permanent: true,
+      },
+      /*
+       * Solo mode had its own URL, serving the same document as /interference
+       * with the surrounding page stripped out: no bar, no footer, no links at
+       * all. Shared on its own it was a dead end, so anyone opening the link
+       * cold had no route into the site, and it put a second address on one
+       * page. It forwards to the project now. The `?solo=1` parameter still
+       * works on /interference for anyone who wants the bare field.
+       */
+      { source: "/interference/solo", destination: "/interference", permanent: true },
       { source: "/prism", destination: "/generatives", permanent: true },
       // The Counterfactual Index became Manipulate the data, and its
       // single-figure story stopped being called /one. The old paths were only

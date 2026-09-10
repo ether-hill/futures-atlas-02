@@ -304,7 +304,7 @@ export const projects: Project[] = [
     topics: ["AI", "Safety & policy"],
     kind: "game",
     status: "live",
-    visibility: "live",
+    visibility: "draft",
     path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
     image: "/projects/odds-of-surviving-ai.jpg",
     cta: "Play the odds",

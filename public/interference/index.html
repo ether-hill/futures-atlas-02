@@ -18,6 +18,12 @@
      change it there first, then here and in the other bundles. -->
 <meta property="og:image" content="https://futures-atlas.com/projects/interference.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<!-- /interference and /interference/solo are the same file served at two URLs:
+     solo is this page with the global bar and footer left off. Both point here,
+     so a crawler indexes one page rather than two identical ones. Absolute
+     because the <base href> above would otherwise resolve a relative canonical
+     against /interference/, which is not a page. -->
+<link rel="canonical" href="https://futures-atlas.com/interference">
 <meta name="twitter:image" content="https://futures-atlas.com/projects/interference.jpg">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)">

@@ -256,6 +256,38 @@ html.dark .fa-shell__item:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-shell__item.is-current { color: rgba(243, 241, 236, 0.45); }
 html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 
+/* ── Touch hit areas ────────────────────────────────────────────────────────
+   The bar's controls are drawn small on purpose (the mark is 20px, the round
+   controls 38px, the crumb 30px tall) and that is fine for a cursor. A finger
+   needs 44px, so the target is grown with a centred pseudo-element instead of
+   with padding: nothing in the bar moves, the drawing is untouched, and only
+   the region that answers a tap changes. Guarded on `pointer: coarse` so a
+   desktop keeps its exact hover boxes. */
+@media (pointer: coarse) {
+  .fa-shell__home,
+  .fa-shell__current,
+  .fa-shell__toggle,
+  .fa-shell__profile,
+  .fa-share__btn,
+  .fa-shell__burger { position: relative; }
+  .fa-shell__home::after,
+  .fa-shell__current::after,
+  .fa-shell__toggle::after,
+  .fa-shell__profile::after,
+  .fa-share__btn::after,
+  .fa-shell__burger::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 @media (max-width: 680px) {
   /* the bar is tall for a phone; trim the row and let consumers reclaim it */
   :root { --fa-nav-h: 54px; }
@@ -612,6 +644,7 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  min-height: 44px; /* a finger's worth, which the pill's padding alone is not */
 }
 .fa-sheet__themeicon { display: inline-flex; }
 
@@ -638,6 +671,29 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
 .fa-sheet.is-open .fa-sheet__title { opacity: 0.5; }
 @media (prefers-reduced-motion: reduce) {
   .fa-sheet, .fa-sheet__link, .fa-sheet__title, .fa-sheet__sublink, .fa-sheet__theme, .fa-shell__burger span { transition: none; }
+}
+
+/* A phone held sideways is about 375px tall, and the sheet at full size does
+   not fit in that: the theme button and the share row ended up below the fold,
+   so the menu became a thing you had to scroll — which nobody expects a menu
+   to do. A short viewport has width to spare, so the links go into two columns
+   rather than just getting smaller: the panel fits without scrolling AND the
+   rows stay tappable. */
+@media (max-width: 900px) and (max-height: 620px) {
+  .fa-sheet__inner {
+    max-width: 760px;
+    padding: calc(var(--fa-nav-h) + 6px) clamp(22px, 6vw, 56px) 12px;
+  }
+  .fa-sheet__sec {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(20px, 5vw, 44px);
+    padding: 6px 0;
+  }
+  .fa-sheet__title { grid-column: 1 / -1; margin: 2px 0 0; }
+  .fa-sheet__link { font-size: clamp(18px, 4.6vh, 26px); padding: 7px 0; }
+  .fa-sheet__sublink { font-size: clamp(14px, 3.2vh, 18px); padding: 6px 0; }
+  .fa-sheet__theme { margin-top: 10px; padding: 8px 16px; min-height: 0; }
 }
 
 /* the swap: links → hamburger at tablet width and below */

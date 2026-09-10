@@ -3,13 +3,21 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Signal Reactor · Foresight Briefings · Futures Atlas",
+  // 199 characters got truncated in every result. This says the same thing in
+  // the length a search engine will actually print.
   description:
-    "Enter your organisation type and get a substance-first foresight briefing on quantum and advanced AI, delivered as a presentable slide deck. It strips out the hype and shows where the real signal is.",
+    "Enter your organisation type and get a substance-first foresight briefing on quantum and advanced AI, delivered as a presentable slide deck.",
+  // Self-referential canonical, written out in full. The bundle is a static
+  // export with basePath + trailingSlash, so a relative form would resolve to
+  // /signal-reactor/ and disagree with the URL the host actually serves and the
+  // sitemap actually names. Change the host in src/lib/site.ts first, then here
+  // and in the other bundles.
+  alternates: { canonical: "https://futures-atlas.com/signal-reactor" },
   openGraph: {
     siteName: "Futures Atlas",
     title: "Signal Reactor · Futures Atlas",
     description:
-      "A substance-first foresight instrument: honest, AI-generated briefings on what quantum and advanced AI actually mean for your organisation. Built to structure a conversation. The decision stays with you.",
+      "A substance-first foresight instrument: honest, AI-generated briefings on what quantum and advanced AI mean for your organisation. The decision stays with you.",
     type: "website",
     // The page had no share image at all, so every link to it unfurled as text.
     // This is the same screengrab the atlas's own card for the project uses

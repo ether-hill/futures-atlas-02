@@ -146,6 +146,24 @@ input[type="range"]::-moz-range-thumb {
 }
 input[type="range"]:disabled { opacity: 0.35; cursor: default; }
 
+/* On a finger the 3px track is not a target. Keep the drawing identical — a
+   thin rule with a round thumb — but let the input itself be 30px tall and
+   paint the track as a centred background band, so the whole band answers a
+   drag. The thumb grows a little too, since it is the thing being grabbed. */
+@media (pointer: coarse) {
+  input[type="range"] {
+    height: 30px;
+    border-radius: 0;
+    background: transparent;
+    background-image: linear-gradient(var(--hairline), var(--hairline));
+    background-size: 100% 3px;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  input[type="range"]::-webkit-slider-thumb { width: 18px; height: 18px; }
+  input[type="range"]::-moz-range-thumb { width: 18px; height: 18px; }
+}
+
 .swatches { display: flex; gap: 6px; align-items: center; }
 .sw {
   width: 26px; height: 22px; padding: 0; border: 1px solid var(--hairline);
@@ -227,6 +245,13 @@ input[type="color"] {
   pointer-events: none;
 }
 .stage:fullscreen.is-live .fsbar { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+/* The chrome is revealed by `mousemove`, which a touch device never sends, and
+   any tap on the stage exits fullscreen — so on a phone the transport was
+   unreachable for as long as the piece was fullscreen. With no hover there is
+   nothing to hide it FROM, so it just stays out. */
+@media (hover: none) {
+  .stage:fullscreen .fsbar { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+}
 .stage:fullscreen .fsbar .ctl { margin-top: 0; }
 .stage:fullscreen .fsbar > .btn { align-self: flex-end; margin-top: 2px; }
 /* the two that make no sense in here: the prose is outside the fullscreen

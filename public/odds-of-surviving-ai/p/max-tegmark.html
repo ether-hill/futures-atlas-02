@@ -17,6 +17,7 @@
 <meta property="og:url" content="https://futures-atlas.com/theodds/max-tegmark" />
 <meta property="og:image" content="https://futures-atlas.com/og/max-tegmark.png" />
 <meta name="twitter:image" content="https://futures-atlas.com/og/max-tegmark.png" />
+<link rel="canonical" href="https://futures-atlas.com/theodds/max-tegmark" />
 <!-- OD:ROUTE-META:END -->
 <base href="/odds-of-surviving-ai/">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
@@ -1359,7 +1360,12 @@ class Component extends DCLogic {
     if (isDoom) { this.doomTone(); this.bumpExtinctions(); } else this.survive();
     if (this.state.mode === 'gauntlet') {
       const results = this.state.gResults.concat(!isDoom);
-      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', gResults: results });
+      // finaleReveal gates the whole result block (showResult below), and
+      // resetMechanic does not clear it — so without setting it here the
+      // gauntlet's first roll landed and nothing ever appeared: no verdict, no
+      // way on to the next player. The gauntlet runs no doom clip, so the
+      // verdict shows straight away, exactly as the single-player survive path does.
+      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', gResults: results, finaleReveal: true });
     } else {
       // Dario's die landing on "really, really badly" → swap the portrait for
       // the doom morph video, which plays once through to the end.
