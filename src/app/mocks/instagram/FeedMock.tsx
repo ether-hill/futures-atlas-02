@@ -25,17 +25,34 @@ import { DESIGN_W } from "./slide-css";
 const HANDLE = "futuresatlas";
 const BIO = "Speculative design studio. Decks, reports and instruments about futures that already arrived.";
 
-/* Darker than every slide ground, deliberately: the term field and the swipe
-   cards are near-black themselves, and on an equally dark page they had no
-   edge. The page is now the darkest thing on it. */
-const PAGE = "#08090b";
-const INK = "#17181b";
-const INK_2 = "#1d1f23";
-const BONE = "#f2ede2";
-const MUTED = "#d3ccbe";
-const FAINT = "#8b877f";
-const OXBLOOD = "#d8694e";
-const HAIRLINE = "rgba(242,237,226,.14)";
+/* The chrome follows the site's light/dark toggle (html.dark), so logos and
+   slides can be checked against both grounds. Dark is darker than every slide
+   ground, deliberately: the term field and the swipe cards are near-black
+   themselves, and on an equally dark page they had no edge. Light is
+   Instagram's own white. The slides themselves never change. */
+const THEME_CSS = `
+.igm {
+  --ig-page: #ffffff; --ig-ink: #ffffff; --ig-ink-2: #efefef;
+  --ig-fg: #121212; --ig-muted: #3a3a3a; --ig-faint: #737373;
+  --ig-accent: #b8452c; --ig-logo: none; --ig-shadow: rgba(0,0,0,.18);
+}
+html.dark .igm {
+  --ig-page: #08090b; --ig-ink: #17181b; --ig-ink-2: #1d1f23;
+  --ig-fg: #f2ede2; --ig-muted: #d3ccbe; --ig-faint: #8b877f;
+  --ig-accent: #d8694e; --ig-logo: invert(1); --ig-shadow: rgba(0,0,0,.55);
+}`;
+const PAGE = "var(--ig-page)";
+const INK = "var(--ig-ink)";
+const INK_2 = "var(--ig-ink-2)";
+const BONE = "var(--ig-fg)";
+const MUTED = "var(--ig-muted)";
+const FAINT = "var(--ig-faint)";
+const OXBLOOD = "var(--ig-accent)";
+/** The foreground at a given opacity, in whichever theme is on. */
+const fg = (a: number) => `color-mix(in srgb, var(--ig-fg) ${a * 100}%, transparent)`;
+/** The page ground at a given opacity (sticky bars, the lightbox scrim). */
+const ground = (a: number) => `color-mix(in srgb, var(--ig-page) ${a * 100}%, transparent)`;
+const HAIRLINE = fg(0.14);
 
 /**
  * The mock's chrome is set in the site's display sans, and there is no serif
@@ -84,7 +101,8 @@ export default function FeedMock() {
   }, [open, move]);
 
   return (
-    <div style={{ minHeight: "100vh", background: PAGE, color: BONE, fontFamily: UI }}>
+    <div className="igm" style={{ minHeight: "100vh", background: PAGE, color: BONE, fontFamily: UI }}>
+      <style>{THEME_CSS}</style>
       <SlideStyles />
       <Chrome
         ratio={ratio} setRatio={setRatio}
@@ -190,7 +208,7 @@ function Chrome({
         position: "sticky",
         top: 0,
         zIndex: 20,
-        background: "rgba(8,9,11,.92)",
+        background: ground(0.92),
         backdropFilter: "blur(10px)",
         borderBottom: `1px solid ${HAIRLINE}`,
         padding: "16px 24px",
@@ -212,7 +230,7 @@ function Chrome({
           style={{
             ...lbl(13, editing ? INK : MUTED),
             background: editing ? "#3b93d5" : "transparent",
-            border: `1px solid ${editing ? "#3b93d5" : "rgba(242,237,226,.22)"}`,
+            border: `1px solid ${editing ? "#3b93d5" : fg(0.22)}`,
             padding: "8px 14px",
             cursor: "pointer",
           }}
@@ -236,7 +254,7 @@ function Chrome({
             style={{
               ...lbl(13, r === ratio ? INK : MUTED),
               background: r === ratio ? BONE : "transparent",
-              border: `1px solid ${r === ratio ? BONE : "rgba(242,237,226,.22)"}`,
+              border: `1px solid ${r === ratio ? BONE : fg(0.22)}`,
               padding: "8px 14px",
               cursor: "pointer",
             }}
@@ -276,7 +294,7 @@ function Chrome({
 const ghost = {
   ...lbl(13, MUTED),
   background: "transparent",
-  border: `1px solid rgba(242,237,226,.22)`,
+  border: `1px solid ${fg(0.22)}`,
   padding: "8px 14px",
   cursor: "pointer",
 };
@@ -303,7 +321,7 @@ function Profile() {
         <img
           src="/fa.svg"
           alt="Futures Atlas"
-          style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", filter: "invert(1)" }}
+          style={{ display: "block", width: "100%", height: "100%", objectFit: "cover", filter: "var(--ig-logo)" }}
         />
       </div>
       <div style={{ minWidth: 280, flex: 1 }}>
@@ -405,8 +423,8 @@ function Tile({
         style={{
           position: "relative",
           boxShadow: lifted
-            ? `inset 0 0 0 1px rgba(242,237,226,.45), 0 18px 40px rgba(0,0,0,.55)`
-            : `inset 0 0 0 1px rgba(242,237,226,.10)`,
+            ? `inset 0 0 0 1px ${fg(0.45)}, 0 18px 40px var(--ig-shadow)`
+            : `inset 0 0 0 1px ${fg(0.1)}`,
           background: INK_2,
           cursor: editing ? (lifted ? "grabbing" : "grab") : "pointer",
           // Without this a touch drag scrolls the page instead of moving a tile.
@@ -423,8 +441,10 @@ function Tile({
           <span
             style={{
               position: "absolute", top: 10, right: 10, width: 18, height: 18,
-              border: `2px solid ${BONE}`, borderRadius: 4,
-              boxShadow: `-4px 4px 0 -2px ${INK}, -6px 6px 0 -2px ${BONE}`,
+              // Sits on the slide, not the page, so it keeps its light-on-dark
+              // colours in both themes (as Instagram's own badge does).
+              border: "2px solid #f2ede2", borderRadius: 4,
+              boxShadow: "-4px 4px 0 -2px #17181b, -6px 6px 0 -2px #f2ede2",
               opacity: 0.55,
             }}
           />
@@ -459,9 +479,9 @@ function Tile({
 }
 
 const stepBtn = (disabled: boolean) => ({
-  ...lbl(11, disabled ? "rgba(242,237,226,.25)" : MUTED),
+  ...lbl(11, disabled ? fg(0.25) : MUTED),
   background: "transparent",
-  border: `1px solid rgba(242,237,226,${disabled ? ".08" : ".22"})`,
+  border: `1px solid ${fg(disabled ? 0.08 : 0.22)}`,
   padding: "5px 9px",
   cursor: disabled ? "default" : "pointer",
   lineHeight: 1,
@@ -521,7 +541,7 @@ function Viewer({
         position: "fixed",
         inset: 0,
         zIndex: 50,
-        background: "rgba(8,9,11,.93)",
+        background: ground(0.93),
         display: "flex",
         alignItems: "flex-start",
         justifyContent: "center",
@@ -557,7 +577,7 @@ function Viewer({
               key={i}
               style={{
                 width: 7, height: 7, borderRadius: "50%",
-                background: i === index ? BONE : "rgba(242,237,226,.28)",
+                background: i === index ? BONE : fg(0.28),
               }}
             />
           ))}
@@ -612,8 +632,8 @@ function Arrow({ dir, disabled, onClick }: { dir: 1 | -1; disabled: boolean; onC
         width: 40,
         height: 40,
         borderRadius: "50%",
-        border: `1px solid rgba(242,237,226,.3)`,
-        background: "rgba(23,24,27,.9)",
+        border: `1px solid ${fg(0.3)}`,
+        background: `color-mix(in srgb, ${INK} 90%, transparent)`,
         color: BONE,
         cursor: "pointer",
         fontSize: 16,
