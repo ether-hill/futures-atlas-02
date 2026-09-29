@@ -15,8 +15,10 @@ import { GROUPS, GROUP_HEX, ITEMS, type Item, type Marks } from "./stack";
  * It plays itself. A one-move heuristic (the standard height / holes /
  * bumpiness / lines weighting) picks the rotation and column, so the well
  * stays legible and clears keep arriving instead of the stack drowning in a
- * random pile. No lateral shuffling: the piece appears over its column and
- * falls, because a piece sliding sideways mid-air films as a mistake.
+ * random pile. The piece is then PLAYED there, not dropped there: it appears
+ * at the top of the well over the middle, turns, and steps left or right a
+ * column at a time while it falls, the way a person nudges a piece into its
+ * slot, and only drops once it is lined up. See `plan()`.
  *
  * BARE strips the page down to the board: no title, no counter, no family key,
  * and no line naming what just cleared. That is the version that goes out as a
@@ -125,7 +127,52 @@ const PACE = {
   shift: 380,       // whatever was above it comes down
   shiftHold: 440,
   next: 380,        // and a breath before the next piece
+  move: 150,        // one player input: a turn, or a step of one column
+  moveEase: "cubic-bezier(.2,.7,.3,1)",
+  gravity: 0.55,    // chance each input also lets the piece fall one row
 };
+
+type Step = { cells: Cells; x: number; y: number };
+
+/**
+ * The inputs a player would make to get a piece from the spawn to where the
+ * heuristic wants it: turn to the target rotation, then step toward the target
+ * column, falling a row now and then in between. Every intermediate position is
+ * checked against the board. Returns null when the piece cannot be walked there
+ * from the top of the well (a tall stack in the way), and the caller falls back
+ * to dropping it straight in.
+ */
+function plan(g: Grid, rots: Cells[], ti: number, tx: number, ty: number): Step[] | null {
+  const wide0 = Math.max(...rots[0].map(([x]) => x));
+  let x = Math.floor((W - 1 - wide0) / 2);
+  let y = 0;
+  let ri = 0;
+  if (!fits(g, rots[ri], x, y)) return null;
+  const out: Step[] = [{ cells: rots[ri], x, y }];
+  const fall = () => {
+    if (y + 1 < ty && Math.random() < PACE.gravity && fits(g, rots[ri], x, y + 1)) y++;
+  };
+  while (ri !== ti || x !== tx) {
+    if (ri !== ti) {
+      const nr = ri + 1;
+      // A turn can push a piece past the right wall; nudge it back in, as the
+      // game would.
+      const nx = Math.min(x, W - 1 - Math.max(...rots[nr].map(([cx]) => cx)));
+      if (!fits(g, rots[nr], nx, y)) return null;
+      ri = nr;
+      x = nx;
+    } else {
+      const nx = x + Math.sign(tx - x);
+      if (!fits(g, rots[ri], nx, y)) return null;
+      x = nx;
+    }
+    fall();
+    out.push({ cells: rots[ri], x, y });
+  }
+  // Lined up. Whatever is left is a straight drop down its own column, which
+  // dropY already walked from above, so it is clear by construction.
+  return y <= ty ? out : null;
+}
 
 type Tile = { id: number; item: Item; col: number; row: number; dur: number; ease: string; cls: string };
 
@@ -178,13 +225,13 @@ export function Tetris({ marks, bare = false }: { marks: Marks; bare?: boolean }
       await sleep(PACE.open);
       while (alive.current) {
         const rots = nextShape();
-        let best = { s: -Infinity, cells: rots[0], x: 0, y: 0 };
-        for (const cells of rots) {
+        let best = { s: -Infinity, cells: rots[0], x: 0, y: 0, ri: 0 };
+        for (const [ri, cells] of rots.entries()) {
           const wide = Math.max(...cells.map(([x]) => x));
           for (let x = 0; x + wide < W; x++) {
             const y = dropY(grid, cells, x);
             const s = score(grid, cells, x, y);
-            if (s > best.s) best = { s, cells, x, y };
+            if (s > best.s) best = { s, cells, x, y, ri };
           }
         }
         if (best.s === -Infinity) {
@@ -207,32 +254,64 @@ export function Tetris({ marks, bare = false }: { marks: Marks; bare?: boolean }
           continue;
         }
 
-        // Spawn the piece directly above its column, already carrying the fall
-        // duration, so the very next commit only has to change the transform.
-        const high = Math.max(...best.cells.map(([, y]) => y));
-        const spawn = -(high + 2);
-        const dist = best.y - spawn;
-        const dur = Math.max(PACE.fallMin, Math.round(dist * PACE.fallPerRow));
-        const fresh: Tile[] = best.cells.map(([dx, dy]) => ({
-          id: id++,
-          item: nextItem(),
-          col: best.x + dx,
-          row: spawn + dy,
-          dur,
-          ease: "cubic-bezier(.35,.03,.62,.5)",
-          cls: "",
-        }));
+        const path = plan(grid, rots, best.ri, best.x, best.y);
+        const items = best.cells.map(() => nextItem());
+        let fresh: Tile[];
+        if (path) {
+          // Appear at the top, then play it into place one input at a time.
+          // Each cell keeps its brand as the piece turns, so a turn reads as
+          // the same four bricks swinging round rather than a new piece.
+          const at = (st: Step, i: number) => ({ col: st.x + st.cells[i][0], row: st.y + st.cells[i][1] });
+          fresh = items.map((item, i) => ({
+            id: id++, item, ...at(path[0], i), dur: PACE.move, ease: PACE.moveEase, cls: "",
+          }));
+          const ids0 = new Set(fresh.map((f) => f.id));
+          setTiles((p) => [...p, ...fresh]);
+          await sleep(PACE.move);
+          for (const st of path.slice(1)) {
+            if (!alive.current) return;
+            setTiles((p) => {
+              let i = 0;
+              return p.map((t) => (ids0.has(t.id) ? { ...t, ...at(st, i++) } : t));
+            });
+            await sleep(PACE.move);
+          }
+          if (!alive.current) return;
+          const last = path[path.length - 1];
+          const rest = best.y - last.y;
+          if (rest > 0) {
+            const dur = Math.max(260, Math.round(rest * PACE.fallPerRow));
+            setTiles((p) => p.map((t) => (ids0.has(t.id) ? { ...t, dur, ease: "cubic-bezier(.45,.05,.7,.4)" } : t)));
+            await settle();
+            if (!alive.current) return;
+            setTiles((p) => p.map((t) => (ids0.has(t.id) ? { ...t, row: t.row + rest } : t)));
+            await sleep(dur);
+          }
+          // Where each brick ended up, for the grid below.
+          fresh = fresh.map((f, i) => ({ ...f, col: best.x + best.cells[i][0], row: best.y + best.cells[i][1] }));
+        } else {
+          // Stack too tall to walk it in: spawn above its column and fall.
+          const high = Math.max(...best.cells.map(([, y]) => y));
+          const spawn = -(high + 2);
+          const dist = best.y - spawn;
+          const dur = Math.max(PACE.fallMin, Math.round(dist * PACE.fallPerRow));
+          fresh = best.cells.map(([dx, dy], i) => ({
+            id: id++, item: items[i], col: best.x + dx, row: spawn + dy,
+            dur, ease: "cubic-bezier(.35,.03,.62,.5)", cls: "",
+          }));
+          const idsF = new Set(fresh.map((f) => f.id));
+          setTiles((p) => [...p, ...fresh]);
+          await settle();
+          if (!alive.current) return;
+          setTiles((p) => p.map((t) => (idsF.has(t.id) ? { ...t, row: t.row + dist } : t)));
+          await sleep(dur);
+          fresh = fresh.map((f) => ({ ...f, row: f.row + dist }));
+        }
+        if (!alive.current) return;
         const ids = new Set(fresh.map((f) => f.id));
-        setTiles((p) => [...p, ...fresh]);
-        await settle();
-        if (!alive.current) return;
-
-        setTiles((p) => p.map((t) => (ids.has(t.id) ? { ...t, row: t.row + dist } : t)));
-        await sleep(dur);
-        if (!alive.current) return;
 
         setTiles((p) => p.map((t) => (ids.has(t.id) ? { ...t, cls: "is-hit" } : t)));
-        for (const f of fresh) grid[f.row + dist][f.col] = f.id;
+        for (const f of fresh) grid[f.row][f.col] = f.id;
         await sleep(PACE.land);
         if (!alive.current) return;
         setTiles((p) => p.map((t) => (ids.has(t.id) ? { ...t, cls: "" } : t)));
