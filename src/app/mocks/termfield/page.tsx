@@ -22,6 +22,9 @@ export default function TermFieldStage() {
     <div className="dark">
       <style>{`
         html, body { background: #17181b; }
+        /* a stage for a post, so the site bar and the padding it reserves go */
+        .fa-shell, .fa-share, .fa-foot { display: none !important; }
+        body { padding-top: 0 !important; }
         .tf-stage { position: fixed; inset: 0; background: #17181b; overflow: hidden; }
       `}</style>
       <div className="tf-stage">

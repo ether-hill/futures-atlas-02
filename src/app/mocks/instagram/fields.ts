@@ -786,10 +786,14 @@ export const REEL_POSTS: ReelPost[] = [
     id: "term-field",
     title: "The vocabulary",
     note: "Every term the Atlas works with, on a slowly turning sphere.",
-    embed: "/mocks/termfield",
-    thumbAt: 8,
+    // Filmed at phone size with the site bar hidden:
+    // `node scripts/record-phone.mjs /mocks/termfield term-field 12`.
+    embed: "",
+    video: "/mocks/instagram/term-field.webm",
+    thumb: "/mocks/instagram/term-field.jpg",
+    thumbAt: 0,
     caption:
-      "Every word this studio actually works with, arranged on a sphere and left to turn.\n\nThe three lines:\n\nWhat you are seeing. About sixty terms in five families — futures, quantum, AI, society, craft — with a line drawn from each term to its family's anchor, and more lines where a term belongs to two families at once.\n\nHow it is made. Points spread evenly on a sphere by golden-angle spacing, projected with perspective so depth reads as size and fade. Positions are written straight onto the DOM inside one animation frame, never through React state, so sixty labels and seventy lines cost almost nothing.\n\nThe idea. It is not decoration and it is not a tag cloud sized by frequency. The families are the actual shape of the practice, and the crossing lines are the argument: the interesting work is the terms that refuse to sit in one family.",
+      "The words we work with, on a sphere that keeps turning.\n\nFutures, quantum, AI, society and craft. Each line ties a term to its family. The ones worth watching are the terms that belong to more than one.",
     hashtags: ["#designstudio", "#datavis", "#futures", "#creativecoding", "#typography"],
   },
 ];
