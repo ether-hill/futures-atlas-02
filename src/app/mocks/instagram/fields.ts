@@ -476,7 +476,7 @@ export const STACK_REEL: ReelPost = {
   thumb: "/mocks/instagram/stack-bare.jpg",
   thumbAt: 0,
   caption:
-    "Everything this studio is built with, named.\n\nThe work splits three ways and so does the stack. Language and code models for research, drafting and the agent work. Image and video models for the plates that are generated, which are always labelled as generated. And the web layer everything actually ships on: Next.js, Three.js, p5, D3, and a lot of hand-written shaders, because a fragment shader computed fresh every frame is smaller, sharper and more honest than a video of one.\n\nOpen weights sit next to the closed ones on purpose. Some pieces here run models locally because the piece is about what you can do without asking permission.\n\nUsed, not endorsed. It is on the About page rather than in a deck, because a studio that will not say what it uses is telling you something.",
+    "The stack keeps growing.\n\nLanguage models, image and video models, open-source weights, and the web tools everything ships on. Each year there are more of them, from more places, and the set we use looks different every few months.\n\nThis is what we build with right now. Ask us again in six months.",
   hashtags: ["#techstack", "#creativecoding", "#webgl", "#nextjs", "#designstudio", "#futuresatlas"],
 };
 
