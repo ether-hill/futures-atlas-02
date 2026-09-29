@@ -158,6 +158,10 @@ export function TermField() {
     if (!el) return;
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const film = new URLSearchParams(window.location.search).has("film");
+    type Blend = { x: number[]; y: number[]; t: number };
+    let blend: Blend | null = null;
+
     const len = nodes.length;
 
     let w = el.clientWidth;
@@ -230,8 +234,9 @@ export function TermField() {
         const y2 = n.y * cx - z1 * sx;
         const z2 = n.y * sx + z1 * cx;
         const p = FOV / (FOV + z2);
-        // quantised to a quarter pixel: finer than that and the text shimmers
-        const fs = Math.round(base(n.w) * p * 4) / 4;
+        // quantised to a quarter pixel: finer than that and the text shimmers.
+        // Not when filming: frame by frame at 2.5x, the steps are the jiggle.
+        const fs = film ? base(n.w) * p : Math.round(base(n.w) * p * 4) / 4;
         const bx = ox + x1 * rx * p;
         const by = oy + y2 * ry * p;
 
@@ -286,8 +291,12 @@ export function TermField() {
         // keep every label whole: nothing is allowed to run off an edge
         const loX = Math.min(HW[i] + 6, w / 2);
         const loY = Math.min(HH[i] + 4, h / 2);
-        PX[i] = Math.max(loX, Math.min(w - loX, X0[i] + offX[i]));
-        PY[i] = Math.max(loY, Math.min(h - loY, Y0[i] + offY[i]));
+        // Filming only: the recorder can lean the shown nudge toward a target,
+        // which is how the end of a turn is joined onto its start.
+        const ox = blend ? offX[i] + (blend.x[i] - offX[i]) * blend.t : offX[i];
+        const oy = blend ? offY[i] + (blend.y[i] - offY[i]) * blend.t : offY[i];
+        PX[i] = Math.max(loX, Math.min(w - loX, X0[i] + ox));
+        PY[i] = Math.max(loY, Math.min(h - loY, Y0[i] + oy));
       }
 
       for (let i = 0; i < len; i++) {
@@ -347,7 +356,23 @@ export function TermField() {
     measure();
     if (document.fonts?.status !== "loaded") void document.fonts?.ready.then(measure);
     setReady(true);
-    if (!reduce) frame = requestAnimationFrame(loop);
+    if (film) {
+      // ?film: no clock at all. The recorder turns the field by an exact angle
+      // per frame and screenshots it, so every frame is evenly spaced and one
+      // full turn ends on the picture it started with
+      // (scripts/record-term-loop.mjs).
+      const win = window as unknown as {
+        __tfTurn?: (rad: number, b?: Blend | null) => void;
+        __tfNudge?: () => { x: number[]; y: number[] };
+      };
+      win.__tfTurn = (rad, b = null) => {
+        spinY += rad;
+        blend = b;
+        draw(0);
+        blend = null;
+      };
+      win.__tfNudge = () => ({ x: Array.from(offX), y: Array.from(offY) });
+    } else if (!reduce) frame = requestAnimationFrame(loop);
 
     // drag turns the field; nothing else follows the pointer
     const point = (e: PointerEvent) => {
