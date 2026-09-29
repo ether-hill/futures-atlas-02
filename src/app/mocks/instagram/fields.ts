@@ -407,7 +407,7 @@ export const HOME_REEL: ReelPost = {
   video: "/mocks/instagram/atlas-home.webm",
   thumbAt: 0,
   caption:
-    "Mapping foresight.\n\nFutures Atlas is a speculative design practice that builds instruments rather than slide decks. A card game that asks which futures already arrived. A papal encyclical on AI, and fifteen imagined replies from other faiths. Eleven live wave fields. A cluster map of the questions a room actually has. Reports with a rule that every finding carries its own figure and its own scope, or it does not go in.\n\nThe throughline: most of what gets called the future is either already here and uncounted, or has been announced for a decade and has not happened. Both are worth knowing, and neither is settled by a forecast.\n\nEverything on the site is playable, readable or sourced. Usually all three.",
+    "Mapping foresight.\n\nFutures Atlas is a speculative design studio. We make games, tools and live simulations about compute: quantum systems, AI, and the power structures behind them.\n\nSome of the future is already here and nobody counted it. Some of it has been announced for a decade and still hasn't shown up. We try to tell the two apart.",
   hashtags: ["#speculativedesign", "#designfiction", "#futuresthinking", "#studio", "#creativecoding"],
 };
 
