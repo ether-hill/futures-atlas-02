@@ -351,6 +351,7 @@ export const slideCount = (p: Post) =>
     : p.kind === "shots" ? p.shots.length
     : p.kind === "odds" ? 2   // the player, then the play-through
     : p.kind === "tegmark" ? 2   // the card's face, then the card's copy
+    : p.kind === "term" ? 1 + (p.story?.length ?? 0)   // the cover, then the story
     : 1;
 
 /**

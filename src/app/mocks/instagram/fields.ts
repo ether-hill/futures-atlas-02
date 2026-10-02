@@ -132,8 +132,38 @@ export interface TermPost {
   kind_: string;
   definition: string;
   body: string;
+  /** The cover's photograph, drawn through whichever cover system is in use
+   *  (see TermSlides.tsx). Without one the cover falls back to `hue`. */
+  cover?: TermPhoto;
+  /** The word's own colour, from a closed set: the deck's sector hues. */
+  hue?: string;
+  /** The caption, told one beat per slide after the cover. Every line here is
+   *  the caption's own; a slide adds nothing the caption does not say. */
+  story?: StoryBeat[];
   caption: string;
   hashtags: string[];
+}
+
+export interface TermPhoto {
+  src: string;
+  /** CSS object-position for the crop. */
+  pos?: string;
+  /** What it is, who made it, and the licence, printed on the slide. */
+  credit: string;
+  /** `plate` shows the whole thing at its own proportions (a document);
+   *  default fills the frame (a place). */
+  fit?: "plate";
+}
+
+export interface StoryBeat {
+  kicker?: string;
+  big?: string;
+  text?: string;
+  photo?: TermPhoto;
+  /** An etymology, set as its parts. */
+  parts?: { w: string; lang: string; gloss: string }[];
+  /** The last slide, signed with the mark. */
+  end?: boolean;
 }
 
 export interface ReelPost {
@@ -425,6 +455,12 @@ export const TERM_POSTS: TermPost[] = [
       "An ant does not tell another ant where to go. It leaves a chemical trail, and the trail tells the next ant. Nothing holds the plan.",
     caption:
       "Stigmergy. Coordination through traces left in the environment, rather than through any communication between the participants.\n\nAn ant does not tell another ant where to go. It leaves a chemical trail, the trail is followed, following it strengthens it, and a route appears that no ant chose. Termite mounds are built this way. So are slime mould networks, ocean paths, footpaths worn across a park, and most of the useful structure on the internet.\n\nThe word was coined by the French zoologist Pierre-Paul Grass\u00E9 in 1959, from the Greek stigma, a mark, and ergon, work. Work that marks, and marks that work.\n\nIt is in this studio's vocabulary because it is the honest answer to a question people keep asking about emergent systems: who is coordinating this? Usually nobody. The environment is.",
+    cover: {
+      src: "/mocks/instagram/stigmergy/ant-highway.jpg",
+      pos: "42% 50%",
+      credit: "Ant highway, Shai Hills, Ghana, 2023. Matti Blume, CC BY-SA 4.0",
+    },
+    hue: "#3E93D8",
     hashtags: ["#stigmergy", "#emergence", "#complexsystems", "#slimemould", "#futuresatlas"],
   },
   {
@@ -440,6 +476,9 @@ export const TERM_POSTS: TermPost[] = [
       "Two people can both say twenty percent and mean different things: extinction, permanent loss of control, or a bad century. Nothing in the number says which.",
     caption:
       "p(doom). The probability a person puts on advanced AI ending badly for humanity, said out loud as a number.\n\nThe people building it answer. Dario Amodei, who runs Anthropic, put it at a 25% chance things go really, really badly, on the record at the Axios AI+ summit in September 2025. Elon Musk says the probability of a good outcome is about 80%, so only a 20% chance of annihilation. Note the only.\n\nIt is jargon out of the AI safety forums that escaped into interviews around 2023, and it looks like a measurement, which is the problem. No agreed definition of doom, no timeframe attached, no method behind any of the figures. Two people can both say twenty percent while one means extinction and the other means a bad century.\n\nIt is in this studio\u2019s vocabulary because The Odds is built on it. Three people, three numbers, and three mechanics that make you hold one: a twelve-sided die, a wheel, and Max Tegmark, who declines to give a number at all and deals you twelve futures instead.",
+    // No cover photograph: there is nothing honest to photograph for a number
+    // people say out loud, so this one falls back to its colour ground.
+    hue: "#8B6FD4",
     hashtags: ["#pdoom", "#aisafety", "#existentialrisk", "#aigovernance", "#futuresatlas"],
   },
   {
@@ -455,6 +494,65 @@ export const TERM_POSTS: TermPost[] = [
       "Nostalgia is the pain of not being able to go back. This is the pain of never having gone anywhere, and home going without you.",
     caption:
       "Solastalgia. The distress of watching the place you live change around you while you are still living in it.\n\nNostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did. The mine widened. The river dropped. The season stopped arriving when it used to. Nothing is missing from your life except the place it happens in.\n\nThe philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed. Latin solacium, comfort, and the Greek -algia, pain. The pain of losing your comfort while sitting inside it.\n\nIt is in this studio\u2019s vocabulary because most futures work is about arrival, and this is the word for what an arrival costs the people who do not move.",
+    // Mount Owen and its neighbours from the air, 2024. The aerial is the
+    // cover because from that height a mine is pattern before it is a mine;
+    // the ground-level photograph is kept for the slide that names the loss.
+    cover: {
+      src: "/mocks/instagram/solastalgia/mount-owen-2024.jpg",
+      pos: "30% 50%",
+      credit: "Mount Owen mine complex, Hunter Valley, 2024. Bidgee, CC BY-SA 3.0 AU",
+    },
+    hue: "#4E9E86",
+    story: [
+      {
+        // Hofer's own title page: "NOSTALGIA, oder Heimwehe", Basel, 22 June 1688.
+        kicker: "Basel, 1688",
+        big: "Nostalgia",
+        text: "Coined by a Swiss medical student, for mercenaries who were physically ill with wanting to go home.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/hofer-1688.jpg",
+          fit: "plate",
+          credit: "Johannes Hofer, Dissertatio medica de nostalgia, oder Heimwehe, 1688. Wellcome Collection, public domain",
+        },
+      },
+      {
+        text: "Solastalgia is the same ache with the arrangement reversed.",
+        big: "You never left.\nHome did.",
+      },
+      {
+        big: "The mine widened.\nThe river dropped.\nThe season stopped arriving when it used to.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/hunter-open-cut.jpg",
+          pos: "50% 50%",
+          credit: "Open-cut coal mine, Hunter Valley, 2011. Max Phillips, CC BY 2.0",
+        },
+      },
+      {
+        big: "Nothing is missing from your life except the place it happens in.",
+      },
+      {
+        kicker: "Hunter Valley, New South Wales",
+        text: "The philosopher Glenn Albrecht built the word here in the early 2000s, where open-cut coal mining was taking the landscape apart around people who stayed.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/upper-hunter-2006.jpg",
+          pos: "50% 60%",
+          credit: "Upper Hunter open-cut mines, 2006. Tim J Keegan, CC BY-SA 2.0",
+        },
+      },
+      {
+        kicker: "The word",
+        parts: [
+          { w: "solacium", lang: "Latin", gloss: "comfort" },
+          { w: "-algia", lang: "Greek", gloss: "pain" },
+        ],
+        text: "The pain of losing your comfort while sitting inside it.",
+      },
+      {
+        text: "Most futures work is about arrival.",
+        big: "This is the word for what an arrival costs the people who do not move.",
+        end: true,
+      },
+    ],
     hashtags: ["#solastalgia", "#climategrief", "#environmentalphilosophy", "#futuresthinking", "#futuresatlas"],
   },
 ];

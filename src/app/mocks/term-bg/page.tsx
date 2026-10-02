@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import TermBackgrounds from "./TermBackgrounds";
 
 /**
- * /mocks/term-bg: the vocabulary card over a dozen blurred, moving grounds,
- * side by side, to pick one to replace the drawn node field. Gated and
+ * /mocks/term-bg: three cover systems for the vocabulary posts, each drawn
+ * for every word, plus Solastalgia as a full carousel. Gated and
  * noindexed with the rest of /mocks.
  */
 export const metadata: Metadata = {
-  title: "Term backgrounds. Futures Atlas",
+  title: "Vocabulary covers. Futures Atlas",
   robots: { index: false },
 };
 
