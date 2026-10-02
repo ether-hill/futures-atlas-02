@@ -97,6 +97,28 @@ export const projects: Project[] = [
    * as many words rather than dressing a placeholder up as a preview. Nothing
    * here asserts an answer — the whole point is that the answer is not written.
    */
+  /*
+   * A bench, not a finished piece: sketches that grow organic forms from an
+   * equation, each with its dials exposed, and a gallery of the settings worth
+   * keeping (pinned to KV). status "live" because the bench works (an
+   * "in-progress" card would read "Forthcoming"); a draft because the project
+   * around it has not been made yet.
+   */
+  {
+    id: "specimens",
+    title: "Specimens",
+    tagline:
+      "Lattice shells, minimal surfaces and reaction–diffusion, grown from equations on your graphics card. Turn the dials, pin what is worth keeping.",
+    year: "2026",
+    date: "2026-10-03",
+    field: "Generative form",
+    topics: [],
+    kind: "visuals",
+    status: "live",
+    visibility: "draft",
+    path: "/specimens",
+    cta: "Open the bench",
+  },
   {
     id: "slime-quantum",
     title: "Slime mould and quantum computing",

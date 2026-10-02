@@ -49,6 +49,7 @@
     { name: "Swipe the Future v1", path: "/swipe-v1", draft: true },
     { name: "Social Composer", path: "/social-composer", draft: true },
     { name: "Generatives", path: "/generatives" },
+    { name: "Specimens", path: "/specimens", draft: true },
     { name: "Literal Frequency", path: "/literal-frequency", draft: true },
     { name: "Quantum Sandbox", path: "/quantum-sandbox", draft: true },
     { name: "The Odds", path: "/theodds", theme: "dark" },

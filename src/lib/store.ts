@@ -236,3 +236,68 @@ export async function deleteVersion(id: string): Promise<boolean> {
   await s.hdel(VKEY, id);
   return true;
 }
+
+// ---- Specimens: pinned renders ----
+
+/**
+ * The Specimens gallery: configurations somebody chose to keep, one field per
+ * pin. A pin is the sketch id, the values that differ from its defaults and a
+ * small JPEG of what they rendered to, so the gallery can show the picture
+ * without re-running every shader on page load. Like `fa:mocks`, this is the
+ * only copy of a decision somebody made, so it is not in `fa:cache`.
+ */
+const SKEY = "fa:specimens";
+
+export interface SpecimenPin {
+  id: string;
+  sketch: string;
+  title: string;
+  note: string;
+  values: Record<string, number>;
+  /** data:image/jpeg;base64,… */
+  thumb: string;
+  by: string | null;
+  at: number;
+}
+
+export async function listSpecimenPins(): Promise<SpecimenPin[]> {
+  const s = getStore();
+  if (!s) return [];
+  try {
+    const raw = await s.hgetall(SKEY);
+    return Object.values(raw)
+      .map((json) => {
+        try {
+          return (typeof json === "string" ? JSON.parse(json) : json) as SpecimenPin;
+        } catch {
+          return null;
+        }
+      })
+      .filter((v): v is SpecimenPin => v !== null && typeof v.id === "string")
+      .sort((a, b) => b.at - a.at);
+  } catch {
+    return [];
+  }
+}
+
+export async function writeSpecimenPin(pin: SpecimenPin): Promise<boolean> {
+  const s = getStore();
+  if (!s) return false;
+  try {
+    await s.hset(SKEY, pin.id, JSON.stringify(pin));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export async function deleteSpecimenPin(id: string): Promise<boolean> {
+  const s = getStore();
+  if (!s) return false;
+  try {
+    await s.hdel(SKEY, id);
+    return true;
+  } catch {
+    return false;
+  }
+}

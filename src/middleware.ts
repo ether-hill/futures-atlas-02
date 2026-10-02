@@ -50,6 +50,9 @@ const INTERNAL_PATHS = [
   // read and written by a page that already required the cookie, so the same
   // gate covers it, on both verbs.
   "/api/mocks",
+  // The Specimens gallery's pins. The page is a draft, so whoever calls this
+  // already holds the cookie; see the route for which verb to open if it ships.
+  "/api/specimens",
   "/logo-animator",
   "/design-system",
   "/style-guide",
