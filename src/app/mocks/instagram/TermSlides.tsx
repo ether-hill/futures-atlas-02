@@ -83,7 +83,7 @@ export function TermSlide({
 }
 
 function Cover({ post, system }: { post: TermPost; system: CoverSystem }) {
-  const photo = post.cover ?? post.story?.find((b) => b.photo && b.photo.fit !== "plate")?.photo;
+  const photo = post.cover ?? post.story?.find((b) => b.photo)?.photo;
   // Without a photograph the photo and plate systems have nothing to show, so
   // they fall back to the colour ground rather than inventing a picture.
   const sys = !photo && system !== "colour" ? "colour" : system;
@@ -125,49 +125,24 @@ function Story({ post, index }: { post: TermPost; index: number }) {
   const s = post.story?.[index];
   if (!s) return null;
 
-  // A document, shown whole: a title page cropped to fill the frame is a
-  // picture of some letters, and the page is the evidence.
-  if (s.photo?.fit === "plate") {
-    return (
-      <div className="tv tv-story is-doc">
-        <div className="tv-doc">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={s.photo.src} alt="" />
-        </div>
-        <div className="tv-col tv-doc-text">
-          {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
-          {s.big ? <div className="tv-big">{s.big}</div> : null}
-          {s.text ? <p className="tv-text">{s.text}</p> : null}
-        </div>
-        <Credit text={s.photo.credit} />
-        {s.end ? <Mark /> : null}
-      </div>
-    );
-  }
-
+  // Photograph above, words below on solid ground. Text laid over a picture
+  // was either illegible or hid the picture, and the picture is half the point.
   if (s.photo) {
     return (
-      <div className="tv tv-story is-photo">
-        {s.photo.duo ? (
-          <div className="tv-duo" aria-hidden="true">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
-          </div>
-        ) : (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img className="tv-bleed" src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
-        )}
-        <i className="tv-scrim" aria-hidden="true" style={s.photo.dim != null ? { background: `rgba(10,14,20,${s.photo.dim})` } : undefined} />
-        <div className="tv-col">
-          {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
-          {/* Paragraph first, then the lines it lands on: the caption's order. */}
-          {s.text ? <p className="tv-text">{s.text}</p> : null}
-          {s.parts && !s.text ? <Roots parts={s.parts} first /> : null}
-          {s.big ? <div className="tv-big">{s.big}</div> : null}
-          {s.parts && s.text ? <Roots parts={s.parts} /> : null}
+      <div className="tv tv-story is-split">
+        <div className="tv-pic">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
+          <Credit text={s.photo.credit} />
         </div>
-        <Credit text={s.photo.credit} />
-        {s.end ? <Mark /> : null}
+        <div className="tv-words">
+          <div className="tv-col">
+            {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
+            {s.parts ? <Roots parts={s.parts} first /> : null}
+            {s.text ? <p className="tv-text">{s.text}</p> : null}
+            {s.big ? <div className="tv-big">{s.big}</div> : null}
+          </div>
+        </div>
       </div>
     );
   }
@@ -284,33 +259,32 @@ export const TERM_CSS = `
   font-size: 9.4cqw; line-height: 1.04; letter-spacing: -.035em; white-space: pre-line;
 }
 .stf .tv-kind + .tv-big { margin-top: 3cqw; }
-.stf .tv-story.is-photo .tv-text { margin-top: 0; }
-.stf .tv-story.is-photo .tv-col { text-shadow: 0 .3cqw 2.4cqw rgba(0,0,0,.85), 0 0 .8cqw rgba(0,0,0,.6); }
-.stf .tv-story.is-photo .tv-big { margin-top: 6cqw; font-size: 7.6cqw; }
+
+/* ── split: picture above, words below ─────────────────────────────── */
+.stf .tv-story.is-split { padding: 0; }
+.stf .tv-pic { position: relative; flex: 0 0 56%; overflow: hidden; }
+.stf .tv-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.stf .tv-pic .tv-credit {
+  right: 3cqw; bottom: 2.4cqw; max-width: 70%; color: rgba(255,255,255,.85);
+  text-shadow: 0 0 1.2cqw rgba(0,0,0,.8);
+}
+.stf .tv-words {
+  flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: center;
+  padding: 6cqw 8cqw;
+}
+.stf .tv-words .tv-text { margin: 0; font-size: 4.5cqw; line-height: 1.42; opacity: .9; }
+.stf .tv-words .tv-big { margin-top: 0; font-size: 6.6cqw; line-height: 1.12; }
+.stf .tv-words .tv-text + .tv-big, .stf .tv-words .tv-roots + .tv-big { margin-top: 4.5cqw; }
 .stf .tv-text { margin: 4.5cqw 0 0; font-size: 4.8cqw; line-height: 1.4; max-width: 34ch; opacity: .86; }
 .stf .tv-story.is-end .tv-big { font-size: 8cqw; }
 
-.stf .tv-bleed { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.stf .tv-scrim {
-  position: absolute; inset: 0; z-index: 1;
-  background: rgba(10,14,20,.62);
-}
 .stf .tv-roots {
   margin-top: 6cqw; padding-top: 4.5cqw; border-top: 1px solid rgba(242,237,226,.25);
   display: flex; flex-direction: column; gap: 1.5cqw; font-size: 4.2cqw; color: rgba(242,237,226,.8);
 }
 .stf .tv-roots.first { margin-top: 0; padding-top: 0; border-top: 0; }
 .stf .tv-roots b { font-family: var(--font-heading); font-weight: 800; font-size: 5.6cqw; letter-spacing: -.02em; color: #f2ede2; margin-right: 1cqw; }
-/* Over a photograph the blue label sinks into sky and spoil; bone holds. */
-.stf .tv-story.is-photo .tv-kind { color: rgba(242,237,226,.85); }
 
-.stf .tv-doc { flex: 0 0 40%; position: relative; }
-.stf .tv-doc img {
-  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block;
-}
-.stf .tv-doc-text { flex: 0 0 auto; padding-top: 7cqw; }
-.stf .tv-doc-text .tv-big { font-size: 8.4cqw; }
-.stf .tv-doc-text .tv-text { font-size: 4.2cqw; }
 
 .stf .tv-parts { display: flex; flex-direction: column; gap: 5cqw; margin-top: 5cqw; }
 .stf .tv-part-w {

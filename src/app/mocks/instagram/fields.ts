@@ -150,13 +150,6 @@ export interface TermPhoto {
   pos?: string;
   /** What it is, who made it, and the licence, printed on the slide. */
   credit: string;
-  /** `plate` shows the whole thing at its own proportions (a document);
-   *  default fills the frame (a place). */
-  fit?: "plate";
-  /** How dark the scrim over it is, 0-1. */
-  dim?: number;
-  /** Draw it in the cover's duotone rather than its own colours. */
-  duo?: boolean;
 }
 
 export interface StoryBeat {
@@ -498,36 +491,34 @@ export const TERM_POSTS: TermPost[] = [
     caption:
       "Solastalgia. The distress of watching the place you live change around you while you are still living in it.\n\nNostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did. The mine widened. The river dropped. The season stopped arriving when it used to. Nothing is missing from your life except the place it happens in.\n\nThe philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed. Latin solacium, comfort, and the Greek -algia, pain. The pain of losing your comfort while sitting inside it.\n\nIt is in this studio’s vocabulary because most futures work is about arrival, and this is the word for what an arrival costs the people who do not move.",
     // The slides follow the caption's own order, in its own words. No `cover`:
-    // slide one is slide two's 1987 frame in the duotone.
+    // slide one is slide two's valley in the duotone.
     hue: "#4E9E86",
-    // Slides two and three are ONE frame, decades apart: Landsat 5 on 18 Sep
-    // 1987 and Landsat 9 on 15 Sep 2024, same path/row (090/082), same bbox
-    // (150.79,-32.408,150.97,-32.217), same season, same colour stretch,
-    // rendered via Microsoft Planetary Computer. The town and the river hold
-    // still; the pit to the south of town is what moves. Mines are not named
-    // on the slides because the identifications were read off the imagery,
-    // not checked against a boundary map.
+    // Ground level, in the Hunter, all Creative Commons: the valley as home,
+    // the mine, a person who lives beside it, what is left of a farm. Each is
+    // labelled with what its own photographer called it, nothing more.
     story: [
       {
-        kicker: "Muswellbrook, Hunter Valley, 1987",
-        text: "Nostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed:",
-        big: "you never left, and home did.",
+        text: "Nostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did.",
         photo: {
-          src: "/mocks/instagram/solastalgia/muswellbrook-1987.jpg",
-          // Light: the change between the two frames is the point of them.
-          dim: 0.3,
-          credit: "Landsat 5, 18 Sep 1987. USGS/NASA, public domain",
+          src: "/mocks/instagram/solastalgia/bulga-farmland.jpg",
+          pos: "50% 60%",
+          credit: "Bulga farmland, Hunter Valley, 2011. Lock the Gate Alliance, CC BY 2.0",
         },
       },
       {
-        kicker: "The same place, 2024",
-        text: "The philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed.",
         big: "The mine widened.\nThe river dropped.\nThe season stopped arriving when it used to.",
         photo: {
-          src: "/mocks/instagram/solastalgia/muswellbrook-2024.jpg",
-          // Light: the change between the two frames is the point of them.
-          dim: 0.3,
-          credit: "Landsat 9, 15 Sep 2024. USGS/NASA, public domain",
+          src: "/mocks/instagram/solastalgia/integra-camberwell.jpg",
+          pos: "50% 50%",
+          credit: "Integra coal mine near Camberwell, Hunter Valley, 2014. D. Sewell for Lock the Gate Alliance, CC BY 2.0",
+        },
+      },
+      {
+        text: "The philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/wendy-bowman-camberwell.jpg",
+          pos: "50% 30%",
+          credit: "Wendy Bowman, resident of Camberwell in the Hunter Valley, 2015. Kate Ausburn, CC BY 2.0",
         },
       },
       {
@@ -537,19 +528,9 @@ export const TERM_POSTS: TermPost[] = [
         ],
         big: "The pain of losing your comfort while sitting inside it.",
         photo: {
-          src: "/mocks/instagram/solastalgia/hunter-open-cut.jpg",
-          pos: "50% 50%",
-          credit: "Open-cut coal mine, Hunter Valley, 2011. Max Phillips, CC BY 2.0",
-        },
-      },
-      {
-        // 2024 in the cover's duotone: the post opens on 1987 and closes on now.
-        text: "Most futures work is about arrival.",
-        big: "This is the word for what an arrival costs the people who do not move.",
-        photo: {
-          src: "/mocks/instagram/solastalgia/muswellbrook-2024.jpg",
-          duo: true,
-          credit: "Landsat 9, 15 Sep 2024. USGS/NASA, public domain",
+          src: "/mocks/instagram/solastalgia/old-fence-hunter.jpg",
+          pos: "60% 50%",
+          credit: "Old fence in the Hunter, 2012. Jeremy Buckingham, CC BY 2.0",
         },
       },
     ],

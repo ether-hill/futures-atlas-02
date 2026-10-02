@@ -65,8 +65,8 @@ export default function TermBackgrounds() {
         <section className="mt-16">
           <h2 className="text-[19px] font-bold">Solastalgia, the whole carousel</h2>
           <p className="mt-1 max-w-[680px] text-[14px] leading-[1.6] text-paper/55">
-            {n} slides at 4:5, cover in system A: the word, where it came from, what it is made of, and the word it is
-            built against. Photographs are real, credited on the slide that uses them.
+            {n} slides at 4:5, cover in system A. The caption in its own order, one beat a slide, photograph
+            above and words below. Every photograph is a real place in the Hunter, credited on its slide.
           </p>
           <div className="mt-5 flex flex-wrap gap-4 pb-4">
             {Array.from({ length: n }, (_, i) => (
