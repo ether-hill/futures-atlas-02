@@ -141,8 +141,9 @@ function Story({ post, index }: { post: TermPost; index: number }) {
         <i className="tv-scrim" aria-hidden="true" style={s.photo.dim != null ? { background: `rgba(10,14,20,${s.photo.dim})` } : undefined} />
         <div className="tv-col">
           {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
-          {s.big ? <div className="tv-big">{s.big}</div> : null}
+          {/* Paragraph first, then the lines it lands on: the caption's order. */}
           {s.text ? <p className="tv-text">{s.text}</p> : null}
+          {s.big ? <div className="tv-big">{s.big}</div> : null}
           {/* The etymology, as a footnote to the origin rather than a slide. */}
           {s.parts ? (
             <div className="tv-roots">
@@ -155,6 +156,7 @@ function Story({ post, index }: { post: TermPost; index: number }) {
           ) : null}
         </div>
         <Credit text={s.photo.credit} />
+        {s.end ? <Mark /> : null}
       </div>
     );
   }
@@ -271,6 +273,8 @@ export const TERM_CSS = `
   font-size: 9.4cqw; line-height: 1.04; letter-spacing: -.035em; white-space: pre-line;
 }
 .stf .tv-kind + .tv-big { margin-top: 3cqw; }
+.stf .tv-story.is-photo .tv-text { margin-top: 0; }
+.stf .tv-story.is-photo .tv-big { margin-top: 6cqw; font-size: 7.6cqw; }
 .stf .tv-text { margin: 4.5cqw 0 0; font-size: 4.8cqw; line-height: 1.4; max-width: 34ch; opacity: .86; }
 .stf .tv-story.is-end .tv-big { font-size: 8cqw; }
 
