@@ -487,40 +487,19 @@ export const TERM_POSTS: TermPost[] = [
     id: "solastalgia",
     term: "Solastalgia",
     pron: "/\u02CCs\u0252l\u0259\u02C8stald\u0292\u0259/",
-    kind_: "noun \u00B7 environmental philosophy",
+    kind_: "noun",
     definition:
-      "The distress of watching the place you live change around you while you are still living in it. Homesickness without having left home.",
-    body:
-      "Nostalgia is the pain of not being able to go back. This is the pain of never having gone anywhere, and home going without you.",
+      "Distress caused by environmental change in the place where you live, while you are still living there. Homesickness without having left home.",
+    body: "",
     caption:
-      "Solastalgia. The distress of watching the place you live change around you while you are still living in it.\n\nNostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did. The mine widened. The river dropped. The season stopped arriving when it used to. Nothing is missing from your life except the place it happens in.\n\nThe philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed. Latin solacium, comfort, and the Greek -algia, pain. The pain of losing your comfort while sitting inside it.\n\nIt is in this studio\u2019s vocabulary because most futures work is about arrival, and this is the word for what an arrival costs the people who do not move.",
-    // Mount Owen and its neighbours from the air, 2024. The aerial is the
-    // cover because from that height a mine is pattern before it is a mine;
-    // the ground-level photograph is kept for the slide that names the loss.
-    cover: {
-      src: "/mocks/instagram/solastalgia/mount-owen-2024.jpg",
-      pos: "30% 50%",
-      credit: "Mount Owen mine complex, Hunter Valley, 2024. Bidgee, CC BY-SA 3.0 AU",
-    },
+      "Solastalgia (noun): distress caused by environmental change in the place where you live, while you are still living there. Homesickness without having left home.\n\nThe philosopher Glenn Albrecht coined it in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was reshaping the land around the people who lived there. It joins the Latin solacium, comfort, and the Greek -algia, pain.\n\nCompare nostalgia, coined in 1688 by the Swiss medical student Johannes Hofer for mercenaries made ill by longing for home. Nostalgia is longing for a home you have left. Solastalgia is distress at a home that changes while you are still in it.",
+    // No `cover`: the cover is drawn from the first story photograph, so slide
+    // one is the same mine in the duotone and slide two is it in colour.
     hue: "#4E9E86",
     story: [
       {
-        // Hofer's own title page: "NOSTALGIA, oder Heimwehe", Basel, 22 June 1688.
-        kicker: "Basel, 1688",
-        big: "Nostalgia",
-        text: "Coined by a Swiss medical student, for mercenaries who were physically ill with wanting to go home.",
-        photo: {
-          src: "/mocks/instagram/solastalgia/hofer-1688.jpg",
-          fit: "plate",
-          credit: "Johannes Hofer, Dissertatio medica de nostalgia, oder Heimwehe, 1688. Wellcome Collection, public domain",
-        },
-      },
-      {
-        text: "Solastalgia is the same ache with the arrangement reversed.",
-        big: "You never left.\nHome did.",
-      },
-      {
-        big: "The mine widened.\nThe river dropped.\nThe season stopped arriving when it used to.",
+        kicker: "Origin",
+        text: "Coined in the early 2000s by the philosopher Glenn Albrecht, while working in the Hunter Valley, New South Wales, where open-cut coal mining was reshaping the land around the people who lived there.",
         photo: {
           src: "/mocks/instagram/solastalgia/hunter-open-cut.jpg",
           pos: "50% 50%",
@@ -528,29 +507,22 @@ export const TERM_POSTS: TermPost[] = [
         },
       },
       {
-        big: "Nothing is missing from your life except the place it happens in.",
-      },
-      {
-        kicker: "Hunter Valley, New South Wales",
-        text: "The philosopher Glenn Albrecht built the word here in the early 2000s, where open-cut coal mining was taking the landscape apart around people who stayed.",
-        photo: {
-          src: "/mocks/instagram/solastalgia/upper-hunter-2006.jpg",
-          pos: "50% 60%",
-          credit: "Upper Hunter open-cut mines, 2006. Tim J Keegan, CC BY-SA 2.0",
-        },
-      },
-      {
-        kicker: "The word",
+        kicker: "Etymology",
         parts: [
           { w: "solacium", lang: "Latin", gloss: "comfort" },
           { w: "-algia", lang: "Greek", gloss: "pain" },
         ],
-        text: "The pain of losing your comfort while sitting inside it.",
       },
       {
-        text: "Most futures work is about arrival.",
-        big: "This is the word for what an arrival costs the people who do not move.",
-        end: true,
+        // Hofer's own title page: "NOSTALGIA, oder Heimwehe", Basel, 22 June 1688.
+        kicker: "Compare",
+        big: "nostalgia",
+        text: "Coined in 1688 by the Swiss medical student Johannes Hofer, for mercenaries made ill by longing for a home they had left.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/hofer-1688.jpg",
+          fit: "plate",
+          credit: "Johannes Hofer, Dissertatio medica de nostalgia, oder Heimwehe, 1688. Wellcome Collection, public domain",
+        },
       },
     ],
     hashtags: ["#solastalgia", "#climategrief", "#environmentalphilosophy", "#futuresthinking", "#futuresatlas"],

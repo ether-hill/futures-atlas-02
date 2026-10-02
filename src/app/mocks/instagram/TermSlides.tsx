@@ -17,6 +17,10 @@
  *
  * Shown side by side at /mocks/term-bg. The feed draws `photo`.
  *
+ * Where a word has a story, the cover is not a separate picture: it is the
+ * first story photograph, so slide one and slide two are the same place, first
+ * in the duotone and then in its own colours.
+ *
  * THE STORY. Every word on a story slide is the caption's, split into beats; a
  * slide adds nothing the caption does not say. Every photograph is a real
  * document or a real place, with its credit and licence printed on the slide
@@ -67,25 +71,26 @@ export function TermSlide({
 }
 
 function Cover({ post, system }: { post: TermPost; system: CoverSystem }) {
+  const photo = post.cover ?? post.story?.find((b) => b.photo && b.photo.fit !== "plate")?.photo;
   // Without a photograph the photo and plate systems have nothing to show, so
   // they fall back to the colour ground rather than inventing a picture.
-  const sys = !post.cover && system !== "colour" ? "colour" : system;
+  const sys = !photo && system !== "colour" ? "colour" : system;
   const light = sys !== "photo";
   // A word with a story keeps its cover to the definition: the line that used
   // to sit under it is now slide two onwards.
-  const showBody = !post.story?.length && sys !== "plate";
+  const showBody = !!post.body && !post.story?.length && sys !== "plate";
   return (
     <div className={`tv tv-cover is-${sys}`} style={{ ["--hue" as string]: post.hue ?? "#3b93d5" }}>
-      {sys === "photo" && post.cover ? (
+      {sys === "photo" && photo ? (
         <div className="tv-duo" aria-hidden="true">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.cover.src} alt="" style={{ objectPosition: post.cover.pos ?? "50% 50%" }} />
+          <img src={photo.src} alt="" style={{ objectPosition: photo.pos ?? "50% 50%" }} />
         </div>
       ) : null}
-      {sys === "plate" && post.cover ? (
+      {sys === "plate" && photo ? (
         <div className="tv-window">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={post.cover.src} alt="" style={{ objectPosition: post.cover.pos ?? "50% 50%" }} />
+          <img src={photo.src} alt="" style={{ objectPosition: photo.pos ?? "50% 50%" }} />
         </div>
       ) : null}
       <div className="tv-col">
@@ -97,6 +102,7 @@ function Cover({ post, system }: { post: TermPost; system: CoverSystem }) {
         <p className="tv-def">{post.definition}</p>
         {showBody ? <p className="tv-body">{post.body}</p> : null}
       </div>
+      {/* A photograph borrowed from the story is credited on its own slide. */}
       {post.cover && sys !== "colour" ? <Credit text={post.cover.credit} /> : null}
       <Mark light={light} />
     </div>
@@ -106,19 +112,12 @@ function Cover({ post, system }: { post: TermPost; system: CoverSystem }) {
 function Story({ post, index }: { post: TermPost; index: number }) {
   const s = post.story?.[index];
   if (!s) return null;
-  const n = post.story!.length;
-  const count = (
-    <div className="tv-count">
-      {post.term} &middot; {index + 1}/{n}
-    </div>
-  );
 
   // A document, shown whole: a title page cropped to fill the frame is a
   // picture of some letters, and the page is the evidence.
   if (s.photo?.fit === "plate") {
     return (
       <div className="tv tv-story is-doc">
-        {count}
         <div className="tv-doc">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={s.photo.src} alt="" />
@@ -129,6 +128,7 @@ function Story({ post, index }: { post: TermPost; index: number }) {
           {s.text ? <p className="tv-text">{s.text}</p> : null}
         </div>
         <Credit text={s.photo.credit} />
+        {s.end ? <Mark /> : null}
       </div>
     );
   }
@@ -139,8 +139,7 @@ function Story({ post, index }: { post: TermPost; index: number }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="tv-bleed" src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
         <i className="tv-scrim" aria-hidden="true" />
-        {count}
-        <div className="tv-col tv-bottom">
+        <div className="tv-col">
           {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
           {s.big ? <div className="tv-big">{s.big}</div> : null}
           {s.text ? <p className="tv-text">{s.text}</p> : null}
@@ -152,7 +151,6 @@ function Story({ post, index }: { post: TermPost; index: number }) {
 
   return (
     <div className={`tv tv-story is-type${s.end ? " is-end" : ""}`}>
-      {count}
       <div className="tv-col">
         {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
         {s.text && !s.parts ? <p className="tv-lead">{s.text}</p> : null}
@@ -183,7 +181,7 @@ export const TERM_CSS = `
 .stf .tv {
   position: absolute; inset: 0; box-sizing: border-box; overflow: hidden;
   display: flex; flex-direction: column;
-  padding: 10cqw 8cqw 16cqw; color: #f2ede2;
+  padding: 16cqw 8cqw; color: #f2ede2; justify-content: center;
   background: #101319;
 }
 .stf .tv-col { position: relative; z-index: 2; }
@@ -223,7 +221,6 @@ export const TERM_CSS = `
    Grey photograph multiplied onto blue (white becomes blue), then the ink
    lightened in (black becomes ink). Any photograph comes out in the same two
    colours, which is what lets the picture change and the series hold. */
-.stf .tv-cover { justify-content: flex-end; }
 .stf .tv-cover.is-photo { --hue: #8cc4ee; }
 .stf .tv-duo { position: absolute; inset: 0; background: #3b93d5; }
 .stf .tv-duo img {
@@ -235,11 +232,11 @@ export const TERM_CSS = `
 }
 .stf .tv-cover.is-photo::before {
   content: ""; position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(10,14,20,0) 30%, rgba(10,14,20,.78) 72%, rgba(10,14,20,.9));
+  background: rgba(10,14,20,.5);
 }
 
 /* ── cover: colour ─────────────────────────────────────────────────────── */
-.stf .tv-cover.is-colour { background: var(--hue); color: #17181b; justify-content: center; }
+.stf .tv-cover.is-colour { background: var(--hue); color: #17181b; }
 .stf .tv-cover.is-colour .tv-kind { color: rgba(23,24,27,.62); }
 
 /* ── cover: plate ──────────────────────────────────────────────────────── */
@@ -257,11 +254,6 @@ export const TERM_CSS = `
 .stf .tv-window img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* ── story ─────────────────────────────────────────────────────────────── */
-.stf .tv-count {
-  position: absolute; left: 8cqw; top: 7cqw; z-index: 3;
-  font-family: var(--font-heading); font-weight: 600; font-size: 2.4cqw;
-  letter-spacing: .2em; text-transform: uppercase; color: rgba(242,237,226,.5);
-}
 .stf .tv-story.is-type { justify-content: center; }
 .stf .tv-lead { margin: 0; font-size: 5.4cqw; line-height: 1.35; opacity: .72; max-width: 32ch; }
 .stf .tv-big {
@@ -275,19 +267,18 @@ export const TERM_CSS = `
 .stf .tv-bleed { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 .stf .tv-scrim {
   position: absolute; inset: 0; z-index: 1;
-  background: linear-gradient(180deg, rgba(10,14,20,.45) 0%, rgba(10,14,20,0) 22%, rgba(10,14,20,0) 40%, rgba(10,14,20,.82) 74%, rgba(10,14,20,.94));
+  background: rgba(10,14,20,.62);
 }
-.stf .tv-bottom { margin-top: auto; }
 /* Over a photograph the blue label sinks into sky and spoil; bone holds. */
 .stf .tv-story.is-photo .tv-kind { color: rgba(242,237,226,.85); }
 
-.stf .tv-story.is-doc { padding-top: 16cqw; }
-.stf .tv-doc { flex: 1 1 auto; min-height: 0; position: relative; }
+.stf .tv-doc { flex: 0 0 40%; position: relative; }
 .stf .tv-doc img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; display: block;
 }
-.stf .tv-doc-text { flex: 0 0 auto; padding-top: 6cqw; }
+.stf .tv-doc-text { flex: 0 0 auto; padding-top: 7cqw; }
 .stf .tv-doc-text .tv-big { font-size: 8.4cqw; }
+.stf .tv-doc-text .tv-text { font-size: 4.2cqw; }
 
 .stf .tv-parts { display: flex; flex-direction: column; gap: 5cqw; margin-top: 5cqw; }
 .stf .tv-part-w {
