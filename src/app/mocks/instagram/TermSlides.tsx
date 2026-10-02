@@ -55,6 +55,18 @@ function Credit({ text, light }: { text: string; light?: boolean }) {
   return <div className={`tv-credit${light ? " on-light" : ""}`}>{text}</div>;
 }
 
+function Roots({ parts, first }: { parts: { w: string; lang: string; gloss: string }[]; first?: boolean }) {
+  return (
+    <div className={`tv-roots${first ? " first" : ""}`}>
+      {parts.map((p) => (
+        <span key={p.w}>
+          <b>{p.w}</b> {p.lang}, {p.gloss}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 export function TermSlide({
   post, index, ratio, cover = "photo",
 }: { post: TermPost; index: number; ratio: Ratio; cover?: CoverSystem }) {
@@ -136,24 +148,23 @@ function Story({ post, index }: { post: TermPost; index: number }) {
   if (s.photo) {
     return (
       <div className="tv tv-story is-photo">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="tv-bleed" src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
+        {s.photo.duo ? (
+          <div className="tv-duo" aria-hidden="true">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
+          </div>
+        ) : (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img className="tv-bleed" src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
+        )}
         <i className="tv-scrim" aria-hidden="true" style={s.photo.dim != null ? { background: `rgba(10,14,20,${s.photo.dim})` } : undefined} />
         <div className="tv-col">
           {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
           {/* Paragraph first, then the lines it lands on: the caption's order. */}
           {s.text ? <p className="tv-text">{s.text}</p> : null}
+          {s.parts && !s.text ? <Roots parts={s.parts} first /> : null}
           {s.big ? <div className="tv-big">{s.big}</div> : null}
-          {/* The etymology, as a footnote to the origin rather than a slide. */}
-          {s.parts ? (
-            <div className="tv-roots">
-              {s.parts.map((p) => (
-                <span key={p.w}>
-                  <b>{p.w}</b> {p.lang}, {p.gloss}
-                </span>
-              ))}
-            </div>
-          ) : null}
+          {s.parts && s.text ? <Roots parts={s.parts} /> : null}
         </div>
         <Credit text={s.photo.credit} />
         {s.end ? <Mark /> : null}
@@ -287,6 +298,7 @@ export const TERM_CSS = `
   margin-top: 6cqw; padding-top: 4.5cqw; border-top: 1px solid rgba(242,237,226,.25);
   display: flex; flex-direction: column; gap: 1.5cqw; font-size: 4.2cqw; color: rgba(242,237,226,.8);
 }
+.stf .tv-roots.first { margin-top: 0; padding-top: 0; border-top: 0; }
 .stf .tv-roots b { font-family: var(--font-heading); font-weight: 800; font-size: 5.6cqw; letter-spacing: -.02em; color: #f2ede2; margin-right: 1cqw; }
 /* Over a photograph the blue label sinks into sky and spoil; bone holds. */
 .stf .tv-story.is-photo .tv-kind { color: rgba(242,237,226,.85); }

@@ -153,8 +153,10 @@ export interface TermPhoto {
   /** `plate` shows the whole thing at its own proportions (a document);
    *  default fills the frame (a place). */
   fit?: "plate";
-  /** How dark the scrim over it is, 0-1. Paper needs far more than a landscape. */
+  /** How dark the scrim over it is, 0-1. */
   dim?: number;
+  /** Draw it in the cover's duotone rather than its own colours. */
+  duo?: boolean;
 }
 
 export interface StoryBeat {
@@ -501,8 +503,8 @@ export const TERM_POSTS: TermPost[] = [
     hue: "#4E9E86",
     story: [
       {
-        text: "Nostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did.",
-        big: "The mine widened.\nThe river dropped.\nThe season stopped arriving when it used to.",
+        text: "Nostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed:",
+        big: "you never left, and home did.",
         photo: {
           src: "/mocks/instagram/solastalgia/hunter-open-cut.jpg",
           pos: "50% 50%",
@@ -511,10 +513,7 @@ export const TERM_POSTS: TermPost[] = [
       },
       {
         text: "The philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed.",
-        parts: [
-          { w: "solacium", lang: "Latin", gloss: "comfort" },
-          { w: "-algia", lang: "Greek", gloss: "pain" },
-        ],
+        big: "The mine widened.\nThe river dropped.\nThe season stopped arriving when it used to.",
         photo: {
           src: "/mocks/instagram/solastalgia/upper-hunter-2006.jpg",
           pos: "50% 60%",
@@ -522,13 +521,27 @@ export const TERM_POSTS: TermPost[] = [
         },
       },
       {
-        text: "Most futures work is about arrival.",
-        big: "This is the word for what an arrival costs the people who do not move.",
+        parts: [
+          { w: "solacium", lang: "Latin", gloss: "comfort" },
+          { w: "-algia", lang: "Greek", gloss: "pain" },
+        ],
+        big: "The pain of losing your comfort while sitting inside it.",
         photo: {
           src: "/mocks/instagram/solastalgia/mount-owen-2024.jpg",
           pos: "30% 50%",
           dim: 0.66,
           credit: "Mount Owen mine complex, Hunter Valley, 2024. Bidgee, CC BY-SA 3.0 AU",
+        },
+      },
+      {
+        // The cover's photograph, in the cover's duotone: the post ends where it began.
+        text: "Most futures work is about arrival.",
+        big: "This is the word for what an arrival costs the people who do not move.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/hunter-open-cut.jpg",
+          pos: "50% 50%",
+          duo: true,
+          credit: "Open-cut coal mine, Hunter Valley, 2011. Max Phillips, CC BY 2.0",
         },
       },
     ],
