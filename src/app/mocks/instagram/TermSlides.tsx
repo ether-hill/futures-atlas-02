@@ -138,11 +138,21 @@ function Story({ post, index }: { post: TermPost; index: number }) {
       <div className="tv tv-story is-photo">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img className="tv-bleed" src={s.photo.src} alt="" style={{ objectPosition: s.photo.pos ?? "50% 50%" }} />
-        <i className="tv-scrim" aria-hidden="true" />
+        <i className="tv-scrim" aria-hidden="true" style={s.photo.dim != null ? { background: `rgba(10,14,20,${s.photo.dim})` } : undefined} />
         <div className="tv-col">
           {s.kicker ? <div className="tv-kind">{s.kicker}</div> : null}
           {s.big ? <div className="tv-big">{s.big}</div> : null}
           {s.text ? <p className="tv-text">{s.text}</p> : null}
+          {/* The etymology, as a footnote to the origin rather than a slide. */}
+          {s.parts ? (
+            <div className="tv-roots">
+              {s.parts.map((p) => (
+                <span key={p.w}>
+                  <b>{p.w}</b> {p.lang}, {p.gloss}
+                </span>
+              ))}
+            </div>
+          ) : null}
         </div>
         <Credit text={s.photo.credit} />
       </div>
@@ -269,6 +279,11 @@ export const TERM_CSS = `
   position: absolute; inset: 0; z-index: 1;
   background: rgba(10,14,20,.62);
 }
+.stf .tv-roots {
+  margin-top: 6cqw; padding-top: 4.5cqw; border-top: 1px solid rgba(242,237,226,.25);
+  display: flex; flex-direction: column; gap: 1.5cqw; font-size: 4.2cqw; color: rgba(242,237,226,.8);
+}
+.stf .tv-roots b { font-family: var(--font-heading); font-weight: 800; font-size: 5.6cqw; letter-spacing: -.02em; color: #f2ede2; margin-right: 1cqw; }
 /* Over a photograph the blue label sinks into sky and spoil; bone holds. */
 .stf .tv-story.is-photo .tv-kind { color: rgba(242,237,226,.85); }
 

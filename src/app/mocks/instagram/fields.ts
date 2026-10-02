@@ -153,6 +153,8 @@ export interface TermPhoto {
   /** `plate` shows the whole thing at its own proportions (a document);
    *  default fills the frame (a place). */
   fit?: "plate";
+  /** How dark the scrim over it is, 0-1. Paper needs far more than a landscape. */
+  dim?: number;
 }
 
 export interface StoryBeat {
@@ -505,22 +507,21 @@ export const TERM_POSTS: TermPost[] = [
           pos: "50% 50%",
           credit: "Open-cut coal mine, Hunter Valley, 2011. Max Phillips, CC BY 2.0",
         },
-      },
-      {
-        kicker: "Etymology",
         parts: [
           { w: "solacium", lang: "Latin", gloss: "comfort" },
           { w: "-algia", lang: "Greek", gloss: "pain" },
         ],
       },
       {
-        // Hofer's own title page: "NOSTALGIA, oder Heimwehe", Basel, 22 June 1688.
+        // Hofer's own title page, Basel, 22 June 1688, full-bleed like slide two.
         kicker: "Compare",
         big: "nostalgia",
         text: "Coined in 1688 by the Swiss medical student Johannes Hofer, for mercenaries made ill by longing for a home they had left.",
         photo: {
           src: "/mocks/instagram/solastalgia/hofer-1688.jpg",
-          fit: "plate",
+          // The top of the page, where NOSTALGIA, oder Heimwehe is printed.
+          pos: "50% 8%",
+          dim: 0.82,
           credit: "Johannes Hofer, Dissertatio medica de nostalgia, oder Heimwehe, 1688. Wellcome Collection, public domain",
         },
       },
