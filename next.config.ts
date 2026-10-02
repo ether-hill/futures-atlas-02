@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
   // runtime; leave it to Node's own resolver.
   serverExternalPackages: ["mupdf"],
 
+  // The homepage stack banner inlines public/logos/*.svg on the server
+  // (mocks/stack-games/marks.ts); ship them with the function.
+  outputFileTracingIncludes: { "/": ["./public/logos/*.svg"] },
+
   /*
    * Take webpack off its WebAssembly hasher.
    *

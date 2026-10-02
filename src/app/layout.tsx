@@ -140,15 +140,15 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Adaptive "F" favicon, light/dark by browser colour scheme. The svg
-            self-adapts via @media (Safari/Firefox); the dark media link covers
-            browsers that switch on the <link> instead. */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
         />
+        {/* The round Atlas mark. One svg that flips itself with the browser's
+            colour scheme (ink on light, bone on dark). favicon-dark.svg is the
+            same file, kept for the static bundles that still link it. */}
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <script
           dangerouslySetInnerHTML={{
             __html: `(function(){try{if(localStorage.getItem('fa-theme')!=='light'){document.documentElement.classList.add('dark');}}catch(e){}})();`,

@@ -9,7 +9,8 @@ import { FeedMasonry } from "@/components/FeedMasonry";
 import { editorPosts, livePosts } from "@/data/posts";
 import { prototypesFor } from "@/data/prototypes";
 import { getListingEditor } from "@/lib/editor";
-import { LOGOS } from "@/lib/logos";
+import { StackBanner } from "@/components/StackBanner";
+import { loadMarks } from "@/app/mocks/stack-games/marks";
 import { OG_IMAGES } from "@/lib/og";
 
 export const metadata: Metadata = {
@@ -17,9 +18,9 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", images: [OG_IMAGES["/"].image] },
 };
 
-// The stack strip: which marks headline the homepage tech banner (all render
-// as paper-tone inline SVGs; the full inventory lives on /about).
-const BANNER_TOOLS = ["claude", "openai", "midjourney", "kling", "veo", "nextjs", "react", "threejs", "p5js", "tailwindcss", "vercel", "huggingface", "mistral", "deepseek"];
+// The stack banner plays the About page's inventory as a game of falling
+// blocks; marks are inlined server-side so each brick carries its brand colour.
+const marks = loadMarks();
 
 export default async function Home() {
   // The homepage strip is public-facing: always live projects only, even for a
@@ -131,27 +132,8 @@ export default async function Home() {
                 Every project documents the AI systems and creative code it&rsquo;s
                 made with.
               </h2>
-              <div className="mt-[clamp(28px,4vw,48px)] flex flex-wrap items-center gap-x-[clamp(28px,4vw,56px)] gap-y-7 text-paper/60 transition-colors group-hover:text-paper/85">
-                {BANNER_TOOLS.map((slug) => {
-                  const glyph = LOGOS[slug];
-                  if (!glyph) return null;
-                  return (
-                    <svg
-                      key={slug}
-                      viewBox="0 0 24 24"
-                      role="img"
-                      aria-label={glyph.title}
-                      fillRule="evenodd"
-                      clipRule="evenodd"
-                      className="h-[clamp(28px,3vw,40px)] w-auto fill-current"
-                    >
-                      <title>{glyph.title}</title>
-                      {glyph.paths.map((d, i) => (
-                        <path key={i} d={d} />
-                      ))}
-                    </svg>
-                  );
-                })}
+              <div className="mt-[clamp(28px,4vw,48px)]">
+                <StackBanner marks={marks} />
               </div>
               <span className="mt-[clamp(28px,4vw,44px)] inline-flex items-center gap-2.5 font-mono text-[12px] uppercase tracking-[0.1em] text-paper/80 underline-offset-4 transition-colors group-hover:text-paper group-hover:underline">
                 The full stack <span className="text-[14px]">→</span>

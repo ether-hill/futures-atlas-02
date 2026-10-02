@@ -72,9 +72,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Futures Atlas F favicon (same across the whole platform) */}
+        {/* Futures Atlas round mark, self-adapting to light/dark (same across the platform) */}
         <link rel="icon" href="/village-oracle/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/village-oracle/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
         {/* Village Oracle is LIGHT-ONLY. Force light before paint so there is no
             flash even if a dark preference was saved elsewhere on the platform.
             The shared atlas-nav also locks this project to light and removes its
