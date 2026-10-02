@@ -285,6 +285,7 @@ export const TERM_CSS = `
 }
 .stf .tv-kind + .tv-big { margin-top: 3cqw; }
 .stf .tv-story.is-photo .tv-text { margin-top: 0; }
+.stf .tv-story.is-photo .tv-col { text-shadow: 0 .3cqw 2.4cqw rgba(0,0,0,.85), 0 0 .8cqw rgba(0,0,0,.6); }
 .stf .tv-story.is-photo .tv-big { margin-top: 6cqw; font-size: 7.6cqw; }
 .stf .tv-text { margin: 4.5cqw 0 0; font-size: 4.8cqw; line-height: 1.4; max-width: 34ch; opacity: .86; }
 .stf .tv-story.is-end .tv-big { font-size: 8cqw; }
