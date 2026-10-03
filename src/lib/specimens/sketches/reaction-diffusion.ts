@@ -131,7 +131,7 @@ void main() {
     float bnc = pow(clamp(dot(n, bounceDir()) * 0.5 + 0.5, 0.0, 1.0), 2.0);
     float body = smoothstep(0.08, 0.32, h);
     if (u_invert > 0.5) body = 1.0 - body;
-    vec3 alb = vec3(0.80, 0.74, 0.62) * body;
+    vec3 alb = vec3(0.86) * body;
     vec3 key = keyColour();
     col = alb * (key * dif * 1.25 + key * (0.5 + 0.5 * ndl) * 0.06 + bounceColour() * bnc * u_fill * 0.4);
     float shin = mix(28.0, 8.0, u_lightSize);

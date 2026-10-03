@@ -36,8 +36,10 @@ const MAX_LIVE = 1400;
 const PREVIEW_MS = 50;
 /** How long things must be still before the full frame starts. */
 const IDLE_MS = 180;
-/** While playing, frame times the live scale steers between (ms). */
-const PLAY_SLOW = 24, PLAY_FAST = 18;
+/** While playing: the frame time the live resolution steers toward (ms), and
+ *  the most pixels it will spend on the long side. Past ~900 device pixels a
+ *  moving form gains nothing visible, and every pixel is a full raymarch. */
+const PLAY_TARGET_MS = 20, PLAY_MAX_PX = 900;
 
 const RESOLUTIONS = [
   { id: "1080p", label: "1920 × 1080 · HD", w: 1920, h: 1080 },
@@ -76,7 +78,7 @@ const DEFAULT_EXPORT: ExportSettings = {
   ch: 2400,
   fps: 60,
   duration: null,
-  samples: 8,
+  samples: 4,
   shutter: 0.5,
   quality: 1,
 };
@@ -310,14 +312,15 @@ export function Lab({ sketchId, initial }: { sketchId: string; initial: Values }
         if (sketch.animated) {
           r.draw(valuesRef.current, { w, h, hold: !playingRef.current, time: timeRef.current });
         } else {
-          if (last) emaRef.current = emaRef.current * 0.9 + dt * 1000 * 0.1;
-          let s = liveScaleRef.current;
-          if (emaRef.current > PLAY_SLOW) s *= 0.95;
-          else if (emaRef.current < PLAY_FAST) s *= 1.03;
-          s = Math.max(0.12, Math.min(1, s));
+          // Cost goes with pixel count, so the scale moves by the square root
+          // of how far off the frame time is: a slow frame is corrected in
+          // two or three frames, not thirty. (A fixed 5% step per frame was
+          // the first version, and at 6 fps it took seconds to back off.)
+          if (last) emaRef.current = emaRef.current * 0.6 + dt * 1000 * 0.4;
+          let s = liveScaleRef.current * Math.max(0.6, Math.min(1.08, Math.sqrt(PLAY_TARGET_MS / emaRef.current)));
+          s = Math.max(0.08, Math.min(PLAY_MAX_PX / Math.max(w, h), s));
           liveScaleRef.current = s;
-          if (s >= 0.999) r.draw(valuesRef.current, { w, h, time: timeRef.current, rect: [0, 0, w, h] });
-          else r.draw(valuesRef.current, { w, h, scale: s, fast: draggingRef.current, time: timeRef.current });
+          r.draw(valuesRef.current, { w, h, scale: s, fast: draggingRef.current, play: true, time: timeRef.current });
         }
       } catch (e) {
         fail(e);
@@ -520,15 +523,28 @@ export function Lab({ sketchId, initial }: { sketchId: string; initial: Values }
       download(blob, `${sketch.id}-${size.w}x${size.h}-${Date.now().toString(36)}.png`);
     });
 
-  const exportMp4 = () =>
+  /** `draft`: half size, one sample, 30 fps, to check the motion in minutes. */
+  const exportMp4 = (draft = false) =>
     exclusive(async (signal) => {
+      const w = draft ? Math.max(16, Math.round(size.w / 2)) & ~1 : size.w;
+      const h = draft ? Math.max(16, Math.round(size.h / 2)) & ~1 : size.h;
+      const fps = draft ? 30 : ex.fps;
+      const total = Math.max(1, Math.round(seconds * fps));
       const { exportVideo } = await import("@/lib/specimens/video");
-      setJob({ frame: 0, total: frames, perFrame: 0, sub: 0 });
+      setJob({ frame: 0, total, perFrame: 0, sub: 0 });
       let lastSub = 0;
       const { blob, codec } = await exportVideo(
         sketch,
         { ...valuesRef.current },
-        { w: size.w, h: size.h, fps: ex.fps, duration: seconds, samples: ex.samples, shutter: ex.shutter, bitrate },
+        {
+          w,
+          h,
+          fps,
+          duration: seconds,
+          samples: draft ? 1 : ex.samples,
+          shutter: draft ? 0 : ex.shutter,
+          bitrate: draft ? Math.max(4e6, w * h * fps * 0.12) : bitrate,
+        },
         {
           signal,
           onProgress: (p) => {
@@ -544,7 +560,7 @@ export function Lab({ sketchId, initial }: { sketchId: string; initial: Values }
           },
         },
       );
-      download(blob, `${sketch.id}-${size.w}x${size.h}-${ex.fps}fps-${Date.now().toString(36)}.mp4`);
+      download(blob, `${sketch.id}-${draft ? "draft-" : ""}${w}x${h}-${fps}fps-${Date.now().toString(36)}.mp4`);
       say(`Saved · ${(blob.size / 1e6).toFixed(1)} MB · ${codec.toUpperCase()}`, 5000);
     });
 
@@ -901,7 +917,7 @@ export function Lab({ sketchId, initial }: { sketchId: string; initial: Values }
               ))}
             </div>
             <span className="text-[12px] leading-[1.5] text-faint">
-              Each frame is the average of this many renders, offset within the pixel{sketch.timed && !sketch.animated ? " and within the shutter" : ""}. Fine struts need 8 or more to come out whole.
+              Each frame is the average of this many renders, offset within the pixel{sketch.timed && !sketch.animated ? " and within the shutter" : ""}. Each doubling doubles the render time; 4 is clean at 1080p, very fine struts may want 8.
             </span>
           </div>
 
@@ -944,8 +960,13 @@ export function Lab({ sketchId, initial }: { sketchId: string; initial: Values }
 
           <div className="flex flex-wrap gap-2">
             {sketch.timed && (
-              <button type="button" className="fa-btn fa-btn--primary" onClick={exportMp4} disabled={exporting || !!error}>
+              <button type="button" className="fa-btn fa-btn--primary" onClick={() => exportMp4()} disabled={exporting || !!error}>
                 Render MP4
+              </button>
+            )}
+            {sketch.timed && !sketch.animated && (
+              <button type="button" className="fa-btn fa-btn--ghost" onClick={() => exportMp4(true)} disabled={exporting || !!error}>
+                Quick draft
               </button>
             )}
             <button type="button" className={`fa-btn ${sketch.timed ? "fa-btn--ghost" : "fa-btn--primary"}`} onClick={exportPng} disabled={exporting || !!error}>
@@ -954,7 +975,9 @@ export function Lab({ sketchId, initial }: { sketchId: string; initial: Values }
           </div>
           <p className="text-[12px] leading-[1.5] text-faint">
             {size.w} × {size.h}. Rendered frame by frame on this machine, not recorded from the screen, so it takes as long as it takes: the
-            first frames give an estimate. Keep this tab open; it can be in the background.
+            first frames give an estimate. Render time goes with pixels × samples × frames, so samples are the cheapest dial to turn down.
+            Quick draft is half size, one sample, 30 fps: about thirty times faster, for checking the motion. Keep this tab open; it can be
+            in the background.
           </p>
         </fieldset>
         </div>

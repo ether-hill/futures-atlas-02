@@ -43,12 +43,12 @@ export const MOTION_PARAMS: ParamDef[] = [
 
 export const STUDIO_PARAMS: ParamDef[] = [
   { key: "material", label: "Material", group: "Light", kind: "choice", default: 0, options: [
-    { value: 0, label: "Ivory" },
-    { value: 1, label: "Chalk" },
+    { value: 0, label: "Chalk" },
+    { value: 1, label: "Bone" },
     { value: 2, label: "Pewter" },
   ] },
   { key: "ground", label: "Ground", group: "Light", kind: "choice", default: 0, options: [
-    { value: 0, label: "Plaster wall" },
+    { value: 0, label: "Grey wall" },
     { value: 1, label: "Black" },
   ] },
   { key: "depth", label: "Depth shadow", group: "Light", kind: "range", min: 0, max: 1, step: 0.01, default: 0.7,
@@ -165,6 +165,7 @@ out vec4 outColor;
 uniform vec2 u_res;
 uniform mat3 u_view;
 uniform float u_fast;
+uniform float u_play;
 uniform float u_time;
 uniform vec2 u_jitter;
 uniform float u_dither;
@@ -183,7 +184,7 @@ vec3 calcNormal(vec3 p, float h) {
 }
 float calcAO(vec3 p, vec3 n) {
   float occ = 0.0, sca = 1.0;
-  int taps = u_fast > 0.5 ? 2 : 5;
+  int taps = u_fast > 0.5 ? 2 : (u_play > 0.5 ? 3 : 5);
   for (int i = 0; i < 5; i++) {
     if (i >= taps) break;
     float h = 0.012 + 0.07 * float(i);
@@ -193,29 +194,35 @@ float calcAO(vec3 p, vec3 n) {
   return clamp(1.0 - 2.6 * occ, 0.0, 1.0);
 }
 // k is the penumbra: small for a big window
+// Bounded by the form's own sphere: once the ray has left BOUND nothing can
+// shade it, so a shadow ray costs only the crossing, not a fixed distance.
 float softShadow(vec3 ro, vec3 rd, float k) {
   if (u_fast > 0.5) return 1.0;
+  float b = dot(ro, rd), c = dot(ro, ro) - BOUND * BOUND;
+  float tMax = -b + sqrt(max(b * b - c, 0.0));
   float res = 1.0, t = 0.02;
-  for (int i = 0; i < 36; i++) {
+  int n = u_play > 0.5 ? 16 : 32;
+  for (int i = 0; i < 32; i++) {
+    if (i >= n) break;
     float h = map(ro + rd * t);
     res = min(res, k * h / t);
-    t += clamp(h, 0.01, 0.12);
-    if (res < 0.005 || t > 2.5) break;
+    t += clamp(h, 0.015, 0.16);
+    if (res < 0.005 || t > tMax) break;
   }
   res = clamp(res, 0.0, 1.0);
   return res * res * (3.0 - 2.0 * res);
 }
-// The plaster wall behind: lit most on the window side, falling off across
-// the frame, with a faint grain so it reads as a surface, not a gradient.
+// The wall behind: lit most on the window side, falling off across the
+// frame, with a faint grain so it reads as a surface, not a gradient.
 vec3 ground(vec2 uv) {
   if (u_ground > 0.5) return vec3(0.0);
   vec3 w = windowDir();
   vec2 src = normalize(w.xy + vec2(1e-4)) * 1.7;
   float d = length(uv - src);
   float pool = exp(-d * d * 0.2);
-  float v = 0.003 + 0.032 * pool;
+  float v = 0.004 + 0.04 * pool;
   v *= 0.94 + 0.12 * vnoise(vec3(uv * 7.0, 3.1)) + 0.05 * vnoise(vec3(uv * 31.0, 7.7));
-  return v * mix(keyColour(), bounceColour(), 0.3) * vec3(0.96, 0.95, 0.9);
+  return vec3(v);
 }
 
 void main() {
@@ -234,7 +241,7 @@ void main() {
     float t = max(0.0, -b - sqrt(disc));
     float tEnd = -b + sqrt(disc);
     bool hit = false;
-    int maxSteps = u_fast > 0.5 ? 140 : 260;
+    int maxSteps = u_fast > 0.5 ? 120 : (u_play > 0.5 ? 160 : 260);
     for (int i = 0; i < 260; i++) {
       if (i >= maxSteps) break;
       vec3 p = u_view * (ro + rd * t);
@@ -259,10 +266,10 @@ void main() {
       float bnc = pow(clamp(dot(n, Lb) * 0.5 + 0.5, 0.0, 1.0), 2.0);
       float fre = pow(clamp(1.0 + dot(n, -vdir), 0.0, 1.0), 3.0);
       // material: albedo, specular weight, sharpness
-      vec3 alb = vec3(0.80, 0.74, 0.62);
-      float ks = 0.05, shin = 18.0;
-      if (u_material > 1.5) { alb = vec3(0.30, 0.31, 0.32); ks = 0.55; shin = 70.0; }
-      else if (u_material > 0.5) { alb = vec3(0.86, 0.86, 0.84); ks = 0.025; shin = 10.0; }
+      vec3 alb = vec3(0.86);
+      float ks = 0.025, shin = 10.0;
+      if (u_material > 1.5) { alb = vec3(0.30); ks = 0.55; shin = 70.0; }
+      else if (u_material > 0.5) { alb = vec3(0.74); ks = 0.05; shin = 18.0; }
       // a big source gives a broad highlight, not a pinpoint
       shin *= mix(1.0, 0.3, u_lightSize);
       vec3 hv = normalize(L + vdir);
@@ -341,6 +348,7 @@ export function raymarchSketch(
           const time = view.time ?? 0;
           gl.useProgram(p.prog);
           gl.uniform1f(p.loc("u_fast"), view.fast ? 1 : 0);
+          gl.uniform1f(p.loc("u_play"), view.play ? 1 : 0);
           gl.uniform1f(p.loc("u_time"), time);
           gl.uniform1f(p.loc("u_dither"), view.dither === false ? 0 : 1);
           gl.uniform2f(p.loc("u_jitter"), view.jitter?.[0] ?? 0, view.jitter?.[1] ?? 0);

@@ -37,6 +37,9 @@ export interface View {
   h: number;
   /** A preview pass while something is moving: sketches may cut corners. */
   fast?: boolean;
+  /** A playback frame: full lighting, on a smaller budget (fewer shadow and
+   *  march steps), because the next frame is 16 ms away. */
+  play?: boolean;
   /** Render at this fraction of w×h and stretch it over the canvas. */
   scale?: number;
   /** Draw only this rectangle [x, y, w, h] of the full frame (progressive
