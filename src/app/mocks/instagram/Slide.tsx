@@ -17,7 +17,8 @@
 
 import type { CSSProperties } from "react";
 import { DESIGN_W, CARD_W, CARD_H, PAD, SLIDE_CSS } from "./slide-css";
-import type { Card, OddsPost, Post, ReelPost, ShotsPost, SlideKind, TegmarkPost, TermPost } from "./posts";
+import { TermSlide, TERM_CSS, type CoverSystem } from "./TermSlides";
+import type { Card, OddsPost, Post, ReelPost, ShotsPost, SlideKind, TegmarkPost } from "./posts";
 
 export const RATIOS = { "4:5": 5 / 4, "1:1": 1, "9:16": 16 / 9 } as const;
 export type Ratio = keyof typeof RATIOS;
@@ -27,7 +28,7 @@ const C_BELIEVE = "#D8694E"; // hype trap: believed something that hasn't happen
 const C_DOUBT = "#3E93D8";   // blind spot: doubted something already real
 
 export function SlideStyles() {
-  return <style>{SLIDE_CSS}</style>;
+  return <style>{SLIDE_CSS + TERM_CSS}</style>;
 }
 
 export function SlideFrame({
@@ -68,7 +69,7 @@ export function SlideFrame({
 export interface CropOverride { zoom: number; x: number; y: number }
 
 export function PostSlide({
-  post, index, ratio, live = false, crop,
+  post, index, ratio, live = false, crop, cover,
 }: {
   post: Post;
   index: number;
@@ -76,6 +77,8 @@ export function PostSlide({
   live?: boolean;
   /** Set by the editor; overrides whatever the post was authored with. */
   crop?: CropOverride;
+  /** Which vocabulary cover system to draw. See TermSlides.tsx. */
+  cover?: CoverSystem;
 }) {
   return post.kind === "reel" ? (
     <ReelSlide post={post} ratio={ratio} live={live} crop={crop} />
@@ -84,7 +87,7 @@ export function PostSlide({
   ) : post.kind === "odds" ? (
     <OddsSlide post={post} index={index} ratio={ratio} live={live} crop={crop} />
   ) : post.kind === "term" ? (
-    <TermSlide post={post} ratio={ratio} />
+    <TermSlide post={post} index={index} ratio={ratio} cover={cover} />
   ) : post.kind === "tegmark" ? (
     <TegmarkSlide post={post} index={index} ratio={ratio} />
   ) : (
@@ -302,34 +305,6 @@ function Texture({ seed, tint, nodes }: { seed: string; tint?: string; nodes?: n
   );
 }
 
-/** One word, set big, on a field of its own vocabulary. */
-function TermSlide({ post, ratio }: { post: TermPost; ratio: Ratio }) {
-  return (
-    <div className="stf" style={{ width: DESIGN_W, height: DESIGN_W * RATIOS[ratio] }}>
-      <div className="term-card">
-        <Texture seed={post.id} />
-        <div className="term-body-col">
-          <div className="term-kind">{post.kind_}</div>
-          {/* Same clamp the card names use: a long word is set smaller, never
-              cut off. "Stigmergy" fits at the full size and "Solastalgia" does
-              not, and a vocabulary card that crops its own word is a joke. */}
-          <div className="term-word" style={{ fontSize: fitName(post.term, 84, 15, WIDEST_EM_MIXED) }}>
-            {post.term}
-          </div>
-          <div className="term-pron">{post.pron}</div>
-          <p className="term-def">{post.definition}</p>
-          <p className="term-body">{post.body}</p>
-        </div>
-        <div className="term-mark" aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/fa.svg" alt="" />
-          <span>Futures Atlas &middot; vocabulary</span>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 /**
  * The back is authored against 9:16, the format these go out in, and stepped
  * down for the crops with less height to give it. It is all words, so there is
@@ -350,11 +325,6 @@ const READ_SCALE: Record<Ratio, number> = { "9:16": 1.1, "4:5": 0.92, "1:1": 0.7
  * name at 100px and dividing by its length.
  */
 const WIDEST_EM = 0.7;
-/** The vocabulary card sets its word in the same face, mixed case and tighter,
- *  which measures much narrower: 0.55 across the three terms, against 0.7 for
- *  the uppercase card names. One constant for both would either clip a name or
- *  set every word smaller than it needs to be. */
-const WIDEST_EM_MIXED = 0.56;
 const fitName = (title: string, avail: number, max: number, em = WIDEST_EM) => {
   const longest = Math.max(...title.split(" ").map((w) => w.length));
   return `${Math.min(max, avail / (em * longest))}cqw`;

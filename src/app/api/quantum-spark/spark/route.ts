@@ -13,6 +13,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { PROMPT_VERSION, SYS_SPARK } from "@/lib/quantum-spark/prompts";
 import { SparkSchema, extractJson, sanitizeDeep, type SparkResult } from "@/lib/quantum-spark/schema";
 import { readSpark, sparkKey, writeSpark } from "@/lib/quantum-spark/store";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -57,6 +58,33 @@ export async function POST(req: Request) {
         { headers: { "cache-control": "no-store" } },
       );
     }
+  }
+
+  /*
+   * Past this line the request spends money: one Sonnet call, with a corrective
+   * retry behind it. The archive read above returns before it, so a stored
+   * spark costs nothing and is not counted; "Spark 5 more" sends `fresh` and IS
+   * counted, because that is the button that pays for a new set.
+   *
+   * Twenty an hour leaves room for a person re-rolling a few businesses in a
+   * session, and the daily 400 caps the worst day at roughly eight dollars.
+   */
+  const gate = await rateLimit(req, "quantum-spark", {
+    perIp: 20,
+    perIpWindowSec: 3600,
+    budget: 400,
+  });
+  if (!gate.ok) {
+    console.log(JSON.stringify({ tool: "quantum-spark", call: "rate-limited", hit: gate.hit }));
+    const res = fail(
+      429,
+      "rate_limited",
+      gate.hit === "budget"
+        ? "The spark chamber has used up today's allowance. It resets tomorrow."
+        : "That is a lot of sparks in one go. Try again in a few minutes.",
+    );
+    res.headers.set("retry-after", String(gate.retryAfter));
+    return res;
   }
 
   const client = new Anthropic();

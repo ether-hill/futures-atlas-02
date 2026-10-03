@@ -30,6 +30,13 @@ export function Footer() {
   return (
     <footer
       className="fa-foot"
+      // The marker atlas-nav.js looks for. That script replaces any
+      // footer.fa-foot it finds with its own fetched copy, because two static
+      // bundles ship a stale hardcoded one — but on a host page THIS is the
+      // generated footer, already rendered from the same source, and replacing
+      // it tore a React-owned node out of the tree (a hydration mismatch on
+      // /glossary in every browser) and flashed the footer on every load.
+      data-fa-footer="host"
       // eslint-disable-next-line react/no-danger
       dangerouslySetInnerHTML={{ __html: FOOTER_HTML }}
     />

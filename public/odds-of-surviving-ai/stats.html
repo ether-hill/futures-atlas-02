@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-fa-no-footer>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,10 +9,11 @@
 <meta property="og:site_name" content="Futures Atlas" />
 <meta property="og:title" content="The Odds · Results, Futures Atlas" />
 <meta property="og:description" content="How many people kept rolling until the world ended. A real, running tally." />
-<meta property="og:url" content="https://futures-atlas-02.vercel.app/theodds/stats" />
-<meta property="og:image" content="https://futures-atlas-02.vercel.app/og/the-odds.png" />
+<meta property="og:url" content="https://futures-atlas.com/theodds/stats" />
+<meta property="og:image" content="https://futures-atlas.com/og/the-odds.png" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:image" content="/projects/odds-of-surviving-ai.jpg" />
+<meta name="twitter:image" content="https://futures-atlas.com/og/the-odds.png" />
+<link rel="canonical" href="https://futures-atlas.com/theodds/stats" />
 <meta name="robots" content="noindex" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
 <link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
@@ -117,10 +118,10 @@ section{margin-top:clamp(44px,7vh,72px)}
       <div class="cap" id="heroCap">of players kept rolling until they got the ending where we don't make it.</div>
       <div class="split"><i id="splitBar" style="width:0%"></i></div>
       <div class="split-key"><span id="splitLeft">reached doom</span><span id="splitRight">stopped before it</span></div>
-      <p class="sub">Nobody is asked to keep going. The odds are, by design, survivable: roughly three plays in four come out fine. Doom is something you have to keep playing for, and the number above is how many people did. Build the thing, see it go well, then build it again. That is roughly how AI policy works right now, which is why this number sits at the top of the page.</p>
+      <p class="sub">Nobody is asked to keep going. The odds are, by design, survivable: roughly three plays in four come out fine. Doom is something you have to keep playing for, and the number above is how many people did.</p>
     </div>
 
-    <section>
+    <section data-fa-reveal>
       <div class="sec-head"><h2>The room</h2><span>everyone who has played</span></div>
       <!-- one grid, not two rows of three: two stacked grids orphan a tile at
            every width where the column count is not three -->
@@ -135,20 +136,20 @@ section{margin-top:clamp(44px,7vh,72px)}
     </section>
 
     <!-- ── how stubborn: tries needed to reach doom ── -->
-    <section id="histSec">
+    <section id="histSec" data-fa-reveal>
       <div class="sec-head"><h2>How many tries it took</h2><span>players who reached doom</span></div>
       <div class="hist" id="hist"></div>
       <p class="note" id="histNote"></p>
     </section>
 
     <!-- ── observed rate against the rate each of them actually stated ── -->
-    <section id="tkSec">
+    <section id="tkSec" data-fa-reveal>
       <div class="sec-head"><h2>Against their own numbers</h2><span>observed vs stated</span></div>
       <div class="thinkers" id="thinkers"></div>
-      <p class="note">The bar is what has actually come up here. The line is the odds that person put on the record. They converge with enough plays, which is the only claim this piece makes about probability.</p>
+      <p class="note">The bar is what has actually come up here. The line is the odds that person put on the record. They converge with enough plays.</p>
     </section>
 
-    <p class="note">Counted server-side, one tally shared by everyone. A player is one browser session, so the same person on two days counts twice, and a shared laptop counts once. Plays from private windows land in the totals but not in the per-player numbers.</p>
+    <p class="note" data-fa-reveal>Counted server-side, one tally shared by everyone. A player is one browser session, so the same person on two days counts twice, and a shared laptop counts once. Plays from private windows land in the totals but not in the per-player numbers.</p>
   </div>
 
   <div id="empty" class="empty hidden">
@@ -160,6 +161,7 @@ section{margin-top:clamp(44px,7vh,72px)}
   </div>
 
   <a href="/theodds" class="back">← Back to The Odds</a>
+  <a href="/theodds/research" class="back" style="margin-left:22px">The research →</a>
 </div>
 
 <script>

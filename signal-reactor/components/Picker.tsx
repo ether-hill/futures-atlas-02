@@ -23,24 +23,11 @@ export function Picker({
 
   return (
     <>
-      <section className="hero">
+      {/* The page's own hero states the proposition; this section used to
+          state it again under a second h1, so it is now just the picker. */}
+      <section className="picker" aria-label="Choose your organisation type">
         <Reveal>
-          <h1>
-            Deflate the <span className="deflated">hype</span>.
-            <br />
-            Extrapolate the <span className="signal">signal</span>.
-          </h1>
-          <p className="lede">
-            Name your organization and get an eight-slide foresight briefing you can run a
-            stakeholder discussion from. It tells you plainly when quantum barely matters to you,
-            and where the genuine disruption actually lands.
-          </p>
-        </Reveal>
-      </section>
-
-      <section className="picker" aria-label="Choose your organization type">
-        <Reveal>
-        <span className="kicker">Choose your organization</span>
+        <span className="kicker">Choose your organisation</span>
         <div className="sector-grid">
           {SECTORS.map((s) => (
             <button
@@ -76,7 +63,7 @@ export function Picker({
               if (e.key === "Enter" && ready) onGenerate(sector);
             }}
             placeholder={OTHER_PLACEHOLDER}
-            aria-label="Describe your organization"
+            aria-label="Describe your organisation"
           />
         )}
         <div className="generate-row">

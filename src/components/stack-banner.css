@@ -1,0 +1,80 @@
+/*
+ * The homepage stack banner. The band is dark in both themes, so the bricks
+ * keep the reel's skin from mocks/stack-games/games.css (the brick rules are
+ * repeated here rather than importing that file, which also hides the dev
+ * overlay for the recorder).
+ */
+
+.sb-well {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 5;
+  overflow: hidden;
+  border: 1px solid rgba(242, 237, 226, 0.08);
+  background-image:
+    linear-gradient(rgba(242, 237, 226, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(242, 237, 226, 0.045) 1px, transparent 1px);
+  color: #f2ede2;
+  user-select: none;
+  --hit: 340ms;
+  --clear: 520ms;
+}
+/* Height is set from the measured cell once it is known; aspect-ratio only
+   reserves the space before then so nothing jumps. */
+.sb-well[style*="height"] { aspect-ratio: auto; }
+
+.sb-well .sg-brick {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(242, 237, 226, 0.16);
+  background: linear-gradient(150deg, rgba(242, 237, 226, 0.085), rgba(242, 237, 226, 0.022));
+  box-shadow: inset 0 1px 0 rgba(242, 237, 226, 0.07);
+  will-change: transform, opacity;
+}
+.sb-well .sg-brick::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: var(--fam);
+  opacity: 0.85;
+}
+.sb-well .sg-brick svg {
+  display: block;
+  width: var(--mark, 24px);
+  height: var(--mark, 24px);
+  flex: 0 0 auto;
+}
+.sb-well .sg-name {
+  font-size: var(--name, 8px);
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(242, 237, 226, 0.66);
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+}
+.sb-well .sg-brick.is-hit { animation: sb-hit var(--hit) ease-out; }
+@keyframes sb-hit {
+  0% { background: rgba(242, 237, 226, 0.26); border-color: rgba(242, 237, 226, 0.44); }
+  100% { background: rgba(242, 237, 226, 0.022); border-color: rgba(242, 237, 226, 0.16); }
+}
+.sb-well .sg-brick.is-clearing {
+  animation: sb-clear var(--clear) cubic-bezier(.3, 0, .3, 1) forwards;
+  z-index: 3;
+}
+@keyframes sb-clear {
+  0% { transform: var(--t) scale(1); background: rgba(242, 237, 226, 0.05); }
+  22% { transform: var(--t) scale(1.02); background: rgba(242, 237, 226, 0.86); }
+  62% { transform: var(--t) scale(1); background: rgba(242, 237, 226, 0.86); }
+  100% { transform: var(--t) scale(0.72); opacity: 0; background: rgba(242, 237, 226, 0.86); }
+}
+.sb-well .sg-brick.is-clearing .sg-name { color: #08090b; }
+.sb-well .sg-brick.is-clearing svg { color: #08090b !important; }

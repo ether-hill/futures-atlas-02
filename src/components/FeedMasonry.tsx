@@ -88,7 +88,13 @@ export function FeedMasonry({
                 {yt ? (
                   <YouTubeCard id={yt} title={p.title} />
                 ) : hasImage(p) ? (
-                  <Link href={`/feed/${p.slug}`} className="group block">
+                  /* The picture is its own link to the post, and it holds
+                     nothing but a decorative image — the title carries the
+                     text, one element down. That leaves the anchor with no
+                     computed name, so a screen reader announces it as "link"
+                     and the reader has no idea where it goes. The title is the
+                     name of the destination, so it is the name of the link. */
+                  <Link href={`/feed/${p.slug}`} className="group block" aria-label={p.title}>
                     <span className="block overflow-hidden border-b border-ink/[0.12]">
                       <PostImage
                         post={p}

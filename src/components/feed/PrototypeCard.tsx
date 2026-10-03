@@ -20,7 +20,10 @@ export function PrototypeCard({ prototype: p }: { prototype: Prototype }) {
       className="flex flex-col overflow-hidden rounded-[4px] transition-colors hover:border-accent"
       style={{ background: "var(--panel)", border: "var(--border-hairline) solid var(--hairline)" }}
     >
-      <Link href={href} className="group block">
+      {/* The still is decorative (alt=""), so this anchor would compute no
+          accessible name at all and announce as a bare "link". It goes to the
+          same place the title below goes, so it takes the same name. */}
+      <Link href={href} className="group block" aria-label={p.title}>
         <div className="relative aspect-video overflow-hidden border-b border-ink/[0.12]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@/components/Container";
+import { Reveal } from "@/components/Reveal";
 import { DOMAIN_ORDER, type GlossaryDomain, type GlossaryEntry } from "@/data/glossary";
 
 /**
@@ -61,6 +62,57 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
   }, [entries]);
 
   /*
+   * A "See also" link is a plain #anchor at a term, and a search or a domain
+   * chip can have that term filtered out of the page. The browser then jumps to
+   * a hash with no element behind it: the reader is dropped at whatever happens
+   * to be at that scroll position, on an unrelated entry, with nothing saying
+   * why. So a jump to a term that is not currently rendered clears the filters
+   * first and scrolls once the entry exists.
+   */
+  const [pending, setPending] = useState<string | null>(null);
+
+  useEffect(() => {
+    const targetId = (raw: string | null) => {
+      if (!raw || raw[0] !== "#") return null;
+      const id = decodeURIComponent(raw.slice(1));
+      if (!id || id === "main-content" || id.startsWith("letter-")) return null;
+      return document.getElementById(id) ? null : id; // already on the page? leave it alone
+    };
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      const a = (e.target as HTMLElement | null)?.closest?.("a") as HTMLAnchorElement | null;
+      const id = a ? targetId(a.getAttribute("href")) : null;
+      if (!id) return;
+      e.preventDefault();
+      setQ("");
+      setDomain(null);
+      setPending(id);
+      history.replaceState(null, "", `#${id}`);
+    };
+    // back/forward onto a term's hash while a filter is on lands the same way
+    const onHash = () => {
+      const id = targetId(location.hash);
+      if (!id) return;
+      setQ("");
+      setDomain(null);
+      setPending(id);
+    };
+    document.addEventListener("click", onClick);
+    window.addEventListener("hashchange", onHash);
+    return () => {
+      document.removeEventListener("click", onClick);
+      window.removeEventListener("hashchange", onHash);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!pending) return;
+    const el = document.getElementById(pending);
+    setPending(null);
+    el?.scrollIntoView({ block: "start" });
+  }, [pending, filtered.length]);
+
+  /*
    * Mark the current letter: the last section whose top has passed the reading
    * line, which sits below the bar and the rail so a heading counts as current
    * when it is actually visible rather than when it touches the viewport edge
@@ -104,17 +156,24 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
   return (
     <div className="min-h-[70vh] bg-surface py-[clamp(48px,8vw,110px)]">
       <Container>
-        <div className="mb-3.5 flex flex-wrap items-baseline gap-4">
+        {/*
+          The header arrives, the 315 entries below do not. Revealing a list
+          this long would stagger for most of a minute and fight the search
+          box, which filters as you type. Only the masthead moves.
+        */}
+        <Reveal className="mb-3.5 flex flex-wrap items-baseline gap-4">
           <span className="h-px min-w-10 flex-1 bg-ink/[0.18]" />
           <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-graphite">
             {filtered.length} of {entries.length} terms
           </span>
-        </div>
+        </Reveal>
 
-        <h1 className="max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
+        <Reveal delay={70} as="h1" className="max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
           Glossary
-        </h1>
-        <p
+        </Reveal>
+        <Reveal
+          as="p"
+          delay={130}
           className="mt-[clamp(16px,2vw,24px)] max-w-[64ch]"
           style={{
             fontSize: "var(--text-body-size)",
@@ -126,7 +185,7 @@ export function GlossaryBrowser({ entries }: { entries: GlossaryEntry[] }) {
           quantum computing, the compute underneath them, and the policy and social
           questions they raise. Written to be read cold. Where a word is contested or
           used loosely, the entry says so rather than picking the flattering reading.
-        </p>
+        </Reveal>
 
         {/* search */}
         <div className="mt-[clamp(28px,4vw,44px)] max-w-[520px]">

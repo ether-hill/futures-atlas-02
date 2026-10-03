@@ -9,17 +9,18 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Reveal } from "../components/Reveal";
 import { SAMPLE_SPARK } from "../lib/sample";
 import { HONESTY_LINE, INDUSTRY_OPTIONS, type SparkResponse, type SparkResult } from "../lib/types";
 
 const API = "/api/quantum-spark/spark";
 
+// honest labels for what the route is actually doing (archive read, then one
+// model call, validated before it renders)
 const LOADING_MSGS = [
-  "Tuning into the quantum future…",
-  "Collapsing the possibilities…",
-  "Entangling ideas…",
-  "Amplifying the best signals…",
+  "Checking the archive for this industry…",
+  "Reading what quantum and AI can really do here…",
+  "Writing five glimpses specific to it…",
+  "Checking the result is complete…",
 ];
 
 type Phase =
@@ -172,17 +173,20 @@ export default function Page() {
 
   return (
     <main className="shell">
-      <Reveal className="hero">
+      {/* Not a <Reveal>: this is the first thing on the page and a reveal here
+         is gated on hydration, so the hero was blank until the bundle loaded,
+         and it collected two entrances once the shared body arrival fade in
+         atlas-nav.css landed. The fade alone brings it in. */}
+      <div className="hero">
         <div className="hero-grid">
           <div className="hero-text">
-            <p className="eyebrow">Quantum Spark · ignite the room</p>
+            <p className="eyebrow">Quantum Spark</p>
             <h1>
               Five <span className="grad-text">sparks</span> for what&rsquo;s next.
             </h1>
             <p className="sub">
-              Name your business and get five bold, grounded glimpses of how quantum computing and
-              next-wave AI will transform it. Built to inspire, and kept honest about what the
-              technology can really do.
+              Name your business and get five glimpses of how quantum and next-wave AI could
+              change it. Speculative, not predictive.
             </p>
           </div>
 
@@ -227,7 +231,7 @@ export default function Page() {
             </div>
           </div>
         </div>
-      </Reveal>
+      </div>
 
       <div ref={resultsRef} style={{ scrollMarginTop: "calc(var(--fa-nav-h, 64px) + 16px)" }}>
         {phase.name === "loading" && (
@@ -240,7 +244,7 @@ export default function Page() {
         {phase.name === "results" && (
           <section className="results" aria-live="polite">
             <h2>
-              How quantum reshapes <span className="grad-text">{phase.result.business_display}</span>
+              How quantum could change <span className="grad-text">{phase.result.business_display}</span>
             </h2>
             {phase.result.insights.map((ins, i) => (
               <article className="card" key={`${phase.result.generatedAt}-${i}`} style={{ animationDelay: `${i * 90}ms` }}>
@@ -260,7 +264,7 @@ export default function Page() {
                   aria-expanded={shareOpen}
                   onClick={() => setShareOpen((o) => !o)}
                 >
-                  Share this now ✦
+                  Share
                 </button>
                 {shareOpen && <ShareMenu result={phase.result} onClose={() => setShareOpen(false)} onToast={quietToast} />}
               </div>

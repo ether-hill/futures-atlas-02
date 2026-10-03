@@ -90,7 +90,11 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   from { opacity: 0; transform: translateY(22px); }
   to { opacity: 1; transform: none; }
 }
-[data-reveal] { opacity: 0; }
+/* Scoped to .fa-js, which the inline script in layout.tsx adds during parse.
+   Unscoped, this hid every marked block for anyone whose script never ran,
+   and these are static exports, so the prerendered HTML ships without the
+   .is-in that brings them back: the page was blank rather than unanimated. */
+.fa-js [data-reveal] { opacity: 0; }
 [data-reveal].is-in { animation: rise 0.8s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
 @media (prefers-reduced-motion: reduce) {
   [data-reveal] { opacity: 1 !important; transform: none !important; animation: none !important; }

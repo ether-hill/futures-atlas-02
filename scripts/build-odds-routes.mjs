@@ -20,7 +20,7 @@ import { dirname, join } from 'node:path';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const BUNDLE = join(__dirname, '..', 'public', 'odds-of-surviving-ai');
-const DOMAIN = 'https://futures-atlas-02.vercel.app';
+const DOMAIN = 'https://futures-atlas.com';
 
 const ROUTES = [
   {
@@ -62,6 +62,7 @@ const block = (r) => `<!-- OD:ROUTE-META:START (generated for /theodds/${r.slug}
 <meta property="og:url" content="${DOMAIN}/theodds/${r.slug}" />
 <meta property="og:image" content="${DOMAIN}${r.image}" />
 <meta name="twitter:image" content="${DOMAIN}${r.image}" />
+<link rel="canonical" href="${DOMAIN}/theodds/${r.slug}" />
 <!-- OD:ROUTE-META:END -->`;
 
 mkdirSync(join(BUNDLE, 'p'), { recursive: true });

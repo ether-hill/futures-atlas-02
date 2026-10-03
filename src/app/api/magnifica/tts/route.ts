@@ -24,6 +24,7 @@ import {
   writeSpeech,
   writeTranslation,
 } from "@/lib/magnifica/store";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -97,6 +98,37 @@ export async function POST(req: Request) {
       { ok: true, ...cached },
       { headers: { "cache-control": "no-store", "x-magnifica-cache": "hit" } },
     );
+  }
+
+  /*
+   * Past this line the request spends money: an ElevenLabs synthesis, and for a
+   * non-English passage a Haiku translation before it. The cache read above
+   * returns first, so replaying a passage anyone has already heard is free and
+   * uncounted, and warming a page is a one-off cost rather than a per-visitor
+   * one.
+   *
+   * Forty an hour because a cold read-through of one voice page is around
+   * eighteen clips (a title and a passage per section), so two of them in a
+   * sitting has to fit. The daily 200 is tighter than the model routes on
+   * purpose: ElevenLabs bills per character and a monthly character allowance
+   * is the thing a bad afternoon would actually empty.
+   */
+  const gate = await rateLimit(req, "magnifica-tts", {
+    perIp: 40,
+    perIpWindowSec: 3600,
+    budget: 200,
+  });
+  if (!gate.ok) {
+    console.log(JSON.stringify({ tool: "magnifica-tts", call: "rate-limited", hit: gate.hit }));
+    const res = fail(
+      429,
+      "rate_limited",
+      gate.hit === "budget"
+        ? "The narrator has used up today's allowance. It resets tomorrow, and passages that have already been read still play."
+        : "That is a lot of listening in one hour. Try again a little later.",
+    );
+    res.headers.set("retry-after", String(gate.retryAfter));
+    return res;
   }
 
   let spoken = text;

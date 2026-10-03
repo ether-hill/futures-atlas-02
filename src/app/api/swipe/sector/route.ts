@@ -22,6 +22,7 @@ import {
   listSectors, readSector, writeSector, slugify, sectorsConfigured,
   type GenSector,
 } from "@/lib/swipe-sectors";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -112,6 +113,37 @@ export async function POST(req: Request) {
   if (!body.fresh) {
     const cached = await readSector(slug);
     if (cached) return NextResponse.json({ ok: true, sector: strip(cached), cached: true });
+  }
+
+  /*
+   * Past this line is the most expensive call on the site by a wide margin:
+   * Opus 5 at high effort, up to twelve web searches and 16k of output, which
+   * lands somewhere around a dollar a deck once the search results are counted
+   * as input. The archive read above returns before it, so picking a sector
+   * somebody has already built is free and uncounted; `fresh: true` skips the
+   * archive and IS counted, because it pays for the whole thing again.
+   *
+   * Five an hour is more new sectors than an audience adds in a session, and
+   * the daily 60 caps the worst day near sixty dollars. Its own bucket, not
+   * the one the vote counter uses, so a busy poll can never lock out sector
+   * building and a run of sector building can never swallow the votes.
+   */
+  const gate = await rateLimit(req, "swipe-sector", {
+    perIp: 5,
+    perIpWindowSec: 3600,
+    budget: 60,
+  });
+  if (!gate.ok) {
+    console.log(JSON.stringify({ tool: "swipe/sector", call: "rate-limited", hit: gate.hit }));
+    const res = fail(
+      429,
+      "rate_limited",
+      gate.hit === "budget"
+        ? "The sector builder has used up today's allowance. It resets tomorrow, and the sectors already in the picker still play."
+        : "That's a few new sectors in a row. Try another one in a little while.",
+    );
+    res.headers.set("retry-after", String(gate.retryAfter));
+    return res;
   }
 
   const client = new Anthropic({ apiKey });

@@ -236,13 +236,17 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
   that set the type in accent and then ran a hairline across the rest of the
   column. Three marks doing one job, none of them agreeing on the colour. The
   rule and the dash are gone; the colour carries it.
+
+  --color-accent-deep, not --color-accent: this is 11.2px, and the fill blue is
+  3.91 on bone. Deep is the same blue tuned for exactly this size (5.25 on bone,
+  5.34 on ink). Nothing about the mark changes but its lightness.
 */
 .eyebrow {
   font-family: var(--font-mono), ui-monospace, monospace;
   font-size: 0.7rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-accent-deep);
 }
 .annot { font-size: 0.72rem; }
 
@@ -505,6 +509,44 @@ header.fa-shell { position: fixed; top: 0; left: 0; right: 0; }
    than core's, so it wins on source order and specificity both. Anything on a
    dark band inherits it, including reports not written yet. */
 .bg-band :is(h1, h2, h3, h4, h5, h6) { color: var(--paper); }
+
+/* ---------- the accent as a button fill ----------
+   The brand blue is tuned to sit on both grounds at ~3.9, which is what a
+   filled shape owes and no more. A CTA also sets 12px mono in --paper ON that
+   fill, and --paper on --accent is 3.92 where small type needs 4.5. So the fill
+   under light type — and only that fill — steps down to --accent-cta
+   (oklch 0.525; --paper on it 4.69). Every other accent fill on the site keeps
+   the brand value exactly: the dots, the rules, the timeline marks, the 3px
+   progress dashes, none of which carry type.
+
+   Matched on the pair of utilities rather than a button class because there is
+   no button class — every CTA is `bg-accent … text-paper` written out. The
+   hover has to be restated for the reason the block above explains: this rule
+   is unlayered, so it would otherwise beat `hover:bg-accent-press` and the
+   buttons would lose their press state. --accent-cta does not flip; --paper
+   does not either, so the pair is one value in both themes. */
+.bg-accent.text-paper { background-color: var(--accent-cta); }
+.bg-accent.text-paper:hover { background-color: var(--accent-press); }
+
+/* ---------- a floor under the faint end of the ink ramp ----------
+   `text-ink/NN` mixes the ink token down with transparent, and the bottom of
+   that ramp was set below reading contrast: /40 measured 2.47 on bone (the
+   glossary's filter counts, the /404 aside) and /55 measured 3.80. Both are
+   body-sized text, so both owe 4.5.
+
+   Only the steps that actually failed are lifted, and they are lifted per
+   theme rather than to one number, because the two grounds are not
+   symmetrical: 40% of ink on bone is 2.47 while 40% of the light ink on
+   near-black is already 3.44, so a single floor high enough for the light page
+   would blow the dark one out to 6.5 and turn a whisper into a statement.
+   Light needs 62%, dark needs 50%; /55 keeps a visible step above /40 in both.
+   Ratios: /40 → 4.72 light, 4.69 dark. /55 → 5.40 light, 5.85 dark.
+
+   Unlayered, so it wins over the generated utility — see the block above. */
+:root { --ink-floor-40: 62%; --ink-floor-55: 66%; }
+html.dark { --ink-floor-40: 50%; --ink-floor-55: 58%; }
+.text-ink\/40 { color: color-mix(in oklab, var(--c-ink) var(--ink-floor-40), transparent); }
+.text-ink\/55 { color: color-mix(in oklab, var(--c-ink) var(--ink-floor-55), transparent); }
 
 /* ---------- the report card keeps its own light type ----------
    This card holds its dark ground in BOTH themes (a scrim over photographs only

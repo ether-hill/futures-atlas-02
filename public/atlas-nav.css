@@ -171,13 +171,26 @@
 .fa-shell__item:hover { background: rgba(20, 21, 24, 0.06); }
 .fa-shell__item.is-current { color: rgba(20, 21, 24, 0.45); cursor: default; }
 /* The brand blue, written out because this stylesheet is self-contained by
-   design — the vanilla project bundles load it WITHOUT the core tokens. One
-   value, both themes: this file used to accent light mode in a burnt orange
-   (#b4541e) and dark mode in a pale blue (#7fb2e6), so the "accent" was not
-   even the same hue from one setting to the next. Matches
-   oklch(0.565 0.13 245) in futures-atlas-core/src/tokens.css; change one,
-   change the other. */
-.fa-shell__item--accent { color: #1e7cbd; }
+   design — the vanilla project bundles load it WITHOUT the core tokens. This
+   file used to accent light mode in a burnt orange (#b4541e) and dark mode in a
+   pale blue (#7fb2e6), so the "accent" was not even the same hue from one
+   setting to the next; that is fixed and stays fixed.
+
+   Every use of it in this file is small TEXT — a switcher item, an active tab,
+   an active sheet link, the share chips — and the brand blue #1e7cbd (matching
+   oklch(0.565 0.13 245) in core) is 3.91 on bone and 3.95 on ink, under the 4.5
+   that small type owes. One blue cannot clear 4.5 on both grounds at any
+   chroma, so the TEXT blue moves with the theme while the fill blue does not.
+   Same hue, same chroma, lightness only:
+
+     light  #0067a6 = oklch(0.495 0.13 245) — 5.25 on bone, 6.02 on the menu's white
+     dark   #3b93d5 = oklch(0.64  0.13 245) — 5.34 on ink, 5.85 on the menu's #0c0d10
+
+   These mirror --fa-accent-deep / --fa-accent-deep-d in
+   futures-atlas-core/src/tokens.css; change one, change the other. */
+:root { --fa-nav-accent: #0067a6; }
+html.dark { --fa-nav-accent: #3b93d5; }
+.fa-shell__item--accent { color: var(--fa-nav-accent); }
 /* Editor-only marker in the switcher (drafts are listed for signed-in editors). */
 .fa-shell__draft { margin-left: 6px; border-radius: 3px; background: rgba(20, 21, 24, 0.1); padding: 1px 5px; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; vertical-align: 1px; }
 .fa-shell__menusep { height: 1px; margin: 6px 4px; background: rgba(20, 21, 24, 0.1); }
@@ -243,6 +256,38 @@ html.dark .fa-shell__item:hover { background: rgba(255, 255, 255, 0.08); }
 html.dark .fa-shell__item.is-current { color: rgba(243, 241, 236, 0.45); }
 html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 
+/* ── Touch hit areas ────────────────────────────────────────────────────────
+   The bar's controls are drawn small on purpose (the mark is 20px, the round
+   controls 38px, the crumb 30px tall) and that is fine for a cursor. A finger
+   needs 44px, so the target is grown with a centred pseudo-element instead of
+   with padding: nothing in the bar moves, the drawing is untouched, and only
+   the region that answers a tap changes. Guarded on `pointer: coarse` so a
+   desktop keeps its exact hover boxes. */
+@media (pointer: coarse) {
+  .fa-shell__home,
+  .fa-shell__current,
+  .fa-shell__toggle,
+  .fa-shell__profile,
+  .fa-share__btn,
+  .fa-shell__burger { position: relative; }
+  .fa-shell__home::after,
+  .fa-shell__current::after,
+  .fa-shell__toggle::after,
+  .fa-shell__profile::after,
+  .fa-share__btn::after,
+  .fa-shell__burger::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
 @media (max-width: 680px) {
   /* the bar is tall for a phone; trim the row and let consumers reclaim it */
   :root { --fa-nav-h: 54px; }
@@ -284,13 +329,57 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 .fa-foot__row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px; margin-top: clamp(44px, 8vw, 90px); border-top: 1px solid rgba(243, 241, 236, 0.24); padding-top: 28px; }
 .fa-foot__brand { font-size: 15px; font-weight: 800; letter-spacing: 0.02em; }
 .fa-foot__nav { display: flex; flex-wrap: wrap; gap: 22px; }
-.fa-foot__link { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.72); text-decoration: none; }
-.fa-foot__link:hover { color: #fff; }
-.fa-foot__tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.55); }
+/*
+  A column heading and a link in this footer used to be the same thing to look
+  at: both mono, both 11px, both uppercase, opacity 0.74 against 0.72, and
+  0.04em of letter-spacing between them. Nothing said which was a label and
+  which you could click.
+
+  The heading keeps the label treatment (small, uppercase, tracked out) because
+  that is what a label is across the whole site. The links stop imitating it:
+  sentence case, larger, brighter, tracked normally, so they read as the
+  content of the column rather than more headings. That also matches
+  `.fa-foot__a` ("All projects"), which was already the only thing down here
+  that looked like a link.
+
+  Underline on hover and on focus, never at rest: seven of these stacked with
+  permanent rules turns the column into a fence.
+*/
+.fa-foot__link {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  letter-spacing: 0.01em;
+  line-height: 1.5;
+  color: rgba(243, 241, 236, 0.9);
+  text-decoration: none;
+}
+.fa-foot__link:hover,
+.fa-foot__link:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+/*
+  THE FLOOR ON THIS BAND IS 0.72, and every quiet tier below runs into it.
+
+  The band is fixed (oklch 0.42 0.13 245, #00508e) and the type on it is one
+  colour, #f3f1ec, so opacity is the only lever there is — and at full strength
+  that pair is 7.33. Solve backwards and 4.5 lands at alpha 0.711. Everything
+  under that was failing: the column headings at 0.55 (3.34), the post dates at
+  0.5 (3.02), the meta lines at 0.6 (3.67) and 0.45 (2.69).
+
+  So the quiet end is lifted to 0.72 / 0.74 / 0.76 (4.59 / 4.75 / 4.91), which
+  keeps the tiers in their old order but compresses them hard: the footer's
+  range used to run 0.45→1.0 and now runs 0.72→1.0. That is a real loss of
+  quietness and it is not recoverable by colour, because on a mid-blue ground
+  4.5 IS a light value. Anything that wants to read softer than this has to get
+  it from size or weight, not from alpha.
+*/
+.fa-foot__tag { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: rgba(243, 241, 236, 0.74); /* was 0.55 → 3.34; now 4.75 */ }
 .fa-foot__grid { display: grid; grid-template-columns: 1.3fr 0.7fr 1.3fr 1fr; gap: 40px clamp(28px, 4vw, 64px); }
 @media (max-width: 900px) { .fa-foot__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .fa-foot__grid { grid-template-columns: 1fr; } }
-.fa-foot__h { margin: 0 0 14px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.55; }
+.fa-foot__h { margin: 0 0 16px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.74; /* was 0.55 → 3.34; now 4.75. Do not dim this to separate it from the links: the contrast here was deliberately raised to clear 4.5:1. The links moved instead. */ }
 .fa-foot__body { margin: 0 0 12px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; line-height: 1.75; opacity: 0.78; }
 .fa-foot__body b { font-weight: 600; opacity: 1; }
 .fa-foot__list { display: flex; flex-direction: column; gap: 10px; }
@@ -310,6 +399,21 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
 @media (max-width: 680px) {
   .fa-foot { padding-top: clamp(40px, 12vw, 70px); }
   .fa-foot__inner { padding: 0 16px; } /* match the page gutter at this breakpoint */
+}
+
+/* Touch targets in the footer.
+
+   The footer's link columns are set at 12.5px with a 10px gap: a 19px-tall box
+   with a 10px dead band under it. Fine for a cursor, tight for a thumb. The
+   padding below grows each link's hit area into that dead band and the equal
+   negative margin puts the box back where it was, so on a phone the whole
+   column is tappable and nothing moves by a pixel on any screen. Adjacent
+   links end up exactly contiguous rather than overlapping, so a tap still
+   lands on the link it looks like it landed on. */
+@media (pointer: coarse) {
+  .fa-foot__list .fa-foot__a,
+  .fa-foot__list > a { display: block; padding: 5px 0; margin: -5px 0; }
+  .fa-foot__nav .fa-foot__link { display: inline-block; padding: 10px 0; margin: -10px 0; }
 }
 
 /* ── Project sub-nav ────────────────────────────────────────────────────────
@@ -350,7 +454,7 @@ html.dark .fa-shell__draft { background: rgba(255, 255, 255, 0.14); }
   cursor: pointer;
 }
 .fa-subnav__link:hover { opacity: 0.9; }
-.fa-subnav__link.is-active { opacity: 1; color: #1e7cbd; }
+.fa-subnav__link.is-active { opacity: 1; color: var(--fa-nav-accent); }
 html.dark .fa-subnav { background: rgba(12, 13, 16, 0.9); color: #f3f1ec; border-bottom-color: rgba(255, 255, 255, 0.1); }
 /* On pages with a sub-nav, keep the master bar put (it never travels) so the
    slim tab row never floats with a gap above it. atlas-nav.js skips the scroll
@@ -397,14 +501,26 @@ body:has(.fa-subnav) .fa-shell { transform: none !important; }
      below) and loses its plate, so its controls still work and the sheet's
      ground runs behind them. */
   inset: 0;
+  /* svh, not the default 100% of inset:0. On phones the layout viewport is the
+     LARGE viewport, the one measured with the browser chrome retracted, so a
+     full-bleed fixed panel ends up taller than what you can actually see and
+     the difference becomes dead scrollable space inside the menu. */
+  height: 100svh;
+  max-height: 100svh;
   z-index: 9990; /* above zone content incl. the Odds stage (z 9000) */
   display: flex;
+  /* nothing chains to the page behind, on the rare page whose menu does scroll */
+  overscroll-behavior: contain;
   /* Bone with a blue cast pulled towards --brand, rather than the page's plain
      ground: the menu is the one full-screen surface the site owns, and it
      should feel like the brand rather than like a page that lost its content. */
-  background: rgba(232, 236, 248, 0.975);
-  -webkit-backdrop-filter: blur(22px);
-  backdrop-filter: blur(22px);
+  /* Opaque, not a 0.975 veil over a blur. backdrop-filter is the first thing
+     to be dropped (older WebKit, low-power mode, a GPU-blocked context), and
+     when it goes the page underneath reads straight through the menu. In light
+     especially, body text behind the links made the whole panel look broken.
+     The blur stays as an enhancement on the frosted edge, it is no longer what
+     makes the panel legible. */
+  background: #eef1f8;
   color: #141518;
   opacity: 0;
   visibility: hidden;
@@ -446,8 +562,10 @@ html.dark .fa-sheet::before { opacity: 0.075; }
 .fa-sheet__inner { position: relative; z-index: 1; }
 
 .fa-sheet.is-open { opacity: 1; visibility: visible; pointer-events: auto; }
-html.dark .fa-sheet { background: rgba(9, 13, 24, 0.978); color: #f3f1ec; }
-html.fa-menu-open { overflow: hidden; } /* lock scroll while the sheet is open */
+html.dark .fa-sheet { background: #0b101c; color: #f3f1ec; }
+/* Lock the page while the sheet is open. overflow alone is not enough on
+   iOS, where the scroll chains through to the document anyway. */
+html.fa-menu-open, html.fa-menu-open body { overflow: hidden; overscroll-behavior: none; touch-action: none; }
 
 /* While the menu is open the bar keeps its position and its controls but gives
    up its surface, so there is no seam between the two. It has to outrank the
@@ -466,11 +584,16 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
 .fa-sheet__inner {
   width: 100%;
   max-width: 620px;
-  margin: 0 auto;
+  /* Centred in the panel rather than stacked at the top. Four links and two
+     buttons filled about half the screen and left the rest empty, which read
+     as a menu that had lost some of itself. `auto` margins centre it while
+     still letting it scroll from the top if a project page adds enough
+     sublinks to overflow. */
+  margin: auto;
   display: flex;
   flex-direction: column;
-  /* the sheet runs under the bar now, so the links start below it */
-  padding: calc(var(--fa-nav-h) + clamp(20px, 5vw, 40px)) clamp(22px, 7vw, 48px) 48px;
+  /* the sheet runs under the bar, so the links clear it */
+  padding: calc(var(--fa-nav-h) + clamp(16px, 4vw, 28px)) clamp(22px, 7vw, 48px) clamp(24px, 6vw, 40px);
 }
 .fa-sheet__sec {
   display: flex;
@@ -504,7 +627,7 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
   font-weight: 500;
   opacity: 0.6;
 }
-.fa-sheet__sublink.is-active { opacity: 1; color: #1e7cbd; }
+.fa-sheet__sublink.is-active { opacity: 1; color: var(--fa-nav-accent); }
 .fa-sheet__theme {
   display: inline-flex;
   align-items: center;
@@ -521,6 +644,7 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
+  min-height: 44px; /* a finger's worth, which the pill's padding alone is not */
 }
 .fa-sheet__themeicon { display: inline-flex; }
 
@@ -547,6 +671,29 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
 .fa-sheet.is-open .fa-sheet__title { opacity: 0.5; }
 @media (prefers-reduced-motion: reduce) {
   .fa-sheet, .fa-sheet__link, .fa-sheet__title, .fa-sheet__sublink, .fa-sheet__theme, .fa-shell__burger span { transition: none; }
+}
+
+/* A phone held sideways is about 375px tall, and the sheet at full size does
+   not fit in that: the theme button and the share row ended up below the fold,
+   so the menu became a thing you had to scroll — which nobody expects a menu
+   to do. A short viewport has width to spare, so the links go into two columns
+   rather than just getting smaller: the panel fits without scrolling AND the
+   rows stay tappable. */
+@media (max-width: 900px) and (max-height: 620px) {
+  .fa-sheet__inner {
+    max-width: 760px;
+    padding: calc(var(--fa-nav-h) + 6px) clamp(22px, 6vw, 56px) 12px;
+  }
+  .fa-sheet__sec {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: clamp(20px, 5vw, 44px);
+    padding: 6px 0;
+  }
+  .fa-sheet__title { grid-column: 1 / -1; margin: 2px 0 0; }
+  .fa-sheet__link { font-size: clamp(18px, 4.6vh, 26px); padding: 7px 0; }
+  .fa-sheet__sublink { font-size: clamp(14px, 3.2vh, 18px); padding: 6px 0; }
+  .fa-sheet__theme { margin-top: 10px; padding: 8px 16px; min-height: 0; }
 }
 
 /* the swap: links → hamburger at tablet width and below */
@@ -596,16 +743,17 @@ html.dark .fa-share.is-open .fa-share__btn { background: rgba(255, 255, 255, 0.0
   border-radius: 9px; color: #141518; font-size: 13px; font-weight: 500; cursor: pointer; text-decoration: none; white-space: nowrap;
 }
 .fa-share__opt:hover { background: rgba(20, 21, 24, 0.07); }
-.fa-share__opt--accent { color: #1e7cbd; font-weight: 600; }
+.fa-share__opt--accent { color: var(--fa-nav-accent); font-weight: 600; }
 .fa-share__sep { height: 1px; margin: 5px 8px; background: rgba(20, 21, 24, 0.1); }
 html.dark .fa-share__sep { background: rgba(255, 255, 255, 0.1); }
 .fa-share__ig { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 6px 13px 8px; }
-.fa-share__iglbl { color: #1e7cbd; font-weight: 600; font-size: 13px; margin-right: 2px; }
+.fa-share__iglbl { color: var(--fa-nav-accent); font-weight: 600; font-size: 13px; margin-right: 2px; }
 .fa-share__chip { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(20, 21, 24, 0.18); color: #141518; text-decoration: none; }
-.fa-share__chip:hover { border-color: #1e7cbd; color: #1e7cbd; }
-html.dark .fa-share__iglbl { color: #1e7cbd; }
+.fa-share__chip:hover { border-color: var(--fa-nav-accent); color: var(--fa-nav-accent); }
+html.dark .fa-share__iglbl { color: var(--fa-nav-accent); }
 html.dark .fa-share__chip { border-color: rgba(255, 255, 255, 0.18); color: #f3f1ec; }
-html.dark .fa-share__chip:hover { border-color: #1e7cbd; color: #1e7cbd; }
+/* the var already flips; these two only restate what :root/html.dark set */
+html.dark .fa-share__chip:hover { border-color: var(--fa-nav-accent); color: var(--fa-nav-accent); }
 html.dark .fa-share__btn { background: rgba(12, 13, 16, 0.92); color: #f3f1ec; border-color: rgba(255, 255, 255, 0.16); }
 html.dark .fa-share.is-open .fa-share__btn { background: #f3f1ec; color: #0c0d10; }
 html.dark .fa-share__panel { background: rgba(12, 13, 16, 0.96); border-color: rgba(255, 255, 255, 0.12); }
@@ -635,7 +783,17 @@ html.dark .fa-share__opt:hover { background: rgba(255, 255, 255, 0.08); }
   left: 0; right: auto;
   transform-origin: top left;
   min-width: min(280px, calc(100vw - 56px));
+  /*
+    Closed, this panel is only visibility:hidden, and an absolutely positioned
+    box still counts towards its scroll container's scrollHeight. Inside the
+    mobile menu that added ~100px of scrollable nothing below the last button,
+    which is the phantom scroll space in the open menu. Taking it out of layout
+    costs its 0.18s fade in the menu (the bar's own copy keeps it) and buys a
+    sheet that does not scroll at all.
+  */
+  display: none;
 }
+.fa-share--sheet.is-open .fa-share__panel { display: flex; }
 html.dark .fa-share--sheet .fa-share__btn { background: transparent; color: inherit; }
 html.dark .fa-share--sheet.is-open .fa-share__btn { background: rgba(255, 255, 255, 0.08); color: inherit; }
 
@@ -676,7 +834,7 @@ html .fa-shell.is-clear,
 /* the shared footer's extra pieces — the host used to style these with Tailwind
    utilities, but there is one footer now and one stylesheet for it, loaded by
    host and sub-app alike */
-.fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.6; }
+.fa-foot__meta { margin: 16px 0 0; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; letter-spacing: 0.02em; opacity: 0.76; /* was 0.6 → 3.67; now 4.91. .fa-foot__a inherits this one. */ }
 .fa-foot__split { display: grid; gap: 32px clamp(28px, 4vw, 64px); margin-top: clamp(32px, 4.5vw, 56px); border-top: 1px solid rgba(243, 241, 236, 0.18); padding-top: clamp(28px, 4vw, 44px); }
 @media (min-width: 640px) { .fa-foot__split { grid-template-columns: 1fr 1fr; } }
 /* The footer's column count varies with the environment: brand, sections and
@@ -703,9 +861,76 @@ html .fa-shell.is-clear,
   align-self: start;
 }
 .fa-foot__internal .fa-foot__h { opacity: 0.75; }
-.fa-foot__internal .fa-foot__meta { opacity: 0.45; }
+.fa-foot__internal .fa-foot__meta { opacity: 0.72; } /* was 0.45 → 2.69; now 4.59 */
 .fa-foot__post { display: block; text-decoration: none; color: inherit; }
-.fa-foot__date { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.5; }
+.fa-foot__date { display: block; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em; opacity: 0.72; /* was 0.5 → 3.02; now 4.59 */ }
 .fa-foot__ptitle { display: block; margin-top: 2px; font-size: 13px; font-weight: 500; line-height: 1.4; opacity: 0.85; }
 .fa-foot__post:hover .fa-foot__ptitle { opacity: 1; }
 .fa-foot__mark img { display: block; width: 22px; height: auto; }
+
+/* ---------------------------------------------------------------------------
+   Arrival, shared by every bundle.
+
+   The host app fades each page up with `.fa-page-in` (src/app/globals.css).
+   The project bundles are separate apps that never pass through its layout, so
+   until now the Atlas eased in and its projects snapped in, which read as two
+   different sites. This is the same 0.42s and the same curve, deliberately, so
+   crossing from a listing into a project feels like one place.
+
+   Three choices worth keeping:
+
+   OPACITY ONLY, and starting at 0.35 rather than 0. Fading the whole way up
+   from nothing reads as slow even at this duration, and a transform here would
+   make body the containing block for the fixed shell bar, which would then
+   jump on arrival and snap back. Opacity creates a stacking context but not a
+   containing block, so the bar stays put.
+
+   ON BODY, not a wrapper. Twenty-four bundles built by different tools share
+   this stylesheet and agree on nothing below <body>.
+
+   PURE CSS, with `both`. It needs no script and cannot leave a page stuck
+   invisible if one fails to load, which is the usual way an entrance animation
+   turns into a blank screen.
+--------------------------------------------------------------------------- */
+@keyframes fa-arrive {
+  from { opacity: 0.35; }
+  to   { opacity: 1; }
+}
+
+/*
+  The bar and the footer are BUILT BY SCRIPT and inserted once it lands, so
+  they cannot fade with the body: by then the body's own animation has long
+  finished and they simply appear, which is the "the navbar jumps in" of it.
+  They get their own short entrance from the moment they are inserted.
+
+  Deliberately shorter than the body's 0.42s and with no movement in the bar:
+  it is fixed to the top of the window, and sliding a fixed element down over
+  content that has already painted draws more attention to the lateness than
+  the pop did. The footer is below the fold on arrival, so it can afford the
+  small lift.
+*/
+@keyframes fa-foot-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/*
+  The bar deliberately does NOT animate. It is injected by script, so a fade
+  reads as it arriving late rather than as an entrance, and it made one project
+  behave differently from the rest. The fix for a late bar is to stop it being
+  late (reserve its height in CSS, load the page's blocking scripts in the
+  head), not to decorate the lateness.
+*/
+.fa-foot  { animation: fa-foot-in 0.5s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fa-foot { animation: none; }
+}
+
+body {
+  animation: fa-arrive 0.42s cubic-bezier(0.2, 0.6, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body { animation: none; }
+}

@@ -25,6 +25,10 @@ const nextConfig: NextConfig = {
   // runtime; leave it to Node's own resolver.
   serverExternalPackages: ["mupdf"],
 
+  // The homepage stack banner inlines public/logos/*.svg on the server
+  // (mocks/stack-games/marks.ts); ship them with the function.
+  outputFileTracingIncludes: { "/": ["./public/logos/*.svg"] },
+
   /*
    * Take webpack off its WebAssembly hasher.
    *
@@ -84,7 +88,7 @@ const nextConfig: NextConfig = {
         { source: "/interference", destination: "/interference/index.html" },
         // …/solo is the same bundle with the global bar and footer left off, for
         // sharing the fields on their own. The page reads the path itself.
-        { source: "/interference/solo", destination: "/interference/index.html" },
+        // /interference/solo REDIRECTS now; see redirects() below.
         { source: "/superposition", destination: "/superposition/index.html" },
         // Throat singing and quantum physics — hand-authored static bundle (article + the Overtone instrument)
         { source: "/throat-singing-quantum", destination: "/throat-singing-quantum/index.html" },
@@ -155,9 +159,58 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: [
-          { key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" },
+          /*
+           * Production is indexable; every other environment is not. Preview
+           * and staging serve the same routes from another hostname, so an
+           * indexed copy of them is a duplicate of the real site. Moves
+           * together with app/robots.ts and `robots` in app/layout.tsx.
+           */
+          ...(process.env.VERCEL_ENV === "production"
+            ? []
+            : [{ key: "X-Robots-Tag", value: "noindex, nofollow, noarchive, nosnippet, noimageindex" }]),
+          // Browsers must take our word for what a response is. Several routes
+          // return JSON assembled from model output and the sub-app bundles
+          // serve a lot of user-supplied-looking strings, and sniffing is how
+          // one of those gets re-read as HTML and run.
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          // The full URL of a page here can name an unreleased project, so it
+          // goes to other origins as the bare origin. Same-origin navigation
+          // keeps the whole path, which is what the internal pages rely on.
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          // Nothing on the site takes a picture or asks where you are, so those
+          // are switched off outright, for this page and for anything it frames.
+          // The microphone is (self) rather than () because the Overtone
+          // visualiser at /throat-singing-quantum listens to you sing; denying
+          // it here would break that page silently, with no console error that
+          // points back at this file. interest-cohort is the legacy FLoC opt
+          // out: ignored by current browsers, harmless, still worth stating.
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), geolocation=(), microphone=(self), interest-cohort=()",
+          },
         ],
       },
+      // Framing, and only where it is safe to forbid.
+      //
+      // There is deliberately no site-wide X-Frame-Options or frame-ancestors:
+      // /interference/embed.html and /generatives/embed.html EXIST to be put in
+      // someone else's page, and /prism/embed.html redirects to the second of
+      // them for embeds already out in the world. A blanket rule would break
+      // all three, and it would break them on other people's sites, where
+      // nobody here would see it happen.
+      //
+      // What is worth denying is the handful of pages with a session behind
+      // them: the sign-in form, the editor overview and the style-guide panel
+      // that writes token overrides. Those are the only surfaces where a
+      // click landing somewhere the visitor did not intend would do anything,
+      // and none of them is ever embedded.
+      ...["/admin", "/editor", "/style-guide"].map((base) => ({
+        source: `${base}/:path*`,
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+        ],
+      })),
       {
         source: "/atlas-nav.:ext(js|css)",
         headers: [{ key: "Cache-Control", value: "public, max-age=0, must-revalidate" }],
@@ -187,6 +240,45 @@ const nextConfig: NextConfig = {
         destination: "https://futures-atlas-staging.vercel.app/:path*",
         permanent: true,
       },
+      /*
+       * The site's address is futures-atlas.com. The .vercel.app that served it
+       * before the domain landed cannot be switched off, so it forwards rather
+       * than standing as a second front door to the same pages: two hostnames
+       * serving one site splits links and, once indexing opens, duplicates
+       * every page. The host is matched EXACTLY, so preview and branch
+       * deployments (…-git-<branch>-….vercel.app) are untouched and can still
+       * be opened directly.
+       */
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "futures-atlas.vercel.app" }],
+        destination: "https://futures-atlas.com/:path*",
+        permanent: true,
+      },
+      /*
+       * The project's ORIGINAL Vercel alias, and the same argument. This one was
+       * missed: futures-atlas-02.vercel.app was still answering 200 with the
+       * production build, so the site had two open front doors rather than one.
+       * The canonical link on each page already named futures-atlas.com, which
+       * is a hint a crawler may ignore; a 308 is not a hint. Matched exactly, so
+       * branch deployments (futures-atlas-02-git-<branch>-….vercel.app) are
+       * untouched and staging can still be opened directly.
+       */
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "futures-atlas-02.vercel.app" }],
+        destination: "https://futures-atlas.com/:path*",
+        permanent: true,
+      },
+      /*
+       * Solo mode had its own URL, serving the same document as /interference
+       * with the surrounding page stripped out: no bar, no footer, no links at
+       * all. Shared on its own it was a dead end, so anyone opening the link
+       * cold had no route into the site, and it put a second address on one
+       * page. It forwards to the project now. The `?solo=1` parameter still
+       * works on /interference for anyone who wants the bare field.
+       */
+      { source: "/interference/solo", destination: "/interference", permanent: true },
       { source: "/prism", destination: "/generatives", permanent: true },
       // The Counterfactual Index became Manipulate the data, and its
       // single-figure story stopped being called /one. The old paths were only

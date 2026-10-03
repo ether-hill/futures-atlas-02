@@ -17,10 +17,17 @@ import { draftProjects, liveProjects, type Project } from "@/data/projects";
 import { ATLAS_REPO, BUILD_LABEL, githubUrl, sourceFor } from "@/data/source-map";
 import { getListingEditor } from "@/lib/editor";
 
+const DEV_TITLE = "For developers. Futures Atlas";
+const DEV_DESC =
+  "How the Atlas is built, where every project's source lives, how to run it yourself, and exactly what is open and what is closed.";
+
 export const metadata: Metadata = {
-  title: "For developers. Futures Atlas",
-  description:
-    "How the Atlas is built, where every project's source lives, how to run it yourself, and exactly what is open and what is closed.",
+  title: DEV_TITLE,
+  description: DEV_DESC,
+  // Without these the page inherits the root layout's Open Graph title and
+  // description, so every hub page unfurled as the home page.
+  openGraph: { title: DEV_TITLE, description: DEV_DESC },
+  twitter: { title: DEV_TITLE, description: DEV_DESC },
 };
 
 /**
@@ -228,7 +235,6 @@ export default async function DevelopersPage() {
                 ["repositories", "Repositories"],
                 ["projects", "Project source"],
                 ["run", "Run it yourself"],
-                ["open", "Open & closed"],
                 ["licence", "Licence"],
               ].map(([id, label]) => (
                 <a
@@ -370,11 +376,6 @@ export default async function DevelopersPage() {
             </Reveal>
           ))}
         </div>
-        <Reveal>
-          <p className="mt-6 max-w-[70ch] text-[13px] leading-[1.85] text-ink-70">
-            {LICENCE.closing}
-          </p>
-        </Reveal>
       </Section>
 
       {/* ── Contact ─────────────────────────────────────────────────────── */}

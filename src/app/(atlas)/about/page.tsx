@@ -7,10 +7,20 @@ import { StackGrid } from "@/components/about/StackGrid";
 import { TermField } from "@/components/about/TermField";
 import { HERO, OPEN, STACK_INTRO, WORK } from "@/content/about";
 
+const ABOUT_TITLE = "About. Futures Atlas";
+// Was a verbatim copy of the site-wide description in app/layout.tsx, so the
+// home page and this one described themselves identically. This one describes
+// what is actually on the page: the three kinds of output, and the subject.
+const ABOUT_DESC =
+  "Futures Atlas is a showcase and a prototype lab: editorial, working prototypes with open code, and packaged workshop kits, mostly about compute, quantum and AI.";
+
 export const metadata: Metadata = {
-  title: "About. Futures Atlas",
-  description:
-    "Futures Atlas is a showcase and prototype lab: frameworks and modular components for foresight around quantum computing, quantum applications, and emerging AI. It's meant to be used.",
+  title: ABOUT_TITLE,
+  description: ABOUT_DESC,
+  // Without these the page inherits the root layout's Open Graph title and
+  // description, so every hub page unfurled as the home page.
+  openGraph: { title: ABOUT_TITLE, description: ABOUT_DESC },
+  twitter: { title: ABOUT_TITLE, description: ABOUT_DESC },
 };
 
 export default function AboutPage() {
@@ -45,9 +55,6 @@ export default function AboutPage() {
               </h2>
               <p className="mt-6 text-[13.5px] leading-[1.85] text-ink-70">{WORK.body}</p>
               <p className="mt-6 text-[12.5px] leading-[1.75] text-ink/50">{WORK.note}</p>
-              <p className="mt-6 font-mono text-[12.5px] uppercase tracking-[0.08em] text-accent-deep">
-                {WORK.closing}
-              </p>
             </div>
           </Reveal>
         </Container>

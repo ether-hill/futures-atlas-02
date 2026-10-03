@@ -16,6 +16,7 @@ import {
   recordOutcome,
   statsConfigured,
 } from "@/lib/theodds/stats-store";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -42,6 +43,24 @@ export async function POST(req: Request) {
 
   if (!statsConfigured()) {
     return NextResponse.json({ ok: false, code: "not_configured" }, { status: 503 });
+  }
+
+  // The numbers on /theodds/stats are the only real measurements the site
+  // publishes about its own readers, and a counter anyone can POST to in a loop
+  // is a counter that says nothing. Costs nothing to run, so the ceiling is
+  // set well above a person playing: a full gauntlet is three rolls, and
+  // re-rolling after doom is the point of the piece, so a busy visitor can
+  // still play for an hour without meeting this.
+  const gate = await rateLimit(req, "theodds-stats", {
+    perIp: 120,
+    perIpWindowSec: 3600,
+    budget: 20000,
+  });
+  if (!gate.ok) {
+    return NextResponse.json(
+      { ok: false, code: "rate_limited" },
+      { status: 429, headers: { ...noStore, "retry-after": String(gate.retryAfter) } },
+    );
   }
 
   // Length-capped so a client cannot mint unbounded keys in the store.

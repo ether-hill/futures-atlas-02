@@ -25,6 +25,7 @@ import {
   type Analysis,
 } from "@/lib/signal-reactor/deck";
 import { deckKey, readDeck, writeDeck } from "@/lib/signal-reactor/store";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
     typeof body.sector === "string"
       ? body.sector.replace(/[\u0000-\u001f\u007f]/g, " ").replace(/\s+/g, " ").trim().slice(0, 120)
       : "";
-  if (sector.length < 2) return fail(400, "bad_sector", "Describe the organization in at least 2 characters.");
+  if (sector.length < 2) return fail(400, "bad_sector", "Describe the organisation in at least 2 characters.");
   const modelKey: ModelKey = body.model === "haiku" ? "haiku" : "sonnet";
   const model = MODELS[modelKey];
 
@@ -70,6 +71,35 @@ export async function POST(req: Request) {
         { headers: { "cache-control": "no-store" } },
       );
     }
+  }
+
+  /*
+   * Past this line the request spends money: two Sonnet calls, each with a
+   * corrective retry, at roughly five cents a deck. The archive read above
+   * returns before it, so opening a deck someone already generated is free and
+   * uncounted; `fresh: true` skips the archive and IS counted, because it is
+   * the flag that forces a regeneration.
+   *
+   * Twelve an hour is more decks than anyone works through in a sitting, and
+   * the daily 300 is the backstop: whatever the traffic looks like and however
+   * many addresses it arrives from, the worst day costs about fifteen dollars.
+   */
+  const gate = await rateLimit(req, "signal-reactor", {
+    perIp: 12,
+    perIpWindowSec: 3600,
+    budget: 300,
+  });
+  if (!gate.ok) {
+    console.log(JSON.stringify({ tool: "signal-reactor", call: "rate-limited", hit: gate.hit }));
+    const res = fail(
+      429,
+      "rate_limited",
+      gate.hit === "budget"
+        ? "The generator has used up today's allowance. It resets tomorrow, and the sample briefing is there in the meantime."
+        : "That is a lot of briefings in one go. Try again in a few minutes.",
+    );
+    res.headers.set("retry-after", String(gate.retryAfter));
+    return res;
   }
 
   const client = new Anthropic();
@@ -133,13 +163,13 @@ export async function POST(req: Request) {
     const analysis = await jsonCall<Analysis>(
       "analysis",
       SYS_ANALYSIS,
-      `Organization type: ${sector}`,
+      `Organisation type: ${sector}`,
       AnalysisSchema,
     );
 
     // compact context summary from call 1 (per brief §3)
     const context = [
-      `Organization type: ${sector}`,
+      `Organisation type: ${sector}`,
       `Sector: ${analysis.sector_display}`,
       `Substance: ${analysis.signal.substance}`,
       `Quantum verdict: ${analysis.signal.quantum_verdict}, ${analysis.signal.quantum_note}`,

@@ -5,10 +5,20 @@ import { Reveal } from "@/components/Reveal";
 import { InterferenceField } from "@/components/InterferenceField";
 import { contactProjects } from "@/data/projects";
 
+const CONTACT_TITLE = "Contact. Futures Atlas";
+// The old one was 72 characters, so a result page had half a line to show, and
+// the replacement listed reasons to write, which the page itself deliberately
+// stopped doing. This matches the page: an open invitation, no presumption.
+const CONTACT_DESC =
+  "Send a message to the Futures Atlas. We read everything that comes in. You can write about the work in general, or about one project in the catalogue.";
+
 export const metadata: Metadata = {
-  title: "Contact. Futures Atlas",
-  description:
-    "Get in touch with the Futures Atlas, pitches, questions, collaborations.",
+  title: CONTACT_TITLE,
+  description: CONTACT_DESC,
+  // Without these the page inherits the root layout's Open Graph title and
+  // description, so every hub page unfurled as the home page.
+  openGraph: { title: CONTACT_TITLE, description: CONTACT_DESC },
+  twitter: { title: CONTACT_TITLE, description: CONTACT_DESC },
 };
 
 export default async function ContactPage({
@@ -31,7 +41,10 @@ export default async function ContactPage({
       {/* Rain into still water, very slowly, as the page's ground. Decorative,
           and quiet: the mask feathers all four edges (globals.css) so it reads
           as a field the page fades into rather than a rectangle of video. */}
-      <InterferenceField className="fa-contact-field pointer-events-none absolute inset-0 hidden h-full w-full md:block" />
+      {/* On phones too. It was `hidden md:block`, so the one page whose whole
+          background is the field had a plain ground on the device most people
+          open it on. It is aria-hidden and holds still under reduced motion. */}
+      <InterferenceField className="fa-contact-field pointer-events-none absolute inset-0 h-full w-full" />
       <div className="relative">
         <Container>
           {/*
@@ -59,9 +72,13 @@ export default async function ContactPage({
               </Reveal>
               <Reveal delay={200}>
                 <p className="mt-7 max-w-[42ch] text-[14px] leading-[1.75] text-ink-70">
-                  Whether you&rsquo;d like to collaborate, commission work, or
-                  simply share a thought or question, we&rsquo;d be glad to hear
-                  from you.
+                  {/* Says what happens to the message, not what it should be
+                      about. Every version that named reasons presumed one:
+                      that you want to work with us, or that you found a
+                      mistake. The form's own fields cover the subject.
+                      No hedge on the reply either: "when we can" is an excuse
+                      made before anyone has asked for one. */}
+                  Send us a message. We read everything that comes in.
                 </p>
               </Reveal>
             </header>

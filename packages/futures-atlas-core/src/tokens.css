@@ -22,7 +22,18 @@
   --fa-ink: #17181b;
   --fa-ink-body: #303237;
   --fa-graphite: #63666c;
-  --fa-faint: #8f929a;
+  /*
+    The quietest ink. It was #8f929a, which is 2.71 on bone and 2.93 on panel —
+    a whisper, and unreadable by any measure; on /glossary alone it set 333
+    "see also" lines. Same hue and chroma (oklch h 269.5, C 0.012), lightness
+    down from 0.66 to 0.53: 4.59 on bone, 4.96 on panel.
+
+    It now sits close to --fa-graphite (0.51). That is arithmetic, not a slip:
+    once the faintest tier has to clear 4.5 on a near-white ground there is
+    almost no room left between it and the tier above. The two are still
+    ordered, and they are rarely set next to each other.
+  */
+  --fa-faint: #696c73;
 
   /* surfaces & ink (dark) */
   --fa-bone-d: #17181b;
@@ -32,7 +43,11 @@
   --fa-ink-d: #f2ede2;
   --fa-ink-body-d: #d3ccbe;
   --fa-graphite-d: #9da0a8;
-  --fa-faint-d: #74777f;
+  /* Same move on the dark side, and a much smaller one: #74777f was already
+     3.96 on ink. Lightness 0.57 → 0.61, hue and chroma untouched — 4.68 on ink,
+     4.72 on the dark panel. The gap to --fa-graphite-d (0.71) survives here,
+     because near-black leaves the quiet end far more room than bone does. */
+  --fa-faint-d: #80838b;
 
   /* accent (light / dark) */
   /*
@@ -49,11 +64,49 @@
     near-white AND a near-black ground is 3.93, whatever the chroma. That clears
     the 3.0 WCAG AA needs for large text and for UI, and sits under the 4.5 for
     small body copy — a property of insisting on one colour, not of this one.
+
+    --fa-accent is therefore the FILL and the MARK: bars, dots, rules, borders,
+    chips, big type. It is unchanged and it stays one value in both themes.
   */
   --fa-accent: oklch(0.565 0.13 245);
   --fa-accent-d: oklch(0.565 0.13 245);
-  --fa-accent-deep: oklch(0.565 0.13 245);
-  --fa-accent-deep-d: oklch(0.565 0.13 245);
+
+  /*
+    --accent-deep is the same blue set as SMALL TEXT, and it is the one member
+    of the family that has to flip.
+
+    The paragraph above is the reason. One blue tops out at 3.93 against both
+    grounds, and small copy needs 4.5 — so as long as the text blue and the fill
+    blue are the same value, every category label, every card meta line and
+    every inline accent link on the site is a contrast failure (315 nodes on
+    /glossary, and that is one page). The choice is a blue that shifts with the
+    theme or body copy nobody with low vision can read, and the second is not a
+    choice. The fill is what carries the brand at a glance anyway; this is the
+    9-to-11px tier, where hue survives the shift and legibility does not survive
+    its absence.
+
+    So: same hue, same chroma, lightness moved off the brand value in whichever
+    direction the ground demands. Light 0.495 (#0067a6) is 5.25 on bone and 5.67
+    on panel; dark 0.64 (#3b93d5) is 5.34 on ink and 5.39 on the dark panel.
+    Both stay unmistakably the brand blue next to a --fa-accent fill.
+  */
+  --fa-accent-deep: oklch(0.495 0.13 245);
+  --fa-accent-deep-d: oklch(0.64 0.13 245);
+
+  /*
+    The blue as a fill UNDER light text — the primary CTA ("Browse the atlas",
+    "Send"), which sets 12px mono in --paper on a solid accent block.
+
+    A filled shape only owes 3.0 and the brand blue gives 3.92, so the button
+    itself was never the problem; the type on it was, at 3.92 where 12px needs
+    4.5. Dropping the lightness to 0.525 puts --paper on it at 4.69 and costs
+    four hundredths of a lightness step — the button reads as the same blue, and
+    nothing else on the site moves, because only fills that carry light type use
+    this. One value in both themes, like the --paper it is under.
+
+    --fa-accent-press (0.475) still sits below it, so the hover step survives.
+  */
+  --fa-accent-cta: oklch(0.525 0.13 245);
 
   /*
     The pressed/hover shade, also ONE value. Backgrounds only — never text, so
@@ -84,6 +137,23 @@
   --fa-accent-soft: oklch(0.93 0.045 245);
   --fa-accent-soft-d: oklch(0.34 0.06 245);
 
+  /*
+    Categorical set, for when a page has to encode CATEGORIES in colour — a
+    legend, a series, a set of ticks on a timeline. Not decoration, and not a
+    second brand palette: nothing may reach for these to make a page prettier.
+
+    Five hues, all pinned to the same lightness as the brand blue and for the
+    same reason given above — one value has to read on bone AND on ink, because
+    like the accent they do not flip with the theme. The first IS the accent's
+    hue, so a page using one category reads as the brand rather than as a sixth
+    colour.
+  */
+  --fa-data-1: oklch(0.6 0.11 245);
+  --fa-data-2: oklch(0.6 0.11 40);
+  --fa-data-3: oklch(0.6 0.09 175);
+  --fa-data-4: oklch(0.6 0.1 90);
+  --fa-data-5: oklch(0.6 0.11 320);
+
   /* font families (consumer loads these via next/font and sets the --font-* vars) */
   --fa-font-display: var(--font-archivo), system-ui, sans-serif;
   --fa-font-serif: var(--font-bodoni), Georgia, serif;
@@ -113,6 +183,14 @@
   --accent-soft: var(--fa-accent-soft);
   --accent-deep: var(--fa-accent-deep);
   --accent-press: var(--fa-accent-press);
+  --accent-cta: var(--fa-accent-cta);
+
+  /* categorical (see the primitives above) — one value in both themes */
+  --data-1: var(--fa-data-1);
+  --data-2: var(--fa-data-2);
+  --data-3: var(--fa-data-3);
+  --data-4: var(--fa-data-4);
+  --data-5: var(--fa-data-5);
   --hairline: color-mix(in srgb, var(--text) 16%, transparent);
 
   /* fonts */
@@ -212,9 +290,15 @@ html.dark {
   --text-body: var(--fa-ink-body-d);
   --muted: var(--fa-graphite-d);
   --faint: var(--fa-faint-d);
-  /* --accent and --accent-deep are NOT re-stated here: the brand blue is one
-     value and re-declaring it under html.dark is how it drifted before. Only
-     the soft surface tint flips. */
+  /* --accent is NOT re-stated here: the brand blue is one value and
+     re-declaring it under html.dark is how it drifted before. --accent-cta is
+     not restated either, for the same reason — it is a fill under --paper, and
+     --paper does not flip.
+
+     --accent-deep does flip, and only because 4.5 for small text is
+     unreachable otherwise; see the primitives above. The soft surface tint
+     flips too, as it always has. */
+  --accent-deep: var(--fa-accent-deep-d);
   --accent-soft: var(--fa-accent-soft-d);
   color-scheme: dark;
 }

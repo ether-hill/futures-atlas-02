@@ -132,8 +132,42 @@ export interface TermPost {
   kind_: string;
   definition: string;
   body: string;
+  /** The cover's photograph, drawn through whichever cover system is in use
+   *  (see TermSlides.tsx). Without one the cover falls back to `hue`. */
+  cover?: TermPhoto;
+  /** The word's own colour, from a closed set: the deck's sector hues. */
+  hue?: string;
+  /** The caption, told one beat per slide after the cover. Every line here is
+   *  the caption's own; a slide adds nothing the caption does not say. */
+  story?: StoryBeat[];
   caption: string;
   hashtags: string[];
+}
+
+export interface TermPhoto {
+  src: string;
+  /** CSS object-position for the crop. */
+  pos?: string;
+  /** What it is, who made it, and the licence, printed on the slide. */
+  credit: string;
+  /** `plate` shows the whole thing at its own proportions (a document);
+   *  default fills the frame (a place). */
+  fit?: "plate";
+  /** How dark the scrim over it is, 0-1. */
+  dim?: number;
+  /** Draw it in the cover's duotone rather than its own colours. */
+  duo?: boolean;
+}
+
+export interface StoryBeat {
+  kicker?: string;
+  big?: string;
+  text?: string;
+  photo?: TermPhoto;
+  /** An etymology, set as its parts. */
+  parts?: { w: string; lang: string; gloss: string }[];
+  /** The last slide, signed with the mark. */
+  end?: boolean;
 }
 
 export interface ReelPost {
@@ -407,7 +441,7 @@ export const HOME_REEL: ReelPost = {
   video: "/mocks/instagram/atlas-home.webm",
   thumbAt: 0,
   caption:
-    "Mapping foresight.\n\nFutures Atlas is a speculative design practice that builds instruments rather than slide decks. A card game that asks which futures already arrived. A papal encyclical on AI, and fifteen imagined replies from other faiths. Eleven live wave fields. A cluster map of the questions a room actually has. Reports with a rule that every finding carries its own figure and its own scope, or it does not go in.\n\nThe throughline: most of what gets called the future is either already here and uncounted, or has been announced for a decade and has not happened. Both are worth knowing, and neither is settled by a forecast.\n\nEverything on the site is playable, readable or sourced. Usually all three.",
+    "Mapping foresight.\n\nFutures Atlas is a speculative design studio. We make games, tools and live simulations about compute: quantum systems, AI, and the power structures behind them.\n\nSome of the future is already here and nobody counted it. Some of it has been announced for a decade and still hasn't shown up. We try to tell the two apart.",
   hashtags: ["#speculativedesign", "#designfiction", "#futuresthinking", "#studio", "#creativecoding"],
 };
 
@@ -425,6 +459,12 @@ export const TERM_POSTS: TermPost[] = [
       "An ant does not tell another ant where to go. It leaves a chemical trail, and the trail tells the next ant. Nothing holds the plan.",
     caption:
       "Stigmergy. Coordination through traces left in the environment, rather than through any communication between the participants.\n\nAn ant does not tell another ant where to go. It leaves a chemical trail, the trail is followed, following it strengthens it, and a route appears that no ant chose. Termite mounds are built this way. So are slime mould networks, ocean paths, footpaths worn across a park, and most of the useful structure on the internet.\n\nThe word was coined by the French zoologist Pierre-Paul Grass\u00E9 in 1959, from the Greek stigma, a mark, and ergon, work. Work that marks, and marks that work.\n\nIt is in this studio's vocabulary because it is the honest answer to a question people keep asking about emergent systems: who is coordinating this? Usually nobody. The environment is.",
+    cover: {
+      src: "/mocks/instagram/stigmergy/ant-highway.jpg",
+      pos: "42% 50%",
+      credit: "Ant highway, Shai Hills, Ghana, 2023. Matti Blume, CC BY-SA 4.0",
+    },
+    hue: "#3E93D8",
     hashtags: ["#stigmergy", "#emergence", "#complexsystems", "#slimemould", "#futuresatlas"],
   },
   {
@@ -440,6 +480,9 @@ export const TERM_POSTS: TermPost[] = [
       "Two people can both say twenty percent and mean different things: extinction, permanent loss of control, or a bad century. Nothing in the number says which.",
     caption:
       "p(doom). The probability a person puts on advanced AI ending badly for humanity, said out loud as a number.\n\nThe people building it answer. Dario Amodei, who runs Anthropic, put it at a 25% chance things go really, really badly, on the record at the Axios AI+ summit in September 2025. Elon Musk says the probability of a good outcome is about 80%, so only a 20% chance of annihilation. Note the only.\n\nIt is jargon out of the AI safety forums that escaped into interviews around 2023, and it looks like a measurement, which is the problem. No agreed definition of doom, no timeframe attached, no method behind any of the figures. Two people can both say twenty percent while one means extinction and the other means a bad century.\n\nIt is in this studio\u2019s vocabulary because The Odds is built on it. Three people, three numbers, and three mechanics that make you hold one: a twelve-sided die, a wheel, and Max Tegmark, who declines to give a number at all and deals you twelve futures instead.",
+    // No cover photograph: there is nothing honest to photograph for a number
+    // people say out loud, so this one falls back to its colour ground.
+    hue: "#8B6FD4",
     hashtags: ["#pdoom", "#aisafety", "#existentialrisk", "#aigovernance", "#futuresatlas"],
   },
   {
@@ -448,13 +491,56 @@ export const TERM_POSTS: TermPost[] = [
     id: "solastalgia",
     term: "Solastalgia",
     pron: "/\u02CCs\u0252l\u0259\u02C8stald\u0292\u0259/",
-    kind_: "noun \u00B7 environmental philosophy",
+    kind_: "noun · environmental philosophy",
     definition:
       "The distress of watching the place you live change around you while you are still living in it. Homesickness without having left home.",
-    body:
-      "Nostalgia is the pain of not being able to go back. This is the pain of never having gone anywhere, and home going without you.",
+    body: "",
     caption:
-      "Solastalgia. The distress of watching the place you live change around you while you are still living in it.\n\nNostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did. The mine widened. The river dropped. The season stopped arriving when it used to. Nothing is missing from your life except the place it happens in.\n\nThe philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed. Latin solacium, comfort, and the Greek -algia, pain. The pain of losing your comfort while sitting inside it.\n\nIt is in this studio\u2019s vocabulary because most futures work is about arrival, and this is the word for what an arrival costs the people who do not move.",
+      "Solastalgia. The distress of watching the place you live change around you while you are still living in it.\n\nNostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed: you never left, and home did. The mine widened. The river dropped. The season stopped arriving when it used to. Nothing is missing from your life except the place it happens in.\n\nThe philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed. Latin solacium, comfort, and the Greek -algia, pain. The pain of losing your comfort while sitting inside it.\n\nIt is in this studio’s vocabulary because most futures work is about arrival, and this is the word for what an arrival costs the people who do not move.",
+    // The slides follow the caption's own order, in its own words. No `cover`:
+    // slide one is slide two's 1987 frame in the duotone.
+    hue: "#4E9E86",
+    // Slides two and three are ONE frame, decades apart: Landsat 5 on 18 Sep
+    // 1987 and Landsat 9 on 15 Sep 2024, same path/row (090/082), same bbox
+    // (150.79,-32.408,150.97,-32.217), same season, same colour stretch,
+    // rendered via Microsoft Planetary Computer. The town and the river hold
+    // still; the pit to the south of town is what moves. Mines are not named
+    // on the slides because the identifications were read off the imagery,
+    // not checked against a boundary map.
+    story: [
+      {
+        kicker: "Muswellbrook, Hunter Valley, 1987",
+        text: "Nostalgia was coined in 1688, by a Swiss medical student, for mercenaries who were physically ill with wanting to go home. Solastalgia is the same ache with the arrangement reversed:",
+        big: "you never left, and home did.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/muswellbrook-1987.jpg",
+          dim: 0.55,
+          credit: "Landsat 5, 18 Sep 1987. USGS/NASA, public domain",
+        },
+      },
+      {
+        kicker: "The same place, 2024",
+        text: "The philosopher Glenn Albrecht built the word in the early 2000s while working in the Hunter Valley in New South Wales, where open-cut coal mining was taking the landscape apart around people who stayed.",
+        big: "The mine widened.\nThe river dropped.\nThe season stopped arriving when it used to.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/muswellbrook-2024.jpg",
+          dim: 0.55,
+          credit: "Landsat 9, 15 Sep 2024. USGS/NASA, public domain",
+        },
+      },
+      {
+        parts: [
+          { w: "solacium", lang: "Latin", gloss: "comfort" },
+          { w: "-algia", lang: "Greek", gloss: "pain" },
+        ],
+        big: "The pain of losing your comfort while sitting inside it.",
+        photo: {
+          src: "/mocks/instagram/solastalgia/hunter-open-cut.jpg",
+          pos: "50% 50%",
+          credit: "Open-cut coal mine, Hunter Valley, 2011. Max Phillips, CC BY 2.0",
+        },
+      },
+    ],
     hashtags: ["#solastalgia", "#climategrief", "#environmentalphilosophy", "#futuresthinking", "#futuresatlas"],
   },
 ];
@@ -476,7 +562,7 @@ export const STACK_REEL: ReelPost = {
   thumb: "/mocks/instagram/stack-bare.jpg",
   thumbAt: 0,
   caption:
-    "Everything this studio is built with, named.\n\nThe work splits three ways and so does the stack. Language and code models for research, drafting and the agent work. Image and video models for the plates that are generated, which are always labelled as generated. And the web layer everything actually ships on: Next.js, Three.js, p5, D3, and a lot of hand-written shaders, because a fragment shader computed fresh every frame is smaller, sharper and more honest than a video of one.\n\nOpen weights sit next to the closed ones on purpose. Some pieces here run models locally because the piece is about what you can do without asking permission.\n\nUsed, not endorsed. It is on the About page rather than in a deck, because a studio that will not say what it uses is telling you something.",
+    "The stack keeps growing.\n\nLanguage models, image and video models, open-source weights, and the web tools everything ships on. Each year there are more of them, from more places, and the set we use looks different every few months.\n\nThis is what we build with right now. Ask us again in six months.",
   hashtags: ["#techstack", "#creativecoding", "#webgl", "#nextjs", "#designstudio", "#futuresatlas"],
 };
 
@@ -786,10 +872,14 @@ export const REEL_POSTS: ReelPost[] = [
     id: "term-field",
     title: "The vocabulary",
     note: "Every term the Atlas works with, on a slowly turning sphere.",
-    embed: "/mocks/termfield",
-    thumbAt: 8,
+    // Filmed at phone size with the site bar hidden:
+    // `node scripts/record-phone.mjs /mocks/termfield term-field 12`.
+    embed: "",
+    video: "/mocks/instagram/term-field.webm",
+    thumb: "/mocks/instagram/term-field.jpg",
+    thumbAt: 0,
     caption:
-      "Every word this studio actually works with, arranged on a sphere and left to turn.\n\nThe three lines:\n\nWhat you are seeing. About sixty terms in five families — futures, quantum, AI, society, craft — with a line drawn from each term to its family's anchor, and more lines where a term belongs to two families at once.\n\nHow it is made. Points spread evenly on a sphere by golden-angle spacing, projected with perspective so depth reads as size and fade. Positions are written straight onto the DOM inside one animation frame, never through React state, so sixty labels and seventy lines cost almost nothing.\n\nThe idea. It is not decoration and it is not a tag cloud sized by frequency. The families are the actual shape of the practice, and the crossing lines are the argument: the interesting work is the terms that refuse to sit in one family.",
+      "The words we work with, on a sphere that keeps turning.\n\nFutures, quantum, AI, society and craft. Each line ties a term to its family. The ones worth watching are the terms that belong to more than one.",
     hashtags: ["#designstudio", "#datavis", "#futures", "#creativecoding", "#typography"],
   },
 ];

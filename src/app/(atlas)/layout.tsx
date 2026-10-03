@@ -8,7 +8,9 @@ import { PageIn } from "@/components/PageIn";
 export default function AtlasLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <main className="flex-1">
+      {/* id + tabindex: the target of the root layout's skip link. tabindex="-1"
+          is what lets the fragment jump move FOCUS here, not just the scroll. */}
+      <main id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <PageIn>{children}</PageIn>
       </main>
       <Footer />

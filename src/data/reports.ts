@@ -38,7 +38,7 @@ export const REPORTS: ReportEntry[] = [
     slug: "where-compute-gets-built",
     href: "/feed/where-compute-gets-built",
     title: "Where Compute Gets Built",
-    dek: "Advanced computing needs somewhere to physically happen — chips, megawatts, fibre and a jurisdiction that permits it. What limits it, who funds it, and which places are trying to build their way in.",
+    dek: "Advanced computing needs somewhere to physically happen: chips, megawatts, fibre and a jurisdiction that permits it. What limits it, who funds it, and which places are trying to build their way in.",
     published: COMPUTE,
     tiles: COMPUTE_TILES,
   },

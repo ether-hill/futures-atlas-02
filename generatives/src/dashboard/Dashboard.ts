@@ -68,7 +68,7 @@ export class Dashboard {
       <div class="studio-root">
         <header class="studio-head">
           <h1 class="studio-title">Generatives</h1>
-          <p class="studio-intro">A generative-visual lab: an array of animated, embeddable treatments for the visual language of a quantum-computing futures project. Pick a treatment, tune it in real time, and capture it.</p>
+          <p class="studio-intro">A generative-visual lab: an array of animated, embeddable treatments for the visual language of the Futures Atlas. Pick a treatment, tune it in real time, and capture it.</p>
         </header>
         <div class="studio-wrap">
           <div class="studio-selectbar">

@@ -99,13 +99,19 @@ export function HeroField() {
   }, [inView]);
 
   return (
-    <div ref={hostRef} className="pointer-events-none absolute inset-0" aria-hidden="true">
+    /* The stage itself carries no aria-hidden. The Reseed button below is a
+       real control, and a focusable control inside an aria-hidden subtree is one
+       a keyboard user can tab to and a screen reader has been told does not
+       exist (axe: aria-hidden-focus). The flag sits on the decorative children
+       instead, the field and the scrim, which is all it was ever for. */
+    <div ref={hostRef} className="pointer-events-none absolute inset-0">
       {src && inView && (
         <iframe
           key={src}
           src={src}
           title=""
           tabIndex={-1}
+          aria-hidden="true"
           loading="eager"
           className="pointer-events-none absolute inset-0 h-full w-full border-0 opacity-80"
         />
@@ -113,7 +119,7 @@ export function HeroField() {
       {/* scrim so the headline and lede stay readable over the field, heavier
           on small screens (rgba black over texture, documented exception,
           like other hero scrims; see globals.css .hero-scrim) */}
-      <div className="hero-scrim pointer-events-none absolute inset-0" />
+      <div aria-hidden="true" className="hero-scrim pointer-events-none absolute inset-0" />
       {src && (
         <button
           type="button"

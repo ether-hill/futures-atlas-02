@@ -13,6 +13,22 @@ import { topicsOf, type Topic } from "@/data/topics";
 const ROW_LABEL =
   "mr-1 font-mono text-[11px] uppercase tracking-[0.14em] text-graphite";
 
+/**
+ * How long the list has to be before filtering it is worth the chips.
+ *
+ * At launch there are seven live projects. Kind splits them 3/2/2 and subject
+ * leaves four chips holding one item each, so every click narrows seven to
+ * between one and four — less work than reading the grid, which fits on a
+ * screen. Two rows of controls over a list you can already see is machinery
+ * pretending to be help.
+ *
+ * An editor sees all thirty-odd, live and draft, where the same chips do real
+ * work. So the rows are not deleted, they appear when the list earns them, and
+ * the public gets them too once enough projects are published. Twelve is where
+ * the grid stops fitting on one screen at three columns.
+ */
+const FILTER_FROM = 12;
+
 // The interactive half of the listing. It filters whatever list it is handed, // deciding what belongs in that list (public vs editor) is the page's job, so a
 // draft can never reach the browser for a visitor who isn't signed in.
 export function ProjectsBrowser({
@@ -41,6 +57,7 @@ export function ProjectsBrowser({
 
   const kinds = kindsOf(byTopic);
   const topics = topicsOf(byKind);
+  const showFilters = items.length >= FILTER_FROM;
 
   return (
     <div className="relative min-h-[70vh] overflow-hidden bg-surface py-[clamp(48px,8vw,110px)]">
@@ -59,50 +76,54 @@ export function ProjectsBrowser({
           <p className="eyebrow mb-5">Everything we&rsquo;ve built</p>
         </Reveal>
         <Reveal delay={70}>
-          <h1 className="mb-[clamp(26px,4vw,46px)] max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance">
+          <h1 className={`${showFilters ? "mb-[clamp(26px,4vw,46px)]" : "mb-[clamp(28px,4vw,48px)]"} max-w-[20ch] text-[clamp(32px,4.6vw,68px)] font-extrabold leading-[0.98] tracking-[-0.022em] text-ink text-balance`}>
             Projects
           </h1>
         </Reveal>
 
-        {/* What it is */}
-        <Reveal delay={140} className="mb-3 flex flex-wrap items-center gap-2.5">
-          <span className={ROW_LABEL}>Kind</span>
-          <FilterTag
-            label="All"
-            count={byTopic.length}
-            active={kind === null}
-            onClick={() => setKind(null)}
-          />
-          {kinds.map((k) => (
-            <FilterTag
-              key={k}
-              label={KIND_LABEL[k]}
-              count={byTopic.filter((p) => p.kind === k).length}
-              active={kind === k}
-              onClick={() => setKind(k)}
-            />
-          ))}
-        </Reveal>
+        {showFilters && (
+          <>
+            {/* What it is */}
+            <Reveal delay={140} className="mb-3 flex flex-wrap items-center gap-2.5">
+              <span className={ROW_LABEL}>Kind</span>
+              <FilterTag
+                label="All"
+                count={byTopic.length}
+                active={kind === null}
+                onClick={() => setKind(null)}
+              />
+              {kinds.map((k) => (
+                <FilterTag
+                  key={k}
+                  label={KIND_LABEL[k]}
+                  count={byTopic.filter((p) => p.kind === k).length}
+                  active={kind === k}
+                  onClick={() => setKind(k)}
+                />
+              ))}
+            </Reveal>
 
-        {/* What it is about */}
-        <Reveal delay={180} className="mb-[clamp(28px,4vw,48px)] flex flex-wrap items-center gap-2.5">
-          <span className={ROW_LABEL}>Subject</span>
-          <FilterTag
-            label="All"
-            count={byKind.length}
-            active={topic === null}
-            onClick={() => setTopic(null)}
-          />
-          {topics.map((t) => (
-            <FilterTag
-              key={t}
-              label={t}
-              count={byKind.filter((p) => p.topics.includes(t)).length}
-              active={topic === t}
-              onClick={() => setTopic(t)}
-            />
-          ))}
-        </Reveal>
+            {/* What it is about */}
+            <Reveal delay={180} className="mb-[clamp(28px,4vw,48px)] flex flex-wrap items-center gap-2.5">
+              <span className={ROW_LABEL}>Subject</span>
+              <FilterTag
+                label="All"
+                count={byKind.length}
+                active={topic === null}
+                onClick={() => setTopic(null)}
+              />
+              {topics.map((t) => (
+                <FilterTag
+                  key={t}
+                  label={t}
+                  count={byKind.filter((p) => p.topics.includes(t)).length}
+                  active={topic === t}
+                  onClick={() => setTopic(t)}
+                />
+              ))}
+            </Reveal>
+          </>
+        )}
 
         {/*
           The grid reveals too, and last.
