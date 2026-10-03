@@ -158,7 +158,46 @@ float smin(float a, float b, float k) {
 }
 `;
 
-function frag(sketchGlsl: string, params: ParamDef[], stepScale: number): string {
+/** Uniforms and helpers every pass of a sketch shares, main or field. */
+function head(params: ParamDef[], field: boolean): string {
+  return `uniform float u_time;
+${uniformDecls(params)}
+// the phase of the cycle, and how much the form's own motion is worth
+#define PH (6.28318530718 * u_time / max(u_cycle, 0.1))
+#define EV u_evolve
+${field ? "#define FIELD\nuniform samplerCube u_fieldLin;\nuniform samplerCube u_fieldNear;" : ""}
+${COMMON}
+${LIGHT_GLSL}`;
+}
+
+/** The field pass: one cube face per draw, every texel a direction, written
+ *  by the sketch's own field() into two layers at once. */
+function fieldFrag(sketchGlsl: string, params: ParamDef[]): string {
+  return `#version 300 es
+precision highp float;
+layout(location = 0) out vec4 outLin;
+layout(location = 1) out vec4 outNear;
+uniform float u_face;
+uniform float u_size;
+${head(params, false)}
+${sketchGlsl}
+void main() {
+  // the GL cube map convention: face, then (s, t) on it, back to a direction
+  vec2 st = gl_FragCoord.xy / u_size * 2.0 - 1.0;
+  float sc = st.x, tc = st.y;
+  vec3 d;
+  int f = int(u_face + 0.5);
+  if (f == 0) d = vec3(1.0, -tc, -sc);
+  else if (f == 1) d = vec3(-1.0, -tc, sc);
+  else if (f == 2) d = vec3(sc, 1.0, tc);
+  else if (f == 3) d = vec3(sc, -1.0, -tc);
+  else if (f == 4) d = vec3(sc, -tc, 1.0);
+  else d = vec3(-sc, -tc, -1.0);
+  field(normalize(d), outLin, outNear);
+}`;
+}
+
+function frag(sketchGlsl: string, params: ParamDef[], stepScale: number, field: boolean): string {
   return `#version 300 es
 precision highp float;
 out vec4 outColor;
@@ -166,15 +205,9 @@ uniform vec2 u_res;
 uniform mat3 u_view;
 uniform float u_fast;
 uniform float u_play;
-uniform float u_time;
 uniform vec2 u_jitter;
 uniform float u_dither;
-${uniformDecls(params)}
-// the phase of the cycle, and how much the form's own motion is worth
-#define PH (6.28318530718 * u_time / max(u_cycle, 0.1))
-#define EV u_evolve
-${COMMON}
-${LIGHT_GLSL}
+${head(params, field)}
 ${sketchGlsl}
 
 vec3 calcNormal(vec3 p, float h) {
@@ -305,10 +338,17 @@ export function raymarchSketch(
     /** Fraction of the distance to step. Lower for fields that overestimate
      *  (domain warps, varying frequency). */
     stepScale?: number;
+    /** The sketch's form depends on direction alone over most of its work,
+     *  and its GLSL defines `field(dir, out lin, out near)` plus a lookup
+     *  that reads `u_fieldLin` / `u_fieldNear` under `#ifdef FIELD`. The
+     *  field is then baked into a cube map once per frame (per time and
+     *  form), and the march reads it instead of recomputing it every step. */
+    field?: boolean;
   },
 ): Sketch {
   const params = [...def.params, ...MOTION_PARAMS, ...WINDOW_PARAMS, ...STUDIO_PARAMS, ...CAMERA_PARAMS];
-  const src = frag(def.glsl, params, def.stepScale ?? 0.8);
+  // what the field depends on: the form and the motion, not light or camera
+  const formKeys = params.filter((p) => p.group !== "Light" && !p.hidden).map((p) => p.key);
   return {
     id: def.id,
     title: def.title,
@@ -322,7 +362,57 @@ export function raymarchSketch(
     animated: false,
     timed: true,
     create(gl): Renderer {
-      const p = program(gl, src);
+      // The field needs float render targets; without them the sketch falls
+      // back to computing it in the march, slowly but identically.
+      const useField = !!def.field && !!gl.getExtension("EXT_color_buffer_float");
+      const p = program(gl, frag(def.glsl, params, def.stepScale ?? 0.8, useField));
+      const fp = useField ? program(gl, fieldFrag(def.glsl, params)) : null;
+      let fLin: WebGLTexture | null = null, fNear: WebGLTexture | null = null;
+      const fFbo = useField ? gl.createFramebuffer() : null;
+      let fSize = 0, fKey = "";
+      const cube = (fmt: number, filter: number, n: number) => {
+        const t = gl.createTexture()!;
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, t);
+        gl.texStorage2D(gl.TEXTURE_CUBE_MAP, 1, fmt, n, n);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, filter);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, filter);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        return t;
+      };
+      /** Bake the field for these values at this time, at a resolution that
+       *  puts about one texel under each pixel of the form. Cached: tiles of
+       *  one frame, and a paused form, bake once. */
+      const bake = (values: Values, time: number, w: number, h: number) => {
+        if (!fp || !fFbo) return;
+        // the form spans ~0.72 of the short side; a 90° face over n texels
+        // then matches it pixel for pixel at n ≈ 0.57 of the short side
+        const n = Math.max(128, Math.min(2048, Math.ceil(Math.min(w, h) * 0.75 / 64) * 64));
+        const key = `${n}|${time}|${formKeys.map((k) => values[k]).join(",")}`;
+        if (key === fKey) return;
+        if (n !== fSize) {
+          if (fLin) gl.deleteTexture(fLin);
+          if (fNear) gl.deleteTexture(fNear);
+          fLin = cube(gl.RG16F, gl.LINEAR, n);
+          fNear = cube(gl.RGBA16F, gl.NEAREST, n);
+          fSize = n;
+        }
+        gl.bindFramebuffer(gl.FRAMEBUFFER, fFbo);
+        gl.drawBuffers([gl.COLOR_ATTACHMENT0, gl.COLOR_ATTACHMENT1]);
+        gl.viewport(0, 0, n, n);
+        gl.disable(gl.SCISSOR_TEST);
+        gl.disable(gl.BLEND);
+        gl.useProgram(fp.prog);
+        gl.uniform1f(fp.loc("u_size"), n);
+        gl.uniform1f(fp.loc("u_time"), time);
+        for (let f = 0; f < 6; f++) {
+          gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + f, fLin, 0);
+          gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT1, gl.TEXTURE_CUBE_MAP_POSITIVE_X + f, fNear, 0);
+          gl.uniform1f(fp.loc("u_face"), f);
+          fp.run(values);
+        }
+        fKey = key;
+      };
       // low-resolution target for preview passes, blitted up to the canvas
       let fbo: WebGLFramebuffer | null = null;
       let tex: WebGLTexture | null = null;
@@ -346,17 +436,30 @@ export function raymarchSketch(
         tiles: true,
         draw(values: Values, view: View) {
           const time = view.time ?? 0;
+          const formTime = view.formTime ?? time;
+          const sc = view.scale ?? 1;
+          const scaled = sc < 1;
+          bake(values, formTime, view.w * Math.min(1, sc), view.h * Math.min(1, sc));
           gl.useProgram(p.prog);
+          if (useField) {
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, fLin);
+            gl.activeTexture(gl.TEXTURE2);
+            gl.bindTexture(gl.TEXTURE_CUBE_MAP, fNear);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.uniform1i(p.loc("u_fieldLin"), 1);
+            gl.uniform1i(p.loc("u_fieldNear"), 2);
+          }
           gl.uniform1f(p.loc("u_fast"), view.fast ? 1 : 0);
           gl.uniform1f(p.loc("u_play"), view.play ? 1 : 0);
-          gl.uniform1f(p.loc("u_time"), time);
+          gl.uniform1f(p.loc("u_time"), formTime);
           gl.uniform1f(p.loc("u_dither"), view.dither === false ? 0 : 1);
           gl.uniform2f(p.loc("u_jitter"), view.jitter?.[0] ?? 0, view.jitter?.[1] ?? 0);
           gl.uniformMatrix3fv(p.loc("u_view"), false, orbitMatrix(...motionAngles(values, time)));
 
-          if (view.scale && view.scale < 1) {
-            const sw = Math.max(1, Math.round(view.w * view.scale));
-            const sh = Math.max(1, Math.round(view.h * view.scale));
+          if (scaled) {
+            const sw = Math.max(1, Math.round(view.w * sc));
+            const sh = Math.max(1, Math.round(view.h * sc));
             gl.bindFramebuffer(gl.FRAMEBUFFER, target(sw, sh));
             gl.viewport(0, 0, sw, sh);
             gl.uniform2f(p.loc("u_res"), sw, sh);
@@ -388,6 +491,10 @@ export function raymarchSketch(
         },
         dispose() {
           p.dispose();
+          fp?.dispose();
+          if (fLin) gl.deleteTexture(fLin);
+          if (fNear) gl.deleteTexture(fNear);
+          if (fFbo) gl.deleteFramebuffer(fFbo);
           if (tex) gl.deleteTexture(tex);
           if (fbo) gl.deleteFramebuffer(fbo);
         },

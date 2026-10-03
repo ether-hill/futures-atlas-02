@@ -207,6 +207,7 @@ export function createFrameRenderer(sketch: Sketch, values: Values, w: number, h
           w,
           h,
           time: o.time + (jt - 0.5) * o.shutter,
+          formTime: o.time,
           jitter: [jx - 0.5, jy - 0.5] as [number, number],
           target: sample.fbo,
           dither: false,

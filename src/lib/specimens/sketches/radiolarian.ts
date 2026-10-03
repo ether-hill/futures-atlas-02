@@ -56,6 +56,7 @@ export const radiolarian = raymarchSketch({
     { name: "Foam", values: { cells: 1800, strut: 0.006, web: 0.05, warp: 0.1, spike: 0.02 } },
   ],
   stepScale: 0.6,
+  field: true,
   glsl: `
 // the longest a spine gets while the wave runs down them
 #define SPIKE_MAX (u_spike * (1.0 + 0.4 * EV))
@@ -72,16 +73,16 @@ vec3 unpinch(vec3 c) {
   vec2 xy = normalize(c.xy + 1e-7);
   return vec3(xy * sin(th), cos(th));
 }
-float map(vec3 p) {
-  float r = length(p);
-  // Empty space first, without touching the lattice: beyond the spines, and
-  // inside the shell, the nearest surface is at least this far.
-  float outer = 1.0 + SPIKE_MAX + u_strut * max(u_knob, 1.0);
-  if (r > outer + 0.03) return r - outer;
-  // inside the shell is empty: the nearest surface is the shell itself
-  float core = 1.0 - u_strut / max(1.0 - u_pinch * 1.14, 0.15) - 0.005;
-  if (r < core - 0.03) return core - r;
-  vec3 dir = p / r;
+// Everything about the lattice depends on direction alone, not on distance
+// from the centre: which cell a direction falls in, how far it is from that
+// cell's walls, how much the vortex stretches it there, and whether the cell
+// carries a spine. So it is computed once per frame per direction into a cube
+// map (field(), run by raymarch.ts), and every march step only reads it.
+// Looking it up from scratch at every step (sixteen candidate cells, the
+// noise warp, the vortex) cost about 0.9 s a 1080p frame on integrated
+// graphics; the read is a texture fetch.
+struct Cell { float edge; float stretch; vec3 c; float pick; };
+Cell cellDirect(vec3 dir) {
   vec3 w = dir;
   // the noise is read along a closed loop through itself, so it flows and returns
   vec3 drift = EV * 1.4 * vec3(cos(PH), sin(PH), 0.0);
@@ -100,43 +101,60 @@ float map(vec3 p) {
     vec2 xy = normalize(w.xy + 1e-7);
     w = vec3(xy * sin(th2), cos(th2));
   }
-  const float R = 1.0;
-  float n = floor(u_cells);
+  SFCell A = sfCells(w, floor(u_cells), u_web);
+  // which cells carry a spine: a hash of the lattice point (before the
+  // vortex moves it), so the choice holds still while the form moves
+  float pick = hash13(floor(A.c * 997.0) + u_seed);
+  return Cell(A.edge, stretch, unpinch(A.c), pick);
+}
+// the cube map's two layers: edge and stretch (filtered), centre and pick
+// (unfiltered, or a texel on a cell wall would blend two centres into one
+// that belongs to neither)
+void field(vec3 dir, out vec4 lin, out vec4 near) {
+  Cell k = cellDirect(dir);
+  lin = vec4(k.edge, k.stretch, 0.0, 1.0);
+  near = vec4(k.c, k.pick);
+}
+Cell cellAt(vec3 dir) {
+#ifdef FIELD
+  vec2 a = texture(u_fieldLin, dir).xy;
+  vec4 b = texture(u_fieldNear, dir);
+  return Cell(a.x, a.y, b.xyz, b.w);
+#else
+  return cellDirect(dir);
+#endif
+}
+float map(vec3 p) {
+  float r = length(p);
+  // Empty space first, without touching the lattice: beyond the spines, and
+  // inside the shell, the nearest surface is at least this far.
+  float outer = 1.0 + SPIKE_MAX + u_strut * max(u_knob, 1.0);
+  if (r > outer + 0.03) return r - outer;
   // widest a strut can get under the vortex stretch
-  float swMax = u_strut / max(1.0 - pinch, 0.15);
-
-  // outer shell: the full cell-wall lookup only within reach of it
-  float d;
-  vec3 ac = vec3(0.0);
-  bool haveC = false;
+  float swMax = u_strut / max(1.0 - PINCH, 0.15);
+  const float R = 1.0;
+  // inside the shell is empty: the nearest surface is the shell itself
+  float core = R - swMax - 0.005;
+  if (r < core - 0.03) return core - r;
   float band = abs(r - R) - swMax;
-  if (band < 0.03) {
-    SFCell A = sfCells(w, n, u_web);
-    d = (length(vec2((r - R) * stretch, A.edge * R)) - u_strut) / stretch;
-    ac = A.c;
-    haveC = true;
-  } else {
-    d = band;
-  }
-  float sw = u_strut / stretch; // strut width here, for the spines
+  bool spines = u_spike > 0.0 && r > R - swMax;
+  if (band >= 0.03 && !spines) return band;
 
-  if (u_spike > 0.0 && r > R - swMax) {
-    if (!haveC) ac = sfNearest(w, n);
-    vec3 c = unpinch(ac);
-    // which cells carry a spine: a hash of the lattice point (before the
-    // vortex moves it), so the choice holds still while the form moves
-    float pick = hash13(floor(ac * 997.0) + u_seed);
-    if (u_spikeEvery <= 1.0 || pick < 1.0 / u_spikeEvery) {
-      float along = dot(p, c);
-      float perp = length(p - c * along);
-      // a wave running down from the pole, two crests a cycle
-      float L = u_spike * (1.0 + 0.4 * EV * (0.5 + 0.5 * sin(2.0 * PH - 7.0 * c.z))) / sqrt(stretch);
-      float s = clamp((along - R) / L, 0.0, 1.0);
-      float rad = sw * mix(1.0, 0.45, s);
-      float sp = max(perp - rad, max(R - along, along - (R + L)));
-      float knob = length(p - c * (R + L)) - sw * u_knob;
-      d = smin(d, min(sp, knob), sw * 1.5);
-    }
+  Cell k = cellAt(p / r);
+  float d = band < 0.03 ? (length(vec2((r - R) * k.stretch, k.edge * R)) - u_strut) / k.stretch : band;
+  float sw = u_strut / k.stretch; // strut width here, for the spines
+
+  if (spines && (u_spikeEvery <= 1.0 || k.pick < 1.0 / u_spikeEvery)) {
+    vec3 c = k.c;
+    float along = dot(p, c);
+    float perp = length(p - c * along);
+    // a wave running down from the pole, two crests a cycle
+    float L = u_spike * (1.0 + 0.4 * EV * (0.5 + 0.5 * sin(2.0 * PH - 7.0 * c.z))) / sqrt(k.stretch);
+    float s = clamp((along - R) / L, 0.0, 1.0);
+    float rad = sw * mix(1.0, 0.45, s);
+    float sp = max(perp - rad, max(R - along, along - (R + L)));
+    float knob = length(p - c * (R + L)) - sw * u_knob;
+    d = smin(d, min(sp, knob), sw * 1.5);
   }
   return d;
 }

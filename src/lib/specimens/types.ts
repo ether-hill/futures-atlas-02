@@ -49,6 +49,12 @@ export interface View {
    *  function of (values, time), which is what lets a video be rendered frame
    *  by frame instead of recorded. */
   time?: number;
+  /** The time the FORM is evaluated at, when it differs from `time`. Motion
+   *  blur moves the camera across the shutter but holds the form at the
+   *  frame's own instant: the turntable is what moves in 1/120 s, and the
+   *  form's baked field (raymarch.ts) is then built once a frame, not once a
+   *  sample. */
+  formTime?: number;
   /** Sub-pixel offset of this sample, for accumulated anti-aliasing. */
   jitter?: [number, number];
   /** Draw into this framebuffer instead of the canvas (export accumulation). */
