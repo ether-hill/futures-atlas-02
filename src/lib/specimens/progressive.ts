@@ -11,7 +11,7 @@
  * size grows while the GPU keeps up and halves when it falls behind, so a
  * cheap sketch finishes in a few frames and an expensive one stays smooth.
  */
-import type { Renderer, Values } from "./types";
+import type { Renderer, Values, View } from "./types";
 
 /** Batches allowed in flight. Chrome refreshes a fence's status lazily (an
  *  empty batch still reads as 30–80 ms), so waiting on each batch before
@@ -32,11 +32,11 @@ export function progressive(
   values: Values,
   w: number,
   h: number,
-  opts: { tile?: number; onProgress?: (f: number) => void } = {},
+  opts: { tile?: number; onProgress?: (f: number) => void; view?: Partial<View> } = {},
 ): Job {
   let cancelled = false;
   if (!r.tiles) {
-    r.draw(values, { w, h });
+    r.draw(values, { ...opts.view, w, h });
     opts.onProgress?.(1);
     return { done: Promise.resolve(true), cancel() {} };
   }
@@ -80,7 +80,7 @@ export function progressive(
         const n = Math.min(batch, tiles.length - i);
         for (let k = 0; k < n; k++) {
           const [x, y] = tiles[i++];
-          r.draw(values, { w, h, rect: [x, y, T, T] });
+          r.draw(values, { ...opts.view, w, h, rect: [x, y, T, T] });
         }
         sizes.push(n);
         flight.push({ fence: gl.fenceSync(gl.SYNC_GPU_COMMANDS_COMPLETE, 0)!, at: performance.now() });

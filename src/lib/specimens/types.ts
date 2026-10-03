@@ -42,6 +42,20 @@ export interface View {
   /** Draw only this rectangle [x, y, w, h] of the full frame (progressive
    *  rendering). Renderers that cannot tile draw everything. */
   rect?: [number, number, number, number];
+  /** Seconds since the start of the sequence. Timed sketches are a pure
+   *  function of (values, time), which is what lets a video be rendered frame
+   *  by frame instead of recorded. */
+  time?: number;
+  /** Sub-pixel offset of this sample, for accumulated anti-aliasing. */
+  jitter?: [number, number];
+  /** Draw into this framebuffer instead of the canvas (export accumulation). */
+  target?: WebGLFramebuffer | null;
+  /** Simulations: show the current state without advancing it (the second and
+   *  later samples of one exported frame). */
+  hold?: boolean;
+  /** Add the 8-bit dither in the shader. Off while accumulating: the resolve
+   *  pass dithers once, after averaging. */
+  dither?: boolean;
 }
 
 export interface Renderer {
@@ -78,6 +92,9 @@ export interface Sketch {
   orbit: boolean;
   /** Runs a frame loop rather than rendering once per change. */
   animated: boolean;
+  /** The form moves with `View.time` (it declares a `cycle` param, the period
+   *  every motion repeats on): the lab can play it and export it as video. */
+  timed?: boolean;
   /** A still for the card: how many frames an animated sketch runs first. */
   stillFrames?: number;
   create(gl: WebGL2RenderingContext): Renderer;

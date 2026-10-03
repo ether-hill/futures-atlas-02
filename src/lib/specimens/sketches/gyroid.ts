@@ -15,6 +15,7 @@ export const gyroid = raymarchSketch({
     "A triply periodic minimal surface divides space into two interlocking labyrinths with a sheet of zero mean curvature between them. The gyroid has no closed formula, but sin x cos y + sin y cos z + sin z cos x = 0 is close enough that everyone uses it.",
     "That level set is thickened into a sheet of a chosen width and intersected with a ball, or with a hollow shell.",
     "The frequency can rise toward the centre, so the cells shrink as they go in, and the space can be twisted about the vertical axis before the surface is evaluated. Both bend the field, so it is marched in smaller steps.",
+    "In motion the sphere stays where it is and the surface flows through it: the field is slid along a closed loop through its own period, and the sheet breathes off zero, so one labyrinth swells while the other narrows. Both close on the cycle, so the film loops.",
   ],
   sources: [
     { label: "Gyroid", href: "https://en.wikipedia.org/wiki/Gyroid" },
@@ -71,7 +72,10 @@ float map(vec3 p) {
   vec3 q = vec3(ca * p.x - sa * p.z, p.y, sa * p.x + ca * p.z);
   float f = u_freq * (1.0 + u_gradient * (1.0 - clamp(r, 0.0, 1.0)));
   float amp = u_surface > 2.5 ? 6.0 : 1.5;
-  float g = (tpms(q * f) / amp - u_level * 0.5) / f;
+  // motion: slide the field round a closed loop, and breathe the level
+  vec3 flow = EV * 2.2 * vec3(cos(PH), sin(PH), 0.5 * sin(PH + 1.1));
+  float level = u_level + EV * 0.45 * sin(PH + 0.7);
+  float g = (tpms(q * f + flow) / amp - level * 0.5) / f;
   float sheet = abs(g) - u_thick * 3.14159 / f * 0.5;
   return max(sheet, env);
 }

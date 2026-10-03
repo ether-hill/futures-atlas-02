@@ -37,7 +37,7 @@ export default async function SketchPage({
   return (
     <section className="py-[clamp(32px,5vw,64px)]">
       <Container>
-        <header className="mb-8 grid gap-6 min-[1000px]:grid-cols-[minmax(0,1fr)_340px]">
+        <header className="mb-8 grid gap-6 min-[1000px]:grid-cols-[minmax(0,1fr)_360px]">
           <div>
             <p className="eyebrow mb-3">Specimens · {sketch.family}</p>
             <h1 className="text-[clamp(28px,3.6vw,48px)] font-extrabold leading-[1.04] tracking-[-0.02em] text-ink">

@@ -9,12 +9,19 @@
  * depth shadow is measured against: the outer surface, not the spines). Optional helpers it may use: hash,
  * value noise, smin, and the spherical Fibonacci lattice in `SF_GLSL`.
  *
- * The look is fixed on purpose — a specimen photographed on black, one key
- * light, the interior falling into shadow — because the variable being
- * explored is the form, not the lighting. The four studio dials are appended
- * to every sketch's params under "Light".
+ * Light is the window in light.ts: a specimen on a table by a north window,
+ * the interior falling into shadow. Material, ground, depth and rim are the
+ * studio's own dials, appended to every sketch under "Light".
+ *
+ * Motion. Every sketch is a function of time as well as of its values, and
+ * everything that moves repeats on one period, `cycle`: the turntable makes
+ * whole turns in it, the nod is one sine of it, and a sketch's own motion
+ * (`PH`, the phase, and `EV`, how much) must close on it too. A video exactly
+ * one cycle long therefore loops without a seam. The light does not move with
+ * the form: it is the room's, so the turning form passes through it.
  */
 import { orbitMatrix, program, uniformDecls } from "./gl";
+import { LIGHT_GLSL, WINDOW_PARAMS } from "./light";
 import type { ParamDef, Renderer, Sketch, Values, View } from "./types";
 
 export const CAMERA_PARAMS: ParamDef[] = [
@@ -23,13 +30,41 @@ export const CAMERA_PARAMS: ParamDef[] = [
   { key: "zoom", label: "Zoom", kind: "range", min: 0.5, max: 3, step: 0.001, default: 1, hidden: true },
 ];
 
-export const LIGHT_PARAMS: ParamDef[] = [
-  { key: "light", label: "Key light angle", group: "Light", kind: "range", min: -3.14, max: 3.14, step: 0.01, default: 2.3 },
-  { key: "exposure", label: "Exposure", group: "Light", kind: "range", min: 0.3, max: 2.5, step: 0.01, default: 1.1 },
-  { key: "depth", label: "Depth shadow", group: "Light", kind: "range", min: 0, max: 1, step: 0.01, default: 0.75,
-    hint: "How far the inside of the form falls into darkness." },
-  { key: "rim", label: "Rim glow", group: "Light", kind: "range", min: 0, max: 1.5, step: 0.01, default: 0.45 },
+export const MOTION_PARAMS: ParamDef[] = [
+  { key: "cycle", label: "Cycle", group: "Motion", kind: "range", min: 4, max: 60, step: 0.5, default: 20,
+    hint: "Seconds. Every motion repeats on this period, so a video this long, or any whole multiple of it, loops without a seam." },
+  { key: "turns", label: "Turntable", group: "Motion", kind: "range", min: -3, max: 3, step: 1, default: 1,
+    hint: "Whole turns per cycle. Negative turns the other way." },
+  { key: "sway", label: "Nod", group: "Motion", kind: "range", min: 0, max: 0.6, step: 0.01, default: 0.12,
+    hint: "The form tips toward you and back once a cycle." },
+  { key: "evolve", label: "Evolve", group: "Motion", kind: "range", min: 0, max: 1, step: 0.01, default: 0.5,
+    hint: "How far the form itself moves: what moves depends on the sketch." },
 ];
+
+export const STUDIO_PARAMS: ParamDef[] = [
+  { key: "material", label: "Material", group: "Light", kind: "choice", default: 0, options: [
+    { value: 0, label: "Ivory" },
+    { value: 1, label: "Chalk" },
+    { value: 2, label: "Pewter" },
+  ] },
+  { key: "ground", label: "Ground", group: "Light", kind: "choice", default: 0, options: [
+    { value: 0, label: "Plaster wall" },
+    { value: 1, label: "Black" },
+  ] },
+  { key: "depth", label: "Depth shadow", group: "Light", kind: "range", min: 0, max: 1, step: 0.01, default: 0.7,
+    hint: "How far the inside of the form falls into darkness." },
+  { key: "rim", label: "Rim glow", group: "Light", kind: "range", min: 0, max: 1.5, step: 0.01, default: 0.2 },
+];
+
+/** Where a timed sketch's camera points at time t: the user's own orbit plus
+ *  the turntable and the nod. */
+export function motionAngles(values: Values, time: number): [number, number] {
+  const cycle = Math.max(0.1, values.cycle ?? 20);
+  const ph = (2 * Math.PI * time) / cycle;
+  const yaw = (values.yaw ?? 0) + (values.turns ?? 0) * ph;
+  const pitch = Math.max(-1.55, Math.min(1.55, (values.pitch ?? 0) + (values.sway ?? 0) * Math.sin(ph)));
+  return [yaw, pitch];
+}
 
 /** Spherical Fibonacci lattice: nearest point, and the smooth distance to the
  *  Voronoi cell walls, for a unit direction. After Keinert et al. (2015), with
@@ -130,8 +165,15 @@ out vec4 outColor;
 uniform vec2 u_res;
 uniform mat3 u_view;
 uniform float u_fast;
+uniform float u_time;
+uniform vec2 u_jitter;
+uniform float u_dither;
 ${uniformDecls(params)}
+// the phase of the cycle, and how much the form's own motion is worth
+#define PH (6.28318530718 * u_time / max(u_cycle, 0.1))
+#define EV u_evolve
 ${COMMON}
+${LIGHT_GLSL}
 ${sketchGlsl}
 
 vec3 calcNormal(vec3 p, float h) {
@@ -150,26 +192,40 @@ float calcAO(vec3 p, vec3 n) {
   }
   return clamp(1.0 - 2.6 * occ, 0.0, 1.0);
 }
-float softShadow(vec3 ro, vec3 rd) {
+// k is the penumbra: small for a big window
+float softShadow(vec3 ro, vec3 rd, float k) {
   if (u_fast > 0.5) return 1.0;
   float res = 1.0, t = 0.02;
-  for (int i = 0; i < 28; i++) {
+  for (int i = 0; i < 36; i++) {
     float h = map(ro + rd * t);
-    res = min(res, 10.0 * h / t);
+    res = min(res, k * h / t);
     t += clamp(h, 0.01, 0.12);
-    if (res < 0.01 || t > 2.5) break;
+    if (res < 0.005 || t > 2.5) break;
   }
-  return clamp(res, 0.0, 1.0);
+  res = clamp(res, 0.0, 1.0);
+  return res * res * (3.0 - 2.0 * res);
+}
+// The plaster wall behind: lit most on the window side, falling off across
+// the frame, with a faint grain so it reads as a surface, not a gradient.
+vec3 ground(vec2 uv) {
+  if (u_ground > 0.5) return vec3(0.0);
+  vec3 w = windowDir();
+  vec2 src = normalize(w.xy + vec2(1e-4)) * 1.7;
+  float d = length(uv - src);
+  float pool = exp(-d * d * 0.2);
+  float v = 0.003 + 0.032 * pool;
+  v *= 0.94 + 0.12 * vnoise(vec3(uv * 7.0, 3.1)) + 0.05 * vnoise(vec3(uv * 31.0, 7.7));
+  return v * mix(keyColour(), bounceColour(), 0.3) * vec3(0.96, 0.95, 0.9);
 }
 
 void main() {
-  vec2 uv = (2.0 * gl_FragCoord.xy - u_res) / min(u_res.x, u_res.y);
+  vec2 fc = gl_FragCoord.xy + u_jitter;
+  vec2 uv = (2.0 * fc - u_res) / min(u_res.x, u_res.y);
   float camD = 3.6 / u_zoom;
   vec3 ro = vec3(0.0, 0.0, camD);
   vec3 rd = normalize(vec3(uv, -2.6));
   // rotate the camera rather than the form, so map() works in object space
-  mat3 inv = transpose(u_view);
-  vec3 col = vec3(0.0);
+  vec3 col = ground(uv);
 
   // bounding sphere
   float b = dot(ro, rd), c = dot(ro, ro) - BOUND * BOUND;
@@ -192,26 +248,40 @@ void main() {
       vec3 p = u_view * pw;
       vec3 n = calcNormal(p, 0.0006 * t);
       vec3 vdir = u_view * (-rd);
-      vec3 L = u_view * normalize(vec3(cos(u_light), sin(u_light) * 0.8 + 0.3, 0.75));
-      float dif = clamp(dot(n, L), 0.0, 1.0);
-      float wrap = clamp(dot(n, L) * 0.5 + 0.5, 0.0, 1.0);
-      float sh = softShadow(p + n * 0.004, L);
+      vec3 L = u_view * windowDir();
+      vec3 Lb = u_view * bounceDir();
+      float ndl = dot(n, L);
+      float dif = windowDiffuse(ndl);
+      float sh = softShadow(p + n * 0.004, L, mix(16.0, 2.2, u_lightSize));
       float ao = calcAO(p, n);
-      float fre = pow(clamp(1.0 + dot(n, -vdir), 0.0, 1.0), 2.5);
+      // the window also lights broadly, as a hemisphere facing it
+      float sky = 0.5 + 0.5 * ndl;
+      float bnc = pow(clamp(dot(n, Lb) * 0.5 + 0.5, 0.0, 1.0), 2.0);
+      float fre = pow(clamp(1.0 + dot(n, -vdir), 0.0, 1.0), 3.0);
+      // material: albedo, specular weight, sharpness
+      vec3 alb = vec3(0.80, 0.74, 0.62);
+      float ks = 0.05, shin = 18.0;
+      if (u_material > 1.5) { alb = vec3(0.30, 0.31, 0.32); ks = 0.55; shin = 70.0; }
+      else if (u_material > 0.5) { alb = vec3(0.86, 0.86, 0.84); ks = 0.025; shin = 10.0; }
+      // a big source gives a broad highlight, not a pinpoint
+      shin *= mix(1.0, 0.3, u_lightSize);
       vec3 hv = normalize(L + vdir);
-      float spe = pow(clamp(dot(n, hv), 0.0, 1.0), 24.0) * dif * sh;
+      float spe = pow(clamp(dot(n, hv), 0.0, 1.0), shin) * (shin + 2.0) / 8.0;
+      spe *= (0.04 + 0.96 * fre) * clamp(ndl * 4.0, 0.0, 1.0) * sh;
+      vec3 key = keyColour(), room = bounceColour();
       // inside falls into darkness, measured against the bound
       float rr = clamp(length(p) / SHADE_R, 0.0, 1.0);
       float deep = mix(1.0, smoothstep(0.35, 1.0, rr), u_depth);
-      vec3 alb = vec3(0.93, 0.92, 0.9);
-      col = alb * (dif * sh * 1.05 + wrap * 0.16) * ao;
-      col += alb * fre * u_rim * ao * 0.9;
-      col += vec3(0.35) * spe;
-      col *= deep * u_exposure;
+      vec3 lit = key * dif * sh * 1.35 * mix(1.0, ao, 0.5);
+      lit += (key * sky * 0.07 + room * bnc * u_fill * 0.42) * ao;
+      col = alb * lit;
+      col += key * ks * spe * mix(1.0, ao, 0.5);
+      col += alb * key * fre * u_rim * ao * 0.35;
+      col *= deep;
     }
   }
-  col = 1.0 - exp(-col * 1.4);          // gentle filmic shoulder
-  col = pow(col, vec3(0.4545));
+  col = encodeSRGB(toneMap(col));
+  if (u_dither > 0.5) col += dither8(gl_FragCoord.xy + fract(u_time * 7.31) * 113.0);
   outColor = vec4(col, 1.0);
 }`;
 }
@@ -222,7 +292,7 @@ void main() {
 const TILE = 256;
 
 export function raymarchSketch(
-  def: Omit<Sketch, "create" | "orbit" | "animated" | "params"> & {
+  def: Omit<Sketch, "create" | "orbit" | "animated" | "timed" | "params"> & {
     params: ParamDef[];
     glsl: string;
     /** Fraction of the distance to step. Lower for fields that overestimate
@@ -230,7 +300,7 @@ export function raymarchSketch(
     stepScale?: number;
   },
 ): Sketch {
-  const params = [...def.params, ...LIGHT_PARAMS, ...CAMERA_PARAMS];
+  const params = [...def.params, ...MOTION_PARAMS, ...WINDOW_PARAMS, ...STUDIO_PARAMS, ...CAMERA_PARAMS];
   const src = frag(def.glsl, params, def.stepScale ?? 0.8);
   return {
     id: def.id,
@@ -243,6 +313,7 @@ export function raymarchSketch(
     params,
     orbit: true,
     animated: false,
+    timed: true,
     create(gl): Renderer {
       const p = program(gl, src);
       // low-resolution target for preview passes, blitted up to the canvas
@@ -267,9 +338,13 @@ export function raymarchSketch(
       return {
         tiles: true,
         draw(values: Values, view: View) {
+          const time = view.time ?? 0;
           gl.useProgram(p.prog);
           gl.uniform1f(p.loc("u_fast"), view.fast ? 1 : 0);
-          gl.uniformMatrix3fv(p.loc("u_view"), false, orbitMatrix(values.yaw ?? 0, values.pitch ?? 0));
+          gl.uniform1f(p.loc("u_time"), time);
+          gl.uniform1f(p.loc("u_dither"), view.dither === false ? 0 : 1);
+          gl.uniform2f(p.loc("u_jitter"), view.jitter?.[0] ?? 0, view.jitter?.[1] ?? 0);
+          gl.uniformMatrix3fv(p.loc("u_view"), false, orbitMatrix(...motionAngles(values, time)));
 
           if (view.scale && view.scale < 1) {
             const sw = Math.max(1, Math.round(view.w * view.scale));
@@ -285,7 +360,7 @@ export function raymarchSketch(
             return;
           }
 
-          gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+          gl.bindFramebuffer(gl.FRAMEBUFFER, view.target ?? null);
           gl.viewport(0, 0, view.w, view.h);
           gl.uniform2f(p.loc("u_res"), view.w, view.h);
           gl.enable(gl.SCISSOR_TEST);
