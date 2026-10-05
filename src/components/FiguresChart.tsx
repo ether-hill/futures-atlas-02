@@ -25,9 +25,10 @@ export function FiguresChart({ slug, label }: { slug: string; label: string }) {
           title={label}
           loading="lazy"
           className="block w-full border border-hairline"
-          style={{ aspectRatio: "1600 / 820" }}
+          // never taller than the screen: the whole chart stays in view
+          style={{ aspectRatio: "1600 / 820", maxWidth: "calc((100svh - 190px) * 1600 / 820)" }}
         />
-        <div className="mt-3 flex justify-end">
+        <div className="mt-3 flex justify-end" style={{ maxWidth: "calc((100svh - 190px) * 1600 / 820)" }}>
           <button
             type="button"
             onClick={replay}

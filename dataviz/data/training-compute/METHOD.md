@@ -91,3 +91,26 @@ I re-ran `process.mjs`, and `clean.csv` and `clean-frontier.csv` both reproduce 
 5. Original 5 (small text): **partly resolved, still open.** Chart text went from 17 to 19px up to 21 to 24px, and the exponents are larger. That's still only about 7 to 8px on a phone at 360px wide. The axis ticks, the "Bars: ..." note and the footer remain hard to read. Consider at least 28px for ticks and notes in the IG format.
 6. **R1. New, should-fix.** Location: slide `disclosure` subhead and note, slide `ranges` subhead, caption. **The new "No estimate" set is mostly repeat records of the same models.** The 10 records are GPT-4o ×5 (May, Aug, Nov 2024; Jan, Mar 2025), GPT-4 Turbo ×2, Gemini 1.5 Pro, Claude 3 Opus and GLM-4-Plus. That's 5 distinct models. The note only mentions GPT-4. "10 have no estimate at all" reads as ten different models, and "5 of 27" counts records, not models. Across the 27 records since 2023 there are about 20 distinct models. The direction of the point holds either way. Fix: change the note to "One mark per Epoch frontier record; some models have several (GPT-4 ×2, GPT-4o ×5, GPT-4 Turbo ×2)", and say "records" in the subhead and caption, e.g. "10 frontier records (5 models) have no estimate".
 7. **Visual.** No new collisions. The GPT-3 label is now offset with a leader line. In the X cut the leader lines still cross the data cluster (nit, as before).
+
+### Review round 3 (2026-10-06)
+
+**Verdict:** PASS WITH FIXES. No blockers.
+
+The data is unchanged. The 478 dots from 2010 on and the frontier highlights match `clean.csv`. 4.2x for "the largest models, 2018 to 2024" matches Sevilla & Roldán's running-top-10 fit. Video frames at 0.8, 1.6 and 2.4s show only the plotted points and a year counter, no numbers. No em dashes.
+
+1. **should-fix.** Location: `hook` title and site page `question`, "AI's computing power has grown 4x a year". **The title says more than the fit does, in two ways.**
+   - The present perfect suggests the rate runs up to today, but the fit stops at May 2024. The chart shows points to Sep 2026 that the fit never tested.
+   - "AI's computing power" reads as all AI compute, or as hardware capacity. The figure is training compute for the largest models.
+
+   The big "4.2x … 2018 to 2024" label underneath is accurate, so the title is the only part that overreaches. Replace with: "Training compute for the biggest AI models grew 4x a year". If length allows, use "...4x a year, 2018 to 2024".
+2. **should-fix.** Location: `hook`, the big "4.2x" callout. **The source's uncertainty has been dropped.** The source gives a 90% CI of 3.6x to 4.9x. Brief §5 says to show uncertainty when the source provides it, and earlier rounds did. Add a line under "for the largest models, 2018 to 2024": "(90% range 3.6x to 4.9x)".
+3. **should-fix (carried from re-check R1).** Location: `disclosure` subhead, "Since 2023: 5 of 27." The 27 are Epoch records, not models: GPT-4 ×2, GPT-4o ×5 and GPT-4 Turbo ×2 are each one model. Replace with: "Since 2023: 5 of 27 Epoch records (about 20 models)." Or make the note list the repeats.
+4. **nit.** Location: `hook`, "Each streak shows the range of the estimate". Use "Each streak shows Epoch's 90% range for the estimate". The same applies to the site page `keepInMind`, "Each glowing streak shows the range of an estimate".
+5. **nit.** Location: `hook` footer, "Source: Epoch AI, Notable AI Models (CC BY), data to Sep 2026...". The access date is missing. Add "accessed 5 Oct 2026".
+6. **nit.** Location: site page `answer`, "The newest figures are the least certain, because labs often don't publish them". This is fine; it follows Epoch's own confidence rule. Optionally say "Epoch rates the newest figures as least certain...", so it reads as Epoch's rating and not our claim.
+
+### Changes after review round 3 (2026-10-06)
+
+- Title: "Training compute for the biggest AI models grew 4x a year" (hook and site page); the 4.2x callout carries the 90% range 3.6x to 4.9x.
+- Disclosure slide: "5 of 27 records (21 models)".
+- "90% range" spelled out in the streak note and on the site page.

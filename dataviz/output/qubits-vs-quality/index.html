@@ -13,11 +13,11 @@ import { VARIANTS } from "../../templates/variants.js";
 import { latticeWaves } from "../../templates/site-art.js";
 
 const d3 = window.d3;
-const SOURCE = "Sources: 10 peer-reviewed papers and 5 company documents, 2019 to 2026. Labs test in different ways.";
+const SOURCE = "*Company figure, not peer-reviewed. †Stricter test: about 20% lower on the others' basis. Sources: 10 peer-reviewed papers, 5 company documents. Accessed 5 Oct 2026.";
 
 const NAME = {
-  "google-sycamore-2019": "Google Sycamore",
-  "ustc-zuchongzhi-2021": "USTC Zuchongzhi",
+  "google-sycamore-2019": "Google Sycamore†",
+  "ustc-zuchongzhi-2021": "USTC Zuchongzhi†",
   "ibm-osprey-2022": "IBM Osprey",
   "harvard-evered-2023": "Harvard/MIT atoms",
   "quantinuum-h2-2023": "Quantinuum H2",
@@ -27,7 +27,7 @@ const NAME = {
   "quantinuum-h2-2024": "Quantinuum H2",
   "atom-msft-2024": "Atom/Microsoft*",
   "google-willow-2024": "Google Willow*",
-  "ustc-zuchongzhi3-2024": "USTC Zuchongzhi 3",
+  "ustc-zuchongzhi3-2024": "USTC Zuchongzhi 3†",
   "ibm-heron-r3-2025": "IBM Heron r3",
   "quantinuum-helios-2025": "Quantinuum Helios",
 };
@@ -57,7 +57,7 @@ function ranked({ el, width, height, format, data }) {
   const nameW = ig ? 250 : 260, chipW = 124;
   const x0 = nameW + chipW + 20;
   const right = ig ? width : width * 0.62;
-  const x = d3.scaleLinear().domain([0, 7]).range([x0, right - 80]);
+  const x = d3.scaleLinear().domain([0, 7]).range([x0, right - (ig ? 250 : 230)]);
   const y = d3.scaleBand().domain(rows.map((d) => d.id)).range([top, bottom]).padding(0.22);
   const bh = y.bandwidth();
 
@@ -71,6 +71,8 @@ function ranked({ el, width, height, format, data }) {
     const bar = svg.append("rect").attr("x", x0).attr("y", cy - bh / 2).attr("height", bh)
       .attr("fill", MOD[d.modality].c);
     const val = svg.append("text").attr("y", cy).attr("dy", "0.34em").style("font-size", "34px").style("font-weight", 800).style("letter-spacing", "-0.02em").style("fill", "var(--ink)");
+    val.append("tspan").text(d3.format(".2~r")(d.err));
+    val.append("tspan").attr("dx", 10).style("font-size", "20px").style("font-weight", 500).style("fill", "var(--graphite)").text(MOD[d.modality].t.toLowerCase().replace(/s$/, ""));
     return { d, bar, val, i };
   });
   svg.append("line").attr("x1", x0).attr("x2", x0).attr("y1", top - 8).attr("y2", bottom).attr("stroke", "var(--hairline)");
@@ -80,11 +82,12 @@ function ranked({ el, width, height, format, data }) {
   const box = svg.append("g").attr("transform", ig ? `translate(0,${height - boxH + 10})` : `translate(${width * 0.66},${top})`);
   const bw = ig ? width : width * 0.34, bhh = ig ? boxH - 20 : bottom - top;
   box.append("rect").attr("width", bw).attr("height", bhh).attr("fill", "rgba(255,255,255,.04)").attr("stroke", "var(--hairline)");
-  box.append("text").attr("x", 28).attr("y", 52).style("font-size", ig ? "40px" : "36px").style("font-weight", 800).style("letter-spacing", "-0.02em").style("fill", "var(--ink)").text("No error rate published");
-  box.append("text").attr("x", 28).attr("y", 88).style("fill", "var(--graphite)").style("opacity", 1).style("font-size", "22px").text(ig ? "Qubit counts, including the two biggest machines here" : "Qubit counts, including the two biggest");
+  box.append("text").attr("x", 28).attr("y", 52).style("font-size", ig ? "40px" : "36px").style("font-weight", 800).style("letter-spacing", "-0.02em").style("fill", "var(--ink)").text("No average error rate given");
+  const subl = box.append("text").attr("x", 28).attr("y", 88).style("fill", "var(--graphite)").style("opacity", 1).style("font-size", "22px").text(ig ? "Qubit counts. IBM says 57 of 176 Heron r3 pairs are under 1 per 1,000." : null);
+  if (!ig) ["Qubit counts. IBM says 57 of 176 Heron r3", "pairs are under 1 per 1,000."].forEach((l, k) => subl.append("tspan").attr("x", 28).attr("dy", k ? "1.25em" : 0).text(l));
   none.forEach((d, i) => {
     const cx = ig ? 28 + i * (bw - 40) / 5 : 28 + (i % 2) * (bw - 40) / 2;
-    const cy = ig ? 150 : 140 + Math.floor(i / 2) * 84;
+    const cy = ig ? 150 : 168 + Math.floor(i / 2) * 84;
     box.append("text").attr("x", cx).attr("y", cy).style("font-size", "44px").style("font-weight", 800).style("letter-spacing", "-0.02em").style("fill", "var(--hl)").text(d3.format(",")(d.qubits));
     box.append("text").attr("x", cx).attr("y", cy + 30).style("font-size", "21px").style("font-weight", 500).style("fill", "var(--ink)").text(NAME[d.id]);
     box.append("text").attr("x", cx).attr("y", cy + 54).style("fill", "var(--graphite)").style("font-size", "18px").text(d.id === "caltech-6100-2024" && ig ? "ran no 2-qubit gates" : "");
@@ -97,7 +100,7 @@ function ranked({ el, width, height, format, data }) {
         const p = span(t, 0.4 + i * 0.18, 1.3 + i * 0.18);
         const v = d.err * p;
         bar.attr("width", Math.max(0, x(v) - x0));
-        val.attr("x", x(v) + 14).text(d3.format(".2~r")(d.err)).attr("opacity", span(t, 1.0 + i * 0.18, 1.4 + i * 0.18));
+        val.attr("x", x(v) + 14).attr("opacity", span(t, 1.0 + i * 0.18, 1.4 + i * 0.18));
       });
       box.attr("opacity", span(t, 0.4 + rows.length * 0.18 + 0.4, 0.4 + rows.length * 0.18 + 1.2));
     },

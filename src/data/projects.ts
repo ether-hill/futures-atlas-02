@@ -250,7 +250,7 @@ export const projects: Project[] = [
     id: "futures-in-figures",
     title: "Futures in Figures",
     tagline:
-      "Short, shareable charts about quantum computing and AI. Each one answers one question with real data, and shows how sure the numbers are.",
+      "Short, shareable charts about quantum computing and AI. Each one answers one question with real data, and says how sure the numbers are.",
     year: "2026",
     date: "2026-10-05",
     field: "Data & evidence",

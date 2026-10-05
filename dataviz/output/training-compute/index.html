@@ -13,14 +13,13 @@ import { VARIANTS } from "../../templates/variants.js";
 import { phyllotaxis } from "../../templates/site-art.js";
 
 const d3 = window.d3;
-const SOURCE = "Source: Epoch AI, Notable AI Models (CC BY), data to Sep 2026. Trend: Sevilla &amp; Roldán, Epoch AI (2024).";
+const SOURCE = "Source: Epoch AI, Notable AI Models (CC BY), data to Sep 2026, accessed 5 Oct 2026. Trend: Sevilla &amp; Roldán, Epoch AI (2024).";
 const SOURCE_DATA = "Source: Epoch AI, Notable AI Models (CC BY), data to Sep 2026.";
 // Direct labels. `at` moves a label into empty space (data coords) with a leader
 // line back to its dot; without it the label sits beside the dot.
 const LABELS = {
   "AlexNet": { text: "AlexNet", at: [2012.1, 1e19] },
   "AlphaGo Zero": { text: "AlphaGo Zero" },
-  "GPT-3 175B (davinci)": { text: "GPT-3", at: [2019.2, 1.2e24] },
   "GPT-4 (Mar 2023)": { text: "GPT-4", at: [2021.4, 2.1e25] },
   "GPT-6 Astra": { text: "GPT-6 Astra", at: [2023.2, 2.2e27] },
 };
@@ -132,15 +131,15 @@ function scatter({ el, width, height, format, data }) {
   ]);
 
   // Epoch's published trend, as a figure: we don't have their fitted line, so none is drawn
-  const hx = x(2010.4), hy = y(format === "ig" ? 2e26 : 4e24);
+  const hx = x(2010.4), hy = y(format === "ig" ? 1.5e26 : 2.5e25);
   const hero = svg.append("g");
-  hero.append("text").attr("x", hx).attr("y", hy).style("font-size", format === "ig" ? "160px" : "120px").style("font-weight", 800).style("font-stretch", "88%")
+  hero.append("text").attr("x", hx).attr("y", hy).style("font-size", format === "ig" ? "136px" : "120px").style("font-weight", 800).style("font-stretch", "88%")
     .style("letter-spacing", "-0.02em").style("fill", "var(--hero)").text("4.2x");
   const cap = hero.append("text").attr("class", "lbl").attr("x", hx + 4).attr("y", hy + 44).style("font-size", "28px");
-  ["more compute every year", "for the largest models, 2018 to 2024"]
+  ["more compute every year", "for the largest models, 2018 to 2024", "(90% range 3.6x to 4.9x)"]
     .forEach((l, i) => cap.append("tspan").attr("x", hx + 4).attr("dy", i ? "1.3em" : 0).text(l));
   if (format === "ig") svg.append("text").attr("class", "note").attr("x", width - m.right).attr("y", height - m.bottom - 12).attr("text-anchor", "end")
-    .text("Each streak shows the range of the estimate");
+    .text("Each streak shows the 90% range of the estimate");
 
   // sweep 2010 -> late 2026, then the trend figure lands
   const Y0 = 2010, Y1 = 2027.3, SWEEP = 6, T0 = 0.3;
@@ -260,7 +259,7 @@ mountPiece({
   slides: [
     {
       id: "hook", formats: ["ig", "x"],
-      title: "AI's computing power has grown 4x a year",
+      title: "Training compute for the biggest AI models grew 4x a year",
       sub: "Each dot is an AI model. Bright ones were the biggest of their day.",
       alt: "Scatter plot on a log scale of training compute for 478 notable AI models, 2010 to 2026, rising from about 10 to the 17 FLOP for AlexNet in 2012 to about 10 to the 27 for GPT-6 Astra in 2026.",
       draw: scatter,
@@ -270,7 +269,7 @@ mountPiece({
     {
       id: "disclosure",
       title: "The newest giants are the hardest to measure",
-      sub: "How sure Epoch AI is of each frontier estimate. 2019 to 2022: 24 of 27 confident. Since 2023: 5 of 27.",
+      sub: "How sure Epoch AI is of each frontier estimate. 2019 to 2022: 24 of 27 confident. Since 2023: 5 of 27 records (21 models).",
       alt: "Stacked marks per year, 2016 to 2026. Up to 2022 nearly all frontier models have confident estimates; from 2023 most are likely or speculative.",
       draw: disclosure,
       source: SOURCE_DATA,

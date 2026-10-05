@@ -218,3 +218,10 @@ html.web, html.web body { background: #17181b; overflow: hidden; } /* a dark pan
   background: none; border: 1px solid var(--hairline); padding: 8px 18px; cursor: pointer;
 }
 .f-web .replay:hover { color: var(--ink); border-color: var(--graphite); }
+
+/* card: the 3:2 thumbnail on /projects. Landscape type, a little more room. */
+.f-card { width: 1500px; height: 1000px; padding: 60px 64px 44px; }
+.f-card .head { margin-top: 40px; }
+.f-card .title { font-size: 84px; max-width: 1200px; }
+.f-card .sub { font-size: 28px; margin-top: 16px; }
+.f-card .chart { margin-top: 34px; }

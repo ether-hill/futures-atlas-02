@@ -162,3 +162,22 @@ I re-ran `process.mjs` and `clean.csv` reproduces byte-identical. Numbers I re-t
     Fix: shorten the meta line (e.g. "2024, superconducting, claim") or move the stems right. Wrap the Heron r3 note onto two lines with the unit. Drop the 3,000 tick.
 12. **New, nit.** Location: caption, "14 systems". METHOD and the chart notes say 15 systems. The 15th is the Harvard/QuEra 280-qubit logical processor, which is on slide 3. Say 15, or "14 systems with a qubit-count row".
 13. **New, nit.** Location: slide `logical`. The "280 physical qubits used" label sits almost on the "Atom Computing/Microsoft, 2024" heading below it. Add space between the rows.
+
+### Review round 3 (2026-10-06)
+
+**Verdict:** FAIL until 1 is fixed. It's a regression of a blocker from round 1. After that, PASS WITH FIXES.
+
+I checked the bars against `clean.csv` as errors per 1,000: Helios 0.79, H2 1.57 shown as 1.6, H2 1.84 as 1.8, Willow 3.3, Zuchongzhi 3.0 3.75 as 3.8, Harvard 5.2, Atom 5.6, Zuchongzhi 5.9, Sycamore 6.2. All match. The bars start at zero (0.79 against 6.2 is drawn at about 1 : 7.8). The two asterisks, Willow and Atom/Microsoft, are the two `company_claim` rows with an error figure, which is correct. "Including the two biggest machines here" (6,100 and 1,121) is correct. No em dashes. Intermediate video frames show only final values, plus one grey "3.3" while its bar grows, which is fine.
+
+1. **blocker.** Location: `hook`, panel title "No error rate published". **The panel's own content contradicts it.** Heron r3 sits in that panel, but the archived IBM blog states "57 of 176 possible two-qubit couplings ... deliver less than one error in every 1000 operations". IBM also publishes live rates on its dashboard. Caltech ran no two-qubit gates, so "published no error rate" misdescribes it. Round 1 fixed this ("No average two-qubit error stated in the source") and the redesign undid it. Replace the title with "No average error rate in the source". Replace the sub with "Qubit counts, including the two biggest machines here. IBM says 57 of 176 Heron r3 pairs are under 1 per 1,000."
+2. **should-fix.** Location: `hook` chart. **The ranking depends on a definition choice the slide doesn't mention.** Sycamore and both Zuchongzhi figures are Pauli errors. On the same footing as the others (×0.8, `twoq_avg_infidelity_harmonised`) they become 4.96, 4.72 and 3.0. That puts Zuchongzhi 3.0 (3.0) ahead of Willow (3.3), and Sycamore and Zuchongzhi ahead of Harvard (5.2) and Atom (5.6). The title asks "Which ... make the fewest errors?", so rank order is the message. Fix: add to the footer or "How to read this": "Google 2019 and USTC report a stricter measure; on the same basis as the rest they'd read about 20% lower." Or plot the harmonised column, as the chart notes suggested.
+3. **should-fix.** Location: `hook`. **The asterisk isn't explained on the slide.** "Google Willow*" and "Atom/Microsoft*" only get their footnote on the sources slide. Add to the footer: "*Company figure, not peer-reviewed."
+4. **should-fix.** Location: `hook` legend. **Platform is now encoded by colour alone** (purple, cyan, cream). That breaks brief §3 ("never encode meaning by colour alone") and the README's "one hue, categories carried by shape". The names do identify each lab, but not the platform. Fix: add a small platform word or glyph to each row label, or group the rows under platform headings.
+5. **nit.** Location: "How to read this", "A hand-picked set of 14 machines". The page says nine machines (the bars), the hook shows 9 + 5 = 14, and METHOD says 15 systems including the 280-qubit logical demo. Fine as is. Just make the site page say "nine machines with a published average error, and five without".
+6. **nit.** Location: `hook` footer, "10 peer-reviewed papers and 5 company documents, 2019 to 2026. Labs test in different ways." The access date is missing. Add "Accessed 5 Oct 2026."
+
+### Changes after review round 3 (2026-10-06)
+
+- Blocker fixed: panel is now "No average error rate given" with IBM's Heron r3 figure (57 of 176 pairs under 1 per 1,000) on the panel; the site page answer is reworded the same way.
+- Sycamore and both Zuchongzhi marked † (stricter Pauli-error test, about 20% lower on the others' basis), explained in the footer and on the site page; * explained in the footer.
+- Platform written next to every value (trapped ion / superconducting / neutral atom), so it is not colour alone.

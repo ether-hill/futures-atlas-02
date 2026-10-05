@@ -15,12 +15,12 @@ import { moire } from "../../templates/site-art.js";
 const d3 = window.d3;
 const HORIZONS = [5, 10, 15, 20, 30];
 const LIKELY = [">70%", ">95%", ">99%"]; // the report's "likely", "very likely", "extremely likely"
-const SOURCE = "Source: Quantum Threat Timeline Report 2025, Global Risk Institute. Expert survey, n=26.";
+const SOURCE = "Source: Quantum Threat Timeline Report 2025 (evolutionQ / Global Risk Institute). Expert survey, n=26. Accessed 5 Oct 2026.";
 
 function bars({ el, width, height, format, data }) {
   const ig = format === "ig";
   const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
-  const m = { top: ig ? 110 : 90, bottom: ig ? 120 : 96 };
+  const m = { top: ig ? 110 : 90, bottom: ig ? 140 : 116 };
   const x = d3.scaleBand().domain(HORIZONS).range([0, width]).padding(ig ? 0.28 : 0.4);
   const y = d3.scaleLinear().domain([0, 1]).range([height - m.bottom, m.top]);
   const rows = data.likely;
@@ -43,6 +43,9 @@ function bars({ el, width, height, format, data }) {
       .style("font-size", ig ? "36px" : "32px").style("font-weight", 700).style("fill", "var(--ink)").text(`${d.h} years`);
     g.append("text").attr("class", "lbl-sub").attr("x", x.bandwidth() / 2).attr("y", y(0) + (ig ? 86 : 74)).attr("text-anchor", "middle").style("font-size", "22px")
       .text(`around ${2025 + d.h}`);
+    // the spread: experts at "about even" (30 to 70%), who the bar leaves out
+    g.append("text").attr("class", "lbl-sub").attr("x", x.bandwidth() / 2).attr("y", y(0) + (ig ? 116 : 100)).attr("text-anchor", "middle").style("font-size", "20px")
+      .text(d.even ? `+${d.even} about even` : "");
     return { d, bar, pct, of };
   });
 
@@ -53,7 +56,9 @@ function bars({ el, width, height, format, data }) {
         const p = span(t, 0.4 + i * 0.45, 1.4 + i * 0.45);
         const v = d.share * p;
         bar.attr("y", y(v)).attr("height", y(0) - y(v));
-        pct.attr("y", y(v) - (ig ? 46 : 40)).text(`${Math.round(v * 100)}%`).attr("opacity", Math.min(1, p * 3));
+        // count up in whole experts, so no frame shows a share nobody gave
+        const k = Math.round(d.n * p);
+        pct.attr("y", y(v) - (ig ? 46 : 40)).text(`${Math.round((k / d.total) * 100)}%`).attr("opacity", Math.min(1, p * 3));
         of.attr("y", y(v) - (ig ? 14 : 12)).attr("opacity", span(t, 1.2 + i * 0.45, 1.6 + i * 0.45));
       });
     },
@@ -73,7 +78,8 @@ mountPiece({
     const likely = HORIZONS.map((h) => {
       const rs = rows.filter((r) => r.edition === 2025 && r.horizon === h);
       const n = d3.sum(rs.filter((r) => LIKELY.includes(r.bucket)), (r) => r.n);
-      return { h, n, total: rs[0].total, share: n / rs[0].total };
+      const even = d3.sum(rs.filter((r) => r.bucket === "~50%"), (r) => r.n);
+      return { h, n, even, total: rs[0].total, share: n / rs[0].total };
     });
     // the bars and the caption quote these; fail loudly if the data moves
     if (likely.map((d) => d.n).join() !== "1,6,15,18,22" || likely.some((d) => d.total !== 26)) throw new Error(`copy out of date: ${likely.map((d) => d.n)}`);
@@ -83,8 +89,8 @@ mountPiece({
     {
       id: "hook", formats: ["ig", "x"],
       kicker: "Expert survey",
-      title: "When could quantum computers break encryption?",
-      sub: "Share of 26 experts who say it's likely. By 2040, most do.",
+      title: "When could quantum computers break RSA encryption?",
+      sub: "Share of 26 experts who put the odds at 70% or more. By around 2040, most do.",
       alt: "Bar chart. Share of 26 quantum experts who think a quantum computer that can break RSA-2048 encryption in a day is likely: within 5 years 4%, 10 years 23%, 15 years 58%, 20 years 69%, 30 years 85%.",
       draw: bars,
       bg: (ctx, W, H, t, f) => moire(ctx, W, H, t, f === "ig" ? { corner: { cx: 1, cy: 0.02, r: 0.5 }, lines: 110, alpha: 0.9 } : { corner: { cx: 1, cy: 0.02, r: 0.42 }, lines: 120, alpha: 0.9 }),

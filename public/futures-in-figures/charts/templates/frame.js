@@ -18,7 +18,7 @@ let VARIANT = null;
 /** The Futures Atlas mark as a Path2D in its own viewBox (299.3..725.3), for canvas art. */
 export let MARK_PATH = null;
 
-export const SIZES = { ig: [1080, 1350], x: [1600, 900] };
+export const SIZES = { ig: [1080, 1350], x: [1600, 900], card: [1500, 1000] }; // card: the 3:2 project thumbnail, landscape layout
 
 function frameHtml(piece, slide, format, index, total, data) {
   const count = total > 1 && format === "ig" ? `<span class="count">${index + 1}/${total}</span>` : "";

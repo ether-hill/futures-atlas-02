@@ -155,3 +155,50 @@ I re-ran `process.mjs` and all three CSVs reproduce byte-identical. The hook num
 4. Original 4 (small text): **partly resolved, still open.** The hook annotations are now 30px and readable. The slide 2 column heads, the "Within" label (20px), the "experts" counts (22px), the bar note (21px) and the footer are still about 7px on a phone.
 5. **New, nit.** Location: slide `waves` note. The line "Not a confidence interval" was replaced by "Each bar reads every answer at its bin's low end, then its high end". The new wording is clearer about the method, but the warning that this isn't a CI has gone. Consider adding it back.
 6. **Visual.** No overlaps or clipping. The X hook is clean.
+
+### Review round 3 (2026-10-06)
+
+**Verdict:** PASS WITH FIXES. No blockers.
+
+I re-checked the new bars against `clean.csv` (2025, bins >70% + >95% + >99%):
+
+| Horizon | Count | Share | Bar |
+|---|---|---|---|
+| 5 years | 1 + 0 + 0 = 1 | 3.8% | 4% |
+| 10 years | 4 + 1 + 1 = 6 | 23.1% | 23% |
+| 15 years | 9 + 4 + 2 = 15 | 57.7% | 58% |
+| 20 years | 6 + 4 + 8 = 18 | 69.2% | 69% |
+| 30 years | 5 + 5 + 12 = 22 | 84.6% | 85% |
+
+All five match the bars and the alt text. "Most do" by 15 years is 15 of 26, so it holds. "Around 2040" for "within 15 years" of a survey fielded in 2025 is fair, as long as the word "around" is kept (see 3). The bars start at zero. No em dashes.
+
+1. **should-fix.** Location: `hook` subhead, "Share of 26 experts who say it's likely." **"Likely" here merges three answer bins.** It covers "Likely (>70%)", "Very likely (>95%)" and "Extremely likely (>99%)", but the definition is only on the "How to read this" slide. The hook travels without that slide. Replace with: "Share of 26 experts who put the odds at 70% or more. By around 2040, most do."
+2. **should-fix.** Location: `hook` title, "When could quantum computers break encryption?" **The title covers more than the survey asked.** The question was only about factoring a 2048-bit number, which means RSA, not encryption in general. Symmetric encryption isn't in scope. Replace with: "When could quantum computers break RSA encryption?"
+3. **nit.** Location: `hook` subhead, "By 2040, most do." It states a calendar year as if it were the question, but the question said "within 15 years". Use "By around 2040", matching the bar label "around 2040".
+4. **should-fix.** Location: `hook` chart. **The spread and the middle answers are gone.** Brief §6 asks for spread as well as the headline share. The new bars drop the "about 50%" group entirely: 3 experts at 15 years, 7 at 10 years. A reader can't see that 13 of 26 put the 10-year odds under 30%. Fix: add the "about even (30 to 70%)" count as a lighter segment stacked on each bar, or a small line under each bar, e.g. "+3 said about even".
+5. **should-fix.** Location: `video/ig-hook-field.mp4` (and x). **Mid-animation frames show wrong numbers.** At 0.8s the 5-year bar reads "3%". At 1.6s the 15-year bar reads "38%". At 2.4s the 20- and 30-year bars read "66%" and "41%". These are tweened values that no expert gave, and a paused frame or screenshot would show them. Fix: fade each label in at its final value once its bar settles, or count up in whole experts ("1 of 26" … "22 of 26").
+6. **nit.** Location: `hook` footer, "Source: Quantum Threat Timeline Report 2025, Global Risk Institute. Expert survey, n=26." It leaves out the authors, publisher and access date. Use: "Source: Mosca & Piani, Quantum Threat Timeline Report 2025 (evolutionQ / Global Risk Institute, Mar 2026). Expert survey, n=26. Accessed 5 Oct 2026."
+7. **nit (house style).** Location: all three new hooks. They're dark-ground by default. Laura's standing design note is "no dark-by-default; use the project's own functional colours". Check with her before publishing.
+
+### Site page review, Futures in Figures (2026-10-06)
+
+Files: `src/app/(atlas)/futures-in-figures/page.tsx` and `src/data/projects.ts` (id `futures-in-figures`). No em dashes.
+
+**Verdict:** FAIL until S1 is fixed. After that, PASS WITH FIXES.
+
+- **S1. blocker.** Location: the qubits `answer`, "...and several of the biggest machines published no error rate at all." **This is false.** IBM states a two-qubit figure for Heron r3 ("57 of 176 pairs under 1 per 1,000", `raw/ibm-blog-qdc-2025.html`). IBM publishes live error rates on its dashboard. And Caltech's 6,100-atom array ran no two-qubit gates, so it had nothing to publish. Replace with: "...and several of the biggest machines came without an average two-qubit error rate in the documents we used. One, Caltech's 6,100-atom array, ran no two-qubit operations at all."
+- **S2. should-fix.** Location: intro, "Every number comes from the original source: a peer-reviewed paper, official statistics or a research group that publishes its method." **The list leaves out a source type the qubit chart uses.** Five of its sources are company documents. Replace with: "Every number comes from the original source: a peer-reviewed paper, official statistics, a research group that publishes its method, or, for claims about a company's own hardware, that company's documents. Where a figure is a company's own claim, we say so."
+- **S3. should-fix.** Location: "How these are made", "A script turns that into the chart's data, so no number is typed in by hand." **This is false for two of the three pieces.** Q-Day and qubits rely on a hand transcription (`raw/transcription.csv`). Replace with: "Where a number has to be copied out of a PDF, it's copied once into a transcription file with its page and quote. A script does everything after that, so no number on a chart is typed in by hand."
+- **S4. should-fix.** Location: Q-Day `keepInMind`, "These are expert opinions, not a forecast." **The sentence contradicts itself and leaves out the conflict of interest.** Expert opinion about the future is a forecast. The brief's distinction is opinion versus measurement. Replace with: "These are expert opinions, not measurements: 26 invited experts, not a random sample. The survey's publisher, evolutionQ, sells quantum-safe security products."
+- **S5. should-fix.** Location: Q-Day `answer`, "...how likely it is that a quantum computer could break RSA-2048... Only 1 thought it likely within 5 years. By 2040, most do." **"Likely" is undefined, and the tense switches mid-paragraph.** Replace the last two sentences with: "Only 1 put the odds at 70% or more within 5 years. Within 15 years, around 2040, 15 of the 26 did." Also: the survey is run by evolutionQ (Mosca & Piani) and published by the Global Risk Institute, so "The Global Risk Institute asked" is loose. Use "A Global Risk Institute survey asked".
+- **S6. should-fix.** Location: compute `question`, "AI's computing power has grown 4x a year" (it's also the hook title; see the training-compute review).
+- **S7. nit.** Location: "How these are made", "spec sheets and announcements from Google, IBM and Atom Computing with Microsoft". The Atom/Microsoft source is a preprint. Use "spec sheets, announcements and a preprint from Google, IBM and Atom Computing with Microsoft".
+- **S8. nit.** Location: the project card tagline and page description, "...and shows how sure the numbers are." The qubit chart doesn't show uncertainty, even though the sources give it (e.g. 1.84(5)). Use "...and says how sure the numbers are", or add the ± values.
+
+### Changes after review round 3 (2026-10-06)
+
+- Title says RSA encryption; subhead defines "likely" as 70% or more; "around 2040".
+- Spread restored: each bar carries "+N about even" (the 30 to 70% answers the bar leaves out).
+- Labels count up in whole experts, so no video frame shows a share nobody gave.
+- Site page: "A Global Risk Institute survey asked"; answer uses 70% or more and "15 of the 26"; "Keep in mind" names the invited panel and the publisher's conflict of interest.
+- Not done: the dark ground. Laura chose variant A (dark) for this series on 2026-10-06, after seeing four variants.

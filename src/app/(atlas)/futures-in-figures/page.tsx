@@ -4,7 +4,7 @@ import { FiguresChart } from "@/components/FiguresChart";
 
 const TITLE = "Futures in Figures. Futures Atlas";
 const DESC =
-  "Short, shareable charts about quantum computing and AI. Each one answers one question with real data, and shows how sure the numbers are.";
+  "Short, shareable charts about quantum computing and AI. Each one answers one question with real data, and says how sure the numbers are.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -35,10 +35,10 @@ type Figure = {
 const FIGURES: Figure[] = [
   {
     slug: "q-day",
-    question: "When could quantum computers break encryption?",
+    question: "When could quantum computers break RSA encryption?",
     answer:
-      "The Global Risk Institute asked 26 quantum experts how likely it is that a quantum computer could break RSA-2048, a common kind of encryption, within 5, 10, 15, 20 and 30 years. Only 1 thought it likely within 5 years. By 2040, most do.",
-    keepInMind: "These are expert opinions, not a forecast. The experts were invited, not picked at random.",
+      "A Global Risk Institute survey asked 26 quantum experts how likely it is that a quantum computer could break RSA-2048, a common kind of encryption, within 5, 10, 15, 20 and 30 years. Only 1 put the odds at 70% or more within 5 years. Within 15 years, around 2040, 15 of the 26 did.",
+    keepInMind: "These are expert opinions, not measurements: 26 invited experts, not a random sample. The survey's publisher, evolutionQ, sells quantum-safe security products.",
     source: {
       label: "Quantum Threat Timeline Report 2025, Global Risk Institute",
       href: "https://globalriskinstitute.org/publication/quantum-threat-timeline-report-2025b/",
@@ -48,16 +48,16 @@ const FIGURES: Figure[] = [
     slug: "qubits-vs-quality",
     question: "Which quantum computers make the fewest errors?",
     answer:
-      "Launches usually lead with the number of qubits, but a qubit is only useful if its operations work. These are the published error rates for nine machines. Trapped-ion machines come out lowest, and several of the biggest machines published no error rate at all.",
-    keepInMind: "Labs test in different ways, so treat close numbers as a tie. Two figures are company claims, not peer-reviewed.",
+      "Launches usually lead with the number of qubits, but a qubit is only useful if its operations work. These are the published error rates for nine machines. Trapped-ion machines come out lowest. Several of the biggest machines came without an average two-qubit error rate in the documents we used, and one, Caltech's 6,100-atom array, ran no two-qubit operations at all.",
+    keepInMind: "Labs test in different ways, so treat close numbers as a tie. Google's 2019 chip and USTC's use a stricter test; on the same basis as the rest they'd read about 20% lower. Two figures are company claims, not peer-reviewed.",
     source: { label: "10 peer-reviewed papers and 5 company documents", href: "#method" },
   },
   {
     slug: "training-compute",
-    question: "AI's computing power has grown 4x a year",
+    question: "Training compute for the biggest AI models grew 4x a year",
     answer:
-      "Training the biggest AI models took about four times more computing power each year between 2018 and 2024. The newest figures are the least certain, because labs often don't publish them.",
-    keepInMind: "Computing power isn't the same as how capable a model is. Each glowing streak shows the range of an estimate.",
+      "Training the biggest AI models took about four times more computing power each year between 2018 and May 2024 (Epoch AI's 90% range: 3.6x to 4.9x). The newest figures are the least certain, because labs often don't publish them.",
+    keepInMind: "Computing power isn't the same as how capable a model is. Each glowing streak shows the 90% range of an estimate.",
     source: { label: "Epoch AI, Data on Notable AI Models", href: "https://epoch.ai/data/notable-ai-models" },
   },
 ];
@@ -66,22 +66,23 @@ export default function FuturesInFiguresPage() {
   return (
     <>
       <section className="pt-[var(--space-header)] pb-[var(--space-section)]">
-        <Container>
+        <Container className="max-w-[1240px]">
           <p className="text-[13px] font-medium text-accent-deep">Visuals</p>
           <h1 className="fa-t-display-l mt-4 max-w-[14ch]">Futures in Figures</h1>
           <p className="fa-t-lead mt-7 max-w-[56ch]">
             Charts about quantum computing and AI. Each one answers one question with real data, and comes as a post you can share.
           </p>
           <p className="fa-t-body mt-5 max-w-[60ch]">
-            Every number comes from the original source: a peer-reviewed paper, official statistics or a research
-            group that publishes its method. Where a figure is a company&apos;s own claim, we say so. And where the
+            Every number comes from the original source: a peer-reviewed paper, official statistics, a research
+            group that publishes its method, or, for claims about a company&apos;s own hardware, that company&apos;s
+            documents. Where a figure is a company&apos;s own claim, we say so. And where the
             source gives a range or says how sure it is, the chart shows that too, not just the headline.
           </p>
         </Container>
       </section>
 
       <section className="pb-[var(--space-section)]">
-        <Container>
+        <Container className="max-w-[1240px]">
           <ol className="grid gap-[var(--space-gap-l)]">
             {FIGURES.map((f, i) => (
               <li key={f.slug} className="border-t border-hairline pt-10">
@@ -128,11 +129,11 @@ export default function FuturesInFiguresPage() {
       </section>
 
       <section id="method" className="border-t border-hairline py-[var(--space-section)]">
-        <Container>
+        <Container className="max-w-[1240px]">
           <h2 className="fa-t-display-s">How these are made</h2>
           <ul className="fa-t-body mt-6 grid max-w-[64ch] gap-3">
             <li>We start from the original data file or report, saved as we found it, and record where each number is in it.</li>
-            <li>A script turns that into the chart&apos;s data, so no number is typed in by hand.</li>
+            <li>Where a number has to be copied out of a PDF, it&apos;s copied once into a transcription file with its page and a quote. A script does everything after that, so no number on a chart is typed in by hand.</li>
             <li>Each chart has a method note: the question, the sources, what we changed and what the chart doesn&apos;t show.</li>
             <li>The qubit chart draws on 10 papers in Nature, Physical Review Letters and Physical Review X, plus spec sheets and announcements from Google, IBM and Atom Computing with Microsoft.</li>
           </ul>
