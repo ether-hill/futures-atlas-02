@@ -1,0 +1,2 @@
+edition,kind,horizon_years,bucket,value_as_printed,corrected_value,evidence
+2023,count,30,~50%,87,8,"Printed '87' on p65 of the 2023 report is a typo. (1) The 30-year column must sum to N=37; with 8 it does (0+0+0+8+10+10+9=37). (2) The 2023 report's own Figure 7 heatmap (p21) shows 22% for this cell; 8/37=21.6%. (3) The 2025 report's Figure 4 (p6) gives 2023 30-year averages of 75% and 92%, which the counts reproduce only with 8 (75.2% and 91.9%)."

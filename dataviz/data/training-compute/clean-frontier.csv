@@ -1,0 +1,125 @@
+model,organization,publication_date,year,training_compute_flop,confidence
+Theseus,Bell Laboratories,1950-07-02,1950.4986,40.0,Confident
+Perceptron Mark I,"Cornell Aeronautical Laboratory,Cornell University",1957-01-01,1957.0000,694894.9377361819,Likely
+Pandemonium (morse),Massachusetts Institute of Technology (MIT),1959-02-01,1959.0849,600000000.0,Speculative
+Samuel Neural Checkers,IBM,1959-07-01,1959.4959,428400000.0,Likely
+Perceptron (1960),Cornell Aeronautical Laboratory,1960-03-30,1960.2432,720000000.0,Speculative
+ADALINE,Stanford University,1960-06-30,1960.4945,6600.0,Confident
+Linear Decision Functions,Bell Laboratories,1962-06-01,1962.4137,1559250.0,Speculative
+Print Recognition Logic,IBM,1963-01-01,1963.0000,22500000.0,Speculative
+LTE speaker verification system,IBM,1966-11-01,1966.8329,105917060.0,Likely
+Neocognitron,NHK Broadcasting Science Research Laboratories,1980-04-01,1980.2486,273738240.0,Confident
+ASE+ACE,University of Massachusetts Amherst,1983-09-01,1983.6658,324000000.0,Likely
+Distributed representation NN,Carnegie Mellon University (CMU),1986-08-15,1986.6192,388800000.0,Confident
+MLP with back-propagation,"University of California San Diego,Carnegie Mellon University (CMU)",1986-10-01,1986.7479,673920000.0,Confident
+NetTalk (transcription),Princeton University,1987-06-06,1987.4274,28328002560.0,Confident
+NetTalk (dictionary),Princeton University,1987-06-06,1987.4274,27664065000.0,Confident
+Translation-invariant MLP,Carnegie Mellon University (CMU),1987-06-15,1987.4521,18032947200.0,Confident
+Invariant image recognition,Complutense University of Madrid,1989-06-18,1989.4603,27000000000.0,Confident
+Handwritten digit recognition network,AT&T,1989-11-27,1989.9041,181440000000.0,Confident
+Zip CNN,"AT&T,Bell Laboratories",1989-12-01,1989.9151,1496338054440.0,Confident
+NETtalk reimplementation,Oregon State University,1990-06-01,1990.4137,35811936000.0,Confident
+SexNet compression,,1990-10-01,1990.7479,78775200000.0,Confident
+Weight Decay,,1991-12-02,1991.9178,75474000000.0,Confident
+TD-Gammon,IBM,1992-05-01,1992.3306,18232157622832.703,Speculative
+Siamese-TDNN,Bell Laboratories,1993-08-01,1993.5808,12869570138112.0,Likely
+Predictive Coding NN,Technical University of Munich,1994-12-02,1994.9178,18621900000000.0,Confident
+NeuroChess,,1994-12-02,1994.9178,858730812676.0,Speculative
+MUSIC perceptron,,1996-06-03,1996.4208,881733600000.0,Confident
+LSTM,Technical University of Munich,1997-11-15,1997.8712,31512000000000.0,Confident
+LeNet-5,AT&T,1998-11-01,1998.8329,2810937600000.0,Confident
+RECONTRA-categorized,,1999-06-02,1999.4164,8013600000000.0,Likely
+PoE MNIST,University College London (UCL),2000-11-28,2000.9071,51810000000000.0,Confident
+Neural LM,University of Montreal / Université de Montréal,2000-11-28,2000.9071,6339000000000000.0,Confident
+Decision tree (classification),"Mitsubishi Electric Research Labs,Compaq CRL",2001-12-08,2001.9342,63000000000000.0,Likely
+NPLM (Brown),University of Montreal / Université de Montréal,2003-03-15,2003.2000,132076260000000.0,Confident
+NPLM (AP News),University of Montreal / Université de Montréal,2003-03-15,2003.2000,1666869200000000.0,Confident
+LMICA,,2004-12-01,2004.9153,2782080000000000.0,Confident
+Hierarchical LM,,2005-01-06,2005.0137,115848000000000.0,Confident
+SVM-CNN,New York University (NYU),2006-06-17,2006.4575,745200000000000.0,Confident
+SB-LM,Google,2007-06-22,2007.4712,1.4494464e+18,Likely
+KN-LM,Google,2007-06-22,2007.4712,7.7303808e+17,Likely
+LCNP MNIST,,2009-11-22,2009.8904,4181852160000000.0,Confident
+LCNP LabelMe,University of Bonn,2009-11-22,2009.8904,3295150080000000.0,Confident
+RNN LM,Johns Hopkins University,2010-09-26,2010.7342,5.396e+16,Speculative
+Deep Autoencoders,University of Toronto,2011-04-29,2011.3233,3.672864e+16,Confident
+CNN Committee (MNIST),IDSIA,2011-09-18,2011.7123,5.2e+16,Likely
+Dropout (ImageNet),University of Toronto,2012-06-03,2012.4208,2.731968e+17,Confident
+Unsupervised High-level Feature Learner,Google,2012-07-12,2012.5273,6e+17,Likely
+AlexNet,University of Toronto,2012-09-30,2012.7459,4.7e+17,Confident
+DNN EM segmentation,"IDSIA,SUPSI",2012-12-03,2012.9208,4.78e+17,Confident
+DistBelief NNLM,Google,2013-01-16,2013.0411,2.612736e+18,Likely
+Visualizing CNNs,New York University (NYU),2013-11-12,2013.8630,5.32e+17,Confident
+TransE,"Universite de Technologie de Compiègne – CNRS,Google",2013-12-05,2013.9260,1.340928e+18,Speculative
+SPPNet,"Microsoft,Xi’an Jiaotong University,University of Science and Technology of China (USTC)",2014-06-18,2014.4603,3.411072e+18,Confident
+RNNsearch-50*,"Jacobs University Bremen,University of Montreal / Université de Montréal",2014-09-01,2014.6658,1.5552e+18,Confident
+VGG19,University of Oxford,2014-09-04,2014.6740,1.1e+19,Likely
+VGG16,University of Oxford,2014-09-04,2014.6740,1.2291e+19,Confident
+Seq2Seq LSTM,Google,2014-09-10,2014.6904,5.6e+19,Confident
+SNM-skip,Google,2014-12-03,2014.9205,2.97600000001e+20,Speculative
+"MSRA (C, PReLU)",Microsoft Research,2015-02-06,2015.0986,2.397403008e+19,Confident
+AlphaGo Fan,DeepMind,2015-10-01,2015.7479,3.8e+20,Likely
+SAF R-CNN,"Beijing Institute of Technology,Sun Yat-sen University,Panasonic R&D,National University of Singapore",2015-10-28,2015.8219,1.2311081250000001e+19,Likely
+Inception v3,"Google,University College London (UCL)",2015-12-02,2015.9178,1e+20,Likely
+AlphaGo Lee,DeepMind,2016-01-27,2016.0710,1.9e+21,Speculative
+GNMT,Google,2016-09-26,2016.7350,6.620000000001e+21,Likely
+Xception,Google,2016-10-07,2016.7650,4.36e+20,Confident
+NASv3 (CIFAR-10),Google Brain,2016-11-05,2016.8443,2.2e+21,Likely
+JFT,"Google Research,Carnegie Mellon University (CMU)",2017-07-10,2017.5205,8.43e+20,Confident
+OpenAI TI7 DOTA 1v1,OpenAI,2017-08-11,2017.6082,6.046095222592002e+20,Confident
+AlphaGo Zero,DeepMind,2017-10-18,2017.7945,6.49439910290227e+20,Confident
+ResNeXt-101 32x48d,Facebook,2018-05-02,2018.3315,8.74395e+21,Confident
+XLNet,"Carnegie Mellon University (CMU),Google Brain",2019-06-01,2019.4137,6.19e+21,Confident
+RoBERTa Large,"Facebook,University of Washington",2019-07-01,2019.4959,8.5067e+21,Confident
+Megatron-LM (8.3B),Nvidia,2019-09-17,2019.7096,9.1e+21,Likely
+Megatron-BERT,Nvidia,2019-09-17,2019.7096,2.2e+22,Confident
+T5-11B,Google,2019-10-23,2019.8082,3.3e+22,Confident
+T5-3B,Google,2019-10-23,2019.8082,9.0000000001e+21,Confident
+AlphaStar,DeepMind,2019-10-30,2019.8274,1.0773400001e+23,Confident
+XLM-RoBERTa,Facebook AI,2019-11-05,2019.8438,2.076e+22,Confident
+Noisy Student (L2),"Carnegie Mellon University (CMU),Google",2019-11-11,2019.8603,2.612e+22,Confident
+OpenAI Five,OpenAI,2019-12-13,2019.9479,6.7e+22,Confident
+Meena,Google Brain,2020-01-28,2020.0738,1.12e+23,Confident
+GPT-3 175B (davinci),OpenAI,2020-05-28,2020.4044,3.14e+23,Confident
+GShard (dense),Google,2020-06-30,2020.4945,4.765e+22,Confident
+mT5-XXL,"Google,Google Research",2020-10-20,2020.8005,8.2e+22,Confident
+Switch,Google,2021-01-11,2021.0274,8.22e+22,Confident
+Jurassic-1-Jumbo,AI21 Labs,2021-08-11,2021.6082,3.7e+23,Confident
+FLAN 137B,Google Research,2021-09-03,2021.6712,2.047e+24,Confident
+HyperCLOVA 204B,NAVER,2021-09-10,2021.6904,2.0000000001e+23,Speculative
+Megatron-Turing NLG 530B,"Microsoft,Nvidia",2021-10-11,2021.7753,8.586e+23,Confident
+Yuan 1.0,Inspur,2021-10-12,2021.7781,3.5380000000001e+23,Confident
+Gopher (280B),DeepMind,2021-12-08,2021.9342,6.31e+23,Confident
+ERNIE 3.0 Titan,"Baidu,Peng Cheng Laboratory",2021-12-23,2021.9753,1.0421e+24,Confident
+GPT-3.5 (davinci-002),OpenAI,2022-03-15,2022.2000,2.578e+24,Speculative
+PaLM (540B),Google Research,2022-04-04,2022.2548,2.5272e+24,Confident
+Minerva (540B),Google,2022-06-29,2022.4904,2.7415e+24,Confident
+U-PaLM (540B),Google,2022-10-20,2022.8000,2.53e+24,Confident
+Flan-PaLM 540B,Google,2022-10-20,2022.8000,2.540000000001e+24,Confident
+GPT-4 (Mar 2023),OpenAI,2023-03-15,2023.2000,2.1e+25,Likely
+PaLM 2,Google,2023-05-10,2023.3534,7.34e+24,Likely
+GPT-4 (Jun 2023),OpenAI,2023-06-13,2023.4466,2.1e+25,Likely
+Claude 2,Anthropic,2023-07-11,2023.5233,3.866e+24,Speculative
+Falcon-180B,Technology Innovation Institute,2023-09-06,2023.6795,3.76e+24,Confident
+Amazon Titan,Amazon,2023-09-28,2023.7397,4.8e+24,Likely
+GPT-4 Turbo (Nov 2023),OpenAI,2023-11-06,2023.8466,,No estimate
+Inflection-2,Inflection AI,2023-11-22,2023.8904,1.001e+25,Confident
+Gemini 1.0 Ultra,Google DeepMind,2023-12-06,2023.9288,5.0000000001e+25,Speculative
+Gemini 1.5 Pro,Google DeepMind,2024-02-15,2024.1230,,No estimate
+Claude 3 Opus,Anthropic,2024-03-04,2024.1721,,No estimate
+GPT-4 Turbo (Apr 2024),OpenAI,2024-04-09,2024.2705,,No estimate
+GPT-4o,OpenAI,2024-05-13,2024.3634,,No estimate
+Nemotron-4 340B,Nvidia,2024-06-14,2024.4508,1.8e+25,Confident
+Claude 3.5 Sonnet,Anthropic,2024-06-20,2024.4672,2.700000000000001e+25,Speculative
+Llama 3.1-405B,Meta AI,2024-07-23,2024.5574,3.8e+25,Confident
+GPT-4o (Aug 2024),OpenAI,2024-08-06,2024.5956,,No estimate
+Grok-2,xAI,2024-08-13,2024.6148,2.96e+25,Confident
+GLM-4-Plus,Z.ai (Zhipu AI),2024-08-29,2024.6585,,No estimate
+GPT-4o (Nov 2024),OpenAI,2024-11-20,2024.8852,,No estimate
+GPT-4o (Jan 2025),OpenAI,2025-01-29,2025.0767,,No estimate
+Grok 3,xAI,2025-02-17,2025.1288,3.5e+26,Likely
+GPT-4.5,OpenAI,2025-02-27,2025.1562,3.8e+26,Likely
+GPT-4o (Mar 2025),OpenAI,2025-03-27,2025.2329,,No estimate
+Llama 4 Behemoth (preview),Meta AI,2025-04-05,2025.2575,5.18400000000001e+25,Likely
+Grok 4,xAI,2025-07-09,2025.5178,5.0000000000001e+26,Speculative
+GPT-6 Astra,OpenAI,2026-09-03,2026.6712,1.0001e+27,Likely

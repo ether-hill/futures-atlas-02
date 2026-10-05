@@ -1,0 +1,12 @@
+node_modules/
+# source PDFs stay local (≈100 MB); their URLs + access dates are in each METHOD.md
+data/*/raw/*.pdf
+# renders are rebuilt with render.mjs / video.mjs; the finished posts are copied to public/futures-in-figures/
+output/**/png/
+output/**/svg/
+output/**/video/
+output/*.png
+output/**/contact*.png
+# downloaded for reference, not used
+data/training-compute/raw/all_ai_models.csv
+output/*/index-v2.html

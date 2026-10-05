@@ -1,0 +1,21 @@
+edition,horizon_years,n_respondents,avg_pessimistic_pct,avg_optimistic_pct,avg_midpoint_pct,printed_pessimistic_pct,printed_optimistic_pct,printed_midpoint_pct,printed_where,printed_mismatch
+2022,5,40,1.35,5.80,3.58,1,6,,"2025 report p6, Figure 4 data labels (2025 report)",
+2022,10,40,10.45,27.05,18.75,10,25,,"2025 report p6, Figure 4 data labels (2025 report)",optimistic
+2022,15,40,30.93,54.80,42.86,31,55,,"2025 report p6, Figure 4 data labels (2025 report)",
+2022,20,40,58.67,83.08,70.88,59,83,,"2025 report p6, Figure 4 data labels (2025 report)",
+2022,30,40,79.22,93.35,86.29,80,93,,"2025 report p6, Figure 4 data labels (2025 report)",pessimistic
+2023,5,37,4.22,11.05,7.64,4,11,,"2025 report p6, Figure 4 data labels (2025 report)",
+2023,10,37,17.22,30.70,23.96,17,31,,"2025 report p6, Figure 4 data labels (2025 report)",
+2023,15,37,32.62,54.30,43.46,33,54,,"2025 report p6, Figure 4 data labels (2025 report)",
+2023,20,37,55.54,78.35,66.95,56,78,,"2025 report p6, Figure 4 data labels (2025 report)",
+2023,30,37,75.16,91.89,83.53,75,92,,"2025 report p6, Figure 4 data labels (2025 report)",
+2024,5,32,5.16,14.31,9.73,5,14,,"2025 report p6, Figure 4 data labels (2025 report)",
+2024,10,32,18.63,34.44,26.53,19,34,,"2025 report p6, Figure 4 data labels (2025 report)",
+2024,15,32,38.66,62.25,50.45,39,62,,"2025 report p6, Figure 4 data labels (2025 report)",
+2024,20,32,60.38,81.81,71.09,60,82,,"2025 report p6, Figure 4 data labels (2025 report)",
+2024,30,32,77.34,92.03,84.69,77,92,,"2025 report p6, Figure 4 data labels (2025 report)",
+2025,5,26,5.19,14.73,9.96,5,15,10,"2025 report p31, Figure 17 data labels",
+2025,10,26,27.62,48.92,38.27,28,49,38,"2025 report p31, Figure 17 data labels",
+2025,15,26,51.00,70.23,60.62,51,70,61,"2025 report p31, Figure 17 data labels",
+2025,20,26,68.54,86.38,77.46,69,86,77,"2025 report p31, Figure 17 data labels",
+2025,30,26,81.08,92.69,86.88,81,93,87,"2025 report p31, Figure 17 data labels",

@@ -1,0 +1,210 @@
+/*
+  Futures Atlas data visual series: the one frame every graphic sits in.
+
+  Colours and type are copied from packages/futures-atlas-core/src/tokens.css
+  (host copy, cool neutrals). They are restated here, not imported, because a
+  rendered post has to look the same whatever the live /style-guide overrides
+  say on the day it is exported. If core's primitives change, change them here.
+
+  Formats (CSS px; exported at deviceScaleFactor 2):
+    .f-ig  1080 x 1350  Instagram single + carousel (4:5)
+    .f-x   1600 x 900   X / Twitter (16:9)
+*/
+
+@font-face {
+  font-family: "Archivo";
+  src: url("../fonts/Archivo-VF.ttf") format("truetype");
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+}
+
+:root {
+  /* core primitives (light) */
+  --bone: #f4efe4;
+  --panel: #fbf8f0;
+  --ink: #17181b;
+  --ink-body: #303237;
+  --graphite: #63666c;
+  --faint: #696c73;
+  --accent: oklch(0.565 0.13 245);      /* fills, marks */
+  --accent-deep: oklch(0.495 0.13 245); /* blue as small text */
+  --accent-soft: oklch(0.93 0.045 245);
+  --hairline: color-mix(in srgb, var(--ink) 16%, transparent);
+  --grid: color-mix(in srgb, var(--ink) 9%, transparent);
+  /* context marks: the data that is there but is not the story */
+  --context: color-mix(in srgb, var(--ink) 22%, var(--bone));
+
+  --font: "Archivo", system-ui, sans-serif;
+  --track-display: -0.022em;
+}
+
+/* Dark cut. Same tokens as core's html.dark; the accent does not flip,
+   --accent-deep does (see core tokens.css for why). */
+.dark {
+  --bone: #17181b;
+  --panel: #16171b;
+  --ink: #f2ede2;
+  --ink-body: #d3ccbe;
+  --graphite: #9da0a8;
+  --faint: #80838b;
+  --accent-deep: oklch(0.64 0.13 245);
+  --accent-soft: oklch(0.34 0.06 245);
+  --context: color-mix(in srgb, var(--ink) 26%, var(--bone));
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #d9d4c9; }
+body { font-family: var(--font); -webkit-font-smoothing: antialiased; }
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--font);
+  display: flex;
+  flex-direction: column;
+}
+.f-ig { width: 1080px; height: 1350px; padding: 64px 68px 48px; }
+.f-x  { width: 1600px; height: 900px;  padding: 52px 64px 40px; }
+
+/* masthead: lockup left, series right */
+.mast {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 22px; color: var(--ink); flex: 0 0 auto;
+}
+.mast .lock { display: flex; align-items: center; gap: 12px; font-weight: 500; letter-spacing: -0.01em; }
+.mast .lock svg { width: 30px; height: 30px; fill: currentColor; display: block; }
+.mast .series { color: var(--graphite); font-weight: 400; }
+.mast .count { color: var(--graphite); font-variant-numeric: tabular-nums; margin-left: 16px; }
+
+.head { flex: 0 0 auto; }
+.f-ig .head { margin-top: 56px; }
+.f-x  .head { margin-top: 34px; }
+
+.kicker { font-size: 22px; color: var(--accent-deep); font-weight: 500; margin: 0 0 14px; }
+.title {
+  margin: 0; font-weight: 700; letter-spacing: var(--track-display);
+  line-height: 1.02; font-stretch: 92%; text-wrap: balance;
+}
+.f-ig .title { font-size: 72px; }
+.f-x  .title { font-size: 60px; max-width: 1320px; }
+.sub {
+  margin: 20px 0 0; color: var(--ink-body); font-weight: 400;
+  line-height: 1.32; text-wrap: pretty;
+}
+.f-ig .sub { font-size: 29px; max-width: 900px; }
+.f-x  .sub { font-size: 26px; max-width: 1470px; margin-top: 14px; }
+
+.chart { flex: 1 1 auto; min-height: 0; position: relative; }
+.f-ig .chart { margin-top: 40px; }
+.f-x  .chart { margin-top: 26px; }
+.chart svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.foot {
+  flex: 0 0 auto; display: flex; justify-content: space-between; align-items: flex-end;
+  gap: 32px; border-top: 1px solid var(--hairline); padding-top: 18px; margin-top: 24px;
+  font-size: 21px; line-height: 1.38; color: var(--graphite);
+}
+.foot .src { max-width: 78%; }
+.foot .site { color: var(--ink); font-weight: 500; white-space: nowrap; }
+
+/* chart text: always text tokens, never series colour.
+   Class sizes are the floor for a 1080px frame read on a phone (~1/3 scale).
+   A chart that needs a different size sets it with .style(), which wins over
+   these; an SVG font-size attribute does NOT (CSS beats presentation attrs). */
+.chart text { font-family: var(--font); fill: var(--ink-body); }
+.axis text { fill: var(--graphite); font-size: 22px; font-variant-numeric: tabular-nums; }
+.axis .domain { stroke: none; }
+.axis line { stroke: var(--grid); }
+.axis-title { fill: var(--graphite) !important; font-size: 22px; }
+.note { fill: var(--graphite) !important; font-size: 21px; }
+.lbl { font-size: 24px; fill: var(--ink) !important; font-weight: 500; }
+.lbl-sub { font-size: 21px; fill: var(--graphite) !important; }
+.halo { paint-order: stroke; stroke: var(--bone); stroke-width: 6px; stroke-linejoin: round; }
+
+/* text-only slides (method, sources) */
+.prose { flex: 1 1 auto; font-size: 25px; line-height: 1.45; color: var(--ink-body); }
+.prose h3 { font-size: 22px; font-weight: 600; color: var(--ink); margin: 34px 0 8px; }
+.prose h3:first-child { margin-top: 0; }
+.prose p { margin: 0 0 12px; }
+.prose ul { margin: 0; padding-left: 0; list-style: none; }
+.prose li { margin: 0 0 12px; padding-left: 22px; position: relative; }
+.prose li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 8px; height: 2px; background: var(--accent); }
+.prose .ref { font-size: 20px; color: var(--graphite); }
+
+/* gallery mode: every slide of a piece, scaled down, for local review */
+.gallery { padding: 32px; display: flex; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+.gallery .cell { display: flex; flex-direction: column; gap: 8px; font: 14px system-ui; color: #444; }
+.gallery .cell a { color: inherit; }
+.gallery .scaler { transform-origin: 0 0; }
+
+/* ── Pop: the social cut. Futures Atlas type and mark, flat saturated
+   grounds, square corners, no glow or gradients. One ground per piece. ── */
+.pop > * { position: relative; z-index: 1; }
+.pop > canvas.bg { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; }
+.pop .title { font-weight: 800; font-stretch: 88%; letter-spacing: -0.03em; line-height: 0.98; }
+.pop.f-ig .title { font-size: 96px; }
+.pop.f-x .title { font-size: 80px; max-width: 1380px; }
+.pop.f-ig .sub { font-size: 32px; }
+.pop .kicker { display: inline-block; background: var(--ink); color: var(--bone); padding: 6px 14px; font-weight: 600; font-size: 22px; }
+.pop .mast .series { display: none; }
+.pop { --d1: oklch(0.55 0.15 252); --d2: oklch(0.67 0.19 33); --d3: oklch(0.86 0.17 92); }
+
+/* Atlas blue ground, paper ink, yellow highlight */
+.pop-blue {
+  --bone: oklch(0.45 0.13 252); --ink: #fff8ec; --ink-body: rgba(255,248,236,.9); --graphite: rgba(255,248,236,.74);
+  --faint: rgba(255,248,236,.6); --hairline: rgba(255,248,236,.3); --grid: rgba(255,248,236,.14); --context: rgba(255,248,236,.3);
+  --accent: #fff8ec; --hl: oklch(0.88 0.16 92); --motif: rgba(255,248,236,.07);
+}
+/* bone ground, three bold data colours */
+.pop-light { --context: rgba(23,24,27,.2); --hl: var(--d2); --motif: rgba(23,24,27,.045); }
+/* coral ground, ink text, paper marks */
+.pop-coral {
+  --bone: oklch(0.7 0.16 38); --ink: #17181b; --ink-body: rgba(23,24,27,.86); --graphite: rgba(23,24,27,.7);
+  --faint: rgba(23,24,27,.6); --hairline: rgba(23,24,27,.25); --grid: rgba(23,24,27,.1); --context: rgba(23,24,27,.3);
+  --accent: #fff8ec; --hl: #17181b; --motif: rgba(255,248,236,.13);
+}
+.pop .halo { stroke: var(--bone); }
+
+/* ── Site: matches futures-atlas.com. System sans at 800 with tight tracking
+   (the site's own heading face), near-black ground, cream ink, Atlas blue,
+   and the site's generative art as the only decoration. Variants (.v-*)
+   change the ground and the data colours, never the type. ── */
+.site {
+  --font: ui-sans-serif, system-ui, -apple-system, "SF Pro Display", "Helvetica Neue", sans-serif;
+  --bone: #17181b; --ink: #f4efe4; --ink-body: #d3ccbe; --graphite: #9da0a8; --faint: #80838b;
+  --hairline: rgba(242,237,226,.16); --grid: rgba(242,237,226,.08); --context: rgba(242,237,226,.26);
+  --accent: oklch(0.565 0.13 245); --accent-deep: oklch(0.64 0.13 245);
+  --bar: #f4efe4; --hl: oklch(0.64 0.13 245); --hero: #f4efe4;
+  --d1: oklch(0.64 0.13 245); --d2: #22d3ee; --d3: #f4efe4;
+  font-family: var(--font);
+}
+.site > * { position: relative; z-index: 1; }
+.site > canvas.bg { position: absolute; inset: 0; z-index: 0; width: 100%; height: 100%; }
+.site .title { font-family: var(--font); font-weight: 800; letter-spacing: -0.022em; line-height: 1.0; font-stretch: normal; }
+.site.f-ig .title { font-size: 92px; }
+.site.f-x .title { font-size: 76px; max-width: 1360px; }
+.site .sub { font-family: var(--font); color: var(--ink-body); }
+.site.f-ig .sub { font-size: 30px; }
+.site .kicker { color: var(--accent-deep); font-weight: 600; font-size: 22px; background: none; padding: 0; }
+.site .mast { font-family: var(--font); }
+.site .mast .series { display: none; }
+.site .foot { font-family: var(--font); border-top-color: var(--hairline); }
+.site .foot .site-url { display: none; }
+.site .chart text, .site .prose { font-family: var(--font); }
+.site .halo { stroke: var(--bone); }
+
+/* A: field. The homepage hero, violet into cyan. */
+.v-field { --hl: #22d3ee; --accent: #22d3ee; --d1: #7c5cff; --d2: #22d3ee; --d3: #f4efe4; --hero: #22d3ee; }
+/* B: interference. The quantum interference rings, Atlas blue. */
+.v-interf { --hl: oklch(0.64 0.13 245); --d1: oklch(0.64 0.13 245); --d2: #8fc3ee; --d3: #f4efe4; }
+/* C: band. The footer's brand blue as the ground. */
+.v-band {
+  --bone: oklch(0.42 0.13 245); --ink-body: rgba(244,239,228,.88); --graphite: rgba(244,239,228,.72); --faint: rgba(244,239,228,.6);
+  --hairline: rgba(244,239,228,.26); --grid: rgba(244,239,228,.12); --context: rgba(244,239,228,.34);
+  --accent: #ffd166; --accent-deep: #ffd166; --hl: #ffd166; --hero: #ffd166;
+  --d1: #ffd166; --d2: #22d3ee; --d3: #f4efe4;
+}
+/* D: ember. The hero's ember into gold palette. */
+.v-ember { --accent: #ffb14d; --accent-deep: #ffb14d; --hl: #ff6a3d; --hero: #ffd166; --d1: #ffd166; --d2: #ff6a3d; --d3: #e05cff; }

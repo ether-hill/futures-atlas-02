@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Q-Day</title>
+<link rel="stylesheet" href="../../templates/frame.css">
+<script src="../../vendor/d3.min.js"></script>
+</head>
+<body>
+<script type="module">
+import { mountPiece, span } from "../../templates/frame.js";
+import { VARIANTS } from "../../templates/variants.js";
+import { moire } from "../../templates/site-art.js";
+
+const d3 = window.d3;
+const HORIZONS = [5, 10, 15, 20, 30];
+const LIKELY = [">70%", ">95%", ">99%"]; // the report's "likely", "very likely", "extremely likely"
+const SOURCE = "Source: Quantum Threat Timeline Report 2025, Global Risk Institute. Expert survey, n=26.";
+
+function bars({ el, width, height, format, data }) {
+  const ig = format === "ig";
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+  const m = { top: ig ? 110 : 90, bottom: ig ? 120 : 96 };
+  const x = d3.scaleBand().domain(HORIZONS).range([0, width]).padding(ig ? 0.28 : 0.4);
+  const y = d3.scaleLinear().domain([0, 1]).range([height - m.bottom, m.top]);
+  const rows = data.likely;
+
+  // half-way reference
+  svg.append("line").attr("x1", 0).attr("x2", width).attr("y1", y(0.5)).attr("y2", y(0.5)).attr("stroke", "var(--hairline)").attr("stroke-width", 1.5);
+  svg.append("text").attr("class", "lbl-sub").attr("x", 0).attr("y", y(0.5) - 12).style("font-size", "22px").text("half of experts");
+
+  const parts = rows.map((d) => {
+    const g = svg.append("g").attr("transform", `translate(${x(d.h)},0)`);
+    g.append("rect").attr("y", y(1)).attr("height", y(0) - y(1)).attr("width", x.bandwidth()).attr("fill", "var(--grid)");
+    // first horizon where most experts say likely gets the one highlight
+    const first = rows.find((r) => r.share > 0.5) === d;
+    const bar = g.append("rect").attr("width", x.bandwidth()).attr("fill", first ? "var(--hl)" : "var(--bar)");
+    const pct = g.append("text").attr("x", x.bandwidth() / 2).attr("text-anchor", "middle")
+      .style("font-size", ig ? "64px" : "54px").style("font-weight", 800).style("font-stretch", "88%").style("letter-spacing", "-0.03em").style("fill", "var(--ink)");
+    const of = g.append("text").attr("class", "lbl-sub").attr("x", x.bandwidth() / 2).attr("text-anchor", "middle").style("font-size", "22px")
+      .text(`${d.n} of ${d.total}`);
+    g.append("text").attr("x", x.bandwidth() / 2).attr("y", y(0) + (ig ? 52 : 44)).attr("text-anchor", "middle")
+      .style("font-size", ig ? "36px" : "32px").style("font-weight", 700).style("fill", "var(--ink)").text(`${d.h} years`);
+    g.append("text").attr("class", "lbl-sub").attr("x", x.bandwidth() / 2).attr("y", y(0) + (ig ? 86 : 74)).attr("text-anchor", "middle").style("font-size", "22px")
+      .text(`around ${2025 + d.h}`);
+    return { d, bar, pct, of };
+  });
+
+  return {
+    duration: 0.4 + rows.length * 0.45 + 1.2,
+    seek(t) {
+      parts.forEach(({ d, bar, pct, of }, i) => {
+        const p = span(t, 0.4 + i * 0.45, 1.4 + i * 0.45);
+        const v = d.share * p;
+        bar.attr("y", y(v)).attr("height", y(0) - y(v));
+        pct.attr("y", y(v) - (ig ? 46 : 40)).text(`${Math.round(v * 100)}%`).attr("opacity", Math.min(1, p * 3));
+        of.attr("y", y(v) - (ig ? 14 : 12)).attr("opacity", span(t, 1.2 + i * 0.45, 1.6 + i * 0.45));
+      });
+    },
+  };
+}
+
+mountPiece({
+  slug: "q-day",
+  title: "Q-Day",
+  series: "The quantum landscape",
+  variants: VARIANTS,
+  variant: "field",
+  // this piece's own background: a port of /generatives "moire"
+  source: SOURCE,
+  async load() {
+    const rows = await d3.csv("../../data/q-day/clean.csv", (r) => ({ edition: +r.edition, horizon: +r.horizon_years, bucket: r.bucket, n: +r.n_experts, total: +r.n_respondents }));
+    const likely = HORIZONS.map((h) => {
+      const rs = rows.filter((r) => r.edition === 2025 && r.horizon === h);
+      const n = d3.sum(rs.filter((r) => LIKELY.includes(r.bucket)), (r) => r.n);
+      return { h, n, total: rs[0].total, share: n / rs[0].total };
+    });
+    // the bars and the caption quote these; fail loudly if the data moves
+    if (likely.map((d) => d.n).join() !== "1,6,15,18,22" || likely.some((d) => d.total !== 26)) throw new Error(`copy out of date: ${likely.map((d) => d.n)}`);
+    return { likely };
+  },
+  slides: [
+    {
+      id: "hook", formats: ["ig", "x"],
+      kicker: "Expert survey",
+      title: "When could quantum computers break encryption?",
+      sub: "Share of 26 experts who say it's likely. By 2040, most do.",
+      alt: "Bar chart. Share of 26 quantum experts who think a quantum computer that can break RSA-2048 encryption in a day is likely: within 5 years 4%, 10 years 23%, 15 years 58%, 20 years 69%, 30 years 85%.",
+      draw: bars,
+      bg: (ctx, W, H, t, f) => moire(ctx, W, H, t, f === "ig" ? { corner: { cx: 1, cy: 0.02, r: 0.5 }, lines: 110, alpha: 0.9 } : { corner: { cx: 1, cy: 0.02, r: 0.42 }, lines: 120, alpha: 0.9 }),
+    },
+    {
+      id: "sources",
+      title: "How to read this",
+      html: `
+        <h3>The question</h3>
+        <p>"How likely is a quantum computer able to factorize a 2048-bit number in less than 24 hours within the next 5, 10, 15, 20 and 30 years?" That's what it takes to break RSA-2048, a common type of encryption.</p>
+        <h3>What "likely" means</h3>
+        <p>Experts picked from seven answers. "Likely" here counts anyone who said 70% chance or more. Years are counted from the 2025 survey.</p>
+        <h3>Who answered</h3>
+        <p>26 experts invited by the authors, not a random sample. The publisher, evolutionQ, sells quantum-safe security products.</p>
+        <p class="ref">Mosca, M. and Piani, M. Quantum Threat Timeline Report 2025. evolutionQ / Global Risk Institute, March 2026. Accessed 5 Oct 2026.</p>`,
+    },
+  ],
+});
+</script>
+</body>
+</html>
