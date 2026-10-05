@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/Container";
+import { FiguresChart } from "@/components/FiguresChart";
 
 const TITLE = "Futures in Figures. Futures Atlas";
 const DESC =
@@ -13,9 +14,10 @@ export const metadata: Metadata = {
 };
 
 /**
- * Futures in Figures: a series of social charts. The charts themselves are
- * built in /dataviz (data, processing scripts, method notes, render tools);
- * this page only shows the finished posts. Media in public/futures-in-figures/
+ * Futures in Figures. The charts are built in /dataviz (data, processing
+ * scripts, method notes, render tools). This page shows each chart live and
+ * full width (FiguresChart, synced by scripts/sync-futures-in-figures.mjs);
+ * the social posts are cut from the same charts and offered as downloads. Media in public/futures-in-figures/
  * is exported from there with `node video.mjs <slug> hook --variant field`
  * (a seamless loop: build, 4s hold to read, rewind) and renamed portrait /
  * landscape,
@@ -68,7 +70,7 @@ export default function FuturesInFiguresPage() {
           <p className="text-[13px] font-medium text-accent-deep">Visuals</p>
           <h1 className="fa-t-display-l mt-4 max-w-[14ch]">Futures in Figures</h1>
           <p className="fa-t-lead mt-7 max-w-[56ch]">
-            Short charts about quantum computing and AI, made to be shared. Each one answers one question with real data.
+            Charts about quantum computing and AI. Each one answers one question with real data, and comes as a post you can share.
           </p>
           <p className="fa-t-body mt-5 max-w-[60ch]">
             Every number comes from the original source: a peer-reviewed paper, official statistics or a research
@@ -82,36 +84,32 @@ export default function FuturesInFiguresPage() {
         <Container>
           <ol className="grid gap-[var(--space-gap-l)]">
             {FIGURES.map((f, i) => (
-              <li
-                key={f.slug}
-                className="grid items-start gap-8 border-t border-hairline pt-10 min-[900px]:grid-cols-[minmax(0,420px)_1fr] min-[900px]:gap-14"
-              >
-                <video
-                  className="block w-full border border-hairline"
-                  src={`/futures-in-figures/${f.slug}-portrait.mp4`}
-                  poster={`/futures-in-figures/${f.slug}.jpg`}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  aria-label={f.question}
-                />
-                <div className="max-w-[58ch]">
-                  <p className="text-[13px] font-medium text-muted">{String(i + 1).padStart(2, "0")}</p>
-                  <h2 className="fa-t-display-s mt-3">{f.question}</h2>
-                  <p className="fa-t-body mt-5">{f.answer}</p>
-                  <p className="fa-t-body mt-4 text-muted">
-                    <span className="font-medium text-[var(--text)]">Keep in mind: </span>
-                    {f.keepInMind}
-                  </p>
-                  <p className="fa-t-body mt-4 text-muted">
-                    Source:{" "}
-                    <a className="underline underline-offset-2 hover:text-[var(--text)]" href={f.source.href}>
-                      {f.source.label}
-                    </a>
-                  </p>
-                  <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
+              <li key={f.slug} className="border-t border-hairline pt-10">
+                <div className="grid gap-5 min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] min-[900px]:gap-14">
+                  <div>
+                    <p className="text-[13px] font-medium text-muted">{String(i + 1).padStart(2, "0")}</p>
+                    <h2 className="fa-t-display-s mt-3">{f.question}</h2>
+                  </div>
+                  <p className="fa-t-body max-w-[58ch] min-[900px]:pt-8">{f.answer}</p>
+                </div>
+                <div className="mt-8">
+                  <FiguresChart slug={f.slug} label={f.question} />
+                </div>
+                <div className="mt-6 grid gap-4 min-[900px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] min-[900px]:gap-14">
+                  <div className="fa-t-body text-muted">
+                    <p>
+                      <span className="font-medium text-[var(--text)]">Keep in mind: </span>
+                      {f.keepInMind}
+                    </p>
+                    <p className="mt-3">
+                      Source:{" "}
+                      <a className="underline underline-offset-2 hover:text-[var(--text)]" href={f.source.href}>
+                        {f.source.label}
+                      </a>
+                    </p>
+                  </div>
+                  <p className="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-[14px]">
+                    <span className="text-muted">Social posts:</span>
                     <a className="text-accent-deep underline underline-offset-4" href={`/futures-in-figures/${f.slug}-portrait.mp4`} download>
                       Portrait video
                     </a>
