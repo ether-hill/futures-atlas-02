@@ -29,6 +29,7 @@
     { name: "Dramaturge", path: "/dramaturge", draft: true },
     { name: "Shop", path: "/shelflife", draft: true },
     { name: "Quantum Interference Visuals", path: "/interference" },
+    { name: "Interactive Quantum Interference", path: "/interactive-quantum-interference", draft: true },
     { name: "Futures in Figures", path: "/futures-in-figures", draft: true },
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Throat singing and quantum physics", path: "/throat-singing-quantum", draft: true },

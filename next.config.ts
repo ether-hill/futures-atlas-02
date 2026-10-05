@@ -89,6 +89,8 @@ const nextConfig: NextConfig = {
         // …/solo is the same bundle with the global bar and footer left off, for
         // sharing the fields on their own. The page reads the path itself.
         // /interference/solo REDIRECTS now; see redirects() below.
+        // Interactive Quantum Interference — hand-authored static bundle (click or webcam pinch)
+        { source: "/interactive-quantum-interference", destination: "/interactive-quantum-interference/index.html" },
         { source: "/superposition", destination: "/superposition/index.html" },
         // Throat singing and quantum physics — hand-authored static bundle (article + the Overtone instrument)
         { source: "/throat-singing-quantum", destination: "/throat-singing-quantum/index.html" },

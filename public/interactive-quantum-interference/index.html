@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<base href="/interactive-quantum-interference/">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Interactive Quantum Interference. Futures Atlas</title>
+<meta name="description" content="Drop into the water yourself, by clicking or by pinching in front of your webcam, and watch the ripples add up and cancel out.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Futures Atlas">
+<meta property="og:title" content="Interactive Quantum Interference">
+<meta property="og:image" content="https://futures-atlas.com/projects/interactive-quantum-interference.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/svg+xml" href="/favicon-dark.svg" media="(prefers-color-scheme: dark)">
+<!-- the global bar; the pond is full screen, so no footer -->
+<script>document.documentElement.setAttribute("data-fa-no-footer", "");</script>
+<link rel="stylesheet" href="/atlas-nav.css" data-fa-nav-css>
+<script src="/atlas-nav.js" defer></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+/* Atlas tokens, the dark set from v01's style.css. Only what this page uses. */
+:root {
+  --bg: #211e18; --panel: #2b2722; --text: #f2ede2; --text-body: #d3ccbe;
+  --muted: #a69f91; --accent: oklch(0.565 0.13 245);
+  --hairline: color-mix(in srgb, var(--text) 16%, transparent);
+  --font: 'Archivo', system-ui, -apple-system, sans-serif;
+  --gutter: 16px; --radius: 2px;
+  --ease: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --swatch: #78d6c9;
+  color-scheme: dark;
+}
+@media (min-width: 680px) { :root { --gutter: 28px; } }
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background: var(--bg); color: var(--text); font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  /* the pond is the page: no pinch-zoom, no pull-to-refresh, no text selection while dragging */
+  touch-action: none; user-select: none; -webkit-user-select: none;
+}
+
+/* everything sits below the global bar, whose height atlas-nav.css declares */
+#pond { position: fixed; inset: 0; top: var(--fa-nav-h, 64px); width: 100%; height: 100%; display: block; cursor: crosshair; }
+#marks, #cursors { position: fixed; inset: 0; pointer-events: none; }
+#marks { top: var(--fa-nav-h, 64px); }
+
+.src-mark {
+  position: absolute; left: -7px; top: -7px; width: 14px; height: 14px;
+  border: 1.5px solid color-mix(in srgb, var(--swatch) 80%, white); border-radius: 50%;
+  transition: opacity 0.2s;
+}
+.hand-cursor {
+  position: absolute; left: 0; top: 0; width: 44px; height: 44px; margin: -22px 0 0 -22px;
+  border: 1.5px solid rgba(255,255,255,0.85); border-radius: 50%;
+  transition: background 0.12s, border-color 0.12s;
+}
+.hand-cursor::after {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; margin: -2px 0 0 -2px;
+  border-radius: 50%; background: #fff;
+}
+.hand-cursor.is-down { background: rgba(255,255,255,0.22); border-color: #fff; }
+
+/* ── words ── */
+.head {
+  position: fixed; left: var(--gutter); top: calc(var(--fa-nav-h, 64px) + var(--gutter)); right: var(--gutter);
+  pointer-events: none; max-width: 34em;
+}
+.head h1 {
+  margin: 0; font-size: clamp(22px, 2.6vw, 32px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;
+}
+.head > p {
+  margin: 8px 0 0; font-size: 15px; line-height: 1.5; color: var(--text-body);
+  text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+}
+
+/* ── explainer ── */
+.head .about-toggle, .head .about { pointer-events: auto; }
+.about-toggle {
+  margin-top: 10px; font: 500 13px/1 var(--font); color: var(--text-body);
+  background: color-mix(in srgb, var(--bg) 70%, transparent); border: 1px solid var(--hairline);
+  border-radius: var(--radius); padding: 7px 10px; cursor: pointer;
+}
+.about-toggle:hover { color: var(--text); }
+.about {
+  margin-top: 6px; max-width: 21em; padding: 10px 12px;
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--hairline); border-radius: var(--radius);
+}
+.about[hidden] { display: none; }
+.about p { margin: 0 0 6px; font-size: 14px; line-height: 1.45; color: var(--text-body); }
+.about p:last-child { margin-bottom: 0; color: var(--text); }
+
+/* ── controls ── */
+.bar {
+  position: fixed; left: var(--gutter); bottom: max(var(--gutter), env(safe-area-inset-bottom));
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+  max-width: calc(100% - 2 * var(--gutter));
+}
+.group {
+  display: flex; align-items: center; gap: 2px; padding: 3px;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--hairline); border-radius: var(--radius);
+}
+.bar button {
+  font: 500 14px/1 var(--font); color: var(--text-body);
+  background: transparent; border: 0; border-radius: var(--radius);
+  padding: 9px 12px; cursor: pointer; white-space: nowrap;
+  transition: background 0.15s var(--ease), color 0.15s var(--ease);
+}
+.bar button:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+.bar button[aria-pressed="true"] { color: var(--bg); background: var(--text); }
+.bar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+.sw { width: 30px; height: 30px; padding: 0 !important; display: grid; place-items: center; }
+.sw span { width: 16px; height: 16px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); }
+.bar .sw[aria-pressed="true"] { background: rgba(255,255,255,0.12); }
+.bar .sw[aria-pressed="true"] span { box-shadow: 0 0 0 2px var(--text); }
+
+/* ── camera ── */
+.cam {
+  position: fixed; right: var(--gutter); bottom: max(var(--gutter), env(safe-area-inset-bottom));
+  width: clamp(140px, 18vw, 240px); aspect-ratio: 4 / 3;
+  border: 1px solid var(--hairline); border-radius: var(--radius); overflow: hidden;
+  background: #000; display: none;
+}
+.cam.is-on { display: block; }
+.cam video, .cam canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cam video { object-fit: fill; transform: scaleX(-1); opacity: 0.75; }
+.cam-off {
+  position: absolute; top: 6px; right: 6px; font: 500 13px/1 var(--font);
+  color: var(--bg); background: var(--text); border: 0; border-radius: var(--radius);
+  padding: 7px 10px; cursor: pointer;
+}
+.cam .status {
+  position: absolute; left: 8px; right: 8px; bottom: 6px; font-size: 12px; line-height: 1.3;
+  color: #fff; text-shadow: 0 1px 4px #000;
+}
+@media (max-width: 679px) {
+  .cam { bottom: auto; top: calc(var(--fa-nav-h, 64px) + var(--gutter)); width: 140px; }
+  .head { right: calc(140px + 2 * var(--gutter)); }
+}
+</style>
+</head>
+<body>
+
+<canvas id="pond" aria-label="A pool of water. Click or tap to drop into it."></canvas>
+<div id="marks"></div>
+<div id="cursors"></div>
+
+<header class="head">
+  <h1>Interactive Quantum Interference</h1>
+  <p id="hint">Tap the water to drop into it. Hold to let it drip.</p>
+  <button type="button" class="about-toggle" id="aboutToggle" aria-expanded="true" aria-controls="about">Hide explainer</button>
+  <section class="about" id="about" aria-label="What this is">
+    <p>When ripples cross, they add up. High meets high and the water rises. High meets low and it goes flat. That is interference, and light and electrons do it too.</p>
+    <p>Try two steady sources and find the flat lines.</p>
+  </section>
+</header>
+
+<div class="bar">
+  <div class="group" role="group" aria-label="What you drop">
+    <button type="button" data-mode="drop" aria-pressed="true">Drops</button>
+    <button type="button" data-mode="source" aria-pressed="false">Steady sources</button>
+  </div>
+  <div class="group" role="group" aria-label="Colour" id="palettes"></div>
+  <div class="group" role="group" aria-label="How you drop">
+    <button type="button" data-input="click" aria-pressed="true">Click</button>
+    <button type="button" data-input="hands" aria-pressed="false">Hands (camera)</button>
+  </div>
+  <div class="group">
+    <button type="button" id="clear">Clear</button>
+  </div>
+</div>
+
+<div class="cam" id="cam">
+  <video id="video" playsinline muted></video>
+  <canvas id="preview"></canvas>
+  <div class="status" id="status"></div>
+  <button type="button" class="cam-off" id="camOff">Back to clicking</button>
+</div>
+
+<script src="pond.js"></script>
+<script type="module">
+import { startHands } from "./hands.js";
+
+const pond = document.getElementById("pond");
+POND.init(pond);
+
+/* ── mode ── */
+const HINTS = {
+  drop: "Tap the water to drop into it. Hold to let it drip.",
+  source: "Place two steady sources. The still lanes between them never move. Tap a source to lift it out."
+};
+let mode = "drop";
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
+  if (!stopHands && !starting) document.getElementById("hint").textContent = HINTS[m];
+}
+document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+/* ── palettes ── */
+const pals = document.getElementById("palettes");
+POND.PALETTES.forEach((p, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.className = "sw"; b.title = p.name; b.setAttribute("aria-label", p.name);
+  b.setAttribute("aria-pressed", String(i === 0));
+  b.innerHTML = `<span style="background:${p.css}"></span>`;
+  b.addEventListener("click", () => {
+    POND.setPalette(i);
+    document.documentElement.style.setProperty("--swatch", p.css);
+    pals.querySelectorAll(".sw").forEach((s, j) => s.setAttribute("aria-pressed", String(j === i)));
+  });
+  pals.appendChild(b);
+});
+
+document.getElementById("clear").addEventListener("click", () => POND.clear());
+
+/* ── presses, from a pointer or a pinching hand ──
+   A press drops once. Held still, it drips on a steady beat; dragged, it
+   leaves a trail. Sources ignore the hold: one press, one source. */
+const DRIP = 0.45, TRAIL_PX = 44, TRAIL_GAP = 0.09;
+const held = new Map();
+const t = () => performance.now() / 1000;
+
+function press(id, x, y) {
+  if (mode === "source") { POND.toggleSource(x, y); return; }
+  POND.drop(x, y);
+  held.set(id, { x, y, lx: x, ly: y, lt: t() });
+}
+function move(id, x, y) {
+  const h = held.get(id);
+  if (!h) return;
+  h.x = x; h.y = y;
+  if (Math.hypot(x - h.lx, y - h.ly) > TRAIL_PX && t() - h.lt > TRAIL_GAP) drip(h);
+}
+function release(id) { held.delete(id); }
+function drip(h) { POND.drop(h.x, h.y, 0.8); h.lx = h.x; h.ly = h.y; h.lt = t(); }
+(function tick() {
+  requestAnimationFrame(tick);
+  for (const h of held.values()) if (t() - h.lt > DRIP) drip(h);
+})();
+
+pond.addEventListener("pointerdown", (e) => {
+  pond.setPointerCapture(e.pointerId);
+  press("p" + e.pointerId, e.clientX, e.clientY);
+});
+pond.addEventListener("pointermove", (e) => move("p" + e.pointerId, e.clientX, e.clientY));
+["pointerup", "pointercancel"].forEach((ev) => pond.addEventListener(ev, (e) => release("p" + e.pointerId)));
+
+/* ── hands ── */
+const cam = document.getElementById("cam");
+const status = document.getElementById("status");
+const video = document.getElementById("video");
+const cursorLayer = document.getElementById("cursors");
+const cursors = {
+  add() { const el = document.createElement("div"); el.className = "hand-cursor"; cursorLayer.appendChild(el); return el; },
+  place(el, x, y, close, down) {
+    const s = 1 - 0.45 * close;
+    el.style.transform = `translate(${x}px,${y}px) scale(${s})`;
+    el.classList.toggle("is-down", down);
+  }
+};
+video.addEventListener("loadedmetadata", () => {
+  if (video.videoWidth) cam.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
+});
+
+const INPUT_HINT = "Pinch your thumb and first finger together to drop. To go back to the mouse, press Click.";
+function showInput(which) {
+  document.querySelectorAll("[data-input]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.input === which)));
+  cam.classList.toggle("is-on", which === "hands");
+  document.getElementById("hint").textContent = which === "hands" ? INPUT_HINT : HINTS[mode];
+}
+
+let stopHands = null, starting = false;
+function useClick() {
+  if (stopHands) { stopHands(); stopHands = null; }
+  showInput("click");
+}
+async function useHands() {
+  if (starting || stopHands) return;
+  starting = true;
+  showInput("hands");
+  try {
+    stopHands = await startHands({
+      video, preview: document.getElementById("preview"), cursors,
+      /* one pinch, one drop: no hold-to-drip, no trail */
+      onPress: (id, x, y) => { if (mode === "source") POND.toggleSource(x, y); else POND.drop(x, y); },
+      onRelease: () => {},
+      onStatus: (s) => { status.textContent = s; }
+    });
+  } catch (err) {
+    console.error(err);
+    status.textContent = err && err.name === "NotAllowedError"
+      ? "Camera blocked. Allow it in the address bar and try again."
+      : "Hand tracking could not start.";
+    setTimeout(() => { if (!stopHands) showInput("click"); }, 4000);
+  }
+  starting = false;
+}
+document.querySelectorAll("[data-input]").forEach((b) => b.addEventListener("click", () => {
+  if (b.dataset.input === "hands") useHands(); else useClick();
+}));
+document.getElementById("camOff").addEventListener("click", useClick);
+
+/* ── explainer, open on a first visit, remembered after ── */
+const about = document.getElementById("about"), aboutBtn = document.getElementById("aboutToggle");
+function setAbout(open) {
+  about.hidden = !open;
+  aboutBtn.textContent = open ? "Hide explainer" : "What is this?";
+  aboutBtn.setAttribute("aria-expanded", String(open));
+  try { localStorage.setItem("iv2-about", open ? "1" : "0"); } catch (e) {}
+}
+aboutBtn.addEventListener("click", () => setAbout(about.hidden));
+try { if (localStorage.getItem("iv2-about") === "0") setAbout(false); } catch (e) {}
+
+/* ── keys ── */
+addEventListener("keydown", (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === "d") setMode("drop");
+  else if (k === "s") setMode("source");
+  else if (k === "c") POND.clear();
+  else if (k === "h") { if (stopHands) useClick(); else useHands(); }
+});
+
+/* an empty pond reads as a black screen, so it opens with one drop in it */
+setTimeout(() => POND.drop(innerWidth * 0.5, innerHeight * 0.52), 250);
+</script>
+</body>
+</html>

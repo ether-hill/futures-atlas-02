@@ -263,6 +263,22 @@ export const projects: Project[] = [
     cta: "See the charts",
   },
   {
+    id: "interactive-quantum-interference",
+    title: "Interactive Quantum Interference",
+    tagline:
+      "Drop into the water yourself, with a click or a pinch in front of your webcam, and watch ripples add up and cancel out.",
+    year: "2026",
+    date: "2026-10-06",
+    field: "Waves & optics",
+    topics: ["Quantum"],
+    kind: "visuals",
+    status: "in-progress",
+    visibility: "draft",
+    path: "/interactive-quantum-interference",
+    image: "/projects/interactive-quantum-interference.jpg",
+    cta: "Drop into the water",
+  },
+  {
     id: "interference",
     title: "Quantum Interference Visuals",
     tagline:
