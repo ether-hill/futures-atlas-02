@@ -13,7 +13,7 @@ import { VARIANTS } from "../../templates/variants.js";
 import { latticeWaves } from "../../templates/site-art.js";
 
 const d3 = window.d3;
-const SOURCE = "*Company figure, not peer-reviewed. †Stricter test: about 20% lower on the others' basis. Sources: 10 peer-reviewed papers, 5 company documents. Accessed 5 Oct 2026.";
+const SOURCE = "*Company figure, not peer-reviewed. †Stricter test: about 20% lower on the others' basis. Sources: 8 peer-reviewed papers, 5 company documents. Accessed 5 Oct 2026.";
 
 const NAME = {
   "google-sycamore-2019": "Google Sycamore†",
@@ -126,9 +126,11 @@ mountPiece({
     }));
     const missing = devices.filter((d) => !NAME[d.id]);
     if (missing.length) throw new Error(`no display name for ${missing.map((d) => d.id)}`);
-    const peer = new Set(all.filter((r) => r.source_type === "peer_reviewed").map((r) => r.doi)).size;
-    const comp = new Set(all.filter((r) => r.source_type === "company_claim").map((r) => r.url)).size;
-    if (peer !== 10 || comp !== 5) throw new Error(`footer source counts out of date: ${peer} peer-reviewed, ${comp} company`);
+    // count the sources of the rows the chart draws, not everything consulted
+    const drawn = all.filter((r) => devices.some((d) => d.id === r.id));
+    const peer = new Set(drawn.filter((r) => r.source_type === "peer_reviewed").map((r) => r.doi)).size;
+    const comp = new Set(drawn.filter((r) => r.source_type === "company_claim").map((r) => r.url)).size;
+    if (peer !== 8 || comp !== 5) throw new Error(`footer source counts out of date: ${peer} peer-reviewed, ${comp} company`);
     // "the two biggest machines here" must both be in the no-number box
     const big2 = [...devices].sort((a, b) => b.qubits - a.qubits).slice(0, 2);
     if (big2.some((d) => d.err != null)) throw new Error("box copy out of date: a top-2 machine now has an error rate");

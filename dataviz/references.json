@@ -1,0 +1,375 @@
+{
+  "accessed": "5 October 2026",
+  "q-day": [
+    {
+      "authors": "Mosca, M., & Piani, M.",
+      "year": 2026,
+      "title": "Quantum Threat Timeline Report 2025",
+      "venue": "Global Risk Institute in Financial Services and evolutionQ Inc.",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://globalriskinstitute.org/publication/quantum-threat-timeline-report-2025b/",
+      "pdf": "https://globalriskinstitute.org/mp-files/pdf-quantum-threat-timeline-report-2025.pdf",
+      "type": "Expert survey report",
+      "plotted": true,
+      "uses": [
+        {
+          "what": "Answers of the 26 experts at each time horizon (the bars)",
+          "where": "Appendix A.4, p. 70"
+        },
+        {
+          "what": "The question as asked",
+          "where": "Appendix A.3, p. 68"
+        },
+        {
+          "what": "Number of respondents, 26",
+          "where": "p. 19"
+        },
+        {
+          "what": "The publisher's declaration of potential conflict of interest",
+          "where": "p. 3"
+        }
+      ]
+    }
+  ],
+  "qubits-vs-quality": [
+    {
+      "authors": "Arute, F., et al.",
+      "year": 2019,
+      "title": "Quantum supremacy using a programmable superconducting processor",
+      "venue": "Nature",
+      "volume": "574",
+      "pages": "505-510",
+      "doi": "10.1038/s41586-019-1666-5",
+      "url": "https://doi.org/10.1038/s41586-019-1666-5",
+      "type": "Peer-reviewed article",
+      "uses": [
+        {
+          "what": "Google Sycamore: 53 qubits, 6.2 two-qubit errors per 1,000",
+          "where": "p. 507 text (\"we find an average e2 of 0.62%\") and Fig. 2a table (Simultaneous, Two-qubit e2)"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Wu, Y., et al.",
+      "year": 2021,
+      "title": "Strong Quantum Computational Advantage Using a Superconducting Quantum Processor",
+      "venue": "Physical Review Letters",
+      "volume": "127",
+      "pages": "180501",
+      "doi": "10.1103/PhysRevLett.127.180501",
+      "url": "https://doi.org/10.1103/PhysRevLett.127.180501",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2106.14734",
+      "uses": [
+        {
+          "what": "USTC Zuchongzhi: 56 qubits, 5.9 two-qubit errors per 1,000",
+          "where": "arXiv p. 2 (56 of 66 selected); p. 3, Fig. 2(c) caption (\"of the 56 qubits and the 94 couplers\") and text (\"Average two-qubit gate pauli error e2 of our processor is 0.59% when all gates are applied simultaneously\")"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "IBM",
+      "year": "2022",
+      "title": "IBM Unveils 400 Qubit-Plus Quantum Processor and Next-Generation IBM Quantum System Two",
+      "venue": "IBM Newsroom",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://newsroom.ibm.com/2022-11-09-IBM-Unveils-400-Qubit-Plus-Quantum-Processor-and-Next-Generation-IBM-Quantum-System-Two",
+      "type": "Company document",
+      "uses": [
+        {
+          "what": "IBM Osprey: 433 qubits, no average two-qubit error given",
+          "where": "Press release body"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Evered, S. J., et al.",
+      "year": 2023,
+      "title": "High-fidelity parallel entangling gates on a neutral-atom quantum computer",
+      "venue": "Nature",
+      "volume": "622",
+      "pages": "268-272",
+      "doi": "10.1038/s41586-023-06481-y",
+      "url": "https://doi.org/10.1038/s41586-023-06481-y",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2304.05420",
+      "uses": [
+        {
+          "what": "Harvard/MIT atom array: 60 qubits, 5.2 two-qubit errors per 1,000",
+          "where": "arXiv Fig. 3d caption (\"we measure a comparable fidelity of 99.48(2)% for the time-optimal gate implemented on 60 qubits in parallel\")"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Moses, S. A., et al.",
+      "year": 2023,
+      "title": "A Race-Track Trapped-Ion Quantum Processor",
+      "venue": "Physical Review X",
+      "volume": "13",
+      "pages": "041052",
+      "doi": "10.1103/PhysRevX.13.041052",
+      "url": "https://doi.org/10.1103/PhysRevX.13.041052",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2305.03828",
+      "uses": [
+        {
+          "what": "Quantinuum H2 (2023): 32 qubits, 1.8 two-qubit errors per 1,000",
+          "where": "Abstract (\"an average two-qubit gate infidelity of 1.84(5)×10−3\")"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "IBM",
+      "year": "2023",
+      "title": "IBM Quantum roadmap 2033",
+      "venue": "IBM Quantum blog",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://www.ibm.com/quantum/blog/quantum-roadmap-2033",
+      "type": "Company document",
+      "uses": [
+        {
+          "what": "IBM Condor: 1,121 qubits, no average two-qubit error given",
+          "where": "Section 'Breaking the 1,000-qubit barrier with Condor'"
+        },
+        {
+          "what": "IBM Heron r1: 133 qubits, no average two-qubit error given",
+          "where": "Section 'Access to the highest performing quantum processor: Heron'"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Reichardt, B. W., et al.",
+      "year": "2024",
+      "title": "Fault-tolerant quantum computation with a neutral atom processor",
+      "venue": "arXiv preprint arXiv:2411.11822 (version 3)",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2411.11822",
+      "type": "Company preprint, not peer-reviewed",
+      "uses": [
+        {
+          "what": "Atom Computing/Microsoft: 256 qubits, 5.6 two-qubit errors per 1,000",
+          "where": "p. 3 table (\"2Q Static IRB 0.56(15)%\", loss + leakage 0.27(6)%); abstract (256 qubits, 24 and 28 logical)"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Google Quantum AI",
+      "year": "2024",
+      "title": "Willow Spec Sheet",
+      "venue": "Product specification sheet",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://quantumai.google/static/site-assets/downloads/willow-spec-sheet.pdf",
+      "type": "Company document",
+      "uses": [
+        {
+          "what": "Google Willow: 105 qubits, 3.3 two-qubit errors per 1,000",
+          "where": "p. 1, Quantum Error Correction (Chip 1), \"Two-qubit gate error (mean, simultaneous) 0.33% ± 0.18% (CZ)\""
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Manetsch, H. J., et al.",
+      "year": 2025,
+      "title": "A tweezer array with 6,100 highly coherent atomic qubits",
+      "venue": "Nature",
+      "volume": "647",
+      "pages": "60-67",
+      "doi": "10.1038/s41586-025-09641-4",
+      "url": "https://doi.org/10.1038/s41586-025-09641-4",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2403.12021",
+      "uses": [
+        {
+          "what": "Caltech atom array: 6,100 qubits, no average two-qubit error given",
+          "where": "Title and abstract"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "DeCross, M., et al.",
+      "year": 2025,
+      "title": "Computational Power of Random Quantum Circuits in Arbitrary Geometries",
+      "venue": "Physical Review X",
+      "volume": "15",
+      "pages": "021052",
+      "doi": "10.1103/PhysRevX.15.021052",
+      "url": "https://doi.org/10.1103/PhysRevX.15.021052",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2406.02501",
+      "uses": [
+        {
+          "what": "Quantinuum H2 (2024): 56 qubits, 1.6 two-qubit errors per 1,000",
+          "where": "arXiv p. 3, Table I (eps2Q, 2Q RB, 15.7(5) ×10−4); abstract gives 99.843(5)% fidelity"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Gao, D., et al.",
+      "year": 2025,
+      "title": "Establishing a New Benchmark in Quantum Computational Advantage with 105-qubit Zuchongzhi 3.0 Processor",
+      "venue": "Physical Review Letters",
+      "volume": "134",
+      "pages": "090601",
+      "doi": "10.1103/PhysRevLett.134.090601",
+      "url": "https://doi.org/10.1103/PhysRevLett.134.090601",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2412.11924",
+      "uses": [
+        {
+          "what": "USTC Zuchongzhi 3.0: 83 qubits, 3.8 two-qubit errors per 1,000",
+          "where": "arXiv p. 3, Fig. 2 caption (\"selected 83 qubits\") and Fig. 2b (\"Average Pauli Error: 3.75‰\")"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "IBM",
+      "year": "2025",
+      "title": "Scaling for quantum advantage and beyond",
+      "venue": "IBM Quantum blog",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://www.ibm.com/quantum/blog/qdc-2025",
+      "type": "Company document",
+      "uses": [
+        {
+          "what": "IBM Heron r3: 156 qubits, no average two-qubit error given",
+          "where": "Paragraph on Heron r3; qubit count from IBM docs processor-types page"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Ransford, A., et al.",
+      "year": 2026,
+      "title": "A 98-qubit trapped-ion quantum computer with all-to-all connectivity",
+      "venue": "Nature",
+      "volume": "655",
+      "pages": "81-86",
+      "doi": "10.1038/s41586-026-10676-4",
+      "url": "https://doi.org/10.1038/s41586-026-10676-4",
+      "type": "Peer-reviewed article",
+      "uses": [
+        {
+          "what": "Quantinuum Helios: 98 qubits, 0.79 two-qubit errors per 1,000",
+          "where": "Abstract; p. 4 table (2Q gates, Average infidelity (2QRB) 7.9(2)); cycle benchmarking gives 8.1(2)"
+        }
+      ],
+      "plotted": true
+    },
+    {
+      "authors": "Bluvstein, D., et al.",
+      "year": 2024,
+      "title": "Logical quantum processor based on reconfigurable atom arrays",
+      "venue": "Nature",
+      "volume": "626",
+      "pages": "58-65",
+      "doi": "10.1038/s41586-023-06927-3",
+      "url": "https://doi.org/10.1038/s41586-023-06927-3",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2312.03982",
+      "uses": [
+        {
+          "what": "Harvard/MIT/QuEra logical processor: 280 qubits, no average two-qubit error given",
+          "where": "Abstract (280 physical, 48 logical); Methods p. 12 (\"two-qubit gate fidelities in the range F = 99.3% − 99.5%\")"
+        }
+      ],
+      "plotted": false
+    },
+    {
+      "authors": "Google Quantum AI and Collaborators",
+      "year": 2025,
+      "title": "Quantum error correction below the surface code threshold",
+      "venue": "Nature",
+      "volume": "638",
+      "pages": "920-926",
+      "doi": "10.1038/s41586-024-08449-y",
+      "url": "https://doi.org/10.1038/s41586-024-08449-y",
+      "type": "Peer-reviewed article",
+      "uses": [
+        {
+          "what": "Google Willow error-correction result: 101 qubits, no average two-qubit error given",
+          "where": "Abstract; Table S1 (neural network decoder, eps7 = (1.43 ± 0.03) × 10^-3)"
+        }
+      ],
+      "plotted": false
+    }
+  ],
+  "training-compute": [
+    {
+      "authors": "Epoch AI",
+      "year": 2026,
+      "title": "Data on Notable AI Models",
+      "venue": "Dataset, CC BY licence (records to 9 September 2026)",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://epoch.ai/data/notable-ai-models",
+      "type": "Dataset",
+      "plotted": true,
+      "uses": [
+        {
+          "what": "Training compute, date and confidence rating of every model (the dots)",
+          "where": "notable_ai_models.csv, columns Training compute (FLOP), Publication date, Confidence, Frontier model"
+        }
+      ]
+    },
+    {
+      "authors": "Epoch AI",
+      "year": 2026,
+      "title": "AI models documentation: Estimation",
+      "venue": "Epoch AI",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://epoch.ai/data/ai-models-documentation/estimation",
+      "type": "Dataset documentation",
+      "plotted": true,
+      "uses": [
+        {
+          "what": "The 90% ranges behind each streak: confident ±3x, likely ±10x, speculative ±31x",
+          "where": "section Estimating confidence"
+        }
+      ]
+    },
+    {
+      "authors": "Sevilla, J., & Roldán, E.",
+      "year": 2024,
+      "title": "Training compute of frontier AI models grows by 4-5x per year",
+      "venue": "Epoch AI",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://epoch.ai/blog/training-compute-of-frontier-ai-models-grows-by-4-5x-per-year",
+      "type": "Research report",
+      "plotted": true,
+      "uses": [
+        {
+          "what": "The 4.2x a year growth rate and its 90% range, 3.6x to 4.9x (frontier models, 2018 to May 2024)",
+          "where": "section Frontier model growth has slowed, and now aligns with overall trends"
+        }
+      ]
+    }
+  ]
+}

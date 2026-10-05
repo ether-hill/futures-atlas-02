@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { FiguresChart } from "@/components/FiguresChart";
+import { FiguresReferences } from "@/components/FiguresReferences";
 
 const TITLE = "Futures in Figures. Futures Atlas";
 const DESC =
@@ -29,7 +30,6 @@ type Figure = {
   question: string;
   answer: string;
   keepInMind: string;
-  source: { label: string; href: string };
 };
 
 const FIGURES: Figure[] = [
@@ -39,10 +39,6 @@ const FIGURES: Figure[] = [
     answer:
       "A Global Risk Institute survey asked 26 quantum experts how likely it is that a quantum computer could break RSA-2048, a common kind of encryption, within 5, 10, 15, 20 and 30 years. Only 1 put the odds at 70% or more within 5 years. Within 15 years, around 2040, 15 of the 26 did.",
     keepInMind: "These are expert opinions, not measurements: 26 invited experts, not a random sample. The survey's publisher, evolutionQ, sells quantum-safe security products.",
-    source: {
-      label: "Quantum Threat Timeline Report 2025, Global Risk Institute",
-      href: "https://globalriskinstitute.org/publication/quantum-threat-timeline-report-2025b/",
-    },
   },
   {
     slug: "qubits-vs-quality",
@@ -50,7 +46,6 @@ const FIGURES: Figure[] = [
     answer:
       "Launches usually lead with the number of qubits, but a qubit is only useful if its operations work. These are the published error rates for nine machines. Trapped-ion machines come out lowest. Several of the biggest machines came without an average two-qubit error rate in the documents we used, and one, Caltech's 6,100-atom array, ran no two-qubit operations at all.",
     keepInMind: "Labs test in different ways, so treat close numbers as a tie. Google's 2019 chip and USTC's use a stricter test; on the same basis as the rest they'd read about 20% lower. Two figures are company claims, not peer-reviewed.",
-    source: { label: "10 peer-reviewed papers and 5 company documents", href: "#method" },
   },
   {
     slug: "training-compute",
@@ -58,7 +53,6 @@ const FIGURES: Figure[] = [
     answer:
       "Training the biggest AI models took about four times more computing power each year between 2018 and May 2024 (Epoch AI's 90% range: 3.6x to 4.9x). The newest figures are the least certain, because labs often don't publish them.",
     keepInMind: "Computing power isn't the same as how capable a model is. Each glowing streak shows the 90% range of an estimate.",
-    source: { label: "Epoch AI, Data on Notable AI Models", href: "https://epoch.ai/data/notable-ai-models" },
   },
 ];
 
@@ -102,12 +96,7 @@ export default function FuturesInFiguresPage() {
                       <span className="font-medium text-[var(--text)]">Keep in mind: </span>
                       {f.keepInMind}
                     </p>
-                    <p className="mt-3">
-                      Source:{" "}
-                      <a className="underline underline-offset-2 hover:text-[var(--text)]" href={f.source.href}>
-                        {f.source.label}
-                      </a>
-                    </p>
+
                   </div>
                   <p className="flex flex-wrap items-baseline gap-x-6 gap-y-2 text-[14px]">
                     <span className="text-muted">Social posts:</span>
@@ -122,6 +111,7 @@ export default function FuturesInFiguresPage() {
                     </a>
                   </p>
                 </div>
+                <FiguresReferences slug={f.slug} />
               </li>
             ))}
           </ol>
@@ -135,7 +125,7 @@ export default function FuturesInFiguresPage() {
             <li>We start from the original data file or report, saved as we found it, and record where each number is in it.</li>
             <li>Where a number has to be copied out of a PDF, it&apos;s copied once into a transcription file with its page and a quote. A script does everything after that, so no number on a chart is typed in by hand.</li>
             <li>Each chart has a method note: the question, the sources, what we changed and what the chart doesn&apos;t show.</li>
-            <li>The qubit chart draws on 10 papers in Nature, Physical Review Letters and Physical Review X, plus spec sheets and announcements from Google, IBM and Atom Computing with Microsoft.</li>
+            <li>Under each chart is its full source list: what each source supports and where in it the number is, with the chart&apos;s method note and its data as a CSV.</li>
           </ul>
         </Container>
       </section>
