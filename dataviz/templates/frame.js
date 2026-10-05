@@ -1,3 +1,4 @@
+import { setLoop } from "./site-art.js";
 // Futures Atlas data visual series: shared frame + helpers.
 //
 // A piece is one HTML page that calls mountPiece({...}). The URL decides what
@@ -54,36 +55,51 @@ function buildFrame(piece, slide, format, theme, data) {
   return el;
 }
 
+// A post's timeline, as one seamless loop:
+//   build (the chart's own animation) -> HOLD (finished, time to read) ->
+//   REWIND (the build played backwards, eased) -> back to frame 0.
+// The chart's state at the end of REWIND is its state at t = 0, and every
+// background is periodic in the same total (setLoop), so the loop has no seam.
+export const HOLD = 4;
+export const REWIND = 1.2;
+
+function loopTime(build, t) {
+  if (t <= build) return t;
+  if (t <= build + HOLD) return build;
+  const p = Math.min(1, (t - build - HOLD) / REWIND);
+  return build * (1 - ease(p));
+}
+
 async function draw(piece, slide, format, el, data) {
   const chart = el.querySelector(".chart");
-  if (chart && slide.draw) {
-    // layout size, not on-screen size: the gallery scales frames with a transform
-    const width = chart.clientWidth, height = chart.clientHeight;
-    const anim = await slide.draw({ el: chart, width, height, format, data, d3: window.d3 });
-    const cv = el.querySelector("canvas.bg");
-    const bg = slide.bg === true ? piece.variants?.[VARIANT]?.bg : slide.bg;
-    if (!cv || !bg) return anim;
+  if (!chart || !slide.draw) return null;
+  // layout size, not on-screen size: the gallery scales frames with a transform
+  const width = chart.clientWidth, height = chart.clientHeight;
+  const anim = await slide.draw({ el: chart, width, height, format, data, d3: window.d3 });
+  const cv = el.querySelector("canvas.bg");
+  const bg = slide.bg === true ? piece.variants?.[VARIANT]?.bg : slide.bg;
+  const build = anim?.duration ?? 0;
+  const total = build ? build + HOLD + REWIND : 8;
+  let paint = () => {};
+  if (cv && bg) {
     // background art: drawn at 2x, re-drawn on every seek so it can move
     const [W, H] = SIZES[format];
     cv.width = W * 2; cv.height = H * 2;
     const ctx = cv.getContext("2d");
     ctx.scale(2, 2);
-    const paint = (t) => { ctx.clearRect(0, 0, W, H); bg(ctx, W, H, t, format, slide.id); };
-    const duration = anim?.duration ?? 0;
-    paint(duration);
-    return { duration: duration || 6, seek: (t) => { paint(t); anim?.seek(t); } };
+    paint = (t) => { setLoop(total); ctx.clearRect(0, 0, W, H); bg(ctx, W, H, t, format, slide.id); };
   }
+  if (!anim && !(cv && bg)) return null;
+  return {
+    duration: total, // a full loop
+    still: build, // the finished chart, for PNG exports
+    seek: (t) => { const u = ((t % total) + total) % total; paint(u); anim?.seek(loopTime(build, u)); },
+  };
 }
 
-const HOLD = 2.5; // seconds the finished chart stays up before a loop restarts
-
 function play(anim) {
-  const total = anim.duration + HOLD;
   const t0 = performance.now();
-  const tick = (now) => {
-    anim.seek(Math.min(((now - t0) / 1000) % total, anim.duration));
-    requestAnimationFrame(tick);
-  };
+  const tick = (now) => { anim.seek((now - t0) / 1000); requestAnimationFrame(tick); };
   requestAnimationFrame(tick);
 }
 
@@ -113,7 +129,7 @@ export async function mountPiece(piece) {
     window.__duration = anim?.duration ?? 0;
     window.__seek = (t) => anim?.seek(t);
     if (anim) {
-      if (q.get("capture")) anim.seek(anim.duration);
+      if (q.get("capture")) anim.seek(anim.still + HOLD / 2); // mid-hold: the finished chart
       else play(anim);
     }
     window.__ready = true;

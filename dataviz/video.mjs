@@ -20,7 +20,7 @@ const [slug, only] = process.argv.slice(2).filter((a, i, all) => a !== "--varian
 const variant = process.argv.includes("--variant") ? process.argv[process.argv.indexOf("--variant") + 1] : null;
 const vq = variant ? `&v=${variant}` : "";
 if (!slug) { console.error("usage: node video.mjs <slug> [slideId]"); process.exit(1); }
-const FPS = 30, HOLD = 3; // seconds the finished chart holds at the end
+const FPS = 30; // the page reports one full seamless loop as __duration (build + hold + rewind)
 const SIZES = { ig: [1080, 1350], x: [1600, 900] };
 
 const server = await startServer(0);
@@ -52,10 +52,10 @@ for (const { id, format } of slides) {
     "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-pix_fmt", "yuv420p",
     "-movflags", "+faststart", file,
   ], { stdio: ["pipe", "inherit", "inherit"] });
-  const frames = Math.ceil((duration + HOLD) * FPS);
+  const frames = Math.round(duration * FPS); // frame N would equal frame 0, so stop one short
   const frame = page.locator(".frame");
   for (let f = 0; f < frames; f++) {
-    const t = Math.min(f / FPS, duration);
+    const t = f / FPS;
     await page.evaluate((t) => window.__seek(t), t);
     const png = await frame.screenshot({ type: "png" });
     if (!enc.stdin.write(png)) await new Promise((r) => enc.stdin.once("drain", r));
@@ -63,7 +63,7 @@ for (const { id, format } of slides) {
   enc.stdin.end();
   await new Promise((r) => enc.on("close", r));
   await page.close();
-  console.log(`  ${format}-${id}.mp4  ${(duration + HOLD).toFixed(1)}s, ${frames} frames`);
+  console.log(`  ${format}-${id}  ${duration.toFixed(1)}s loop, ${frames} frames`);
 }
 
 await browser.close();

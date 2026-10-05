@@ -111,6 +111,7 @@ const html = `<div class="fa-foot__inner">
 <a class="fa-foot__home" href="/" aria-label="Futures Atlas home"><span class="fa-foot__mark" aria-hidden="true"><img src="/fa.svg" alt="" width="22" height="22"></span><span class="fa-foot__word">Futures Atlas</span></a>
 <p class="fa-foot__body">Speculative-design projects, open-source tools, apps and prototypes exploring compute: quantum systems, AI, and the power structures driving them.</p>
 <p class="fa-foot__body"><a class="fa-foot__a" href="https://github.com/ether-hill" target="_blank" rel="noopener">GitHub &#8599;</a> &middot; <a class="fa-foot__a" href="/developers">Licence</a> &middot; <a class="fa-foot__a" href="/contact">Contact</a></p>
+<p class="fa-foot__body"><a class="fa-foot__a" href="https://www.instagram.com/futuresatlas/" target="_blank" rel="noopener">Instagram &#8599;</a> &middot; <a class="fa-foot__a" href="https://x.com/thefuturesatlas" target="_blank" rel="noopener">X &#8599;</a></p>
 </div>
 <div class="fa-foot__col">
 <p class="fa-foot__h">Sections</p>

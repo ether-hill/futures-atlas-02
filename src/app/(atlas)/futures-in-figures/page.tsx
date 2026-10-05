@@ -16,7 +16,9 @@ export const metadata: Metadata = {
  * Futures in Figures: a series of social charts. The charts themselves are
  * built in /dataviz (data, processing scripts, method notes, render tools);
  * this page only shows the finished posts. Media in public/futures-in-figures/
- * is exported from there with `node video.mjs <slug> hook --variant field`,
+ * is exported from there with `node video.mjs <slug> hook --variant field`
+ * (a seamless loop: build, 4s hold to read, rewind) and renamed portrait /
+ * landscape,
  * never edited by hand. Every claim below is also on that piece's method note.
  */
 
@@ -86,7 +88,7 @@ export default function FuturesInFiguresPage() {
               >
                 <video
                   className="block w-full border border-hairline"
-                  src={`/futures-in-figures/${f.slug}-instagram.mp4`}
+                  src={`/futures-in-figures/${f.slug}-portrait.mp4`}
                   poster={`/futures-in-figures/${f.slug}.jpg`}
                   autoPlay
                   muted
@@ -110,11 +112,11 @@ export default function FuturesInFiguresPage() {
                     </a>
                   </p>
                   <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-[14px]">
-                    <a className="text-accent-deep underline underline-offset-4" href={`/futures-in-figures/${f.slug}-instagram.mp4`} download>
-                      Instagram video
+                    <a className="text-accent-deep underline underline-offset-4" href={`/futures-in-figures/${f.slug}-portrait.mp4`} download>
+                      Portrait video
                     </a>
-                    <a className="text-accent-deep underline underline-offset-4" href={`/futures-in-figures/${f.slug}-x.mp4`} download>
-                      X video
+                    <a className="text-accent-deep underline underline-offset-4" href={`/futures-in-figures/${f.slug}-landscape.mp4`} download>
+                      Landscape video
                     </a>
                     <a className="text-accent-deep underline underline-offset-4" href={`/futures-in-figures/${f.slug}.jpg`} download>
                       Still image

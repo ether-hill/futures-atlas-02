@@ -18,6 +18,16 @@ export const PALETTES = {
 
 const cache = new Map();
 
+/**
+ * The loop period, in seconds. frame.js sets it to the post's full length
+ * (build + hold + rewind) so every background is periodic in exactly that
+ * time and the video's last frame runs straight back into its first.
+ */
+export let LOOP = 20;
+export function setLoop(seconds) { LOOP = seconds; }
+/** nearest speed with a whole number of cycles per loop, so motion wraps */
+const wrap = (cyclesPerSecond) => Math.max(1, Math.round(cyclesPerSecond * LOOP)) / LOOP;
+
 function rng(seed) {
   let a = seed | 0;
   return () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -67,7 +77,7 @@ export function flowField(ctx, W, H, t, {
   ctx.lineWidth = width;
   for (const p of paths(W, H, { seed, n, steps, region })) {
     // a window of the path slides along it over time
-    const head = ((p.ph + t * speed) % 1) * (1 + p.len);
+    const head = ((p.ph + t * wrap(speed)) % 1) * (1 + p.len);
     const a0 = Math.max(0, Math.floor((head - p.len) * steps)), a1 = Math.min(steps, Math.floor(head * steps));
     for (let k = a0; k < a1; k++) {
       const [x0, y0] = p.pts[k], [x1, y1] = p.pts[k + 1];
@@ -89,7 +99,7 @@ export function rings(ctx, W, H, t, {
   const c = hex(color);
   const s = 3, w = Math.ceil(W / s), h = Math.ceil(H / s);
   const off = new OffscreenCanvas(w, h), o = off.getContext("2d"), img = o.createImageData(w, h);
-  const k = (2 * Math.PI) / wavelength, ph = t * speed * 2 * Math.PI;
+  const k = (2 * Math.PI) / wavelength, ph = t * wrap(speed) * 2 * Math.PI;
   const [ax, ay, bx, by] = [a[0] * W, a[1] * H, b[0] * W, b[1] * H];
   for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
     const x = i * s, y = j * s;
@@ -122,10 +132,10 @@ function cornered(ctx, W, H, { cx = 1, cy = 0, r = 0.75 }, draw) {
 const lerpHex = (a, b, t) => { const c = mix(hex(a), hex(b), t); return `rgb(${c[0]},${c[1]},${c[2]})`; };
 
 /** Moiré Lattice: two line families whose relative angle breathes. */
-export function moire(ctx, W, H, t, { palette = PALETTES.violetCyan, lines = 60, corner = {}, alpha = 0.55, loop = 18 } = {}) {
+export function moire(ctx, W, H, t, { palette = PALETTES.violetCyan, lines = 60, corner = {}, alpha = 0.55, loop = LOOP } = {}) {
   cornered(ctx, W, H, corner, (o) => {
     const diag = Math.hypot(W, H), step = diag / lines, ph = (t / loop) * 2 * Math.PI;
-    const drift = 0.1 * Math.sin(ph), base = 0.5 + ph * 0.15;
+    const drift = 0.1 * Math.sin(ph), base = 0.5 + 0.12 * Math.sin(ph); // both periodic in the loop
     o.globalCompositeOperation = "lighter";
     o.globalAlpha = alpha; o.lineWidth = 1.2;
     for (const [ang, c] of [[base - drift, 0.3], [base + drift, 0.75]]) {
@@ -139,12 +149,12 @@ export function moire(ctx, W, H, t, { palette = PALETTES.violetCyan, lines = 60,
 }
 
 /** Lattice Waves: a wave-displaced grid in perspective, drawn as wireframe. */
-export function latticeWaves(ctx, W, H, t, { palette = PALETTES.violetCyan, res = 34, corner = {}, alpha = 0.7, loop = 24, seed = 5 } = {}) {
+export function latticeWaves(ctx, W, H, t, { palette = PALETTES.violetCyan, res = 34, corner = {}, alpha = 0.7, loop = LOOP, seed = 5 } = {}) {
   const r = rng(seed), TAU = 2 * Math.PI, ph = (t / loop) * TAU;
   const waves = Array.from({ length: 4 }, () => [0.6 + r() * 1.6, r() * TAU, Math.max(1, Math.round(1 + r() * 2))]);
   const z = (u, v) => waves.reduce((s, [k, d, f]) => s + Math.sin(k * (u * Math.cos(d) + v * Math.sin(d)) * 2.2 + f * ph), 0) * 0.16;
   // camera: a plane seen from above at an angle, centred on the corner
-  const cxp = W * (corner.cx ?? 1) - W * 0.12, cyp = H * (corner.cy ?? 0) + H * 0.12, S = Math.max(W, H) * 0.42, spin = ph * 0.15;
+  const cxp = W * (corner.cx ?? 1) - W * 0.12, cyp = H * (corner.cy ?? 0) + H * 0.12, S = Math.max(W, H) * 0.42, spin = 0.15 * Math.sin(ph);
   const proj = (u, v) => {
     const x = u * Math.cos(spin) - v * Math.sin(spin), y = u * Math.sin(spin) + v * Math.cos(spin), h = z(u, v);
     const depth = 1 / (1.9 + y * 0.55);
@@ -168,7 +178,7 @@ export function latticeWaves(ctx, W, H, t, { palette = PALETTES.violetCyan, res 
 }
 
 /** Phyllotaxis: golden-angle seed spiral, slowly turning and breathing. */
-export function phyllotaxis(ctx, W, H, t, { palette = PALETTES.violetCyan, n = 1600, corner = {}, alpha = 0.85, loop = 24, size = 0.5 } = {}) {
+export function phyllotaxis(ctx, W, H, t, { palette = PALETTES.violetCyan, n = 1600, corner = {}, alpha = 0.85, loop = LOOP, size = 0.5 } = {}) {
   const GOLDEN = 2.399963229728653, ph = (t / loop) * 2 * Math.PI;
   const cx = W * (corner.cx ?? 1), cy = H * (corner.cy ?? 0);
   const scale = (size * Math.max(W, H)) / Math.sqrt(n) * (1 + 0.04 * Math.sin(ph));
@@ -176,7 +186,7 @@ export function phyllotaxis(ctx, W, H, t, { palette = PALETTES.violetCyan, n = 1
   cornered(ctx, W, H, corner, (o) => {
     o.globalAlpha = alpha;
     for (let i = 0; i < n; i++) {
-      const a = i * GOLDEN + ph * 0.25, rr = scale * Math.sqrt(i);
+      const a = i * GOLDEN + 0.35 * Math.sin(ph), rr = scale * Math.sqrt(i);
       o.fillStyle = lerpHex(palette.lo, palette.hi, i / n);
       o.beginPath(); o.arc(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, dot, 0, 6.2832); o.fill();
     }
