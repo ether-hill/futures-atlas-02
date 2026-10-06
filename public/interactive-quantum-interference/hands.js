@@ -36,12 +36,22 @@ const REST_MS = 250;    /* after a release, before the next pinch can fire */
    the whole pond. */
 const REACH = 1.35;
 
-export async function startHands({ video, preview, cursors, onPress, onRelease, onStatus }) {
+/* `cancelled()` is checked after every slow step. Loading the model takes a few
+   seconds with the camera already on, and someone who presses Click (or
+   leaves) in that window must not end up with the camera left running. */
+function abort(stream) {
+  stream?.getTracks().forEach((t) => t.stop());
+  const e = new Error("cancelled"); e.name = "Cancelled"; throw e;
+}
+
+export async function startHands({ video, preview, cursors, onPress, onRelease, onStatus, onStream, cancelled }) {
   onStatus("Loading hand tracking");
   const stream = await navigator.mediaDevices.getUserMedia({
     video: { facingMode: "user", width: { ideal: 640 }, height: { ideal: 480 } },
     audio: false
   });
+  onStream?.(stream);
+  if (cancelled?.()) abort(stream);
   video.srcObject = stream;
   await video.play();
 
@@ -57,6 +67,7 @@ export async function startHands({ video, preview, cursors, onPress, onRelease, 
   });
   let lm;
   try { lm = await make("GPU"); } catch (e) { lm = await make("CPU"); }
+  if (cancelled?.()) { lm.close(); video.srcObject = null; abort(stream); }
   onStatus("Pinch thumb and finger to drop");
 
   const pctx = preview.getContext("2d");

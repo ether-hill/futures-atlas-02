@@ -206,6 +206,10 @@ async function mountWeb(piece, slide, data) {
   el.className = `frame f-x f-web ${v ? v.theme : piece.theme ?? ""}`;
   el.innerHTML = `<div class="chart" role="img" aria-label="${esc(slide.alt ?? "")}"></div>`;
   document.documentElement.classList.add("web");
+  // Hidden until the first frame is set. draw() lays out the FINISHED chart,
+  // and seek(0) only rewinds it after the fonts load, so without this the
+  // whole chart flashed up, vanished, then built itself.
+  el.style.opacity = "0";
   document.body.append(el);
   const fit = () => { el.style.transform = `scale(${window.innerWidth / W})`; };
   fit();
@@ -213,10 +217,16 @@ async function mountWeb(piece, slide, data) {
   const chart = el.querySelector(".chart");
   const anim = await slide.draw({ el: chart, width: W, height: H, format: "x", data, d3: window.d3 });
   await document.fonts.ready;
-  if (!anim) { window.__ready = true; return; }
-  window.parent?.postMessage({ fifChart: piece.slug }, "*");
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  anim.seek(reduce ? anim.duration : 0);
+  if (anim) anim.seek(reduce ? anim.duration : 0);
+  // first frame is set: show it, gently, and tell the host page (it fades the
+  // iframe in on this message)
+  requestAnimationFrame(() => {
+    el.style.transition = "opacity 0.5s ease";
+    el.style.opacity = "1";
+  });
+  window.parent?.postMessage({ fifChart: piece.slug }, "*");
+  if (!anim) { window.__ready = true; return; }
   let raf = 0;
   const run = () => {
     cancelAnimationFrame(raf);

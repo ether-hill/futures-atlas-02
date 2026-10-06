@@ -71,10 +71,16 @@ export function FiguresReferences({ slug }: { slug: string }) {
   const plotted = refs.filter((r) => r.plotted);
   const consulted = refs.filter((r) => !r.plotted);
   return (
-    <section aria-label="Sources" className="mt-8 border-t border-hairline pt-6 text-[14px] leading-relaxed">
-      <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2">
-        <h3 className="text-[15px] font-semibold text-[var(--text)]">Sources</h3>
-        <p className="text-muted">
+    <details aria-label="Sources" className="group mt-8 border-t border-hairline pt-5 text-[14px] leading-relaxed">
+      {/* closed by default: the list is long, and the chart is what the page is for */}
+      <summary className="flex cursor-pointer list-none items-center gap-2 text-[15px] font-semibold text-[var(--text)] [&::-webkit-details-marker]:hidden">
+        <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12" className="shrink-0 transition-transform duration-200 group-open:rotate-90">
+          <path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        </svg>
+        Sources
+        <span className="font-normal text-muted">({refs.length})</span>
+      </summary>
+      <p className="mt-3 text-muted">
           <a className={linkCls} href={`/futures-in-figures/charts/data/${slug}/METHOD.md`}>
             Method note
           </a>
@@ -83,8 +89,7 @@ export function FiguresReferences({ slug }: { slug: string }) {
             Chart data (CSV)
           </a>
           {" · "}All accessed {ACCESSED}
-        </p>
-      </div>
+      </p>
       <RefList refs={plotted} />
       {consulted.length > 0 && (
         <>
@@ -92,6 +97,6 @@ export function FiguresReferences({ slug }: { slug: string }) {
           <RefList refs={consulted} start={plotted.length + 1} verb="Checked for" />
         </>
       )}
-    </section>
+    </details>
   );
 }
