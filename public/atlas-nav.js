@@ -23,7 +23,8 @@
   cover the whole site.
 
   Nothing from Google loads until a visitor says yes. The answer is kept in
-  localStorage ("fa-consent": "yes" | "no"), so the banner shows once. The
+  localStorage ("fa-consent": "yes:<ms>" | "no:<ms>", the time of the answer)
+  for twelve months, then the banner asks again. The
   footer's "Cookie settings" (any element with data-fa-cookies) brings it back,
   and saying no after a yes stops the tag and deletes its cookies.
 
@@ -39,8 +40,24 @@
   var host = location.hostname;
   var PROD = host === "futures-atlas.com" || host === "www.futures-atlas.com";
 
-  function getChoice() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
-  function setChoice(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+  var MAX_AGE = 365 * 24 * 3600 * 1000; // ask again after twelve months
+
+  function setChoice(v) { try { localStorage.setItem(KEY, v + ":" + Date.now()); } catch (e) {} }
+  function getChoice() {
+    var raw;
+    try { raw = localStorage.getItem(KEY); } catch (e) { return null; }
+    if (!raw) return null;
+    var parts = raw.split(":"), v = parts[0], t = Number(parts[1]);
+    if (v !== "yes" && v !== "no") return null;
+    // answers saved before the expiry existed carry no time: start their clock now
+    if (!t) { setChoice(v); return v; }
+    if (Date.now() - t > MAX_AGE) {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      if (v === "yes") stopGA(); // clear the old cookies until they say yes again
+      return null;
+    }
+    return v;
+  }
 
   function loadGA() {
     if (!PROD) return;
