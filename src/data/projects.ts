@@ -127,6 +127,7 @@ export const projects: Project[] = [
     status: "live",
     visibility: "draft",
     path: "/cymatics-simulator",
+    image: "/projects/cymatics-simulator.jpg", // the simulator's own render, 140 Hz
     cta: "Open the simulator",
   },
   {
