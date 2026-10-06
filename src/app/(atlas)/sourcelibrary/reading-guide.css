@@ -1,0 +1,225 @@
+/*
+ * The reading guide: the motion and the few rules Tailwind utilities cannot say.
+ * No colour literals: everything resolves to a core token, so the instrument
+ * follows whichever theme the site is in.
+ */
+
+.anc-viewport {
+  position: relative;
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.anc-viewport.is-dragging { cursor: grabbing; }
+.anc-viewport.is-still { cursor: default; }
+
+.anc-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  transition: transform 1050ms cubic-bezier(0.22, 0.8, 0.2, 1), opacity 500ms;
+  will-change: transform;
+}
+.is-dragging .anc-world { transition: opacity 500ms; }
+
+/* ---- tiles: the outer box travels, the inner one is what you see ---- */
+
+.anc-tile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transition:
+    transform 1150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 1150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 1150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 450ms;
+}
+.anc-tile:hover,
+.anc-tile:focus-visible { z-index: 30; outline: none; }
+.anc-tile.is-selected { z-index: 20; }
+.anc-tile.is-dim { opacity: 0.13; }
+.anc-tile.is-dim:hover,
+.anc-tile.is-dim:focus-visible { opacity: 1; }
+
+.anc-tile-in {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--c-haze);
+  box-shadow: 0 3px 0 0 var(--t);
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1), outline-color 200ms;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+.anc-tile-in img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.anc-tile:hover .anc-tile-in,
+.anc-tile:focus-visible .anc-tile-in { transform: scale(var(--hs, 1.6)); outline-color: var(--c-ink); }
+.anc-tile.is-linked .anc-tile-in { outline-color: var(--t); }
+.anc-tile.is-selected .anc-tile-in { transform: scale(1.35); outline-color: var(--c-accent); outline-width: 3px; }
+
+/* the opening: every book hangs everywhere until its thread is named */
+.anc-tile.is-cloud .anc-tile-in {
+  opacity: 0.82;
+  animation: anc-hang 5200ms ease-in-out infinite alternate;
+  animation-delay: var(--d, 0ms);
+}
+@keyframes anc-hang {
+  from { transform: translate(-9px, 6px) rotate(-2.5deg); }
+  to { transform: translate(8px, -7px) rotate(2.5deg); }
+}
+
+.anc-tip {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 10px);
+  transform: translateX(-50%) scale(var(--inv, 1));
+  transform-origin: 50% 100%;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 160ms;
+}
+.anc-tile:hover .anc-tip,
+.anc-tile:focus-visible .anc-tip { opacity: 1; }
+.anc-tile.is-cloud .anc-tip { display: none; }
+
+/* ---- what is drawn around the tiles ---- */
+
+.anc-deco {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 420ms;
+}
+.anc-deco.is-on { opacity: 1; transition: opacity 700ms 520ms; }
+.anc-deco.is-on .anc-hit { pointer-events: auto; }
+
+.anc-wire {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1300ms cubic-bezier(0.3, 0.7, 0.2, 1);
+}
+.anc-wire.is-drawn { stroke-dashoffset: 0; }
+
+/* one bright mark running each wire, left to right, for as long as you look */
+.anc-pulse {
+  stroke-dasharray: 0.012 0.988;
+  stroke-dashoffset: 1;
+  opacity: 0;
+}
+.anc-pulse.is-drawn {
+  opacity: 1;
+  animation: anc-run 9s linear infinite;
+  animation-delay: var(--d, 0s);
+}
+@keyframes anc-run {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+.anc-link { transition: opacity 400ms, stroke-width 300ms; }
+.anc-link.is-hot {
+  stroke-dasharray: 7 6;
+  animation: anc-flow 900ms linear infinite;
+}
+@keyframes anc-flow {
+  to { stroke-dashoffset: -13; }
+}
+
+.anc-fade { transition: opacity 600ms; }
+
+/* ---- the wheel ---- */
+
+.anc-ring { transition: transform 700ms cubic-bezier(0.2, 0.9, 0.2, 1); transform-origin: 0 0; cursor: grab; }
+.anc-ring.is-held { transition: none; cursor: grabbing; }
+.anc-seg { transition: fill 300ms; outline: none; }
+.anc-seg:focus-visible { stroke: var(--c-accent); stroke-width: 2; }
+
+/* ---- masthead: fifty covers on one line, drifting ---- */
+
+.anc-shelf {
+  overflow: hidden;
+  padding-bottom: 4px; /* the colour underfoot sits on the shelf line */
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+.anc-shelf-track {
+  display: flex;
+  width: max-content;
+  animation: anc-drift 150s linear infinite;
+}
+.anc-shelf:hover .anc-shelf-track,
+.anc-shelf:focus-within .anc-shelf-track { animation-play-state: paused; }
+@keyframes anc-drift {
+  to { transform: translateX(-50%); }
+}
+.anc-shelf-run {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(10px, 1.2vw, 18px);
+  padding: 14px clamp(10px, 1.2vw, 18px) 0 0; /* the trailing gap makes two runs exactly twice one */
+  margin: 0;
+  list-style: none;
+}
+.anc-shelf-book {
+  display: block;
+  height: clamp(92px, 15svh, 150px);
+  padding: 0;
+  border: 0;
+  background: var(--c-haze);
+  cursor: pointer;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.anc-shelf-book:hover,
+.anc-shelf-book:focus-visible { transform: translateY(-8px); outline: none; }
+.anc-shelf-book img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---- masthead: the line that names each thread ---- */
+
+.anc-swap { animation: anc-swap 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes anc-swap {
+  from { opacity: 0; transform: translateY(0.45em); filter: blur(6px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+.anc-sheet { animation: anc-sheet 380ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes anc-sheet {
+  from { transform: translateX(28px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.anc-panel-in { animation: anc-panel 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@keyframes anc-panel {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anc-world,
+  .anc-tile,
+  .anc-tile-in,
+  .anc-ring,
+  .anc-wire { transition-duration: 1ms !important; }
+  .anc-tile.is-cloud .anc-tile-in,
+  .anc-pulse.is-drawn,
+  .anc-link.is-hot,
+  .anc-swap,
+  .anc-sheet,
+  .anc-panel-in,
+  .anc-shelf-track { animation: none; }
+  .anc-shelf { overflow-x: auto; }
+  .anc-pulse.is-drawn { opacity: 0; }
+}

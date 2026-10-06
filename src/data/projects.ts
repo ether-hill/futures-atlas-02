@@ -640,7 +640,7 @@ export const projects: Project[] = [
     image: "/projects/literal-frequency.jpg",
   },
   {
-    id: "ancestors",
+    id: "sourcelibrary",
     title: "Source Library × Futures Atlas Recommended Reading",
     tagline:
       "Fifty works from the Source Library, read as early versions of what the rest of the Atlas works on: mechanical reasoning, automata, the physics that became quantum, and prediction as a practice.",
@@ -651,8 +651,8 @@ export const projects: Project[] = [
     kind: "tool",
     status: "live",
     visibility: "draft",
-    path: "/ancestors",
-    image: "/projects/ancestors.jpg",
+    path: "/sourcelibrary",
+    image: "/projects/sourcelibrary.jpg",
     cta: "Open the shelf",
   },
   {

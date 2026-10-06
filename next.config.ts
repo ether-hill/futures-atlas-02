@@ -285,6 +285,10 @@ const nextConfig: NextConfig = {
        */
       { source: "/interference/solo", destination: "/interference", permanent: true },
       { source: "/prism", destination: "/generatives", permanent: true },
+      // The Source Library reading guide was first shared, as a draft, under
+      // /ancestors. Not permanent: the old name was never public.
+      { source: "/ancestors", destination: "/sourcelibrary", permanent: false },
+      { source: "/ancestors/:path*", destination: "/sourcelibrary", permanent: false },
       // The Counterfactual Index became Manipulate the data, and its
       // single-figure story stopped being called /one. The old paths were only
       // ever shared as previews, so these are cheap insurance on a bookmark.
