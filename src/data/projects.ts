@@ -110,6 +110,25 @@ export const projects: Project[] = [
    * as many words rather than dressing a placeholder up as a preview. Nothing
    * here asserts an answer — the whole point is that the answer is not written.
    */
+  /*
+   * A replica of the cymatics site's V2 simulator page: the same engine and
+   * copy (src/lib/cymatics/, ported from the cymatics repo), on Atlas tokens.
+   */
+  {
+    id: "cymatics-simulator",
+    title: "Cymatics Simulator",
+    tagline:
+      "A dish of water driven from below, in code: the wavelength from the water, the figure from the dish, lit by a ring of LEDs. Dial the frequency and hear the tone.",
+    year: "2026",
+    date: "2026-10-06",
+    field: "Sound & physics",
+    topics: [],
+    kind: "tool",
+    status: "live",
+    visibility: "draft",
+    path: "/cymatics-simulator",
+    cta: "Open the simulator",
+  },
   {
     id: "slime-quantum",
     title: "Slime mould and quantum computing",

@@ -26,6 +26,7 @@
   // publish in the month after launch; it only changes the tag an editor sees.
   var FA_PROJECTS = [
     { name: "Glossary", path: "/glossary" },
+    { name: "Cymatics Simulator", path: "/cymatics-simulator", draft: true },
     { name: "Dramaturge", path: "/dramaturge", draft: true },
     { name: "Shop", path: "/shelflife", draft: true },
     { name: "Quantum Interference Visuals", path: "/interference" },

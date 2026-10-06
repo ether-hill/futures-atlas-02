@@ -1,0 +1,96 @@
+/*
+  Cymatics Simulator — the cymatics site's V2 page, on this site's tokens.
+
+  Upstream styles the simulator with its own variables (--fg, --fg-dim,
+  --line, and --lw, an RGB triplet used as rgba(var(--lw), a)). They are
+  mapped here onto core's semantic tokens, and every rgba(var(--lw), a)
+  becomes color-mix(in srgb, var(--text) a%, transparent), so the rack follows
+  the Atlas theme and any live override. No literal colours: the dish's own
+  ground is the `black` keyword (the shader draws on black in both themes, as
+  Specimens does), and text that sits ON that ground mixes from --paper,
+  which is always light.
+
+  Rules come from three upstream places: the instruments kit's injectCss()
+  (keyboard rules dropped), engine.ts's own <style> block (.cv2-*), and the
+  .csim-* frame in app/globals.css.
+*/
+.cyma {
+  --fg: var(--text);
+  --fg2: var(--text-body);
+  --fg3: var(--muted);
+  --fg4: var(--faint);
+  --fg-dim: var(--muted);
+  --fg-faint: var(--faint);
+  --line: var(--hairline);
+  --line-2: color-mix(in srgb, var(--text) 7%, transparent);
+  --cy-on-dish: color-mix(in srgb, var(--paper) 72%, transparent);
+  --cy-mono: var(--font-mono), ui-monospace, monospace;
+}
+
+/* ---------- the kit (injectCss) ---------- */
+.cyma .inst-panel { border: 1px solid color-mix(in srgb, var(--text) 13%, transparent); border-radius: var(--radius); background: var(--panel); padding: clamp(18px, 2.4vw, 28px); }
+.cyma .inst-cap { font-family: var(--cy-mono); font-size: 10px; letter-spacing: 0.22em; color: var(--fg4); margin: 0 0 18px; }
+.cyma .inst-ctl { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cyma .inst-ctl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.cyma .inst-ctl-label { font-family: var(--cy-mono); font-size: 10px; letter-spacing: 0.14em; color: var(--fg3); text-transform: uppercase; }
+.cyma .inst-ctl-val { font-family: var(--cy-mono); font-size: 11px; color: var(--fg); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cyma .inst-range { -webkit-appearance: none; appearance: none; width: 100%; height: 2px; margin: 7px 0; background: color-mix(in srgb, var(--text) 22%, transparent); border-radius: 2px; outline: none; cursor: pointer; }
+.cyma .inst-range::-webkit-slider-thumb { -webkit-appearance: none; width: 15px; height: 15px; border-radius: 50%; background: var(--fg); border: 2px solid var(--bg); cursor: pointer; transition: transform 0.12s; }
+.cyma .inst-range::-webkit-slider-thumb:hover { transform: scale(1.18); }
+.cyma .inst-range::-moz-range-thumb { width: 13px; height: 13px; border-radius: 50%; background: var(--fg); border: 2px solid var(--bg); cursor: pointer; }
+.cyma .inst-range:focus-visible { outline: 2px solid var(--fg); outline-offset: 6px; }
+.cyma .inst-seg { display: inline-flex; flex-wrap: wrap; border: 1px solid color-mix(in srgb, var(--text) 22%, transparent); border-radius: 5px; overflow: hidden; }
+.cyma .inst-seg button { appearance: none; background: transparent; color: var(--fg3); border: none; border-left: 1px solid color-mix(in srgb, var(--text) 14%, transparent); padding: 8px 12px; min-height: 36px; font-family: var(--cy-mono); font-size: 11px; letter-spacing: 0.04em; cursor: pointer; transition: background 0.15s, color 0.15s; }
+.cyma .inst-seg button:first-child { border-left: none; }
+.cyma .inst-seg button[aria-pressed="true"] { background: var(--fg); color: var(--bg); }
+.cyma .inst-seg button:not([aria-pressed="true"]):hover { color: var(--fg); }
+.cyma .inst-seg button:focus-visible { outline: 2px solid var(--fg); outline-offset: -2px; }
+.cyma .inst-power { display: inline-flex; align-items: center; gap: 11px; background: transparent; color: var(--fg); border: 1px solid color-mix(in srgb, var(--text) 30%, transparent); border-radius: 40px; padding: 12px 22px; font-family: var(--cy-mono); font-size: 12px; letter-spacing: 0.14em; cursor: pointer; transition: background 0.2s, color 0.2s, border-color 0.2s; }
+.cyma .inst-power:hover { border-color: color-mix(in srgb, var(--text) 60%, transparent); }
+.cyma .inst-power[data-on="1"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.cyma .inst-power:focus-visible { outline: 2px solid var(--fg); outline-offset: 4px; }
+.cyma .inst-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--fg4); transition: background 0.2s; }
+.cyma .inst-power[data-on="1"] .inst-dot { background: var(--bg); animation: cyma-pulse 1.6s ease-in-out infinite; }
+@keyframes cyma-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+/* ---------- the frame (globals .csim-*) ---------- */
+.cyma .csim { border: 1px solid var(--line); border-radius: var(--radius); background: black; overflow: hidden; }
+.cyma .csim-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px clamp(16px, 2vw, 26px); }
+.cyma .csim-title { font-family: var(--cy-mono); font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--paper); }
+.cyma .csim-time { font-family: var(--cy-mono); font-size: 12px; letter-spacing: 0.08em; color: var(--cy-on-dish); }
+.cyma .csim-tabs { display: grid; grid-template-columns: repeat(5, 1fr); }
+.cyma .csim-tab { position: relative; padding: clamp(18px, 2.4vw, 30px) 10px; background: transparent; border: none; border-right: 1px solid color-mix(in srgb, var(--paper) 10%, transparent); color: color-mix(in srgb, var(--paper) 72%, transparent); cursor: pointer; text-align: center; transition: background-color 0.3s ease, color 0.3s ease; }
+.cyma .csim-tab:last-child { border-right: none; }
+.cyma .csim-tab .hz { display: block; font-family: var(--font-heading), sans-serif; font-size: clamp(18px, 1.9vw, 26px); font-weight: 500; letter-spacing: -0.01em; }
+.cyma .csim-tab .hz i { font-style: normal; font-size: 0.55em; margin-left: 1px; } /* upstream dimmed this to 0.7; it failed contrast on the dish's black */
+.cyma .csim-tab .sub { display: block; margin-top: 3px; font-family: var(--cy-mono); font-size: 10px; letter-spacing: 0.06em; opacity: 0.8; }
+.cyma .csim-tab:hover { color: color-mix(in srgb, var(--paper) 88%, transparent); background: color-mix(in srgb, var(--paper) 3%, transparent); }
+.cyma .csim-tab.on { color: var(--paper); background: color-mix(in srgb, var(--paper) 7%, transparent); }
+.cyma .csim-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* ---------- the layout (engine.ts's own block, .cv2-*) ----------
+   The dish on the left, the controls on the right in a column that scrolls on
+   its own, so the figure stays in view while you work the rack. Stacks on
+   narrow screens. */
+.cyma .cv2-layout { display: grid; grid-template-columns: minmax(0, 1fr) clamp(300px, 30vw, 420px); gap: clamp(12px, 1.6vw, 20px); height: clamp(560px, calc(100vh - 120px), 900px); }
+.cyma .cv2-layout > .csim { display: flex; flex-direction: column; min-height: 0; margin: 0; }
+.cyma .cv2-stage { position: relative; flex: 1 1 auto; min-height: 0; background: black; overflow: hidden; cursor: crosshair; touch-action: none; }
+.cyma .cv2-panels { display: flex; flex-direction: column; gap: clamp(12px, 1.6vw, 18px); min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; scrollbar-width: thin; }
+.cyma .cv2-panels .cv2-row > * { flex: 1 1 100% !important; min-width: 0 !important; }
+@media (max-width: 860px) {
+  .cyma .cv2-layout { grid-template-columns: 1fr; height: auto; }
+  .cyma .cv2-stage { flex: none; height: clamp(340px, 70vw, 560px); }
+  .cyma .cv2-panels { overflow: visible; }
+  .cyma .csim-tab .sub { display: none; }
+}
+.cyma .cv2-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.cyma .cv2-read { position: absolute; left: clamp(16px, 2vw, 28px); right: clamp(16px, 2vw, 28px); bottom: clamp(14px, 2vh, 22px); font-family: var(--cy-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--cy-on-dish); pointer-events: none; }
+.cyma .cv2-full { position: absolute; right: clamp(16px, 2vw, 28px); top: clamp(14px, 2vh, 22px); appearance: none; background: color-mix(in srgb, black 60%, transparent); border: 1px solid color-mix(in srgb, var(--paper) 35%, transparent); color: var(--paper); border-radius: 40px; padding: 8px 14px; font-family: var(--cy-mono); font-size: 10px; letter-spacing: 0.14em; cursor: pointer; }
+.cyma .cv2-full:hover { border-color: var(--paper); }
+.cyma .cv2-row { display: flex; flex-wrap: wrap; gap: 16px 22px; align-items: center; }
+.cyma .cv2-hint { margin: 14px 0 0; font-family: var(--cy-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--fg4); line-height: 1.6; max-width: 70ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cyma .inst-power[data-on="1"] .inst-dot { animation: none; }
+  .cyma * { transition: none !important; }
+}
