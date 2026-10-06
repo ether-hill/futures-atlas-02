@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Brick, Legend, bag, sleep } from "./Brick";
 import { GROUPS, GROUP_HEX, ITEMS, type Group, type Item, type Marks } from "./stack";
 
@@ -69,10 +69,13 @@ export function Cascade({ marks }: { marks: Marks }) {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [popped, setPopped] = useState(0);
   const [toast, setToast] = useState<{ k: number; text: string } | null>(null);
-  const alive = useRef(true);
 
   useEffect(() => {
-    alive.current = true;
+    // Each run of this effect has its OWN flag. A shared ref was set back to
+    // true by the next mount (React's dev double-mount, or a card scrolled out
+    // and back), which left the old loop running beside the new one on the
+    // same board: duplicate bricks, then a crash.
+    const alive = { current: true };
     let id = 1;
     const draw = bag(ITEMS);
     const item = new Map<number, Item>();

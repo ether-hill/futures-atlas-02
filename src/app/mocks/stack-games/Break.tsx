@@ -41,10 +41,13 @@ export function Break({ marks, bare = false }: { marks: Marks; bare?: boolean })
   const [left, setLeft] = useState(COLS * ROWS);
   const ball = useRef<HTMLDivElement>(null);
   const paddle = useRef<HTMLDivElement>(null);
-  const alive = useRef(true);
 
   useEffect(() => {
-    alive.current = true;
+    // Each run of this effect has its OWN flag. A shared ref was set back to
+    // true by the next mount (React's dev double-mount, or a card scrolled out
+    // and back), which left the old loop running beside the new one on the
+    // same board: duplicate bricks, then a crash.
+    const alive = { current: true };
     let id = 1;
 
     const build = () => {

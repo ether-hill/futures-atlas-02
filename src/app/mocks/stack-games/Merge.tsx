@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { sleep, shuffled } from "./Brick";
 import { BY_GROUP, GROUPS, GROUP_HEX, type Group, type Item, type Marks } from "./stack";
 
@@ -56,10 +56,13 @@ export function Merge({ marks }: { marks: Marks }) {
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [banked, setBanked] = useState<Record<Group, number>>({ language: 0, media: 0, open: 0, web: 0 });
   const [toast, setToast] = useState<{ k: number; text: string } | null>(null);
-  const alive = useRef(true);
 
   useEffect(() => {
-    alive.current = true;
+    // Each run of this effect has its OWN flag. A shared ref was set back to
+    // true by the next mount (React's dev double-mount, or a card scrolled out
+    // and back), which left the old loop running beside the new one on the
+    // same board: duplicate bricks, then a crash.
+    const alive = { current: true };
     let id = 1;
     let board: (Tile | null)[][] = Array.from({ length: N }, () => Array(N).fill(null));
     const bankTally: Record<Group, number> = { language: 0, media: 0, open: 0, web: 0 };

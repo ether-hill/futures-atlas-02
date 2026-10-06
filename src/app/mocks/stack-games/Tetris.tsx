@@ -300,14 +300,17 @@ export function Tetris({ marks, bare = false }: { marks: Marks; bare?: boolean }
   const [tiles, setTiles] = useState<Tile[]>([]);
   const [lines, setLines] = useState(0);
   const [toast, setToast] = useState<{ k: number; text: string } | null>(null);
-  const alive = useRef(true);
   // The loop reads the board it is also writing, so a ref carries the current
   // tiles across instead of the effect depending on its own output.
   const tilesRef = useRef<Tile[]>([]);
   tilesRef.current = tiles;
 
   useEffect(() => {
-    alive.current = true;
+    // Each run of this effect has its OWN flag. A shared ref was set back to
+    // true by the next mount (React's dev double-mount, or a card scrolled out
+    // and back), which left the old loop running beside the new one on the
+    // same board: duplicate bricks, then a crash.
+    const alive = { current: true };
     let id = 1;
     let grid = empty();
     const nextShape = bag(SHAPES);
@@ -399,7 +402,9 @@ export function Tetris({ marks, bare = false }: { marks: Marks; bare?: boolean }
         const path = plan(grid, rots, best.ri, best.x, best.y);
         const items = move ? move.items : best.cells.map(() => nextItem());
         let fresh: Tile[];
-        if (path) {
+        // an empty path (rare, with a fresh random lap) falls through to the
+        // drop-from-above branch rather than reading path[0] of nothing
+        if (path && path.length) {
           // Appear at the top, then play it into place one input at a time.
           // Each cell keeps its brand as the piece turns, so a turn reads as
           // the same four bricks swinging round rather than a new piece.
