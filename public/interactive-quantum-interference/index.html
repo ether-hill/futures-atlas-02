@@ -117,6 +117,15 @@ body {
 .bar button[aria-pressed="true"] { color: var(--bg); background: var(--text); }
 .bar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
+/* the mode picker: a plain select, 16px so phones do not zoom into it */
+.bar select {
+  appearance: none; -webkit-appearance: none;
+  font: 500 16px/1 var(--font); color: var(--text);
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23d3ccbe' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border: 0; border-radius: var(--radius); padding: 7px 30px 7px 10px; cursor: pointer;
+}
+.bar select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.bar select option { color: #000; }
 .sw { width: 30px; height: 30px; padding: 0 !important; display: grid; place-items: center; }
 .sw span { width: 16px; height: 16px; border-radius: 50%; display: block; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15); }
 .bar .sw[aria-pressed="true"] { background: rgba(255,255,255,0.12); }
@@ -164,9 +173,11 @@ body {
 </header>
 
 <div class="bar">
-  <div class="group" role="group" aria-label="What you drop">
-    <button type="button" data-mode="drop" aria-pressed="true">Drops</button>
-    <button type="button" data-mode="source" aria-pressed="false">Steady sources</button>
+  <div class="group">
+    <select id="mode" aria-label="What you drop">
+      <option value="drop">Drops</option>
+      <option value="source">Steady sources</option>
+    </select>
   </div>
   <div class="group" role="group" aria-label="Colour" id="palettes"></div>
   <div class="group" role="group" aria-label="How you drop">
@@ -198,12 +209,13 @@ const HINTS = {
   source: "Place two steady sources. The still lanes between them never move. Tap a source to lift it out."
 };
 let mode = "drop";
+const modeSel = document.getElementById("mode");
 function setMode(m) {
   mode = m;
-  document.querySelectorAll("[data-mode]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.mode === m)));
+  modeSel.value = m;
   if (!stopHands && !starting) document.getElementById("hint").textContent = HINTS[m];
 }
-document.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+modeSel.addEventListener("change", () => setMode(modeSel.value));
 
 /* ── palettes ── */
 const pals = document.getElementById("palettes");
