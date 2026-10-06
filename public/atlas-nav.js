@@ -14,6 +14,32 @@
   "fa-theme"): dark by default everywhere; light only if the user chose it.
   Edit THIS file to change the nav anywhere.
 */
+
+/*
+  Google Analytics (GA4, G-MZJ3PLZ4QT). It lives here rather than in the Next
+  layout because this is the one script every surface loads, the static
+  bundles included, so one tag counts the whole site.
+
+  Production domain only. Staging, previews and localhost never load it, so
+  editors clicking through drafts do not show up as visitors. The hub is a
+  client-side app, so later page changes are counted by GA4's own history
+  tracking (enhanced measurement), not by anything here.
+*/
+(function () {
+  var GA_ID = "G-MZJ3PLZ4QT";
+  var host = location.hostname;
+  if (host !== "futures-atlas.com" && host !== "www.futures-atlas.com") return;
+  if (window.gtag) return; // a second copy of this file on one page
+  var s = document.createElement("script");
+  s.async = true;
+  s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+  document.head.appendChild(s);
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = function () { window.dataLayer.push(arguments); };
+  window.gtag("js", new Date());
+  window.gtag("config", GA_ID);
+})();
+
 (function () {
   // pages: a project's own internal tabs, shown in the mobile sheet under the
   // project title (and as the slim desktop sub-nav, rendered by each zone).
