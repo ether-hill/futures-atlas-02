@@ -164,6 +164,7 @@ ${FEED_HERE ? `<div class="fa-foot__col">
 </div>
 <div class="fa-foot__row">
 <span class="fa-foot__tag">&copy; ${now.getUTCFullYear()} Futures Atlas</span>
+<button type="button" class="fa-foot__a fa-foot__cookies" data-fa-cookies>Cookie settings</button>
 </div>
 </div>`;
 
