@@ -52,6 +52,15 @@
     { name: "Social Composer", path: "/social-composer", draft: true },
     { name: "Generatives", path: "/generatives" },
     { name: "Specimens", path: "/specimens", draft: true },
+    { name: "Standing Waves", path: "/standing-waves", draft: true, pages: [
+      { name: "Overview", path: "/standing-waves" },
+      { name: "Timeline", path: "/standing-waves/timeline" },
+      { name: "Read", path: "/standing-waves/read" },
+      { name: "People", path: "/standing-waves/people" },
+      { name: "Gallery", path: "/standing-waves/gallery" },
+      { name: "Simulator", path: "/standing-waves/simulator" },
+      { name: "Sources", path: "/standing-waves/sources" },
+    ] },
     { name: "Literal Frequency", path: "/literal-frequency", draft: true },
     { name: "Quantum Sandbox", path: "/quantum-sandbox", draft: true },
     // Research and Stats are public routes of this project, and until they were

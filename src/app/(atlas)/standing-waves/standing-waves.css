@@ -1,0 +1,162 @@
+/*
+  Standing Waves. Every value is a core token or derived from one; no literal
+  colours (the CLAUDE.md grep rule). The four lanes take core's data palette,
+  which is chart ink at mid lightness: used for marks (bars, dots, rules),
+  never for text, where it would not hold contrast in both themes.
+*/
+.sw {
+  --sw-lane-cymatics: var(--data-2);
+  --sw-lane-wave-physics: var(--data-4);
+  --sw-lane-quantum: var(--data-1);
+  --sw-lane-pilot-wave: var(--data-3);
+  --sw-rule: var(--hairline);
+}
+
+.sw [data-lane="cymatics"] { --lane: var(--sw-lane-cymatics); }
+.sw [data-lane="wave-physics"] { --lane: var(--sw-lane-wave-physics); }
+.sw [data-lane="quantum"] { --lane: var(--sw-lane-quantum); }
+.sw [data-lane="pilot-wave"] { --lane: var(--sw-lane-pilot-wave); }
+
+.sw-dot {
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  border-radius: var(--radius-full);
+  background: var(--lane, var(--muted));
+  flex: none;
+}
+
+/* ---------- sub-nav ---------- */
+.sw-subnav {
+  border-bottom: var(--border-hairline) solid var(--sw-rule);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+.sw-subnav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px; /* touch target */
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+}
+.sw-subnav a:hover { color: var(--text); }
+.sw-subnav a[aria-current="page"] { color: var(--text); border-bottom-color: var(--accent); }
+
+/* ---------- status badges ----------
+   Shape and a word, not colour alone: each status has its own border style, so
+   the badge reads in greyscale and to a colour-blind reader. */
+.sw-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1;
+  padding: 0.45em 0.6em;
+  border: 1px solid var(--muted);
+  color: var(--text);
+  white-space: nowrap;
+}
+.sw-badge[data-status="established"] { border-color: var(--text); }
+.sw-badge[data-status="historical"] { border-style: dotted; color: var(--text-body); }
+.sw-badge[data-status="contested"] { border-style: dashed; border-color: var(--accent-deep); }
+.sw-badge[data-status="not-replicated"] { border-color: var(--accent-deep); background: var(--accent-soft); }
+.sw-badge[data-status="unsupported-claim"] { border-width: 1px 1px 1px 4px; border-color: var(--accent-deep); }
+
+/* ---------- chips (filters) ---------- */
+.sw-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-height: 36px;
+  padding: 0 0.85em;
+  border: var(--border-hairline) solid var(--sw-rule);
+  background: transparent;
+  color: var(--text-body);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.sw-chip:hover { border-color: var(--text); color: var(--text); }
+.sw-chip[aria-pressed="true"] { border-color: var(--text); color: var(--text); background: var(--haze); }
+.sw-chip:focus-visible,
+.sw-focus:focus-visible { outline: var(--focus-ring) solid var(--accent); outline-offset: 2px; }
+
+/* ---------- nodal figures (server SVG) ---------- */
+.sw-figure { display: block; width: 100%; height: auto; color: var(--text); }
+.sw-figure path.sw-nodal { fill: none; stroke: currentColor; stroke-linecap: round; }
+.sw-figure .sw-rim { fill: none; stroke: var(--sw-rule); }
+
+/* The landing hero: four figures stacked, crossfading. CSS only. With reduced
+   motion the first one simply stays. */
+.sw-hero-stack { position: relative; aspect-ratio: 1; }
+.sw-hero-stack > svg { position: absolute; inset: 0; opacity: 0; animation: sw-cycle 24s infinite; }
+.sw-hero-stack > svg:nth-child(1) { opacity: 1; animation-delay: 0s; }
+.sw-hero-stack > svg:nth-child(2) { animation-delay: 6s; }
+.sw-hero-stack > svg:nth-child(3) { animation-delay: 12s; }
+.sw-hero-stack > svg:nth-child(4) { animation-delay: 18s; }
+@keyframes sw-cycle {
+  0% { opacity: 0; }
+  4% { opacity: 1; }
+  25% { opacity: 1; }
+  29% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* ---------- timeline ---------- */
+.sw-event { scroll-margin-top: calc(var(--fa-nav-h) + 24px); }
+.sw-event:target { outline: var(--focus-ring) solid var(--accent); outline-offset: 4px; }
+.sw-event__rail { background: var(--lane); }
+.sw-thread { border-left: 2px dashed var(--accent-deep); }
+
+.sw-expand > summary { cursor: pointer; list-style: none; }
+.sw-expand > summary::-webkit-details-marker { display: none; }
+.sw-expand > summary .sw-caret { transition: transform 0.2s var(--ease); display: inline-block; }
+.sw-expand[open] > summary .sw-caret { transform: rotate(90deg); }
+
+/* The scrubber: one row of years at ≥1024px, scrolled by the track itself
+   (never the page). */
+.sw-scrub {
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.sw-scrub > li { scroll-snap-align: start; }
+
+/* ---------- article ---------- */
+.sw-box { border: var(--border-hairline) solid var(--sw-rule); background: var(--panel); }
+.sw-box dt { font-family: var(--font-mono); font-size: var(--text-label); letter-spacing: var(--track-label); text-transform: uppercase; color: var(--muted); }
+.fa-prose .sw-cite { font-family: var(--font-mono); font-size: 0.7em; line-height: 0; }
+.fa-prose .sw-cite a { text-decoration: none; color: var(--accent-deep); }
+.fa-prose .sw-cite a:hover { text-decoration: underline; }
+.sw-refs li:target { background: var(--accent-soft); }
+
+/* ---------- gallery ---------- */
+.sw-masonry { columns: 1; column-gap: var(--space-5); }
+@media (min-width: 640px) { .sw-masonry { columns: 2; } }
+@media (min-width: 1024px) { .sw-masonry { columns: 3; } }
+.sw-masonry > * { break-inside: avoid; margin-bottom: var(--space-5); }
+.sw-lightbox { width: min(1100px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); padding: 0; border: 0; background: var(--bg); color: var(--text); }
+.sw-lightbox::backdrop { background: color-mix(in srgb, var(--bg) 80%, transparent); }
+
+/* Figures drawn for white paper sit on a light plate in both themes (the rule
+   Horizon Scan follows for paper figures). */
+.sw-plate-light { background: var(--paper); }
+
+/* ---------- mode ↔ orbital ---------- */
+.sw-pair canvas { width: 100%; height: auto; aspect-ratio: 1; display: block; background: var(--panel); }
+.sw-range { width: 100%; accent-color: var(--accent); min-height: 44px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sw *, .sw *::before, .sw *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  .sw-hero-stack > svg { opacity: 0; }
+  .sw-hero-stack > svg:nth-child(1) { opacity: 1; }
+}

@@ -440,6 +440,40 @@ record, there is nowhere to put one.
   there should not be: a page that says it re-ran twelve hours ago must not be
   showing last week.
 
+## Standing Waves (`/standing-waves`)
+
+Cymatics × quantum mechanics: the shared wave maths, the walking droplets, and
+where the analogy breaks. Draft. Title is `SW_TITLE` in
+`src/data/standing-waves/meta.ts` (rename there; the slug stays).
+
+- **Typed data, no CMS**: `src/data/standing-waves/` — `sources`, `timeline`,
+  `people`, `media`, and one file per article under `articles/` (markdown in a
+  TS string, not MDX: the repo renders markdown with `marked` and has no MDX
+  pipeline). Inline citations are `[@source-id]`, timeline links
+  `[[event:id|label]]` (`lib/standing-waves/cite.ts`).
+- **The integrity check is the layout.** `assertIntegrity()` runs in
+  `(atlas)/standing-waves/layout.tsx`, so a dangling id, an event with no
+  source, media without alt/licence, an unverified source with no `todo`, or a
+  source nothing cites fails the page AND `next build`. Don't move it to a
+  script someone has to remember to run.
+- `verified: true` means the link was opened and the metadata checked (DOIs
+  against Crossref). Unverifiable items were CUT, not guessed — the brief's
+  Stern–Gerlach analog does not exist, arXiv:2411.14996 is not the
+  Kapitza–Dirac paper, and "Solvay 1927 rejected the pilot wave" is folklore.
+- **Simulator** = the cymatics repo's V2. `lib/standing-waves/sim/dish.ts` is a
+  verbatim copy (fix upstream, re-copy); the chrome was rewritten in
+  `components/standing-waves/Simulator.tsx` on site tokens. Nothing is imported
+  or computed before Start; sound is a separate switch, off by default.
+- **Gallery rights are hard rules**: no Jenny *Kymatik* photos, no CymaScope
+  images. Commons images are hot-linked from `upload.wikimedia.org` with
+  `crossOrigin="anonymous"` — Wikimedia sends `ACAO: *`, and CORS mode is what
+  stops its tracking cookie (Lighthouse best-practices). Our generated figures
+  are all rights reserved (LICENSE-CONTENT §2), not CC.
+- `NodalFigure` is a client component that does NOT recompute its path on
+  hydration (the server's `d` stays in the DOM); recomputing fifteen of them
+  was 2 s of blocking time on a throttled phone. Read its comment before
+  touching it.
+
 ## Hypothetica Magnifica (`/magnifica`)
 
 Renamed from "Magnifica" (display title only — the slug, URLs and build paths

@@ -117,6 +117,26 @@ export const projects: Project[] = [
    * "in-progress" card would read "Forthcoming"); a draft because the project
    * around it has not been made yet.
    */
+  /*
+   * Cymatics and quantum mechanics: the shared wave maths, the walking
+   * droplets, and where the analogy breaks. Its own typed data and integrity
+   * check live in src/data/standing-waves/; the title is SW_TITLE there.
+   */
+  {
+    id: "standing-waves",
+    title: "Standing Waves",
+    tagline:
+      "Sand on a ringing plate and an electron in an atom follow the same wave maths. How far that likeness goes, where the walking-droplet experiments took it, and where it breaks.",
+    year: "2026",
+    date: "2026-10-06",
+    field: "Sound & physics",
+    topics: ["Quantum"],
+    kind: "story",
+    status: "live",
+    visibility: "draft",
+    path: "/standing-waves",
+    cta: "Read the project",
+  },
   {
     id: "specimens",
     title: "Specimens",
