@@ -55,31 +55,32 @@
 .g2-fams li { display: flex; align-items: center; gap: 7px; }
 .g2-fams i { width: 14px; height: 3px; display: block; }
 
-/* the four cabinets */
-.g2-grid { display: grid; gap: 16px; }
-@media (min-width: 760px) { .g2-grid { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 1400px) { .g2-grid { grid-template-columns: repeat(4, 1fr); } }
+/* the four cabinets: a narrower page, two to a row on desktop */
+.g2-wrap { max-width: 1180px; margin: 0 auto; }
+.g2-grid { display: grid; gap: 20px; }
+@media (min-width: 1000px) { .g2-grid { grid-template-columns: 1fr 1fr; gap: 24px; } }
 
 .g2-cab {
   position: relative;
   display: flex;
-  flex-direction: column;
   border: 1px solid var(--g2-line);
   background: var(--g2-panel);
   color: inherit;
   text-decoration: none;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 .g2-cab:hover, .g2-cab:focus-visible { border-color: rgba(242, 237, 226, 0.32); }
 .g2-cab:focus-visible { outline: 2px solid var(--g2-blue); outline-offset: 2px; }
 
-/* the reel, playing itself as attract mode */
+/* the reel, whole, playing itself as attract mode */
 .g2-screen {
   position: relative;
-  aspect-ratio: 430 / 520;
+  flex: 0 0 auto;
+  width: clamp(128px, 38%, 236px);
+  aspect-ratio: 430 / 764;
   overflow: hidden;
   background: var(--g2-bg);
-  border-bottom: 1px solid var(--g2-line);
+  border-right: 1px solid var(--g2-line);
 }
 .g2-screen-inner {
   position: absolute;
@@ -90,39 +91,23 @@
   transform-origin: center;
   pointer-events: none;
 }
-.g2-screen::after {
-  /* a soft fade top and bottom so the cropped reel sits in the card */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(var(--g2-bg) 0, transparent 14%, transparent 80%, var(--g2-panel) 100%);
-  pointer-events: none;
-}
-.g2-demo {
-  position: absolute;
-  left: 12px;
-  top: 12px;
-  z-index: 2;
-  font-size: 12px;
-  color: var(--g2-dim);
-  background: rgba(8, 9, 11, 0.8);
-  padding: 4px 7px;
-}
 
-.g2-cab-body { display: flex; flex-direction: column; gap: 10px; padding: 18px 18px 20px; flex: 1; }
+.g2-cab-body { display: flex; flex-direction: column; gap: 10px; padding: clamp(16px, 2.4vw, 28px); flex: 1; min-width: 0; }
 .g2-cab-top { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .g2-cab-n { font-size: 13px; color: var(--g2-faint); }
-.g2-cab h2 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
-.g2-cab-line { margin: 0; font-size: 15px; line-height: 1.45; color: var(--g2-dim); }
-.g2-cab-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 8px; }
+.g2-cab h2 { margin: 0; font-size: clamp(26px, 2.6vw, 36px); font-weight: 800; letter-spacing: -0.02em; }
+.g2-cab-line { margin: 0; font-size: clamp(15px, 1.3vw, 17px); line-height: 1.4; }
+.g2-cab-goal { margin: 0; font-size: 14px; line-height: 1.5; color: var(--g2-dim); }
+@media (max-width: 520px) { .g2-cab-goal { display: none; } }
+.g2-cab-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: auto; padding-top: 10px; }
 .g2-cab-best { font-size: 13px; color: var(--g2-faint); }
 .g2-cab-best b { color: var(--g2-bone); font-weight: 600; }
 .g2-play-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
+  padding: 11px 18px;
+  font-size: 15px;
   font-weight: 600;
   background: var(--g2-bone);
   color: var(--g2-bg);
@@ -313,5 +298,54 @@
   .g2-body { gap: 0; }
 }
 
-/* phones: a shorter demo window, so a card fits on one screen */
-@media (max-width: 759px) { .g2-screen { aspect-ratio: 430 / 400; } }
+
+/* ============================================== rules, drawn rather than listed */
+
+.g2-card { max-width: 360px; }
+.g2-rules { margin: 4px 0 0; padding: 0; list-style: none; counter-reset: r; display: grid; gap: 10px; }
+.g2-rules li {
+  counter-increment: r;
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--g2-dim);
+}
+.g2-rules li::before {
+  content: counter(r);
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--g2-bg);
+  background: var(--g2-bone);
+}
+
+.g2-caps { margin: 6px 0 0; padding: 12px 0 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px 16px; border-top: 1px solid var(--g2-line); font-size: 13px; color: var(--g2-dim); }
+.g2-caps li { display: flex; align-items: center; gap: 7px; }
+.g2-capset { display: flex; gap: 3px; }
+.g2-caps kbd {
+  min-width: 26px;
+  height: 26px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  font: 600 13px/1 var(--font-archivo), system-ui, sans-serif;
+  color: var(--g2-bone);
+  background: linear-gradient(rgba(242, 237, 226, 0.12), rgba(242, 237, 226, 0.05));
+  border: 1px solid rgba(242, 237, 226, 0.22);
+  border-bottom-width: 3px;
+}
+.g2-caps kbd.is-wide { padding: 0 9px; font-size: 12px; }
+
+/* the keycap strip under the board while you play */
+.g2-strip { flex: 0 0 52px; display: flex; align-items: center; justify-content: center; border-top: 1px solid var(--g2-line); }
+.g2-strip .g2-caps { margin: 0; padding: 0; border: 0; gap: 8px 22px; color: var(--g2-faint); }
+.g2-strip kbd { min-width: 24px; height: 24px; font-size: 12px; }
+
+.g2-fams.is-compact ul { gap: 6px 12px; font-size: 12px; }
+.g2-fams.is-compact i { width: 12px; }
+.g2-icon { font: 700 15px/1 var(--font-archivo), system-ui, sans-serif; }

@@ -11,10 +11,11 @@ import { Families } from "./shell";
 import { META, ORDER, type GameId } from "./meta";
 
 /**
- * The cabinets. Each card plays its reel as attract mode, cropped to the
- * middle of the 9:16 stage and scaled to the card's width, so the four games
- * explain themselves before anyone reads a rule. The reels only run while the
- * card is on screen.
+ * The cabinets, two to a row on a wide screen and one at a time below that.
+ * Each card plays its reel as attract mode, WHOLE (the first cut cropped the
+ * middle of the 9:16 stage, which cut Break's paddle out of its own demo), so
+ * the four games explain themselves before anyone reads a rule. The reels
+ * only run while the card is on screen.
  */
 export function Intro({ marks }: { marks: Marks }) {
   const [bests, setBests] = useState<Record<string, number>>({});
@@ -29,6 +30,7 @@ export function Intro({ marks }: { marks: Marks }) {
   return (
     <div className="g2">
       <section className="g2-intro">
+        <div className="g2-wrap">
         <div className="g2-hero">
           <div>
             <p className="g2-eyebrow">Four small games</p>
@@ -53,6 +55,7 @@ export function Intro({ marks }: { marks: Marks }) {
           Your best scores are kept in this browser only. The tools are the ones listed on the About page, and their
           marks belong to their owners.
         </p>
+        </div>
       </section>
     </div>
   );
@@ -83,7 +86,6 @@ function Cabinet({ id, marks, best }: { id: GameId; marks: Marks; best: number }
   return (
     <Link href={`/stack-games-v2/${id}`} className="g2-cab" aria-label={`Play ${m.title}`}>
       <div className="g2-screen" ref={screen} aria-hidden="true">
-        <span className="g2-demo">Demo</span>
         {onScreen && (
           <div className="g2-screen-inner" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>
             {reel}
@@ -96,6 +98,7 @@ function Cabinet({ id, marks, best }: { id: GameId; marks: Marks; best: number }
           <span className="g2-cab-n">{m.n}</span>
         </div>
         <p className="g2-cab-line">{m.line}</p>
+        <p className="g2-cab-goal">{m.goal}</p>
         <div className="g2-cab-foot">
           <span className="g2-cab-best">{best ? <>Your best <b>{best}</b></> : "Not played yet"}</span>
           <span className="g2-play-btn">

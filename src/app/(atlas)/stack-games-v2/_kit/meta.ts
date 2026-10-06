@@ -12,7 +12,8 @@ export const META: Record<
     line: string;
     goal: string;
     how: string[];
-    keys: [string, string][];
+    /** keycaps: each entry is the caps to draw, then what they do */
+    keys: [string[], string][];
     touch: string;
     /** the self-playing reel shown on the intro card */
     reel: "tetris" | "cascade" | "break" | "merge";
@@ -29,11 +30,11 @@ export const META: Record<
       "Every ten rows the bricks fall faster.",
     ],
     keys: [
-      ["← →", "Move"],
-      ["↑ or X", "Turn"],
-      ["↓", "Drop faster"],
-      ["Space", "Drop now"],
-      ["P", "Pause"],
+      [["←", "→"], "Move"],
+      [["↑"], "Turn"],
+      [["↓"], "Faster"],
+      [["Space"], "Drop"],
+      [["P"], "Pause"],
     ],
     touch: "On a phone, use the buttons under the well. Tap the well to turn.",
     reel: "tetris",
@@ -49,9 +50,9 @@ export const META: Record<
       "Pops set off by falling bricks score more each time they chain.",
     ],
     keys: [
-      ["Drag", "Swap with a neighbour"],
-      ["Click, click", "Swap two neighbours"],
-      ["P", "Pause"],
+      [["Drag"], "Swap with a neighbour"],
+      [["Click", "Click"], "Or pick two"],
+      [["P"], "Pause"],
     ],
     touch: "Drag a brick towards the one you want to swap it with.",
     reel: "cascade",
@@ -67,9 +68,10 @@ export const META: Record<
       "Clear the wall and a faster one is built.",
     ],
     keys: [
-      ["Mouse or ← →", "Move the paddle"],
-      ["Click or Space", "Launch"],
-      ["P", "Pause"],
+      [["Mouse"], "Paddle"],
+      [["←", "→"], "Or the keys"],
+      [["Space"], "Launch"],
+      [["P"], "Pause"],
     ],
     touch: "Slide your finger anywhere to move the paddle. Tap to launch.",
     reel: "break",
@@ -85,8 +87,8 @@ export const META: Record<
       "A new tool arrives after every slide.",
     ],
     keys: [
-      ["Arrows or WASD", "Slide"],
-      ["P", "Pause"],
+      [["←", "↑", "↓", "→"], "Slide"],
+      [["P"], "Pause"],
     ],
     touch: "Swipe anywhere on the board to slide.",
     reel: "merge",
