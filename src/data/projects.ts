@@ -29,16 +29,24 @@ import type { Topic } from "./topics";
 export type ProjectVisibility = "live" | "draft";
 
 /**
- * A draft's place in the launch plan (see /plan). Only "month-1" exists so far:
- * a draft the plan expects to publish in the month after launch. Visibility is
- * unchanged, a candidate is still a draft, gated and unlisted for the public;
- * this only labels it for editors and groups it in their listings.
+ * How near a draft is to publishing, as the editors see it. Visibility is
+ * unchanged: a draft with a stage is still a draft, gated and unlisted for the
+ * public. This only tags its card for editors and groups their listings.
+ *
+ *  - "ready"       finished enough to publish; listed straight after the live ones
+ *  - "needs-work"  wanted, but not publishable as it stands; listed after those
+ *
+ * A draft with no stage is just a draft and sorts below both.
  */
-export type ProjectStage = "month-1";
+export type ProjectStage = "ready" | "needs-work";
 
 export const STAGE_LABEL: Record<ProjectStage, string> = {
-  "month-1": "Month 1 candidate",
+  ready: "Ready",
+  "needs-work": "Needs work",
 };
+
+/** The order the staged drafts are read in. Also the order of the two groups. */
+export const STAGE_ORDER: ProjectStage[] = ["ready", "needs-work"];
 
 /**
  * What a project IS, as opposed to what it is about.
@@ -126,6 +134,7 @@ export const projects: Project[] = [
     kind: "tool",
     status: "live",
     visibility: "draft",
+    stage: "ready",
     path: "/cymatics-simulator",
     image: "/projects/cymatics-simulator.jpg", // the simulator's own render, 140 Hz
     cta: "Open the simulator",
@@ -157,6 +166,7 @@ export const projects: Project[] = [
     kind: "story",
     status: "live",
     visibility: "draft",
+    stage: "needs-work",
     path: "/throat-singing-quantum",
     image: "/projects/throat-singing-quantum.jpg",
     cta: "Read the story",
@@ -180,6 +190,7 @@ export const projects: Project[] = [
     kind: "game",
     status: "in-progress",
     visibility: "draft",
+    stage: "ready",
     path: "/stack-games",
     image: "/projects/stack-games.jpg",
     cta: "Play the boards",
@@ -200,7 +211,6 @@ export const projects: Project[] = [
     // "Forthcoming" instead of its cta.
     status: "live",
     visibility: "draft",
-    stage: "month-1",
     path: "/horizon-scan",
     image: "/projects/horizon-scan.jpg",
     cta: "Open the scan",
@@ -278,6 +288,7 @@ export const projects: Project[] = [
     kind: "visuals",
     status: "in-progress",
     visibility: "draft",
+    stage: "ready",
     path: "/futures-in-figures",
     image: "/projects/futures-in-figures.jpg",
     cta: "See the charts",
@@ -294,6 +305,7 @@ export const projects: Project[] = [
     kind: "visuals",
     status: "in-progress",
     visibility: "draft",
+    stage: "ready",
     path: "/interactive-quantum-interference",
     image: "/projects/interactive-quantum-interference.jpg",
     cta: "Drop into the water",
@@ -341,7 +353,6 @@ export const projects: Project[] = [
     kind: "story",
     status: "live",
     visibility: "draft",
-    stage: "month-1",
     path: "/magnifica",
     image: "/projects/magnifica.jpg",
   },
@@ -357,6 +368,7 @@ export const projects: Project[] = [
     kind: "game",
     status: "live",
     visibility: "draft",
+    stage: "needs-work",
     path: "/theodds", // self-contained bundle served within this site (physically at /odds-of-surviving-ai/)
     image: "/projects/odds-of-surviving-ai.jpg",
     cta: "Play the odds",
@@ -591,6 +603,7 @@ export const projects: Project[] = [
     kind: "tool",
     status: "live",
     visibility: "draft",
+    stage: "needs-work",
     path: "/actually-hard-questions", // hand-authored static bundle, served within this site
     image: "/projects/actually-hard-questions.jpg",
   },
@@ -606,6 +619,7 @@ export const projects: Project[] = [
     kind: "story",
     status: "live",
     visibility: "draft",
+    stage: "needs-work",
     path: "/underground-intelligence", // the full project, served within this site
     image: "/projects/underground-intelligence.jpg",
   },
@@ -651,6 +665,7 @@ export const projects: Project[] = [
     kind: "tool",
     status: "live",
     visibility: "draft",
+    stage: "ready",
     path: "/sourcelibrary",
     image: "/projects/sourcelibrary.jpg",
     cta: "Open the shelf",
@@ -731,17 +746,42 @@ export const homepageProjects: Project[] = liveProjects.filter(
   (p) => !OFF_HOMEPAGE.includes(p.id),
 );
 
-/** Unpublished work, listed only for a signed-in editor. Month-1 candidates
- *  first, since they are the drafts nearest to publishing. */
-export const draftProjects: Project[] = projectsOrdered
-  .filter((p) => p.visibility === "draft")
-  .sort((a, b) => Number(Boolean(b.stage)) - Number(Boolean(a.stage)));
+/**
+ * The running order inside the staged groups, stated here for the same reason
+ * LIVE_ORDER is: the dates on the cards stay real. A staged draft missing from
+ * this list keeps its date position at the end of its group.
+ */
+const DRAFT_ORDER = [
+  // ready
+  "cymatics-simulator",
+  "interactive-quantum-interference",
+  "futures-in-figures",
+  "stack-games",
+  "sourcelibrary",
+  // needs work
+  "odds-of-surviving-ai",
+  "underground-intelligence",
+  "actually-hard-questions",
+  "throat-singing-quantum",
+];
 
-/** The drafts the plan expects to publish in the month after launch. */
-export const month1Candidates: Project[] = draftProjects.filter((p) => p.stage === "month-1");
+/** Unpublished work, listed only for a signed-in editor: ready first, then the
+ *  ones that need work, then every other draft, newest first. */
+export const draftProjects: Project[] = (() => {
+  const group = (p: Project) => (p.stage ? STAGE_ORDER.indexOf(p.stage) : STAGE_ORDER.length);
+  const rank = new Map(DRAFT_ORDER.map((id, i) => [id, i] as const));
+  return projectsOrdered
+    .filter((p) => p.visibility === "draft")
+    .sort((a, b) => group(a) - group(b) || (rank.get(a.id) ?? 1e6) - (rank.get(b.id) ?? 1e6));
+})();
 
-/** Drafts with no place in the plan yet. */
-export const unscheduledDrafts: Project[] = draftProjects.filter((p) => !p.stage);
+/** Drafts at one stage, in running order. */
+export function draftsAt(stage: ProjectStage): Project[] {
+  return draftProjects.filter((p) => p.stage === stage);
+}
+
+/** Drafts with no stage yet. */
+export const unstagedDrafts: Project[] = draftProjects.filter((p) => !p.stage);
 
 /** The list for the current viewer: editors get everything, the public gets live only. */
 export function visibleProjects(isEditor: boolean): Project[] {

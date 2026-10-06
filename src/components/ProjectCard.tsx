@@ -1,15 +1,33 @@
 import Link from "next/link";
-import { liveProjects, formatProjectDate, KIND_LABEL, STAGE_LABEL, type Project } from "@/data/projects";
+import {
+  liveProjects,
+  formatProjectDate,
+  KIND_LABEL,
+  STAGE_LABEL,
+  type Project,
+  type ProjectStage,
+} from "@/data/projects";
 
 // Fully token-driven (futures-atlas-core): every size/space/colour/font references
 // a semantic token, so the style-guide panel drives every dimension. Structural
 // utilities (flex/grid/absolute/aspect) are layout, not design values.
 
-/** The LIVE / DRAFT flag, only ever rendered for a signed-in editor. A draft
- *  with a place in the launch plan says so: "Draft · Month 1 candidate". */
+/**
+ * The flag on a card, only ever rendered for a signed-in editor. Four states:
+ * Live, Ready, Needs work, Draft. The two staged ones take a categorical token
+ * each so they read apart from Live's accent and from a plain draft's ink at a
+ * glance; those tokens sit at a middle lightness in both themes, so their text
+ * is the always-dark ink rather than a colour that flips.
+ */
+const STAGE_TONE: Record<ProjectStage, string> = {
+  ready: "var(--data-3)",
+  "needs-work": "var(--data-4)",
+};
+
 function VisibilityTag({ project }: { project: Project }) {
   const draft = project.visibility === "draft";
-  const label = draft ? (project.stage ? `Draft · ${STAGE_LABEL[project.stage]}` : "Draft") : "Live";
+  const stage = draft ? project.stage : undefined;
+  const label = !draft ? "Live" : stage ? STAGE_LABEL[stage] : "Draft";
   return (
     <span
       className="absolute left-0 top-0 z-[2] inline-flex items-center gap-1.5"
@@ -17,8 +35,8 @@ function VisibilityTag({ project }: { project: Project }) {
         margin: "var(--space-4)",
         padding: "5px 10px",
         borderRadius: "2px",
-        background: draft ? "var(--text)" : "var(--accent)",
-        color: draft ? "var(--bg)" : "var(--paper, #fff)",
+        background: stage ? STAGE_TONE[stage] : draft ? "var(--text)" : "var(--accent)",
+        color: stage ? "var(--fa-ink)" : draft ? "var(--bg)" : "var(--paper, #fff)",
         fontFamily: "var(--font-mono)",
         fontSize: "var(--text-label)",
         textTransform: "uppercase",

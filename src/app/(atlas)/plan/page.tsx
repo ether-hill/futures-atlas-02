@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/Container";
 import { Reveal } from "@/components/Reveal";
-import { liveProjects, month1Candidates, type Project } from "@/data/projects";
+import { liveProjects, projects, type Project } from "@/data/projects";
 import { OG_IMAGES } from "@/lib/og";
 
 export const metadata: Metadata = {
@@ -27,7 +27,8 @@ export const metadata: Metadata = {
  *
  * The project lists are read from src/data/projects.ts rather than typed here,
  * so a card's thumbnail and title are the ones the site actually shows. The
- * month-1 list is every draft carrying `stage: "month-1"`.
+ * month-1 list is named here by id: it is this plan's list, and no longer a
+ * tag on the projects themselves.
  */
 
 const head = "font-mono text-[11px] uppercase tracking-[0.18em] text-accent-deep";
@@ -43,7 +44,10 @@ function itemOf(p: Project): Item {
 /** What launches: every live project, in the order the public shelf reads. */
 const LAUNCH: Item[] = liveProjects.map(itemOf);
 
-const MONTH_1: Item[] = month1Candidates.map(itemOf);
+const MONTH_1: Item[] = ["horizon-scan", "magnifica"]
+  .map((id) => projects.find((p) => p.id === id))
+  .filter((p): p is Project => p !== undefined)
+  .map(itemOf);
 
 /** Month 0's to-do list, everything that has to be true before the site ships. */
 const MONTH_0_TODO = [
