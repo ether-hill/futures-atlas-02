@@ -84,7 +84,7 @@ function Cabinet({ id, marks, best }: { id: GameId; marks: Marks; best: number }
     <Merge marks={marks} />;
 
   return (
-    <Link href={`/stack-games-v2/${id}`} className="g2-cab" aria-label={`Play ${m.title}`}>
+    <Link href={`/stack-games/${id}`} className="g2-cab" aria-label={`Play ${m.title}`}>
       <div className="g2-screen" ref={screen} aria-hidden="true">
         {onScreen && (
           <div className="g2-screen-inner" style={{ transform: `translate(-50%, -50%) scale(${scale})` }}>

@@ -1,25 +1,24 @@
 import type { Metadata } from "next";
 import "../../mocks/stack-games/games.css";
-import { Sheet } from "../../mocks/stack-games/Sheet";
+import "./_kit/v2.css";
+import { loadMarks } from "../../mocks/stack-games/marks";
+import { Intro } from "./_kit/Intro";
 
 /**
- * The Stack, as four games — the project page.
+ * The stack, as four games: the playable version. The self-playing reels it
+ * grew out of still live in src/app/mocks/stack-games (the Instagram posts and
+ * the recorder use them) and play here as each card's attract mode.
  *
- * The games themselves live in `src/app/mocks/stack-games/`, where they were
- * built and where `scripts/record-stack-game.mjs` still films them. This route
- * is the same contact sheet pointed at its own boards, so a reader of the
- * project never follows a link into the editors-only area. Nothing is
- * duplicated: one Sheet, one set of games, two places they are served from.
- *
- * Draft. `visibility: "draft"` in src/data/projects.ts is what gates this URL —
- * see the middleware — and it is mirrored in public/atlas-nav.js.
+ * The intro is four cabinets. Each one runs its game's reel as attract mode,
+ * the way an arcade machine plays itself until someone puts a coin in, so the
+ * rules are visible before a word is read.
  */
 export const metadata: Metadata = {
   title: "The stack, as four games. Futures Atlas",
-  description:
-    "Four brick games built out of one inventory: every tool this studio works with, read four different ways.",
+  description: "Four small games built out of one inventory: every tool this studio works with.",
+  robots: { index: false },
 };
 
-export default function StackGamesPage() {
-  return <Sheet base="/stack-games" />;
+export default function StackGamesV2() {
+  return <Intro marks={loadMarks()} />;
 }

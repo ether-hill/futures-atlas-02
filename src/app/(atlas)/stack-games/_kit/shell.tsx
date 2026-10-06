@@ -140,7 +140,7 @@ export function GameShell({
       `}</style>
 
       <header className="g2-bar">
-        <Link href="/stack-games-v2" className="g2-back">
+        <Link href="/stack-games" className="g2-back">
           <span aria-hidden="true">&#8592;</span> All games
         </Link>
         <h1 className="g2-bar-title">{meta.title}</h1>
@@ -224,7 +224,7 @@ export function GameShell({
                       <button type="button" className="g2-go" onClick={start} autoFocus>
                         Play again
                       </button>
-                      <Link href="/stack-games-v2" className="g2-ghost">
+                      <Link href="/stack-games" className="g2-ghost">
                         Try another game
                       </Link>
                     </>
