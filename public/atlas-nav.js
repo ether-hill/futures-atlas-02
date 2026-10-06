@@ -70,7 +70,7 @@
   }
 
   var CSS = [
-    ".fa-consent{position:fixed;z-index:10000;left:16px;bottom:16px;max-width:380px;",
+    ".fa-consent{position:fixed;z-index:10000;right:16px;bottom:16px;max-width:380px;",
     "box-sizing:border-box;padding:18px 18px 16px;background:rgba(23,24,27,.97);color:rgba(243,241,236,.92);",
     "border:1px solid rgba(243,241,236,.16);border-radius:2px;box-shadow:0 10px 40px rgba(0,0,0,.35);",
     "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;",
@@ -84,7 +84,10 @@
     ".fa-consent button:hover{border-color:rgba(243,241,236,.6)}",
     ".fa-consent .fa-consent__yes{background:#f3f1ec;color:#17181b;border-color:#f3f1ec}",
     ".fa-consent button:focus-visible{outline:2px solid #6ea8e8;outline-offset:2px}",
-    "@media (max-width:520px){.fa-consent{left:12px;right:12px;bottom:12px;max-width:none}}"
+    /* phones: a short strip, title run into the text, both buttons on one line */
+    "@media (max-width:520px){.fa-consent{left:10px;right:10px;bottom:10px;max-width:none;padding:11px 12px 10px;font-size:13px;line-height:1.4}",
+    ".fa-consent p{margin:0 0 9px}.fa-consent strong{display:inline;margin:0 4px 0 0;font-size:13px}",
+    ".fa-consent__row{flex-wrap:nowrap}.fa-consent button{flex:1;min-height:36px;padding:0 10px}}"
   ].join("");
 
   function showBanner() {
