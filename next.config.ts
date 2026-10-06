@@ -89,6 +89,8 @@ const nextConfig: NextConfig = {
         // …/solo is the same bundle with the global bar and footer left off, for
         // sharing the fields on their own. The page reads the path itself.
         // /interference/solo REDIRECTS now; see redirects() below.
+        // Interactive Quantum Interference — hand-authored static bundle (click or webcam pinch)
+        { source: "/interactive-quantum-interference", destination: "/interactive-quantum-interference/index.html" },
         { source: "/superposition", destination: "/superposition/index.html" },
         // Throat singing and quantum physics — hand-authored static bundle (article + the Overtone instrument)
         { source: "/throat-singing-quantum", destination: "/throat-singing-quantum/index.html" },
@@ -177,8 +179,11 @@ const nextConfig: NextConfig = {
           // goes to other origins as the bare origin. Same-origin navigation
           // keeps the whole path, which is what the internal pages rely on.
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-          // Nothing on the site takes a picture or asks where you are, so those
-          // are switched off outright, for this page and for anything it frames.
+          // Nothing on the site asks where you are, so that is switched off
+          // outright, for this page and for anything it frames. The camera is
+          // (self) because /interactive-quantum-interference tracks your hand
+          // to drop into the pond; with camera=() the browser refuses
+          // getUserMedia without ever showing the permission prompt.
           // The microphone is (self) rather than () because the Overtone
           // visualiser at /throat-singing-quantum listens to you sing; denying
           // it here would break that page silently, with no console error that
@@ -186,7 +191,7 @@ const nextConfig: NextConfig = {
           // out: ignored by current browsers, harmless, still worth stating.
           {
             key: "Permissions-Policy",
-            value: "camera=(), geolocation=(), microphone=(self), interest-cohort=()",
+            value: "camera=(self), geolocation=(), microphone=(self), interest-cohort=()",
           },
         ],
       },

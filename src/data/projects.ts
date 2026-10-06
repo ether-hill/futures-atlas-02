@@ -269,6 +269,38 @@ export const projects: Project[] = [
     cta: "Open the shop",
   },
   {
+    id: "futures-in-figures",
+    title: "Futures in Figures",
+    tagline:
+      "Short, shareable charts about quantum computing and AI. Each one answers one question with real data, and says how sure the numbers are.",
+    year: "2026",
+    date: "2026-10-05",
+    field: "Data & evidence",
+    topics: ["Quantum", "AI"],
+    kind: "visuals",
+    status: "in-progress",
+    visibility: "draft",
+    path: "/futures-in-figures",
+    image: "/projects/futures-in-figures.jpg",
+    cta: "See the charts",
+  },
+  {
+    id: "interactive-quantum-interference",
+    title: "Interactive Quantum Interference",
+    tagline:
+      "Drop into the water yourself, with a click or a pinch in front of your webcam, and watch ripples add up and cancel out.",
+    year: "2026",
+    date: "2026-10-06",
+    field: "Waves & optics",
+    topics: ["Quantum"],
+    kind: "visuals",
+    status: "in-progress",
+    visibility: "draft",
+    path: "/interactive-quantum-interference",
+    image: "/projects/interactive-quantum-interference.jpg",
+    cta: "Drop into the water",
+  },
+  {
     id: "interference",
     title: "Quantum Interference Visuals",
     tagline:

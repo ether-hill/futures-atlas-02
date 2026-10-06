@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Qubits vs quality</title>
+<link rel="stylesheet" href="../../templates/frame.css">
+<script src="../../vendor/d3.min.js"></script>
+</head>
+<body>
+<script type="module">
+import { mountPiece, span } from "../../templates/frame.js";
+import { VARIANTS } from "../../templates/variants.js";
+import { latticeWaves } from "../../templates/site-art.js";
+
+const d3 = window.d3;
+const SOURCE = "*Company figure, not peer-reviewed. †Stricter test: about 20% lower on the others' basis. Sources: 8 peer-reviewed papers, 5 company documents. Accessed 5 Oct 2026.";
+
+const NAME = {
+  "google-sycamore-2019": "Google Sycamore†",
+  "ustc-zuchongzhi-2021": "USTC Zuchongzhi†",
+  "ibm-osprey-2022": "IBM Osprey",
+  "harvard-evered-2023": "Harvard/MIT atoms",
+  "quantinuum-h2-2023": "Quantinuum H2",
+  "ibm-condor-2023": "IBM Condor",
+  "ibm-heron-r1-2023": "IBM Heron r1",
+  "caltech-6100-2024": "Caltech",
+  "quantinuum-h2-2024": "Quantinuum H2",
+  "atom-msft-2024": "Atom/Microsoft*",
+  "google-willow-2024": "Google Willow*",
+  "ustc-zuchongzhi3-2024": "USTC Zuchongzhi 3†",
+  "ibm-heron-r3-2025": "IBM Heron r3",
+  "quantinuum-helios-2025": "Quantinuum Helios",
+};
+// one colour per kind of machine (a whole group, so several hues are fine)
+const MOD = {
+  "trapped ion": { c: "var(--d1)", t: "Trapped ions" },
+  "superconducting": { c: "var(--d2)", t: "Superconducting" },
+  "neutral atom": { c: "var(--d3)", t: "Neutral atoms" },
+};
+
+function ranked({ el, width, height, format, data }) {
+  const ig = format === "ig";
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+  const rows = data.devices.filter((d) => d.err != null).sort((a, b) => a.err - b.err);
+  const none = data.devices.filter((d) => d.err == null).sort((a, b) => b.qubits - a.qubits);
+
+  // legend
+  let lx = 0;
+  for (const k of ["trapped ion", "superconducting", "neutral atom"]) {
+    svg.append("rect").attr("x", lx).attr("y", 0).attr("width", 22).attr("height", 22).attr("fill", MOD[k].c);
+    const t = svg.append("text").attr("class", "lbl").attr("x", lx + 32).attr("y", 11).attr("dy", "0.34em").style("font-size", "24px").text(MOD[k].t);
+    lx += 32 + t.node().getComputedTextLength() + 32;
+  }
+
+  const boxH = ig ? 230 : 0;
+  const top = 64, bottom = height - boxH - (ig ? 30 : 10);
+  const nameW = ig ? 250 : 260, chipW = 124;
+  const x0 = nameW + chipW + 20;
+  const right = ig ? width : width * 0.62;
+  const x = d3.scaleLinear().domain([0, 7]).range([x0, right - (ig ? 250 : 230)]);
+  const y = d3.scaleBand().domain(rows.map((d) => d.id)).range([top, bottom]).padding(0.22);
+  const bh = y.bandwidth();
+
+  const parts = rows.map((d, i) => {
+    const cy = y(d.id) + bh / 2;
+    svg.append("text").attr("class", "lbl").attr("x", 0).attr("y", cy).attr("dy", "0.34em").style("font-size", "26px").style("font-weight", 700).text(NAME[d.id]);
+    // qubit-count chip
+    svg.append("rect").attr("x", nameW).attr("y", cy - 19).attr("width", chipW - 10).attr("height", 38).attr("rx", 19).attr("fill", "var(--grid)");
+    svg.append("text").attr("x", nameW + (chipW - 10) / 2).attr("y", cy).attr("dy", "0.34em").attr("text-anchor", "middle")
+      .style("font-size", "21px").style("fill", "var(--ink-body)").text(`${d.qubits} qubits`);
+    const bar = svg.append("rect").attr("x", x0).attr("y", cy - bh / 2).attr("height", bh)
+      .attr("fill", MOD[d.modality].c);
+    const val = svg.append("text").attr("y", cy).attr("dy", "0.34em").style("font-size", "34px").style("font-weight", 800).style("letter-spacing", "-0.02em").style("fill", "var(--ink)");
+    val.append("tspan").text(d3.format(".2~r")(d.err));
+    val.append("tspan").attr("dx", 10).style("font-size", "20px").style("font-weight", 500).style("fill", "var(--graphite)").text(MOD[d.modality].t.toLowerCase().replace(/s$/, ""));
+    return { d, bar, val, i };
+  });
+  svg.append("line").attr("x1", x0).attr("x2", x0).attr("y1", top - 8).attr("y2", bottom).attr("stroke", "var(--hairline)");
+  svg.append("text").attr("class", "lbl-sub").attr("x", x0).attr("y", top - 22).style("font-size", "20px").text("errors per 1,000");
+
+  // the big machines with no number
+  const box = svg.append("g").attr("transform", ig ? `translate(0,${height - boxH + 10})` : `translate(${width * 0.66},${top})`);
+  const bw = ig ? width : width * 0.34, bhh = ig ? boxH - 20 : bottom - top;
+  box.append("rect").attr("width", bw).attr("height", bhh).attr("fill", "rgba(255,255,255,.04)").attr("stroke", "var(--hairline)");
+  box.append("text").attr("x", 28).attr("y", 52).style("font-size", ig ? "40px" : "36px").style("font-weight", 800).style("letter-spacing", "-0.02em").style("fill", "var(--ink)").text("No average error rate given");
+  const subl = box.append("text").attr("x", 28).attr("y", 88).style("fill", "var(--graphite)").style("opacity", 1).style("font-size", "22px").text(ig ? "Qubit counts. IBM says 57 of 176 Heron r3 pairs are under 1 per 1,000." : null);
+  if (!ig) ["Qubit counts. IBM says 57 of 176 Heron r3", "pairs are under 1 per 1,000."].forEach((l, k) => subl.append("tspan").attr("x", 28).attr("dy", k ? "1.25em" : 0).text(l));
+  none.forEach((d, i) => {
+    const cx = ig ? 28 + i * (bw - 40) / 5 : 28 + (i % 2) * (bw - 40) / 2;
+    const cy = ig ? 150 : 168 + Math.floor(i / 2) * 84;
+    box.append("text").attr("x", cx).attr("y", cy).style("font-size", "44px").style("font-weight", 800).style("letter-spacing", "-0.02em").style("fill", "var(--hl)").text(d3.format(",")(d.qubits));
+    box.append("text").attr("x", cx).attr("y", cy + 30).style("font-size", "21px").style("font-weight", 500).style("fill", "var(--ink)").text(NAME[d.id]);
+    box.append("text").attr("x", cx).attr("y", cy + 54).style("fill", "var(--graphite)").style("font-size", "18px").text(d.id === "caltech-6100-2024" && ig ? "ran no 2-qubit gates" : "");
+  });
+
+  return {
+    duration: 0.4 + rows.length * 0.18 + 1.8,
+    seek(t) {
+      parts.forEach(({ d, bar, val, i }) => {
+        const p = span(t, 0.4 + i * 0.18, 1.3 + i * 0.18);
+        const v = d.err * p;
+        bar.attr("width", Math.max(0, x(v) - x0));
+        val.attr("x", x(v) + 14).attr("opacity", span(t, 1.0 + i * 0.18, 1.4 + i * 0.18));
+      });
+      box.attr("opacity", span(t, 0.4 + rows.length * 0.18 + 0.4, 0.4 + rows.length * 0.18 + 1.2));
+    },
+  };
+}
+
+mountPiece({
+  slug: "qubits-vs-quality",
+  title: "Qubits vs quality",
+  series: "The quantum landscape",
+  variants: VARIANTS,
+  variant: "field",
+  // this piece's own background: a port of /generatives "latticeWaves"
+  source: SOURCE,
+  async load() {
+    const all = await d3.csv("../../data/qubits-vs-quality/clean.csv");
+    const num = (v) => (v === "" || v == null ? null : +v);
+    const k = (v) => (num(v) == null ? null : num(v) * 1000);
+    const devices = all.filter((r) => r.physical_qubits !== "" && !(r.record_type === "logical_demo" && r.twoq_error === "")).map((r) => ({
+      id: r.id, modality: r.modality, year: +r.year,
+      // errors held as errors per 1,000 gates (published fraction x 1000)
+      qubits: +r.physical_qubits, err: k(r.twoq_error), claim: r.source_type === "company_claim",
+    }));
+    const missing = devices.filter((d) => !NAME[d.id]);
+    if (missing.length) throw new Error(`no display name for ${missing.map((d) => d.id)}`);
+    // count the sources of the rows the chart draws, not everything consulted
+    const drawn = all.filter((r) => devices.some((d) => d.id === r.id));
+    const peer = new Set(drawn.filter((r) => r.source_type === "peer_reviewed").map((r) => r.doi)).size;
+    const comp = new Set(drawn.filter((r) => r.source_type === "company_claim").map((r) => r.url)).size;
+    if (peer !== 8 || comp !== 5) throw new Error(`footer source counts out of date: ${peer} peer-reviewed, ${comp} company`);
+    // "the two biggest machines here" must both be in the no-number box
+    const big2 = [...devices].sort((a, b) => b.qubits - a.qubits).slice(0, 2);
+    if (big2.some((d) => d.err != null)) throw new Error("box copy out of date: a top-2 machine now has an error rate");
+    return { devices, all };
+  },
+  slides: [
+    {
+      id: "hook", formats: ["ig", "x"],
+      titleSize: { ig: 88, x: 76 },
+      title: "Which quantum computers make the fewest errors?",
+      sub: "Errors per 1,000 two-qubit operations. Shorter is better.",
+      alt: "Ranked bar chart of two-qubit gate errors per 1,000 operations for 9 quantum computers, fewest first: Quantinuum Helios 0.79, Quantinuum H2 1.6 and 1.8, Google Willow 3.3, USTC Zuchongzhi 3.0 3.8, Harvard/MIT 5.2, Atom Computing and Microsoft 5.6, USTC Zuchongzhi 5.9, Google Sycamore 6.2. A box lists machines with no published error rate: Caltech 6,100 qubits, IBM Condor 1,121, IBM Osprey 433, IBM Heron r3 156, IBM Heron r1 133.",
+      draw: ranked,
+      bg: (ctx, W, H, t, f) => latticeWaves(ctx, W, H, t, f === "ig" ? { corner: { cx: 1.02, cy: 0.02, r: 0.6 } } : { corner: { cx: 1.0, cy: 0.05, r: 0.5 } }),
+    },
+    {
+      id: "sources",
+      title: "How to read this",
+      html: (f, data) => {
+        const rows = [...new Map(data.all.map((r) => [r.doi || r.url, r])).values()];
+        const ref = (r) => `${r.citation}${r.doi ? `, doi:${r.doi}` : `, ${r.url.replace(/^https?:\/\//, "")}`}${r.source_type === "company_claim" ? " (company claim)" : ""}`;
+        return `
+        <h3>What's measured</h3>
+        <p>How often an operation on two qubits goes wrong, as each lab published it. Fewer is better. Labs test in different ways, so treat close numbers as a tie.</p>
+        <h3>Caveats</h3>
+        <ul>
+          <li>*Company figures, not peer-reviewed. Atom Computing's figure leaves out 2.7 per 1,000 lost atoms.</li>
+          <li>IBM shows live error rates on its cloud dashboard, but not in these announcements. For Heron r3 it says 57 of 176 qubit pairs are under 1 per 1,000.</li>
+          <li>A hand-picked set of 14 machines, not every quantum computer.</li>
+        </ul>
+        <p class="ref" style="font-size:16px;line-height:1.4">${rows.map(ref).join(". ")}. Accessed 5 Oct 2026.</p>`;
+      },
+    },
+  ],
+});
+</script>
+</body>
+</html>
