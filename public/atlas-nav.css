@@ -211,6 +211,15 @@ html.dark { --fa-nav-accent: #3b93d5; }
 }
 .fa-shell__navlink:hover, .fa-shell__navlink.is-active { opacity: 1; }
 
+/* Instagram and X, quiet icons after the links; in the sheet below 900px */
+.fa-shell__socials { display: inline-flex; align-items: center; gap: 2px; margin-left: 4px; }
+.fa-shell__social {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 5px;
+  color: currentColor; opacity: 0.66;
+}
+.fa-shell__social:hover { opacity: 1; }
+
 /* circular theme toggle */
 .fa-shell__toggle {
   display: inline-flex;
@@ -647,12 +656,15 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
   min-height: 44px; /* a finger's worth, which the pill's padding alone is not */
 }
 .fa-sheet__themeicon { display: inline-flex; }
+.fa-sheet__social { display: flex; gap: 22px; margin: 22px 0 0; font-size: 15px; font-weight: 500; }
+.fa-sheet__social a { color: inherit; text-decoration: none; padding: 10px 0; }
 
 /* stagger: each item fades/rises in, delayed by its --i (reverses fast on close) */
 .fa-sheet__link,
 .fa-sheet__title,
 .fa-sheet__sublink,
-.fa-sheet__theme {
+.fa-sheet__theme,
+.fa-sheet__social {
   opacity: 0;
   transform: translateY(14px);
   transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1), transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
@@ -660,7 +672,8 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
 .fa-sheet.is-open .fa-sheet__link,
 .fa-sheet.is-open .fa-sheet__title,
 .fa-sheet.is-open .fa-sheet__sublink,
-.fa-sheet.is-open .fa-sheet__theme {
+.fa-sheet.is-open .fa-sheet__theme,
+.fa-sheet.is-open .fa-sheet__social {
   opacity: 0.62;
   transform: none;
   transition-delay: calc(var(--i) * 55ms + 90ms);
@@ -670,7 +683,7 @@ html.dark.fa-menu-open .fa-shell.is-clear { color: #f3f1ec; }
 .fa-sheet.is-open .fa-sheet__theme { opacity: 1; }
 .fa-sheet.is-open .fa-sheet__title { opacity: 0.5; }
 @media (prefers-reduced-motion: reduce) {
-  .fa-sheet, .fa-sheet__link, .fa-sheet__title, .fa-sheet__sublink, .fa-sheet__theme, .fa-shell__burger span { transition: none; }
+  .fa-sheet, .fa-sheet__link, .fa-sheet__title, .fa-sheet__sublink, .fa-sheet__theme, .fa-sheet__social, .fa-shell__burger span { transition: none; }
 }
 
 /* A phone held sideways is about 375px tall, and the sheet at full size does

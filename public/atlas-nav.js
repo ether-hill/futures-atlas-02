@@ -30,8 +30,8 @@
     { name: "Dramaturge", path: "/dramaturge", draft: true },
     { name: "Shop", path: "/shelflife", draft: true },
     { name: "Quantum Interference Visuals", path: "/interference" },
-    { name: "Interactive Quantum Interference", path: "/interactive-quantum-interference", draft: true },
-    { name: "Futures in Figures", path: "/futures-in-figures", draft: true },
+    { name: "Interactive Quantum Interference", path: "/interactive-quantum-interference" },
+    { name: "Futures in Figures", path: "/futures-in-figures" },
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Throat singing and quantum physics", path: "/throat-singing-quantum", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },
@@ -47,7 +47,7 @@
     { name: "Quantum Lag", path: "/quantum-lag", theme: "dark", draft: true },
     { name: "Quantum Dominance", path: "/quantum-dominance", draft: true },
     { name: "Woodchipper Futures", path: "/woodchipper", draft: true },
-    { name: "The stack, as four games", path: "/stack-games", draft: true },
+    { name: "The stack, as four games", path: "/stack-games" },
     { name: "Swipe the Future", path: "/swipe-the-future" },
     { name: "Swipe the Future v1", path: "/swipe-v1", draft: true },
     { name: "Social Composer", path: "/social-composer", draft: true },
@@ -166,6 +166,17 @@
       (activeLink(l.path) ? ' aria-current="page"' : "") + ">" + l.name + "</a>";
   }).join("");
 
+  // The Atlas's own accounts, same pair as the footer (scripts/gen-footer.mjs).
+  var SOCIAL = [
+    { name: "Instagram", href: "https://www.instagram.com/futuresatlas/",
+      icon: '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>' },
+    { name: "X", href: "https://x.com/thefuturesatlas",
+      icon: '<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M17.8 2.5h3.2l-7 8 8.2 11h-6.4l-5-6.6-5.8 6.6H1.8l7.5-8.6L1.4 2.5h6.6l4.6 6.1 5.2-6.1Zm-1.1 17.1h1.8L7.4 4.3H5.5l11.2 15.3Z"/></svg>' },
+  ];
+  var socialHtml = SOCIAL.map(function (s) {
+    return '<a class="fa-shell__social" href="' + s.href + '" target="_blank" rel="noopener" aria-label="Futures Atlas on ' + s.name + '" title="' + s.name + '">' + s.icon + "</a>";
+  }).join("");
+
   var crumbHtml = "";
   if (isProject) {
     var items = FA_LISTED.map(function (x) {
@@ -196,7 +207,7 @@
       crumbHtml +
     "</div>" +
     '<nav class="fa-shell__right" aria-label="Primary">' +
-      '<div class="fa-shell__nav">' + navlinks + "</div>" +
+      '<div class="fa-shell__nav">' + navlinks + '<span class="fa-shell__socials">' + socialHtml + "</span></div>" +
       '<button type="button" class="fa-shell__toggle" aria-label="Toggle theme"></button>' +
       // No account button. The bar is the site's front door and a profile icon
       // on it offers a sign-in to people who have nothing to sign in to. Sign
@@ -229,6 +240,9 @@
     if (IS_EDITOR) {
       out.push('<button type="button" class="fa-sheet__theme fa-sheet__profile" style="--i:' + (i++) + '"><span>Sign out</span></button>');
     }
+    out.push('<p class="fa-sheet__social" style="--i:' + (i++) + '">' + SOCIAL.map(function (s) {
+      return '<a href="' + s.href + '" target="_blank" rel="noopener">' + s.name + " &#8599;</a>";
+    }).join("") + "</p>");
     // Empty host: the ONE share widget is moved in here at menu widths rather
     // than a second copy being built. Two share tools would be two sets of
     // handlers to keep in step, and they already drifted once as two footers.
