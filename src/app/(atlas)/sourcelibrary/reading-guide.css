@@ -149,6 +149,19 @@
 .anc-seg { transition: fill 300ms; outline: none; }
 .anc-seg:focus-visible { stroke: var(--c-accent); stroke-width: 2; }
 
+/* Each of these is written twice, vh then svh. A browser without svh (Safari
+   before 15.4) drops the second line whole and keeps the first; without the
+   first the scroll that drives the five views would have no length at all and
+   the page would be stuck on the circuit. */
+.anc-hero {
+  min-height: calc(100vh - var(--fa-nav-h));
+  min-height: calc(100svh - var(--fa-nav-h));
+}
+.anc-travel {
+  height: calc(var(--views) * 100vh);
+  height: calc(var(--views) * 100svh);
+}
+
 /* ---- masthead: fifty covers on one line, drifting ---- */
 
 .anc-shelf {
@@ -176,6 +189,7 @@
 }
 .anc-shelf-book {
   display: block;
+  height: clamp(92px, 15vh, 150px);
   height: clamp(92px, 15svh, 150px);
   padding: 0;
   border: 0;

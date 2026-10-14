@@ -23,6 +23,11 @@
   font-family: var(--font-archivo), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
+/* The games are always dark, whatever the site theme. The site's own heading
+   rule colours every h1 to h6 with the theme's text colour, which in the light
+   theme is near-black: the page title and the game names were dark on dark.
+   Headings in here take the games' own ink instead. */
+.g2 :is(h1, h2, h3, h4, h5, h6) { color: var(--g2-bone); }
 
 /* ===================================================================== intro */
 
@@ -349,3 +354,23 @@
 .g2-fams.is-compact ul { gap: 6px 12px; font-size: 12px; }
 .g2-fams.is-compact i { width: 12px; }
 .g2-icon { font: 700 15px/1 var(--font-archivo), system-ui, sans-serif; }
+
+/* ============================================================ too small to play */
+
+/* Over everything, when the screen cannot hold the well: a phone held sideways,
+   or a window squeezed too short. The game underneath is paused. */
+.g2-cramped {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 10px;
+  padding: clamp(20px, 6vw, 64px);
+  background: var(--g2-bg);
+  color: var(--g2-bone);
+}
+.g2-cramped h2 { margin: 0; font-size: clamp(22px, 5vw, 34px); font-weight: 800; line-height: 1.1; letter-spacing: -0.02em; }
+.g2-cramped p { margin: 0 0 6px; max-width: 44ch; font-size: 15px; line-height: 1.55; color: var(--g2-dim); }

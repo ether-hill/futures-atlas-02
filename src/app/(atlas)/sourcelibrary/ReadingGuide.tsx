@@ -296,19 +296,21 @@ export function ReadingGuide() {
     <div className="bg-surface pb-[clamp(56px,8vw,110px)]">
       {/* ------------------------------------------------------------ masthead */}
       {/* One screen, and little on it: what this is, one line that keeps
-          changing, and the books themselves standing on a shelf. */}
+          changing, and the books themselves standing on a shelf. The title and
+          the gaps follow the screen's height as well as its width, so a short
+          laptop screen still shows the shelf rather than pushing it off. */}
       <header
-        className="flex flex-col"
-        style={{ minHeight: "calc(100svh - var(--fa-nav-h))" }}
+        // anc-hero is a full screen under the nav, with a vh fallback (reading-guide.css)
+        className="anc-hero flex flex-col"
       >
-        <Container className="flex flex-1 flex-col justify-center pb-[clamp(28px,4vw,56px)] pt-[clamp(40px,6vw,88px)]">
+        <Container className="flex flex-1 flex-col justify-center pb-[clamp(20px,4vw,56px)] pt-[clamp(28px,6vw,88px)] supports-[height:1svh]:pb-[clamp(20px,min(4vw,4svh),56px)] supports-[height:1svh]:pt-[clamp(28px,min(6vw,7svh),88px)]">
           <p className="text-[13.5px] font-semibold text-graphite">
             A reading guide · {SHELF_BOOKS.length} books from the Source Library · {FIRST_YEAR} to {LAST_YEAR}
           </p>
-          <h1 className="mt-[clamp(14px,1.8vw,26px)] max-w-[13ch] text-[clamp(42px,7.4vw,116px)] font-extrabold leading-[0.93] tracking-[-0.032em] text-ink text-balance">
+          <h1 className="mt-[clamp(14px,1.8vw,26px)] max-w-[13ch] text-[clamp(42px,7.4vw,116px)] supports-[height:1svh]:text-[clamp(42px,min(7.4vw,11.5svh),116px)] font-extrabold leading-[0.93] tracking-[-0.032em] text-ink text-balance">
             The ancestors of the questions we work on
           </h1>
-          <div className="mt-[clamp(28px,4vw,60px)] grid gap-x-[clamp(32px,6vw,96px)] gap-y-7 min-[980px]:grid-cols-2 min-[980px]:items-start">
+          <div className="mt-[clamp(22px,4vw,60px)] supports-[height:1svh]:mt-[clamp(22px,min(4vw,5svh),60px)] grid gap-x-[clamp(32px,6vw,96px)] gap-y-7 min-[980px]:grid-cols-2 min-[980px]:items-start">
             <p
               className="max-w-[54ch]"
               style={{ fontSize: "var(--text-lead)", lineHeight: "var(--lh-snug)", color: "var(--text-body)" }}
@@ -385,13 +387,13 @@ export function ReadingGuide() {
                 </div>
 
                 {/* what the five colours mean, wherever you are */}
-                <ul className="flex list-none flex-wrap items-center gap-x-4 gap-y-1 p-0 min-[1180px]:ml-auto">
+                <ul className="flex list-none flex-wrap items-center gap-x-4 gap-y-0 p-0 min-[1180px]:ml-auto">
                   {SHELF_CATEGORIES.map((c) => (
                     <li key={c.key}>
                       <button
                         type="button"
                         onClick={() => toThread(c.key)}
-                        className="flex items-center gap-1.5 text-[12.5px] font-semibold text-graphite hover:text-ink"
+                        className="flex min-h-[32px] items-center gap-1.5 text-[12.5px] font-semibold text-graphite hover:text-ink"
                       >
                         <i className="block h-[9px] w-[9px]" style={{ background: CAT_COLOR[c.key] }} />
                         <span className="min-[680px]:hidden">{c.short}</span>
@@ -469,7 +471,7 @@ export function ReadingGuide() {
         </div>
 
         {/* the scroll the pinned stage is read against: one stretch per view */}
-        <div aria-hidden style={{ height: `${LAYOUTS.length * SCROLL_PER_VIEW * 100}svh` }} />
+        <div aria-hidden className="anc-travel" style={{ "--views": LAYOUTS.length * SCROLL_PER_VIEW } as CSSProperties} />
       </div>
 
       <ReadingList selected={selected} onPick={pick} />

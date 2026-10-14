@@ -46,6 +46,19 @@ body {
 /* everything sits below the global bar, whose height atlas-nav.css declares */
 #pond { position: fixed; inset: 0; top: var(--fa-nav-h, 64px); width: 100%; height: 100%; display: block; cursor: crosshair; }
 #marks, #cursors { position: fixed; inset: 0; pointer-events: none; }
+/* shown instead of the pond when the browser cannot draw it */
+.notice {
+  position: fixed; inset: var(--fa-nav-h, 64px) 0 0 0; z-index: 5;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 12px;
+  padding: clamp(20px, 6vw, 72px); background: var(--bg); color: var(--text);
+}
+.notice[hidden] { display: none; }
+.notice h2 { margin: 0; font-size: clamp(24px, 3.4vw, 40px); font-weight: 800; line-height: 1.08; letter-spacing: -0.02em; max-width: 20ch; }
+.notice p { margin: 0; max-width: 48ch; font-size: 16px; line-height: 1.6; color: var(--text-body); }
+.notice button { margin-top: 6px; color: var(--bg); background: var(--text); border: 0; border-radius: var(--radius); padding: 11px 18px; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+.notice button[hidden] { display: none; }
+.bar button:disabled { opacity: 0.55; cursor: default; }
+body.is-down .head, body.is-down .bar, body.is-down .cam, body.is-down #marks, body.is-down #cursors { display: none !important; }
 #marks { top: var(--fa-nav-h, 64px); }
 
 .src-mark {
@@ -143,7 +156,14 @@ body {
 }
 @media (max-width: 679px) {
   .cam { bottom: auto; top: calc(var(--fa-nav-h, 64px) + var(--gutter)); width: 140px; }
-  .head { right: calc(140px + 2 * var(--gutter)); }
+  /* the title only gives up its right-hand side while the camera is there to fill it */
+  body.hands-on .head { right: calc(140px + 2 * var(--gutter)); }
+}
+/* No camera option on a phone: hands need the phone propped up and a hand held
+   in front of it. A phone here is a screen whose short side is under 600px,
+   whichever way it is held. A tablet, and anything with a mouse, keeps the choice. */
+@media (max-width: 599px), (pointer: coarse) and (max-height: 599px) {
+  #inputs { display: none; }
 }
 </style>
 </head>
@@ -151,13 +171,18 @@ body {
 
 <canvas id="pond" aria-label="A pool of water. Click or tap to drop into it."></canvas>
 <div id="marks"></div>
+<div class="notice" id="notice" role="alert" hidden>
+  <h2></h2>
+  <p></p>
+  <button type="button" hidden>Reload the page</button>
+</div>
 <div id="cursors"></div>
 
 <header class="head">
   <h1>Interactive Quantum Interference</h1>
   <p id="hint">Tap the water to drop into it. Hold to let it drip.</p>
-  <button type="button" class="about-toggle" id="aboutToggle" aria-expanded="true" aria-controls="about">Hide explainer</button>
-  <section class="about" id="about" aria-label="What this is">
+  <button type="button" class="about-toggle" id="aboutToggle" aria-expanded="false" aria-controls="about">What is this?</button>
+  <section class="about" id="about" aria-label="What this is" hidden>
     <p>When ripples cross, they add up. High meets high and the water rises. High meets low and it goes flat. That is interference, and light and electrons do it too.</p>
     <p>Try two steady sources and find the flat lines.</p>
   </section>
@@ -169,7 +194,7 @@ body {
     <button type="button" data-mode="source" aria-pressed="false">Steady sources</button>
   </div>
   <div class="group" role="group" aria-label="Colour" id="palettes"></div>
-  <div class="group" role="group" aria-label="How you drop">
+  <div class="group" role="group" aria-label="How you drop" id="inputs">
     <button type="button" data-input="click" aria-pressed="true">Click</button>
     <button type="button" data-input="hands" aria-pressed="false">Hands (camera)</button>
   </div>
@@ -190,7 +215,28 @@ body {
 import { startHands } from "./hands.js";
 
 const pond = document.getElementById("pond");
-POND.init(pond);
+/* If this browser or device cannot draw the water, say so in words and take
+   the controls away; the page used to stay blank with every button dead. */
+function fail(heading, text, reload) {
+  const n = document.getElementById("notice");
+  n.querySelector("h2").textContent = heading;
+  n.querySelector("p").textContent = text;
+  n.querySelector("button").hidden = !reload;
+  n.hidden = false;
+  document.body.classList.add("is-down");
+}
+document.querySelector("#notice button").addEventListener("click", () => location.reload());
+try {
+  POND.init(pond);
+} catch (err) {
+  console.error(err);
+  fail("The water can't be drawn in this browser", "It needs WebGL, which is switched off or missing here. Try the current version of Chrome, Safari, Firefox or Edge, or open it on another device.", false);
+}
+/* a phone short of memory can take the graphics back mid-run */
+pond.addEventListener("webglcontextlost", (e) => {
+  e.preventDefault();
+  fail("The water stopped", "Your device took the graphics memory back, which happens when it runs low. Reload to start again.", true);
+});
 
 /* ── mode ── */
 const HINTS = {
@@ -275,6 +321,7 @@ const INPUT_HINT = "Pinch your thumb and first finger together to drop. To go ba
 function showInput(which) {
   document.querySelectorAll("[data-input]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.input === which)));
   cam.classList.toggle("is-on", which === "hands");
+  document.body.classList.toggle("hands-on", which === "hands");
   document.getElementById("hint").textContent = which === "hands" ? INPUT_HINT : HINTS[mode];
 }
 
@@ -297,6 +344,12 @@ async function useHands() {
   if (starting || stopHands) return;
   starting = true; cancel = false;
   showInput("hands");
+  /* The model is a few megabytes from a CDN and the camera needs a yes: on a
+     slow line, or if the prompt went unanswered, "Loading" can sit there with
+     no end. After a while say so, and point at the way back. */
+  const slow = setTimeout(() => {
+    if (starting) status.textContent = "Still loading. If your browser asked for the camera, answer it. Otherwise go back to clicking.";
+  }, 12000);
   try {
     stopHands = await startHands({
       video, preview: document.getElementById("preview"), cursors,
@@ -309,6 +362,7 @@ async function useHands() {
     });
     if (cancel) cameraOff();
   } catch (err) {
+    clearTimeout(slow);
     starting = false;
     if (err && err.name === "Cancelled") return;
     console.error(err);
@@ -317,25 +371,33 @@ async function useHands() {
       : "Hand tracking could not start.";
     setTimeout(() => { if (!stopHands) showInput("click"); }, 4000);
   }
+  clearTimeout(slow);
   starting = false;
 }
 document.querySelectorAll("[data-input]").forEach((b) => b.addEventListener("click", () => {
   if (b.dataset.input === "hands") useHands(); else useClick();
 }));
+/* No camera API at all (an old browser, or a page not served over https): the
+   button says so rather than failing after a press. */
+if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
+  const hb = document.querySelector('[data-input="hands"]');
+  hb.disabled = true;
+  hb.textContent = "Hands need a camera, not available here";
+}
 document.getElementById("camOff").addEventListener("click", useClick);
 /* leaving the page (a link, back, closing the tab) switches the camera off */
 addEventListener("pagehide", useClick);
 
-/* ── explainer, open on a first visit, remembered after ── */
+/* ── explainer: shut until someone asks for it ──
+   It lives behind "What is this?" and opens only on a press. It used to be open
+   on a first visit, where on a phone it and the controls covered half the water. */
 const about = document.getElementById("about"), aboutBtn = document.getElementById("aboutToggle");
 function setAbout(open) {
   about.hidden = !open;
   aboutBtn.textContent = open ? "Hide explainer" : "What is this?";
   aboutBtn.setAttribute("aria-expanded", String(open));
-  try { localStorage.setItem("iv2-about", open ? "1" : "0"); } catch (e) {}
 }
 aboutBtn.addEventListener("click", () => setAbout(about.hidden));
-try { if (localStorage.getItem("iv2-about") === "0") setAbout(false); } catch (e) {}
 
 /* ── keys ── */
 addEventListener("keydown", (e) => {

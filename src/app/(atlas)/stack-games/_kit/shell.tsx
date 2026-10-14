@@ -29,6 +29,8 @@ const STAGE_W = 430;
 const STAGE_H = 764;
 const BAR_H = 56;
 const STRIP_H = 52;
+/** the smallest scale the games are still playable at */
+const MIN_PLAYABLE = 0.46;
 
 export function useBest(id: GameId) {
   const key = `sg2-best-${id}`;
@@ -79,6 +81,7 @@ export function GameShell({
   const [scale, setScale] = useState(1);
   const [touch, setTouch] = useState(false);
   const [help, setHelp] = useState(false);
+  const [cramped, setCramped] = useState<"turn" | "small" | null>(null);
   const newBest = phase === "over" && score > 0 && score >= best;
 
   useEffect(() => {
@@ -88,7 +91,12 @@ export function GameShell({
       const strip = coarse ? 0 : STRIP_H;
       const roomW = window.innerWidth - 16;
       const roomH = window.innerHeight - BAR_H - strip - 16;
-      setScale(Math.max(0.4, Math.min(roomW / STAGE_W, roomH / STAGE_H, 1.3)));
+      const raw = Math.min(roomW / STAGE_W, roomH / STAGE_H);
+      setScale(Math.max(0.4, Math.min(raw, 1.3)));
+      // Below this the bricks are too small to hit and, at the 0.4 floor, the
+      // well no longer fits the screen at all. Say so instead of showing a game
+      // that cannot be played: a phone held sideways is the usual case.
+      setCramped(raw < MIN_PLAYABLE ? (coarse && window.innerWidth > window.innerHeight ? "turn" : "small") : null);
     };
     fit();
     window.addEventListener("resize", fit);
@@ -116,6 +124,11 @@ export function GameShell({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onStart, onPause, onResume]);
+
+  // a screen that has become too small (a phone turned sideways) pauses the game
+  useEffect(() => {
+    if (cramped && phaseRef.current === "playing") onPause();
+  }, [cramped, onPause]);
 
   // a hidden tab pauses the game rather than letting it run out unattended
   useEffect(() => {
@@ -170,6 +183,20 @@ export function GameShell({
           )}
         </div>
       </header>
+
+      {cramped && (
+        <div className="g2-cramped" role="alert">
+          <h2>{cramped === "turn" ? "Turn your phone upright" : "This window is too small to play in"}</h2>
+          <p>
+            {cramped === "turn"
+              ? "These games are built for a tall screen. Hold the phone upright and the game is right where you left it."
+              : "Make the window taller, or open the game on a bigger screen. It is paused until then."}
+          </p>
+          <Link href="/stack-games" className="g2-ghost">
+            All games
+          </Link>
+        </div>
+      )}
 
       <div className="g2-body">
         <div className="g2-frame" style={{ width: STAGE_W * scale, height: STAGE_H * scale }}>
