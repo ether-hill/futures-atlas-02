@@ -14,6 +14,145 @@
   "fa-theme"): dark by default everywhere; light only if the user chose it.
   Edit THIS file to change the nav anywhere.
 */
+
+/*
+  Google Analytics (GA4, G-MZJ3PLZ4QT), behind a consent banner.
+
+  It lives here rather than in the Next layout because this is the one script
+  every surface loads, the static bundles included, so one banner and one tag
+  cover the whole site.
+
+  Nothing from Google loads until a visitor says yes. The answer is kept in
+  localStorage ("fa-consent": "yes:<ms>" | "no:<ms>", the time of the answer)
+  for twelve months, then the banner asks again. The
+  footer's "Cookie settings" (any element with data-fa-cookies) brings it back,
+  and saying no after a yes stops the tag and deletes its cookies.
+
+  The tag itself only ever loads on the production domain, so staging,
+  previews and localhost are never counted. The banner still appears there,
+  so it can be reviewed, but answering it changes nothing. The hub is a
+  client-side app, so later page changes are counted by GA4's own history
+  tracking (enhanced measurement), not by anything here.
+*/
+(function () {
+  var GA_ID = "G-MZJ3PLZ4QT";
+  var KEY = "fa-consent";
+  var host = location.hostname;
+  var PROD = host === "futures-atlas.com" || host === "www.futures-atlas.com";
+
+  var MAX_AGE = 365 * 24 * 3600 * 1000; // ask again after twelve months
+
+  function setChoice(v) { try { localStorage.setItem(KEY, v + ":" + Date.now()); } catch (e) {} }
+  function getChoice() {
+    var raw;
+    try { raw = localStorage.getItem(KEY); } catch (e) { return null; }
+    if (!raw) return null;
+    var parts = raw.split(":"), v = parts[0], t = Number(parts[1]);
+    if (v !== "yes" && v !== "no") return null;
+    // answers saved before the expiry existed carry no time: start their clock now
+    if (!t) { setChoice(v); return v; }
+    if (Date.now() - t > MAX_AGE) {
+      try { localStorage.removeItem(KEY); } catch (e) {}
+      if (v === "yes") stopGA(); // clear the old cookies until they say yes again
+      return null;
+    }
+    return v;
+  }
+
+  function loadGA() {
+    if (!PROD) return;
+    window["ga-disable-" + GA_ID] = false;
+    if (window.gtag) return; // already loaded on this page
+    var s = document.createElement("script");
+    s.async = true;
+    s.src = "https://www.googletagmanager.com/gtag/js?id=" + GA_ID;
+    document.head.appendChild(s);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", GA_ID);
+  }
+
+  function stopGA() {
+    window["ga-disable-" + GA_ID] = true;
+    // _ga and _ga_<id>, set on the registrable domain
+    document.cookie.split(";").forEach(function (c) {
+      var name = c.split("=")[0].trim();
+      if (!/^_ga/.test(name)) return;
+      var gone = name + "=; Max-Age=0; path=/";
+      document.cookie = gone;
+      document.cookie = gone + "; domain=" + host.replace(/^www\./, "");
+      document.cookie = gone + "; domain=." + host.replace(/^www\./, "");
+    });
+  }
+
+  var CSS = [
+    ".fa-consent{position:fixed;z-index:10000;right:16px;bottom:16px;max-width:380px;",
+    "box-sizing:border-box;padding:18px 18px 16px;background:rgba(23,24,27,.97);color:rgba(243,241,236,.92);",
+    "border:1px solid rgba(243,241,236,.16);border-radius:2px;box-shadow:0 10px 40px rgba(0,0,0,.35);",
+    "font-family:system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px;line-height:1.5;",
+    "opacity:0;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}",
+    ".fa-consent.is-in{opacity:1;transform:none}",
+    ".fa-consent p{margin:0 0 14px}",
+    ".fa-consent strong{display:block;margin-bottom:4px;font-size:15px;color:#f3f1ec}",
+    ".fa-consent__row{display:flex;gap:8px;flex-wrap:wrap}",
+    ".fa-consent button{font:inherit;font-weight:500;min-height:40px;padding:0 16px;border-radius:2px;cursor:pointer;",
+    "border:1px solid rgba(243,241,236,.28);background:transparent;color:#f3f1ec}",
+    ".fa-consent button:hover{border-color:rgba(243,241,236,.6)}",
+    ".fa-consent .fa-consent__yes{background:#f3f1ec;color:#17181b;border-color:#f3f1ec}",
+    ".fa-consent button:focus-visible{outline:2px solid #6ea8e8;outline-offset:2px}",
+    /* phones: a short strip, title run into the text, both buttons on one line */
+    "@media (max-width:520px){.fa-consent{left:10px;right:10px;bottom:10px;max-width:none;padding:11px 12px 10px;font-size:13px;line-height:1.4}",
+    ".fa-consent p{margin:0 0 9px}.fa-consent strong{display:inline;margin:0 4px 0 0;font-size:13px}",
+    ".fa-consent__row{flex-wrap:nowrap}.fa-consent button{flex:1;min-height:36px;padding:0 10px}}"
+  ].join("");
+
+  function showBanner() {
+    if (document.querySelector(".fa-consent")) return;
+    if (!document.getElementById("fa-consent-css")) {
+      var st = document.createElement("style");
+      st.id = "fa-consent-css";
+      st.textContent = CSS;
+      document.head.appendChild(st);
+    }
+    var box = document.createElement("div");
+    box.className = "fa-consent";
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-label", "Cookies");
+    box.innerHTML =
+      "<p><strong>Can we count visits?</strong>" +
+      "We use Google Analytics to see which pages people read. It sets cookies, " +
+      "and nothing from Google loads unless you say yes.</p>" +
+      '<div class="fa-consent__row">' +
+      '<button type="button" class="fa-consent__yes">Yes, that&rsquo;s fine</button>' +
+      '<button type="button" class="fa-consent__no">No thanks</button>' +
+      "</div>";
+    function answer(v) {
+      setChoice(v);
+      if (v === "yes") loadGA(); else stopGA();
+      box.classList.remove("is-in");
+      setTimeout(function () { box.remove(); }, 260);
+    }
+    box.querySelector(".fa-consent__yes").addEventListener("click", function () { answer("yes"); });
+    box.querySelector(".fa-consent__no").addEventListener("click", function () { answer("no"); });
+    document.body.appendChild(box);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { box.classList.add("is-in"); }); });
+  }
+
+  window.faCookieSettings = showBanner;
+  document.addEventListener("click", function (e) {
+    var t = e.target && e.target.closest && e.target.closest("[data-fa-cookies]");
+    if (t) { e.preventDefault(); showBanner(); }
+  });
+
+  var choice = getChoice();
+  if (choice === "yes") loadGA();
+  else if (choice !== "no") {
+    if (document.body) showBanner();
+    else document.addEventListener("DOMContentLoaded", showBanner);
+  }
+})();
+
 (function () {
   // pages: a project's own internal tabs, shown in the mobile sheet under the
   // project title (and as the slim desktop sub-nav, rendered by each zone).
