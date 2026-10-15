@@ -105,6 +105,7 @@ window.BUMPERS = (function () {
   // Rendered small and scaled up: soft is right for something meant to sit
   // behind the words, and every tile in the grid can afford to run live.
   var BW = 540, BH = 960;
+  var LOOP_FADE = 1.2;
   var BACKGROUNDS = [
     { id: "none", name: "Plain" },
     { id: "i:wavefronts", name: "Wavefronts", from: "Interference", slug: "wavefronts", pal: 0 },
@@ -133,12 +134,23 @@ window.BUMPERS = (function () {
       var stops = window.FIELD.PALETTES[def.pal].stops;
       var c = document.createElement("canvas"); c.width = BW; c.height = BH;
       var x = c.getContext("2d");
+      function paint(ft, alpha) {
+        r.draw(v, ft, BW, BH, stops, false);
+        x.globalAlpha = alpha;
+        x.drawImage(r.canvas, 0, r.srcY(BH), BW, BH, 0, 0, BW, BH);
+        x.globalAlpha = 1;
+      }
       return {
         canvas: c,
-        // a field is a function of time, so moving or still is just which t
-        draw: function (t) {
-          r.draw(v, t * 0.6, BW, BH, stops, false);
-          x.drawImage(r.canvas, 0, r.srcY(BH), BW, BH, 0, 0, BW, BH);
+        // a field is a function of time, so moving or still is just which t.
+        // With `loop`, the last LOOP_FADE seconds blend into the field as it was
+        // one bumper-length earlier, so frame DUR is frame 0 exactly and the
+        // clip repeats with no seam, at the speed the grid shows.
+        draw: function (t, loop) {
+          paint(t * 0.6, 1);
+          if (!loop) return;
+          var a = smooth((t - (DUR - LOOP_FADE)) / LOOP_FADE);
+          if (a > 0) paint((t - DUR) * 0.6, a);
         },
         dispose: function () {}
       };
@@ -191,7 +203,7 @@ window.BUMPERS = (function () {
       ctx.fillRect(0, 0, W, H);
 
       if (bg) {
-        if (!o.still) bg.draw(bgT);
+        if (!o.still) bg.draw(bgT, o.loop);
         else if (!stillDone) { bg.draw(2.2); stillDone = true; }
         ctx.save();
         // gain evens the backgrounds out, so one strength reads alike on each

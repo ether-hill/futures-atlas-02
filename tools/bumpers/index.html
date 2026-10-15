@@ -55,7 +55,8 @@ var st = {
   bg: q.get("bg") || "i:wavefronts",
   still: q.get("still") === "1",
   strength: q.has("strength") ? +q.get("strength") : 0.45,
-  cta: q.get("cta") || "Explore more at"
+  cta: q.get("cta") || "Explore more at",
+  loop: q.get("loop") === "1"
 };
 var out = document.getElementById("out"), bumper = null, frameNo = 0;
 
@@ -63,7 +64,7 @@ function build() {
   if (bumper) bumper.dispose();
   bumper = B.create(out, st);
   frameNo = 0;
-  var p = new URLSearchParams({ motion: st.motion, bg: st.bg, still: st.still ? "1" : "0", strength: st.strength });
+  var p = new URLSearchParams({ motion: st.motion, bg: st.bg, still: st.still ? "1" : "0", strength: st.strength, loop: st.loop ? "1" : "0" });
   if (q.has("render")) p.set("render", "1");
   history.replaceState(null, "", "?" + p);
 }
@@ -110,7 +111,7 @@ B.ready().then(function () {
   (function tick(now) {
     var t = (now - start) / 1000;
     if (t > B.DUR + 0.8) { if (looping) { start = now; t = 0; } else t = B.DUR; }
-    bumper.draw(Math.min(t, B.DUR), now / 1000);
+    bumper.draw(Math.min(t, B.DUR), st.loop ? Math.min(t, B.DUR) : now / 1000);
     requestAnimationFrame(tick);
   })(performance.now());
 });
