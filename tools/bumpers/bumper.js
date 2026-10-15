@@ -34,7 +34,8 @@ window.BUMPERS = (function () {
   var E = null;
   async function loadEngine() {
     if (E) return E;
-    var html = await (await fetch("../logo-animator/index.html")).text();
+    // the /bumpers page (scripts/gen-bumpers.mjs) inlines the engine; the local bench fetches it
+    var html = window.BUMPER_ENGINE || await (await fetch("../logo-animator/index.html")).text();
     var src = html.slice(html.indexOf("// >>> ENGINE"), html.indexOf("// <<< ENGINE"));
     // two hooks the animator does not need: a blink amount set from outside, and
     // the centre circle eased in and out of the plate
@@ -284,7 +285,7 @@ window.BUMPERS = (function () {
   }
 
   function ready() {
-    return Promise.all([import("../../dataviz/templates/site-art.js").then(function (m) { SITEART = m; }), loadEngine(), document.fonts.load("700 92px Archivo"), document.fonts.load("500 46px Archivo")]);
+    return Promise.all([import(window.BUMPER_SITEART ? URL.createObjectURL(new Blob([window.BUMPER_SITEART], { type: "text/javascript" })) : "../../dataviz/templates/site-art.js").then(function (m) { SITEART = m; }), loadEngine(), document.fonts.load("700 92px Archivo"), document.fonts.load("500 46px Archivo")]);
   }
 
   return { W: W, H: H, FPS: FPS, DUR: DUR, MOTIONS: MOTIONS, MOTION_ORDER: MOTION_ORDER, BACKGROUNDS: BACKGROUNDS, create: create, ready: ready };

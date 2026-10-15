@@ -169,4 +169,6 @@ next-env.d.ts
 
 # rendered bumper videos (tools/bumpers/render.mjs)
 /tools/bumpers/out/
-/tools/bumpers/build/
+/tools/bumpers/build/*
+# committed: the /bumpers page inlines it and the deploy has no Generatives Vite to rebuild it
+!/tools/bumpers/build/gen.js

@@ -5,10 +5,11 @@
   "scripts": {
     "gen:footer": "node scripts/gen-footer.mjs",
     "gen:logo-animator": "node scripts/gen-logo-animator.mjs",
-    "predev": "node scripts/gen-footer.mjs && node scripts/gen-logo-animator.mjs",
+    "gen:bumpers": "node scripts/gen-bumpers.mjs",
+    "predev": "node scripts/gen-footer.mjs && node scripts/gen-logo-animator.mjs && node scripts/gen-bumpers.mjs",
     "dev": "next dev",
     "build:subapps": "bash scripts/build-subapps.sh",
-    "build": "node scripts/gen-footer.mjs && node scripts/gen-logo-animator.mjs && bash scripts/build-subapps.sh && bash scripts/reset-build-cache.sh && next build",
+    "build": "node scripts/gen-footer.mjs && node scripts/gen-logo-animator.mjs && node scripts/gen-bumpers.mjs && bash scripts/build-subapps.sh && bash scripts/reset-build-cache.sh && next build",
     "start": "next start",
     "lint": "eslint",
     "peaks": "node scripts/peaks.mts"

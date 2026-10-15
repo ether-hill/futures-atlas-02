@@ -54,6 +54,7 @@ const INTERNAL_PATHS = [
   // gate covers it, on both verbs.
   "/api/mocks",
   "/logo-animator",
+  "/bumpers",
   "/design-system",
   "/style-guide",
   "/listen", // audio-reel build page (see src/components/audio-reel)
@@ -79,6 +80,7 @@ const STAGING_ONLY = [
   "/feed",
   "/api/feed",
   "/logo-animator",
+  "/bumpers",
   "/design-system",
   "/style-guide",
 ];
