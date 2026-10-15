@@ -117,7 +117,15 @@ window.BUMPERS = (function () {
     { id: "i:moire", gain: 0.8, name: "Moiré", from: "Interference", slug: "moire", pal: 3 },
     { id: "i:thin-film", gain: 0.6, name: "Thin film", from: "Interference", slug: "thin-film", pal: 0 },
     { id: "i:droplets", name: "Droplets", from: "Interference", slug: "droplets", pal: 0 },
-    { id: "p:qubits", gain: 1, pool: false, name: "Qubits post", from: "Futures in Figures: Qubits vs quality", post: "qubits" },
+    { id: "p:qubits", gain: 1, pool: false, name: "Qubits post", from: "Futures in Figures: Qubits vs quality", post: "qubits",
+      box: [0, 0, 1080, 1350], corner: { cx: 1.02, cy: 0.02, r: 0.6 } },
+    // The same mesh laid out for the bumper rather than for the post. The box
+    // keeps the post's 1080x1350 proportions, so the grid has the post's fine
+    // scale; it is centred on the mark, and for "full" scaled up to fill.
+    { id: "p:qubits-centre", gain: 1, pool: false, name: "Qubits mesh, centred", from: "Futures in Figures: Qubits vs quality", post: "qubits",
+      box: [0, 85, 1080, 1350], corner: { cx: 0.5, cy: 0.49, r: 0.55 } },
+    { id: "p:qubits-full", gain: 1, pool: false, name: "Qubits mesh, full frame", from: "Futures in Figures: Qubits vs quality", post: "qubits",
+      box: [-228, 0, 1536, 1920], corner: { cx: 0.5, cy: 0.47, r: 0.9 } },
     { id: "g:domain-warp", name: "Domain warp", from: "Generatives", gen: "domain-warp" },
     { id: "g:wave-interference", gain: 0.7, name: "Wave interference", from: "Generatives", gen: "wave-interference" },
     { id: "g:lattice-waves", gain: 1.3, name: "Lattice waves", from: "Generatives", gen: "lattice-waves" },
@@ -164,17 +172,19 @@ window.BUMPERS = (function () {
       // same 1080x1350 box at the top of the frame, so the mesh sits where it
       // sat on the post and the cut from post to bumper doesn't move it. It
       // runs at the post's speed (its loop is 271 frames).
-      var A = SITEART, PW = 1080, PH = 1350;
+      // box: where on the 1080x1920 frame the art is drawn; corner: the
+      // latticeWaves anchor and fade, in that box's own fractions
+      var A = SITEART, PW = def.box[2], PH = def.box[3];
       var fc = document.createElement("canvas"); fc.width = PW * 2; fc.height = PH * 2;
       var fx = fc.getContext("2d");
       var paintPost = function (ft, alpha) {
         fx.save(); fx.globalAlpha = alpha; fx.scale(2, 2);
         A.setLoop(POST_LOOP);
-        A.latticeWaves(fx, PW, PH, ft, { corner: { cx: 1.02, cy: 0.02, r: 0.6 } });
+        A.latticeWaves(fx, PW, PH, ft, { corner: def.corner });
         fx.restore();
       };
       return {
-        canvas: fc, box: [0, 0, PW, PH],
+        canvas: fc, box: def.box,
         draw: function (t, loop) {
           fx.clearRect(0, 0, fc.width, fc.height);
           // lines on a clear layer: the two moments are weighted 1-a and a, so
