@@ -123,9 +123,9 @@ window.BUMPERS = (function () {
     // keeps the post's 1080x1350 proportions, so the grid has the post's fine
     // scale; it is centred on the mark, and for "full" scaled up to fill.
     { id: "p:qubits-centre", gain: 1, pool: false, name: "Qubits mesh, centred", from: "Futures in Figures: Qubits vs quality", post: "qubits",
-      box: [0, 85, 1080, 1350], corner: { cx: 0.5, cy: 0.49, r: 0.55 } },
+      box: [0, 85, 1080, 1350], corner: { cx: 0.5, cy: 0.49, r: 0.55 }, slow: 2.5 },
     { id: "p:qubits-full", gain: 1, pool: false, name: "Qubits mesh, full frame", from: "Futures in Figures: Qubits vs quality", post: "qubits",
-      box: [-228, 0, 1536, 1920], corner: { cx: 0.5, cy: 0.47, r: 0.9 } },
+      box: [-228, 0, 1536, 1920], corner: { cx: 0.5, cy: 0.63, r: 1.15 }, slow: 2.5 },
     { id: "g:domain-warp", name: "Domain warp", from: "Generatives", gen: "domain-warp" },
     { id: "g:wave-interference", gain: 0.7, name: "Wave interference", from: "Generatives", gen: "wave-interference" },
     { id: "g:lattice-waves", gain: 1.3, name: "Lattice waves", from: "Generatives", gen: "lattice-waves" },
@@ -174,12 +174,13 @@ window.BUMPERS = (function () {
       // runs at the post's speed (its loop is 271 frames).
       // box: where on the 1080x1920 frame the art is drawn; corner: the
       // latticeWaves anchor and fade, in that box's own fractions
-      var A = SITEART, PW = def.box[2], PH = def.box[3];
+      // slow stretches the art's loop, so it moves that many times slower
+      var A = SITEART, PW = def.box[2], PH = def.box[3], ART_LOOP = POST_LOOP * (def.slow || 1);
       var fc = document.createElement("canvas"); fc.width = PW * 2; fc.height = PH * 2;
       var fx = fc.getContext("2d");
       var paintPost = function (ft, alpha) {
         fx.save(); fx.globalAlpha = alpha; fx.scale(2, 2);
-        A.setLoop(POST_LOOP);
+        A.setLoop(ART_LOOP);
         A.latticeWaves(fx, PW, PH, ft, { corner: def.corner });
         fx.restore();
       };
@@ -191,7 +192,7 @@ window.BUMPERS = (function () {
           // at the end only the opening frame is left
           var a = loop ? smooth((t - (DUR - LOOP_FADE)) / LOOP_FADE) : 0;
           if (a < 1) paintPost(t, 1 - a);
-          if (a > 0) paintPost(t - DUR + POST_LOOP, a);
+          if (a > 0) paintPost(t - DUR + ART_LOOP, a);
         },
         dispose: function () {}
       };
