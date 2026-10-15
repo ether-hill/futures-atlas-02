@@ -707,31 +707,8 @@ export const projectsOrdered: Project[] = [...projects].sort((a, b) =>
 /** Live projects kept off the homepage strip. They stay on /projects. */
 const OFF_HOMEPAGE = ["glossary"];
 
-/**
- * The published shelf, in the order it is read.
- *
- * Curated rather than chronological. The dates on the cards are real and stay
- * real, so the running order is stated here instead of being nudged by editing
- * them. Anything live and missing from this list keeps its date position at the
- * end, so forgetting to add an id can never hide a project.
- */
-const LIVE_ORDER = [
-  "interference",
-  "odds-of-surviving-ai",
-  "glossary",
-  "signal-reactor",
-  "quantum-spark",
-  "swipe-the-future",
-  "generatives",
-];
-
-/** Everything the public may see. */
-export const liveProjects: Project[] = (() => {
-  const rank = new Map(LIVE_ORDER.map((id, i) => [id, i] as const));
-  return projectsOrdered
-    .filter((p) => p.visibility === "live")
-    .sort((a, b) => (rank.get(a.id) ?? 1e6) - (rank.get(b.id) ?? 1e6));
-})();
+/** Everything the public may see, newest first like every other listing. */
+export const liveProjects: Project[] = projectsOrdered.filter((p) => p.visibility === "live");
 
 /**
  * The homepage strip. The same shelf, minus the projects that earn their place
@@ -744,8 +721,8 @@ export const homepageProjects: Project[] = liveProjects.filter(
 );
 
 /**
- * The running order inside the staged groups, stated here for the same reason
- * LIVE_ORDER is: the dates on the cards stay real. A staged draft missing from
+ * The running order inside the staged groups, stated here so the dates on the
+ * cards stay real. A staged draft missing from
  * this list keeps its date position at the end of its group.
  */
 const DRAFT_ORDER = [

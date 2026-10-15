@@ -159,15 +159,50 @@ body.is-down .head, body.is-down .bar, body.is-down .cam, body.is-down #marks, b
   /* the title only gives up its right-hand side while the camera is there to fill it */
   body.hands-on .head { right: calc(140px + 2 * var(--gutter)); }
 }
+/* ── start card, over the water on arrival ── */
+.start {
+  position: fixed; inset: var(--fa-nav-h, 64px) 0 0 0; z-index: 4;
+  display: grid; place-items: center; padding: var(--gutter);
+  pointer-events: none; transition: opacity 0.35s var(--ease);
+}
+.start.is-gone { opacity: 0; }
+.start[hidden] { display: none; }
+.start__card {
+  pointer-events: auto; text-align: center; width: min(30em, 100%); min-width: 0;
+  padding: clamp(22px, 4vw, 36px) clamp(22px, 4vw, 40px);
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--hairline); border-radius: var(--radius);
+}
+.start__card h2 { margin: 0; font-size: clamp(26px, 3.6vw, 40px); font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+.start__card p { margin: 10px auto 0; max-width: 26em; font-size: 16px; line-height: 1.5; color: var(--text-body); }
+.start__choices { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 22px; }
+.start__choices button {
+  display: inline-flex; align-items: center; gap: 9px;
+  font: 600 16px/1 var(--font); padding: 15px 22px; border-radius: var(--radius); cursor: pointer;
+  color: var(--text); background: transparent; border: 1px solid color-mix(in srgb, var(--text) 40%, transparent);
+}
+.start__choices button.is-main { color: var(--bg); background: var(--text); border-color: var(--text); }
+.start__choices button:hover { border-color: var(--text); }
+.start__choices button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.start__choices svg { flex: none; }
+.start .start__or { font-size: 14px; color: var(--muted); }
+body.is-starting .head > p, body.is-starting .about-toggle, body.is-starting .bar { opacity: 0; pointer-events: none; }
+.head > p, .about-toggle, .bar { transition: opacity 0.35s var(--ease); }
+
+/* the "how you drop" choice says what it is */
+.group-label { padding: 0 6px 0 8px; font-size: 13px; color: var(--muted); white-space: nowrap; }
+.bar [data-input] { display: inline-flex; align-items: center; gap: 7px; }
+
 /* No camera option on a phone: hands need the phone propped up and a hand held
    in front of it. A phone here is a screen whose short side is under 600px,
    whichever way it is held. A tablet, and anything with a mouse, keeps the choice. */
 @media (max-width: 599px), (pointer: coarse) and (max-height: 599px) {
-  #inputs { display: none; }
+  #inputs, .start [data-start="hands"] { display: none; }
 }
 </style>
 </head>
-<body>
+<body class="is-starting">
 
 <canvas id="pond" aria-label="A pool of water. Click or tap to drop into it."></canvas>
 <div id="marks"></div>
@@ -177,6 +212,24 @@ body.is-down .head, body.is-down .bar, body.is-down .cam, body.is-down #marks, b
   <button type="button" hidden>Reload the page</button>
 </div>
 <div id="cursors"></div>
+
+<div class="start" id="start">
+  <div class="start__card" role="dialog" aria-labelledby="startTitle">
+    <h2 id="startTitle">Drop into the water</h2>
+    <p>Every drop sends out ripples. Where two sets meet, they add up or cancel out.</p>
+    <div class="start__choices">
+      <button type="button" class="is-main" data-start="click">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 8-6 1.6L10 19z"/></svg>
+        <span class="start__clicklabel">Start with the mouse</span>
+      </button>
+      <button type="button" data-start="hands">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>
+        Use your hands (camera)
+      </button>
+    </div>
+    <p class="start__or">Or click straight into the water.</p>
+  </div>
+</div>
 
 <header class="head">
   <h1>Interactive Quantum Interference</h1>
@@ -195,8 +248,9 @@ body.is-down .head, body.is-down .bar, body.is-down .cam, body.is-down #marks, b
   </div>
   <div class="group" role="group" aria-label="Colour" id="palettes"></div>
   <div class="group" role="group" aria-label="How you drop" id="inputs">
-    <button type="button" data-input="click" aria-pressed="true">Click</button>
-    <button type="button" data-input="hands" aria-pressed="false">Hands (camera)</button>
+    <span class="group-label" aria-hidden="true">Drop with</span>
+    <button type="button" data-input="click" aria-pressed="true"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 8-6 1.6L10 19z"/></svg>Mouse</button>
+    <button type="button" data-input="hands" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>Hands (camera)</button>
   </div>
   <div class="group">
     <button type="button" id="clear">Clear</button>
@@ -317,7 +371,7 @@ video.addEventListener("loadedmetadata", () => {
   if (video.videoWidth) cam.style.aspectRatio = `${video.videoWidth} / ${video.videoHeight}`;
 });
 
-const INPUT_HINT = "Pinch your thumb and first finger together to drop. To go back to the mouse, press Click.";
+const INPUT_HINT = "Pinch your thumb and first finger together to drop. To go back to the mouse, press Mouse.";
 function showInput(which) {
   document.querySelectorAll("[data-input]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.input === which)));
   cam.classList.toggle("is-on", which === "hands");
@@ -398,6 +452,30 @@ function setAbout(open) {
   aboutBtn.setAttribute("aria-expanded", String(open));
 }
 aboutBtn.addEventListener("click", () => setAbout(about.hidden));
+
+/* ── start card ──
+   On arrival the water is empty and still, and nothing says it can be touched.
+   The card says so, with the two ways in side by side, while a few drops fall
+   on their own behind it. Any press on the water also closes it. */
+const start = document.getElementById("start");
+if (matchMedia("(pointer: coarse)").matches) start.querySelector(".start__clicklabel").textContent = "Start";
+if (matchMedia("(pointer: coarse)").matches) start.querySelector(".start__or").textContent = "Or tap straight into the water.";
+let started = false;
+const demo = setInterval(() => {
+  if (started || document.hidden) return;
+  const r = pond.getBoundingClientRect();
+  POND.drop(r.left + r.width * (0.2 + 0.6 * Math.random()), r.top + r.height * (0.25 + 0.6 * Math.random()), 0.7);
+}, 1400);
+function begin(how) {
+  if (started) return;
+  started = true; clearInterval(demo);
+  document.body.classList.remove("is-starting");
+  start.classList.add("is-gone");
+  setTimeout(() => { start.hidden = true; }, 380);
+  if (how === "hands") useHands();
+}
+start.querySelectorAll("[data-start]").forEach((b) => b.addEventListener("click", () => begin(b.dataset.start)));
+pond.addEventListener("pointerdown", () => begin("click"));
 
 /* ── keys ── */
 addEventListener("keydown", (e) => {
