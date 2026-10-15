@@ -12,7 +12,7 @@ export function startServer(port = Number(process.env.PORT) || 8996) {
   const server = createServer(async (req, res) => {
     let path = normalize(decodeURIComponent(new URL(req.url, "http://x").pathname));
     if (path.endsWith("/")) path += "index.html";
-    const allowed = path.startsWith("/tools/") || path.startsWith("/dataviz/fonts/") || path.startsWith("/public/interference/");
+    const allowed = path.startsWith("/tools/") || path.startsWith("/dataviz/fonts/") || path.startsWith("/public/interference/") || path.startsWith("/dataviz/templates/");
     try {
       if (!allowed) throw new Error("not here");
       const body = await readFile(join(root, path));

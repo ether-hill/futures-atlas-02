@@ -106,6 +106,8 @@ window.BUMPERS = (function () {
   // behind the words, and every tile in the grid can afford to run live.
   var BW = 540, BH = 960;
   var LOOP_FADE = 1.2;
+  var POST_LOOP = 271 / 30;  // the Futures in Figures videos' loop, in seconds
+  var SITEART = null;
   var BACKGROUNDS = [
     { id: "none", name: "Plain" },
     { id: "i:wavefronts", name: "Wavefronts", from: "Interference", slug: "wavefronts", pal: 0 },
@@ -115,6 +117,7 @@ window.BUMPERS = (function () {
     { id: "i:moire", gain: 0.8, name: "Moiré", from: "Interference", slug: "moire", pal: 3 },
     { id: "i:thin-film", gain: 0.6, name: "Thin film", from: "Interference", slug: "thin-film", pal: 0 },
     { id: "i:droplets", name: "Droplets", from: "Interference", slug: "droplets", pal: 0 },
+    { id: "p:qubits", gain: 1, pool: false, name: "Qubits post", from: "Futures in Figures: Qubits vs quality", post: "qubits" },
     { id: "g:domain-warp", name: "Domain warp", from: "Generatives", gen: "domain-warp" },
     { id: "g:wave-interference", gain: 0.7, name: "Wave interference", from: "Generatives", gen: "wave-interference" },
     { id: "g:lattice-waves", gain: 1.3, name: "Lattice waves", from: "Generatives", gen: "lattice-waves" },
@@ -155,6 +158,34 @@ window.BUMPERS = (function () {
         dispose: function () {}
       };
     }
+    if (def.post) {
+      // The Qubits vs quality post's own background: site-art.js latticeWaves
+      // with the exact arguments that post's Instagram slide uses, drawn in the
+      // same 1080x1350 box at the top of the frame, so the mesh sits where it
+      // sat on the post and the cut from post to bumper doesn't move it. It
+      // runs at the post's speed (its loop is 271 frames).
+      var A = SITEART, PW = 1080, PH = 1350;
+      var fc = document.createElement("canvas"); fc.width = PW * 2; fc.height = PH * 2;
+      var fx = fc.getContext("2d");
+      var paintPost = function (ft, alpha) {
+        fx.save(); fx.globalAlpha = alpha; fx.scale(2, 2);
+        A.setLoop(POST_LOOP);
+        A.latticeWaves(fx, PW, PH, ft, { corner: { cx: 1.02, cy: 0.02, r: 0.6 } });
+        fx.restore();
+      };
+      return {
+        canvas: fc, box: [0, 0, PW, PH],
+        draw: function (t, loop) {
+          fx.clearRect(0, 0, fc.width, fc.height);
+          // lines on a clear layer: the two moments are weighted 1-a and a, so
+          // at the end only the opening frame is left
+          var a = loop ? smooth((t - (DUR - LOOP_FADE)) / LOOP_FADE) : 0;
+          if (a < 1) paintPost(t, 1 - a);
+          if (a > 0) paintPost(t - DUR + POST_LOOP, a);
+        },
+        dispose: function () {}
+      };
+    }
     // Generatives pieces are simulations with state: they are stepped forward
     // one fixed frame at a time, and warmed up first so frame 0 is not empty
     var p = window.GEN.mount(def.gen, BW, BH, { colors: GEN_COLORS, seed: "futures-atlas" });
@@ -188,7 +219,7 @@ window.BUMPERS = (function () {
    */
   function create(canvas, opts) {
     var ctx = canvas.getContext("2d");
-    var o = Object.assign({ motion: "ringline", bg: "i:wavefronts", still: false, strength: 0.45, cta: "Explore more at" }, opts);
+    var o = Object.assign({ motion: "ringline", bg: "i:wavefronts", still: false, strength: 0.45, cta: "Explore more at", staticText: false }, opts);
     var bgDef = BACKGROUNDS.filter(function (b) { return b.id === o.bg; })[0];
     var bg = makeBackground(bgDef);
     var stillDone = false;
@@ -208,8 +239,10 @@ window.BUMPERS = (function () {
         ctx.save();
         // gain evens the backgrounds out, so one strength reads alike on each
         ctx.globalAlpha = Math.min(1, o.strength * (bgDef && bgDef.gain || 1));
-        ctx.drawImage(bg.canvas, 0, 0, W, H);
+        var box = bg.box || [0, 0, W, H];
+        ctx.drawImage(bg.canvas, box[0], box[1], box[2], box[3]);
         ctx.restore();
+        if (bgDef.pool !== false) {
         // a soft pool of the ground colour behind the mark and the words, so
         // the background stays at the edges and never under a letter
         var g = ctx.createRadialGradient(W / 2, CY + 260, 80, W / 2, CY + 260, 820);
@@ -218,12 +251,13 @@ window.BUMPERS = (function () {
         g.addColorStop(1, "rgba(23,24,27,0)");
         ctx.fillStyle = g;
         ctx.fillRect(0, 0, W, H);
+        }
       }
 
       var px = Math.round(LOGO * k);
       ctx.drawImage(drawMark(o.motion, t, px), (W - LOGO) / 2, CY - LOGO / 2, LOGO, LOGO);
 
-      function rise(at) { return smooth((t - at) / RISE); }
+      function rise(at) { return o.staticText ? 1 : smooth((t - at) / RISE); }
       var a1 = rise(WORDS[0]), a2 = rise(WORDS[1]), a3 = rise(WORDS[2]);
       text(ctx, "Futures Atlas", W / 2, CY + LOGO / 2 + 150 + 22 * (1 - a1), 92, 700, "#f2ede2", a1, -2);
       text(ctx, o.cta, W / 2, CY + LOGO / 2 + 330 + 22 * (1 - a2), 46, 500, "#b4b6bc", a2, 0);
@@ -239,7 +273,7 @@ window.BUMPERS = (function () {
   }
 
   function ready() {
-    return Promise.all([loadEngine(), document.fonts.load("700 92px Archivo"), document.fonts.load("500 46px Archivo")]);
+    return Promise.all([import("../../dataviz/templates/site-art.js").then(function (m) { SITEART = m; }), loadEngine(), document.fonts.load("700 92px Archivo"), document.fonts.load("500 46px Archivo")]);
   }
 
   return { W: W, H: H, FPS: FPS, DUR: DUR, MOTIONS: MOTIONS, MOTION_ORDER: MOTION_ORDER, BACKGROUNDS: BACKGROUNDS, create: create, ready: ready };

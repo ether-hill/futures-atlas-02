@@ -56,7 +56,8 @@ var st = {
   still: q.get("still") === "1",
   strength: q.has("strength") ? +q.get("strength") : 0.45,
   cta: q.get("cta") || "Explore more at",
-  loop: q.get("loop") === "1"
+  loop: q.get("loop") === "1",
+  staticText: q.get("words") === "static"
 };
 var out = document.getElementById("out"), bumper = null, frameNo = 0;
 
@@ -64,7 +65,7 @@ function build() {
   if (bumper) bumper.dispose();
   bumper = B.create(out, st);
   frameNo = 0;
-  var p = new URLSearchParams({ motion: st.motion, bg: st.bg, still: st.still ? "1" : "0", strength: st.strength, loop: st.loop ? "1" : "0" });
+  var p = new URLSearchParams({ motion: st.motion, bg: st.bg, still: st.still ? "1" : "0", strength: st.strength, loop: st.loop ? "1" : "0", words: st.staticText ? "static" : "rise" });
   if (q.has("render")) p.set("render", "1");
   history.replaceState(null, "", "?" + p);
 }

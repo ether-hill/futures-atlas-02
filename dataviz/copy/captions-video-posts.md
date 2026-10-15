@@ -38,15 +38,21 @@ futures-atlas.com/futures-in-figures
 
 ### Instagram
 
-More qubits isn't the same as better qubits.
+Post title: Which quantum computers make the fewest errors?
 
-Quantum computer launches lead with the qubit count. The number that tells you whether those qubits are any good is the error rate on two-qubit gates.
+Which quantum computers make the fewest errors?
 
-We collected published figures for 14 machines from 2019 to 2026. Quantinuum's 98-qubit Helios reports 0.79 errors per 1,000 gates, the lowest here. Some of the biggest counts, including IBM's 1,121-qubit Condor, were announced with no average error at all.
+Going by the published numbers, Quantinuum's trapped-ion machines. Its 98-qubit Helios reports 0.79 errors per 1,000 two-qubit gates. Google's Willow, the best superconducting chip in our set, reports 3.3.
 
-Caveat: each maker tests its own hardware in its own way, and these are best results, not everyday service. A hand-picked set, not a census.
+That error rate says more about a quantum computer than its qubit count, and some of the biggest machines don't publish it. IBM's 1,121-qubit Condor was announced with no average error at all.
+
+A caveat on the source data: every number here was measured and reported by the company or lab that built the machine. Most are in peer-reviewed papers, but peer review checks the method, not whether the machine performs like that every day. Each maker tests in its own way, and these are best results. 14 machines from 2019 to 2026, hand-picked, not a census.
+
+Should quantum companies have to report errors the same way, checked by someone else? Tell us below.
 
 Full chart and sources at futures-atlas.com/futures-in-figures (link in bio)
+
+Sources: 8 peer-reviewed papers (Nature, Physical Review Letters, Physical Review X) and 5 company documents from Google, IBM, Atom Computing and Microsoft
 
 #quantumcomputing #qubits #quantumtech #dataviz #futuresatlas
 
