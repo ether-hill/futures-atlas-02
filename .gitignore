@@ -166,3 +166,6 @@ next-env.d.ts
 # ships is the encoded webm under public/mocks/instagram, which is a fraction of
 # the size. Committing both would put the same footage in the repo twice.
 /projects/socials/
+
+# rendered bumper videos (tools/bumpers/render.mjs)
+/tools/bumpers/out/
