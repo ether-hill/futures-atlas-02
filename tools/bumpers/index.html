@@ -5,41 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bumpers</title>
 <!--
-  End-of-post bumpers for Reels: the mark does one motion and comes back to
-  rest as the exact logo, then the name and a line pointing at the site.
-
-  The mark is drawn by the logo animator's own engine (tools/logo-animator,
-  the part between >>> ENGINE and <<< ENGINE), fetched and run here, so the
-  two can never drift apart. The animator's motions loop for ever; here each
-  one is driven by eased whole turns over a fixed window instead, so frame 0
-  and the last frame are both the logo at rest.
-
-  Preview: serve the repo root (node tools/bumpers/serve.mjs) and open
-  http://localhost:8996/tools/bumpers/. Render: node tools/bumpers/render.mjs.
+  One bumper, big, and what render.mjs records. The drawing is bumper.js,
+  shared with grid.html. Preview: node tools/bumpers/serve.mjs, then
+  http://localhost:8996/tools/bumpers/ (grid at grid.html).
+  Query: motion, bg, still=1, strength, cta.
 -->
 <style>
 @font-face { font-family: "Archivo"; src: url("../../dataviz/fonts/Archivo-VF.ttf") format("truetype"); font-weight: 100 900; }
-:root {
-  /* the mark's two colours, read by the engine's readTheme() */
-  --ink: #f2ede2;
-  --stage: #17181b;
-  --accent-hex: #1777b8;
-  --lattice: transparent;
-  color-scheme: dark;
-}
+:root { --ink: #f2ede2; --stage: #17181b; --accent-hex: #1777b8; --lattice: transparent; color-scheme: dark; }
 html, body { margin: 0; background: #0c0d10; color: #f2ede2; font-family: "Archivo", system-ui, sans-serif; }
 .wrap { display: flex; gap: 28px; padding: 24px; align-items: flex-start; flex-wrap: wrap; }
-.bench { display: flex; flex-direction: column; gap: 14px; max-width: 360px; }
+.bench { display: flex; flex-direction: column; gap: 16px; max-width: 380px; }
 .bench h1 { margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.02em; }
 .bench p { margin: 0; font-size: 15px; line-height: 1.5; color: #c9c5bc; }
 .row { display: flex; flex-wrap: wrap; gap: 6px; }
-button, select, input {
-  font: 500 16px/1 "Archivo", system-ui, sans-serif; color: #f2ede2; background: #1d1e22;
-  border: 1px solid #3a3c42; border-radius: 2px; padding: 10px 12px; cursor: pointer;
-}
-input { cursor: text; width: 100%; box-sizing: border-box; }
+button, select, input { font: 500 16px/1 "Archivo", system-ui, sans-serif; color: #f2ede2; background: #1d1e22;
+  border: 1px solid #3a3c42; border-radius: 2px; padding: 10px 12px; cursor: pointer; }
+input[type=text] { cursor: text; width: 100%; box-sizing: border-box; }
 button[aria-pressed="true"] { background: #f2ede2; color: #17181b; border-color: #f2ede2; }
 label { font-size: 13px; color: #9da0a8; display: block; margin-bottom: 6px; }
+a { color: #8cc4ea; }
 canvas#out { height: min(86vh, 900px); aspect-ratio: 9 / 16; background: #17181b; box-shadow: 0 0 0 1px #2a2c31; }
 </style>
 </head>
@@ -47,177 +32,87 @@ canvas#out { height: min(86vh, 900px); aspect-ratio: 9 / 16; background: #17181b
 <div class="wrap">
   <canvas id="out" width="1080" height="1920"></canvas>
   <div class="bench">
-    <h1>Bumpers</h1>
-    <p>1080 × 1920, 30 fps, five seconds. The mark starts and ends as the logo.</p>
-    <div>
-      <label>Motion</label>
-      <div class="row" id="motions"></div>
-    </div>
-    <div>
-      <label for="cta">Line above the address</label>
-      <input id="cta" value="Explore more at">
-    </div>
-    <div class="row">
-      <button type="button" id="replay">Replay</button>
-      <button type="button" id="loop" aria-pressed="true">Loop</button>
-    </div>
+    <h1>Bumper</h1>
+    <p>1080 × 1920, 30 fps, four seconds. The mark starts and ends as the logo. <a href="grid.html">All backgrounds</a></p>
+    <div><label>Logo</label><div class="row" id="motions"></div></div>
+    <div><label for="bg">Background</label><select id="bg"></select></div>
+    <div><label>Background</label><div class="row" id="mode">
+      <button type="button" data-still="0">Moving</button><button type="button" data-still="1">Still</button></div></div>
+    <div><label for="strength">Strength <span id="sv"></span></label><input id="strength" type="range" min="0.15" max="0.9" step="0.05"></div>
+    <div><label for="cta">Line above the address</label><input id="cta" type="text"></div>
+    <div class="row"><button type="button" id="replay">Replay</button><button type="button" id="loop" aria-pressed="true">Loop</button></div>
   </div>
 </div>
 
+<script src="../../public/interference/field.js"></script>
+<script src="build/gen.js"></script>
+<script src="bumper.js"></script>
 <script>
 "use strict";
-var W = 1080, H = 1920, FPS = 30, DUR = 5;
-// the motion runs inside this window; before and after it the mark is the logo
-var M0 = 0.35, M1 = 2.65;
-
-var params = new URLSearchParams(location.search);
-var out = document.getElementById("out");
-var octx = out.getContext("2d");
-var LOGO = 500;                       // mark diameter on the 1080-wide frame, px
-var mark = document.createElement("canvas");
-mark.width = mark.height = LOGO;
-var mctx = mark.getContext("2d");
-
-function smooth(x) { x = Math.max(0, Math.min(1, x)); return x * x * (3 - 2 * x); }
-function ease(x) { x = Math.max(0, Math.min(1, x)); return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; }
-// a blink: shuts fast, opens slower (the animator's own curve)
-function blinkAt(t, at, len) {
-  var b = (t - at) / len;
-  if (b <= 0 || b >= 1) return 0;
-  return b < 0.42 ? smooth(b / 0.42) : 1 - smooth((b - 0.42) / 0.58);
-}
-
-var E; // the engine
-
-/* Each motion sets the engine's parts for a moment u in [0, 1] of the motion
-   window, and must leave everything at the logo for u = 0 and u = 1. */
-var MOTIONS = {
-  ringline: { name: "Ring and line", set: function (u, s) {
-    E.els[E.RING].phase = 360 * ease(u);
-    E.els[E.LINE].phase = -360 * ease(u);
-  }, setup: function () {
-    E.set(E.els, E.RING, { axisA: E.MARK.ringLean, axisB: 0 });
-    E.set(E.els, E.LINE, { axisA: 0, axisB: 90 });
-  } },
-  coinflip: { name: "Coin flip", set: function (u) {
-    // the centre circle lies in the plate, so mid-flip it is an ellipse; ease
-    // it into and out of the plate so the logo never jumps at either end
-    E.scene.plateMix = smooth(u / 0.18) * smooth((1 - u) / 0.18);
-    E.els[E.RING].phase = 720 * ease(u);
-  }, setup: function () {
-    E.scene.plate = true;
-    E.set(E.els, E.RING, { axisA: E.MARK.ringLean + 90, axisB: 0 });
-  } },
-  edgeball: { name: "Edge on, ball centre", set: function (u) {
-    E.els[E.RING].phase = 360 * ease(u);
-  }, setup: function () {
-    E.scene.plate = true; E.scene.coreSolid = true;
-    E.set(E.els, E.RING, { axisA: E.MARK.ringLean, axisB: 0 });
-  } },
-  blink: { name: "Blink", set: function (u, s) {
-    E.scene.close = blinkAt(s, 0.45, 0.36) + blinkAt(s, 1.25, 0.36);
-  }, setup: function () { E.els[E.BLINK].spin = true; } },
-  iris: { name: "Iris", set: function (u, s) {
-    // opens wide, shuts like a shutter, holds, opens back to the logo
-    var wide = smooth(s / 0.45) * (1 - smooth((s - 1.7) / 0.55));
-    E.els[E.RING].tilt = E.MARK.ringTilt + (20 - E.MARK.ringTilt) * wide;
-    E.scene.close = smooth((s - 0.5) / 0.38) * (1 - smooth((s - 1.45) / 0.55));
-  }, setup: function () { E.els[E.BLINK].spin = true; } }
+var B = window.BUMPERS, q = new URLSearchParams(location.search);
+var st = {
+  motion: B.MOTIONS[q.get("motion")] ? q.get("motion") : "ringline",
+  bg: q.get("bg") || "i:wavefronts",
+  still: q.get("still") === "1",
+  strength: q.has("strength") ? +q.get("strength") : 0.45,
+  cta: q.get("cta") || "Explore more at"
 };
-var ORDER = ["ringline", "coinflip", "edgeball", "blink", "iris"];
-var motion = MOTIONS[params.get("motion")] ? params.get("motion") : "ringline";
+var out = document.getElementById("out"), bumper = null, frameNo = 0;
 
-function reset() {
-  E.reset();
-  E.scene.guide = "none";
-  E.scene.close = null;
-  E.scene.plateMix = 1;
-  MOTIONS[motion].setup();
+function build() {
+  if (bumper) bumper.dispose();
+  bumper = B.create(out, st);
+  frameNo = 0;
+  var p = new URLSearchParams({ motion: st.motion, bg: st.bg, still: st.still ? "1" : "0", strength: st.strength });
+  if (q.has("render")) p.set("render", "1");
+  history.replaceState(null, "", "?" + p);
 }
 
-function text(str, x, y, size, weight, colour, alpha, spacing) {
-  octx.save();
-  octx.globalAlpha = alpha;
-  octx.font = weight + " " + size + "px Archivo";
-  octx.letterSpacing = (spacing || 0) + "px";
-  octx.textAlign = "center";
-  octx.fillStyle = colour;
-  octx.fillText(str, x, y);
-  octx.restore();
-}
+// for render.mjs: frames are drawn strictly in order, one fixed step apart
+window.BUMPER = { FPS: B.FPS, DUR: B.DUR, ready: false, frame: function (i) { bumper.draw(i / B.FPS); return out.toDataURL("image/png"); } };
 
-function draw(t) {
-  reset();
-  var s = t - M0;
-  MOTIONS[motion].set(Math.max(0, Math.min(1, s / (M1 - M0))), Math.max(0, Math.min(M1 - M0, s)));
-  E.setT(0);
-  E.drawScene(mctx, LOGO, { n: 720 });
-
-  octx.fillStyle = "#17181b";
-  octx.fillRect(0, 0, W, H);
-  var cy = 760;
-  octx.drawImage(mark, (W - LOGO) / 2, cy - LOGO / 2);
-
-  // the words come in once the mark is back at rest
-  function rise(at) { return smooth((t - at) / 0.5); }
-  var a1 = rise(2.45), a2 = rise(2.75), a3 = rise(2.95);
-  text("Futures Atlas", W / 2, cy + LOGO / 2 + 150 + 22 * (1 - a1), 92, 700, "#f2ede2", a1, -2);
-  text(document.getElementById("cta").value, W / 2, cy + LOGO / 2 + 330 + 22 * (1 - a2), 46, 500, "#9da0a8", a2, 0);
-  text("futures-atlas.com", W / 2, cy + LOGO / 2 + 420 + 22 * (1 - a3), 68, 700, "oklch(0.64 0.13 245)", a3, -1);
-}
-
-/* ---------------------------------------------------------------- engine */
-async function loadEngine() {
-  var html = await (await fetch("../logo-animator/index.html")).text();
-  var src = html.slice(html.indexOf("// >>> ENGINE"), html.indexOf("// <<< ENGINE"));
-  // two hooks the bumpers need and the animator does not: a blink amount set
-  // from outside, and the centre circle eased in and out of the plate
-  src = src.replace("function blinkClose(t) {", "function blinkClose(t) {\n    if (scene.close != null) return scene.close;");
-  src = src.replace("var carry = function (p) { return view(f(shift(p))); };",
-    "var mixd = scene.plateMix == null ? 1 : scene.plateMix;\n" +
-    "    var carry = function (p) { var a = view(shift(p)), b = view(f(shift(p))); " +
-    "return [a[0] + (b[0] - a[0]) * mixd, a[1] + (b[1] - a[1]) * mixd, a[2] + (b[2] - a[2]) * mixd]; };");
-  if (src.indexOf("scene.close") < 0 || src.indexOf("plateMix") < 0) throw new Error("engine hooks did not apply");
-  return new Function(src + "\nreturn { get els() { return els; }, scene: scene, drawScene: drawScene, set: set, MARK: MARK," +
-    " RING: RING, LINE: LINE, CORE: CORE, BLINK: BLINK, SPHERE: SPHERE," +
-    " setT: function (v) { T = v; }, reset: function () { base(false); } };")();
-}
-
-/* ------------------------------------------------------------------ bench */
-var start = performance.now(), looping = true;
-function tick(now) {
-  var t = (now - start) / 1000;
-  if (t > DUR) { if (looping) { start = now; t = 0; } else t = DUR; }
-  draw(t);
-  requestAnimationFrame(tick);
-}
-
-var holder = document.getElementById("motions");
-ORDER.forEach(function (id) {
-  var b = document.createElement("button");
-  b.type = "button"; b.textContent = MOTIONS[id].name; b.dataset.id = id;
-  b.setAttribute("aria-pressed", String(id === motion));
-  b.addEventListener("click", function () {
-    motion = id; start = performance.now();
-    holder.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x.dataset.id === id)); });
-    var q = new URLSearchParams(location.search); q.set("motion", id); history.replaceState(null, "", "?" + q);
-  });
-  holder.appendChild(b);
-});
-if (params.get("cta")) document.getElementById("cta").value = params.get("cta");
-document.getElementById("replay").addEventListener("click", function () { start = performance.now(); });
-document.getElementById("loop").addEventListener("click", function () {
-  looping = !looping; this.setAttribute("aria-pressed", String(looping));
-});
-
-// for render.mjs: draw one exact moment, no clock
-window.BUMPER = { FPS: FPS, DUR: DUR, ready: false, frame: function (i) { draw(i / FPS); return out.toDataURL("image/png"); } };
-
-Promise.all([loadEngine(), document.fonts.load("700 92px Archivo"), document.fonts.load("500 46px Archivo")]).then(function (r) {
-  E = r[0];
+B.ready().then(function () {
+  build();
   window.BUMPER.ready = true;
-  if (!params.has("render")) requestAnimationFrame(tick);
-  else draw(0);
+  if (q.has("render")) return;
+
+  var mh = document.getElementById("motions");
+  B.MOTION_ORDER.forEach(function (id) {
+    var b = document.createElement("button"); b.type = "button"; b.textContent = B.MOTIONS[id].name;
+    b.setAttribute("aria-pressed", String(id === st.motion));
+    b.addEventListener("click", function () {
+      st.motion = id; bumper.set("motion", id); start = performance.now(); build();
+      mh.querySelectorAll("button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    });
+    mh.appendChild(b);
+  });
+  var bs = document.getElementById("bg");
+  B.BACKGROUNDS.forEach(function (d) { var o = document.createElement("option"); o.value = d.id; o.textContent = d.name + (d.from ? " (" + d.from + ")" : ""); bs.appendChild(o); });
+  bs.value = st.bg;
+  bs.addEventListener("change", function () { st.bg = bs.value; build(); start = performance.now(); });
+  document.querySelectorAll("#mode button").forEach(function (b) {
+    b.setAttribute("aria-pressed", String((b.dataset.still === "1") === st.still));
+    b.addEventListener("click", function () {
+      st.still = b.dataset.still === "1"; bumper.set("still", st.still);
+      document.querySelectorAll("#mode button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    });
+  });
+  var sr = document.getElementById("strength"), sv = document.getElementById("sv");
+  sr.value = st.strength; sv.textContent = st.strength.toFixed(2);
+  sr.addEventListener("input", function () { st.strength = +sr.value; sv.textContent = st.strength.toFixed(2); bumper.set("strength", st.strength); });
+  var cta = document.getElementById("cta"); cta.value = st.cta;
+  cta.addEventListener("input", function () { st.cta = cta.value; bumper.set("cta", cta.value); });
+  document.getElementById("replay").addEventListener("click", function () { start = performance.now(); });
+  var looping = true;
+  document.getElementById("loop").addEventListener("click", function () { looping = !looping; this.setAttribute("aria-pressed", String(looping)); });
+
+  var start = performance.now();
+  (function tick(now) {
+    var t = (now - start) / 1000;
+    if (t > B.DUR + 0.8) { if (looping) { start = now; t = 0; } else t = B.DUR; }
+    bumper.draw(Math.min(t, B.DUR), now / 1000);
+    requestAnimationFrame(tick);
+  })(performance.now());
 });
 </script>
 </body>

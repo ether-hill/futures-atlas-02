@@ -1,6 +1,6 @@
-// Renders every bumper (or the ones named) to out/<motion>.mp4, frame by frame,
-// so the timing is exact whatever the machine. H.264, yuv420p, 1080x1920, 30fps.
-//   node tools/bumpers/render.mjs [ringline coinflip ...] [--cta "Read more at"]
+// Renders bumpers to out/, frame by frame, so the timing is exact whatever the
+// machine. H.264, yuv420p, 1080x1920, 30fps.
+//   node tools/bumpers/render.mjs [ringline coinflip ...] [--bg i:wavefronts] [--still] [--strength 0.45] [--cta "Read more at"]
 import { spawn } from "node:child_process";
 import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -14,8 +14,9 @@ const ffmpeg = require("ffmpeg-static");
 
 const here = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
-const ci = args.indexOf("--cta");
-const cta = ci >= 0 ? args.splice(ci, 2)[1] : null;
+function opt(name) { const i = args.indexOf(name); return i >= 0 ? args.splice(i, 2)[1] : null; }
+const cta = opt("--cta"), bg = opt("--bg") || "none", strength = opt("--strength");
+const si = args.indexOf("--still"); const still = si >= 0; if (still) args.splice(si, 1);
 const motions = args.length ? args : ["ringline", "coinflip", "edgeball", "blink", "iris"];
 const outDir = join(here, "out");
 await mkdir(outDir, { recursive: true });
@@ -26,12 +27,14 @@ const browser = await chromium.launch({ channel: "chrome" });
 const page = await browser.newPage({ viewport: { width: 1400, height: 1000 } });
 
 for (const m of motions) {
-  const q = new URLSearchParams({ motion: m, render: "1" });
+  const q = new URLSearchParams({ motion: m, render: "1", bg, still: still ? "1" : "0" });
   if (cta) q.set("cta", cta);
+  if (strength) q.set("strength", strength);
   await page.goto(`http://127.0.0.1:${port}/tools/bumpers/?${q}`);
   await page.waitForFunction(() => window.BUMPER && window.BUMPER.ready);
   const { FPS, DUR } = await page.evaluate(() => ({ FPS: BUMPER.FPS, DUR: BUMPER.DUR }));
-  const file = join(outDir, `${m}${cta ? "-" + cta.toLowerCase().replace(/[^a-z]+/g, "-").replace(/-$/, "") : ""}.mp4`);
+  const tag = [m, bg !== "none" && bg.replace(":", "-"), still && "still", cta && cta.toLowerCase().replace(/[^a-z]+/g, "-").replace(/-$/, "")].filter(Boolean).join("-");
+  const file = join(outDir, `${tag}.mp4`);
   const enc = spawn(ffmpeg, ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(FPS), "-i", "-",
     "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "16", "-preset", "slow", "-movflags", "+faststart", file],
     { stdio: ["pipe", "inherit", "inherit"] });

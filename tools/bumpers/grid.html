@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bumper backgrounds</title>
+<!-- Every background side by side, all playing. Click a tile to open it big. -->
+<style>
+@font-face { font-family: "Archivo"; src: url("../../dataviz/fonts/Archivo-VF.ttf") format("truetype"); font-weight: 100 900; }
+:root { --ink: #f2ede2; --stage: #17181b; --accent-hex: #1777b8; --lattice: transparent; color-scheme: dark; }
+html, body { margin: 0; background: #0c0d10; color: #f2ede2; font-family: "Archivo", system-ui, sans-serif; }
+header { position: sticky; top: 0; z-index: 2; display: flex; flex-wrap: wrap; gap: 14px 22px; align-items: center;
+  padding: 16px 24px; background: rgba(12,13,16,0.92); border-bottom: 1px solid #2a2c31; }
+h1 { margin: 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-right: 8px; }
+.ctl { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #9da0a8; }
+.seg { display: flex; gap: 2px; }
+button, select { font: 500 15px/1 "Archivo", system-ui, sans-serif; color: #f2ede2; background: #1d1e22;
+  border: 1px solid #3a3c42; border-radius: 2px; padding: 9px 11px; cursor: pointer; }
+button[aria-pressed="true"] { background: #f2ede2; color: #17181b; border-color: #f2ede2; }
+input[type=range] { width: 140px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 22px 18px; padding: 22px 24px 60px; }
+.tile { margin: 0; cursor: pointer; }
+.tile canvas { display: block; width: 100%; aspect-ratio: 9 / 16; background: #17181b; box-shadow: 0 0 0 1px #2a2c31; }
+.tile:hover canvas { box-shadow: 0 0 0 2px #f2ede2; }
+.tile figcaption { margin-top: 8px; font-size: 15px; font-weight: 600; }
+.tile figcaption span { display: block; margin-top: 2px; font-size: 13px; font-weight: 400; color: #9da0a8; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Bumper backgrounds</h1>
+  <div class="ctl">Background <div class="seg" id="mode">
+    <button type="button" data-still="0" aria-pressed="true">Moving</button>
+    <button type="button" data-still="1" aria-pressed="false">Still</button></div></div>
+  <div class="ctl"><label for="motion">Logo</label> <select id="motion"></select></div>
+  <div class="ctl"><label for="strength">Strength</label> <input id="strength" type="range" min="0.15" max="0.9" step="0.05" value="0.45"> <span id="sv">0.45</span></div>
+  <button type="button" id="replay">Replay</button>
+</header>
+<div class="grid" id="grid"></div>
+
+<script src="../../public/interference/field.js"></script>
+<script src="build/gen.js"></script>
+<script src="bumper.js"></script>
+<script>
+"use strict";
+var B = window.BUMPERS, tiles = [], start = performance.now();
+var sel = document.getElementById("motion");
+B.MOTION_ORDER.forEach(function (id) { var o = document.createElement("option"); o.value = id; o.textContent = B.MOTIONS[id].name; sel.appendChild(o); });
+
+B.ready().then(function () {
+  var grid = document.getElementById("grid");
+  B.BACKGROUNDS.forEach(function (def) {
+    var fig = document.createElement("figure"); fig.className = "tile";
+    var c = document.createElement("canvas"); c.width = 360; c.height = 640;
+    var cap = document.createElement("figcaption");
+    cap.innerHTML = def.name + "<span>" + (def.from || "No background") + "</span>";
+    fig.appendChild(c); fig.appendChild(cap); grid.appendChild(fig);
+    var b;
+    try { b = B.create(c, { bg: def.id }); } catch (e) { cap.innerHTML += "<span>failed: " + e.message + "</span>"; return; }
+    tiles.push(b);
+    fig.addEventListener("click", function () {
+      var q = new URLSearchParams({ bg: def.id, motion: sel.value, still: still ? "1" : "0", strength: strength.value });
+      open("./?" + q, "_blank");
+    });
+  });
+  requestAnimationFrame(tick);
+});
+
+var still = false;
+var strength = document.getElementById("strength");
+document.querySelectorAll("#mode button").forEach(function (b) {
+  b.addEventListener("click", function () {
+    still = b.dataset.still === "1";
+    document.querySelectorAll("#mode button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+    tiles.forEach(function (t) { t.set("still", still); });
+  });
+});
+sel.addEventListener("change", function () { tiles.forEach(function (t) { t.set("motion", sel.value); }); start = performance.now(); });
+strength.addEventListener("input", function () {
+  document.getElementById("sv").textContent = (+strength.value).toFixed(2);
+  tiles.forEach(function (t) { t.set("strength", +strength.value); });
+});
+document.getElementById("replay").addEventListener("click", function () { start = performance.now(); });
+
+function tick(now) {
+  // the bumper replays every 4 s plus a beat; backgrounds keep their own clock
+  var cyc = (now - start) / 1000 % (B.DUR + 0.8);
+  var bgT = (now - start) / 1000;
+  tiles.forEach(function (t) { t.draw(Math.min(cyc, B.DUR), bgT); });
+  requestAnimationFrame(tick);
+}
+</script>
+</body>
+</html>

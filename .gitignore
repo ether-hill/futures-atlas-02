@@ -169,3 +169,4 @@ next-env.d.ts
 
 # rendered bumper videos (tools/bumpers/render.mjs)
 /tools/bumpers/out/
+/tools/bumpers/build/
