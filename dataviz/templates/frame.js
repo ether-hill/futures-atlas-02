@@ -63,11 +63,19 @@ function buildFrame(piece, slide, format, theme, data) {
 export const HOLD = 4;
 export const REWIND = 1.2;
 
-function loopTime(build, t) {
+function loopTime(build, t, hold = HOLD, rewind = REWIND) {
   if (t <= build) return t;
-  if (t <= build + HOLD) return build;
-  const p = Math.min(1, (t - build - HOLD) / REWIND);
+  if (t <= build + hold) return build;
+  const p = Math.min(1, (t - build - hold) / rewind);
   return build * (1 - ease(p));
+}
+
+// The same loop started at the hold, so frame 0 is the finished chart:
+//   HOLD (finished) -> REWIND -> build -> back to frame 0.
+function fullFirst(build, hold, rewind, t) {
+  if (t <= hold) return build;
+  if (t <= hold + rewind) return build * (1 - ease((t - hold) / rewind));
+  return Math.min(build, t - hold - rewind);
 }
 
 async function draw(piece, slide, format, el, data) {
@@ -79,7 +87,9 @@ async function draw(piece, slide, format, el, data) {
   const cv = el.querySelector("canvas.bg");
   const bg = slide.bg === true ? piece.variants?.[VARIANT]?.bg : slide.bg;
   const build = anim?.duration ?? 0;
-  const total = build ? build + HOLD + REWIND : 8;
+  // per piece: a longer hold, and startFull to open on the finished chart (the thumbnail)
+  const hold = piece.hold ?? HOLD, rewind = piece.rewind ?? REWIND;
+  const total = build ? build + hold + rewind : 8;
   let paint = () => {};
   if (cv && bg) {
     // background art: drawn at 2x, re-drawn on every seek so it can move
@@ -93,7 +103,8 @@ async function draw(piece, slide, format, el, data) {
   return {
     duration: total, // a full loop
     still: build, // the finished chart, for PNG exports
-    seek: (t) => { const u = ((t % total) + total) % total; paint(u); anim?.seek(loopTime(build, u)); },
+    stillAt: piece.startFull ? hold / 2 : build + hold / 2,
+    seek: (t) => { const u = ((t % total) + total) % total; paint(u); anim?.seek(piece.startFull ? fullFirst(build, hold, rewind, u) : loopTime(build, u, hold, rewind)); },
   };
 }
 
@@ -130,7 +141,7 @@ export async function mountPiece(piece) {
     window.__duration = anim?.duration ?? 0;
     window.__seek = (t) => anim?.seek(t);
     if (anim) {
-      if (q.get("capture")) anim.seek(anim.still + HOLD / 2); // mid-hold: the finished chart
+      if (q.get("capture")) anim.seek(anim.stillAt); // mid-hold: the finished chart
       else play(anim);
     }
     window.__ready = true;

@@ -1,5 +1,8 @@
 {
   "accessed": "5 October 2026",
+  "accessedBy": {
+    "willow-magic-state": "16 October 2026"
+  },
   "q-day": [
     {
       "authors": "Mosca, M., & Piani, M.",
@@ -368,6 +371,53 @@
         {
           "what": "The 4.2x a year growth rate and its 90% range, 3.6x to 4.9x (frontier models, 2018 to May 2024)",
           "where": "section Frontier model growth has slowed, and now aligns with overall trends"
+        }
+      ]
+    }
+  ],
+  "willow-magic-state": [
+    {
+      "authors": "Rosenfeld, E., et al.",
+      "year": 2026,
+      "title": "Magic state cultivation on a superconducting quantum processor",
+      "venue": "Science",
+      "volume": "",
+      "pages": "eaee7961",
+      "doi": "10.1126/science.aee7961",
+      "url": "https://doi.org/10.1126/science.aee7961",
+      "type": "Peer-reviewed article",
+      "openAccess": "https://arxiv.org/abs/2512.13908",
+      "plotted": true,
+      "uses": [
+        {
+          "what": "99.99% accuracy, at most 1 mistake in 10,000 (state fidelity 0.9999(1))",
+          "where": "abstract"
+        },
+        {
+          "what": "8 in 100 attempts kept, 92 thrown away",
+          "where": "abstract"
+        },
+        {
+          "what": "Error cut 40 times by cultivation",
+          "where": "abstract"
+        }
+      ]
+    },
+    {
+      "authors": "Gidney, C.",
+      "year": 2025,
+      "title": "How to factor 2048 bit RSA integers with less than a million noisy qubits",
+      "venue": "arXiv preprint arXiv:2505.15917",
+      "volume": "",
+      "pages": "",
+      "doi": "",
+      "url": "https://arxiv.org/abs/2505.15917",
+      "type": "Preprint by a Google Quantum AI researcher, not peer-reviewed",
+      "plotted": true,
+      "uses": [
+        {
+          "what": "1 in 10 million: the error each magic state needs in this plan for breaking RSA-2048",
+          "where": "section Physical Costs, p. 20"
         }
       ]
     }

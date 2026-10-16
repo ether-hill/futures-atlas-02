@@ -19,11 +19,12 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = join(ROOT, "dataviz");
 const OUT = join(ROOT, "public/futures-in-figures/charts");
-const PIECES = ["q-day", "qubits-vs-quality", "training-compute"];
+const PIECES = ["q-day", "qubits-vs-quality", "training-compute", "willow-magic-state"];
 const DATA = {
   "q-day": ["clean.csv"],
   "qubits-vs-quality": ["clean.csv"],
   "training-compute": ["clean.csv", "clean-frontier.csv"],
+  "willow-magic-state": ["clean.csv"],
 };
 
 rmSync(OUT, { recursive: true, force: true });
@@ -50,6 +51,7 @@ writeFileSync(
     `// Rebuild: cd dataviz && node build-references.mjs, then node scripts/sync-futures-in-figures.mjs\n\n` +
     `export type FigureRef = { authors: string; year: number | string; title: string; venue: string; volume: string; pages: string; doi: string; url: string; pdf?: string; openAccess?: string; type: string; plotted: boolean; uses: { what: string; where: string }[] };\n\n` +
     `export const ACCESSED = ${JSON.stringify(refs.accessed)};\n\n` +
+    `// a piece made later than the rest carries its own access date\nexport const ACCESSED_BY: Record<string, string> = ${JSON.stringify(refs.accessedBy ?? {})};\n\n` +
     `export const REFERENCES: Record<string, FigureRef[]> = ${JSON.stringify(Object.fromEntries(PIECES.map((p) => [p, refs[p]])), null, 2)};\n`,
 );
 console.log(`→ ${PIECES.length} charts synced to public/futures-in-figures/charts/, references to src/data/futures-in-figures-references.ts`);

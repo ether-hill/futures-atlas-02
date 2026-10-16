@@ -26,8 +26,8 @@ function authors(list) {
   return `${names[0]}, et al.`;
 }
 
-function crossref(doi) {
-  const f = join(root, "data/qubits-vs-quality/raw/crossref", `${doi.replace("/", "_")}.json`);
+function crossref(doi, piece = "qubits-vs-quality") {
+  const f = join(root, `data/${piece}/raw/crossref`, `${doi.replace("/", "_")}.json`);
   if (!existsSync(f)) throw new Error(`no Crossref record for ${doi}`);
   const m = JSON.parse(readFileSync(f, "utf8")).message;
   const year = (m["published-print"] ?? m["published-online"] ?? m.published ?? m.issued)["date-parts"][0][0];
@@ -119,7 +119,28 @@ const computeRefs = [
   },
 ];
 
-const out = { accessed: ACCESSED, "q-day": qdayRefs, "qubits-vs-quality": qubitsRefs, "training-compute": computeRefs };
+// ── willow-magic-state ──────────────────────────────────────────────────────
+const willowRefs = [
+  {
+    ...crossref("10.1126/science.aee7961", "willow-magic-state"),
+    authors: "Rosenfeld, E., et al.", // Crossref lists 296 authors; the first one stands for all, as the others do here
+    openAccess: "https://arxiv.org/abs/2512.13908",
+    plotted: true,
+    uses: [
+      { what: "99.99% accuracy, at most 1 mistake in 10,000 (state fidelity 0.9999(1))", where: "abstract" },
+      { what: "8 in 100 attempts kept, 92 thrown away", where: "abstract" },
+      { what: "Error cut 40 times by cultivation", where: "abstract" },
+    ],
+  },
+  {
+    authors: "Gidney, C.", year: 2025, title: "How to factor 2048 bit RSA integers with less than a million noisy qubits",
+    venue: "arXiv preprint arXiv:2505.15917", volume: "", pages: "", doi: "", url: "https://arxiv.org/abs/2505.15917",
+    type: "Preprint by a Google Quantum AI researcher, not peer-reviewed", plotted: true,
+    uses: [{ what: "1 in 10 million: the error each magic state needs in this plan for breaking RSA-2048", where: "section Physical Costs, p. 20" }],
+  },
+];
+
+const out = { accessed: ACCESSED, accessedBy: { "willow-magic-state": "16 October 2026" }, "q-day": qdayRefs, "qubits-vs-quality": qubitsRefs, "training-compute": computeRefs, "willow-magic-state": willowRefs };
 writeFileSync(join(root, "references.json"), JSON.stringify(out, null, 2) + "\n");
 const q = qubitsRefs.filter((r) => r.plotted);
 console.log(`references: q-day ${qdayRefs.length}, compute ${computeRefs.length}, qubits ${qubitsRefs.length} (${q.filter((r) => r.type === "Peer-reviewed article").length} peer-reviewed + ${q.filter((r) => r.type !== "Peer-reviewed article").length} company plotted, ${qubitsRefs.length - q.length} consulted only)`);

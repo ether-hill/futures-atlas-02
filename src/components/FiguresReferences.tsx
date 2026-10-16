@@ -1,4 +1,4 @@
-import { ACCESSED, REFERENCES, type FigureRef } from "@/data/futures-in-figures-references";
+import { ACCESSED, ACCESSED_BY, REFERENCES, type FigureRef } from "@/data/futures-in-figures-references";
 
 /**
  * The full reference list for one Futures in Figures chart. The data is
@@ -88,7 +88,7 @@ export function FiguresReferences({ slug }: { slug: string }) {
           <a className={linkCls} href={`/futures-in-figures/charts/data/${slug}/clean.csv`}>
             Chart data (CSV)
           </a>
-          {" · "}All accessed {ACCESSED}
+          {" · "}All accessed {ACCESSED_BY[slug] ?? ACCESSED}
       </p>
       <RefList refs={plotted} />
       {consulted.length > 0 && (

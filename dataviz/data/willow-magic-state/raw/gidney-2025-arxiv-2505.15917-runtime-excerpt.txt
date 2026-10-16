@@ -1,0 +1,12 @@
+future work.
+
+A mock-up of the spatial layout (after some rounding) is shown in Figure 7.
+Let’s now turn to runtime. According to figure 1 of [GSJ24], cultivating a T state with a logical
+error rate of 10−7 uses 30000 physical qubit · rounds of spacetime volume. Each 8T-to-CCZ factory
+covers 3 · 4 · 262 · 2 qubits, and needs 8 T states, suggesting an average cultivation time of 14.7
+rounds. The factory itself (shown in figure 24 of [GSJ24]) has 6 layers of lattice surgery. It uses
+temporally encoded lattice surgery [CC22] so each layer should be able to execute in 2/3d rounds
+rather than d rounds. In total this amounts to 114.7 rounds per CCZ state, which I round up
+to 150 rounds for slack. Since the magic state cultivation targets a logical error rate of 10−7 and
+8T-to-CCZ distillation has an error suppression of 28p2 [Jon13], the distilled CCZ states will have
+a logical error rate of 28 · (10−7)2 < 10−12. This is low enough (compared to the Toffoli count of

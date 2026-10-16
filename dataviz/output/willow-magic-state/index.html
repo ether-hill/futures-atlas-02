@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Willow, two numbers</title>
+<link rel="stylesheet" href="../../templates/frame.css">
+<script src="../../vendor/d3.min.js"></script>
+</head>
+<body>
+<script type="module">
+// Follow-up to qubits-vs-quality: Google's magic state result (Science, 15 Oct 2026).
+// Figures, all checked against the primary source:
+//   magic state fidelity 0.9999(1), error cut 40x, 8% of attempts kept:
+//     Rosenfeld et al., "Magic state cultivation on a superconducting quantum processor",
+//     Science (15 Oct 2026), arXiv:2512.13908 abstract
+//   RSA plan's cultivated T states at 1e-7 logical error each:
+//     Gidney, "How to factor 2048 bit RSA integers with less than a million noisy qubits",
+//     arXiv:2505.15917, section on runtime ("magic state cultivation targets a logical error rate of 10^-7")
+//   Willow two-qubit gate error 3.3 per 1,000: data/qubits-vs-quality/clean.csv (company spec sheet)
+import { mountPiece, span } from "../../templates/frame.js";
+import { VARIANTS } from "../../templates/variants.js";
+import { latticeWaves } from "../../templates/site-art.js";
+
+const d3 = window.d3;
+// every number is read from data/willow-magic-state/clean.csv in load()
+let MAGIC, KEPT, RSA;
+const SRC_SCIENCE = "Rosenfeld et al., Science, 15 Oct 2026 (arXiv:2512.13908)";
+const bg = (ctx, W, H, t, f) => latticeWaves(ctx, W, H, t, f === "ig" ? { corner: { cx: 1.02, cy: 0.02, r: 0.6 } } : { corner: { cx: 1.0, cy: 0.05, r: 0.5 } });
+
+/* 1. one in 10,000 */
+function tenThousand({ el, width, height }) {
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+  // 10,000 dots as 200 x 50, 125 x 80 or 100 x 100, whichever gives the biggest dots here
+  const fit = (n) => Math.min(width / n, (height - 110) / (10000 / n));
+  const n = [200, 125, 100].reduce((a, c) => (fit(c) > fit(a) ? c : a)), m = 10000 / n;
+  const gap = fit(n), r = gap * 0.34, top = 10;
+  const wrong = 4362; // where the one mistake sits; any cell would do
+  const g = svg.append("g");
+  const rows = [];
+  for (let j = 0; j < m; j++) {
+    const row = g.append("g").attr("transform", `translate(0,${top + j * gap})`);
+    for (let i = 0; i < n; i++) if (j * n + i !== wrong) row.append("circle").attr("cx", i * gap + gap / 2).attr("cy", gap / 2).attr("r", r).attr("fill", "var(--d2)");
+    rows.push(row);
+  }
+  const wx = (wrong % n) * gap + gap / 2, wy = top + Math.floor(wrong / n) * gap + gap / 2;
+  const bad = svg.append("g");
+  bad.append("circle").attr("cx", wx).attr("cy", wy).attr("r", r * 1.4).attr("fill", "#fff");
+  bad.append("circle").attr("cx", wx).attr("cy", wy).attr("r", 34).attr("fill", "none").attr("stroke", "#fff").attr("stroke-width", 3);
+  const leg = svg.append("g").attr("transform", `translate(0,${top + m * gap + 54})`);
+  leg.append("circle").attr("cx", 12).attr("cy", 0).attr("r", 12).attr("fill", "var(--d2)");
+  leg.append("text").attr("x", 36).attr("y", 0).attr("dy", "0.34em").style("font-size", "28px").style("fill", "var(--ink)").text("9,999 right");
+  leg.append("circle").attr("cx", 252).attr("cy", 0).attr("r", 12).attr("fill", "#fff");
+  leg.append("text").attr("x", 276).attr("y", 0).attr("dy", "0.34em").style("font-size", "28px").style("fill", "var(--ink)").text("1 wrong");
+  return {
+    duration: 3.6,
+    seek(t) {
+      rows.forEach((row, j) => row.attr("opacity", 0.6 * span(t, 0.2 + j * 0.025, 0.7 + j * 0.025)));
+      bad.attr("opacity", span(t, 2.4, 3.0));
+      leg.attr("opacity", span(t, 2.6, 3.4));
+    },
+  };
+}
+
+/* 2. 92 of 100 thrown away */
+function dots({ el, width, height }) {
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+  const n = 10, size = Math.min(width, height - 120) / n, r = size * 0.32;
+  // the kept ones scattered, as they would be in a run
+  const kept = new Set([3, 17, 28, 44, 51, 66, 79, 92]);
+  if (kept.size !== KEPT) throw new Error("kept count out of date");
+  const cs = [];
+  for (let i = 0; i < 100; i++) {
+    const cx = (i % n) * size + size / 2, cy = Math.floor(i / n) * size + size / 2;
+    cs.push({ k: kept.has(i), c: svg.append("circle").attr("cx", cx).attr("cy", cy).attr("r", r), i });
+  }
+  const leg = svg.append("g").attr("transform", `translate(0,${n * size + 50})`);
+  leg.append("circle").attr("cx", 14).attr("cy", 0).attr("r", 14).attr("fill", "var(--d2)");
+  leg.append("text").attr("x", 40).attr("y", 0).attr("dy", "0.34em").style("font-size", "26px").style("fill", "var(--ink)").text(`${KEPT} kept`);
+  leg.append("circle").attr("cx", 214).attr("cy", 0).attr("r", 13).attr("fill", "none").attr("stroke", "var(--graphite)").attr("stroke-width", 2);
+  leg.append("text").attr("x", 240).attr("y", 0).attr("dy", "0.34em").style("font-size", "26px").style("fill", "var(--ink)").text(`${100 - KEPT} thrown away`);
+  return {
+    duration: 4,
+    seek(t) {
+      const sorted = span(t, 2.0, 3.2);
+      cs.forEach(({ k, c, i }) => {
+        const on = span(t, 0.2 + i * 0.012, 0.7 + i * 0.012);
+        c.attr("opacity", on);
+        if (k) c.attr("fill", "var(--d2)").attr("stroke", "none");
+        else c.attr("fill", d3.interpolateRgb("#22d3ee", "#17181b")(sorted)).attr("stroke", "var(--graphite)").attr("stroke-width", 2 * sorted)
+          .attr("fill-opacity", 1 - sorted * 0.9);
+      });
+      leg.attr("opacity", span(t, 2.8, 3.6));
+    },
+  };
+}
+
+/* 3. the ladder: how far there is to go */
+function ladder({ el, width, height, data }) {
+  const svg = d3.select(el).append("svg").attr("viewBox", `0 0 ${width} ${height}`);
+  const y = d3.scaleLog().domain([3e-4, 3e-8]).range([40, height - 60]);
+  const ax = 70;
+  svg.append("line").attr("x1", ax).attr("x2", ax).attr("y1", y(3e-4)).attr("y2", y(3e-8)).attr("stroke", "var(--hairline)").attr("stroke-width", 2);
+  const rungs = [
+    { v: MAGIC / 1000, big: "1 mistake in 10,000", t: "Google's quantum computer today", s: "" },
+    { v: RSA, big: "1 in 10 million", t: "Needed to crack the codes", s: "that keep online banking and messages private" },
+  ];
+  const parts = rungs.map((r, i) => {
+    const g = svg.append("g").attr("transform", `translate(${ax},${y(r.v)})`);
+    g.append("circle").attr("r", 16).attr("fill", i === 1 ? "none" : "var(--d2)").attr("stroke", "var(--d2)").attr("stroke-width", 4);
+    const tx = g.append("g").attr("transform", "translate(44,0)");
+    tx.append("text").attr("y", -16).style("font-size", "52px").style("font-weight", 800).style("letter-spacing", "-0.03em").style("fill", "var(--ink)").text(r.big);
+    tx.append("text").attr("y", 24).style("font-size", "26px").style("font-weight", 600).style("fill", "var(--ink)").text(r.t);
+    tx.append("text").attr("y", 56).style("font-size", "22px").style("fill", "var(--graphite)").text(r.s);
+    return g;
+  });
+  // the gap still to close
+  const gy1 = y(MAGIC / 1000) + 90, gy2 = y(RSA) - 90;
+  const gap = svg.append("g");
+  gap.append("line").attr("x1", ax).attr("x2", ax).attr("y1", gy1).attr("y2", gy2).attr("stroke", "var(--d2)").attr("stroke-width", 4).attr("stroke-dasharray", "2 12").attr("stroke-linecap", "round");
+  gap.append("text").attr("x", ax + 44).attr("y", (gy1 + gy2) / 2).attr("dy", "0.34em").style("font-size", "30px").style("font-weight", 700).style("fill", "var(--d2)").text("1,000 times fewer mistakes");
+  return {
+    duration: 4.4,
+    seek(t) {
+      parts.forEach((g, i) => g.attr("opacity", span(t, 0.4 + i * 1.4, 1.2 + i * 1.4)));
+      gap.attr("opacity", span(t, 2.8, 3.6));
+    },
+  };
+}
+
+mountPiece({
+  slug: "willow-magic-state",
+  title: "Willow, two numbers",
+  series: "The quantum landscape",
+  variants: VARIANTS,
+  variant: "field",
+  // open on the finished chart so the first frame is a good thumbnail, and
+  // hold it long enough to read; the longer loop also slows the mesh
+  startFull: true,
+  hold: 9,
+  rewind: 1.6,
+  source: `Source: ${SRC_SCIENCE}. Accessed 16 Oct 2026.`,
+  async load() {
+    const rows = Object.fromEntries((await d3.csv("../../data/willow-magic-state/clean.csv")).map((r) => [r.id, +r.value]));
+    MAGIC = (1 - rows.magic_state_fidelity) * 1000; // errors per 1,000
+    KEPT = Math.round(rows.attempts_kept * 100);
+    RSA = rows.rsa_plan_state_error;
+    if (Math.abs(MAGIC - 0.1) > 1e-9) throw new Error("'1 in 10,000' out of date");
+    if (KEPT !== 8) throw new Error("'92 of every 100' out of date");
+    if (rows.error_reduction !== 40) throw new Error("'40 times' out of date");
+    if (Math.round((MAGIC / 1000) / RSA) !== 1000) throw new Error("'1,000 times' out of date");
+    return {};
+  },
+  slides: [
+    {
+      id: "hook", formats: ["ig", "x"],
+      titleSize: { ig: 84, x: 64 },
+      title: "Today Google said its quantum computer hit 99.99% accuracy",
+      sub: "On one key step it needs to run programs. That's at most 1 mistake in 10,000.",
+      alt: "A grid of 10,000 dots. 9,999 are blue and one is white, circled: at most 1 mistake in 10,000.",
+      draw: tenThousand, bg,
+    },
+    {
+      id: "kept", formats: ["ig"],
+      titleSize: { ig: 84 },
+      title: "To get there, it threw away 92 of every 100 tries",
+      sub: "Google checked every try and kept only the good ones.",
+      alt: "A grid of 100 dots. 8 are highlighted as kept; 92 are faded out as thrown away.",
+      draw: dots, bg,
+    },
+    {
+      id: "ladder", formats: ["ig"],
+      titleSize: { ig: 84 },
+      title: "Big step, but not enough to break internet security",
+      sub: "That would take 1,000 times fewer mistakes, by Google's own estimate.",
+      source: `Sources: ${SRC_SCIENCE}; Gidney, arXiv:2505.15917 (2025). Accessed 16 Oct 2026.`,
+      alt: "Two levels of mistakes. Google's quantum computer today: 1 mistake in 10,000. Needed to crack the codes that keep online banking and messages private: 1 in 10 million, 1,000 times fewer.",
+      draw: ladder, bg,
+    },
+  ],
+});
+</script>
+</body>
+</html>

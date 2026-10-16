@@ -1,0 +1,5 @@
+id,quantity,value,unit,source,locator
+magic_state_fidelity,Fidelity of the magic state made with cultivation,0.9999,fraction (uncertainty 0.0001),Rosenfeld et al. 2026 (Science; arXiv:2512.13908),"Abstract: ""a state fidelity of 0.9999(1)"""
+error_reduction,How much cultivation reduced the error,40,times,Rosenfeld et al. 2026 (Science; arXiv:2512.13908),"Abstract: ""Cultivation reduces the error by a factor of 40"""
+attempts_kept,Share of attempts kept after the checks,0.08,fraction,Rosenfeld et al. 2026 (Science; arXiv:2512.13908),"Abstract: ""retaining 8% of attempts"""
+rsa_plan_state_error,Error per cultivated magic state in Google's plan for factoring RSA-2048,0.0000001,per state,Gidney 2025 (arXiv:2505.15917),"Section "Physical Costs", p. 20: ""the magic state cultivation targets a logical error rate of 10^-7"""
