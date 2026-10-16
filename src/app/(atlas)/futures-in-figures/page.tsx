@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Container } from "@/components/Container";
 import { FiguresChart } from "@/components/FiguresChart";
 import { FiguresReferences } from "@/components/FiguresReferences";
@@ -33,13 +34,6 @@ type Figure = {
 };
 
 const FIGURES: Figure[] = [
-  {
-    slug: "willow-magic-state",
-    question: "Google says its quantum computer hit 99.99% accuracy. What does that mean?",
-    answer:
-      "On 15 October 2026 Google said its Willow quantum computer made one key building block, called a magic state, with 99.99% accuracy: at most 1 mistake in 10,000. To get there it checked every attempt and kept only the 8 in 100 that passed. It's a big step, but by Google's own estimate, breaking the codes that keep online banking and messages private would take 1,000 times fewer mistakes.",
-    keepInMind: "The 99.99% is for this one step, not for everything the chip does: its basic two-qubit operations still go wrong about 3 times in 1,000 (see the error-rate chart below). It has only been shown at a small scale so far. The 1,000 times figure comes from one Google researcher's plan, which hasn't been peer-reviewed.",
-  },
   {
     slug: "q-day",
     question: "When could quantum computers break RSA encryption?",
@@ -79,6 +73,25 @@ export default function FuturesInFiguresPage() {
             documents. Where a figure is a company&apos;s own claim, we say so. And where the
             source gives a range or says how sure it is, the chart shows that too, not just the headline.
           </p>
+        </Container>
+      </section>
+
+      {/* pieces told over several slides get their own page; this links to them */}
+      <section className="pb-[var(--space-section)]">
+        <Container className="max-w-[1240px]">
+          <Link
+            href="/futures-in-figures/google-99-99"
+            className="group grid items-center gap-6 border border-hairline p-5 transition-colors hover:border-[var(--muted)] min-[700px]:grid-cols-[180px_minmax(0,1fr)] min-[700px]:gap-10 min-[700px]:p-6"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element -- a small still of the post's first slide */}
+            <img src="/futures-in-figures/google-99-99/slide-1.jpg" alt="" loading="lazy" className="block w-[140px] border border-hairline min-[700px]:w-[180px]" />
+            <div>
+              <p className="text-[13px] font-medium text-muted">16 October 2026</p>
+              <h2 className="fa-t-display-s mt-2">Google says its quantum computer hit 99.99% accuracy. What does that mean?</h2>
+              <p className="fa-t-body mt-3 max-w-[60ch] text-muted">Three slides on what was measured, how Google got there, and how far it still is from breaking internet security.</p>
+              <p className="mt-4 text-[14px] text-accent-deep underline underline-offset-4">See the slides</p>
+            </div>
+          </Link>
         </Container>
       </section>
 
