@@ -233,8 +233,9 @@
       return {
         start: startSide, yaw,
         v: [r(-0.7, 0.7), 11.2 + power * 2.6 + r(-0.5, 0.5), r(-0.9, 0.3)],
-        // spin end over end about a horizontal diameter, plus a little wobble
-        w: (() => { const s = (24 + power * 16 + r(-3, 3)) * (Math.random() < 0.5 ? -1 : 1); const a = r(0, Math.PI * 2); return [Math.cos(a) * s, r(-1.6, 1.6), Math.sin(a) * s]; })(),
+        // spin end over end about a horizontal diameter, plus a little wobble. Kept to 2-3 turns a second:
+        // faster than that, at 60 frames a second the coin strobes and reads as jitter
+        w: (() => { const s = (13 + power * 6 + r(-2, 2)) * (Math.random() < 0.5 ? -1 : 1); const a = r(0, Math.PI * 2); return [Math.cos(a) * s, r(-1.6, 1.6), Math.sin(a) * s]; })(),
       };
     }
     _apply(body, T) {
@@ -281,16 +282,25 @@
         this._lastImpact = now;
         this._emit('coin-impact', { strength: Math.min(1, v / 8) });
       });
+      this._prevP = body.position.clone(); this._prevQ = body.quaternion.clone();
       this._phase = 'flying'; this._simT = 0; this._calm = 0; this._apexDone = false;
       this._hangMs = hang; this._hangUntil = 0;
       this._acc = 0; this._ts = 1; this._tsGoal = 1;
       this._camGoal = 1;
     }
     _emit(name, detail) { this.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true })); }
-    _sync() {
+    _sync(alpha) {
       const b = this._body, m = this._coin;
-      m.position.set(b.position.x, b.position.y, b.position.z);
-      m.quaternion.set(b.quaternion.x, b.quaternion.y, b.quaternion.z, b.quaternion.w);
+      if (alpha == null || !this._prevP) {
+        m.position.set(b.position.x, b.position.y, b.position.z);
+        m.quaternion.set(b.quaternion.x, b.quaternion.y, b.quaternion.z, b.quaternion.w);
+        return;
+      }
+      const P = this._prevP, Q = this._prevQ, T = this.THREE;
+      m.position.set(P.x + (b.position.x - P.x) * alpha, P.y + (b.position.y - P.y) * alpha, P.z + (b.position.z - P.z) * alpha);
+      this._qa = this._qa || new T.Quaternion(); this._qb = this._qb || new T.Quaternion();
+      this._qa.set(Q.x, Q.y, Q.z, Q.w); this._qb.set(b.quaternion.x, b.quaternion.y, b.quaternion.z, b.quaternion.w);
+      m.quaternion.copy(this._qa).slerp(this._qb, alpha);
     }
 
     // ---------- camera ----------
@@ -354,17 +364,20 @@
           this._acc += dt * this._ts;
           let n = 0;
           while (this._acc >= STEP && n < 40) {
+            this._prevP.copy(b.position); this._prevQ.copy(b.quaternion);   // keep the last state to interpolate from
             this._world.step(STEP); this._acc -= STEP; this._simT += STEP; n++;
             if (this._simT > 0.4 && b.velocity.length() < 0.06 && b.angularVelocity.length() < 0.12) this._calm += STEP; else this._calm = 0;
             if (this._calm > 0.25 || this._simT > MAX_SIM) break;
           }
-          this._sync();
+          // Render BETWEEN the last two physics states. Physics runs in fixed steps, and in slow motion a
+          // step only lands every few frames: drawing the raw state made the coin jump, step to step.
+          this._sync(Math.min(1, this._acc / STEP));
           // push in on the hang; follow the coin's height a little
           const pushGoal = this._tsGoal < 0.5 ? 1 : 0;
           this._push = (this._push || 0) + (pushGoal - (this._push || 0)) * Math.min(1, dt * 1.6);
           this._ease(b, dt, 3.2);
           if (this._calm > 0.25 || this._simT > MAX_SIM) {
-            this._phase = 'rest'; this._camGoal = 0; this._push = 0;
+            this._phase = 'rest'; this._camGoal = 0; this._push = 0; this._sync();
             const side = this._sideOf(b.quaternion);
             setTimeout(() => this._emit('coin-settled', { side }), 650);   // after the camera has come round to see it
           }

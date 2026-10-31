@@ -598,7 +598,7 @@ body.od-menu-open .od-extinctions{display:none!important}
       </sc-if>
 
       <sc-if value="{{ isCoin }}">
-        <x-import component-from-global-scope="irving-coin" from="./irving-coin.js?v=4" want="{{ coinWant }}" tosstoken="{{ coinToken }}" hangms="{{ coinHangMs }}" reduced="{{ reducedFlag }}" class="od-coin-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
+        <x-import component-from-global-scope="irving-coin" from="./irving-coin.js?v=6" want="{{ coinWant }}" tosstoken="{{ coinToken }}" hangms="{{ coinHangMs }}" reduced="{{ reducedFlag }}" class="od-coin-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
       </sc-if>
 
       <sc-if value="{{ isCards }}">
@@ -1527,7 +1527,7 @@ class Component extends DCLogic {
   // ---- Irving: call it, flip it, and the coin hangs in the air while the questions go unanswered ----
   callHeads = () => this.flipCoin('heads');
   callTails = () => this.flipCoin('tails');
-  coinHangMs = 6400;   // how long the coin hangs at the top while the four questions go by
+  coinHangMs = 2600;   // how long the coin hangs in slow motion at the top of its flight
   flipCoin(call) {
     if (this.state.phase !== 'ready') return;
     const p = this.players[this.state.playerId];
@@ -1544,10 +1544,9 @@ class Component extends DCLogic {
   // the coin reached the top of its flight: the questions, one at a time, while it hangs
   _coinHang(e) {
     if (this.state.phase !== 'rolling') return;
-    const ms = (e && e.detail && e.detail.ms) || 0, n = this.irvingQs.length;
-    if (this._qTimers) this._qTimers.forEach(clearTimeout);
-    this._qTimers = [];
-    for (let i = 0; i < n; i++) this._qTimers.push(setTimeout(() => { if (this.state.phase === 'rolling') { this.setState({ coinQ: i }); this.coinTing(0.016); } }, i * ms / n));
+    // (the four unresolved questions used to be shown here, one by one; nobody reads text while
+    // watching a coin, so the hang is just the coin now. irvingQs is kept in case they come back.)
+    this.coinTing(0.02);
   }
   _coinImpact(e) {
     if (this.state.muted || !this.ac) return;
@@ -1772,7 +1771,7 @@ class Component extends DCLogic {
     // the game: ominous copy + a "try a different timeline" button back to the chooser
     // (no replay — once humanity's gone, there's no picking again)
     const endGame = single && isDoomOut && (p.mechanic === 'die' || p.mechanic === 'wheel' || p.mechanic === 'cards' || p.mechanic === 'coin');
-    let verdictHead = '', verdictSub = '', verdictSub2 = '', verdictSrc = '';
+    let verdictHead = '', verdictSub = '', verdictSub2 = '', verdictSrc = '', coinKicker = '';
     let showVerdictHead = true;
     // the ledger: the newest entry is this roll's verdict, the rest are listed under it
     const led = s.ledger || [];
@@ -1785,10 +1784,11 @@ class Component extends DCLogic {
       verdictSub = drawnCard.desc;                     // our own Tegmark card copy (unchanged)
     } else if (p.mechanic === 'coin') {
       const sideW = s.coinSide === 'tails' ? 'Tails' : 'Heads';
-      verdictHead = isDoomOut ? sideW + '. Everyone dies.' : sideW + '. You called it.';
+      verdictHead = isDoomOut ? sideW + '. Everyone dies.' : 'Frontier AI development stops. Immediately.';
       verdictSub = isDoomOut
         ? '\u201CIf we\u2019re unwilling to act until all our disagreements are resolved, it will be too late.\u201D'
-        : 'Not one of the four questions has been answered. Irving\u2019s own answer: \u201CWe can, and should, stop frontier AI development immediately.\u201D';
+        : 'No bigger models, until further notice. That is Irving\u2019s answer: \u201CWe can, and should, stop frontier AI development immediately.\u201D';
+      if (!isDoomOut) coinKicker = 'NOT DOOM \u00B7 ' + sideW.toUpperCase() + ' \u00B7 YOU CALLED IT';
       verdictSrc = 'Geoffrey Irving in TIME \u00B7 3 Oct 2026';
       if (isDoomOut && single) verdictSub2 = 'There is no second flip.';
     } else if (lastEv) {
@@ -1807,7 +1807,7 @@ class Component extends DCLogic {
     // the kicker over a non-doom result: is this good, bad or both? plus which year of this world it is
     const TONE = { good: ['GOOD NEWS', '#34E5C4'], mixed: ['GOOD AND BAD', '#F4A259'], bad: ['BAD, NOT DOOM', '#FF6F61'] };
     const tone = lastEv ? (TONE[lastEv.tone] || TONE.mixed) : null;
-    const kicker = lastEv ? tone[0] + ' \u00B7 YEAR ' + year + ' \u00B7 ' + (p.mechanic === 'wheel' ? 'LANDED IN THE BLUE' : 'THE DIE SHOWED ' + s.dieTarget) : '';
+    const kicker = coinKicker || (lastEv ? tone[0] + ' \u00B7 YEAR ' + year + ' \u00B7 ' + (p.mechanic === 'wheel' ? 'LANDED IN THE BLUE' : 'THE DIE SHOWED ' + s.dieTarget) : '');
     const verdictKicker = isDoomOut ? '#E0481B' : '#34E5C4';
 
     // split odds bar (key) per game \u2014 labels, good fraction, and the bar colours
@@ -1859,7 +1859,7 @@ class Component extends DCLogic {
       showCall: isCoin && s.phase === 'ready', callHeads: this.callHeads, callTails: this.callTails,
       showUnres, unresK: 'UNRESOLVED \u00B7 ' + (s.coinQ + 1) + ' OF ' + this.irvingQs.length, unresQ: s.coinQ >= 0 ? this.irvingQs[s.coinQ] : '',
       verdictSrc, hasSrc: !!verdictSrc, showLedger, ledgerItems, ledgerHead,
-      kicker, hasKicker: !!kicker, kickerColor: tone ? tone[1] : '#ECEAE6', rheadCls: (endGame ? 'od-rhead od-rhead-big' : 'od-rhead') + (lastEv ? ' od-rhead-evt' : ''),
+      kicker, hasKicker: !!kicker, kickerColor: coinKicker ? '#34E5C4' : (tone ? tone[1] : '#ECEAE6'), rheadCls: (endGame ? 'od-rhead od-rhead-big' : 'od-rhead') + ((lastEv || coinKicker) ? ' od-rhead-evt' : ''),
       // Elon: every year the world survives, another batch of satellites goes up
       starN: String(p.mechanic === 'wheel' && single ? Math.min(308, led.length * 22) : 0),
       showTest: p.mechanic !== 'cards' && !this.isLive,
