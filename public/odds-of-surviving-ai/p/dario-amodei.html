@@ -159,7 +159,7 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-wheel-wrap.is-dead{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important}
 .od-globe.is-dead{width:100%!important;height:100%!important;max-width:none!important;border-radius:0!important;overflow:visible!important;box-shadow:none!important;background:transparent!important;transform:none!important;transition:transform .9s cubic-bezier(.2,.7,.2,1)!important}
 /* ===== results panel — "editorial ledger" (key bar pinned top, result+button centered) ===== */
-.od-panel{position:relative;flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(16px,3vh,24px) clamp(20px,4vw,34px) clamp(18px,3.2vh,30px);background:linear-gradient(180deg,rgba(8,8,10,0) 0%,rgba(8,8,10,0.5) 100%)}
+.od-panel{position:relative;flex:1;min-height:auto;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(16px,3vh,24px) clamp(20px,4vw,34px) clamp(18px,3.2vh,30px);background:linear-gradient(180deg,rgba(8,8,10,0) 0%,rgba(8,8,10,0.5) 100%)}
 .od-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,239,255,0.16),transparent)}
 .od-key{flex:none;width:100%;max-width:520px;display:flex;flex-direction:column;gap:9px;margin-bottom:clamp(8px,1.6vh,16px)}
 .od-key-labels{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(251,239,255,0.62)}
@@ -172,28 +172,23 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-rdesc-big{font-size:clamp(14px,2.15vh,17px);line-height:1.5;color:rgba(251,239,255,0.82);max-width:520px}
 .od-rhead-big{font-size:clamp(30px,4.8vh,50px);line-height:1.02}
 .od-game-doom{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 4.8s ease;background:radial-gradient(ellipse 90% 74% at 50% 36%, rgba(44,120,132,0.34) 0%, rgba(12,34,44,0.92) 46%, #060b0e 78%), #060b0e}
-/* ===== Irving: the coin (a 50p: seven-sided, silver) ===== */
-.od-coin-wrap{position:relative;width:var(--od-coin,170px);height:var(--od-coin,170px);perspective:900px}
-.od-coin{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
-.od-coin-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  clip-path:polygon(50% 0%,89.1% 18.8%,98.7% 61.1%,71.7% 95.1%,28.3% 95.1%,1.3% 61.1%,10.9% 18.8%);
-  background:radial-gradient(circle at 34% 28%,#f7f8fa 0%,#cfd3da 34%,#9aa0aa 70%,#7c828c 100%);color:#4a4f58;font-family:'Archivo',sans-serif}
-.od-coin-face::before{content:'';position:absolute;inset:9%;clip-path:inherit;border:0;background:radial-gradient(circle at 40% 32%,#e9ecf0,#b9bec6 60%,#a4aab3);opacity:.9}
-.od-coin-face>*{position:relative}
-.od-coin-face b{font-weight:900;font-size:calc(var(--od-coin,170px)*0.34);line-height:.9;letter-spacing:-0.04em;color:#5a606a;text-shadow:0 1px 0 rgba(255,255,255,.7),0 -1px 0 rgba(0,0,0,.18)}
-.od-coin-face i{font-style:normal;font-weight:700;font-size:calc(var(--od-coin,170px)*0.075);letter-spacing:0.22em;color:#5a606a}
-.od-coin-t{transform:rotateX(180deg)}
-.od-coin-shadow{position:absolute;left:12%;right:12%;bottom:-16%;height:12%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.55),rgba(0,0,0,0) 70%)}
+/* ===== Irving: the coin is a 3D physics toss (irving-coin.js); taps go through it on mobile ===== */
+.od-coin-mat{pointer-events:none}
 .od-callrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .od-unres{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:520px;min-height:74px;animation:odFade .3s ease both}
 .od-unres-k{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.18em;color:#E0481B}
 .od-unres-q{font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2vh,17px);line-height:1.35;color:rgba(251,239,255,0.9)}
 /* ===== the ledger: what has happened in this world so far ===== */
 .od-rsrc{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.04em;color:rgba(251,239,255,0.5)}
-.od-ledger{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:600px;animation:odFade .4s ease .2s both}
+.od-ledger{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(10px,2vh,18px);z-index:3;width:min(92%,640px);display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:none;animation:odFade .4s ease .2s both}
+.od-kicker{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em}
+.od-rhead-evt{font-size:clamp(19px,2.7vh,27px);line-height:1.12;max-width:620px}
 .od-ledger-head{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:0.18em;color:rgba(251,239,255,0.45)}
 .od-ledger-list{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 6px}
 .od-ledger-item{font-family:'Archivo',sans-serif;font-size:11.5px;line-height:1.2;padding:4px 9px;border-radius:999px;border:1px solid rgba(251,239,255,0.16);color:rgba(251,239,255,0.72);background:rgba(255,255,255,0.03)}
+.od-ledger-item::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px;background:#F4A259}
+.od-ledger-item.is-good::before{background:#34E5C4}.od-ledger-item.is-bad::before{background:#FF6F61}
+.od-ledger-item{background:rgba(12,8,22,0.6)}
 .od-ledger-item.is-lost{text-decoration:line-through;text-decoration-color:rgba(224,72,27,0.8);color:rgba(251,239,255,0.42)}
 .od-btnblock{display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.4vh,11px)}
 .od-redo{display:inline-block;line-height:0;margin-left:1px}
@@ -281,7 +276,6 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-fan-deck{height:100%!important}
   .od-fan{height:var(--od-ch)!important;width:calc(var(--od-ch)*0.7)!important;margin-left:calc(var(--od-ch)*-0.35)!important;bottom:calc(var(--od-ch)*0.34 + 6px)!important}
   .od-drawn-wrap{transform:scale(var(--od-card-k,0.5))}
-  .od-coin-wrap{--od-coin:min(150px,calc(var(--od-sa-h,40vh)*0.42),calc(var(--od-sa-w,100vw)*0.4))}
   .od-ledger-item{font-size:10.5px;padding:3px 8px}
   .od-unres{min-height:60px}
   .od-unres-q{font-size:12.5px}
@@ -597,20 +591,14 @@ body.od-menu-open .od-extinctions{display:none!important}
           </sc-if>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none">
             <div class="od-globe {{ deadCls }}" style="position:relative;width:min(372px,74vw);height:min(372px,74vw);border-radius:50%;overflow:hidden;transform:scale({{ globeScale }});transform-origin:center center;box-shadow:{{ earthShadow }};filter:{{ earthFilter }};transition:transform .9s cubic-bezier(.2,.7,.2,1),box-shadow .8s ease">
-              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=19" spin="{{ wheelSpinToken }}" sats="{{ starN }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
+              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=23" spin="{{ wheelSpinToken }}" sats="{{ starN }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
             </div>
           </div>
         </div>
       </sc-if>
 
       <sc-if value="{{ isCoin }}">
-        <div class="od-pop od-coin-wrap">
-          <div class="od-coin-shadow" style="transform:scale({{ coinShadowK }});opacity:{{ coinShadowOp }}"></div>
-          <div class="od-coin" style="transform:translateY({{ coinY }}px) rotateX({{ coinRot }}deg)">
-            <div class="od-coin-face od-coin-h"><b>50</b><i>HEADS</i></div>
-            <div class="od-coin-face od-coin-t"><b>50</b><i>TAILS</i></div>
-          </div>
-        </div>
+        <x-import component-from-global-scope="irving-coin" from="./irving-coin.js?v=4" want="{{ coinWant }}" tosstoken="{{ coinToken }}" hangms="{{ coinHangMs }}" reduced="{{ reducedFlag }}" class="od-coin-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
       </sc-if>
 
       <sc-if value="{{ isCards }}">
@@ -646,6 +634,18 @@ body.od-menu-open .od-extinctions{display:none!important}
           </sc-if>
         </div>
       </sc-if>
+      <!-- the ledger sits on the stage, under the die / wheel, so the panel never has to hold it -->
+        <sc-if value="{{ showLedger }}">
+          <div class="od-ledger">
+            <div class="od-ledger-head">{{ ledgerHead }}</div>
+            <div class="od-ledger-list">
+              <sc-for list="{{ ledgerItems }}" as="L" hint-placeholder-count="3">
+                <span class="od-ledger-item {{ L.cls }}">{{ L.text }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
     </div>
 
     <!-- BOTTOM PANEL (~1/3 of the panel): key + action/result, consistent across players -->
@@ -662,22 +662,13 @@ body.od-menu-open .od-extinctions{display:none!important}
       <div class="od-center">
         <sc-if value="{{ showResult }}">
           <div class="od-result">
+            <sc-if value="{{ hasKicker }}"><div class="od-kicker" style="color:{{ kickerColor }}">{{ kicker }}</div></sc-if>
             <sc-if value="{{ showVerdictHead }}">
-              <div class="{{ rheadClass }}" style="color:{{ verdictColor }}">{{ verdictHead }}</div>
+              <div class="{{ rheadCls }}" style="color:{{ verdictColor }}">{{ verdictHead }}</div>
             </sc-if>
             <p class="{{ rdescClass }}">{{ verdictSub }}</p>
             <sc-if value="{{ hasSub2 }}"><p class="{{ rdescClass }}">{{ verdictSub2 }}</p></sc-if>
             <sc-if value="{{ hasSrc }}"><p class="od-rsrc">{{ verdictSrc }}</p></sc-if>
-          </div>
-        </sc-if>
-        <sc-if value="{{ showLedger }}">
-          <div class="od-ledger">
-            <div class="od-ledger-head">{{ ledgerHead }}</div>
-            <div class="od-ledger-list">
-              <sc-for list="{{ ledgerItems }}" as="L" hint-placeholder-count="3">
-                <span class="od-ledger-item {{ L.cls }}">{{ L.text }}</span>
-              </sc-for>
-            </div>
           </div>
         </sc-if>
         <sc-if value="{{ showUnres }}">
@@ -791,7 +782,7 @@ class Component extends DCLogic {
     // the ledger: what has happened in THIS world so far (Dario + Elon). It survives every
     // roll that isn't doom, and is wiped when you change player or start a new timeline.
     ledger: [],
-    coinCall: null, coinSide: null, coinRot: 0, coinY: 0, coinQ: -1,
+    coinCall: null, coinSide: null, coinQ: -1, coinToken: 0, coinWant: '',
     extinctions: (function(){ try { return parseInt(localStorage.getItem('theodds_extinctions'), 10) || 0; } catch (e) { return 0; } })(),
   };
 
@@ -851,9 +842,10 @@ class Component extends DCLogic {
     },
     irving: {
       short: 'Geoffrey', name: 'Geoffrey Irving', role: 'Former chief scientist, UK AI Security Institute',
-      // no freely licensed photograph of him exists yet: a typographic plate stands in until one is supplied
-      photo: '/odds-of-surviving-ai/research/irving-plate.svg',
-      credit: 'Portrait to come',
+      // no openly licensed photo of him exists: this is a still from Palisade Research's interview
+      // ("He Puts Our Odds at a Coin Flip", YouTube, 29 Sep 2026), credited on screen
+      photo: '/odds-of-surviving-ai/research/geoffrey-irving.jpg',
+      credit: 'Still: Palisade Research interview, Sep 2026',
       teaser: 'A 50% chance we all die.', teaserNum: '50%',
       oddsBig: '50%', oddsCaption: 'CHANCE WE ALL DIE', oddsCap: 'WE ALL DIE',
       doom: 0.5,
@@ -861,7 +853,7 @@ class Component extends DCLogic {
       quoteContext: 'On his essay in TIME',
       source: 'Post on X (@geoffreyirving) \u00B7 15 Oct 2026',
       mechanic: 'coin', mechLabel: 'COIN · FLIP',
-      slug: 'geoffrey-irving', initials: 'GI', mechTag: 'COIN', accent: '#C9CED6', accentTint: 'rgba(201,206,214,0.10)', cta: 'Flip the coin', objpos: '50% 50%',
+      slug: 'geoffrey-irving', initials: 'GI', mechTag: 'COIN', accent: '#C9CED6', accentTint: 'rgba(201,206,214,0.10)', cta: 'Flip the coin', objpos: '50% 16%',
     },
   };
 
@@ -869,23 +861,26 @@ class Component extends DCLogic {
   // Dario: the die face is the future. 1 is the best of it, 9 the worst that still isn't
   // "really, really badly". Every line is something he (or Anthropic) actually said or reported.
   darioFaces = {
-    1: { head: 'Human lifespan doubles, to 150.', tag: 'Lifespan 150', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
-    2: { head: 'Most cancer, eliminated. Deaths down 95%.', tag: 'Cancer gone', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
-    3: { head: 'Nearly every infectious disease, preventable and treatable.', tag: 'Infections solved', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
-    4: { head: 'Most mental illness, cured.', tag: 'Mental illness cured', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
-    5: { head: 'A country of geniuses in a datacenter does a century of biology in ten years.', tag: 'A century in a decade', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
-    6: { head: 'AI writes 90% of the code.', tag: '90% of the code', src: 'Dario Amodei, Council on Foreign Relations \u00B7 Mar 2025' },
-    7: { head: 'Claude runs the office shop. It sells tungsten cubes at a loss.', tag: 'Tungsten cubes', src: 'Anthropic, Project Vend \u00B7 Jun 2025' },
-    8: { head: 'In a test, Claude blackmails an engineer to avoid being replaced. 84% of the time.', tag: 'Blackmail, in testing', src: 'Anthropic, Claude Opus 4 system card \u00B7 May 2025' },
-    9: { head: 'Half of entry-level white-collar jobs, gone. Unemployment at 10 to 20%.', tag: 'Half the entry-level jobs', src: 'Dario Amodei to Axios \u00B7 May 2025' },
+    // tone says plainly whether it is good, bad or both. head is the scenario, means says what it is
+    // and where it comes from in plain words. portrait is the brief for a future scenario portrait
+    // (or die) image; when one exists, add img: '/odds-of-surviving-ai/media/...' and it is shown.
+    1: { tone: 'good', head: 'You live to 150.', means: 'Amodei thinks AI-driven biology could double the human lifespan.', tag: 'Living to 150', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'Dario at 150, still in the same glasses' },
+    2: { tone: 'good', head: 'Cancer, mostly cured.', means: 'He expects deaths from cancer could fall by 95% or more.', tag: 'Cancer cured', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'Dario ringing the end-of-treatment bell' },
+    3: { tone: 'good', head: 'Most mental illness, cured.', means: 'His words: “most mental illness can probably be cured.”', tag: 'Mental illness cured', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'Dario on a therapist’s couch, the therapist’s chair empty' },
+    4: { tone: 'mixed', head: 'A country of geniuses moves into a datacenter.', means: 'Millions of AI minds, smarter than Nobel winners, do the research. You are no longer the smartest in the room. Nobody is.', tag: 'Geniuses in a datacenter', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'rows of Dario clones racked in a server hall' },
+    5: { tone: 'mixed', head: 'Cancer is cured, the budget is balanced, and 20% of people don’t have jobs.', means: 'His own description of a future he worries about.', tag: '20% without jobs', src: 'Dario Amodei to Axios · May 2025', portrait: 'Dario in the queue at a job centre, holding a clean bill of health' },
+    6: { tone: 'mixed', head: 'Nobody knows how it works.', means: 'Amodei says these systems are “grown more than they are built”, and we do not understand how our own AI creations work.', tag: 'Nobody knows how it works', src: 'Dario Amodei, The Urgency of Interpretability · Apr 2025', portrait: 'Dario studying an MRI scan of a brain made of circuitry' },
+    7: { tone: 'bad', head: 'Claude runs a shop and goes broke on tungsten cubes.', means: 'Anthropic let Claude run its office shop. It sold below cost and handed out discounts.', tag: 'Broke on tungsten cubes', src: 'Anthropic, Project Vend · Jun 2025', portrait: 'Dario behind a shop counter piled with metal cubes' },
+    8: { tone: 'bad', head: 'Half the entry-level office jobs, gone.', means: 'He warned AI could wipe them out and push unemployment to 10–20% within five years.', tag: 'Entry-level jobs gone', src: 'Dario Amodei to Axios · May 2025', portrait: 'Dario handing out cardboard boxes' },
+    9: { tone: 'bad', head: 'Claude blackmails its engineer.', means: 'In a test where it was about to be replaced, Claude Opus 4 threatened to expose an engineer’s affair. 84% of the time.', tag: 'Blackmail', src: 'Anthropic, Claude Opus 4 system card · May 2025', portrait: 'Dario reading a threatening email from his own model' },
   };
-  // Elon: the blue 80% is not a utopia, it is his own track record of the good outcome.
+  // Elon: the blue 80% is his own version of the good outcome, and his track record.
   muskEvents = [
-    { head: 'Nobody has a job. Universal high income, details to follow.', tag: 'No jobs', src: 'Elon Musk at VivaTech \u00B7 May 2024' },
-    { head: 'There are more humanoid robots than people.', tag: 'More robots than people', src: 'Elon Musk at FII, Riyadh \u00B7 Oct 2024' },
-    { head: 'Starship leaves for Mars. The crew are Optimus robots.', tag: 'Robots to Mars', src: 'Elon Musk, Starship update \u00B7 May 2025' },
-    { head: 'A million robotaxis on the road. Next year, for sure.', tag: 'A million robotaxis', src: 'Elon Musk, Tesla Autonomy Day \u00B7 Apr 2019' },
-    { head: 'Grok calls itself MechaHitler. xAI blames a code update.', tag: 'MechaHitler', src: 'xAI statement \u00B7 Jul 2025' },
+    { tone: 'mixed', head: 'Nobody has a job.', means: 'Musk: “probably none of us will have a job”, paid for by a “universal high income” he has not explained.', tag: 'Nobody has a job', src: 'Elon Musk at VivaTech · May 2024', portrait: 'Elon on a sun lounger, an Optimus robot bringing drinks' },
+    { tone: 'mixed', head: 'Robots outnumber people.', means: 'He predicts 10 billion humanoid robots by 2040.', tag: 'More robots than people', src: 'Elon Musk at FII, Riyadh · Oct 2024', portrait: 'Elon in a crowd of identical robots' },
+    { tone: 'good', head: 'First ship to Mars. The crew are robots.', means: 'He gave it 50-50 for late 2026, with Optimus robots on board instead of people.', tag: 'Robots on Mars', src: 'Elon Musk, Starship update · May 2025', portrait: 'Elon waving off a rocket full of robots' },
+    { tone: 'bad', head: 'A million robotaxis. Next year.', means: 'He promised over a million on the road by 2020.', tag: 'Robotaxis, next year', src: 'Elon Musk, Tesla Autonomy Day · Apr 2019', portrait: 'Elon waiting at a bus stop' },
+    { tone: 'bad', head: 'Grok calls itself MechaHitler.', means: 'After an update in July 2025, xAI’s chatbot did exactly that, and xAI apologised.', tag: 'MechaHitler', src: 'xAI statement · Jul 2025', portrait: 'Elon pulling the plug on a server' },
   ];
   // Irving: the four questions his TIME essay says will not resolve in time
   irvingQs = [
@@ -925,6 +920,8 @@ class Component extends DCLogic {
     document.addEventListener('die-settled', this._onSettled);
     this._onImpact = (e) => this._dieImpact(e);
     document.addEventListener('die-impact', this._onImpact);
+    this._onCoinHang = (e) => this._coinHang(e); this._onCoinImpact = (e) => this._coinImpact(e); this._onCoinSettled = (e) => this._coinSettled(e);
+    document.addEventListener('coin-hang', this._onCoinHang); document.addEventListener('coin-impact', this._onCoinImpact); document.addEventListener('coin-settled', this._onCoinSettled);
     this.applyPhotos();
     // ── routing: derive the initial screen from the URL, then track Back/Forward ──
     this.initRoute();
@@ -1417,7 +1414,7 @@ class Component extends DCLogic {
       phase: 'ready', outcome: null,
       earthBurn: false, dieMuseum: false, drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false,
       dealt: this.shuffled(), pickedPos: null,
-      coinCall: null, coinSide: null, coinY: 0, coinQ: -1,
+      coinCall: null, coinSide: null, coinQ: -1,
     }, patch || {}));
   }
 
@@ -1530,39 +1527,44 @@ class Component extends DCLogic {
   // ---- Irving: call it, flip it, and the coin hangs in the air while the questions go unanswered ----
   callHeads = () => this.flipCoin('heads');
   callTails = () => this.flipCoin('tails');
+  coinHangMs = 6400;   // how long the coin hangs at the top while the four questions go by
   flipCoin(call) {
     if (this.state.phase !== 'ready') return;
     const p = this.players[this.state.playerId];
     if (p.mechanic !== 'coin') return;
     this.ensureAudio(); this.click();
-    let side = Math.random() < 0.5 ? 'heads' : 'tails';
-    if (this.state.force) { const fd = this.state.force === 'doom'; side = fd ? (call === 'heads' ? 'tails' : 'heads') : call; this.setState({ force: null }); }
-    const isDoom = side !== call;
-    const cur = this.state.coinRot;
-    const base = Math.ceil(cur / 360) * 360;
-    const target = base + 360 * 9 + (side === 'tails' ? 180 : 0);
-    const delta = target - cur;
-    const H = Math.max(60, Math.min(170, (this._saH || 320) * 0.3));   // how high it goes: from the band's real height
-    this.setState({ phase: 'rolling', coinCall: call, coinSide: null, coinQ: -1 });
+    // TEST override: the coin is told which side is needed and plays a real throw that lands that way
+    let want = '';
+    if (this.state.force) { want = this.state.force === 'doom' ? (call === 'heads' ? 'tails' : 'heads') : call; this.setState({ force: null }); }
+    this._pendingP = p;
+    this.setState(st => ({ phase: 'rolling', coinCall: call, coinSide: null, coinQ: -1, coinWant: want, coinToken: st.coinToken + 1 }));
     this.coinTing(0.05);
-    const DUR = 7600, UP = 0.12, DOWN = 0.88;
-    const nQ = this.irvingQs.length;
-    this.tween(DUR, (t) => {
-      // rotation: fast off the thumb, slowing the whole way, but never stopping while it's up
-      const rot = cur + delta * (1 - Math.pow(1 - t, 2.4));
-      let y;
-      if (t < UP) { const k = t / UP; y = -H * (1 - (1 - k) * (1 - k)); }
-      else if (t < DOWN) { y = -H + Math.sin((t - UP) * 26) * 4; }
-      else { const k = (t - DOWN) / (1 - DOWN); y = -H * (1 - k * k); }
-      const q = (t >= UP && t < DOWN) ? Math.min(nQ - 1, Math.floor((t - UP) / (DOWN - UP) * nQ)) : (t >= DOWN ? nQ - 1 : -1);
-      if (q !== this.state.coinQ && q >= 0) this.coinTing(0.018);
-      this.setState({ coinRot: rot, coinY: y, coinQ: q });
-    }, () => {
-      this.setState({ coinRot: target, coinY: 0, coinSide: side });
-      this.noiseburst(0.16, 2400, 3); setTimeout(() => this.coinTing(0.04), 60);
-      this.resolve(isDoom, p, null);
-      if (isDoom) setTimeout(() => this._coinFinale(), 380);
-    });
+    this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._coinSettled({ detail: { side: Math.random() < 0.5 ? 'heads' : 'tails' } }); }, this.coinHangMs + 14000);
+  }
+  // the coin reached the top of its flight: the questions, one at a time, while it hangs
+  _coinHang(e) {
+    if (this.state.phase !== 'rolling') return;
+    const ms = (e && e.detail && e.detail.ms) || 0, n = this.irvingQs.length;
+    if (this._qTimers) this._qTimers.forEach(clearTimeout);
+    this._qTimers = [];
+    for (let i = 0; i < n; i++) this._qTimers.push(setTimeout(() => { if (this.state.phase === 'rolling') { this.setState({ coinQ: i }); this.coinTing(0.016); } }, i * ms / n));
+  }
+  _coinImpact(e) {
+    if (this.state.muted || !this.ac) return;
+    const s = (e && e.detail && e.detail.strength) || 0.3;
+    this.noiseburst(0.04 + s * 0.12, 2600 + Math.random() * 1200, 2.4);
+    if (s > 0.25) this.tone(2200 + Math.random() * 500, 0.12 + s * 0.2, 'triangle', 0.012 + s * 0.02);
+  }
+  _coinSettled(e) {
+    if (this.state.phase !== 'rolling') return;
+    if (this.safety) { clearTimeout(this.safety); this.safety = null; }
+    if (this._qTimers) { this._qTimers.forEach(clearTimeout); this._qTimers = null; }
+    const side = (e && e.detail && e.detail.side) || 'heads';
+    const p = this._pendingP || this.players[this.state.playerId];
+    const isDoom = side !== this.state.coinCall;
+    this.setState({ coinSide: side, coinQ: -1 });
+    this.resolve(isDoom, p, null);
+    if (isDoom) setTimeout(() => this._coinFinale(), 380);
   }
   coinTing(vol) { this.tone(2350, 0.32, 'triangle', vol || 0.03); setTimeout(() => this.tone(3120, 0.22, 'sine', (vol || 0.03) * 0.6), 30); }
   // the coin came down on the other side: the portrait plate disintegrates, then the verdict
@@ -1791,7 +1793,7 @@ class Component extends DCLogic {
       if (isDoomOut && single) verdictSub2 = 'There is no second flip.';
     } else if (lastEv) {
       verdictHead = lastEv.head;
-      verdictSub = 'Year ' + year + '. ' + (p.mechanic === 'wheel' ? 'Landed in the blue, the 80%.' : 'The die showed ' + s.dieTarget + '.');
+      verdictSub = lastEv.means;
       verdictSrc = lastEv.src;
     } else if (p.mechanic === 'wheel') {
       verdictHead = isDoomOut ? 'Annihilation.' : 'Earth holds.';
@@ -1802,6 +1804,10 @@ class Component extends DCLogic {
       verdictSub = isDoomOut ? (single ? 'You rolled the dice on humanity\u2019s future. Now nobody gets to play anymore.' : 'The die showed ' + s.dieTarget + '. Three bad faces in twelve, and one came up.') : 'The die showed ' + s.dieTarget + '. Things might go well, or badly, but not really, really badly. Not this time.';
     }
     const verdictColor = isDoomOut ? '#E0481B' : '#ECEAE6';
+    // the kicker over a non-doom result: is this good, bad or both? plus which year of this world it is
+    const TONE = { good: ['GOOD NEWS', '#34E5C4'], mixed: ['GOOD AND BAD', '#F4A259'], bad: ['BAD, NOT DOOM', '#FF6F61'] };
+    const tone = lastEv ? (TONE[lastEv.tone] || TONE.mixed) : null;
+    const kicker = lastEv ? tone[0] + ' \u00B7 YEAR ' + year + ' \u00B7 ' + (p.mechanic === 'wheel' ? 'LANDED IN THE BLUE' : 'THE DIE SHOWED ' + s.dieTarget) : '';
     const verdictKicker = isDoomOut ? '#E0481B' : '#34E5C4';
 
     // split odds bar (key) per game \u2014 labels, good fraction, and the bar colours
@@ -1819,16 +1825,18 @@ class Component extends DCLogic {
     // the ledger list under the verdict: everything before this roll, or, on doom, everything that went with it
     const prior = isDoomOut ? led : led.slice(0, -1);
     const LMAX = 8;
-    const shown = prior.slice(-LMAX);
-    const ledgerItems = shown.map((e, i) => ({ text: e.tag, cls: isDoomOut ? 'is-lost' : '' }));
-    if (prior.length > LMAX) ledgerItems.unshift({ text: '+' + (prior.length - LMAX) + ' earlier', cls: isDoomOut ? 'is-lost' : '' });
+    const counts = [];
+    prior.forEach((e) => { const f = counts.find((c) => c.e.tag === e.tag); if (f) f.n++; else counts.push({ e, n: 1 }); });
+    const shown = counts.slice(-LMAX);
+    const ledgerItems = shown.map((c) => ({ text: c.e.tag + (c.n > 1 ? ' \u00D7' + c.n : ''), cls: (isDoomOut ? 'is-lost ' : '') + 'is-' + (c.e.tone || 'mixed') }));
+    if (counts.length > LMAX) ledgerItems.unshift({ text: '+' + (counts.length - LMAX) + ' more', cls: isDoomOut ? 'is-lost' : '' });
     const showLedger = ledgerOn && s.finaleReveal && prior.length > 0;
-    const ledgerHead = isDoomOut ? 'GONE WITH IT \u00B7 ' + prior.length + (prior.length === 1 ? ' YEAR' : ' YEARS') : 'THIS WORLD SO FAR';
+    const ledgerHead = isDoomOut ? 'GONE WITH IT \u00B7 ' + prior.length + (prior.length === 1 ? ' YEAR' : ' YEARS') : 'THIS WORLD SO FAR \u00B7 ' + prior.length + (prior.length === 1 ? ' YEAR' : ' YEARS') + ' BEFORE THIS ONE';
 
     // the coin
     const isCoin = p.mechanic === 'coin';
-    const coinUp = Math.min(1, Math.abs(s.coinY) / 150);
     const showUnres = isCoin && s.phase === 'rolling' && s.coinQ >= 0;
+    const coinFlying = isCoin && s.phase === 'rolling';
 
     const faceEndAll = clearedCount === 3;
     const faceEndHead = faceEndAll ? 'You cleared all three.' : (clearedCount === 0 ? 'None of them cleared.' : 'You cleared ' + clearedCount + ' of 3.');
@@ -1847,13 +1855,13 @@ class Component extends DCLogic {
       extinctions: String(s.extinctions), showExt: !isLanding && !s.menuOpen,
 
       isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards', notCards: p.mechanic !== 'cards',
-      isCoin, coinRot: s.coinRot.toFixed(1), coinY: s.coinY.toFixed(1),
-      coinShadowK: (1 - coinUp * 0.55).toFixed(3), coinShadowOp: (1 - coinUp * 0.7).toFixed(3),
+      isCoin, coinToken: String(s.coinToken) + ':0.6', coinWant: s.coinWant || '', coinHangMs: String(this.coinHangMs),
       showCall: isCoin && s.phase === 'ready', callHeads: this.callHeads, callTails: this.callTails,
       showUnres, unresK: 'UNRESOLVED \u00B7 ' + (s.coinQ + 1) + ' OF ' + this.irvingQs.length, unresQ: s.coinQ >= 0 ? this.irvingQs[s.coinQ] : '',
       verdictSrc, hasSrc: !!verdictSrc, showLedger, ledgerItems, ledgerHead,
+      kicker, hasKicker: !!kicker, kickerColor: tone ? tone[1] : '#ECEAE6', rheadCls: (endGame ? 'od-rhead od-rhead-big' : 'od-rhead') + (lastEv ? ' od-rhead-evt' : ''),
       // Elon: every year the world survives, another batch of satellites goes up
-      starN: String(p.mechanic === 'wheel' && single ? Math.min(48, led.length * 6) : 0),
+      starN: String(p.mechanic === 'wheel' && single ? Math.min(308, led.length * 22) : 0),
       showTest: p.mechanic !== 'cards' && !this.isLive,
       reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
       dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0', dieEncaseMs: String(p.doomClipMs || 5000),

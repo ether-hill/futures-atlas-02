@@ -205,26 +205,38 @@
       for (let i = 0; i < 70; i++) addOrbiter(makeJunk(i), rand(0.38, 0.95), rand(0.4, 1.9), 1.16, 2.12);
       this._orbiters = orbiters; this._orbMats = orbMats; this._orbOpacity = 0;
 
-      // ── a low shell of satellites that fills up while the planet is ALIVE: one batch per year
-      // Earth holds (attribute sats = how many are up). Low enough (a 1.06-1.12) to cross the
-      // visible disc inside the wheel; they stay up through an annihilation, circling the dead world.
-      this._stars = [];
-      const starWing = new THREE.BoxGeometry(0.2, 0.004, 0.07);
-      for (let i = 0; i < 48; i++) {
-        const g = new THREE.Group();
-        const m1 = new THREE.MeshStandardMaterial({ color: 0xe4e8ee, metalness: 0.9, roughness: 0.3, emissive: 0xa6acb6, emissiveIntensity: 0.9, transparent: true, opacity: 0 });
-        const m2 = new THREE.MeshStandardMaterial({ color: 0x3b72d6, metalness: 0.5, roughness: 0.45, emissive: 0x4a82e6, emissiveIntensity: 1.5, transparent: true, opacity: 0 });
-        g.add(new THREE.Mesh(bodyGeo, m1));
-        const wing = new THREE.Mesh(starWing, m2); wing.position.x = 0.14; g.add(wing);
-        g.scale.setScalar(0.62); g.visible = false;
-        const pv = new THREE.Group();
-        // batches of six share a plane, like a launch putting a train into one orbit
-        const b = Math.floor(i / 6);
-        if (!this._starPlanes) this._starPlanes = [];
-        if (!this._starPlanes[b]) this._starPlanes[b] = [rand(-1.3, 1.3), rand(0, Math.PI * 2), rand(-1.3, 1.3), rand(0.28, 0.5) * (Math.random() < 0.5 ? -1 : 1), rand(0, Math.PI * 2)];
-        const P = this._starPlanes[b];
-        pv.rotation.set(P[0], P[1], P[2]); pv.add(g); scene.add(pv);
-        this._stars.push({ mesh: g, mats: [m1, m2], a: rand(1.06, 1.12), ang: P[4] + (i % 6) * 0.26, spd: P[3], op: 0 });
+      // ── Starlink trains: while the planet is ALIVE, every year Earth holds puts up another train
+      // of bright satellites (attribute sats = how many are up). They ride a low shell (r 1.035)
+      // so they cross the visible disc inside the wheel as strings of moving lights, glinting as
+      // they catch the sun, and the more years you survive the more the planet is wrapped in them.
+      // They stay up through an annihilation, still circling the dead world.
+      {
+        const dotTex = (() => {
+          const c = document.createElement('canvas'); c.width = c.height = 64;
+          const g = c.getContext('2d'), grd = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+          grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(0.18, 'rgba(235,242,255,0.95)');
+          grd.addColorStop(0.42, 'rgba(160,190,255,0.25)'); grd.addColorStop(1, 'rgba(160,190,255,0)');
+          g.fillStyle = grd; g.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c);
+        })();
+        this._stars = [];
+        const PER = 22, TRAINS = 14;
+        this._starRings = [];
+        for (let t = 0; t < TRAINS; t++) {
+          const pv = new THREE.Group();
+          pv.rotation.set(rand(-1.25, 1.25), rand(0, Math.PI * 2), rand(-1.25, 1.25));
+          scene.add(pv);
+          const a0 = rand(0, Math.PI * 2), spd = rand(0.32, 0.5) * (t % 2 ? -1 : 1), r = rand(1.03, 1.045);
+          // the orbit itself, drawn faintly: each year adds a ring, and the planet slowly gets caged
+          const rp = []; for (let k = 0; k <= 128; k++) { const q = k / 128 * Math.PI * 2; rp.push(new THREE.Vector3(Math.cos(q) * r, 0, Math.sin(q) * r)); }
+          const rm = new THREE.LineBasicMaterial({ color: 0xcfe0ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+          const rl = new THREE.Line(new THREE.BufferGeometry().setFromPoints(rp), rm); rl.visible = false; pv.add(rl);
+          this._starRings.push({ line: rl, mat: rm, op: 0 });
+          for (let i = 0; i < PER; i++) {
+            const m = new THREE.SpriteMaterial({ map: dotTex, color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+            const sp = new THREE.Sprite(m); sp.scale.setScalar(0.085); sp.visible = false; pv.add(sp);
+            this._stars.push({ mesh: sp, mats: [m], a: r, ang: a0 + i * (Math.PI * 2 / PER), spd, op: 0, ph: rand(0, 6.28) });
+          }
+        }
       }
 
       // ── rocket: ONE launch off the dead planet a few seconds in; arcs out a short way ──
@@ -500,18 +512,24 @@
           this._orbiters.visible = this._orbOpacity > 0.012;
           for (const m of this._orbMats) m.opacity = this._orbOpacity;
         }
-        // the satellite shell: fade each one in/out against the requested count, and keep them circling
+        // the Starlink trains: fade each one in/out against the requested count, keep them moving, glint
         if (this._stars) {
           const n = this._starN || 0;
           for (let i = 0; i < this._stars.length; i++) {
             const s = this._stars[i], tgt = i < n ? 1 : 0;
-            s.op = anim ? s.op + (tgt - s.op) * Math.min(1, dt * 1.6) : tgt;
+            // a new train rises in one after another along its line, like a fresh launch
+            s.op = anim ? s.op + (tgt - s.op) * Math.min(1, dt * (tgt > s.op ? 1.2 : 3)) : tgt;
             s.mesh.visible = s.op > 0.01;
             if (!s.mesh.visible) continue;
-            if (anim) s.ang += s.spd * dt;
+            if (anim) s.ang += s.spd * dt * 0.6;
             s.mesh.position.set(Math.cos(s.ang) * s.a, 0, Math.sin(s.ang) * s.a);
-            s.mesh.rotation.y = -s.ang;
-            s.mats[0].opacity = s.op; s.mats[1].opacity = s.op;
+            const glint = 0.75 + 0.25 * Math.sin(now * 0.004 + s.ph);
+            s.mats[0].opacity = s.op * glint;
+          }
+          for (let t = 0; t < this._starRings.length; t++) {
+            const R = this._starRings[t], tgt = t * 22 < n ? 0.16 : 0;
+            R.op = anim ? R.op + (tgt - R.op) * Math.min(1, dt * 1.5) : tgt;
+            R.line.visible = R.op > 0.005; R.mat.opacity = R.op;
           }
         }
         // rocket launch cycle — only while annihilated, and never under reduced motion
