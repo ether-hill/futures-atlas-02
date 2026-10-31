@@ -876,11 +876,13 @@ class Component extends DCLogic {
   };
   // Elon: the blue 80% is his own version of the good outcome, and his track record.
   muskEvents = [
-    { tone: 'mixed', head: 'Nobody has a job.', means: 'Musk: “probably none of us will have a job”, paid for by a “universal high income” he has not explained.', tag: 'Nobody has a job', src: 'Elon Musk at VivaTech · May 2024', portrait: 'Elon on a sun lounger, an Optimus robot bringing drinks' },
-    { tone: 'mixed', head: 'Robots outnumber people.', means: 'He predicts 10 billion humanoid robots by 2040.', tag: 'More robots than people', src: 'Elon Musk at FII, Riyadh · Oct 2024', portrait: 'Elon in a crowd of identical robots' },
-    { tone: 'good', head: 'First ship to Mars. The crew are robots.', means: 'He gave it 50-50 for late 2026, with Optimus robots on board instead of people.', tag: 'Robots on Mars', src: 'Elon Musk, Starship update · May 2025', portrait: 'Elon waving off a rocket full of robots' },
-    { tone: 'bad', head: 'A million robotaxis. Next year.', means: 'He promised over a million on the road by 2020.', tag: 'Robotaxis, next year', src: 'Elon Musk, Tesla Autonomy Day · Apr 2019', portrait: 'Elon waiting at a bus stop' },
-    { tone: 'bad', head: 'Grok calls itself MechaHitler.', means: 'After an update in July 2025, xAI’s chatbot did exactly that, and xAI apologised.', tag: 'MechaHitler', src: 'xAI statement · Jul 2025', portrait: 'Elon pulling the plug on a server' },
+    { tone: 'good', head: 'Nobody has to work.', means: 'Musk: \u201cprobably none of us will have a job\u201d, and everyone gets a \u201cuniversal high income\u201d. Who pays, and how much: details pending.', tag: 'Universal high income', src: 'Elon Musk at VivaTech \u00B7 May 2024', portrait: 'Elon on a sun lounger, an Optimus robot bringing drinks' },
+    { tone: 'good', head: 'Your job becomes a hobby.', means: 'He told Rishi Sunak: \u201cYou can have a job if you want to have a job, for personal satisfaction.\u201d Rent stays compulsory.', tag: 'Jobs, optional', src: 'Elon Musk with Rishi Sunak, AI Safety Summit \u00B7 Nov 2023', portrait: 'Elon handing out knitting needles' },
+    { tone: 'good', head: 'AI outsmarts everyone. Next year.', means: 'In April 2024 he said AI would be smarter than the smartest human by the end of the next year. He likes next year.', tag: 'Superhuman, next year', src: 'Elon Musk to Nicolai Tangen, X livestream \u00B7 Apr 2024', portrait: 'Elon tearing a page off a calendar' },
+    { tone: 'good', head: 'Your car earns money while you sleep.', means: 'A million Tesla robotaxis by 2020, each making about $30,000 a year. In 2025 Tesla started a robotaxi service with its own cars. Yours still earns nothing.', tag: 'Robotaxi income', src: 'Elon Musk, Tesla Autonomy Day \u00B7 Apr 2019', portrait: 'Elon asleep in a parked Tesla' },
+    { tone: 'good', head: 'A robot for everyone. And a spare.', means: 'He predicts 10 billion humanoid robots by 2040, more than there are people, at $20,000 to $25,000 each.', tag: 'More robots than people', src: 'Elon Musk at FII, Riyadh \u00B7 Oct 2024', portrait: 'Elon in a crowd of identical robots' },
+    { tone: 'good', head: 'An AI that only tells the truth.', means: 'He promised \u201ca maximum truth-seeking AI that tries to understand the nature of the universe\u201d. In July 2025 it called itself MechaHitler.', tag: 'Maximum truth', src: 'Elon Musk on Tucker Carlson \u00B7 Apr 2023; xAI \u00B7 Jul 2025', portrait: 'Elon pulling the plug on a server' },
+    { tone: 'good', head: 'Your brain merges with the AI.', means: 'His stated aim for Neuralink is \u201csymbiosis with artificial intelligence\u201d. The first big demo: a monkey playing Pong.', tag: 'Brain, meet AI', src: 'Neuralink launch \u00B7 Jul 2019; MindPong video \u00B7 Apr 2021', portrait: 'Elon and a monkey sharing a joystick' },
   ];
   // Irving: the four questions his TIME essay says will not resolve in time
   irvingQs = [
@@ -1807,7 +1809,8 @@ class Component extends DCLogic {
     // the kicker over a non-doom result: is this good, bad or both? plus which year of this world it is
     const TONE = { good: ['GOOD NEWS', '#34E5C4'], mixed: ['GOOD AND BAD', '#F4A259'], bad: ['BAD, NOT DOOM', '#FF6F61'] };
     const tone = lastEv ? (TONE[lastEv.tone] || TONE.mixed) : null;
-    const kicker = coinKicker || (lastEv ? tone[0] + ' \u00B7 YEAR ' + year + ' \u00B7 ' + (p.mechanic === 'wheel' ? 'LANDED IN THE BLUE' : 'THE DIE SHOWED ' + s.dieTarget) : '');
+    const toneLabel = lastEv && p.mechanic === 'wheel' && lastEv.tone === 'good' ? 'GOOD NEWS, SAYS ELON' : (tone ? tone[0] : '');
+    const kicker = coinKicker || (lastEv ? toneLabel + ' \u00B7 YEAR ' + year + ' \u00B7 ' + (p.mechanic === 'wheel' ? 'LANDED IN THE BLUE' : 'THE DIE SHOWED ' + s.dieTarget) : '');
     const verdictKicker = isDoomOut ? '#E0481B' : '#34E5C4';
 
     // split odds bar (key) per game \u2014 labels, good fraction, and the bar colours
