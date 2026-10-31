@@ -48,6 +48,7 @@
       const [THREE, CANNON] = await Promise.all([import(THREE_URL), import(CANNON_URL)]);
       this.THREE = THREE; this.CANNON = CANNON;
       try { await document.fonts.ready; } catch (e) {}
+      this._earthImg = await new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = '/odds-of-surviving-ai/textures/earth_color.jpg'; });
       const w = this.clientWidth || 360, h = this.clientHeight || 360;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -158,19 +159,55 @@
         }
       };
       if (side === 'heads') {
-        both((X) => { X.font = '900 400px Archivo, "Helvetica Neue", Arial, sans-serif'; X.textAlign = 'center'; X.textBaseline = 'middle'; X.fillText('50', c, c + 18); });
+        // heads: a head. Nobody in particular: a plain profile bust, the way a coin carries a monarch,
+        // except this one stands for everybody
+        const P = [[380, 845], [392, 700], [338, 585], [318, 430], [372, 285], [470, 222], [580, 232], [650, 315], [676, 410],
+          [668, 448], [700, 515], [716, 562], [684, 580], [694, 606], [679, 626], [690, 648], [682, 700], [640, 732], [612, 760], [622, 845]];
+        const k = 0.8, ox = c - 515 * k, oy = c - 548 * k;
+        const pt = (q) => [ox + q[0] * k, oy + q[1] * k];
+        const bust = (X) => {
+          // a smooth closed curve through the points (Catmull-Rom as Beziers), cut flat at the neck
+          X.beginPath();
+          const Q = P.map(pt); X.moveTo(Q[0][0], Q[0][1]);
+          for (let i = 0; i < Q.length - 1; i++) {
+            const p0 = Q[Math.max(0, i - 1)], p1 = Q[i], p2 = Q[i + 1], p3 = Q[Math.min(Q.length - 1, i + 2)];
+            X.bezierCurveTo(p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6, p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6, p2[0], p2[1]);
+          }
+          X.closePath(); X.fill();
+        };
+        both(bust);
         both((X) => arcText(X, 'HEADS', c - 140, -Math.PI / 2, 74, false));
-        both((X) => arcText(X, 'PER CENT', c - 140, Math.PI / 2, 60, true));
+        both((X) => arcText(X, 'HUMANITY', c - 140, Math.PI / 2, 56, true));
       } else {
-        // tails: an engraved globe
-        both((X) => {
-          X.lineWidth = 16; const r = 250;
-          X.beginPath(); X.arc(c, c + 10, r, 0, Math.PI * 2); X.stroke();
-          for (const k of [-0.62, -0.25, 0.25, 0.62]) { X.beginPath(); X.ellipse(c, c + 10, r * Math.abs(k) * 1.15, r, 0, 0, Math.PI * 2); X.stroke(); }
-          for (const y of [-0.5, 0, 0.5]) { const hw = Math.sqrt(1 - y * y) * r; X.beginPath(); X.moveTo(c - hw, c + 10 + y * r); X.lineTo(c + hw, c + 10 + y * r); X.stroke(); }
-        });
+        // tails: the Earth, its real coastlines struck from the same map the globe on Elon's wheel uses
+        const R = 275, gx = c, gy = c + 6;
+        const img = this._earthImg;
+        if (img && img.width) {
+          const sw = 1024, sh = 512, sc = document.createElement('canvas'); sc.width = sw; sc.height = sh;
+          const sx = sc.getContext('2d'); sx.drawImage(img, 0, 0, sw, sh);
+          const D = sx.getImageData(0, 0, sw, sh).data;
+          const land = (lat, lon) => {
+            const u = Math.floor(((lon + Math.PI) / (2 * Math.PI)) * sw) % sw, v = Math.min(sh - 1, Math.max(0, Math.floor((Math.PI / 2 - lat) / Math.PI * sh)));
+            const o = (v * sw + ((u + sw) % sw)) * 4, r = D[o], g = D[o + 1], b = D[o + 2];
+            return (b - Math.max(r, g)) < 12;
+          };
+          const lat0 = 0.32, lon0 = 0.25, sl = Math.sin(lat0), cl = Math.cos(lat0);   // Europe and Africa facing
+          const HI = H.getImageData(0, 0, S, S), CI = C.getImageData(0, 0, S, S);
+          for (let py = gy - R; py <= gy + R; py++) for (let px = gx - R; px <= gx + R; px++) {
+            const x = (px - gx) / R, y = -(py - gy) / R, rr = x * x + y * y; if (rr > 1) continue;
+            const rho = Math.sqrt(rr), cc = Math.asin(Math.min(1, rho)), sc2 = Math.sin(cc), cs = Math.cos(cc);
+            const lat = rho < 1e-6 ? lat0 : Math.asin(cs * sl + (y * sc2 * cl) / rho);
+            const lon = lon0 + Math.atan2(x * sc2, rho * cl * cs - y * sl * sc2);
+            if (!land(lat, lon)) continue;
+            const o = (py * S + px) * 4;
+            HI.data[o] = HI.data[o + 1] = HI.data[o + 2] = 255;
+            CI.data[o] = Math.min(255, CI.data[o] + 40); CI.data[o + 1] = Math.min(255, CI.data[o + 1] + 40); CI.data[o + 2] = Math.min(255, CI.data[o + 2] + 40);
+          }
+          H.putImageData(HI, 0, 0); C.putImageData(CI, 0, 0);
+        }
+        both((X) => { X.lineWidth = 12; X.beginPath(); X.arc(gx, gy, R + 4, 0, Math.PI * 2); X.stroke(); });
         both((X) => arcText(X, 'TAILS', c - 140, -Math.PI / 2, 74, false));
-        both((X) => arcText(X, 'EVERYONE', c - 140, Math.PI / 2, 56, true));
+        both((X) => arcText(X, 'THE EARTH', c - 140, Math.PI / 2, 56, true));
       }
       const mk = (cv, srgb) => { const t = new THREE.CanvasTexture(cv); t.anisotropy = this._maxAniso; if (srgb && 'colorSpace' in t) t.colorSpace = THREE.SRGBColorSpace; return t; };
       // three's cap UVs put +x of the canvas along +x of the coin; flip the bottom cap so tails reads upright
