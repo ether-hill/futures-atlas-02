@@ -180,6 +180,9 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-unres-q{font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2vh,17px);line-height:1.35;color:rgba(251,239,255,0.9)}
 /* ===== the ledger: what has happened in this world so far ===== */
 .od-rsrc{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.04em;color:rgba(251,239,255,0.5)}
+.od-stage-area.has-ledger{--od-ledger-room:66px;padding-bottom:var(--od-ledger-room)}
+.od-stage-area.has-ledger .od-wheel-wrap:not(.is-dead){width:min(var(--od-wheel,390px),78vw,calc(var(--od-sa-h,60vh) - var(--od-ledger-room) - 14px))!important;height:min(var(--od-wheel,390px),78vw,calc(var(--od-sa-h,60vh) - var(--od-ledger-room) - 14px))!important;max-width:none!important;max-height:none!important}
+.od-stage-area.has-ledger .od-die-mat{bottom:var(--od-ledger-room)!important;height:auto!important}
 .od-ledger{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(10px,2vh,18px);z-index:3;width:min(92%,640px);display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:none;animation:odFade .4s ease .2s both}
 .od-kicker{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em}
 .od-rhead-evt{font-size:clamp(19px,2.7vh,27px);line-height:1.12;max-width:620px}
@@ -267,6 +270,8 @@ body.od-menu-open .od-extinctions{display:none!important}
   /* bigger die, nudged up. The scaled canvas reaches over the portrait band, and it used to
      swallow taps on Choose Player there; the die takes no input, so let taps through */
   .od-die-mat{transform:translateY(-7%) scale(1.32);pointer-events:none}
+  /* the phone die tray already clears the ledger, so it keeps the whole band */
+  .od-stage-area.has-ledger .od-die-mat{bottom:0!important;height:100%!important}
   .od-wheel-wrap{width:var(--od-wheel)!important;height:var(--od-wheel)!important;max-width:none!important;max-height:none!important}
   .od-globe{width:calc(var(--od-wheel)*0.96)!important;height:calc(var(--od-wheel)*0.96)!important;max-width:none!important}
   .od-wheel-tick{height:47%!important}
@@ -570,7 +575,7 @@ body.od-menu-open .od-extinctions{display:none!important}
     </button>
 
     <!-- STAGE AREA (top ~2/3 of the panel) -->
-    <div class="od-anim od-stage-area" style="animation-delay:.46s">
+    <div class="{{ stageCls }}" style="animation-delay:.46s">
 
       <sc-if value="{{ isDie }}">
         <x-import component-from-global-scope="dario-die" from="./dario-die.js?v=11" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" encase="{{ dieEncase }}" encasems="{{ dieEncaseMs }}" class="od-die-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
@@ -637,7 +642,6 @@ body.od-menu-open .od-extinctions{display:none!important}
       <!-- the ledger sits on the stage, under the die / wheel, so the panel never has to hold it -->
         <sc-if value="{{ showLedger }}">
           <div class="od-ledger">
-            <div class="od-ledger-head">{{ ledgerHead }}</div>
             <div class="od-ledger-list">
               <sc-for list="{{ ledgerItems }}" as="L" hint-placeholder-count="3">
                 <span class="od-ledger-item {{ L.cls }}">{{ L.text }}</span>
@@ -1809,8 +1813,8 @@ class Component extends DCLogic {
     // the kicker over a non-doom result: is this good, bad or both? plus which year of this world it is
     const TONE = { good: ['GOOD NEWS', '#34E5C4'], mixed: ['GOOD AND BAD', '#F4A259'], bad: ['BAD, NOT DOOM', '#FF6F61'] };
     const tone = lastEv ? (TONE[lastEv.tone] || TONE.mixed) : null;
-    const toneLabel = lastEv && p.mechanic === 'wheel' && lastEv.tone === 'good' ? 'GOOD NEWS, SAYS ELON' : (tone ? tone[0] : '');
-    const kicker = coinKicker || (lastEv ? toneLabel + ' \u00B7 YEAR ' + year + ' \u00B7 ' + (p.mechanic === 'wheel' ? 'LANDED IN THE BLUE' : 'THE DIE SHOWED ' + s.dieTarget) : '');
+    // Elon's are all sold as good news, so they carry no label; Dario's say good, bad or both
+    const kicker = coinKicker || (lastEv && p.mechanic === 'die' ? tone[0] : '');
     const verdictKicker = isDoomOut ? '#E0481B' : '#34E5C4';
 
     // split odds bar (key) per game \u2014 labels, good fraction, and the bar colours
@@ -1861,7 +1865,7 @@ class Component extends DCLogic {
       isCoin, coinToken: String(s.coinToken) + ':0.6', coinWant: s.coinWant || '', coinHangMs: String(this.coinHangMs),
       showCall: isCoin && s.phase === 'ready', callHeads: this.callHeads, callTails: this.callTails,
       showUnres, unresK: 'UNRESOLVED \u00B7 ' + (s.coinQ + 1) + ' OF ' + this.irvingQs.length, unresQ: s.coinQ >= 0 ? this.irvingQs[s.coinQ] : '',
-      verdictSrc, hasSrc: !!verdictSrc, showLedger, ledgerItems, ledgerHead,
+      verdictSrc, hasSrc: !!verdictSrc, stageCls: 'od-anim od-stage-area' + ((single && (p.mechanic === 'die' || p.mechanic === 'wheel')) ? ' has-ledger' : ''), showLedger, ledgerItems, ledgerHead,
       kicker, hasKicker: !!kicker, kickerColor: coinKicker ? '#34E5C4' : (tone ? tone[1] : '#ECEAE6'), rheadCls: (endGame ? 'od-rhead od-rhead-big' : 'od-rhead') + ((lastEv || coinKicker) ? ' od-rhead-evt' : ''),
       // Elon: every year the world survives, another batch of satellites goes up
       starN: String(p.mechanic === 'wheel' && single ? Math.min(308, led.length * 22) : 0),
