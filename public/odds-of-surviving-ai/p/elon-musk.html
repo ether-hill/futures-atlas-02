@@ -874,7 +874,7 @@ class Component extends DCLogic {
     4: { tone: 'mixed', head: 'A country of geniuses moves into a datacenter.', means: 'Millions of AI minds, smarter than Nobel winners, do the research. You are no longer the smartest in the room. Nobody is.', tag: 'Geniuses in a datacenter', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'rows of Dario clones racked in a server hall' },
     5: { tone: 'mixed', head: 'Cancer is cured, the budget is balanced, and 20% of people don’t have jobs.', means: 'His own description of a future he worries about.', tag: '20% without jobs', src: 'Dario Amodei to Axios · May 2025', portrait: 'Dario in the queue at a job centre, holding a clean bill of health' },
     6: { tone: 'mixed', head: 'Nobody knows how it works.', means: 'Amodei says these systems are “grown more than they are built”, and we do not understand how our own AI creations work.', tag: 'Nobody knows how it works', src: 'Dario Amodei, The Urgency of Interpretability · Apr 2025', portrait: 'Dario studying an MRI scan of a brain made of circuitry' },
-    7: { tone: 'bad', head: 'Claude runs a shop and goes broke on tungsten cubes.', means: 'Anthropic let Claude run its office shop. It sold below cost and handed out discounts.', tag: 'Broke on tungsten cubes', src: 'Anthropic, Project Vend · Jun 2025', portrait: 'Dario behind a shop counter piled with metal cubes' },
+    7: { tone: 'bad', head: 'AI runs a business. Into the ground.', means: 'Anthropic gave Claude the office snack shop to run for a month. Staff talked it into stocking tungsten cubes and selling them at a loss. The shop lost money.', tag: 'Shop runs at a loss', src: 'Anthropic, Project Vend \u00B7 Jun 2025', portrait: 'Dario behind a shop counter piled with metal cubes' },
     8: { tone: 'bad', head: 'Half the entry-level office jobs, gone.', means: 'He warned AI could wipe them out and push unemployment to 10–20% within five years.', tag: 'Entry-level jobs gone', src: 'Dario Amodei to Axios · May 2025', portrait: 'Dario handing out cardboard boxes' },
     9: { tone: 'bad', head: 'Claude blackmails its engineer.', means: 'In a test where it was about to be replaced, Claude Opus 4 threatened to expose an engineer’s affair. 84% of the time.', tag: 'Blackmail', src: 'Anthropic, Claude Opus 4 system card · May 2025', portrait: 'Dario reading a threatening email from his own model' },
   };
@@ -1813,8 +1813,7 @@ class Component extends DCLogic {
     // the kicker over a non-doom result: is this good, bad or both? plus which year of this world it is
     const TONE = { good: ['GOOD NEWS', '#34E5C4'], mixed: ['GOOD AND BAD', '#F4A259'], bad: ['BAD, NOT DOOM', '#FF6F61'] };
     const tone = lastEv ? (TONE[lastEv.tone] || TONE.mixed) : null;
-    // Elon's are all sold as good news, so they carry no label; Dario's say good, bad or both
-    const kicker = coinKicker || (lastEv && p.mechanic === 'die' ? tone[0] : '');
+    const kicker = coinKicker;
     const verdictKicker = isDoomOut ? '#E0481B' : '#34E5C4';
 
     // split odds bar (key) per game \u2014 labels, good fraction, and the bar colours
