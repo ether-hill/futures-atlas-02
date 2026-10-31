@@ -172,6 +172,29 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-rdesc-big{font-size:clamp(14px,2.15vh,17px);line-height:1.5;color:rgba(251,239,255,0.82);max-width:520px}
 .od-rhead-big{font-size:clamp(30px,4.8vh,50px);line-height:1.02}
 .od-game-doom{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 4.8s ease;background:radial-gradient(ellipse 90% 74% at 50% 36%, rgba(44,120,132,0.34) 0%, rgba(12,34,44,0.92) 46%, #060b0e 78%), #060b0e}
+/* ===== Irving: the coin (a 50p: seven-sided, silver) ===== */
+.od-coin-wrap{position:relative;width:var(--od-coin,170px);height:var(--od-coin,170px);perspective:900px}
+.od-coin{position:absolute;inset:0;transform-style:preserve-3d;will-change:transform}
+.od-coin-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  clip-path:polygon(50% 0%,89.1% 18.8%,98.7% 61.1%,71.7% 95.1%,28.3% 95.1%,1.3% 61.1%,10.9% 18.8%);
+  background:radial-gradient(circle at 34% 28%,#f7f8fa 0%,#cfd3da 34%,#9aa0aa 70%,#7c828c 100%);color:#4a4f58;font-family:'Archivo',sans-serif}
+.od-coin-face::before{content:'';position:absolute;inset:9%;clip-path:inherit;border:0;background:radial-gradient(circle at 40% 32%,#e9ecf0,#b9bec6 60%,#a4aab3);opacity:.9}
+.od-coin-face>*{position:relative}
+.od-coin-face b{font-weight:900;font-size:calc(var(--od-coin,170px)*0.34);line-height:.9;letter-spacing:-0.04em;color:#5a606a;text-shadow:0 1px 0 rgba(255,255,255,.7),0 -1px 0 rgba(0,0,0,.18)}
+.od-coin-face i{font-style:normal;font-weight:700;font-size:calc(var(--od-coin,170px)*0.075);letter-spacing:0.22em;color:#5a606a}
+.od-coin-t{transform:rotateX(180deg)}
+.od-coin-shadow{position:absolute;left:12%;right:12%;bottom:-16%;height:12%;border-radius:50%;background:radial-gradient(ellipse at center,rgba(0,0,0,.55),rgba(0,0,0,0) 70%)}
+.od-callrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.od-unres{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:520px;min-height:74px;animation:odFade .3s ease both}
+.od-unres-k{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.18em;color:#E0481B}
+.od-unres-q{font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2vh,17px);line-height:1.35;color:rgba(251,239,255,0.9)}
+/* ===== the ledger: what has happened in this world so far ===== */
+.od-rsrc{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.04em;color:rgba(251,239,255,0.5)}
+.od-ledger{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:600px;animation:odFade .4s ease .2s both}
+.od-ledger-head{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:0.18em;color:rgba(251,239,255,0.45)}
+.od-ledger-list{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 6px}
+.od-ledger-item{font-family:'Archivo',sans-serif;font-size:11.5px;line-height:1.2;padding:4px 9px;border-radius:999px;border:1px solid rgba(251,239,255,0.16);color:rgba(251,239,255,0.72);background:rgba(255,255,255,0.03)}
+.od-ledger-item.is-lost{text-decoration:line-through;text-decoration-color:rgba(224,72,27,0.8);color:rgba(251,239,255,0.42)}
 .od-btnblock{display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.4vh,11px)}
 .od-redo{display:inline-block;line-height:0;margin-left:1px}
 .od-ledger-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 17px}
@@ -258,6 +281,10 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-fan-deck{height:100%!important}
   .od-fan{height:var(--od-ch)!important;width:calc(var(--od-ch)*0.7)!important;margin-left:calc(var(--od-ch)*-0.35)!important;bottom:calc(var(--od-ch)*0.34 + 6px)!important}
   .od-drawn-wrap{transform:scale(var(--od-card-k,0.5))}
+  .od-coin-wrap{--od-coin:min(150px,calc(var(--od-sa-h,40vh)*0.42),calc(var(--od-sa-w,100vw)*0.4))}
+  .od-ledger-item{font-size:10.5px;padding:3px 8px}
+  .od-unres{min-height:60px}
+  .od-unres-q{font-size:12.5px}
 
   /* --- band 3: results panel, as tall as its content --- */
   .od-panel{flex:none!important;min-height:0;overflow:visible!important;padding:8px 16px 14px!important}
@@ -333,7 +360,7 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-endlinks{margin-top:0}
 
   .od-headline{font-size:clamp(18px,calc(var(--od-vh,1vh)*5.6),28px)!important;max-width:none}
-  .od-pcards{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px!important;margin-top:14px!important}
+  .od-pcards{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px!important;margin-top:14px!important}
   .od-pcards .od-pcard{flex-direction:column;min-height:0}
   .od-pcards .od-pcard-img{position:relative!important;width:100%!important;max-width:none;height:clamp(60px,calc(var(--od-vh,1vh)*21),130px)!important;object-position:50% 28%!important;border-radius:12px 12px 0 0}
   .od-pcards .od-pcard-body{margin-left:0;justify-content:flex-start;padding:8px 10px 10px}
@@ -378,7 +405,7 @@ body.od-menu-open .od-extinctions{display:none!important}
 .od-intro{margin-top:14px;max-width:680px;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.1vh,22px);line-height:1.45;color:rgba(236,234,230,0.78)}
 .od-choose{margin-top:clamp(16px,2.6vh,26px);margin-bottom:12px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.18em;color:rgba(236,234,230,0.6)}
 .od-choose-sel{color:#E0481B}
-.od-pcards{flex:none;height:clamp(280px,49vh,510px);min-height:0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.od-pcards{flex:none;height:clamp(280px,49vh,510px);min-height:0;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .od-faceall-row{margin-top:clamp(14px,2.4vh,24px);display:flex;justify-content:center}
 .od-faceall{padding:12px 26px;border:1px solid #33333a;border-radius:999px;background:transparent;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:#ECEAE6}
 .od-pcard{position:relative;display:block;width:100%;height:100%;padding:0;cursor:pointer;border:2px solid #26262c;border-radius:14px;overflow:hidden;background:#15151a;transition:transform .26s cubic-bezier(.2,.7,.2,1),border-color .25s ease,box-shadow .3s ease;animation:odUp .55s cubic-bezier(.22,1,.36,1) both}
@@ -570,8 +597,18 @@ body.od-menu-open .od-extinctions{display:none!important}
           </sc-if>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none">
             <div class="od-globe {{ deadCls }}" style="position:relative;width:min(372px,74vw);height:min(372px,74vw);border-radius:50%;overflow:hidden;transform:scale({{ globeScale }});transform-origin:center center;box-shadow:{{ earthShadow }};filter:{{ earthFilter }};transition:transform .9s cubic-bezier(.2,.7,.2,1),box-shadow .8s ease">
-              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=18" spin="{{ wheelSpinToken }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
+              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=19" spin="{{ wheelSpinToken }}" sats="{{ starN }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
             </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCoin }}">
+        <div class="od-pop od-coin-wrap">
+          <div class="od-coin-shadow" style="transform:scale({{ coinShadowK }});opacity:{{ coinShadowOp }}"></div>
+          <div class="od-coin" style="transform:translateY({{ coinY }}px) rotateX({{ coinRot }}deg)">
+            <div class="od-coin-face od-coin-h"><b>50</b><i>HEADS</i></div>
+            <div class="od-coin-face od-coin-t"><b>50</b><i>TAILS</i></div>
           </div>
         </div>
       </sc-if>
@@ -630,12 +667,35 @@ body.od-menu-open .od-extinctions{display:none!important}
             </sc-if>
             <p class="{{ rdescClass }}">{{ verdictSub }}</p>
             <sc-if value="{{ hasSub2 }}"><p class="{{ rdescClass }}">{{ verdictSub2 }}</p></sc-if>
+            <sc-if value="{{ hasSrc }}"><p class="od-rsrc">{{ verdictSrc }}</p></sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showLedger }}">
+          <div class="od-ledger">
+            <div class="od-ledger-head">{{ ledgerHead }}</div>
+            <div class="od-ledger-list">
+              <sc-for list="{{ ledgerItems }}" as="L" hint-placeholder-count="3">
+                <span class="od-ledger-item {{ L.cls }}">{{ L.text }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showUnres }}">
+          <div class="od-unres">
+            <div class="od-unres-k">{{ unresK }}</div>
+            <div class="od-unres-q">{{ unresQ }}</div>
           </div>
         </sc-if>
 
         <div class="od-btnblock">
           <sc-if value="{{ showRollButton }}">
             <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll od-charge od-ledger-btn" style="animation-delay:.68s;position:relative;overflow:hidden;isolation:isolate;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ actLabel }}</span><svg class="od-redo" style="position:relative;z-index:1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 4v5h-5"/></svg></button>
+          </sc-if>
+          <sc-if value="{{ showCall }}">
+            <div class="od-callrow od-anim" style="animation-delay:.68s">
+              <button onClick="{{ callHeads }}" class="od-roll od-ledger-btn" style="border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;background:#FBEFFF;color:#1A0B2E">CALL HEADS</button>
+              <button onClick="{{ callTails }}" class="od-roll od-ledger-btn" style="border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;background:#FBEFFF;color:#1A0B2E">CALL TAILS</button>
+            </div>
           </sc-if>
           <sc-if value="{{ showPickPrompt }}">
             <div class="od-rollhint">{{ pickHint }}</div>
@@ -728,13 +788,19 @@ class Component extends DCLogic {
     wheelRot: 0, earthBurn: false, wheelSpinToken: 0,
     drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false, finaleReveal: false,
     dealt: [0,1,2,3,4,5,6,7,8,9,10,11], pickedPos: null,
+    // the ledger: what has happened in THIS world so far (Dario + Elon). It survives every
+    // roll that isn't doom, and is wiped when you change player or start a new timeline.
+    ledger: [],
+    coinCall: null, coinSide: null, coinRot: 0, coinY: 0, coinQ: -1,
     extinctions: (function(){ try { return parseInt(localStorage.getItem('theodds_extinctions'), 10) || 0; } catch (e) { return 0; } })(),
   };
 
   // TEST good/bad buttons: everywhere except the live production domain (local, staging previews, drafts all show them)
   isLive = (function(){ try { const h = location.hostname; return !/^(localhost|127\.0\.0\.1)$/.test(h) && !/-git-|staging/.test(h); } catch (e) { return true; } })(); // live = any public host (production domains change); previews carry -git-/staging, local is localhost
 
-  order = ['amodei', 'musk', 'tegmark'];
+  order = ['amodei', 'musk', 'tegmark', 'irving'];
+  // Face Them All stays the original three (its end screen does the arithmetic for those three)
+  gauntletOrder = ['amodei', 'musk', 'tegmark'];
 
   players = {
     amodei: {
@@ -783,7 +849,51 @@ class Component extends DCLogic {
       mechanic: 'cards', mechLabel: '12 FUTURES · PICK',
       slug: 'max-tegmark', initials: 'MT', mechTag: 'CARDS', accent: '#34E5C4', accentTint: 'rgba(52,229,196,0.10)', cta: 'Pick a card', objpos: '66% 24%',
     },
+    irving: {
+      short: 'Geoffrey', name: 'Geoffrey Irving', role: 'Former chief scientist, UK AI Security Institute',
+      // no freely licensed photograph of him exists yet: a typographic plate stands in until one is supplied
+      photo: '/odds-of-surviving-ai/research/irving-plate.svg',
+      credit: 'Portrait to come',
+      teaser: 'A 50% chance we all die.', teaserNum: '50%',
+      oddsBig: '50%', oddsCaption: 'CHANCE WE ALL DIE', oddsCap: 'WE ALL DIE',
+      doom: 0.5,
+      quote: 'In my view we have about a coin-flip chance that everyone dies.',
+      quoteContext: 'On his essay in TIME',
+      source: 'Post on X (@geoffreyirving) \u00B7 15 Oct 2026',
+      mechanic: 'coin', mechLabel: 'COIN · FLIP',
+      slug: 'geoffrey-irving', initials: 'GI', mechTag: 'COIN', accent: '#C9CED6', accentTint: 'rgba(201,206,214,0.10)', cta: 'Flip the coin', objpos: '50% 50%',
+    },
   };
+
+  // ── what happens when it ISN'T doom ──
+  // Dario: the die face is the future. 1 is the best of it, 9 the worst that still isn't
+  // "really, really badly". Every line is something he (or Anthropic) actually said or reported.
+  darioFaces = {
+    1: { head: 'Human lifespan doubles, to 150.', tag: 'Lifespan 150', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
+    2: { head: 'Most cancer, eliminated. Deaths down 95%.', tag: 'Cancer gone', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
+    3: { head: 'Nearly every infectious disease, preventable and treatable.', tag: 'Infections solved', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
+    4: { head: 'Most mental illness, cured.', tag: 'Mental illness cured', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
+    5: { head: 'A country of geniuses in a datacenter does a century of biology in ten years.', tag: 'A century in a decade', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024' },
+    6: { head: 'AI writes 90% of the code.', tag: '90% of the code', src: 'Dario Amodei, Council on Foreign Relations \u00B7 Mar 2025' },
+    7: { head: 'Claude runs the office shop. It sells tungsten cubes at a loss.', tag: 'Tungsten cubes', src: 'Anthropic, Project Vend \u00B7 Jun 2025' },
+    8: { head: 'In a test, Claude blackmails an engineer to avoid being replaced. 84% of the time.', tag: 'Blackmail, in testing', src: 'Anthropic, Claude Opus 4 system card \u00B7 May 2025' },
+    9: { head: 'Half of entry-level white-collar jobs, gone. Unemployment at 10 to 20%.', tag: 'Half the entry-level jobs', src: 'Dario Amodei to Axios \u00B7 May 2025' },
+  };
+  // Elon: the blue 80% is not a utopia, it is his own track record of the good outcome.
+  muskEvents = [
+    { head: 'Nobody has a job. Universal high income, details to follow.', tag: 'No jobs', src: 'Elon Musk at VivaTech \u00B7 May 2024' },
+    { head: 'There are more humanoid robots than people.', tag: 'More robots than people', src: 'Elon Musk at FII, Riyadh \u00B7 Oct 2024' },
+    { head: 'Starship leaves for Mars. The crew are Optimus robots.', tag: 'Robots to Mars', src: 'Elon Musk, Starship update \u00B7 May 2025' },
+    { head: 'A million robotaxis on the road. Next year, for sure.', tag: 'A million robotaxis', src: 'Elon Musk, Tesla Autonomy Day \u00B7 Apr 2019' },
+    { head: 'Grok calls itself MechaHitler. xAI blames a code update.', tag: 'MechaHitler', src: 'xAI statement \u00B7 Jul 2025' },
+  ];
+  // Irving: the four questions his TIME essay says will not resolve in time
+  irvingQs = [
+    'To what extent will AI models learn transferable skills from training and then successfully apply them to new tasks?',
+    'Will AI model capabilities stop advancing at or below human-level, or instead exceed it?',
+    'Will the small-scale model misbehavior we see today (sycophancy, lying, bias) worsen as capabilities increase?',
+    'Will the safety methods that work for models less smart than us continue to work for models smarter than any human?',
+  ];
 
   deck = [
     { name: 'Libertarian Utopia', doom: false, img: '/odds-of-surviving-ai/research/cards/libertarian-utopia.jpg', desc: 'Humanity survives and thrives alongside AI, in a free, post-scarcity world with little central control. Humans, cyborgs and machines coexist by mutual agreement, divided into zones. Prosperous, unequal, and entirely unguaranteed to last.' },
@@ -983,7 +1093,7 @@ class Component extends DCLogic {
     // snapshot the video's last frame, cover-fit (object-position 50% 28%), into a source canvas
     const src = document.createElement('canvas'); src.width = rw; src.height = rh;
     const sctx = src.getContext('2d');
-    const vw = (video && video.videoWidth) || pmw, vh = (video && video.videoHeight) || pmh;
+    const vw = (video && (video.videoWidth || video.naturalWidth)) || pmw, vh = (video && (video.videoHeight || video.naturalHeight)) || pmh;
     const cover = Math.max(pmw / vw, pmh / vh), dw = vw * cover, dh = vh * cover;
     try {
       sctx.save(); sctx.beginPath(); sctx.rect(pmx, pmy, pmw, pmh); sctx.clip();   // nothing bleeds outside the portrait
@@ -1163,7 +1273,7 @@ class Component extends DCLogic {
   shuffled() { const a = [0,1,2,3,4,5,6,7,8,9,10,11]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
 
   // ---------- routing (path-based: /theodds, /theodds/{slug}, /theodds/all) ----------
-  bySlug = { 'dario-amodei': 'amodei', 'elon-musk': 'musk', 'max-tegmark': 'tegmark' };
+  bySlug = { 'dario-amodei': 'amodei', 'elon-musk': 'musk', 'max-tegmark': 'tegmark', 'geoffrey-irving': 'irving' };
   parseRoute() {
     let path = '/theodds';
     try { path = (location.pathname || '').replace(/\/+$/, ''); } catch (e) {}
@@ -1189,7 +1299,7 @@ class Component extends DCLogic {
     this.clearTimers();
     if (r.gauntlet) { this.beginGauntlet(false); return; }
     if (r.screen === 'play' && r.id) {
-      this.setState({ screen: 'play', playerId: r.id, menuOpen: false, mode: 'single', faceEnd: false });
+      this.setState({ screen: 'play', playerId: r.id, menuOpen: false, mode: 'single', faceEnd: false, ledger: [] });
       this.resetMechanic();
       return;
     }
@@ -1205,7 +1315,7 @@ class Component extends DCLogic {
   // the landing AND the in-game Choose-your-player menu — choosing IS playing)
   playPlayer = (id) => {
     this.click(); this.clearTimers();
-    this.setState({ playerId: id, screen: 'play', menuOpen: false, mode: 'single', faceEnd: false });
+    this.setState({ playerId: id, screen: 'play', menuOpen: false, mode: 'single', faceEnd: false, ledger: [] });
     this.resetMechanic();
     this.pushRoute('play', { id: id }, this.players[id].slug);
   };
@@ -1299,7 +1409,7 @@ class Component extends DCLogic {
   forceBad = () => this.setState(s => ({ force: s.force === 'doom' ? null : 'doom' }));
   // "Choose player" returns to the homepage screen itself (not a separate
   // modal) — so the chooser IS the homepage, exactly.
-  openMenu = () => { this.click(); this.clearTimers(); this.setState({ screen: 'landing', menuOpen: false, faceEnd: false }); this.pushRoute('landing', {}, ''); };
+  openMenu = () => { this.click(); this.clearTimers(); this.setState({ screen: 'landing', menuOpen: false, faceEnd: false, ledger: [] }); this.pushRoute('landing', {}, ''); };
   closeMenu = () => { this.click(); this.setState({ menuOpen: false }); };
 
   resetMechanic(patch) {
@@ -1307,13 +1417,14 @@ class Component extends DCLogic {
       phase: 'ready', outcome: null,
       earthBurn: false, dieMuseum: false, drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false,
       dealt: this.shuffled(), pickedPos: null,
+      coinCall: null, coinSide: null, coinY: 0, coinQ: -1,
     }, patch || {}));
   }
 
   selectPlayer = (id) => {
     this.click(); this.clearTimers();
     this._pBlurFor = null;   // re-arm the portrait blur-in so it plays on every fresh selection
-    this.setState({ playerId: id, menuOpen: false, mode: 'single', faceEnd: false, screen: 'play' });
+    this.setState({ playerId: id, menuOpen: false, mode: 'single', faceEnd: false, screen: 'play', ledger: [] });
     this.resetMechanic();
     this._dealIfCards(id);   // Tegmark: sound the cards fanning out
     this.replaceRoute('play', { id: id }, this.players[id].slug);
@@ -1416,6 +1527,52 @@ class Component extends DCLogic {
     });
   }
 
+  // ---- Irving: call it, flip it, and the coin hangs in the air while the questions go unanswered ----
+  callHeads = () => this.flipCoin('heads');
+  callTails = () => this.flipCoin('tails');
+  flipCoin(call) {
+    if (this.state.phase !== 'ready') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic !== 'coin') return;
+    this.ensureAudio(); this.click();
+    let side = Math.random() < 0.5 ? 'heads' : 'tails';
+    if (this.state.force) { const fd = this.state.force === 'doom'; side = fd ? (call === 'heads' ? 'tails' : 'heads') : call; this.setState({ force: null }); }
+    const isDoom = side !== call;
+    const cur = this.state.coinRot;
+    const base = Math.ceil(cur / 360) * 360;
+    const target = base + 360 * 9 + (side === 'tails' ? 180 : 0);
+    const delta = target - cur;
+    const H = Math.max(60, Math.min(170, (this._saH || 320) * 0.3));   // how high it goes: from the band's real height
+    this.setState({ phase: 'rolling', coinCall: call, coinSide: null, coinQ: -1 });
+    this.coinTing(0.05);
+    const DUR = 7600, UP = 0.12, DOWN = 0.88;
+    const nQ = this.irvingQs.length;
+    this.tween(DUR, (t) => {
+      // rotation: fast off the thumb, slowing the whole way, but never stopping while it's up
+      const rot = cur + delta * (1 - Math.pow(1 - t, 2.4));
+      let y;
+      if (t < UP) { const k = t / UP; y = -H * (1 - (1 - k) * (1 - k)); }
+      else if (t < DOWN) { y = -H + Math.sin((t - UP) * 26) * 4; }
+      else { const k = (t - DOWN) / (1 - DOWN); y = -H * (1 - k * k); }
+      const q = (t >= UP && t < DOWN) ? Math.min(nQ - 1, Math.floor((t - UP) / (DOWN - UP) * nQ)) : (t >= DOWN ? nQ - 1 : -1);
+      if (q !== this.state.coinQ && q >= 0) this.coinTing(0.018);
+      this.setState({ coinRot: rot, coinY: y, coinQ: q });
+    }, () => {
+      this.setState({ coinRot: target, coinY: 0, coinSide: side });
+      this.noiseburst(0.16, 2400, 3); setTimeout(() => this.coinTing(0.04), 60);
+      this.resolve(isDoom, p, null);
+      if (isDoom) setTimeout(() => this._coinFinale(), 380);
+    });
+  }
+  coinTing(vol) { this.tone(2350, 0.32, 'triangle', vol || 0.03); setTimeout(() => this.tone(3120, 0.22, 'sine', (vol || 0.03) * 0.6), 30); }
+  // the coin came down on the other side: the portrait plate disintegrates, then the verdict
+  _coinFinale() {
+    if (this._finaleDone) return; this._finaleDone = true;
+    try { const h = document.querySelector('.od-hero-img'); if (h) this._shatterPortrait(h); } catch (e) {}
+    if (this._revealTimer) clearTimeout(this._revealTimer);
+    this._revealTimer = setTimeout(() => this.setState({ finaleReveal: true }), 1500);
+  }
+
   pickCard(pos) {
     if (this.state.phase !== 'ready') return;
     const p = this.players[this.state.playerId];
@@ -1483,7 +1640,19 @@ class Component extends DCLogic {
     } else {
       // Dario's die landing on "really, really badly" → swap the portrait for
       // the doom morph video, which plays once through to the end.
-      const doomVideo = isDoom && (p.mechanic === 'die' || p.mechanic === 'wheel');   // Dario + Elon fade into their doom clip
+      const doomVideo = isDoom && (p.mechanic === 'die' || p.mechanic === 'wheel' || p.mechanic === 'coin');   // Dario + Elon fade into their doom clip; Irving's plate disintegrates
+      // not doom, on the die or the wheel: something still happens, and it is added to this world's ledger
+      if (!isDoom && (p.mechanic === 'die' || p.mechanic === 'wheel')) {
+        let ev;
+        if (p.mechanic === 'die') ev = this.darioFaces[this.state.dieTarget] || this.darioFaces[5];
+        else {
+          // Elon: work through his list before anything repeats
+          if (!this._muskBag || !this._muskBag.length) { this._muskBag = this.muskEvents.map((e, i) => i); for (let i = this._muskBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = this._muskBag[i]; this._muskBag[i] = this._muskBag[j]; this._muskBag[j] = t; } }
+          ev = this.muskEvents[this._muskBag.pop()];
+        }
+        this.setState(st => ({ ledger: st.ledger.concat([ev]) }));
+      }
+      if (p.mechanic === 'coin') this._finaleDone = false;
       // Elon (wheel) holds its result copy until the finale; everyone else shows it right away
       const finaleReveal = !doomVideo;   // die + wheel doom both hold the result until their clip finishes
       this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', doomVideo, finaleReveal });
@@ -1495,12 +1664,13 @@ class Component extends DCLogic {
     if (this.state.mode === 'gauntlet') { this.advanceGauntlet(); return; }
     const p = this.players[this.state.playerId];
     if (p.mechanic === 'cards') { this.resetMechanic(); this.dealCards(); }   // re-deal the fan with its sound
+    else if (p.mechanic === 'coin') { this.click(); this.resetMechanic(); }    // call it again
     else this.act();
   };
 
   beginGauntlet(push) {
     this.clearTimers();
-    this.setState({ screen: 'play', mode: 'gauntlet', gIndex: 0, gResults: [], playerId: this.order[0], menuOpen: false, faceEnd: false });
+    this.setState({ screen: 'play', mode: 'gauntlet', gIndex: 0, gResults: [], playerId: this.gauntletOrder[0], menuOpen: false, faceEnd: false, ledger: [] });
     this.resetMechanic();
     if (push !== false) this.pushRoute('play', { gauntlet: true }, 'all');
   }
@@ -1508,7 +1678,7 @@ class Component extends DCLogic {
   advanceGauntlet = () => {
     this.click();
     const next = this.state.gIndex + 1;
-    if (next < this.order.length) { this.setState({ gIndex: next, playerId: this.order[next] }); this.resetMechanic(); this._dealIfCards(this.order[next]); }
+    if (next < this.gauntletOrder.length) { this.setState({ gIndex: next, playerId: this.gauntletOrder[next] }); this.resetMechanic(); this._dealIfCards(this.gauntletOrder[next]); }
     else { this.setState({ faceEnd: true }); }
   };
   exitGauntlet = () => { this.click(); this.setState({ screen: 'play', mode: 'single', faceEnd: false, gIndex: 0, gResults: [], playerId: 'amodei' }); this.resetMechanic(); this.replaceRoute('play', { id: 'amodei' }, 'dario-amodei'); };
@@ -1578,7 +1748,7 @@ class Component extends DCLogic {
       };
     });
 
-    const gauntletNav = this.order.map((id, i) => {
+    const gauntletNav = this.gauntletOrder.map((id, i) => {
       let bar;
       if (i < s.gIndex) bar = s.gResults[i] ? this.wheelGood1 : this.wheelDoomCol;
       else if (i === s.gIndex) bar = '#E0481B';
@@ -1590,7 +1760,7 @@ class Component extends DCLogic {
     const isDoomOut = s.outcome === 'doom';
     const single = !inGauntlet;
     // per-player doom glow on the game side: Dario = cold teal, Elon = dark space blue, Tegmark(card) = red
-    const doomBgGrad = p.mechanic === 'wheel'
+    const doomBgGrad = (p.mechanic === 'wheel' || p.mechanic === 'coin')
       ? 'radial-gradient(ellipse 90% 78% at 50% 40%, rgba(46,66,138,0.34) 0%, rgba(9,15,38,0.94) 46%, #04060e 78%), #04060e'
       : (p.mechanic === 'cards'
         ? 'radial-gradient(ellipse 88% 72% at 50% 34%, rgba(122,22,26,0.32) 0%, rgba(34,8,11,0.9) 46%, #08080a 78%), #08080a'
@@ -1599,13 +1769,30 @@ class Component extends DCLogic {
     // single-player doom on the die, the wheel, or a Tegmark "we're gone" card ends
     // the game: ominous copy + a "try a different timeline" button back to the chooser
     // (no replay — once humanity's gone, there's no picking again)
-    const endGame = single && isDoomOut && (p.mechanic === 'die' || p.mechanic === 'wheel' || p.mechanic === 'cards');
-    let verdictHead = '', verdictSub = '', verdictSub2 = '';
+    const endGame = single && isDoomOut && (p.mechanic === 'die' || p.mechanic === 'wheel' || p.mechanic === 'cards' || p.mechanic === 'coin');
+    let verdictHead = '', verdictSub = '', verdictSub2 = '', verdictSrc = '';
     let showVerdictHead = true;
+    // the ledger: the newest entry is this roll's verdict, the rest are listed under it
+    const led = s.ledger || [];
+    const ledgerOn = single && (p.mechanic === 'die' || p.mechanic === 'wheel') && s.phase === 'result';
+    const lastEv = (ledgerOn && !isDoomOut && led.length) ? led[led.length - 1] : null;
+    const year = led.length;
     const isCardsResult = p.mechanic === 'cards' && s.phase === 'result';
     if (isCardsResult) {
       verdictHead = drawnCard.name;                    // the future's name
       verdictSub = drawnCard.desc;                     // our own Tegmark card copy (unchanged)
+    } else if (p.mechanic === 'coin') {
+      const sideW = s.coinSide === 'tails' ? 'Tails' : 'Heads';
+      verdictHead = isDoomOut ? sideW + '. Everyone dies.' : sideW + '. You called it.';
+      verdictSub = isDoomOut
+        ? '\u201CIf we\u2019re unwilling to act until all our disagreements are resolved, it will be too late.\u201D'
+        : 'Not one of the four questions has been answered. Irving\u2019s own answer: \u201CWe can, and should, stop frontier AI development immediately.\u201D';
+      verdictSrc = 'Geoffrey Irving in TIME \u00B7 3 Oct 2026';
+      if (isDoomOut && single) verdictSub2 = 'There is no second flip.';
+    } else if (lastEv) {
+      verdictHead = lastEv.head;
+      verdictSub = 'Year ' + year + '. ' + (p.mechanic === 'wheel' ? 'Landed in the blue, the 80%.' : 'The die showed ' + s.dieTarget + '.');
+      verdictSrc = lastEv.src;
     } else if (p.mechanic === 'wheel') {
       verdictHead = isDoomOut ? 'Annihilation.' : 'Earth holds.';
       verdictSub = isDoomOut ? (single ? 'You kept playing until the world burned.' : 'Landed in the red. The 20% came up.') : 'Landed in the blue, the 80%. Good, most likely. This time.';
@@ -1621,12 +1808,27 @@ class Component extends DCLogic {
     let keyGood, keyBad, goodPct;
     if (p.mechanic === 'wheel') { keyGood = 'GOOD \u00b7 80%'; keyBad = 'ANNIHILATION \u00b7 20%'; goodPct = 80; }
     else if (p.mechanic === 'cards') { keyGood = 'STILL HERE \u00b7 9 OF 12'; keyBad = 'GONE \u00b7 3 OF 12'; goodPct = 75; }
+    else if (p.mechanic === 'coin') { keyGood = 'YOUR CALL \u00b7 50%'; keyBad = 'EVERYONE DIES \u00b7 50%'; goodPct = 50; }
     else { keyGood = '1\u20139 \u00b7 GOOD TO BAD'; keyBad = '10\u201312 \u00b7 REALLY, REALLY BAD'; goodPct = 75; }
     const replayLabel = endGame
       ? 'TRY A DIFFERENT TIMELINE'
       : inGauntlet
       ? (s.gIndex < 2 ? 'NEXT PLAYER \u2192' : 'SEE THE ODDS \u2192')
-      : (p.mechanic === 'wheel' ? 'SPIN AGAIN' : p.mechanic === 'cards' ? 'PICK AGAIN' : 'ROLL AGAIN');
+      : (p.mechanic === 'wheel' ? 'SPIN AGAIN' : p.mechanic === 'cards' ? 'PICK AGAIN' : p.mechanic === 'coin' ? 'FLIP AGAIN' : 'ROLL AGAIN');
+
+    // the ledger list under the verdict: everything before this roll, or, on doom, everything that went with it
+    const prior = isDoomOut ? led : led.slice(0, -1);
+    const LMAX = 8;
+    const shown = prior.slice(-LMAX);
+    const ledgerItems = shown.map((e, i) => ({ text: e.tag, cls: isDoomOut ? 'is-lost' : '' }));
+    if (prior.length > LMAX) ledgerItems.unshift({ text: '+' + (prior.length - LMAX) + ' earlier', cls: isDoomOut ? 'is-lost' : '' });
+    const showLedger = ledgerOn && s.finaleReveal && prior.length > 0;
+    const ledgerHead = isDoomOut ? 'GONE WITH IT \u00B7 ' + prior.length + (prior.length === 1 ? ' YEAR' : ' YEARS') : 'THIS WORLD SO FAR';
+
+    // the coin
+    const isCoin = p.mechanic === 'coin';
+    const coinUp = Math.min(1, Math.abs(s.coinY) / 150);
+    const showUnres = isCoin && s.phase === 'rolling' && s.coinQ >= 0;
 
     const faceEndAll = clearedCount === 3;
     const faceEndHead = faceEndAll ? 'You cleared all three.' : (clearedCount === 0 ? 'None of them cleared.' : 'You cleared ' + clearedCount + ' of 3.');
@@ -1645,6 +1847,13 @@ class Component extends DCLogic {
       extinctions: String(s.extinctions), showExt: !isLanding && !s.menuOpen,
 
       isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards', notCards: p.mechanic !== 'cards',
+      isCoin, coinRot: s.coinRot.toFixed(1), coinY: s.coinY.toFixed(1),
+      coinShadowK: (1 - coinUp * 0.55).toFixed(3), coinShadowOp: (1 - coinUp * 0.7).toFixed(3),
+      showCall: isCoin && s.phase === 'ready', callHeads: this.callHeads, callTails: this.callTails,
+      showUnres, unresK: 'UNRESOLVED \u00B7 ' + (s.coinQ + 1) + ' OF ' + this.irvingQs.length, unresQ: s.coinQ >= 0 ? this.irvingQs[s.coinQ] : '',
+      verdictSrc, hasSrc: !!verdictSrc, showLedger, ledgerItems, ledgerHead,
+      // Elon: every year the world survives, another batch of satellites goes up
+      starN: String(p.mechanic === 'wheel' && single ? Math.min(48, led.length * 6) : 0),
       showTest: p.mechanic !== 'cards' && !this.isLive,
       reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
       dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0', dieEncaseMs: String(p.doomClipMs || 5000),
@@ -1652,7 +1861,7 @@ class Component extends DCLogic {
       wheelGoodColor: this.wheelGood1, wheelDoomColor: this.wheelDoomCol,
       earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, earthBurnFlag: s.earthBurn ? '1' : '0', showWheel: !s.earthBurn, deadCls: s.earthBurn ? 'is-dead' : '', embers, wheelSpinToken: String(s.wheelSpinToken), doomVideo: s.doomVideo,
       doomVid: p.doomVid || '', doomVidFlipCls: p.doomVidFlip ? 'od-flip' : '', doomVidPos: p.doomVidPos || '50% 50%',
-      hasPortraitVid: !!p.portraitVideo, noPortraitVid: !p.portraitVideo, portraitVid: p.portraitVideo || '', portraitPoster: p.portraitPoster || p.photo || '', portraitPos: p.portraitPos || '50% 18%', showDoomVid: s.doomVideo && !p.portraitVideo,
+      hasPortraitVid: !!p.portraitVideo, noPortraitVid: !p.portraitVideo, portraitVid: p.portraitVideo || '', portraitPoster: p.portraitPoster || p.photo || '', portraitPos: p.portraitPos || '50% 18%', showDoomVid: s.doomVideo && !p.portraitVideo && !!p.doomVid,
       hasPortraitLoop: !!p.portraitVideoLoop, portraitLoopVid: p.portraitVideoLoop || '',
       globeScale: s.earthBurn ? '1' : '0.5',
       wheelRingScale: s.earthBurn ? '0.16' : '1',

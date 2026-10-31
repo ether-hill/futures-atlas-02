@@ -29,7 +29,7 @@
   const SPIN_PHASE = _spinPhase(ROCKET_AT);
 
   class EarthGlobe extends HTMLElement {
-    static get observedAttributes() { return ['spin', 'burn', 'reduced', 'boom']; }
+    static get observedAttributes() { return ['spin', 'burn', 'reduced', 'boom', 'sats']; }
     connectedCallback() {
       if (this._booted) return;
       this._booted = true;
@@ -53,6 +53,8 @@
       if (name === 'reduced') this._reduced = this._isReduced();
       // the host fires this exactly when the doom video ends → detonate the rocket + nearest sats now
       if (name === 'boom' && newV && newV !== '0' && newV !== oldV) this._boomPending = true;
+      // how many satellites are up while the planet is alive (the host adds a batch every year Earth holds)
+      if (name === 'sats') this._starN = parseInt(newV, 10) || 0;
     }
     _isBurning() { const v = this.getAttribute('burn'); return !!v && v !== '0' && v !== 'false'; }
     _isReduced() { const v = this.getAttribute('reduced'); return !!v && v !== '0' && v !== 'false'; }
@@ -203,6 +205,28 @@
       for (let i = 0; i < 70; i++) addOrbiter(makeJunk(i), rand(0.38, 0.95), rand(0.4, 1.9), 1.16, 2.12);
       this._orbiters = orbiters; this._orbMats = orbMats; this._orbOpacity = 0;
 
+      // ── a low shell of satellites that fills up while the planet is ALIVE: one batch per year
+      // Earth holds (attribute sats = how many are up). Low enough (a 1.06-1.12) to cross the
+      // visible disc inside the wheel; they stay up through an annihilation, circling the dead world.
+      this._stars = [];
+      const starWing = new THREE.BoxGeometry(0.2, 0.004, 0.07);
+      for (let i = 0; i < 48; i++) {
+        const g = new THREE.Group();
+        const m1 = new THREE.MeshStandardMaterial({ color: 0xe4e8ee, metalness: 0.9, roughness: 0.3, emissive: 0xa6acb6, emissiveIntensity: 0.9, transparent: true, opacity: 0 });
+        const m2 = new THREE.MeshStandardMaterial({ color: 0x3b72d6, metalness: 0.5, roughness: 0.45, emissive: 0x4a82e6, emissiveIntensity: 1.5, transparent: true, opacity: 0 });
+        g.add(new THREE.Mesh(bodyGeo, m1));
+        const wing = new THREE.Mesh(starWing, m2); wing.position.x = 0.14; g.add(wing);
+        g.scale.setScalar(0.62); g.visible = false;
+        const pv = new THREE.Group();
+        // batches of six share a plane, like a launch putting a train into one orbit
+        const b = Math.floor(i / 6);
+        if (!this._starPlanes) this._starPlanes = [];
+        if (!this._starPlanes[b]) this._starPlanes[b] = [rand(-1.3, 1.3), rand(0, Math.PI * 2), rand(-1.3, 1.3), rand(0.28, 0.5) * (Math.random() < 0.5 ? -1 : 1), rand(0, Math.PI * 2)];
+        const P = this._starPlanes[b];
+        pv.rotation.set(P[0], P[1], P[2]); pv.add(g); scene.add(pv);
+        this._stars.push({ mesh: g, mats: [m1, m2], a: rand(1.06, 1.12), ang: P[4] + (i % 6) * 0.26, spd: P[3], op: 0 });
+      }
+
       // ── rocket: ONE launch off the dead planet a few seconds in; arcs out a short way ──
       // detailed, coloured (steel-blue body, burnt-orange nose/band), SpaceX-ish silhouette
       this._up = new THREE.Vector3(0, 1, 0);
@@ -267,6 +291,7 @@
 
       this._ready = true;
       this._reduced = this._isReduced();
+      this._starN = parseInt(this.getAttribute('sats'), 10) || 0;
       // honour burn/reduced attributes that were already set before init finished
       this._nightTarget = this._isBurning() ? 0 : NIGHT_FULL;
       earth.material.uniforms.nightInt.value = this._nightTarget;
@@ -474,6 +499,20 @@
           this._orbOpacity = anim ? this._orbOpacity + (tgt - this._orbOpacity) * Math.min(1, dt * 1.6) : tgt;
           this._orbiters.visible = this._orbOpacity > 0.012;
           for (const m of this._orbMats) m.opacity = this._orbOpacity;
+        }
+        // the satellite shell: fade each one in/out against the requested count, and keep them circling
+        if (this._stars) {
+          const n = this._starN || 0;
+          for (let i = 0; i < this._stars.length; i++) {
+            const s = this._stars[i], tgt = i < n ? 1 : 0;
+            s.op = anim ? s.op + (tgt - s.op) * Math.min(1, dt * 1.6) : tgt;
+            s.mesh.visible = s.op > 0.01;
+            if (!s.mesh.visible) continue;
+            if (anim) s.ang += s.spd * dt;
+            s.mesh.position.set(Math.cos(s.ang) * s.a, 0, Math.sin(s.ang) * s.a);
+            s.mesh.rotation.y = -s.ang;
+            s.mats[0].opacity = s.op; s.mats[1].opacity = s.op;
+          }
         }
         // rocket launch cycle — only while annihilated, and never under reduced motion
         if (this._rocket) {
