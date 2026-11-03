@@ -174,6 +174,7 @@
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Throat singing and quantum physics", path: "/throat-singing-quantum", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },
+    { name: "The Doom Score", path: "/doom-score/play-v02", draft: true },
     { name: "Horizon Scan", path: "/horizon-scan", draft: "month-1" },
     { name: "Hypothetica Magnifica", path: "/magnifica", draft: "month-1" },
     { name: "Trajectories", path: "/trajectories", draft: true },

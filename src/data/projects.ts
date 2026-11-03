@@ -195,6 +195,23 @@ export const projects: Project[] = [
     cta: "Play the boards",
   },
   {
+    id: "doom-score",
+    title: "The Doom Score",
+    tagline:
+      "How talk of AI ending humanity grew from a forum footnote to a flood, 2009 to now, played as sound. Every dot is someone's guess at the chance, played as a note.",
+    year: "2026",
+    date: "2026-10-30",
+    field: "Foresight & evidence",
+    topics: ["AI", "Futures"],
+    kind: "story",
+    status: "live",
+    visibility: "draft",
+    // the play page is the project's one page on staging for now
+    path: "/doom-score/play-v02",
+    image: "/projects/doom-score.jpg",
+    cta: "Play the score",
+  },
+  {
     id: "horizon-scan",
     title: "Horizon Scan",
     tagline:
@@ -781,9 +798,9 @@ export function kindsOf(items: Project[]): ProjectKind[] {
 export const projectFields: string[] = fieldsOf(liveProjects);
 
 /** In-site paths belonging to draft projects, what the middleware gate closes. */
-// Paths closed like a draft project's that have no project card yet: The Doom Score's
-// first page is on staging for review, behind the sign-in and absent on production.
-const DRAFT_TRIALS = ["/doom-score"];
+// Paths closed like a draft project's beyond its card's own path: the card points at
+// The Doom Score's play page, and the rest of /doom-score (and its v02 trial) stay closed too.
+const DRAFT_TRIALS = ["/doom-score", "/doom-score-v02"];
 export const draftPaths: string[] = [...draftProjects.flatMap((p) => (p.path ? [p.path] : [])), ...DRAFT_TRIALS];
 
 /**

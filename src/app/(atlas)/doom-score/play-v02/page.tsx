@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/Container";
 import { SHARE_CARDS } from "@/data/share-cards";
 import { DoomScore } from "../_engine/DoomScore";
-import { DoomNav } from "../_hub/DoomNav";
 import { AI_ROWS, buildMoments, buildPile } from "../_hub/home-data";
 import "../doom-score.css";
 
@@ -24,9 +22,6 @@ export const metadata: Metadata = {
 export default function PlayV02Page() {
   return (
     <div className="ds-hero-page">
-      <Container className="ds-hero-nav">
-        <DoomNav />
-      </Container>
       <DoomScore
         hero={{
           title: "The AI extinction conversation",

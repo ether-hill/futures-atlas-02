@@ -861,7 +861,7 @@ html.ds-focus .fa-shell { visibility: hidden; }
 .ds-hero-page { position: relative; }
 .ds-hero-nav { position: absolute; top: 0; left: 0; right: 0; z-index: 3; pointer-events: none; }
 .ds-hero-nav .ds-nav { margin-top: 12px; pointer-events: auto; }
-.ds-hero-page .ds-cover { padding-top: clamp(56px, 7vw, 96px); }
+
 
 /* ----- Play, v02 on tablets and phones ----- */
 @media (max-width: 1100px) {
@@ -879,7 +879,7 @@ html.ds-focus .fa-shell { visibility: hidden; }
   .ds-intro .fa-btn { padding: 10px 14px; font-size: 11px; height: auto; min-height: 0; }
 }
 @media (max-width: 700px) {
-  .ds-hero-page .ds-cover { padding-top: 64px; gap: 14px; }
+  .ds-hero-page .ds-cover { gap: 14px; }
   .ds-cover h1 { font-size: clamp(40px, 12vw, 56px); }
   .ds-bigplay.fa-btn { font-size: 18px; padding: 16px 26px 16px 20px; }
   .ds.ds--hero.is-open:not(.is-playing) { padding-top: 112px; }
