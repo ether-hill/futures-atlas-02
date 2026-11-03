@@ -781,7 +781,10 @@ export function kindsOf(items: Project[]): ProjectKind[] {
 export const projectFields: string[] = fieldsOf(liveProjects);
 
 /** In-site paths belonging to draft projects, what the middleware gate closes. */
-export const draftPaths: string[] = draftProjects.flatMap((p) => (p.path ? [p.path] : []));
+// Paths closed like a draft project's that have no project card yet: The Doom Score's
+// first page is on staging for review, behind the sign-in and absent on production.
+const DRAFT_TRIALS = ["/doom-score"];
+export const draftPaths: string[] = [...draftProjects.flatMap((p) => (p.path ? [p.path] : [])), ...DRAFT_TRIALS];
 
 /**
  * True if `pathname` is a draft project's page (the path itself or anything

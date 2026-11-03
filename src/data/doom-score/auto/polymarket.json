@@ -1,0 +1,962 @@
+{
+  "source": "Polymarket Gamma public-search + CLOB prices-history",
+  "fetchedAt": "2026-10-30T22:06:37.584Z",
+  "status": "ok",
+  "caveats": [
+    "Real-money (USDC) markets; prices are the YES share price, read as the probability. Liquidity on the doom questions is small next to Polymarket's political markets.",
+    "A market is kept only when its text is about AI and about doom, extinction, takeover, a training pause or AGI arrival, and not a game, film, benchmark or central-bank question; each carries a theme: doom, pause or agi. The regexes are in scripts/doom-score/polymarket.mjs.",
+    "Daily price history from the CLOB (fidelity 1440 minutes) for the largest binary markets by volume; the last price in each month is the monthly value.",
+    "Polymarket only lists dated, resolvable questions, so most are \"by <date>\" framings, not unconditional p(doom)."
+  ],
+  "totals": {
+    "marketsFound": 34,
+    "relevant": 34,
+    "open": 29
+  },
+  "items": [
+    {
+      "id": "253571",
+      "date": "2023-12-29T20:26:11.396Z",
+      "title": "OpenAI announces it has achieved AGI in 2024?",
+      "event": "OpenAI announces it has achieved AGI in 2024?",
+      "theme": "agi",
+      "url": "https://polymarket.com/event/will-openai-announce-it-has-achieved-agi-in-2024",
+      "score": 907185,
+      "liquidity": 0,
+      "probability": 0,
+      "closeTime": "2024-12-31T00:00:00Z",
+      "isResolved": true,
+      "resolution": "NO",
+      "yesToken": "105850438828614884452197310938430279698886324164735312931762902384271674871323"
+    },
+    {
+      "id": "653788",
+      "date": "2025-10-28T15:00:20.478489Z",
+      "title": "OpenAI announces it has achieved AGI before 2027?",
+      "event": "OpenAI announces it has achieved AGI before 2027?",
+      "theme": "agi",
+      "url": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-before-2027",
+      "score": 345362,
+      "liquidity": 20157,
+      "probability": 0.09,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "115755033510457721528230598637869053553488546416290388126901840137082000566077"
+    },
+    {
+      "id": "517755",
+      "date": "2025-01-06T23:19:07.345786Z",
+      "title": "OpenAI announces it has achieved AGI in 2025?",
+      "event": "OpenAI announces it has achieved AGI in 2025?",
+      "theme": "agi",
+      "url": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-in-2025",
+      "score": 336968,
+      "liquidity": 0,
+      "probability": 0,
+      "closeTime": "2025-12-31T12:00:00Z",
+      "isResolved": true,
+      "resolution": "NO",
+      "yesToken": "1678498787130843861632303406604650932153415780065595979766040447349203593100"
+    },
+    {
+      "id": "516977",
+      "date": "2024-12-31T20:30:38.542988Z",
+      "title": "OpenAI announces it has achieved AGI before July?",
+      "event": "OpenAI announces it has achieved AGI before July?",
+      "theme": "agi",
+      "url": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-before-july",
+      "score": 195452,
+      "liquidity": 0,
+      "probability": 0,
+      "closeTime": "2025-06-30T12:00:00Z",
+      "isResolved": true,
+      "resolution": "NO",
+      "yesToken": "36930112782087618960696464067559681922755568123460424203664876253794878545225"
+    },
+    {
+      "id": "4586608",
+      "date": "2026-09-15T15:26:16.727441Z",
+      "title": "Anthropic announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/anthropic-announces-a-training-pause-by-october-31",
+      "score": 9591,
+      "liquidity": 0,
+      "probability": 1,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": true,
+      "resolution": "YES",
+      "yesToken": "58615687905527228098905985490197480844745644225901675638231527948644965811764"
+    },
+    {
+      "id": "4586607",
+      "date": "2026-09-15T15:26:16.612828Z",
+      "title": "OpenAI announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/openai-announces-a-training-pause-by-october-31",
+      "score": 2840,
+      "liquidity": 0,
+      "probability": 1,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": true,
+      "resolution": "YES",
+      "yesToken": "84554337113700893842652061836832841525918759365383669376443732950790381272513"
+    },
+    {
+      "id": "4572551",
+      "date": "2026-09-15T00:21:16.185039Z",
+      "title": "Amazon announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/amazon-announces-a-training-pause-by-october-31",
+      "score": 2234,
+      "liquidity": 122,
+      "probability": 0.0795,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "11280970949722413045411303380144435608379338310309947617989977285369896756972"
+    },
+    {
+      "id": "4572550",
+      "date": "2026-09-15T00:21:15.781941Z",
+      "title": "Meta announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/meta-announces-a-training-pause-by-october-31",
+      "score": 2067,
+      "liquidity": 152,
+      "probability": 0.03,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "55202605631202728428696270511658442664726297477493687986928466985761761461951"
+    },
+    {
+      "id": "4572549",
+      "date": "2026-09-15T00:21:15.247004Z",
+      "title": "Microsoft announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/microsoft-announces-a-training-pause-by-october-31",
+      "score": 1952,
+      "liquidity": 165,
+      "probability": 0.067,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "59588622083461137017532645323212807812383387104781168240716870023678583809446"
+    },
+    {
+      "id": "4657164",
+      "date": "2026-09-17T19:54:19.267694Z",
+      "title": "OpenAI announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/openai-announces-a-full-training-pause-in-2026",
+      "score": 1851,
+      "liquidity": 209,
+      "probability": 0.442,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "89877275972858077720442577624210241999094963296444279884823394037320799337238"
+    },
+    {
+      "id": "4657166",
+      "date": "2026-09-17T19:54:19.964948Z",
+      "title": "Google announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/google-announces-a-full-training-pause-in-2026",
+      "score": 1805,
+      "liquidity": 271,
+      "probability": 0.0265,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "110796119052405355858224437208209536658329901622061661413143452141328915840713"
+    },
+    {
+      "id": "4572544",
+      "date": "2026-09-15T00:21:13.289602Z",
+      "title": "SpaceXAI announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/spacexai-announces-a-training-pause-by-october-31",
+      "score": 1696,
+      "liquidity": 779,
+      "probability": 0.023,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "102791194146468284419888283353081630557052440097454285038294374120409690552695"
+    },
+    {
+      "id": "4572546",
+      "date": "2026-09-15T00:21:14.024557Z",
+      "title": "Moonshot announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/moonshot-announces-a-training-pause-by-october-31",
+      "score": 1615,
+      "liquidity": 761,
+      "probability": 0.006,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "90553827957850931452661179119072502347848793051564668031572240202992080774892"
+    },
+    {
+      "id": "4657165",
+      "date": "2026-09-17T19:54:19.624169Z",
+      "title": "Anthropic announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/anthropic-announces-a-full-training-pause-in-2026",
+      "score": 1446,
+      "liquidity": 1213,
+      "probability": 0.055,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "20096668164096128251466530188526106727602177742269863698723139074344122685025"
+    },
+    {
+      "id": "4572545",
+      "date": "2026-09-15T00:21:13.660595Z",
+      "title": "DeepSeek announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/deepseek-announces-a-training-pause-by-october-31",
+      "score": 1360,
+      "liquidity": 556,
+      "probability": 0.0115,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "28704679567265804076801027611628488082874667250756703318300934456775035086043"
+    },
+    {
+      "id": "4572543",
+      "date": "2026-09-15T00:21:12.899748Z",
+      "title": "Z.ai announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/zai-announces-a-training-pause-by-october-31",
+      "score": 1227,
+      "liquidity": 248,
+      "probability": 0.03,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "59950230215393868141187817772521354038614622048323642616837521650884256145856"
+    },
+    {
+      "id": "4572541",
+      "date": "2026-09-15T00:21:12.026269Z",
+      "title": "Google announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/google-announces-a-training-pause-by-october-31",
+      "score": 1176,
+      "liquidity": 530,
+      "probability": 0.023,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "20858867389012752229781527890113530746604130769990848323226854190936347836067"
+    },
+    {
+      "id": "4572553",
+      "date": "2026-09-15T00:21:16.930659Z",
+      "title": "ByteDance announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/bytedance-announces-a-training-pause-by-october-31",
+      "score": 1142,
+      "liquidity": 61,
+      "probability": 0.042,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "13463578669535365449164471141441482551504760682353952475167511150431894496560"
+    },
+    {
+      "id": "4572547",
+      "date": "2026-09-15T00:21:14.404075Z",
+      "title": "Mistral announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/mistral-announces-a-training-pause-by-october-31",
+      "score": 1013,
+      "liquidity": 134,
+      "probability": 0.0875,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "80936771169159290697313400645125720146739021575317805364413975361898091990875"
+    },
+    {
+      "id": "4657167",
+      "date": "2026-09-17T19:54:20.329973Z",
+      "title": "SpaceXAI announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/spacexai-announces-a-full-training-pause-in-2026",
+      "score": 999,
+      "liquidity": 336,
+      "probability": 0.0295,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "655447711484232248561527749078304831566797081731870688877246902187936168546"
+    },
+    {
+      "id": "4572542",
+      "date": "2026-09-15T00:21:12.493032Z",
+      "title": "Alibaba announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/alibaba-announces-a-training-pause-by-october-31",
+      "score": 974,
+      "liquidity": 144,
+      "probability": 0.013,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "107843402587891568196952065471733683430725337881422682022530692923475390130461"
+    },
+    {
+      "id": "4572548",
+      "date": "2026-09-15T00:21:14.804191Z",
+      "title": "Meituan announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/meituan-announces-a-training-pause-by-october-31",
+      "score": 606,
+      "liquidity": 217,
+      "probability": 0.027,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "57616755116130785066779204456377491021074000296958552020654546776600864441155"
+    },
+    {
+      "id": "4572552",
+      "date": "2026-09-15T00:21:16.557011Z",
+      "title": "Baidu announces a training pause by October 31?",
+      "event": "Which AI labs announce a training pause by October 31?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/baidu-announces-a-training-pause-by-october-31",
+      "score": 522,
+      "liquidity": 377,
+      "probability": 0.015,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "22969075472538375344653356459856001013758350603995592548585602993200983403136"
+    },
+    {
+      "id": "4657168",
+      "date": "2026-09-17T19:54:20.699141Z",
+      "title": "Meta announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/meta-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 43,
+      "probability": 0.145,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "86588978311283577113850727618869552516183043204439209967533758710256423436557"
+    },
+    {
+      "id": "4657169",
+      "date": "2026-09-17T19:54:21.428146Z",
+      "title": "Microsoft announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/microsoft-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 46,
+      "probability": 0.13,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "5508526512127156859091022214140522049744563001015995236072078541517155931749"
+    },
+    {
+      "id": "4657170",
+      "date": "2026-09-17T19:54:21.803544Z",
+      "title": "Amazon announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/amazon-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 44,
+      "probability": 0.14,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "80522952420587922942407653561861244439471375821784757061887134705793397705854"
+    },
+    {
+      "id": "4657171",
+      "date": "2026-09-17T19:54:22.192984Z",
+      "title": "Mistral announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/mistral-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 45,
+      "probability": 0.135,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "514028853548528441426505906475973440533968339180079061253062814024114427311"
+    },
+    {
+      "id": "4657172",
+      "date": "2026-09-17T19:54:22.775017Z",
+      "title": "DeepSeek announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/deepseek-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 44,
+      "probability": 0.14,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "61004450907523297899304942503722418231639703062146502794423755641898894084286"
+    },
+    {
+      "id": "4657173",
+      "date": "2026-09-17T19:54:23.219644Z",
+      "title": "Alibaba announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/alibaba-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 44,
+      "probability": 0.14,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "86134262823116931145907489241326998849762709171679579279153977867839500622163"
+    },
+    {
+      "id": "4657174",
+      "date": "2026-09-17T19:54:23.621856Z",
+      "title": "Z.ai announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/zai-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 46,
+      "probability": 0.13,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "1440152921062969070706199661538044508213316117580214994216710316667627929659"
+    },
+    {
+      "id": "4657175",
+      "date": "2026-09-17T19:54:24.004165Z",
+      "title": "Moonshot announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/moonshot-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 44,
+      "probability": 0.14,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "92369192109513778931998674266130655148001574756808835707343125961443602132376"
+    },
+    {
+      "id": "4657176",
+      "date": "2026-09-17T19:54:24.496885Z",
+      "title": "Baidu announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/baidu-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 46,
+      "probability": 0.13,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "79612935427578884811040088216122087008205351541202020273078037602665460128205"
+    },
+    {
+      "id": "4657177",
+      "date": "2026-09-17T19:54:24.926483Z",
+      "title": "ByteDance announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/bytedance-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 44,
+      "probability": 0.14,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "11292790826163501044358730621562682823119175416272263240270694565925364033433"
+    },
+    {
+      "id": "4657178",
+      "date": "2026-09-17T19:54:25.467418Z",
+      "title": "Meituan announces a full training pause in 2026?",
+      "event": "Which AI labs announce a full training pause in 2026?",
+      "theme": "pause",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/meituan-announces-a-full-training-pause-in-2026",
+      "score": 0,
+      "liquidity": 44,
+      "probability": 0.14,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "isResolved": false,
+      "resolution": null,
+      "yesToken": "79490131241203395833122475133166212280935724524712614740118979205833448909383"
+    }
+  ],
+  "earliest": {
+    "id": "253571",
+    "date": "2023-12-29T20:26:11.396Z",
+    "title": "OpenAI announces it has achieved AGI in 2024?",
+    "event": "OpenAI announces it has achieved AGI in 2024?",
+    "theme": "agi",
+    "url": "https://polymarket.com/event/will-openai-announce-it-has-achieved-agi-in-2024",
+    "score": 907185,
+    "liquidity": 0,
+    "probability": 0,
+    "closeTime": "2024-12-31T00:00:00Z",
+    "isResolved": true,
+    "resolution": "NO",
+    "yesToken": "105850438828614884452197310938430279698886324164735312931762902384271674871323"
+  },
+  "topMarkets": [
+    {
+      "id": "253571",
+      "question": "OpenAI announces it has achieved AGI in 2024?",
+      "url": "https://polymarket.com/event/will-openai-announce-it-has-achieved-agi-in-2024",
+      "createdAt": "2023-12-29T20:26:11.396Z",
+      "volume": 907185,
+      "probability": 0,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-12-31T00:00:00Z",
+      "points": 368,
+      "monthlyProbability": [
+        {
+          "month": "2023-12",
+          "probability": 0.28
+        },
+        {
+          "month": "2024-01",
+          "probability": 0.111
+        },
+        {
+          "month": "2024-02",
+          "probability": 0.1045
+        },
+        {
+          "month": "2024-03",
+          "probability": 0.117
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.114
+        },
+        {
+          "month": "2024-05",
+          "probability": 0.097
+        },
+        {
+          "month": "2024-06",
+          "probability": 0.0975
+        },
+        {
+          "month": "2024-07",
+          "probability": 0.0635
+        },
+        {
+          "month": "2024-08",
+          "probability": 0.0655
+        },
+        {
+          "month": "2024-09",
+          "probability": 0.0475
+        },
+        {
+          "month": "2024-10",
+          "probability": 0.041
+        },
+        {
+          "month": "2024-11",
+          "probability": 0.0255
+        },
+        {
+          "month": "2024-12",
+          "probability": 0.0025
+        },
+        {
+          "month": "2025-01",
+          "probability": 0.004
+        }
+      ]
+    },
+    {
+      "id": "653788",
+      "question": "OpenAI announces it has achieved AGI before 2027?",
+      "url": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-before-2027",
+      "createdAt": "2025-10-28T15:00:20.478489Z",
+      "volume": 345362,
+      "probability": 0.09,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "points": 327,
+      "monthlyProbability": [
+        {
+          "month": "2025-10",
+          "probability": 0.195
+        },
+        {
+          "month": "2025-11",
+          "probability": 0.16
+        },
+        {
+          "month": "2025-12",
+          "probability": 0.085
+        },
+        {
+          "month": "2026-01",
+          "probability": 0.135
+        },
+        {
+          "month": "2026-02",
+          "probability": 0.13
+        },
+        {
+          "month": "2026-03",
+          "probability": 0.195
+        },
+        {
+          "month": "2026-04",
+          "probability": 0.145
+        },
+        {
+          "month": "2026-05",
+          "probability": 0.125
+        },
+        {
+          "month": "2026-06",
+          "probability": 0.09
+        },
+        {
+          "month": "2026-07",
+          "probability": 0.11
+        },
+        {
+          "month": "2026-08",
+          "probability": 0.175
+        },
+        {
+          "month": "2026-09",
+          "probability": 0.175
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.09
+        }
+      ]
+    },
+    {
+      "id": "517755",
+      "question": "OpenAI announces it has achieved AGI in 2025?",
+      "url": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-in-2025",
+      "createdAt": "2025-01-06T23:19:07.345786Z",
+      "volume": 336968,
+      "probability": 0,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-12-31T12:00:00Z",
+      "points": 360,
+      "monthlyProbability": [
+        {
+          "month": "2025-01",
+          "probability": 0.265
+        },
+        {
+          "month": "2025-02",
+          "probability": 0.215
+        },
+        {
+          "month": "2025-03",
+          "probability": 0.22
+        },
+        {
+          "month": "2025-04",
+          "probability": 0.145
+        },
+        {
+          "month": "2025-05",
+          "probability": 0.115
+        },
+        {
+          "month": "2025-06",
+          "probability": 0.15
+        },
+        {
+          "month": "2025-07",
+          "probability": 0.085
+        },
+        {
+          "month": "2025-08",
+          "probability": 0.044
+        },
+        {
+          "month": "2025-09",
+          "probability": 0.0625
+        },
+        {
+          "month": "2025-10",
+          "probability": 0.056
+        },
+        {
+          "month": "2025-11",
+          "probability": 0.0115
+        },
+        {
+          "month": "2025-12",
+          "probability": 0.0005
+        },
+        {
+          "month": "2026-01",
+          "probability": 0.0005
+        }
+      ]
+    },
+    {
+      "id": "516977",
+      "question": "OpenAI announces it has achieved AGI before July?",
+      "url": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-before-july",
+      "createdAt": "2024-12-31T20:30:38.542988Z",
+      "volume": 195452,
+      "probability": 0,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-06-30T12:00:00Z",
+      "points": 182,
+      "monthlyProbability": [
+        {
+          "month": "2025-01",
+          "probability": 0.125
+        },
+        {
+          "month": "2025-02",
+          "probability": 0.065
+        },
+        {
+          "month": "2025-03",
+          "probability": 0.055
+        },
+        {
+          "month": "2025-04",
+          "probability": 0.0455
+        },
+        {
+          "month": "2025-05",
+          "probability": 0.013
+        },
+        {
+          "month": "2025-06",
+          "probability": 0.0135
+        },
+        {
+          "month": "2025-07",
+          "probability": 0.0045
+        }
+      ]
+    },
+    {
+      "id": "4586608",
+      "question": "Anthropic announces a training pause by October 31?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/anthropic-announces-a-training-pause-by-october-31",
+      "createdAt": "2026-09-15T15:26:16.727441Z",
+      "volume": 9591,
+      "probability": 1,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2026-11-01T03:59:00Z",
+      "points": 36,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.485
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.1635
+        }
+      ]
+    },
+    {
+      "id": "4586607",
+      "question": "OpenAI announces a training pause by October 31?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/openai-announces-a-training-pause-by-october-31",
+      "createdAt": "2026-09-15T15:26:16.612828Z",
+      "volume": 2840,
+      "probability": 1,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2026-11-01T03:59:00Z",
+      "points": 12,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.875
+        }
+      ]
+    },
+    {
+      "id": "4572551",
+      "question": "Amazon announces a training pause by October 31?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/amazon-announces-a-training-pause-by-october-31",
+      "createdAt": "2026-09-15T00:21:16.185039Z",
+      "volume": 2234,
+      "probability": 0.0795,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "points": 42,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.0235
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.0795
+        }
+      ]
+    },
+    {
+      "id": "4572550",
+      "question": "Meta announces a training pause by October 31?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/meta-announces-a-training-pause-by-october-31",
+      "createdAt": "2026-09-15T00:21:15.781941Z",
+      "volume": 2067,
+      "probability": 0.03,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "points": 41,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.0465
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.03
+        }
+      ]
+    },
+    {
+      "id": "4572549",
+      "question": "Microsoft announces a training pause by October 31?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/microsoft-announces-a-training-pause-by-october-31",
+      "createdAt": "2026-09-15T00:21:15.247004Z",
+      "volume": 1952,
+      "probability": 0.067,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "points": 42,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.068
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.067
+        }
+      ]
+    },
+    {
+      "id": "4657164",
+      "question": "OpenAI announces a full training pause in 2026?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/openai-announces-a-full-training-pause-in-2026",
+      "createdAt": "2026-09-17T19:54:19.267694Z",
+      "volume": 1851,
+      "probability": 0.442,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "points": 38,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.095
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.442
+        }
+      ]
+    },
+    {
+      "id": "4657166",
+      "question": "Google announces a full training pause in 2026?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-full-training-pause-in-2026/google-announces-a-full-training-pause-in-2026",
+      "createdAt": "2026-09-17T19:54:19.964948Z",
+      "volume": 1805,
+      "probability": 0.0265,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-01-01T04:59:00Z",
+      "points": 39,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.0195
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.0265
+        }
+      ]
+    },
+    {
+      "id": "4572544",
+      "question": "SpaceXAI announces a training pause by October 31?",
+      "url": "https://polymarket.com/event/which-ai-labs-announce-a-training-pause-by-october-31/spacexai-announces-a-training-pause-by-october-31",
+      "createdAt": "2026-09-15T00:21:13.289602Z",
+      "volume": 1696,
+      "probability": 0.023,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-11-01T03:59:00Z",
+      "points": 40,
+      "monthlyProbability": [
+        {
+          "month": "2026-09",
+          "probability": 0.0315
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.023
+        }
+      ]
+    }
+  ],
+  "monthly": []
+}

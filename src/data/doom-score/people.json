@@ -1,0 +1,182 @@
+{
+ "John Leslie": null,
+ "I. J. Good": {
+  "src": "/doom-score/people/i-j-good.jpg",
+  "credit": "https://en.wikipedia.org/wiki/I._J._Good",
+  "description": "British statistician and cryptographer (1916–2009)"
+ },
+ "Tim Tyler": null,
+ "Shane Legg": {
+  "src": "/doom-score/people/shane-legg.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Shane_Legg",
+  "description": "New Zealand AI researcher (born 1973/4)"
+ },
+ "Nick Bostrom": {
+  "src": "/doom-score/people/nick-bostrom.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Nick_Bostrom",
+  "description": "Philosopher and writer (born 1973)"
+ },
+ "Toby Ord": {
+  "src": "/doom-score/people/toby-ord.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Toby_Ord",
+  "description": "Australian philosopher (born 1979)"
+ },
+ "Stephen Hawking": {
+  "src": "/doom-score/people/stephen-hawking.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Stephen_Hawking",
+  "description": "English theoretical physicist (1942–2018)"
+ },
+ "Ajeya Cotra": null,
+ "Sam Altman": {
+  "src": "/doom-score/people/sam-altman.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Sam_Altman",
+  "description": "American entrepreneur"
+ },
+ "Eli Lifland": null,
+ "Scott Alexander": null,
+ "Holden Karnofsky": {
+  "src": "/doom-score/people/holden-karnofsky.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Holden_Karnofsky",
+  "description": "American nonprofit executive"
+ },
+ "Daniel Kokotajlo": null,
+ "Geoffrey Hinton": {
+  "src": "/doom-score/people/geoffrey-hinton.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Geoffrey_Hinton",
+  "description": "British-Canadian computer scientist (born 1947)"
+ },
+ "Jan Leike": null,
+ "Paul Christiano": {
+  "src": "/doom-score/people/paul-christiano.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Paul_Christiano",
+  "description": "American AI safety researcher"
+ },
+ "Arthur Compton": {
+  "src": "/doom-score/people/arthur-compton.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Arthur_Compton",
+  "description": "American physicist (1892–1962)"
+ },
+ "Dan Hendrycks": {
+  "src": "/doom-score/people/dan-hendrycks.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Dan_Hendrycks",
+  "description": "American machine learning researcher"
+ },
+ "Lina Khan": {
+  "src": "/doom-score/people/lina-khan.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Lina_Khan",
+  "description": "American legal scholar and jurist (born 1989)"
+ },
+ "Zvi Mowshowitz": {
+  "src": "/doom-score/people/zvi-mowshowitz.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Zvi_Mowshowitz",
+  "description": "American writer and Magic: The Gathering player"
+ },
+ "Scott Aaronson": {
+  "src": "/doom-score/people/scott-aaronson.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Scott_Aaronson",
+  "description": "American computer scientist (born 1981)"
+ },
+ "Dario Amodei": {
+  "src": "/doom-score/people/dario-amodei.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Dario_Amodei",
+  "description": "American AI entrepreneur (born 1983)"
+ },
+ "Andrew Critch": null,
+ "Roman Yampolskiy": {
+  "src": "/doom-score/people/roman-yampolskiy.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Roman_Yampolskiy",
+  "description": "Latvian-American AI researcher (born 1979)"
+ },
+ "Elon Musk": null,
+ "John F. Kennedy": null,
+ "Benjamin Mann": null,
+ "Stuart Russell": null,
+ "Jacob Coxon": null,
+ "Geoffrey Irving": null,
+ "Evan Hubinger": null,
+ "Yoshua Bengio": {
+  "src": "/doom-score/people/yoshua-bengio.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Yoshua_Bengio",
+  "description": "Canadian computer scientist (born 1964)"
+ },
+ "Lex Fridman": {
+  "src": "/doom-score/people/lex-fridman.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Lex_Fridman",
+  "description": "American scientist and podcast host (born 1983)"
+ },
+ "Vitalik Buterin": {
+  "src": "/doom-score/people/vitalik-buterin.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Vitalik_Buterin",
+  "description": "Russian-Canadian programmer (born 1994)"
+ },
+ "Sundar Pichai": {
+  "src": "/doom-score/people/sundar-pichai.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Sundar_Pichai",
+  "description": "CEO of Alphabet Inc. and Google (born 1972)"
+ },
+ "Martin Rees": {
+  "src": "/doom-score/people/martin-rees.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Martin_Rees",
+  "description": "British astrophysicist (born 1942)"
+ },
+ "Jensen Huang": {
+  "src": "/doom-score/people/jensen-huang.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Jensen_Huang",
+  "description": "Taiwanese and American businessman (born 1963)"
+ },
+ "Yann LeCun": {
+  "src": "/doom-score/people/yann-lecun.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Yann_LeCun",
+  "description": "French computer scientist (born 1960)"
+ },
+ "Reid Hoffman": {
+  "src": "/doom-score/people/reid-hoffman.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Reid_Hoffman",
+  "description": "American internet entrepreneur (born 1967)"
+ },
+ "Emad Mostaque": {
+  "src": "/doom-score/people/emad-mostaque.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Emad_Mostaque",
+  "description": "Bangladeshi-British businessman (born 1983)"
+ },
+ "Eliezer Yudkowsky": {
+  "src": "/doom-score/people/eliezer-yudkowsky.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Eliezer_Yudkowsky",
+  "description": "American AI researcher and writer (born 1979)"
+ },
+ "Max Tegmark": {
+  "src": "/doom-score/people/max-tegmark.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Max_Tegmark",
+  "description": "Swedish-American academic physicist (born 1967)"
+ },
+ "Bernie Sanders": {
+  "src": "/doom-score/people/bernie-sanders.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Bernie_Sanders",
+  "description": "American politician and activist (born 1941)"
+ },
+ "Nate Silver": {
+  "src": "/doom-score/people/nate-silver.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Nate_Silver",
+  "description": "American statistician and writer (born 1978)"
+ },
+ "Connor Leahy": {
+  "src": "/doom-score/people/connor-leahy.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Connor_Leahy",
+  "description": "German-American artificial intelligence researcher"
+ },
+ "William MacAskill": {
+  "src": "/doom-score/people/william-macaskill.jpg",
+  "credit": "https://en.wikipedia.org/wiki/William_MacAskill",
+  "description": "Scottish philosopher and ethicist (born 1987)"
+ },
+ "Emmett Shear": {
+  "src": "/doom-score/people/emmett-shear.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Emmett_Shear",
+  "description": "American businessperson (born 1983)"
+ },
+ "Demis Hassabis": {
+  "src": "/doom-score/people/demis-hassabis.jpg",
+  "credit": "https://en.wikipedia.org/wiki/Demis_Hassabis",
+  "description": "British AI researcher (born 1976)"
+ }
+}

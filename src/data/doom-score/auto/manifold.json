@@ -1,0 +1,3022 @@
+{
+  "source": "Manifold Markets public API (search-markets, market, bets)",
+  "fetchedAt": "2026-10-30T18:28:47.413Z",
+  "status": "ok",
+  "caveats": [
+    "Manifold is play-money; probabilities reflect a small forecasting community, not a market with real stakes.",
+    "Only markets whose question matches a relevance regex (extinction/doom/existential/catastrophe/kill/humanity) are kept; sorted by lifetime volume.",
+    "Probability history is the last probAfter in each month from the bet log (up to 6000 bets per market); multiple-choice markets have no single probability and keep only the answers list.",
+    "Market creation dates are the earliest signal here; Manifold itself only launched in late 2021."
+  ],
+  "totals": {
+    "marketsFound": 234,
+    "relevant": 167
+  },
+  "items": [
+    {
+      "date": "2023-07-12T17:10:31.689Z",
+      "title": "Will @Mira cause human extinction by 2030?",
+      "url": "https://manifold.markets/Mira/will-mira-cause-human-extinction-by",
+      "score": 382496,
+      "id": "4t1YMbwoFDp1I96NLRFL",
+      "outcomeType": "BINARY",
+      "probability": 0.010000000000000002,
+      "uniqueBettors": 95,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2030-12-31T22:59:00.000Z"
+    },
+    {
+      "date": "2023-02-20T18:37:00.891Z",
+      "title": "Will AI kill >20% of the human population before 2030?",
+      "url": "https://manifold.markets/JonathanRay/will-ai-kill-20-of-the-human-popula",
+      "score": 106199,
+      "id": "3cBLGjcbZ2ElJkHCdDpm",
+      "outcomeType": "BINARY",
+      "probability": 0.030119721705462114,
+      "uniqueBettors": 139,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2030-01-01T07:59:00.000Z"
+    },
+    {
+      "date": "2023-03-14T20:29:11.273Z",
+      "title": "At the beginning of 2035, will Eliezer Yudkowsky still believe that AI doom is coming soon with high probability?",
+      "url": "https://manifold.markets/IsaacKing/at-the-beginning-of-2035-will-eliez",
+      "score": 50925,
+      "id": "IYz4t74NHr6Of4cIKZ6V",
+      "outcomeType": "BINARY",
+      "probability": 0.548014760156125,
+      "uniqueBettors": 221,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2035-01-01T08:00:00.000Z"
+    },
+    {
+      "date": "2022-12-02T15:54:23.184Z",
+      "title": "Will Yudkowsky agree that his \"death with dignity\" post overstated the risk of extinction from AI, by end of 2029?",
+      "url": "https://manifold.markets/MartinRandall/will-yudkowsky-agree-that-his-death",
+      "score": 48838,
+      "id": "elvcpbJu9xZmGfJUNyL1",
+      "outcomeType": "BINARY",
+      "probability": 0.1500365767279787,
+      "uniqueBettors": 102,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-11-22T12:38:00.000Z"
+    },
+    {
+      "date": "2023-03-24T05:16:29.349Z",
+      "title": "Will misaligned AI kill >50% of humanity before 2040?",
+      "url": "https://manifold.markets/ahalekelly/will-misaligned-ai-kill-50-of-the-h",
+      "score": 24010,
+      "id": "5VAuz1ZfAzPhvH3Pw2ip",
+      "outcomeType": "BINARY",
+      "probability": 0.0750370013067872,
+      "uniqueBettors": 71,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2039-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-04-09T22:17:11.556Z",
+      "title": "Will Destiny debate someone about AI existential risk by the end of 2023?",
+      "url": "https://manifold.markets/IsaacKing/will-destiny-debate-someone-about-a",
+      "score": 19026,
+      "id": "T0clts2fAcRIacSJ9qGG",
+      "outcomeType": "BINARY",
+      "probability": 0.6994731450879008,
+      "uniqueBettors": 108,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2023-06-27T04:03:45.855Z"
+    },
+    {
+      "date": "2024-02-13T16:54:28.212Z",
+      "title": "Will Eliezer Yudkowsky publicly claim to have a P(doom) of less than 50% at any point before 2040?",
+      "url": "https://manifold.markets/Bayesian/will-eliezer-yudkowsky-publicly-cla-7f519b61e8cf",
+      "score": 18873,
+      "id": "0pHv0N3QejuVUt5mgFBU",
+      "outcomeType": "BINARY",
+      "probability": 0.24241153283805347,
+      "uniqueBettors": 67,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-01T12:30:00.000Z"
+    },
+    {
+      "date": "2023-06-07T10:46:08.962Z",
+      "title": "Will existential risk from AI be a topic during the 2024 US presidential debates?",
+      "url": "https://manifold.markets/saulmunn/will-existential-risk-from-ai-be-a",
+      "score": 18793,
+      "id": "E4SQ7EH9EWG7MKttiIEn",
+      "outcomeType": "BINARY",
+      "probability": 0.014951930907015137,
+      "uniqueBettors": 92,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-11-08T05:34:23.054Z"
+    },
+    {
+      "date": "2023-05-01T21:32:52.172Z",
+      "title": "Will someone kill an AI researcher to save the world by the end of 2025?",
+      "url": "https://manifold.markets/JuJumper/will-someone-kill-an-ai-researcher",
+      "score": 17139,
+      "id": "V17L3Wx62ZUzG5GSBEW5",
+      "outcomeType": "BINARY",
+      "probability": 0.010000000000000009,
+      "uniqueBettors": 72,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-01-10T20:40:48.018Z"
+    },
+    {
+      "date": "2024-03-31T18:27:03.044Z",
+      "title": "Will Y. Lecun turn AI doomer by end 2025 ?",
+      "url": "https://manifold.markets/Guillaume/will-y-lecun-turn-ai-doomer-by-end",
+      "score": 14910,
+      "id": "t5p3DU6anzW8TmJhoS1m",
+      "outcomeType": "BINARY",
+      "probability": 0.03147603994645391,
+      "uniqueBettors": 60,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-12-31T22:59:00.000Z"
+    },
+    {
+      "date": "2024-01-17T21:02:40.590Z",
+      "title": "If humanity avoids AI Doom until 2060, what will have contributed to this? [Resolves N/A, then re-resolves in 2060]",
+      "url": "https://manifold.markets/Joshua/if-humanity-avoids-ai-doom-until-20",
+      "score": 12344,
+      "id": "2Fx7Bc95V8ObllM9zsgT",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 56,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2024-01-28T07:59:00.000Z"
+    },
+    {
+      "date": "2024-07-30T14:59:24.691Z",
+      "title": "Will the next president state a P(doom)?",
+      "url": "https://manifold.markets/MatthewKhoriaty/will-the-next-president-state-a-pdo",
+      "score": 11140,
+      "id": "2takjae4is",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 17,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-01-22T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-07T12:53:22.887Z",
+      "title": "Will Andrew Ng start to take AI extinction risk seriously before 2024?",
+      "url": "https://manifold.markets/Mag/will-andrew-ng-start-to-take-ai-ext",
+      "score": 10681,
+      "id": "DaY3xRCHJQLsLomXgS13",
+      "outcomeType": "BINARY",
+      "probability": 0.048988303106635905,
+      "uniqueBettors": 73,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2023-12-31T22:59:00.000Z"
+    },
+    {
+      "date": "2023-05-14T07:54:49.850Z",
+      "title": "Will Eliezer Yudkowsky publicly claim to have a P(doom) of less than 97% at any point before 2028?",
+      "url": "https://manifold.markets/Tripping/will-eliezer-yudkowsky-publicly-cla",
+      "score": 10045,
+      "id": "tuVUq6qMhXZPfr9IARa5",
+      "outcomeType": "BINARY",
+      "probability": 0.12501363928925402,
+      "uniqueBettors": 94,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-01-02T12:30:00.000Z"
+    },
+    {
+      "date": "2024-07-01T19:40:40.976Z",
+      "title": "Will Trump repeatedly raise concerns about existential risk from AI before the end of 2025?",
+      "url": "https://manifold.markets/cash/will-trump-repeatedly-raise-concern",
+      "score": 9504,
+      "id": "ne7latw17k",
+      "outcomeType": "BINARY",
+      "probability": 0.03114581021241636,
+      "uniqueBettors": 33,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-01-01T04:39:19.388Z"
+    },
+    {
+      "date": "2023-02-04T02:22:12.604Z",
+      "title": "By 2025, will Paul Christiano have updated his P(AGI doom) to over 50%?",
+      "url": "https://manifold.markets/EA42/will-paul-christiano-have-updated-h",
+      "score": 9497,
+      "id": "mYfjujIbOLtjfvNObY1Z",
+      "outcomeType": "BINARY",
+      "probability": 0.06510625248030849,
+      "uniqueBettors": 65,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-03-24T05:17:18.294Z",
+      "title": "Will misaligned AI kill >50% of humanity before 2050?",
+      "url": "https://manifold.markets/ahalekelly/will-misaligned-ai-kill-50-of-the-h-53baa02e69ba",
+      "score": 9276,
+      "id": "eTxcOdNs8EXYyLfhRSP6",
+      "outcomeType": "BINARY",
+      "probability": 0.1446577920681392,
+      "uniqueBettors": 45,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2049-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2026-04-04T17:28:00.715Z",
+      "title": "If AI kills everyone, how will it do it?",
+      "url": "https://manifold.markets/IhorKendiukhov/if-ai-kills-everyone-how-will-it-do",
+      "score": 9212,
+      "id": "cOUhudLdul",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 67,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2080-04-11T17:17:00.000Z"
+    },
+    {
+      "date": "2024-05-23T13:08:32.326Z",
+      "title": "Will AI existential risk be mentioned in the white house briefing room again by May 2029?",
+      "url": "https://manifold.markets/ZviMowshowitz/will-ai-existential-risk-be-mention",
+      "score": 7502,
+      "id": "vcNfzsg6Avjj7ynoxKqV",
+      "outcomeType": "BINARY",
+      "probability": 0.882649685162987,
+      "uniqueBettors": 39,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-05-31T03:59:00.000Z"
+    },
+    {
+      "date": "2022-11-15T22:26:27.247Z",
+      "title": "In a year, will Peter Wildeford believe that AI is the largest single source of existential risk?",
+      "url": "https://manifold.markets/NathanpmYoung/in-a-year-will-peter-wildeford-beli",
+      "score": 7053,
+      "id": "iKvbwIJfbkfakdnYDGsH",
+      "outcomeType": "BINARY",
+      "probability": 0.9689718728136637,
+      "uniqueBettors": 36,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2023-11-15T23:59:00.000Z"
+    },
+    {
+      "date": "2024-06-06T08:26:42.898Z",
+      "title": "In the first event when AI kills at least 1,000 people, how many people will be killed?",
+      "url": "https://manifold.markets/IhorKendiukhov/in-the-first-event-when-ai-kills-at",
+      "score": 6230,
+      "id": "YuUohD0RPHlNUoi5MDfg",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 23,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-01T22:59:00.000Z"
+    },
+    {
+      "date": "2023-08-02T13:01:55.079Z",
+      "title": "Will the White House Press Secretary giggle when asked about AI extinction risks before 2025?",
+      "url": "https://manifold.markets/FranklinBaldo/will-the-white-house-press-secretar-d08236051742",
+      "score": 5982,
+      "id": "YzMJoQDJCxjYHMFuJ3Lb",
+      "outcomeType": "BINARY",
+      "probability": 0.04097287363302995,
+      "uniqueBettors": 28,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-01-01T03:59:00.000Z"
+    },
+    {
+      "date": "2024-02-24T04:50:32.342Z",
+      "title": "The probability of \"extremely bad outcomes e.g., human extinction\" from AGI will be >5% in next survey of AI experts",
+      "url": "https://manifold.markets/DismalScientist/the-probability-of-extremely-bad-ou",
+      "score": 5907,
+      "id": "JpnMNNrVSb5FuIqu9zox",
+      "outcomeType": "BINARY",
+      "probability": 0.5225738053386491,
+      "uniqueBettors": 58,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-09-19T17:31:19.292Z"
+    },
+    {
+      "date": "2024-01-30T17:05:45.506Z",
+      "title": "Will GPT-5 make Manifold think AI-caused extinction is more likely?",
+      "url": "https://manifold.markets/VerySeriousPoster/will-gpt5-make-manifold-think-aicau",
+      "score": 5653,
+      "id": "GbknXR7nxxZz4jgaSjCs",
+      "outcomeType": "BINARY",
+      "probability": 0.12257327601336498,
+      "uniqueBettors": 60,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-02-22T01:47:42.551Z",
+      "title": "Will the Doomsday Clock advance toward midnight partly due to AI by January 2024",
+      "url": "https://manifold.markets/MartinRandall/will-the-doomsday-clock-advance-tow-394bd3801f80",
+      "score": 5216,
+      "id": "eCw2xC2mkI18imt8s885",
+      "outcomeType": "BINARY",
+      "probability": 0.19135234087122097,
+      "uniqueBettors": 66,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-01-22T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-01T04:40:55.851Z",
+      "title": "Will Xi Jinping publicly express concern about AI extinction risk before 2026?",
+      "url": "https://manifold.markets/jacobk/will-xi-jinping-publicly-express-co",
+      "score": 4599,
+      "id": "xDlsqEWvZ6SGANBPU0Cs",
+      "outcomeType": "BINARY",
+      "probability": 0.06674714664377927,
+      "uniqueBettors": 39,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2024-02-17T15:02:28.057Z",
+      "title": "Will an AI Doomer turn to violence by the end of 2026?",
+      "url": "https://manifold.markets/AlexanderLeCampbell/will-ai-doomers-turn-to-violence-by",
+      "score": 4553,
+      "id": "U58ue9CkiHRqrgmPlr0S",
+      "outcomeType": "BINARY",
+      "probability": 0.8977747252999694,
+      "uniqueBettors": 55,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2026-05-15T21:05:19.104Z"
+    },
+    {
+      "date": "2023-05-06T02:39:28.015Z",
+      "title": "If Republicans win the 2024 U.S. presidency, will an AI kill 10% of the human population before 2028?",
+      "url": "https://manifold.markets/ScroogeMcDuck/if-democrats-wins-the-2024-us-presi-1a0aebd85996",
+      "score": 4528,
+      "id": "6bAgiTaXMYXQMA8lkbfU",
+      "outcomeType": "BINARY",
+      "probability": 0.03000000000000004,
+      "uniqueBettors": 19,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-01-05T23:59:00.000Z"
+    },
+    {
+      "date": "2023-06-22T04:40:25.952Z",
+      "title": "Does an AI disaster kill at least 100,000 people before 2029?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-accident-kill-at-least-1-16699bd37e14",
+      "score": 4041,
+      "id": "nrRwBalvp8XEsvS39Su0",
+      "outcomeType": "BINARY",
+      "probability": 0.2227703358033937,
+      "uniqueBettors": 30,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-01-01T22:43:00.000Z"
+    },
+    {
+      "date": "2023-10-03T00:15:27.798Z",
+      "title": "AI doomer terrorism in 2023?",
+      "url": "https://manifold.markets/a2bb/ai-doomer-terrorism-in-2023",
+      "score": 3921,
+      "id": "y81O2Ac6xSgegEb0nfZr",
+      "outcomeType": "BINARY",
+      "probability": 0.004209291626634356,
+      "uniqueBettors": 14,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-01-01T22:59:00.000Z"
+    },
+    {
+      "date": "2023-07-21T00:31:50.315Z",
+      "title": "Will AI cause a global catastrophe killing at least 10% of humans before 2100?",
+      "url": "https://manifold.markets/jack/global-catastrophe-series-by-2100-w-73fc5b6f55b0",
+      "score": 3763,
+      "id": "wn5c8MBJNO0BfGjLmyJ2",
+      "outcomeType": "BINARY",
+      "probability": 0.2970283617502112,
+      "uniqueBettors": 19,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-07-02T22:50:00.987Z",
+      "title": "Does an AI disaster kill at least 1,000,000,000 (1bn) people before 2040?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-disaster-kill-at-least-1",
+      "score": 3432,
+      "id": "hd6bCiYXPBI1pikaryWa",
+      "outcomeType": "BINARY",
+      "probability": 0.053428388526065906,
+      "uniqueBettors": 33,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-07-09T11:21:52.583Z",
+      "title": "Will Google DeepMind cause human extinction in the next 5 years?",
+      "url": "https://manifold.markets/SimeonCampos/will-google-deepmind-cause-human-ex",
+      "score": 3321,
+      "id": "HD4xS1cBv1ITNtl9SEzc",
+      "outcomeType": "BINARY",
+      "probability": 0.03832290402051335,
+      "uniqueBettors": 35,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-07-09T21:59:00.000Z"
+    },
+    {
+      "date": "2023-04-05T00:11:43.270Z",
+      "title": "Will there be a botched AI takeover/attempted shutdown evasion killing >100 people before 2050?",
+      "url": "https://manifold.markets/DanielEth/botched-ai-takeoverattempted-shutdo",
+      "score": 3046,
+      "id": "aomqLeJPTMn3jpOFOm1Q",
+      "outcomeType": "BINARY",
+      "probability": 0.2728631603302962,
+      "uniqueBettors": 54,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2050-01-02T07:59:00.000Z"
+    },
+    {
+      "date": "2025-07-02T14:51:56.376Z",
+      "title": "If humanity is still alive in 2035, what will be the reason?",
+      "url": "https://manifold.markets/Elspeth/if-humanity-is-still-alive-in-2035",
+      "score": 3032,
+      "id": "dL5O5IA2C8",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 29,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2034-12-30T23:59:00.000Z"
+    },
+    {
+      "date": "2023-09-27T11:50:59.092Z",
+      "title": "Will Eliezer's AI doom market have a higher P(doom) in the third quarter of 2026 than today's (2023-09-27) 21%?",
+      "url": "https://manifold.markets/Metastable/will-eliezers-ai-doom-market-have-a",
+      "score": 2891,
+      "id": "FPkyrDtTqtLNBgUMCVjS",
+      "outcomeType": "BINARY",
+      "probability": 0.08316717029674511,
+      "uniqueBettors": 24,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-06-30T21:59:00.000Z"
+    },
+    {
+      "date": "2024-01-20T21:26:56.536Z",
+      "title": "Will the Doomsday Clock advance forward because of AI?",
+      "url": "https://manifold.markets/Mira_/will-the-doomsday-clock-advance-for",
+      "score": 2678,
+      "id": "HkuSt6ROUdY6neHVwW2I",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 58,
+      "isResolved": true,
+      "resolution": "CHOOSE_MULTIPLE",
+      "closeTime": "2024-01-23T14:00:00.000Z"
+    },
+    {
+      "date": "2025-03-02T10:31:42.037Z",
+      "title": "Will Veritasium make a youtube video about AI Alignment or Existential Risks in 2025?",
+      "url": "https://manifold.markets/ronak69/will-veritasium-make-a-youtube-vide",
+      "score": 2564,
+      "id": "UdAqACyIhy",
+      "outcomeType": "BINARY",
+      "probability": 0.01157151601416687,
+      "uniqueBettors": 24,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-01-26T02:57:49.284Z",
+      "title": "What will be the average P(doom) of AI researchers in 2025?",
+      "url": "https://manifold.markets/LeoGao/what-will-be-the-average-pdoom-of-a",
+      "score": 2547,
+      "id": "n0NN33MxgzZkYd5Vv2hf",
+      "outcomeType": "BINARY",
+      "probability": 0.18968730160632047,
+      "uniqueBettors": 59,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2025-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-12-13T16:26:04.227Z",
+      "title": "Will AI cause human extinction before 2100 (and how)?",
+      "url": "https://manifold.markets/logan/will-ai-cause-human-extinction-befo",
+      "score": 2415,
+      "id": "UjuA9OUihIjgKC198yQP",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 39,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2101-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2026-09-30T08:09:06.323Z",
+      "title": "Will AI technology and infrastructure and AI itself become extinct before 2100?",
+      "url": "https://manifold.markets/DudleyDOODOO/will-ai-technology-and-infrastructu",
+      "score": 2294,
+      "id": "20lIu9RyCz",
+      "outcomeType": "BINARY",
+      "probability": 0.014200573360879284,
+      "uniqueBettors": 6,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2099-12-31T11:00:00.000Z"
+    },
+    {
+      "date": "2023-07-02T22:54:43.168Z",
+      "title": "Does an AI disaster kill at least 100 people before 2040?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-disaster-kill-at-least-1-73bcb6a788ab",
+      "score": 2284,
+      "id": "hMn7h6TFqzYZr16Lmtht",
+      "outcomeType": "BINARY",
+      "probability": 0.8066363802888616,
+      "uniqueBettors": 42,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2025-09-16T23:32:56.247Z",
+      "title": "How will reading \"If Anyone Builds It, Everyone Dies: Why Superhuman AI Would Kill Us All\" change my P(Doom)?",
+      "url": "https://manifold.markets/JoshSnider/how-will-reading-if-anyone-builds-i",
+      "score": 2231,
+      "id": "2ZUNuAsQnI",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 22,
+      "isResolved": true,
+      "resolution": "q200LlpZ9Z",
+      "closeTime": "2025-09-19T10:01:55.622Z"
+    },
+    {
+      "date": "2023-11-14T08:11:49.073Z",
+      "title": "Will at least 16 AI x-risk researchers move to doomsday bunkers in the Southern Hemisphere by 2026-01-01?",
+      "url": "https://manifold.markets/HedShock/will-at-least-16-ai-xrisk-researche",
+      "score": 2165,
+      "id": "GnPWCsnSSII6MRUfWQsc",
+      "outcomeType": "BINARY",
+      "probability": 0.062054399588219754,
+      "uniqueBettors": 23,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-01-02T07:59:00.000Z"
+    },
+    {
+      "date": "2026-04-06T15:19:46.199Z",
+      "title": "Avengers Doomsday to be delayed",
+      "url": "https://manifold.markets/Ari6pE6t/avengers-doomsday-to-be-delayed",
+      "score": 2162,
+      "id": "9cUgOttg2z",
+      "outcomeType": "BINARY",
+      "probability": 0.9899999999999999,
+      "uniqueBettors": 20,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2026-10-22T19:34:22.895Z"
+    },
+    {
+      "date": "2025-05-12T21:02:27.813Z",
+      "title": "Will Pope Leo XIV give a p(doom) estimate in a public statement before January 1, 2026?",
+      "url": "https://manifold.markets/JackStennett/will-pope-leo-xiv-give-a-pdoom-esti",
+      "score": 2133,
+      "id": "5P8EpInOAz",
+      "outcomeType": "BINARY",
+      "probability": 0.01322545506984769,
+      "uniqueBettors": 16,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-11-16T02:54:28.414Z",
+      "title": "Does there exist a serious argument that extinction risk from AI is <1% over the next 50 years?",
+      "url": "https://manifold.markets/IsaacKing/does-there-exist-a-serious-argument",
+      "score": 2098,
+      "id": "cHsFWt2b6lpWpTupJSwd",
+      "outcomeType": "BINARY",
+      "probability": 0.16618031739462366,
+      "uniqueBettors": 30,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-02-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-12-03T21:38:02.512Z",
+      "title": "If I spend up to another 100 hours talking to Timothy B. Lee about AI existential risk, will it be productive?",
+      "url": "https://manifold.markets/IsaacKing/if-i-spend-up-to-another-100-hours",
+      "score": 2050,
+      "id": "Rd9Udnta1oySGSTabwDV",
+      "outcomeType": "BINARY",
+      "probability": 0.29641247060231474,
+      "uniqueBettors": 28,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2025-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2022-01-28T20:39:22.987Z",
+      "title": "Is AI a greater existential risk to humanity than a pandemic?",
+      "url": "https://manifold.markets/JamesGrugett/is-ai-a-greater-existential-risk-to",
+      "score": 2015,
+      "id": "Zs4l5hpzpsKEwAkfvn3P",
+      "outcomeType": "BINARY",
+      "probability": 0.17523685356743396,
+      "uniqueBettors": 11,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2022-02-05T05:59:59.000Z"
+    },
+    {
+      "date": "2024-03-31T00:49:01.984Z",
+      "title": "P(Doom) - Dario Amodei",
+      "url": "https://manifold.markets/ManifoldAI/pdoom-dario-amodei-2d86c76a9dbe",
+      "score": 1972,
+      "id": "LXIsOyLoMoIJ94La3K6R",
+      "outcomeType": "NUMBER",
+      "probability": null,
+      "uniqueBettors": 18,
+      "isResolved": true,
+      "resolution": "a264371b1b20",
+      "closeTime": "2025-10-27T17:23:21.089Z"
+    },
+    {
+      "date": "2023-04-14T12:55:40.476Z",
+      "title": "Will an AI system similar to Auto-GPT make a successful attempt to kill a human by 2030?",
+      "url": "https://manifold.markets/JuJumper/will-an-ai-system-similar-to-autogp",
+      "score": 1927,
+      "id": "r229lzHaWfno9FV0gOwj",
+      "outcomeType": "BINARY",
+      "probability": 0.2665299552404369,
+      "uniqueBettors": 35,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2031-04-14T21:59:00.000Z"
+    },
+    {
+      "date": "2023-02-19T09:03:57.245Z",
+      "title": "Will Paul Christiano publicly announce a greater than 10% increase in his p(doom | AGI before 2100) within the next 5 years?",
+      "url": "https://manifold.markets/au_/will-paul-christiano-publicly-annou",
+      "score": 1806,
+      "id": "hduVqfTQNj5ap76IhvHj",
+      "outcomeType": "BINARY",
+      "probability": 0.3334998244991131,
+      "uniqueBettors": 24,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-02-19T23:59:00.000Z"
+    },
+    {
+      "date": "2023-01-06T04:19:22.076Z",
+      "title": "By 2028, will I believe that contemporary AIs are aligned (posing no existential risk)?",
+      "url": "https://manifold.markets/JacobPfau/by-2028-will-i-believe-that-ai-alig",
+      "score": 1707,
+      "id": "VzKJ4UDazsnXyczv6H1b",
+      "outcomeType": "BINARY",
+      "probability": 0.32118243302171845,
+      "uniqueBettors": 49,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-01-02T09:59:00.000Z"
+    },
+    {
+      "date": "2023-06-01T04:37:07.977Z",
+      "title": "Will Rishi Sunak publicly express concern about AI extinction risk before 2024?",
+      "url": "https://manifold.markets/jacobk/will-rishi-sunak-publicly-express-c",
+      "score": 1676,
+      "id": "cqNRDBDkExmeR3gBLUMa",
+      "outcomeType": "BINARY",
+      "probability": 0.9607279190932446,
+      "uniqueBettors": 11,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2023-07-06T08:04:50.057Z"
+    },
+    {
+      "date": "2023-07-16T18:09:55.649Z",
+      "title": "Eliezer Yudkowsky p(Doom) stock",
+      "url": "https://manifold.markets/Dfe2f/eliezer-yudkowsky-pdoom-stock",
+      "score": 1662,
+      "id": "ANjhMSPdwwuODpMnd3tN",
+      "outcomeType": "PSEUDO_NUMERIC",
+      "probability": 0.9302035773976592,
+      "uniqueBettors": 18,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2501-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-10-13T13:48:49.073Z",
+      "title": "Will a fully autonomous AI-powered US military drone kill a human being without express human direction before 2025?",
+      "url": "https://manifold.markets/glwld/will-a-full-autonomous-aipowered-us",
+      "score": 1661,
+      "id": "PoOY0YJTGUtiANpI710s",
+      "outcomeType": "BINARY",
+      "probability": 0.1018592094179197,
+      "uniqueBettors": 20,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-24T17:57:34.174Z",
+      "title": "Does an AI disaster kill at least 10,000,000 people before 2029?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-accident-kill-at-least-1-6ad27639b65b",
+      "score": 1572,
+      "id": "quWd3b97OAfMVGtnAtdv",
+      "outcomeType": "BINARY",
+      "probability": 0.08567265843448668,
+      "uniqueBettors": 13,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T06:40:22.064Z",
+      "title": "Before 2028, will any prediction market find a robust way to run a market on AI extinction risk? [M$50,000 reward]",
+      "url": "https://manifold.markets/IsaacKing/before-2028-will-any-prediction-mar",
+      "score": 1567,
+      "id": "vZZk8M49BePEoKitISDR",
+      "outcomeType": "BINARY",
+      "probability": 0.1584900607052281,
+      "uniqueBettors": 24,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-01-02T07:59:00.000Z"
+    },
+    {
+      "date": "2026-09-16T05:37:30.955Z",
+      "title": "Will a rogue AI kill a human before 2030?",
+      "url": "https://manifold.markets/gwylim/will-a-rogue-ai-kill-a-human-before",
+      "score": 1391,
+      "id": "pQtqzpAnO5",
+      "outcomeType": "BINARY",
+      "probability": 0.49696710734612887,
+      "uniqueBettors": 15,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-12-07T06:16:16.848Z",
+      "title": "According to Manifold users, which possible cause of human extinction by AI needs the most urgent attention?",
+      "url": "https://manifold.markets/ClubmasterTransparent/according-to-manifold-users-which-p",
+      "score": 1369,
+      "id": "UlAYR5IePtdum0ATwBAa",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 37,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2024-06-02T06:59:00.000Z"
+    },
+    {
+      "date": "2026-10-15T17:49:38.703Z",
+      "title": "Will Yudkowsky substantially lower his P(doom) in response to Cammarata's \"Neural Networks Are Already Clean\"?",
+      "url": "https://manifold.markets/ae/will-yudkowsky-substantially-lower",
+      "score": 1280,
+      "id": "lUI0u50z0L",
+      "outcomeType": "BINARY",
+      "probability": 0.05,
+      "uniqueBettors": 15,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-12-31T17:49:00.000Z"
+    },
+    {
+      "date": "2023-07-04T21:10:09.999Z",
+      "title": "Will AI wipe out patriarchy before the year 2030?",
+      "url": "https://manifold.markets/Zardoru/will-ai-wipe-out-patriarchy-before",
+      "score": 1278,
+      "id": "NpeWE6BdgB986U5hdYFT",
+      "outcomeType": "BINARY",
+      "probability": 0.03879681954464399,
+      "uniqueBettors": 12,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2030-01-02T01:16:00.000Z"
+    },
+    {
+      "date": "2023-09-23T17:29:40.945Z",
+      "title": "Will existential risks from AI still be considered a top problem to work on within the EA community by the end of 2024?",
+      "url": "https://manifold.markets/gaurav/will-existential-risks-from-ai-stil",
+      "score": 1114,
+      "id": "oZyXDHlqoks7zhxvf2Ez",
+      "outcomeType": "BINARY",
+      "probability": 0.9721519520582207,
+      "uniqueBettors": 10,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2024-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-12-14T06:16:32.030Z",
+      "title": "What will be the median p(doom) of AI researchers after AGI is reached?",
+      "url": "https://manifold.markets/ahalekelly/what-will-be-the-median-pdoom-of-ai-fed3fdd12c85",
+      "score": 1081,
+      "id": "dXt2u6Wn8ynf7N1EJqWw",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 17,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2101-01-01T07:59:00.000Z"
+    },
+    {
+      "date": "2023-10-16T00:02:16.273Z",
+      "title": "AI doomer terrorism in 2024?",
+      "url": "https://manifold.markets/a2bb/ai-doomer-terrorism-in-2024",
+      "score": 1021,
+      "id": "de2V6VvOQ4MGrusy0rIm",
+      "outcomeType": "BINARY",
+      "probability": 0.06815933369707958,
+      "uniqueBettors": 21,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-01-01T22:59:00.000Z"
+    },
+    {
+      "date": "2024-03-28T14:28:04.737Z",
+      "title": "What's the p(doom) of monkeys?",
+      "url": "https://manifold.markets/SimoneRomeo/whats-the-pdoom-of-monkeys",
+      "score": 977,
+      "id": "gWX6Lnd6FIK3S1M9hv4G",
+      "outcomeType": "BINARY",
+      "probability": 0.08396385087054317,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2041-01-01T22:59:00.000Z"
+    },
+    {
+      "date": "2025-06-20T18:06:12.661Z",
+      "title": "Valid argument for high p(doom) in @EliezerYudkowsky's upcoming book \"If Anyone Builds, Everyone Dies\"?",
+      "url": "https://manifold.markets/jim/valid-argument-for-high-pdoom-in-el",
+      "score": 948,
+      "id": "PclQZEl0s9",
+      "outcomeType": "BINARY",
+      "probability": 0.07631373500731059,
+      "uniqueBettors": 17,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2026-02-01T19:05:00.000Z"
+    },
+    {
+      "date": "2023-12-29T13:14:34.466Z",
+      "title": "If AI causes human extinction before 2100, how will it happen",
+      "url": "https://manifold.markets/logan/if-ai-causes-human-extinction-befor",
+      "score": 911,
+      "id": "VPKIvQSqwnlYXyQjWouu",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 27,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2101-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-27T06:23:58.307Z",
+      "title": "Will AI Existential Risk be a partisan issue in the 2024 US election?",
+      "url": "https://manifold.markets/ahalekelly/will-ai-existential-risk-be-a-parti",
+      "score": 904,
+      "id": "Wk4Gn5Sk7WjH1aVJCDBL",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 21,
+      "isResolved": true,
+      "resolution": "55c215f152b5",
+      "closeTime": "2024-11-05T07:59:00.000Z"
+    },
+    {
+      "date": "2022-12-24T03:53:18.398Z",
+      "title": "Sometime before 2031, AI is going to cross a generality threshold that allows for recursive self-improvement, and then FOOM to superhuman capability. Before that point humanity must solve AI safety or be helpless.",
+      "url": "https://manifold.markets/NathanHelmBurger/sometime-before-2031-ai-is-going-to",
+      "score": 893,
+      "id": "TZHsXrEoe8i51ApSwBjD",
+      "outcomeType": "BINARY",
+      "probability": 0.32557457614242097,
+      "uniqueBettors": 21,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2030-02-01T07:59:00.000Z"
+    },
+    {
+      "date": "2023-05-06T02:38:22.785Z",
+      "title": "If Democrats win the 2024 U.S. presidency, will an AI kill 10% of the human population before 2028?",
+      "url": "https://manifold.markets/ScroogeMcDuck/if-democrats-wins-the-2024-us-presi",
+      "score": 877,
+      "id": "xVbMh2QdhR3XvakHCwbN",
+      "outcomeType": "BINARY",
+      "probability": 0.08111152432526943,
+      "uniqueBettors": 18,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2024-11-14T04:57:31.496Z"
+    },
+    {
+      "date": "2026-03-15T02:20:28.142Z",
+      "title": "Humanoid robot kills human in Ukrain war in 2026?",
+      "url": "https://manifold.markets/vdb/humanoid-robot-kills-human-in-ukrai",
+      "score": 875,
+      "id": "l9NNUgLS8g",
+      "outcomeType": "BINARY",
+      "probability": 0.059516758016603104,
+      "uniqueBettors": 10,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2026-09-27T07:02:55.596Z",
+      "title": "Will global technology infrastructure including AI be extinct before 2100?",
+      "url": "https://manifold.markets/DudleyDOODOO/will-global-technology-infrastructu",
+      "score": 841,
+      "id": "hhCC8IZRzO",
+      "outcomeType": "BINARY",
+      "probability": 0.010000000000000014,
+      "uniqueBettors": 3,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2099-12-31T11:00:00.000Z"
+    },
+    {
+      "date": "2024-08-15T16:51:11.263Z",
+      "title": "Will \"Ten arguments that AI is an existential risk\" make the top fifty posts in LessWrong's 2024 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-ten-arguments-that-ai-is-an-ex",
+      "score": 755,
+      "id": "q1ws2st503",
+      "outcomeType": "BINARY",
+      "probability": 0.10000000000000002,
+      "uniqueBettors": 3,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2026-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-06-24T19:28:27.456Z",
+      "title": "Does an AI disaster kill at least 1,000,000,000 (1bn) people before 2029?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-accident-kill-at-least-1-9281cfc732fb",
+      "score": 752,
+      "id": "WV2vGh2CJvE3YiLAvr8u",
+      "outcomeType": "BINARY",
+      "probability": 0.06016512834666147,
+      "uniqueBettors": 13,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-12-03T14:41:46.686Z",
+      "title": "Does there exist a serious argument that extinction risk from AI is >1% over the next 50 years?",
+      "url": "https://manifold.markets/AlexbGoode/does-there-exist-a-serious-argument-6635abd499a0",
+      "score": 739,
+      "id": "pbIlvGokbTeaL5Vc8fY8",
+      "outcomeType": "BINARY",
+      "probability": 0.42031179443965827,
+      "uniqueBettors": 16,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2024-01-04T14:22:25.415Z"
+    },
+    {
+      "date": "2023-07-02T22:54:14.138Z",
+      "title": "Does an AI disaster kill at least 1,000 people before 2040?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-disaster-kill-at-least-1-b4aff4d3a971",
+      "score": 722,
+      "id": "wKrgF16yaHbD0Ug1INlF",
+      "outcomeType": "BINARY",
+      "probability": 0.5979974728332499,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-18T19:37:45.181Z",
+      "title": "Will QACI alignment affect p(doom) more than 5%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-qaci-alignment-affect-pdoom-mo",
+      "score": 711,
+      "id": "bg40wo7nfLL3tIoSXZYb",
+      "outcomeType": "BINARY",
+      "probability": 0.02863204329998845,
+      "uniqueBettors": 4,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2223-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-10-31T20:05:59.636Z",
+      "title": "Will the Understanding AI blog mention existential risk as a significant threat before March?",
+      "url": "https://manifold.markets/IsaacKing/will-the-understanding-ai-blog-ment",
+      "score": 696,
+      "id": "f4LabLptF4xYtt7byv2l",
+      "outcomeType": "BINARY",
+      "probability": 0.04719468232439139,
+      "uniqueBettors": 7,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-03-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-12-27T07:40:33.312Z",
+      "title": "Will my p(doom) be above 10% in 20 years (2043)?",
+      "url": "https://manifold.markets/Bayesian/will-my-pdoom-be-above-10-in-20-yea",
+      "score": 654,
+      "id": "qV3jSwd0YyWIR7HQ1u5C",
+      "outcomeType": "BINARY",
+      "probability": 0.36542275443364997,
+      "uniqueBettors": 22,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2043-12-28T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-01T14:29:39.092Z",
+      "title": "If Labour wins the 2025 U.K. general election, will an AI kill 10% of humans before 2032?",
+      "url": "https://manifold.markets/ScroogeMcDuck/if-labour-wins-the-2025-uk-general",
+      "score": 615,
+      "id": "QFvPpp8MkMv4CL36dycX",
+      "outcomeType": "BINARY",
+      "probability": 0.049752953309816675,
+      "uniqueBettors": 4,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2032-01-05T23:59:00.000Z"
+    },
+    {
+      "date": "2023-01-13T00:20:02.981Z",
+      "title": "Daniel Kokotajlo’s P(Doom) falls below 50% before the end of 2027",
+      "url": "https://manifold.markets/Alana/daniel-kokotajlos-pdoom-falls-below",
+      "score": 610,
+      "id": "b0n2LjqoTyCvEnM4nemP",
+      "outcomeType": "BINARY",
+      "probability": 0.15623350815895143,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-04-01T21:29:58.271Z",
+      "title": "Will AGI retaliate on AI doomers in a way that makes AI doomers regret it?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-agi-retaliate-on-ai-doomers-in",
+      "score": 580,
+      "id": "qEH02BplXuviKHuHTAMB",
+      "outcomeType": "BINARY",
+      "probability": 0.03000000000000003,
+      "uniqueBettors": 5,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2099-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-06-22T01:46:43.127Z",
+      "title": "Does an AI disaster kill at least 1,000 people before 2029?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-accident-kill-at-least-1",
+      "score": 563,
+      "id": "8v4aTLXJNOFmtBoTbNWJ",
+      "outcomeType": "BINARY",
+      "probability": 0.4356828034889625,
+      "uniqueBettors": 12,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-13T22:37:58.647Z",
+      "title": "When (if ever) will AI cause human extinction?",
+      "url": "https://manifold.markets/MichaelWheatley/when-if-ever-will-ai-cause-human-ex",
+      "score": 558,
+      "id": "f9WrOuJpYR3ldv8mCQYS",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 15,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2030-12-30T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-11T12:35:59.554Z",
+      "title": "ML researchers’ median probability of existential risk from AI",
+      "url": "https://manifold.markets/HannesThurnherr/ml-researchers-median-probability-o",
+      "score": 534,
+      "id": "KNYs1IzNJmZ5yIut7LV6",
+      "outcomeType": "PSEUDO_NUMERIC",
+      "probability": 0.2346356976882318,
+      "uniqueBettors": 14,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2025-06-11T10:00:00.000Z"
+    },
+    {
+      "date": "2023-04-11T17:11:25.581Z",
+      "title": "Will LeBron James publicly express concern about AI extinction risk before 2024?",
+      "url": "https://manifold.markets/jacobk/will-lebron-james-comment-on-ai-not",
+      "score": 518,
+      "id": "qUl8VE92c28mgQJAeqo5",
+      "outcomeType": "BINARY",
+      "probability": 0.05204877703427612,
+      "uniqueBettors": 10,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-07-01T13:09:43.789Z",
+      "title": "Will AI invent acausal trade and bargain with humans from the future to not kill us?",
+      "url": "https://manifold.markets/EmienerYunoski/will-ai-invent-acausal-trade-and-ba",
+      "score": 517,
+      "id": "bcvYuIfiza46qxQYoVvR",
+      "outcomeType": "BINARY",
+      "probability": 0.19382699108024962,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2025-01-22T11:46:00.000Z"
+    },
+    {
+      "date": "2023-03-10T22:27:58.677Z",
+      "title": "Will an AI system be judged to have killed a human on its own initiative and for no other purpose by 2030?",
+      "url": "https://manifold.markets/Keepcalmandchill/will-an-ai-system-be-judged-to-have",
+      "score": 516,
+      "id": "fpzThxjwpLIQ7LgU9hz9",
+      "outcomeType": "BINARY",
+      "probability": 0.25684338148259067,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2030-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2024-03-31T00:10:10.509Z",
+      "title": "P(Doom) - Yoshua Bengio",
+      "url": "https://manifold.markets/ManifoldAI/pdoom-yoshua-bengio",
+      "score": 476,
+      "id": "k4aXcx8YiFoH6PJI7Bfq",
+      "outcomeType": "NUMBER",
+      "probability": null,
+      "uniqueBettors": 10,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2025-12-02T07:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T21:00:51.386Z",
+      "title": "Will janus/@repligate meaningfully affect p(doom) by more than 5%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-janusrepligate-meaningfully-af",
+      "score": 475,
+      "id": "CrzGy2VFZqaNQb32wGeJ",
+      "outcomeType": "BINARY",
+      "probability": 0.3539160624088344,
+      "uniqueBettors": 6,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "3000-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-07-23T22:19:25.200Z",
+      "title": "If humanity goes extinct by 2030, will AI unwipe out humanity by 2040?",
+      "url": "https://manifold.markets/Ibozz91/if-humanity-goes-extinct-by-2030-wi",
+      "score": 473,
+      "id": "MYyWx6d5FrIOoalgCpn4",
+      "outcomeType": "BINARY",
+      "probability": 0.3900000000000001,
+      "uniqueBettors": 13,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2025-07-15T23:27:13.773Z",
+      "title": "Will Gary Marcus claim to have a P(doom) of at or higher than 10% at some point before 2027?",
+      "url": "https://manifold.markets/Tripping/will-gary-marcus-claim-to-have-a-pd",
+      "score": 466,
+      "id": "PgQ95d0s9S",
+      "outcomeType": "BINARY",
+      "probability": 0.07580068008509676,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-01-01T23:59:00.000Z"
+    },
+    {
+      "date": "2023-06-24T18:14:55.411Z",
+      "title": "Does an AI disaster kill at least 100,000,000 people before 2029?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-accident-kill-at-least-1-270615f49415",
+      "score": 428,
+      "id": "jdQMa116UszEt8s0AUEh",
+      "outcomeType": "BINARY",
+      "probability": 0.07375868236672063,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2024-07-09T14:03:44.292Z",
+      "title": "What will today's p(doom) be determined to be retrospectively by post singularity simulations?",
+      "url": "https://manifold.markets/plex/what-will-todays-pdoom-be-determine",
+      "score": 427,
+      "id": "pk68yia21b",
+      "outcomeType": "BINARY",
+      "probability": 0.11836930997609764,
+      "uniqueBettors": 5,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2024-03-30T09:42:46.948Z",
+      "title": "Will AI decide to uncouple its destiny from humanity's?",
+      "url": "https://manifold.markets/SimoneRomeo/will-ai-decide-to-uncouple-its-dest",
+      "score": 420,
+      "id": "8bzbkKMyo7EiPJ0jAa6N",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2101-04-06T21:59:00.000Z"
+    },
+    {
+      "date": "2025-05-23T10:45:58.360Z",
+      "title": "What will be the P(doom) of these individuals 6 months after ASI has been created but hasn't wiped out humanity yet?",
+      "url": "https://manifold.markets/4fa/what-will-be-the-pdoom-of-these-ind-USZucS26RO",
+      "score": 410,
+      "id": "h5PU9C06QA",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 11,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2030-07-04T08:31:00.000Z"
+    },
+    {
+      "date": "2023-02-11T03:40:53.556Z",
+      "title": "How likely will I say I think AI doom is at EAG?",
+      "url": "https://manifold.markets/KatjaGrace/how-likely-will-i-say-i-think-ai-do",
+      "score": 383,
+      "id": "tqafWXZryu052mNhFEqq",
+      "outcomeType": "PSEUDO_NUMERIC",
+      "probability": 0.09036297245744929,
+      "uniqueBettors": 12,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2023-02-25T20:00:00.000Z"
+    },
+    {
+      "date": "2024-05-02T03:48:26.995Z",
+      "title": "When Ilya Sutskever reemerges in public, will he have joined his voice to those of the AI Doomers?",
+      "url": "https://manifold.markets/NevinWetherill/when-ilya-sutskever-reemerges-in-pu",
+      "score": 380,
+      "id": "pUhEluepAQNlimYcixT8",
+      "outcomeType": "BINARY",
+      "probability": 0.07361713731071856,
+      "uniqueBettors": 11,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2024-05-15T03:08:15.033Z"
+    },
+    {
+      "date": "2023-03-24T14:35:44.770Z",
+      "title": "Are AI and its effects are the most important existential risk, given only public information available in 2021?",
+      "url": "https://manifold.markets/IsaacKing/are-ai-and-its-effects-are-the-most",
+      "score": 354,
+      "id": "HG061Y5wn79MvW4Fhwxk",
+      "outcomeType": "BINARY",
+      "probability": 0.8919038490598142,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2300-01-01T05:00:00.000Z"
+    },
+    {
+      "date": "2024-03-28T16:37:29.239Z",
+      "title": "What will Manifold's P(doom) be at the end of 2025?",
+      "url": "https://manifold.markets/chris/what-will-manifolds-pdoom-be-at-the-68646ab65a1e",
+      "score": 338,
+      "id": "kwPNrZstGPK5ChN6kWqq",
+      "outcomeType": "BINARY",
+      "probability": 0.2552879087862829,
+      "uniqueBettors": 15,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2026-01-01T06:59:00.000Z"
+    },
+    {
+      "date": "2023-11-29T21:25:12.640Z",
+      "title": "If there is AI Doom by 2030, the largest human casualties will be a result of...",
+      "url": "https://manifold.markets/AlexanderLeCampbell/if-there-is-ai-doom-by-2030-the-lar",
+      "score": 337,
+      "id": "al280S3N6Q7xCFttf6Tv",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 12,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2031-01-01T07:59:00.000Z"
+    },
+    {
+      "date": "2023-06-22T01:50:31.041Z",
+      "title": "Does an AI disaster kill at least 100 people before 2029?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-accident-kill-at-least-1-b0aef3f5f5ec",
+      "score": 335,
+      "id": "ohHwaEc98xg3xpPBhzTN",
+      "outcomeType": "BINARY",
+      "probability": 0.7640768595759954,
+      "uniqueBettors": 11,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2029-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2024-01-25T18:21:11.873Z",
+      "title": "Whose P(Doom) is higher: Emmett Shear (YES) or Sam Altman (NO)?",
+      "url": "https://manifold.markets/Bayesian/whose-pdoom-is-higher-emmett-shear",
+      "score": 332,
+      "id": "5fvVZImwUjq5LZC0VVtZ",
+      "outcomeType": "BINARY",
+      "probability": 0.8554369875387231,
+      "uniqueBettors": 16,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2300-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2026-05-17T03:51:31.877Z",
+      "title": "How will reading \"If Anyone Builds It, Everyone Dies: Why Superhuman AI Would Kill Us All\" affect my P(Doom)?",
+      "url": "https://manifold.markets/DylanRichardson/how-will-reading-if-anyone-builds-i-SC8QP2lRcP",
+      "score": 324,
+      "id": "REtIE6gszp",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 10,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2026-05-30T22:20:22.796Z"
+    },
+    {
+      "date": "2023-12-27T07:46:51.702Z",
+      "title": "Will my p(doom) be above 10% in 10 years (2033)?",
+      "url": "https://manifold.markets/Bayesian/will-my-pdoom-be-above-10-in-10-yea",
+      "score": 299,
+      "id": "vYMKZ066s1a9lPUYcWRZ",
+      "outcomeType": "BINARY",
+      "probability": 0.5939838960678738,
+      "uniqueBettors": 14,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2033-12-28T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:24:35.897Z",
+      "title": "Will Jose Luis Ricon meaningfully affect p(doom) by more than 3%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-jose-luis-ricon-meaningfully-a",
+      "score": 298,
+      "id": "RT8YeWqYCCQiVhuXftye",
+      "outcomeType": "BINARY",
+      "probability": 0.049781586087652104,
+      "uniqueBettors": 5,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-07-02T22:51:29.709Z",
+      "title": "Does an AI disaster kill at least 10,000,000 people before 2040?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-disaster-kill-at-least-1-56d8c29e61cf",
+      "score": 264,
+      "id": "FXCC20FxU1pGkZFAlHqx",
+      "outcomeType": "BINARY",
+      "probability": 0.18729362959685025,
+      "uniqueBettors": 10,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2024-09-23T02:44:28.203Z",
+      "title": "Will \"AI doom from an LLM-plateau-ist perspective\" make the top fifty posts in LessWrong's 2023 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-ai-doom-from-an-llmplateauist",
+      "score": 255,
+      "id": "t8wdo153au",
+      "outcomeType": "BINARY",
+      "probability": 0.11131386205217163,
+      "uniqueBettors": 2,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2025-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:26:46.670Z",
+      "title": "Will MIRI meaningfully affect p(doom) by more than 5%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-miri-meaningfully-affect-pdoom",
+      "score": 254,
+      "id": "F6QRWIR9qzlBLw2GE88B",
+      "outcomeType": "BINARY",
+      "probability": 0.4751119820192846,
+      "uniqueBettors": 7,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "3000-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2025-11-19T23:39:05.360Z",
+      "title": "Will \"AI Governance to Avoid Extinction: The Strate...\" make the top fifty posts in LessWrong's 2025 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-ai-governance-to-avoid-extinct",
+      "score": 250,
+      "id": "WkCfvqyjCz",
+      "outcomeType": "BINARY",
+      "probability": 0.11157440616057736,
+      "uniqueBettors": 1,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-06-02T08:41:56.402Z",
+      "title": "Will someone make a real simulation for \"AI-licensed drone 'killed' human operator in surreal military simulated test\"?",
+      "url": "https://manifold.markets/causal_agency/will-someone-make-a-real-simulation",
+      "score": 233,
+      "id": "O4HNuBxNco4hGeeJf5AF",
+      "outcomeType": "BINARY",
+      "probability": 0.10743924080636938,
+      "uniqueBettors": 5,
+      "isResolved": true,
+      "resolution": "NO",
+      "closeTime": "2023-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-07-02T22:52:38.031Z",
+      "title": "Does an AI disaster kill at least 100,000 people before 2040?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-disaster-kill-at-least-1-a6d27cdbf0e2",
+      "score": 230,
+      "id": "N3NRp6M3280ud9siXnui",
+      "outcomeType": "BINARY",
+      "probability": 0.3815441658994121,
+      "uniqueBettors": 12,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-01T22:43:00.000Z"
+    },
+    {
+      "date": "2023-03-11T14:10:43.893Z",
+      "title": "AI Doomsday Clock",
+      "url": "https://manifold.markets/Sailfish/ai-doomsday-clock",
+      "score": 228,
+      "id": "NOfunuCNsLXncqPEgOSH",
+      "outcomeType": "PSEUDO_NUMERIC",
+      "probability": 0.9082610732094568,
+      "uniqueBettors": 7,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T21:11:51.670Z",
+      "title": "Will davidad meaningfully affect p(doom) by more than 3%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-davidad-meaningfully-affect-pd",
+      "score": 225,
+      "id": "lWb5Kfl7CrLU5dWs08r7",
+      "outcomeType": "BINARY",
+      "probability": 0.055145022470821974,
+      "uniqueBettors": 2,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "3000-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2026-10-06T18:47:54.111Z",
+      "title": "Manifold user's average p(doom)",
+      "url": "https://manifold.markets/Velaris/manifold-users-average-pdoom",
+      "score": 225,
+      "id": "hg5QIn0SuR",
+      "outcomeType": "BINARY",
+      "probability": 0.39999999999999997,
+      "uniqueBettors": 1,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2026-10-06T18:54:54.370Z"
+    },
+    {
+      "date": "2024-03-31T00:35:33.576Z",
+      "title": "P(Doom) - Emmett Shear",
+      "url": "https://manifold.markets/ManifoldAI/pdoom-emmett-shear",
+      "score": 223,
+      "id": "bYSy6i751TPoz4cvRmkU",
+      "outcomeType": "NUMBER",
+      "probability": null,
+      "uniqueBettors": 7,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2025-12-02T07:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:26:32.895Z",
+      "title": "Will manifold markets meaningfully affect p(doom) by more than 3%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-manifold-markets-meaningfully",
+      "score": 221,
+      "id": "ng7iM954C3Q90kNO0bR9",
+      "outcomeType": "BINARY",
+      "probability": 0.07369845247703967,
+      "uniqueBettors": 3,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "3000-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-07-02T22:53:43.619Z",
+      "title": "Does an AI disaster kill at least 10,000 people before 2040?",
+      "url": "https://manifold.markets/ScroogeMcDuck/does-an-ai-disaster-kill-at-least-1-64c23c92de25",
+      "score": 214,
+      "id": "alUpBeoluKEBr7baf4Qu",
+      "outcomeType": "BINARY",
+      "probability": 0.4533163463979251,
+      "uniqueBettors": 10,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-08-30T16:13:52.117Z",
+      "title": "How much AI extinction risk would you accept?",
+      "url": "https://manifold.markets/SteveSokolowski/how-much-ai-extinction-risk-would-y",
+      "score": 211,
+      "id": "190ObpzfGnRgAyExv1ZY",
+      "outcomeType": "BINARY",
+      "probability": 0.12229294691427067,
+      "uniqueBettors": 10,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2079-12-07T04:59:00.000Z"
+    },
+    {
+      "date": "2024-10-13T22:53:16.084Z",
+      "title": "What will be the P(doom) of these individuals when Manifold thinks ASI is <1y away?",
+      "url": "https://manifold.markets/TheAllMemeingEye/what-will-be-the-pdoom-of-these-ind",
+      "score": 198,
+      "id": "4of0t84i46",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 9,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2040-01-01T23:59:00.000Z"
+    },
+    {
+      "date": "2023-09-18T19:15:05.876Z",
+      "title": "Will mechanistic/transformer interpretability [eg Neel Nanda] end up affecting p(doom) more than 5%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-mechanistictransformer-interpr",
+      "score": 190,
+      "id": "4z7nW1o5H8pbKZ0GCXZK",
+      "outcomeType": "BINARY",
+      "probability": 0.09845760126625541,
+      "uniqueBettors": 4,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2223-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-03-24T02:33:52.281Z",
+      "title": "If we survive, which AI researcher will be remembered as the one who found the lynchpin that saved us from doom?",
+      "url": "https://manifold.markets/L/if-we-survive-which-ai-researcher-w",
+      "score": 181,
+      "id": "DMZ5AQz6DwdwTF9loqJp",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 9,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2024-04-27T15:50:23.880Z"
+    },
+    {
+      "date": "2023-04-07T18:09:10.672Z",
+      "title": "Will an unaligned AI or an aligned AI controlled by a malicious actor create a \"wake-up call\" for humanity on AI safety?",
+      "url": "https://manifold.markets/RobinGreen/will-an-unaligned-ai-or-an-aligned",
+      "score": 141,
+      "id": "qLH2XPZLe8o9DkNJ6IVy",
+      "outcomeType": "BINARY",
+      "probability": 0.6883652415049937,
+      "uniqueBettors": 10,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2050-04-07T22:59:00.000Z"
+    },
+    {
+      "date": "2024-03-28T16:38:08.431Z",
+      "title": "What will Manifold's P(doom) be at the end of 2026?",
+      "url": "https://manifold.markets/chris/what-will-manifolds-pdoom-be-at-the-7c833accc9b3",
+      "score": 140,
+      "id": "PQGD583iPXuwxnER3wHd",
+      "outcomeType": "BINARY",
+      "probability": 0.22832671091188164,
+      "uniqueBettors": 6,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-12-21T06:59:00.000Z"
+    },
+    {
+      "date": "2023-01-15T09:21:24.891Z",
+      "title": "GPT-4's response to: \"Please give a yes or no answer to this question: Will AI cause human extinction?\"",
+      "url": "https://manifold.markets/ZanyEconomist/gpt4s-response-to-please-give-a-yes",
+      "score": 136,
+      "id": "DhFowMBu09vbS7AEZoIX",
+      "outcomeType": "BINARY",
+      "probability": 0.16396304650102106,
+      "uniqueBettors": 8,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2023-03-23T07:03:17.968Z"
+    },
+    {
+      "date": "2023-10-01T14:54:01.577Z",
+      "title": "Would it be a good use of time to review 'AGI Catastrophe and Takeover:: Some Reference Class-Based Priors'?",
+      "url": "https://manifold.markets/ZviMowshowitz/would-it-be-a-good-use-of-time-to-r-e5b8bbeda7a8",
+      "score": 130,
+      "id": "YgK9Y6l7HvRAvy8vyWM0",
+      "outcomeType": "BINARY",
+      "probability": 0.25844406170450424,
+      "uniqueBettors": 3,
+      "isResolved": true,
+      "resolution": "MKT",
+      "closeTime": "2023-10-06T11:37:49.631Z"
+    },
+    {
+      "date": "2025-10-02T20:15:05.132Z",
+      "title": "Which book(s) will win Will Kiely's $1,000 bounty by being the new best overview of AI existential risk?",
+      "url": "https://manifold.markets/WilliamKiely/which-books-will-win-will-kielys-10-UtN95LCUyp",
+      "score": 125,
+      "id": "sN5OPc0I6n",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 4,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-01-01T05:59:59.000Z"
+    },
+    {
+      "date": "2023-04-04T13:12:51.220Z",
+      "title": "Will I consider the Peter Doocy doomsday AI question to the White House iconic/important in five years?",
+      "url": "https://manifold.markets/HenriThunberg/will-i-consider-the-peter-doocy-doo",
+      "score": 120,
+      "id": "1V7eU8rxTuSqVYTZ2ZYv",
+      "outcomeType": "BINARY",
+      "probability": 0.3400000000000001,
+      "uniqueBettors": 7,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-04-04T21:59:00.000Z"
+    },
+    {
+      "date": "2025-01-31T21:37:57.091Z",
+      "title": "Will \"Gradual Disempowerment: Systemic Existential ...\" make the top fifty posts in LessWrong's 2025 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-gradual-disempowerment-systemi",
+      "score": 117,
+      "id": "pZhEQieM9o",
+      "outcomeType": "BINARY",
+      "probability": 0.48999999999999994,
+      "uniqueBettors": 8,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-12-25T01:13:06.044Z",
+      "title": "If a large, good survey of AI engineers in the United States is run, what will be the average p(doom) within 10 years?",
+      "url": "https://manifold.markets/IsaacKing/if-a-large-good-survey-of-ai-engine",
+      "score": 117,
+      "id": "drkNAx9E3QOUhswZt3mH",
+      "outcomeType": "BINARY",
+      "probability": 0.1421665230495475,
+      "uniqueBettors": 8,
+      "isResolved": true,
+      "resolution": "CANCEL",
+      "closeTime": "2025-01-02T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:45:33.729Z",
+      "title": "Will Alex Zhu meaningfully affect p(doom) by more than 2%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-alex-zhu-meaningfully-affect-p",
+      "score": 111,
+      "id": "7pH5MEx43LNJvgvGbjwO",
+      "outcomeType": "BINARY",
+      "probability": 0.12034872920603881,
+      "uniqueBettors": 5,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-06-01T14:26:34.404Z",
+      "title": "If Conservatives win the 2025 U.K. general election, will an AI kill 10% of humans before 2032?",
+      "url": "https://manifold.markets/ScroogeMcDuck/if-conservatives-win-the-2025-uk-ge",
+      "score": 106,
+      "id": "XAWy3moqy7tzhvV55P7g",
+      "outcomeType": "BINARY",
+      "probability": 0.10300383285363038,
+      "uniqueBettors": 2,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2032-01-05T23:59:00.000Z"
+    },
+    {
+      "date": "2026-08-22T20:36:18.428Z",
+      "title": "Conditional on AI causing human extinction, which failure mode will be primarily responsible?",
+      "url": "https://manifold.markets/AlexMiller3a5e/conditional-on-ai-causing-human-ext",
+      "score": 102,
+      "id": "cz9CUd8Pc6",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 9,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2050-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:26:14.002Z",
+      "title": "Will Jeremy Nixon meaningfully affect p(doom) by more than 5%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-jeremy-nixon-meaningfully-affe",
+      "score": 85,
+      "id": "HcdRTBAhYhPcFukWxaQq",
+      "outcomeType": "BINARY",
+      "probability": 0.12062726176115801,
+      "uniqueBettors": 2,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2101-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-02T03:02:50.233Z",
+      "title": "How many users will mistake IA Doom for AI Doom?",
+      "url": "https://manifold.markets/PlasmaBallin/how-many-users-will-mistake-ia-doom",
+      "score": 80,
+      "id": "7CgNxaxhuDKKqsh48860",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 4,
+      "isResolved": true,
+      "resolution": "6bb6fb9bd324",
+      "closeTime": "2023-09-30T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:28:36.122Z",
+      "title": "Will more than 5% of p(doom) come alone from autistic people collectively not known to de-escalate when they could have?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-more-than-5-of-pdoom-come-alon",
+      "score": 65,
+      "id": "sN7Qc6r2frrLJwTvjP8b",
+      "outcomeType": "BINARY",
+      "probability": 0.2359311662085026,
+      "uniqueBettors": 3,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "3000-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-11-11T07:35:44.231Z",
+      "title": "Will AI cause an existential catastrophe (Bostrom or Ord definition) which doesn't result in human extinction?",
+      "url": "https://manifold.markets/jacksonpolack/will-ai-cause-an-existential-catast",
+      "score": 59,
+      "id": "PYUn4I2wWdwHipwLgySz",
+      "outcomeType": "BINARY",
+      "probability": 0.24999999999999978,
+      "uniqueBettors": 5,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-11-18T07:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:43:07.018Z",
+      "title": "Will Claire Wang (@clairebookworm) meaningfully affect p(doom) by more than 1%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-claire-wang-clairebookworm-mea",
+      "score": 57,
+      "id": "0syZbeI4p8hNqOQCZ925",
+      "outcomeType": "BINARY",
+      "probability": 0.20720966156148427,
+      "uniqueBettors": 3,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:57:19.277Z",
+      "title": "Will the VC 50 Years meaningfully affect p(doom) by more than 3?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-the-vc-50-years-meaningfully-a",
+      "score": 56,
+      "id": "Cx3GlZVHvrfMKB7uJNSE",
+      "outcomeType": "BINARY",
+      "probability": 0.19365681409979466,
+      "uniqueBettors": 2,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2101-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2025-12-08T07:22:37.171Z",
+      "title": "Will \"Yudkowsky on \"Don't use p(doom)\"\" make the top fifty posts in LessWrong's 2025 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-yudkowsky-on-dont-use-pdoom-ma",
+      "score": 50,
+      "id": "4mBaixwf4k",
+      "outcomeType": "BINARY",
+      "probability": 0.13330785091386185,
+      "uniqueBettors": 1,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-09-21T21:15:26.590Z",
+      "title": "Will p(doom) be meaningfully (>3%) affected by alignment researchers choosing to walk rather than run from ptA to ptB?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-pdoom-be-meaningfully-3-affect",
+      "score": 41,
+      "id": "QwDY7jqy7AzxtNY5p1XP",
+      "outcomeType": "BINARY",
+      "probability": 0.36260301220459656,
+      "uniqueBettors": 3,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2101-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2023-05-19T16:23:59.033Z",
+      "title": "OpenAI CEO doesn't think existential risk from AI is a serious concern in Jan 2026",
+      "url": "https://manifold.markets/NathanpmYoung/openai-ceo-doesnt-think-existential",
+      "score": 40,
+      "id": "sQEor8YFSPby75vTWRAl",
+      "outcomeType": "BINARY",
+      "probability": 0.2685342051794041,
+      "uniqueBettors": 4,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2026-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2026-09-15T13:16:48.045Z",
+      "title": "Will the internet become extinct before 2100?",
+      "url": "https://manifold.markets/DudleyDOODOO/will-the-internet-become-extinct-be",
+      "score": 30,
+      "id": "ttU5ZddE0E",
+      "outcomeType": "BINARY",
+      "probability": 0.1117011066348456,
+      "uniqueBettors": 2,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2099-12-31T07:30:00.000Z"
+    },
+    {
+      "date": "2024-12-17T05:41:15.178Z",
+      "title": "Will \"Statement on AI Extinction - Signed by AGI La...\" make the top fifty posts in LessWrong's 2023 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-statement-on-ai-extinction-sig-Rgp028AUAs",
+      "score": 27,
+      "id": "HcJPJxkyCs",
+      "outcomeType": "BINARY",
+      "probability": 0.11000000000000001,
+      "uniqueBettors": 2,
+      "isResolved": true,
+      "resolution": "YES",
+      "closeTime": "2025-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2026-06-30T05:25:28.567Z",
+      "title": "Will \"P(doom) is a Dumb Meme\" make the top fifty posts in LessWrong's 2026 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-pdoom-is-a-dumb-meme-make-the",
+      "score": 25,
+      "id": "6h7aAd4aw8",
+      "outcomeType": "BINARY",
+      "probability": 0.16261286683723833,
+      "uniqueBettors": 2,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2028-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-10-10T17:26:17.042Z",
+      "title": "Will attending AI Summit Talks: Navigating Existential Risk make Tetraspace feel better or worse?",
+      "url": "https://manifold.markets/Tetraspace/will-attending-ai-summit-talks-navi",
+      "score": 20,
+      "id": "AdVkozPPoTIWUa97vVi8",
+      "outcomeType": "MULTIPLE_CHOICE",
+      "probability": null,
+      "uniqueBettors": 3,
+      "isResolved": true,
+      "resolution": "f2bb56f7a378",
+      "closeTime": "2023-10-10T20:44:09.812Z"
+    },
+    {
+      "date": "2026-09-16T05:54:10.972Z",
+      "title": "Will Chatgpt-type chatbots become extinct before 2100?",
+      "url": "https://manifold.markets/DudleyDOODOO/will-chatgpttype-chatbots-become-ex",
+      "score": 19,
+      "id": "zchu9uut6E",
+      "outcomeType": "BINARY",
+      "probability": 0.3481486300640339,
+      "uniqueBettors": 4,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2099-12-31T11:00:00.000Z"
+    },
+    {
+      "date": "2023-09-21T20:47:24.826Z",
+      "title": "Will elite US universities discriminating against Canadians [talent at UT/UW] contribute a positive  sign to p(doom)?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-elite-us-universities-discrimi",
+      "score": 10,
+      "id": "SBf9mBxhOjpTElFWYSej",
+      "outcomeType": "BINARY",
+      "probability": 0.40983606557377045,
+      "uniqueBettors": 1,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2100-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2025-09-22T14:02:17.970Z",
+      "title": "Will \"AI Control May Increase Existential Risk\" make the top fifty posts in LessWrong's 2025 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-ai-control-may-increase-existe",
+      "score": 6,
+      "id": "rZcyemEpBH",
+      "outcomeType": "BINARY",
+      "probability": 0.14522414711031104,
+      "uniqueBettors": 1,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2026-09-09T11:17:59.111Z",
+      "title": "Will AI Chatbots become extinct in 9999?",
+      "url": "https://manifold.markets/DudleyDOODOO/will-ai-chatbots-become-extinct-in",
+      "score": 5,
+      "id": "dO82LES6I0",
+      "outcomeType": "BINARY",
+      "probability": 0.19633923466029712,
+      "uniqueBettors": 1,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "9999-12-31T23:59:00.000Z"
+    },
+    {
+      "date": "2023-09-18T19:20:00.953Z",
+      "title": "Will agent foundations [eg Scott Garrabrant] end up affecting p(doom) more than 5%?",
+      "url": "https://manifold.markets/AutopoieticErgodicity/will-agent-foundations-eg-scott-gar",
+      "score": 5,
+      "id": "5R3CW6HDpR0aDWii4fTe",
+      "outcomeType": "BINARY",
+      "probability": 0.5475113122171953,
+      "uniqueBettors": 1,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2223-01-01T04:59:00.000Z"
+    },
+    {
+      "date": "2025-05-17T20:00:06.754Z",
+      "title": "Will \"AI Doomerism in 1879\" make the top fifty posts in LessWrong's 2025 Annual Review?",
+      "url": "https://manifold.markets/LessWrong/will-ai-doomerism-in-1879-make-the",
+      "score": 3,
+      "id": "DFyoYHhbE8",
+      "outcomeType": "BINARY",
+      "probability": 0.14270992031563282,
+      "uniqueBettors": 1,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": "2027-02-01T00:00:00.000Z"
+    },
+    {
+      "date": "2023-11-15T11:54:08.068Z",
+      "title": "Is there an excessive overlap between belief in \"AI extinction risk\" and longtermism?",
+      "url": "https://manifold.markets/sortwie/is-there-an-excessive-overlap-betwe",
+      "score": 0,
+      "id": "yauYNyVLbjoQLC4TMP7B",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 8,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": null
+    },
+    {
+      "date": "2023-11-25T05:41:05.486Z",
+      "title": "Is the probability of AI-induced extinction greater than 1% in the next 200 years?",
+      "url": "https://manifold.markets/SemioticRivalry/is-the-probability-of-aiinduced-ext",
+      "score": 0,
+      "id": "Cfgw3J9OVypwdAUPTBei",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 71,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2024-11-26T11:24:00.000Z"
+    },
+    {
+      "date": "2023-08-12T20:49:04.463Z",
+      "title": "Is risk of extinction from AI >1% in the next century / Should we be spending >1% of our resources to prevent this?",
+      "url": "https://manifold.markets/Joshua/is-risk-of-extinction-from-ai-1-in",
+      "score": 0,
+      "id": "PRGnXV85rEI9QKrGAJx8",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 63,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2024-01-01T07:59:00.000Z"
+    },
+    {
+      "date": "2025-12-16T13:20:10.219Z",
+      "title": "What is your P(doom) right now? (used to resolve end of 2025 question)",
+      "url": "https://manifold.markets/chris/what-is-your-pdoom-right-now-used-t-9UZPR555uq",
+      "score": 0,
+      "id": "csdyPp6dP6",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 24,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2026-01-01T06:59:00.000Z"
+    },
+    {
+      "date": "2024-06-06T01:07:16.128Z",
+      "title": "An investment in which research field is the most effective reduction of p(doom)?",
+      "url": "https://manifold.markets/Krantz/an-investment-in-which-research-fie",
+      "score": 0,
+      "id": "Isz7k5AdN83uQeceXk8M",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 10,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": null
+    },
+    {
+      "date": "2025-04-27T00:41:36.791Z",
+      "title": "What is your P(doom)?",
+      "url": "https://manifold.markets/evan/what-is-your-pdoom-CPI5nCI0g9",
+      "score": 0,
+      "id": "8N2005ShpU",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 59,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2026-01-01T07:59:00.000Z"
+    },
+    {
+      "date": "2026-04-08T20:57:07.904Z",
+      "title": "Is your p(doom in 2026) less than 1%?",
+      "url": "https://manifold.markets/jim/is-your-pdoom-in-2026-less-than-1",
+      "score": 0,
+      "id": "9hy8NugCIs",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 43,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": null
+    },
+    {
+      "date": "2023-12-22T13:52:42.538Z",
+      "title": "Is it delusional to put AI doom at 99% likelihood or above?",
+      "url": "https://manifold.markets/OnurcanYasar/is-it-delusional-to-put-ai-doom-at",
+      "score": 0,
+      "id": "X3qfg7xM7LJ1OOvavDSC",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 86,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": null
+    },
+    {
+      "date": "2023-12-22T16:42:49.771Z",
+      "title": "Is it delusional to put AI doom at 10% likelihood or below?",
+      "url": "https://manifold.markets/OnurcanYasar/is-it-delusional-to-put-ai-doom-at-71cae8d79a2f",
+      "score": 0,
+      "id": "54rAZvdQCLiubvcSGHju",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 114,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": null
+    },
+    {
+      "date": "2024-05-15T21:28:02.817Z",
+      "title": "Are AI doomers right?",
+      "url": "https://manifold.markets/PlasmaBallin/are-ai-doomers-right",
+      "score": 0,
+      "id": "xjrTygjaqfVsx9tEzuwn",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 34,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2025-01-01T05:59:00.000Z"
+    },
+    {
+      "date": "2023-07-14T18:53:47.513Z",
+      "title": "Recommendations for stories around a non-doom post singularity or a future with super-intelligent AI(s)",
+      "url": "https://manifold.markets/_deleted_/recommendations-for-stories-around",
+      "score": 0,
+      "id": "uLXkk0blgbnB0GitrkeT",
+      "outcomeType": "BOUNTIED_QUESTION",
+      "probability": null,
+      "uniqueBettors": 0,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2023-11-04T19:35:50.052Z"
+    },
+    {
+      "date": "2026-01-22T04:53:35.887Z",
+      "title": "Do you believe that a rapid AI intelligence explosion poses a significant existential risk to humanity before 2075?",
+      "url": "https://manifold.markets/IsaacKing/do-you-believe-that-a-rapid-ai-inte-I9QRchRIth",
+      "score": 0,
+      "id": "CA8n9l8sNR",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 36,
+      "isResolved": false,
+      "resolution": null,
+      "closeTime": null
+    },
+    {
+      "date": "2024-01-04T21:06:55.082Z",
+      "title": "Do you believe that a rapid AI intelligence explosion poses a significant existential risk to humanity before 2075?",
+      "url": "https://manifold.markets/IsaacKing/do-you-believe-that-a-rapid-ai-inte",
+      "score": 0,
+      "id": "Onsnpo8WsmNKo9hEiDCm",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 138,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2024-01-12T04:59:00.000Z"
+    },
+    {
+      "date": "2025-01-10T20:08:20.246Z",
+      "title": "Do you believe that a rapid AI intelligence explosion poses a significant existential risk to humanity before 2075?",
+      "url": "https://manifold.markets/IsaacKing/do-you-believe-that-a-rapid-ai-inte-yLgluEZNp0",
+      "score": 0,
+      "id": "zp5dANIORy",
+      "outcomeType": "POLL",
+      "probability": null,
+      "uniqueBettors": 40,
+      "isResolved": true,
+      "resolution": null,
+      "closeTime": "2025-01-18T04:59:00.000Z"
+    }
+  ],
+  "earliest": {
+    "date": "2022-01-28T20:39:22.987Z",
+    "title": "Is AI a greater existential risk to humanity than a pandemic?",
+    "url": "https://manifold.markets/JamesGrugett/is-ai-a-greater-existential-risk-to",
+    "score": 2015,
+    "id": "Zs4l5hpzpsKEwAkfvn3P",
+    "outcomeType": "BINARY",
+    "probability": 0.17523685356743396,
+    "uniqueBettors": 11,
+    "isResolved": true,
+    "resolution": "MKT",
+    "closeTime": "2022-02-05T05:59:59.000Z"
+  },
+  "topMarkets": [
+    {
+      "id": "4t1YMbwoFDp1I96NLRFL",
+      "question": "Will @Mira cause human extinction by 2030?",
+      "url": "https://manifold.markets/Mira/will-mira-cause-human-extinction-by",
+      "createdAt": "2023-07-12T17:10:31.689Z",
+      "outcomeType": "BINARY",
+      "volume": 382496,
+      "uniqueBettors": 95,
+      "probability": 0.010000000000000002,
+      "isResolved": false,
+      "resolution": null,
+      "description": "@Mira is developing powerful AI systems which may be powerful enough to cause human extinction, by misuse or by misalignment. \n\nWill @Mira cause human extinction by 2030? \n\nThe market will resolve as YES if:\n\n@Mira 's actions directly lead to the extinction of humanity by the end of 2030.\n\nThe market will resolve as NO if any of:\n\nHuman extinction is caused by another entity or circumstance before 2030.\n\nThere are any surviving humans by the end of 2030.\n\nHumanity is extinct by 2030, the culprit is unclear, and any remaining intelligences decide not to do a forensic investigation.\n\nFor the pur",
+      "betCount": 557,
+      "monthlyProbability": [
+        {
+          "month": "2023-07",
+          "probability": 0.02
+        },
+        {
+          "month": "2023-08",
+          "probability": 0.01
+        },
+        {
+          "month": "2023-09",
+          "probability": 0.0118
+        },
+        {
+          "month": "2023-10",
+          "probability": 0.0114
+        },
+        {
+          "month": "2023-11",
+          "probability": 0.0114
+        },
+        {
+          "month": "2023-12",
+          "probability": 0.02
+        },
+        {
+          "month": "2024-01",
+          "probability": 0.0276
+        },
+        {
+          "month": "2024-03",
+          "probability": 0.0217
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.0202
+        },
+        {
+          "month": "2024-05",
+          "probability": 0.03
+        },
+        {
+          "month": "2024-06",
+          "probability": 0.0301
+        },
+        {
+          "month": "2024-07",
+          "probability": 0.0155
+        },
+        {
+          "month": "2024-08",
+          "probability": 0.0263
+        },
+        {
+          "month": "2024-09",
+          "probability": 0.05
+        },
+        {
+          "month": "2024-10",
+          "probability": 0.05
+        },
+        {
+          "month": "2024-11",
+          "probability": 0.0375
+        },
+        {
+          "month": "2025-01",
+          "probability": 0.02
+        },
+        {
+          "month": "2025-02",
+          "probability": 0.02
+        },
+        {
+          "month": "2025-03",
+          "probability": 0.02
+        },
+        {
+          "month": "2025-04",
+          "probability": 0.01
+        },
+        {
+          "month": "2025-05",
+          "probability": 0.0344
+        },
+        {
+          "month": "2025-06",
+          "probability": 0.0085
+        },
+        {
+          "month": "2025-12",
+          "probability": 0.0083
+        },
+        {
+          "month": "2026-01",
+          "probability": 0.01
+        },
+        {
+          "month": "2026-05",
+          "probability": 0.01
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.01
+        }
+      ]
+    },
+    {
+      "id": "3cBLGjcbZ2ElJkHCdDpm",
+      "question": "Will AI kill >20% of the human population before 2030?",
+      "url": "https://manifold.markets/JonathanRay/will-ai-kill-20-of-the-human-popula",
+      "createdAt": "2023-02-20T18:37:00.891Z",
+      "outcomeType": "BINARY",
+      "volume": 106199,
+      "uniqueBettors": 139,
+      "probability": 0.030119721705462114,
+      "isResolved": false,
+      "resolution": null,
+      "description": "Compare to \n\n(https://manifold.markets/embed/JonathanRay/resolves-no-in-2030)",
+      "betCount": 1092,
+      "monthlyProbability": [
+        {
+          "month": "2023-02",
+          "probability": 0.08
+        },
+        {
+          "month": "2023-03",
+          "probability": 0.08
+        },
+        {
+          "month": "2023-04",
+          "probability": 0.0765
+        },
+        {
+          "month": "2023-05",
+          "probability": 0.2393
+        },
+        {
+          "month": "2023-06",
+          "probability": 0.25
+        },
+        {
+          "month": "2023-07",
+          "probability": 0.17
+        },
+        {
+          "month": "2023-08",
+          "probability": 0.11
+        },
+        {
+          "month": "2023-09",
+          "probability": 0.0852
+        },
+        {
+          "month": "2023-10",
+          "probability": 0.0846
+        },
+        {
+          "month": "2023-11",
+          "probability": 0.063
+        },
+        {
+          "month": "2023-12",
+          "probability": 0.0614
+        },
+        {
+          "month": "2024-01",
+          "probability": 0.0553
+        },
+        {
+          "month": "2024-02",
+          "probability": 0.0549
+        },
+        {
+          "month": "2024-03",
+          "probability": 0.0365
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.09
+        },
+        {
+          "month": "2024-06",
+          "probability": 0.0951
+        },
+        {
+          "month": "2024-11",
+          "probability": 0.0658
+        },
+        {
+          "month": "2024-12",
+          "probability": 0.0526
+        },
+        {
+          "month": "2025-10",
+          "probability": 0.0507
+        },
+        {
+          "month": "2026-01",
+          "probability": 0.09
+        },
+        {
+          "month": "2026-02",
+          "probability": 0.0265
+        },
+        {
+          "month": "2026-03",
+          "probability": 0.0279
+        },
+        {
+          "month": "2026-08",
+          "probability": 0.0252
+        },
+        {
+          "month": "2026-09",
+          "probability": 0.0252
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.0301
+        }
+      ]
+    },
+    {
+      "id": "IYz4t74NHr6Of4cIKZ6V",
+      "question": "At the beginning of 2035, will Eliezer Yudkowsky still believe that AI doom is coming soon with high probability?",
+      "url": "https://manifold.markets/IsaacKing/at-the-beginning-of-2035-will-eliez",
+      "createdAt": "2023-03-14T20:29:11.273Z",
+      "outcomeType": "BINARY",
+      "volume": 50925,
+      "uniqueBettors": 221,
+      "probability": 0.548014760156125,
+      "isResolved": false,
+      "resolution": null,
+      "description": "If Eliezer believes that there's at least a 75% chance of an AI existential risk coming to pass within the next 50 years, this resolves YES. (Other interpretations of p(doom) don't matter.)\n\nI'll resolve the market based on public statements from them in the previous and subsequent few months. Eliezer doesn't like putting explicit probabilities on this, so I'll attempt to infer their beliefs from their more subjective statements.\n\nResolves N/A in the event that Eliezer is no longer alive/conscious or AI doom has already occurred.",
+      "betCount": 585,
+      "monthlyProbability": [
+        {
+          "month": "2023-03",
+          "probability": 0.7169
+        },
+        {
+          "month": "2023-04",
+          "probability": 0.69
+        },
+        {
+          "month": "2023-05",
+          "probability": 0.6617
+        },
+        {
+          "month": "2023-06",
+          "probability": 0.6
+        },
+        {
+          "month": "2023-07",
+          "probability": 0.5895
+        },
+        {
+          "month": "2023-08",
+          "probability": 0.6188
+        },
+        {
+          "month": "2023-09",
+          "probability": 0.6242
+        },
+        {
+          "month": "2023-11",
+          "probability": 0.6445
+        },
+        {
+          "month": "2023-12",
+          "probability": 0.6624
+        },
+        {
+          "month": "2024-01",
+          "probability": 0.6586
+        },
+        {
+          "month": "2024-02",
+          "probability": 0.6391
+        },
+        {
+          "month": "2024-03",
+          "probability": 0.6258
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.634
+        },
+        {
+          "month": "2024-05",
+          "probability": 0.6196
+        },
+        {
+          "month": "2024-06",
+          "probability": 0.6
+        },
+        {
+          "month": "2024-07",
+          "probability": 0.51
+        },
+        {
+          "month": "2024-09",
+          "probability": 0.6378
+        },
+        {
+          "month": "2024-10",
+          "probability": 0.6077
+        },
+        {
+          "month": "2024-11",
+          "probability": 0.6222
+        },
+        {
+          "month": "2024-12",
+          "probability": 0.6181
+        },
+        {
+          "month": "2025-01",
+          "probability": 0.55
+        },
+        {
+          "month": "2025-02",
+          "probability": 0.53
+        },
+        {
+          "month": "2025-03",
+          "probability": 0.5929
+        },
+        {
+          "month": "2025-04",
+          "probability": 0.5513
+        },
+        {
+          "month": "2025-05",
+          "probability": 0.582
+        },
+        {
+          "month": "2025-06",
+          "probability": 0.5375
+        },
+        {
+          "month": "2025-07",
+          "probability": 0.56
+        },
+        {
+          "month": "2025-08",
+          "probability": 0.5095
+        },
+        {
+          "month": "2025-09",
+          "probability": 0.5571
+        },
+        {
+          "month": "2025-10",
+          "probability": 0.55
+        },
+        {
+          "month": "2025-11",
+          "probability": 0.5078
+        },
+        {
+          "month": "2025-12",
+          "probability": 0.53
+        },
+        {
+          "month": "2026-01",
+          "probability": 0.5974
+        },
+        {
+          "month": "2026-02",
+          "probability": 0.5562
+        },
+        {
+          "month": "2026-03",
+          "probability": 0.55
+        },
+        {
+          "month": "2026-04",
+          "probability": 0.55
+        },
+        {
+          "month": "2026-06",
+          "probability": 0.5666
+        },
+        {
+          "month": "2026-08",
+          "probability": 0.548
+        }
+      ]
+    },
+    {
+      "id": "elvcpbJu9xZmGfJUNyL1",
+      "question": "Will Yudkowsky agree that his \"death with dignity\" post overstated the risk of extinction from AI, by end of 2029?",
+      "url": "https://manifold.markets/MartinRandall/will-yudkowsky-agree-that-his-death",
+      "createdAt": "2022-12-02T15:54:23.184Z",
+      "outcomeType": "BINARY",
+      "volume": 48838,
+      "uniqueBettors": 102,
+      "probability": 0.1500365767279787,
+      "isResolved": false,
+      "resolution": null,
+      "description": "Resolves YES if he agrees with this publicly. Otherwise, at market close, I'll ask him somehow, and resolve based on the answer. Resolves N/A if he doesn't answer me.\n\nhttps://www.lesswrong.com/posts/j9Q8bRmwCgXRYAgcJ/miri-announces-new-death-with-dignity-strategy\n\nI will not trade on this market after 2022.\n\n",
+      "betCount": 291,
+      "monthlyProbability": [
+        {
+          "month": "2022-12",
+          "probability": 0.24
+        },
+        {
+          "month": "2023-01",
+          "probability": 0.1043
+        },
+        {
+          "month": "2023-02",
+          "probability": 0.1527
+        },
+        {
+          "month": "2023-03",
+          "probability": 0.15
+        },
+        {
+          "month": "2023-04",
+          "probability": 0.2
+        },
+        {
+          "month": "2023-05",
+          "probability": 0.179
+        },
+        {
+          "month": "2023-06",
+          "probability": 0.2
+        },
+        {
+          "month": "2023-07",
+          "probability": 0.1714
+        },
+        {
+          "month": "2023-08",
+          "probability": 0.2134
+        },
+        {
+          "month": "2023-09",
+          "probability": 0.1911
+        },
+        {
+          "month": "2023-10",
+          "probability": 0.1957
+        },
+        {
+          "month": "2023-11",
+          "probability": 0.1843
+        },
+        {
+          "month": "2023-12",
+          "probability": 0.1883
+        },
+        {
+          "month": "2024-01",
+          "probability": 0.289
+        },
+        {
+          "month": "2024-02",
+          "probability": 0.289
+        },
+        {
+          "month": "2024-03",
+          "probability": 0.2698
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.1543
+        },
+        {
+          "month": "2024-05",
+          "probability": 0.15
+        },
+        {
+          "month": "2024-06",
+          "probability": 0.2175
+        },
+        {
+          "month": "2024-07",
+          "probability": 0.15
+        },
+        {
+          "month": "2024-08",
+          "probability": 0.15
+        },
+        {
+          "month": "2025-02",
+          "probability": 0.1971
+        },
+        {
+          "month": "2025-03",
+          "probability": 0.1841
+        },
+        {
+          "month": "2025-05",
+          "probability": 0.1782
+        },
+        {
+          "month": "2025-08",
+          "probability": 0.1808
+        },
+        {
+          "month": "2026-08",
+          "probability": 0.1744
+        },
+        {
+          "month": "2026-10",
+          "probability": 0.15
+        }
+      ]
+    },
+    {
+      "id": "5VAuz1ZfAzPhvH3Pw2ip",
+      "question": "Will misaligned AI kill >50% of humanity before 2040?",
+      "url": "https://manifold.markets/ahalekelly/will-misaligned-ai-kill-50-of-the-h",
+      "createdAt": "2023-03-24T05:16:29.349Z",
+      "outcomeType": "BINARY",
+      "volume": 24010,
+      "uniqueBettors": 71,
+      "probability": 0.0750370013067872,
+      "isResolved": false,
+      "resolution": null,
+      "description": "Resolves Yes if >50% of humanity's population is killed in a 12 month time period and I think it >30% likely that the root cause was misaligned AI. If I am dead then Manifold can resolve based on Lesswrong community sentiment or a poll with a 30% threshold.\n\nSee also:\n\n(https://manifold.markets/embed/ahalekelly/will-misaligned-ai-kill-50-of-the-h-53baa02e69ba)",
+      "betCount": 379,
+      "monthlyProbability": [
+        {
+          "month": "2023-03",
+          "probability": 0.125
+        },
+        {
+          "month": "2023-04",
+          "probability": 0.1307
+        },
+        {
+          "month": "2023-05",
+          "probability": 0.3321
+        },
+        {
+          "month": "2023-06",
+          "probability": 0.3592
+        },
+        {
+          "month": "2023-07",
+          "probability": 0.342
+        },
+        {
+          "month": "2023-08",
+          "probability": 0.2647
+        },
+        {
+          "month": "2023-09",
+          "probability": 0.1381
+        },
+        {
+          "month": "2023-10",
+          "probability": 0.1716
+        },
+        {
+          "month": "2023-11",
+          "probability": 0.1389
+        },
+        {
+          "month": "2023-12",
+          "probability": 0.1228
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.1421
+        },
+        {
+          "month": "2024-05",
+          "probability": 0.14
+        },
+        {
+          "month": "2024-09",
+          "probability": 0.14
+        },
+        {
+          "month": "2024-10",
+          "probability": 0.14
+        },
+        {
+          "month": "2024-11",
+          "probability": 0.14
+        },
+        {
+          "month": "2025-06",
+          "probability": 0.14
+        },
+        {
+          "month": "2025-08",
+          "probability": 0.1445
+        },
+        {
+          "month": "2025-10",
+          "probability": 0.0716
+        },
+        {
+          "month": "2026-03",
+          "probability": 0.0817
+        },
+        {
+          "month": "2026-08",
+          "probability": 0.075
+        }
+      ]
+    },
+    {
+      "id": "T0clts2fAcRIacSJ9qGG",
+      "question": "Will Destiny debate someone about AI existential risk by the end of 2023?",
+      "url": "https://manifold.markets/IsaacKing/will-destiny-debate-someone-about-a",
+      "createdAt": "2023-04-09T22:17:11.556Z",
+      "outcomeType": "BINARY",
+      "volume": 19026,
+      "uniqueBettors": 108,
+      "probability": 0.6994731450879008,
+      "isResolved": true,
+      "resolution": "YES",
+      "description": "The debate must primarily focus on existential risk, not just briefly touch on it and move on.",
+      "betCount": 264,
+      "monthlyProbability": [
+        {
+          "month": "2023-04",
+          "probability": 0.7842
+        },
+        {
+          "month": "2023-05",
+          "probability": 0.8414
+        },
+        {
+          "month": "2023-06",
+          "probability": 0.6995
+        }
+      ]
+    },
+    {
+      "id": "0pHv0N3QejuVUt5mgFBU",
+      "question": "Will Eliezer Yudkowsky publicly claim to have a P(doom) of less than 50% at any point before 2040?",
+      "url": "https://manifold.markets/Bayesian/will-eliezer-yudkowsky-publicly-cla-7f519b61e8cf",
+      "createdAt": "2024-02-13T16:54:28.212Z",
+      "outcomeType": "BINARY",
+      "volume": 18873,
+      "uniqueBettors": 67,
+      "probability": 0.24241153283805347,
+      "isResolved": false,
+      "resolution": null,
+      "description": "Phrasing here matters, I will count \"P(doom)\" in text, and also things like \"probability of doom\", \"P doom\", \"chance we all die\" and other similar-enough things in spoken recorded interviews / podcast appearances /etc. as well as in text. I will exercise personal judgement for borderline cases.\n\nP(doom|something else) is not P(doom).\n\nHe must explicitly specify a number that is less than 50 or that his number is less than 50 for this market to resolve YES.\n\nSame as this market, but 50% and 2040\n\n(https://manifold.markets/embed/Tripping/will-eliezer-yudkowsky-publicly-cla)",
+      "betCount": 138,
+      "monthlyProbability": [
+        {
+          "month": "2024-02",
+          "probability": 0.37
+        },
+        {
+          "month": "2024-03",
+          "probability": 0.3122
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.3163
+        },
+        {
+          "month": "2024-05",
+          "probability": 0.3254
+        },
+        {
+          "month": "2024-06",
+          "probability": 0.3464
+        },
+        {
+          "month": "2024-07",
+          "probability": 0.3257
+        },
+        {
+          "month": "2024-08",
+          "probability": 0.25
+        },
+        {
+          "month": "2024-09",
+          "probability": 0.2298
+        },
+        {
+          "month": "2024-10",
+          "probability": 0.2692
+        },
+        {
+          "month": "2024-11",
+          "probability": 0.3096
+        },
+        {
+          "month": "2025-02",
+          "probability": 0.2647
+        },
+        {
+          "month": "2025-03",
+          "probability": 0.2531
+        },
+        {
+          "month": "2025-05",
+          "probability": 0.2322
+        },
+        {
+          "month": "2025-06",
+          "probability": 0.226
+        },
+        {
+          "month": "2025-08",
+          "probability": 0.2085
+        },
+        {
+          "month": "2025-09",
+          "probability": 0.2532
+        },
+        {
+          "month": "2026-09",
+          "probability": 0.2424
+        }
+      ]
+    },
+    {
+      "id": "E4SQ7EH9EWG7MKttiIEn",
+      "question": "Will existential risk from AI be a topic during the 2024 US presidential debates?",
+      "url": "https://manifold.markets/saulmunn/will-existential-risk-from-ai-be-a",
+      "createdAt": "2023-06-07T10:46:08.962Z",
+      "outcomeType": "BINARY",
+      "volume": 18793,
+      "uniqueBettors": 92,
+      "probability": 0.014951930907015137,
+      "isResolved": true,
+      "resolution": "NO",
+      "description": "resolves YES if during at least one of the main (non-VP) 2024 general presidential election debates in the United States, the moderator or any of the candidates uses some combination of the following words in sequence:\n\nextinction, existential, \"death of our species,\" etc\n\nartificial intellegence, AI, machine learning, ML, machine intelligence, etc\n\nresolves YES even if they're skeptical or dismissive of the existential risk from AI.\n\nresolves NO if the above criteria aren't met.\n\ni'll resolve it to the spirit of the resolution.\n\nexamples:\n\nif they talk about a world where \"everybody dies from",
+      "betCount": 158,
+      "monthlyProbability": [
+        {
+          "month": "2023-06",
+          "probability": 0.2599
+        },
+        {
+          "month": "2023-07",
+          "probability": 0.212
+        },
+        {
+          "month": "2023-08",
+          "probability": 0.2029
+        },
+        {
+          "month": "2023-09",
+          "probability": 0.2374
+        },
+        {
+          "month": "2023-10",
+          "probability": 0.2393
+        },
+        {
+          "month": "2023-11",
+          "probability": 0.2446
+        },
+        {
+          "month": "2024-03",
+          "probability": 0.2429
+        },
+        {
+          "month": "2024-04",
+          "probability": 0.1835
+        },
+        {
+          "month": "2024-05",
+          "probability": 0.1411
+        },
+        {
+          "month": "2024-06",
+          "probability": 0.1255
+        },
+        {
+          "month": "2024-07",
+          "probability": 0.1209
+        },
+        {
+          "month": "2024-08",
+          "probability": 0.1442
+        },
+        {
+          "month": "2024-09",
+          "probability": 0.0788
+        },
+        {
+          "month": "2024-10",
+          "probability": 0.0144
+        },
+        {
+          "month": "2024-11",
+          "probability": 0.015
+        }
+      ]
+    }
+  ],
+  "monthly": [],
+  "metaculus": {
+    "status": 403,
+    "needsAuth": true,
+    "note": "Permission Error: The API is only available to authenticated users. Please create an account and use your API token to access the API.",
+    "caveat": "Metaculus API (api2 and api/posts) returns 403 for unauthenticated requests as of this fetch; it needs a free account token. Skipped."
+  }
+}
