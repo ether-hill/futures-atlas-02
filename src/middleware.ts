@@ -106,7 +106,10 @@ export const config = {
  * visitor gets. The bundle's own JS and CSS never reach this file (the matcher
  * above skips anything with an extension), so naming the page is enough.
  */
-const PREVIEW_PUBLIC = ["/interference/solo"];
+// /doom-score/play-v02 is the one Doom Score page on staging, sent round for comment
+// (2026-11-03); the project is a draft, so it is opened past the draft gate as well
+// and is still absent on production.
+const PREVIEW_PUBLIC = ["/interference/solo", "/doom-score/play-v02"];
 
 /**
  * A draft project's ENDPOINTS, which its page path does not cover.
@@ -206,6 +209,8 @@ export async function middleware(req: NextRequest) {
   ) {
     return sessionGate(req);
   }
+  // A listed page is open on staging even when it belongs to a draft project.
+  if (process.env.VERCEL_ENV === "preview" && PREVIEW_PUBLIC.includes(bare)) return NextResponse.next();
 
   // /api/tokens is the style-guide panel writing an override. It is a fetch from
   // a page that already required the editor cookie, so the same gate covers it.
