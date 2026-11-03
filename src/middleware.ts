@@ -38,6 +38,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { ADMIN_COOKIE, readSession } from "./lib/admin-session";
 import { isDraftPath } from "./data/projects";
 import { isDraftPostPath } from "./data/posts";
+import { PREVIEW_FETCHER, SHARE_CARDS, shareCardHtml } from "./data/share-cards";
 
 // Runs on page-ish requests only: static assets, image optimisation and files
 // with an extension are skipped, so a draft bundle's own JS/CSS costs nothing
@@ -236,6 +237,17 @@ async function sessionGate(req: NextRequest) {
 
   const editor = await readSession(req.cookies.get(ADMIN_COOKIE)?.value, secret);
   if (editor) return NextResponse.next();
+
+  // A link preview (WhatsApp, Slack, X…) of a page listed in share-cards.ts gets
+  // that card's head tags and nothing else, so a link sent to people who will
+  // sign in still unfurls with its picture. Everyone else gets the form.
+  const bareCard = req.nextUrl.pathname.replace(/\/+$/, "");
+  const card = SHARE_CARDS[bareCard];
+  if (card && req.method === "GET" && PREVIEW_FETCHER.test(req.headers.get("user-agent") ?? "")) {
+    return new NextResponse(shareCardHtml(card, req.nextUrl.origin, bareCard), {
+      headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" },
+    });
+  }
 
   // A fetch wants an answer it can read, not the sign-in page's markup with a
   // 200 on it. Only the browser gets redirected to the form.
