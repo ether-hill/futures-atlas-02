@@ -596,7 +596,7 @@ body.od-menu-open .od-extinctions{display:none!important}
           </sc-if>
           <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none">
             <div class="od-globe {{ deadCls }}" style="position:relative;width:min(372px,74vw);height:min(372px,74vw);border-radius:50%;overflow:hidden;transform:scale({{ globeScale }});transform-origin:center center;box-shadow:{{ earthShadow }};filter:{{ earthFilter }};transition:transform .9s cubic-bezier(.2,.7,.2,1),box-shadow .8s ease">
-              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=23" spin="{{ wheelSpinToken }}" sats="{{ starN }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
+              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=24" spin="{{ wheelSpinToken }}" sats="{{ starN }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
             </div>
           </div>
         </div>
@@ -821,7 +821,7 @@ class Component extends DCLogic {
     musk: {
       short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
       photo: '/odds-of-surviving-ai/research/elon-first.jpg',   // the video's first frame → seamless into the doom clip
-      credit: 'Image: AI-generated',
+      credit: 'Photo: Gage Skidmore, CC BY-SA 4.0',
       teaser: 'Only a 20% chance of annihilation.', teaserNum: '20%',
       oddsBig: '20%', oddsCaption: 'CHANCE EARTH BURNS', oddsCap: 'EARTH BURNS',
       doom: 0.20,
@@ -882,7 +882,7 @@ class Component extends DCLogic {
   muskEvents = [
     { tone: 'good', head: 'Nobody has to work.', means: 'Musk: \u201cprobably none of us will have a job\u201d, and everyone gets a \u201cuniversal high income\u201d. Who pays, and how much: details pending.', tag: 'Universal high income', src: 'Elon Musk at VivaTech \u00B7 May 2024', portrait: 'Elon on a sun lounger, an Optimus robot bringing drinks' },
     { tone: 'good', head: 'Your job becomes a hobby.', means: 'He told Rishi Sunak: \u201cYou can have a job if you want to have a job, for personal satisfaction.\u201d Rent stays compulsory.', tag: 'Jobs, optional', src: 'Elon Musk with Rishi Sunak, AI Safety Summit \u00B7 Nov 2023', portrait: 'Elon handing out knitting needles' },
-    { tone: 'good', head: 'AI outsmarts everyone. Next year.', means: 'In April 2024 he said AI would be smarter than the smartest human by the end of the next year. He likes next year.', tag: 'Superhuman, next year', src: 'Elon Musk to Nicolai Tangen, X livestream \u00B7 Apr 2024', portrait: 'Elon tearing a page off a calendar' },
+    { tone: 'good', head: 'AI outsmarts everyone. Next year.', means: 'In April 2024 he said AI would beat the smartest human by the end of 2025. In January 2026 he said by the end of 2026, \u201cno later than next year\u201d.', tag: 'Superhuman, next year', src: 'Elon Musk to Nicolai Tangen, X livestream \u00B7 Apr 2024; at Davos \u00B7 Jan 2026', portrait: 'Elon tearing a page off a calendar' },
     { tone: 'good', head: 'Your car earns money while you sleep.', means: 'A million Tesla robotaxis by 2020, each making about $30,000 a year. In 2025 Tesla started a robotaxi service with its own cars. Yours still earns nothing.', tag: 'Robotaxi income', src: 'Elon Musk, Tesla Autonomy Day \u00B7 Apr 2019', portrait: 'Elon asleep in a parked Tesla' },
     { tone: 'good', head: 'A robot for everyone. And a spare.', means: 'He predicts 10 billion humanoid robots by 2040, more than there are people, at $20,000 to $25,000 each.', tag: 'More robots than people', src: 'Elon Musk at FII, Riyadh \u00B7 Oct 2024', portrait: 'Elon in a crowd of identical robots' },
     { tone: 'good', head: 'An AI that only tells the truth.', means: 'He promised \u201ca maximum truth-seeking AI that tries to understand the nature of the universe\u201d. In July 2025 it called itself MechaHitler.', tag: 'Maximum truth', src: 'Elon Musk on Tucker Carlson \u00B7 Apr 2023; xAI \u00B7 Jul 2025', portrait: 'Elon pulling the plug on a server' },
@@ -1795,7 +1795,7 @@ class Component extends DCLogic {
         ? '\u201CIf we\u2019re unwilling to act until all our disagreements are resolved, it will be too late.\u201D'
         : 'No bigger models, until further notice. That is Irving\u2019s answer: \u201CWe can, and should, stop frontier AI development immediately.\u201D';
       if (!isDoomOut) coinKicker = 'NOT DOOM \u00B7 ' + sideW.toUpperCase() + ' \u00B7 YOU CALLED IT';
-      verdictSrc = 'Geoffrey Irving in TIME \u00B7 3 Oct 2026';
+      // no source line on the result screen; Irving in TIME, 3 Oct 2026
       if (isDoomOut && single) verdictSub2 = 'There is no second flip.';
     } else if (lastEv) {
       verdictHead = lastEv.head;

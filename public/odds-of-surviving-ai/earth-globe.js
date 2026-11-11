@@ -225,7 +225,7 @@
           const pv = new THREE.Group();
           pv.rotation.set(rand(-1.25, 1.25), rand(0, Math.PI * 2), rand(-1.25, 1.25));
           scene.add(pv);
-          const a0 = rand(0, Math.PI * 2), spd = rand(0.32, 0.5) * (t % 2 ? -1 : 1), r = rand(1.03, 1.045);
+          const a0 = rand(0, Math.PI * 2), spd = rand(0.32, 0.5) * (t % 2 ? -1 : 1), r = 1.06 + t * 0.022;   // each year's shell sits a little further out, so the rings stack up visibly
           // the orbit itself, drawn faintly: each year adds a ring, and the planet slowly gets caged
           const rp = []; for (let k = 0; k <= 128; k++) { const q = k / 128 * Math.PI * 2; rp.push(new THREE.Vector3(Math.cos(q) * r, 0, Math.sin(q) * r)); }
           const rm = new THREE.LineBasicMaterial({ color: 0xcfe0ff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
@@ -233,7 +233,7 @@
           this._starRings.push({ line: rl, mat: rm, op: 0 });
           for (let i = 0; i < PER; i++) {
             const m = new THREE.SpriteMaterial({ map: dotTex, color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
-            const sp = new THREE.Sprite(m); sp.scale.setScalar(0.085); sp.visible = false; pv.add(sp);
+            const sp = new THREE.Sprite(m); sp.scale.setScalar(0.1); sp.visible = false; pv.add(sp);
             this._stars.push({ mesh: sp, mats: [m], a: r, ang: a0 + i * (Math.PI * 2 / PER), spd, op: 0, ph: rand(0, 6.28) });
           }
         }
@@ -527,7 +527,7 @@
             s.mats[0].opacity = s.op * glint;
           }
           for (let t = 0; t < this._starRings.length; t++) {
-            const R = this._starRings[t], tgt = t * 22 < n ? 0.16 : 0;
+            const R = this._starRings[t], tgt = t * 22 < n ? 0.32 : 0;
             R.op = anim ? R.op + (tgt - R.op) * Math.min(1, dt * 1.5) : tgt;
             R.line.visible = R.op > 0.005; R.mat.opacity = R.op;
           }
