@@ -1800,7 +1800,7 @@ class Component extends DCLogic {
     } else if (lastEv) {
       verdictHead = lastEv.head;
       verdictSub = lastEv.means;
-      verdictSrc = lastEv.src;
+      // the source stays in the data (ev.src); the result screen has no room for it
     } else if (p.mechanic === 'wheel') {
       verdictHead = isDoomOut ? 'Annihilation.' : 'Earth holds.';
       verdictSub = isDoomOut ? (single ? 'You kept playing until the world burned.' : 'Landed in the red. The 20% came up.') : 'Landed in the blue, the 80%. Good, most likely. This time.';
