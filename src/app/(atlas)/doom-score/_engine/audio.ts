@@ -172,6 +172,17 @@ export class DoomAudio {
     this.drone.gain.gain.setTargetAtTime(0.04 + k * 0.17, t, 0.4);
   }
 
+  /** Silence everything at once and let the context go: the page is leaving, or hidden. */
+  dispose() {
+    const ctx = this.ctx;
+    if (!ctx) return;
+    this.drone = null;
+    this.session = null;
+    this.ctx = this.master = this.dry = this.send = this.comp = null;
+    this.recDest = null;
+    void ctx.close().catch(() => {});
+  }
+
   stopDrone() {
     if (!this.drone || !this.ctx) return;
     const { oscs, gain } = this.drone;

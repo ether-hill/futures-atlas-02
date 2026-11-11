@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Mention } from "@/data/doom-score/types";
 import { DoomAudio, type MomentSound } from "./audio";
 import { NOW, START, parseDate, tFromU, u as uOf, yearTicks } from "./axis";
@@ -42,14 +42,32 @@ type Grain = { t: number; f: number; k: number; m: number; real: boolean };
 type View = "pile" | "lanes";
 type Camera = "whole" | "follow";
 
-/** What the hero's opening says at each step, said while that layer comes in. */
-const INTRO: Record<number, string> = {
-  2: "Each square is one thing said. Each dot is someone's guess at the chance AI ends humanity.",
-  3: "Flags mark key moments. Higher guesses play higher notes.",
+/**
+ * The hero's opening: one idea a step, and the layer it is about lit while the rest dims.
+ * The reader moves on with Next; nothing advances on a timer, so nobody is left behind.
+ */
+/** A word in the colour of its lane, so the sentence doubles as the key. */
+const Ink = ({ v, children }: { v: string; children: ReactNode }) => <span style={{ color: `var(${v})` }}>{children}</span>;
+const INTRO: Record<number, ReactNode> = {
+  2: (
+    <>
+      Every square is one thing said about AI wiping out humanity: a <Ink v="--ds-cat-5">forum post</Ink>, a <Ink v="--ds-cat-4">paper</Ink>, a <Ink v="--ds-cat-3">news story</Ink>, a <Ink v="--ds-cat-1">bet</Ink>.
+    </>
+  ),
+  3: "Every dot is one person's guess at the odds, from 0% to 100%. You will hear them: the higher the guess, the higher the note.",
+  4: (
+    <>
+      The <Ink v="--ds-cat-2">orange flags</Ink> are the moments that changed the conversation, like the release of ChatGPT and the letter calling for a pause on AI.
+    </>
+  ),
+  5: "Now watch it build from 2009. It takes two minutes.",
 };
-
-/** How long each step of the opening holds before the next: time to read the line and see the layer come in. */
-const STEP_MS: Record<number, number> = { 1: 900, 2: 6500, 3: 7000 };
+/** Which layer each step of the opening is about. */
+const FOCUS: Record<number, "grains" | "dots" | "flags"> = { 2: "grains", 3: "dots", 4: "flags" };
+const INTRO_FIRST = 2;
+const INTRO_LAST = 5;
+/** The step at which the score plays. */
+const PLAYING = 6;
 
 const SPEEDS: { label: string; seconds: number }[] = [
   { label: "1 min", seconds: 60 },
@@ -215,8 +233,8 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
   /** Hero only, eased towards their targets each frame: d, the labels (0 none, 1 all); lane, one pile (0) to a lane per source (1); zoom, following (0) to the whole span (1); f, how far the unplayed part has dimmed. */
-  const blend = useRef({ m: isHero ? 0 : 1, lane: 0, ax: isHero ? 0 : 1, mo: isHero ? 0 : 1, ph: isHero ? 0 : 1, zoom: 1, f: 0, at: 0 });
-  /** Hero only: the opening, one thing at a time. 0 rest, 1 full screen, 2 the lanes and the numbers, 3 the turning points and the camera, 4 playing. */
+  const blend = useRef({ m: isHero ? 0 : 1, lane: 0, ax: isHero ? 0 : 1, mo: isHero ? 0 : 1, ph: isHero ? 0 : 1, zoom: 1, f: 0, dg: 1, dd: 1, dk: 1, at: 0 });
+  /** Hero only: the opening, one thing at a time. 0 rest, 1 full screen, 2 the squares, 3 the dots, 4 the flags, 5 the camera goes in to 2009, 6 playing. */
   const [step, setStep] = useState(0);
   const stepRef = useRef(step);
   stepRef.current = step;
@@ -386,7 +404,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       const b = blend.current;
       if (heroRef.current) {
         const dt = b.at ? Math.min(0.1, (now - b.at) / 1000) : 0;
-        const ease = (key: "m" | "lane" | "ax" | "mo" | "ph" | "zoom" | "f", target: number, tau: number) => {
+        const ease = (key: "m" | "lane" | "ax" | "mo" | "ph" | "zoom" | "f" | "dg" | "dd" | "dk", target: number, tau: number) => {
           b[key] += (target - b[key]) * (1 - Math.exp(-dt / tau));
           if (Math.abs(target - b[key]) < 0.002) b[key] = target;
         };
@@ -395,12 +413,17 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         ease("m", st >= 2 ? 1 : 0, back ? 0.3 : 0.5);
         ease("lane", viewRef.current === "lanes" ? 1 : 0, back ? 0.3 : 0.5);
         ease("ax", st >= 2 ? 1 : 0, back ? 0.2 : 0.7);
-        ease("mo", st >= 3 ? 1 : 0, back ? 0.2 : 0.4);
-        ease("ph", st >= 3 ? 1 : 0, back ? 0.2 : 0.3);
+        ease("mo", st >= 4 ? 1 : 0, back ? 0.2 : 0.4);
+        ease("ph", st >= 5 ? 1 : 0, back ? 0.2 : 0.3);
+        // the layer a step of the opening is about stays lit; the others sink back
+        const fo = FOCUS[st];
+        ease("dg", !fo || fo === "grains" ? 1 : 0.15, 0.35);
+        ease("dd", !fo || fo === "dots" ? 1 : 0.15, 0.35);
+        ease("dk", !fo || fo === "flags" ? 1 : 0.15, 0.35);
         ease("zoom", cameraRef.current === "follow" && endedAt.current == null ? 0 : 1, endedAt.current != null ? 0.7 : stepRef.current > 0 ? 0.6 : 0.3);
         ease("f", started.current ? 1 : 0, 0.5);
       } else {
-        b.m = b.ax = b.mo = b.ph = 1;
+        b.m = b.ax = b.mo = b.ph = b.dg = b.dd = b.dk = 1;
         b.lane = viewRef.current === "lanes" ? 1 : 0;
         b.f = started.current ? 1 : 0;
       }
@@ -469,7 +492,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         ga(1);
       }
       for (const p of [0, 25, 50, 75, 100]) {
-        setLayer(AX * (p % 50 === 0 ? 1 : 1 - LK));
+        setLayer(AX * (p % 50 === 0 ? 1 : 1 - LK) * b.dd);
         const y = Y(p);
         ctx.strokeStyle = c["--text"];
         ga(0.35);
@@ -482,14 +505,14 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         ctx.textAlign = "right";
         ctx.fillText(`${p}%`, L - 8, y);
       }
-      setLayer(LK);
+      setLayer(LK * b.dd);
       if (LK > 0) {
         ctx.textAlign = "left";
         ctx.font = `700 12px var(--font-heading), system-ui, sans-serif`;
         ctx.fillStyle = c["--text"];
         ga(AX);
         if (!narrow) ctx.fillText("Numbers given", 8, PT + 10);
-        ga(1);
+        setLayer(LK * b.dg);
         KINDS.forEach((k, i) => {
           const y0 = laneTop(i);
           ctx.strokeStyle = c["--text"];
@@ -571,7 +594,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       // ----- grains: each month is a set of columns, one per day where there is room, and the
       // grains stack up inside their column in order of kind, so a busy day is a taller spike and
       // the month's tallest columns reach the height the scale gives it
-      setLayer(1);
+      setLayer(b.dg);
       const gs = following ? 3 : 2.2;
       // a lane per source: every grain in a lane is the same size and the same step, the largest that
       // lets the lane's busiest month fit, so a column twice as tall is twice as many things said
@@ -708,7 +731,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       }
 
       // ----- key moments: labels in rows along the top, a hairline down once passed
-      setLayer(b.mo);
+      setLayer(b.mo * b.dk);
       ctx.font = `600 10.5px var(--font-heading), system-ui, sans-serif`;
       ctx.textBaseline = "middle";
       ctx.textAlign = "left";
@@ -806,7 +829,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         const x = xOf(r.t);
         const yy = r.pitch == null ? floor : Ydot(r.pitch);
         const hidden = under.some(([l, t, rr, bb]) => x > l && x < rr && ((yy > t && yy < bb) || (r.pLow != null && r.pHigh != null && Math.min(Y(r.pLow), Y(r.pHigh)) < bb && Math.max(Y(r.pLow), Y(r.pHigh)) > t)));
-        setLayer((AX >= 1 ? 1 : mix(0.4 + 0.2 * Math.sin(now / 1400 + r.u * 37), 1, AX)) * (hidden ? M : 1) * arrive((x - L) / Math.max(1, plotW)) * edge(x));
+        setLayer((AX >= 1 ? 1 : mix(0.4 + 0.2 * Math.sin(now / 1400 + r.u * 37), 1, AX)) * (hidden ? M : 1) * arrive((x - L) / Math.max(1, plotW)) * edge(x) * b.dd);
         const past = isPast(r.t);
         const fl = flashes.current.get(r.id);
         const age = fl == null ? Infinity : (now - fl) / 1000;
@@ -883,7 +906,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       }
 
       // ----- the name labels, on top of every dot
-      setLayer(AX);
+      setLayer(AX * b.dd);
       for (const r of rows) {
         if (r.pitch == null || !visible(r.t)) continue;
         const fl = flashes.current.get(r.id);
@@ -1134,29 +1157,58 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
     recount(0);
     setPhase("open");
     setStep(1);
-    timers.current = [window.setTimeout(() => goTo(2), STEP_MS[1])];
+    timers.current = [window.setTimeout(() => goTo(INTRO_FIRST), 900)];
   };
-  /** One step of the opening; each waits long enough to read its line, or Next moves on at once. */
+  /** One step of the opening. Only Next moves it on; the reader sets the pace. */
   const goTo = (n: number) => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
+    audio.current?.cancelPending(); // a step's sound stops when the reader moves on
     if (n >= 2) setView("lanes");
-    // the whole record stays at full strength through the tour; the unplayed part dims as the camera goes in
-    const inCamera = () => ((started.current = true), setCamera("follow"));
-    if (n >= 4) inCamera();
+    // the whole record stays at full strength through the tour; the unplayed part dims as the camera goes in to 2009
+    // the whole chart stays in view, at full strength, through every step; the camera goes in to 2009 only on Play
+    if (n >= PLAYING) ((started.current = true), setCamera("follow"));
+    else ((started.current = false), setCamera("whole"));
     setStep(n);
-    if (n >= 4) return setPlaying(true);
-    timers.current = [window.setTimeout(() => goTo(n + 1), STEP_MS[n])];
-    // the flags are seen across the whole span first, then the camera goes in to 2009
-    if (n === 3) timers.current.push(window.setTimeout(inCamera, 2600));
+    if (n >= PLAYING) return setPlaying(true);
+    const a = audio.current;
+    // each step plays what it describes. The squares: the clicks they make while playing, from a few to a downpour,
+    // the way the talk grew
+    if (n === 2 && a) {
+      const r = rnd(11);
+      const N = 90, span = 3.2;
+      for (let j = 0; j < N; j++) {
+        const k = (j + 1) / N;
+        a.tick(0.03 + k * k * 0.17, 0.5 + span * Math.sqrt((j + r() * 0.9) / N), 0.3 + k * 0.7);
+      }
+    }
+    // the flags: the sound a key moment makes, a rise and a drop, and on the drop one moment (ChatGPT) arrives in the
+    // panel and its flag lights, just as it will in play
+    setCard(null);
+    if (n === 4 && a) {
+      const eg = mos.find((m) => /chatgpt/i.test(m.title)) ?? mos[0];
+      timers.current = [
+        window.setTimeout(() => a.moment("riser", 1, 1.6), 400),
+        window.setTimeout(() => eg && setCard(eg), 400 + (1.6 + a.latency()) * 1000),
+      ];
+    }
+    // the dots: the lowest guess on record, then the highest
+    if (n === 3) {
+      const sure = rows.filter((r) => r.pitch != null && r.p != null && r.verified); // a single number, not a range or a bound
+      const lo = sure.reduce<Row | null>((a, r) => (!a || r.pitch! < a.pitch! ? r : a), null);
+      const hi = sure.reduce<Row | null>((a, r) => (!a || r.pitch! > a.pitch! ? r : a), null);
+      if (lo && hi) timers.current = [window.setTimeout(() => play(lo), 700), window.setTimeout(() => play(hi), 2000)];
+    }
   };
   const skipIntro = () => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
     setView("lanes");
     setCamera("follow");
+    audio.current?.cancelPending();
+    setCard(null);
     started.current = true;
-    setStep(4);
+    setStep(PLAYING);
     setPlaying(true);
   };
   const closeHero = () => {
@@ -1213,28 +1265,67 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       document.documentElement.style.overflow = "";
       document.documentElement.classList.remove("ds-focus");
       timers.current.forEach(clearTimeout);
+      // leaving the page by a link inside the site keeps the window, so the sound has to be stopped here
+      audio.current?.dispose();
+      audio.current = null;
     },
     [],
   );
+  // another tab, another app or the back button: pause, and cut the sound already scheduled
+  useEffect(() => {
+    const away = () => {
+      if (document.visibilityState === "visible") return;
+      setPlaying(false);
+      audio.current?.cancelPending();
+      audio.current?.stopDrone();
+    };
+    const gone = () => (audio.current?.dispose(), (audio.current = null));
+    document.addEventListener("visibilitychange", away);
+    window.addEventListener("pagehide", gone);
+    return () => {
+      document.removeEventListener("visibilitychange", away);
+      window.removeEventListener("pagehide", gone);
+    };
+  }, []);
 
   const when = new Date(tFromU(cursor)).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" });
 
   const body = (
-    <div ref={frame} className={`ds ${isHero ? "ds--hero" : ""} ${isHero && phase === "open" ? "is-open" : ""} ${isHero && step >= 3 ? "is-moments" : ""} ${isHero && step >= 4 ? "is-playing" : ""}`}>
-      {isHero && step >= 1 && step < 4 ? (
+    <div ref={frame} className={`ds ${isHero ? "ds--hero" : ""} ${isHero && phase === "open" ? "is-open" : ""} ${isHero && step >= 4 ? "is-moments" : ""} ${isHero && step >= PLAYING ? "is-playing" : ""}`}>
+      {isHero && step >= 1 && step < PLAYING ? (
         <div className="ds-intro" aria-live="polite">
-          <p key={step}>{INTRO[step] ?? ""}</p>
-          {step >= 2 ? (
-            <button type="button" className="fa-btn fa-btn--ghost" onClick={() => goTo(step + 1)}>
-              {step === 3 ? "Play" : "Next"}
-            </button>
+          {step >= INTRO_FIRST ? (
+            <>
+              <button type="button" className="fa-btn fa-btn--ghost ds-intro-home" onClick={closeHero} title="Back to the title page, or press Escape">
+                Back
+              </button>
+              <span className="ds-intro-count">
+                {step - INTRO_FIRST + 1} of {INTRO_LAST - INTRO_FIRST + 1}
+              </span>
+              <p key={step}>{INTRO[step]}</p>
+              <div className="ds-intro-nav">
+                <button type="button" className="fa-btn fa-btn--ghost" onClick={() => goTo(step - 1)} disabled={step === INTRO_FIRST}>
+                  Previous
+                </button>
+                <button type="button" className="fa-btn fa-btn--primary ds-intro-next" onClick={() => goTo(step + 1)} autoFocus>
+                  {step === INTRO_LAST ? "Play" : "Next"}
+                </button>
+                {step < INTRO_LAST ? (
+                  <button type="button" className="fa-btn fa-btn--ghost" onClick={skipIntro}>
+                    Skip
+                  </button>
+                ) : null}
+              </div>
+            </>
           ) : null}
-          <button type="button" className="fa-btn fa-btn--ghost" onClick={skipIntro}>
-            Skip
-          </button>
         </div>
       ) : null}
       <div className="ds-bar">
+        {isHero ? (
+          <button className="fa-btn fa-btn--ghost ds-exit" onClick={closeHero} title="Back to the title page, or press Escape">
+            Back
+          </button>
+        ) : null}
         <button className="fa-btn fa-btn--primary ds-play" onClick={() => (ended ? restart() : setPlaying((p) => !p))} aria-label={playing ? "Pause" : "Play"}>
           {ended ? "Play again" : playing ? "Pause" : cursor > 0 ? "Resume" : "Play"}
         </button>
@@ -1270,11 +1361,6 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
             <span>median of them</span>
           </div>
         </div>
-        {isHero ? (
-          <button className="fa-btn fa-btn--ghost ds-exit" onClick={closeHero} title="Or press Escape">
-            Close
-          </button>
-        ) : null}
       </div>
       <div className="ds-options">
         <label className="ds-ctl">
@@ -1301,7 +1387,6 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
             ))}
           </select>
         </label>
-        {isHero ? <span className="ds-hint">Dots are numbers given, at their value; hollow when unverified. Tap one to hear it.</span> : null}
       </div>
 
       <div className="ds-stage">

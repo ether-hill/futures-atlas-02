@@ -814,6 +814,20 @@ html.rs-anim .rs-card.is-in .rs-quote { animation: rs-up 0.5s ease-out 0.25s bot
   transition: top 0.75s cubic-bezier(0.2, 0.7, 0.2, 1), left 0.75s cubic-bezier(0.2, 0.7, 0.2, 1), width 0.75s cubic-bezier(0.2, 0.7, 0.2, 1), height 0.75s cubic-bezier(0.2, 0.7, 0.2, 1), padding 0.75s, gap 0.75s, grid-template-rows 0.75s; }
 .ds--hero > .ds-bar, .ds--hero > .ds-options { overflow: hidden; flex-wrap: nowrap; opacity: 0; pointer-events: none; transition: opacity 0.5s; }
 .ds--hero .ds-stats { margin-left: auto; width: auto; }
+/* full screen on a wide screen: the four figures fill the whole band above the plot, both rows of it */
+@media (min-width: 1101px) {
+  .ds--hero.is-playing > .ds-bar { overflow: visible; }
+  .ds--hero .ds-stats { align-self: flex-start; height: 88px; gap: 28px; align-items: flex-start; }
+  .ds--hero .ds-stats div { gap: 6px; }
+  .ds--hero .ds-stats b { font-size: clamp(32px, 3vw, 48px); line-height: 0.95; white-space: nowrap; }
+  .ds--hero .ds-stats span { font-size: 12px; white-space: nowrap; }
+  .ds--hero > .ds-bar > .fa-btn { flex-shrink: 0; }
+}
+@media (min-width: 1101px) and (max-width: 1400px) {
+  .ds--hero .ds-stats { gap: 18px; }
+  .ds--hero .ds-stats b { font-size: 28px; }
+  .ds--hero .ds-stats span { font-size: 11px; }
+}
 .ds--hero .ds-hint { margin-left: auto; width: auto; font-size: 12px; color: var(--muted); }
 .ds.ds--hero.is-open { grid-template-rows: 52px 26px minmax(0, 1fr); gap: 10px; padding: 14px 20px 16px; }
 .ds--hero.is-playing > .ds-bar, .ds--hero.is-playing > .ds-options { opacity: 1; pointer-events: auto; transition: opacity 0.6s; }
@@ -843,12 +857,23 @@ html.rs-anim .rs-card.is-in .rs-quote { animation: rs-up 0.5s ease-out 0.25s bot
 html.ds-focus .fa-page-in { animation: none; }
 html.ds-focus .fa-shell { visibility: hidden; }
 /* the opening's narration sits where the controls will be, one line per step */
-.ds-intro { position: absolute; z-index: 3; top: 14px; left: 20px; right: 20px; height: 52px; display: flex; align-items: center; gap: 20px; pointer-events: none; }
-.ds-intro p { margin: 0; flex: 1; font-family: var(--font-heading), system-ui, sans-serif; font-weight: 700; font-size: clamp(16px, 1.6vw, 22px); line-height: 1.25; letter-spacing: -0.01em; color: var(--text); animation: ds-intro-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+/* it fills the band above the plot, centred in it and as wide as the plot: Back (to the title) first, where the
+   player's own Back sits, then the count, the words and the step buttons */
+.ds-intro { position: absolute; z-index: 3; top: 14px; left: 20px; right: 334px; height: 88px; display: grid; grid-template-columns: auto auto minmax(0, 1fr) auto; align-items: center; gap: 0 24px; pointer-events: none; }
+.ds-intro-home { margin-right: -10px; }
+.ds-intro-count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ds-intro-nav { display: flex; gap: 10px; }
+.ds-intro .fa-btn:disabled { opacity: 0.35; cursor: default; }
+.ds-intro p { margin: 0; text-wrap: pretty; font-family: var(--font-heading), system-ui, sans-serif; font-weight: 700; font-size: clamp(17px, 1.5vw, 22px); line-height: 1.25; letter-spacing: -0.01em; color: var(--text); animation: ds-intro-in 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
 .ds-intro button { pointer-events: auto; }
 @keyframes ds-intro-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .ds-intro p { animation: none; } }
-@media (max-width: 1100px) { .ds-intro { top: 10px; left: 12px; right: 12px; height: auto; } }
+@media (max-width: 1100px) {
+  .ds-intro { top: 10px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; align-content: flex-start; align-items: center; gap: 12px 10px; }
+  .ds-intro p { flex-basis: 100%; order: -1; }
+  .ds-intro-count { margin-left: auto; order: 1; }
+  .ds-intro-home { margin-right: 0; }
+}
 /* the hero arrives: the words rise in one after another while the picture builds behind them */
 .ds-cover > * { animation: ds-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) backwards; }
 .ds-cover > :nth-child(1) { animation-delay: 0.05s; }
@@ -873,8 +898,8 @@ html.ds-focus .fa-shell { visibility: hidden; }
   .ds--hero > .ds-bar { grid-row: 1; }
   .ds--hero > .ds-options { grid-row: 2; }
   .ds--hero > .ds-stage { grid-row: 3; }
-  .ds.ds--hero.is-open:not(.is-playing) { padding-top: 92px; }
-  .ds-intro { top: 12px; height: 72px; gap: 10px; }
+  .ds.ds--hero.is-open:not(.is-playing) { padding-top: 140px; }
+  .ds-intro { height: 120px; }
   .ds-intro p { font-size: 17px; }
   .ds-intro .fa-btn { padding: 10px 14px; font-size: 11px; height: auto; min-height: 0; }
 }
@@ -882,9 +907,9 @@ html.ds-focus .fa-shell { visibility: hidden; }
   .ds-hero-page .ds-cover { gap: 14px; }
   .ds-cover h1 { font-size: clamp(40px, 12vw, 56px); }
   .ds-bigplay.fa-btn { font-size: 18px; padding: 16px 26px 16px 20px; }
-  .ds.ds--hero.is-open:not(.is-playing) { padding-top: 112px; }
-  .ds-intro { height: 92px; flex-wrap: wrap; align-content: center; }
-  .ds-intro p { flex-basis: 100%; font-size: 16px; }
+  .ds.ds--hero.is-open:not(.is-playing) { padding-top: 172px; }
+  .ds-intro { height: 150px; }
+  .ds-intro p { font-size: 16px; }
   /* playing: one tight row of buttons, the four figures on one line, no settings (lanes and follow are the phone's view) */
   .ds--hero > .ds-bar { gap: 6px; }
   .ds--hero > .ds-bar .fa-btn { padding: 8px 11px; font-size: 10.5px; height: auto; min-height: 0; }
@@ -893,7 +918,7 @@ html.ds-focus .fa-shell { visibility: hidden; }
   .ds--hero .ds-stats b { font-size: 15px; }
   .ds--hero .ds-stats span { font-size: 10px; line-height: 1.2; }
   .ds--hero > .ds-options { display: none; }
-  .ds--hero .ds-exit { margin-left: auto; }
+
 }
 
 /* the key-moments panel changes quietly: the new moment fades over the old in a frame of fixed height,
@@ -910,3 +935,8 @@ html.ds-focus .fa-shell { visibility: hidden; }
 .ds-passed li { animation: ds-li-in 0.8s ease both; overflow: hidden; }
 @keyframes ds-li-in { from { opacity: 0; max-height: 0; } 60% { opacity: 0; } to { opacity: 1; max-height: 90px; } }
 @media (prefers-reduced-motion: reduce) { .ds-moment, .ds-passed li { animation: none; } }
+@media (min-width: 1101px) and (max-width: 1240px) {
+  .ds--hero .ds-stats { gap: 14px; }
+  .ds--hero .ds-stats b { font-size: 22px; }
+  .ds--hero .ds-stats span { font-size: 10.5px; }
+}

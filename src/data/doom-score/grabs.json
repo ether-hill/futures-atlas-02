@@ -1,0 +1,122 @@
+{
+ "russell-einstein-1955": {
+  "src": "/doom-score/grabs/russell-einstein-1955.jpg",
+  "url": "https://pugwash.org/1955/07/09/statement-manifesto/",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "good-1965": {
+  "src": "/doom-score/grabs/good-1965.jpg",
+  "url": "https://gwern.net/doc/ai/1966-good.pdf",
+  "kind": "pdf",
+  "taken": "2026-11-02"
+ },
+ "tyler-2009": {
+  "src": "/doom-score/grabs/tyler-2009.jpg",
+  "url": "https://www.greaterwrong.com/posts/2KNN9WPcyto7QH9pi/this-failing-earth?commentId=nvA3JjbaMa7YGrM7J",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "fli-letter-2015": {
+  "src": "/doom-score/grabs/fli-letter-2015.jpg",
+  "url": "https://futureoflife.org/open-letter/ai-open-letter/",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "altman-2015": {
+  "src": "/doom-score/grabs/altman-2015.jpg",
+  "url": "https://blog.samaltman.com/machine-intelligence-part-1",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "openai-founded-2015": {
+  "src": "/doom-score/grabs/openai-founded-2015.jpg",
+  "url": "https://openai.com/index/introducing-openai/",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "safety-survey-2021": {
+  "src": "/doom-score/grabs/safety-survey-2021.jpg",
+  "url": "https://www.alignmentforum.org/posts/QvwSr5LsxyDeaPK5s/existential-risk-from-ai-survey-results",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "death-with-dignity-2022": {
+  "src": "/doom-score/grabs/death-with-dignity-2022.jpg",
+  "url": "https://www.greaterwrong.com/posts/j9Q8bRmwCgXRYAgcJ/miri-announces-new-death-with-dignity-strategy",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "cotra-2022": {
+  "src": "/doom-score/grabs/cotra-2022.jpg",
+  "url": "https://www.greaterwrong.com/posts/pRkFkzwKZ2zfa3R6H/without-specific-countermeasures-the-easiest-path-to",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "shoggoth-2022": {
+  "src": "/doom-score/grabs/shoggoth-2022.jpg",
+  "url": "https://x.com/i/status/1608966939929636864",
+  "kind": "post",
+  "taken": "2026-11-02"
+ },
+ "hendrycks-80-2023": {
+  "src": "/doom-score/grabs/hendrycks-80-2023.jpg",
+  "url": "https://x.com/i/status/1642394635657162753",
+  "kind": "post",
+  "taken": "2026-11-02"
+ },
+ "amodei-10-25-2023": {
+  "src": "/doom-score/grabs/amodei-10-25-2023.jpg",
+  "url": "https://x.com/i/status/1710520914444718459",
+  "kind": "post",
+  "taken": "2026-11-02"
+ },
+ "eo-14110-2023": {
+  "src": "/doom-score/grabs/eo-14110-2023.jpg",
+  "url": "https://www.federalregister.gov/documents/2023/11/01/2023-24283/safe-secure-and-trustworthy-development-and-use-of-artificial-intelligence",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "khan-2023": {
+  "src": "/doom-score/grabs/khan-2023.jpg",
+  "url": "https://x.com/i/status/1723458202090774949",
+  "kind": "post",
+  "taken": "2026-11-02"
+ },
+ "zvi-buterin-2023": {
+  "src": "/doom-score/grabs/zvi-buterin-2023.jpg",
+  "url": "https://x.com/i/status/1729251822391447904",
+  "kind": "post",
+  "taken": "2026-11-02"
+ },
+ "zvi-2024": {
+  "src": "/doom-score/grabs/zvi-2024.jpg",
+  "url": "https://manifold.markets/ZviMowshowitz/will-zvis-pdoom-go-down-substantial",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "wikipedia-pdoom-2024": {
+  "src": "/doom-score/grabs/wikipedia-pdoom-2024.jpg",
+  "url": "https://en.wikipedia.org/wiki/P(doom)",
+  "kind": "page",
+  "taken": "2026-11-02"
+ },
+ "tegmark-compton-2025": {
+  "src": "/doom-score/grabs/tegmark-compton-2025.jpg",
+  "url": "https://x.com/i/status/1917580821101437280",
+  "kind": "post",
+  "taken": "2026-11-02"
+ },
+ "lecun-asteroid-2026": {
+  "src": "/doom-score/grabs/lecun-asteroid-2026.jpg",
+  "url": "https://x.com/i/status/2046577402264870958",
+  "kind": "post",
+  "taken": "2026-11-02"
+ },
+ "magnifica-humanitas-2026": {
+  "src": "/doom-score/grabs/magnifica-humanitas-2026.jpg",
+  "url": "https://www.vatican.va/content/leo-xiv/en/encyclicals/documents/20260515-magnifica-humanitas.html",
+  "kind": "page",
+  "taken": "2026-11-02"
+ }
+}
