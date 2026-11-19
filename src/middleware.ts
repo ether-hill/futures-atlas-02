@@ -106,9 +106,9 @@ export const config = {
  * visitor gets. The bundle's own JS and CSS never reach this file (the matcher
  * above skips anything with an extension), so naming the page is enough.
  */
-// The Doom Score pages on staging, sent round for comment (play-v02 2026-11-03; chronicle, response and
-// play-response 2026-11-11). The project is a draft, so they are opened past the draft gate as well and are
-// still absent on production.
+// The Doom Score's trial pages on staging, sent round for comment (play-v02 2026-11-03; chronicle, response and
+// play-response 2026-11-11; play-v03 2026-11-19). The project is live at /doom-score and /doom-score/chronicle;
+// the trials are closed like drafts (DRAFT_TRIALS in projects.ts), so they open on previews only.
 const PREVIEW_PUBLIC = ["/interference/solo", "/doom-score/play-v02", "/doom-score/chronicle", "/doom-score/response", "/doom-score/play-response", "/doom-score/play-v03"];
 
 /**

@@ -940,3 +940,11 @@ html.ds-focus .fa-shell { visibility: hidden; }
   .ds--hero .ds-stats b { font-size: 22px; }
   .ds--hero .ds-stats span { font-size: 10.5px; }
 }
+
+/* project home: Play, and beside it a quieter Read that opens the chronicle */
+.ds-cover-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 12px; }
+.ds-cover-actions .ds-bigplay.fa-btn { margin-top: 0; }
+.ds-bigread.fa-btn { display: inline-flex; align-items: center; height: auto; padding: 20px 30px; font-size: 22px; font-weight: 600; color: var(--text); background: transparent; border: 1px solid color-mix(in srgb, var(--text) 45%, transparent); text-decoration: none; transition: border-color 0.25s, transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.ds-bigread.fa-btn:hover { border-color: var(--text); background: transparent; color: var(--text); transform: translateY(-2px); }
+.ds-moment a.ds-moment-more { justify-self: start; margin-top: 4px; font-size: 14px; font-weight: 600; color: var(--text); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, var(--text) 40%, transparent); }
+.ds-moment a.ds-moment-more:hover { text-decoration-color: var(--text); }

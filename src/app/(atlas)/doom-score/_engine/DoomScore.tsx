@@ -77,17 +77,21 @@ const SPEEDS: { seconds: number }[] = [
 ];
 
 /**
- * The playhead's velocity curve. The quiet years run fast and the sweep brakes into the release of ChatGPT
- * (30 Nov 2022), from where it plays at the listed speed. Multiplier on the base rate, by position across the width.
+ * The playhead's velocity curve, set in calendar time so the sweep never jumps where the axis changes scale
+ * (2015). It eases down smoothly from 7× in 2009 to the listed speed at the release of ChatGPT (30 Nov 2022),
+ * then plays at the listed speed. Returned as a multiplier on the base rate across the width.
  */
-const FAST = 3.5;
-const U_QUIET = uOf(Date.UTC(2015, 0, 1));
-const U_GPT = uOf(Date.UTC(2022, 10, 30));
+const FAST = 7;
+const T_GPT = Date.UTC(2022, 10, 30);
+const U_GPT = uOf(T_GPT);
+/** Calendar time per unit of width at x (the axis is piecewise, so this steps at its breaks). */
+const tPerU = (x: number) => (tFromU(Math.min(1, x + 1e-6)) - tFromU(x)) / 1e-6;
+const T_PER_U_GPT = tPerU(U_GPT - 1e-3);
 const rateAt = (x: number) => {
-  if (x <= U_QUIET) return FAST;
   if (x >= U_GPT) return 1;
-  const k = (x - U_QUIET) / (U_GPT - U_QUIET);
-  return 1 + (FAST - 1) * (1 - k * k * (3 - 2 * k)); // smoothstep: holds the pace through the 2010s, brakes towards ChatGPT
+  const k = (tFromU(x) - START) / (T_GPT - START);
+  const ease = k * k * (3 - 2 * k); // smoothstep: no corner at either end
+  return (T_PER_U_GPT * (1 + (FAST - 1) * (1 - ease))) / tPerU(x);
 };
 /** How long a whole play lasts, as a share of the base seconds. */
 const PLAY_SHARE = (() => {
@@ -133,7 +137,6 @@ const rnd = (seed: number) => {
 };
 const MONTHS_SHORT = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const fmtMonth = (k: string) => `${MONTHS_SHORT[+k.slice(5, 7) - 1]} ${k.slice(0, 4)}`;
-const fmtDay = (t: number, dayToo: boolean) => new Date(t).toLocaleDateString("en-GB", { day: dayToo ? "numeric" : undefined, month: "short", year: "numeric", timeZone: "UTC" });
 
 /**
  * With `hero`, the score opens as a bare picture of the whole span (one pile, no
@@ -141,7 +144,7 @@ const fmtDay = (t: number, dayToo: boolean) => new Date(t).toLocaleDateString("e
  * screen, eases the pile apart into a lane per source as the labels come in,
  * pulls the camera in to follow the playhead, then starts. Escape goes back.
  */
-export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention[]; pile: PileMonth[]; moments: Moment[]; hero?: { title: string; lead: string } }) {
+export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention[]; pile: PileMonth[]; moments: Moment[]; hero?: { title: string; lead: string; read?: { href: string; label: string } } }) {
   const rows = useMemo<Row[]>(
     () =>
       mentions
@@ -215,6 +218,8 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
   const canvas = useRef<HTMLCanvasElement>(null);
   const audio = useRef<DoomAudio | null>(null);
   const uRef = useRef(0);
+  /** How far along the sweep has sounded (upTo), and where the playhead was when it did (at). */
+  const fired = useRef({ upTo: 0, at: -1 });
   const flashes = useRef<Map<string, number>>(new Map());
   const lastFrame = useRef<number | null>(null);
   const colors = useRef<Record<string, string>>({});
@@ -225,7 +230,6 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
   /** False until play or a scrub: before that the whole picture is shown at full strength. */
   const started = useRef(false);
   const risen = useRef<Set<string>>(new Set());
-  const captionRef = useRef<{ text: string; at: number } | null>(null);
 
   const [playing, setPlaying] = useState(false);
   const [scale] = useState<ScaleName>("dread");
@@ -243,6 +247,9 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
   const [cursor, setCursor] = useState(0);
   const [stats, setStats] = useState({ n: 0, median: null as number | null, said: 0 });
   const [card, setCard] = useState<Mo | null>(null);
+  /** A moment the reader chose (a click in the panel or on its flag), as against one the playhead brought in. */
+  const [picked, setPicked] = useState<string | null>(null);
+  const pick = (m: Mo) => (setCard(m), setPicked(m.id));
   const passed = useMemo(() => mos.filter((m) => m.u <= cursor).reverse(), [mos, cursor]);
   const current = card ?? passed[0] ?? null;
   const [ended, setEnded] = useState(false);
@@ -261,7 +268,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
   const phaseRef = useRef(phase);
   phaseRef.current = phase;
   /** Hero only, eased towards their targets each frame: d, the labels (0 none, 1 all); lane, one pile (0) to a lane per source (1); zoom, following (0) to the whole span (1); f, how far the unplayed part has dimmed. */
-  const blend = useRef({ m: isHero ? 0 : 1, lane: 0, ax: isHero ? 0 : 1, mo: isHero ? 0 : 1, ph: isHero ? 0 : 1, zoom: 1, f: 0, dg: 1, dd: 1, dk: 1, at: 0 });
+  const blend = useRef({ m: isHero ? 0 : 1, lane: 0, laneLin: 0, ax: isHero ? 0 : 1, mo: isHero ? 0 : 1, ph: isHero ? 0 : 1, zoom: 1, f: 0, dg: 1, dd: 1, dk: 1, at: 0 });
   /** Hero only: the opening, one thing at a time. 0 rest, 1 full screen, 2 the squares, 3 the dots, 4 the flags, 5 the camera goes in to 2009, 6 playing. */
   const [step, setStep] = useState(0);
   const stepRef = useRef(step);
@@ -280,6 +287,10 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
   playingRef.current = playing;
   const currentRef = useRef<Mo | null>(current);
   currentRef.current = current;
+  /** The chosen moment, while it is still the one in the panel. */
+  const isPicked = !!current && picked === current.id;
+  const pickedRef = useRef<Mo | null>(null);
+  pickedRef.current = isPicked ? current : null;
 
   const readColors = useCallback(() => {
     const el = canvas.current;
@@ -345,6 +356,8 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       const dt = lastFrame.current == null ? 0 : (now - lastFrame.current) / 1000;
       lastFrame.current = now;
       const u0 = uRef.current;
+      // a seek, a restart or a fresh play moved the playhead: nothing behind it is owed a sound
+      if (fired.current.at !== u0) fired.current.upTo = u0;
       // seconds per full width at the playhead's current velocity
       const sec = seconds / rateAt(u0);
       const u1 = Math.min(1, u0 + dt / sec);
@@ -352,7 +365,11 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         // sounds are started early by the audio output's own delay, so they are heard as the playhead crosses the mark
         const lead = Math.min(0.35, a.latency() + 0.012);
         const leadU = lead / sec;
-        for (const r of rows) if (r.u > u0 + leadU && r.u <= u1 + leadU) play(r, false, now + lead * 1000);
+        // everything up to the furthest point already sounded is done; the window never moves back or skips,
+        // even as the output delay (and so the lead) changes from frame to frame. Before, a lead that grew
+        // between frames left a gap (a number never sounded) and one that shrank played a number twice
+        const from = fired.current.upTo, to = Math.max(from, u1 + leadU);
+        for (const r of rows) if (r.u > from && r.u <= to) play(r, false, now + lead * 1000);
         if (momentRef.current === "riser") {
           // the riser starts 1.6 s out and its hit lands on the moment as heard (the output's delay taken off);
           // a moment nearer than that when play starts, like the first one in 2009, gets a shorter rise, still on time
@@ -366,12 +383,9 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
           }
         }
         for (const m of mos)
-          if (m.u > u0 + leadU && m.u <= u1 + leadU) {
+          if (m.u > from && m.u <= to) {
             if (momentRef.current !== "riser") a.moment(momentRef.current);
-            setTimeout(() => {
-              setCard(null);
-              captionRef.current = { text: `${fmtDay(m.t, m.date.length > 7)} · ${m.title}`, at: performance.now() };
-            }, lead * 1000);
+            setTimeout(() => setCard(null), lead * 1000);
           }
         {
           for (let i = 0; i < months.length; i++) {
@@ -389,7 +403,9 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
             }
           }
         }
+        fired.current.upTo = to;
         uRef.current = u1;
+        fired.current.at = u1;
         setCursor(u1);
         recount(u1);
         let recent = 0;
@@ -441,7 +457,15 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         const st = stepRef.current;
         const back = st === 0; // going back to rest is quicker than coming in
         ease("m", st >= 2 ? 1 : 0, back ? 0.3 : 0.5);
-        ease("lane", viewRef.current === "lanes" ? 1 : 0, back ? 0.3 : 0.5);
+        // the lanes split on a fixed clock (1.4 s, quicker going back), eased in and out, rather than
+        // chasing the target: an exponential chase starts at full speed, which read as a jolt
+        {
+          const target = viewRef.current === "lanes" ? 1 : 0;
+          const stepL = dt / (back ? 0.6 : 1.4);
+          b.laneLin = target > b.laneLin ? Math.min(target, b.laneLin + stepL) : Math.max(target, b.laneLin - stepL);
+          const k = b.laneLin;
+          b.lane = k * k * k * (k * (k * 6 - 15) + 10); // smootherstep
+        }
         ease("ax", st >= 2 ? 1 : 0, back ? 0.2 : 0.7);
         ease("mo", st >= 4 ? 1 : 0, back ? 0.2 : 0.4);
         ease("ph", st >= 5 ? 1 : 0, back ? 0.2 : 0.3);
@@ -450,11 +474,14 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         ease("dg", !fo || fo === "grains" ? 1 : 0.15, 0.35);
         ease("dd", !fo || fo === "dots" ? 1 : 0.15, 0.35);
         ease("dk", !fo || fo === "flags" ? 1 : 0.15, 0.35);
-        ease("zoom", cameraRef.current === "follow" && endedAt.current == null ? 0 : 1, endedAt.current != null ? 0.7 : stepRef.current > 0 ? 0.6 : 0.3);
+        // a chosen moment outside the two-year window pulls the camera back to the whole span so it can be seen; the next moment the playhead reaches puts it back
+        const pm = pickedRef.current;
+        const pmOut = !!pm && (pm.t < tNow - WINDOW_MS * NOW_AT || pm.t > tNow + WINDOW_MS * (1 - NOW_AT));
+        ease("zoom", cameraRef.current === "follow" && endedAt.current == null && !pmOut ? 0 : 1, endedAt.current != null ? 0.7 : stepRef.current > 0 ? 0.6 : 0.3);
         ease("f", started.current ? 1 : 0, 0.5);
       } else {
         b.m = b.ax = b.mo = b.ph = b.dg = b.dd = b.dk = 1;
-        b.lane = viewRef.current === "lanes" ? 1 : 0;
+        b.lane = b.laneLin = viewRef.current === "lanes" ? 1 : 0;
         b.f = started.current ? 1 : 0;
       }
       b.at = now;
@@ -636,9 +663,16 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         if (mo.t + MONTH_MS > NOW && i > 0) return fullPx(i - 1);
         return Math.max(1, xOf(mo.t + MONTH_MS) - xOf(mo.t));
       };
+      // the lanes are laid out for where they END (the margin and band heights at a full split), so the
+      // columns and grain sizes hold still while the picture eases apart; laid out for the current blend,
+      // they changed every frame and grains hopped between columns
+      const L1 = mix(0, narrow ? 44 : 118, M);
+      const toFinal = (w - L1 - PR) / Math.max(1, plotW);
+      const laneH1 = (plotH * (1 - 0.36)) / KINDS.length;
+      const laneTop1 = (k: number) => PT + plotH * 0.36 + k * laneH1;
       if (LK > 0) {
-        const room = Math.max(4, laneH - 8);
-        const px = months.map((_, i) => fullPx(i));
+        const room = Math.max(4, laneH1 - 8);
+        const px = months.map((_, i) => fullPx(i) * toFinal);
         KINDS.forEach((_, k) => {
           let lo = 0.8, hi = 12;
           for (let it = 0; it < 16; it++) {
@@ -695,15 +729,19 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
             // in time order, an equal share of the month's grains per column
             const sq = laneS[gr.k], n = mo.counts[gr.k];
             const fw = fullPx(mi);
-            const cl = laneCols(fw, sq);
+            const cl = laneCols(fw * toFinal, sq);
             const cL = Math.min(cl - 1, Math.floor((nthOfKind[gr.k]++ * cl) / n));
             // this month, still under way, keeps the full month's columns but squeezes them into the days so far,
             // so nothing sits past the end of the record
             const xL = x0 + (cL + 0.5) * (fw / cl) * Math.min(1, monthPx / fw);
-            const yL = laneTop(gr.k) + laneH - 3 - (stackLane[gr.k][cL]++ + 0.5) * sq;
-            x = mix(x, xL, LK);
-            sz = mix(sz, sq, LK);
-            y = mix(y, yL, LK);
+            const yL = laneTop1(gr.k) + laneH1 - 3 - (stackLane[gr.k][cL]++ + 0.5) * sq;
+            // a gentle wave: the left of the picture leaves a moment before the right, each grain on its own eased clock
+            const W8 = 0.35;
+            const kl = Math.max(0, Math.min(1, (b.laneLin * (1 + W8) - W8 * Math.max(0, Math.min(1, (x - L) / Math.max(1, plotW))))));
+            const kg = LK >= 1 ? 1 : LK <= 0 ? 0 : kl * kl * kl * (kl * (kl * 6 - 15) + 10);
+            x = mix(x, xL, kg);
+            sz = mix(sz, sq, kg);
+            y = mix(y, yL, kg);
           }
           if (gw < 1) y = floor - (floor - y) * gw;
           if (y < PT) continue;
@@ -829,6 +867,20 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         ga(hot ? 1 : pv(past, 1, 0.5));
         const sq = hot ? 7 : 5;
         ctx.fillRect(x - sq / 2, ly - sq / 2, sq, sq);
+        if (pickedRef.current?.id === m.id) {
+          // the chosen moment: its line drawn full strength and a slow ring around its flag
+          const ph = (now % 1600) / 1600;
+          ctx.strokeStyle = MO;
+          ga(0.9 * (1 - ph));
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(x, ly, 6 + ph * 14, 0, Math.PI * 2);
+          ctx.stroke();
+          ga(0.35);
+          ctx.fillRect(x - 1.5, ly + 6, 3, floor - ly - 6);
+          ctx.lineWidth = 1;
+          ga(1);
+        }
         ctx.fillStyle = past > 0.5 || hot ? c["--text"] : c["--muted"];
         if (!m.bare || hot) {
           ctx.font = `${hot ? 700 : 500} 10.5px var(--font-heading), system-ui, sans-serif`;
@@ -981,24 +1033,6 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       ctx.stroke();
       ctx.lineWidth = 1;
 
-      // ----- the narration line: the latest turning point, written along the bottom
-      const cap = captionRef.current;
-      if (cap) {
-        const age = (now - cap.at) / 1000;
-        const alpha = age < 0.3 ? age / 0.3 : age > 7 ? Math.max(0, 1 - (age - 7) / 1) : 1;
-        if (alpha > 0) {
-          ctx.font = `700 13px var(--font-heading), system-ui, sans-serif`;
-          ctx.textAlign = "left";
-          ctx.textBaseline = "alphabetic";
-          const tw = ctx.measureText(cap.text).width;
-          ga(alpha);
-          ctx.fillStyle = c["--panel"];
-          ctx.fillRect(L, h - 22, tw + 14, 20);
-          ctx.fillStyle = c["--text"];
-          ctx.fillText(cap.text, L + 7, h - 8);
-          ga(1);
-        }
-      }
 
       // ----- hovered month, on top of everything
       if (hoverMonth.current != null && !following) {
@@ -1077,7 +1111,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       return;
     }
     if (row) return play(row, true);
-    if (mo) return setCard(mo);
+    if (mo) return pick(mo);
     if (follow) return;
     dragging.current = true;
     started.current = true;
@@ -1163,9 +1197,9 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
     uRef.current = 0;
     setCursor(0);
     setCard(null);
+    setPicked(null);
     setEnded(false);
     endedAt.current = null;
-    captionRef.current = null;
     flashes.current.clear();
     recount(0);
     setPlaying(true);
@@ -1178,10 +1212,10 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
     timers.current.forEach(clearTimeout);
     risen.current.clear();
     flashes.current.clear();
-    captionRef.current = null;
     uRef.current = 0;
     setCursor(0);
     setCard(null);
+    setPicked(null);
     setEnded(false);
     endedAt.current = null;
     recount(0);
@@ -1215,6 +1249,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
     // the flags: the sound a key moment makes, a rise and a drop, and on the drop one moment (ChatGPT) arrives in the
     // panel and its flag lights, just as it will in play
     setCard(null);
+    setPicked(null);
     if (n === 4 && a) {
       const eg = mos.find((m) => /chatgpt/i.test(m.title)) ?? mos[0];
       timers.current = [
@@ -1237,6 +1272,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
     setCamera("follow");
     audio.current?.cancelPending();
     setCard(null);
+    setPicked(null);
     started.current = true;
     setStep(PLAYING);
     setPlaying(true);
@@ -1253,9 +1289,9 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
     uRef.current = 0;
     setCursor(0);
     setCard(null);
+    setPicked(null);
     setEnded(false);
     endedAt.current = null;
-    captionRef.current = null;
     domain.current = null;
     setZoomed(false);
     setZooming(false);
@@ -1451,6 +1487,11 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
                 <b>{current.title}</b>
               </span>
               )}
+              {isPicked && current.href ? (
+                <a className="ds-moment-more" href={current.href}>
+                  Read more
+                </a>
+              ) : null}
             </div>
           ) : (
             <p className="ds-side-empty">The turning points appear here as the playhead reaches them: ChatGPT, the pause letter, Hinton leaving Google, the Nobel Prize, the resignation letters.</p>
@@ -1461,7 +1502,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
                 .filter((m) => m.id !== current?.id)
                 .map((m) => (
                   <li key={m.id}>
-                    <button type="button" onClick={() => setCard(m)}>
+                    <button type="button" onClick={() => pick(m)}>
                       <small>{new Date(m.t).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" })}</small>
                       {m.title}
                     </button>
@@ -1476,9 +1517,16 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
         <div ref={cover} className="ds-cover" aria-hidden={phase === "open"}>
           <h1>{hero!.title}</h1>
           <p>{hero!.lead}</p>
-          <button type="button" className="fa-btn fa-btn--primary ds-bigplay" onClick={openHero} tabIndex={phase === "open" ? -1 : 0}>
-            <span aria-hidden="true">▶</span> Play
-          </button>
+          <div className="ds-cover-actions">
+            <button type="button" className="fa-btn fa-btn--primary ds-bigplay" onClick={openHero} tabIndex={phase === "open" ? -1 : 0}>
+              <span aria-hidden="true">▶</span> Play
+            </button>
+            {hero!.read ? (
+              <a className="fa-btn ds-bigread" href={hero!.read.href} tabIndex={phase === "open" ? -1 : 0}>
+                {hero!.read.label}
+              </a>
+            ) : null}
+          </div>
           <small>{fmtLength(SPEEDS[speed].seconds)}, with sound</small>
         </div>
       ) : (

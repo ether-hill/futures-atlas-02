@@ -15,7 +15,7 @@ import "../doom-score.css";
 export const metadata: Metadata = {
   title: "Chronicle. The Doom Score. Futures Atlas",
   description: "The extended timeline: how extinction risk from AI became a public question, section by section, with the numbers, the quotes and the press that carried them.",
-  robots: { index: false },
+  alternates: { canonical: "/doom-score/chronicle" },
 };
 
 /** All talk a month: forum mentions, papers, news, markets, broadcasts. */
