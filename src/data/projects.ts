@@ -200,7 +200,7 @@ export const projects: Project[] = [
     tagline:
       "How talk of AI ending humanity grew from a forum footnote to a flood, 2009 to now, played as sound. Every dot is someone's guess at the chance, played as a note.",
     year: "2026",
-    date: "2026-10-30",
+    date: "2026-11-19",
     field: "Foresight & evidence",
     topics: ["AI", "Futures"],
     kind: "story",
