@@ -109,7 +109,7 @@ export const config = {
 // The Doom Score pages on staging, sent round for comment (play-v02 2026-11-03; chronicle, response and
 // play-response 2026-11-11). The project is a draft, so they are opened past the draft gate as well and are
 // still absent on production.
-const PREVIEW_PUBLIC = ["/interference/solo", "/doom-score/play-v02", "/doom-score/chronicle", "/doom-score/response", "/doom-score/play-response"];
+const PREVIEW_PUBLIC = ["/interference/solo", "/doom-score/play-v02", "/doom-score/chronicle", "/doom-score/response", "/doom-score/play-response", "/doom-score/play-v03"];
 
 /**
  * A draft project's ENDPOINTS, which its page path does not cover.

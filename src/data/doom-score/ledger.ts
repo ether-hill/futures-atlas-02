@@ -1425,5 +1425,41 @@ export const MENTIONS: Mention[] = [
     },
     "note": "Live community prediction read on 31 Oct 2026. The question page and API refuse unauthenticated requests; the embed view shows the current value only.",
     "verified": true
+  },
+  {
+    "id": "christiano-dwarkesh-2026-11",
+    "date": "2026-11-16",
+    "scope": "ai",
+    "who": "Paul Christiano",
+    "role": "Alignment Research Center founder, OpenAI nonprofit board member",
+    "p": 10,
+    "horizon": "AI takeover within the next year",
+    "type": "interview",
+    "quote": "I would say we are looking more like a 10% risk than a 1% risk over the next year.",
+    "source": {
+      "title": "Paul Christiano: We could be 12 months away from AIs that can overthrow the government",
+      "url": "https://www.dwarkesh.com/p/paul-christiano-2",
+      "outlet": "Dwarkesh Podcast"
+    },
+    "verified": true
+  },
+  {
+    "id": "kauk-llm-median-2026-11",
+    "date": "2026-11-13",
+    "scope": "ai",
+    "who": "241 large language models (study by Julian Kauk)",
+    "role": "arXiv preprint",
+    "p": 10,
+    "pLow": 3.5,
+    "pHigh": 15.8,
+    "horizon": "human extinction or permanent disempowerment from advanced AI, unspecified horizon",
+    "type": "paper",
+    "quote": "Large language models put existential risk from artificial intelligence at 10%",
+    "source": {
+      "title": "Large language models put existential risk from artificial intelligence at 10%",
+      "url": "https://arxiv.org/abs/2611.18219",
+      "outlet": "arXiv"
+    },
+    "verified": true
   }
 ];

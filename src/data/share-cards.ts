@@ -24,6 +24,15 @@ export const SHARE_CARDS: Record<string, ShareCard> = {
     height: 630,
     alt: "The AI extinction conversation: a big title and Play button over a chart of what has been said about AI ending humanity since 2009, rising to the right.",
   },
+  "/doom-score/play-v03": {
+    title: "The AI extinction conversation",
+    description:
+      "How talk of AI ending humanity grew from a forum footnote to a flood, 2009 to now, played as sound. Every dot is someone's guess at the chance, played as a note.",
+    image: "/og/doom-score-play.jpg",
+    width: 1200,
+    height: 630,
+    alt: "The AI extinction conversation: a big title and Play button over a chart of what has been said about AI ending humanity since 2009, rising to the right.",
+  },
 };
 
 /** Link-preview fetchers, not search crawlers: Googlebot and friends are deliberately absent. */

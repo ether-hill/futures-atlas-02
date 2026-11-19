@@ -60,7 +60,7 @@ const INTRO: Record<number, ReactNode> = {
       The <Ink v="--ds-cat-2">orange flags</Ink> are the moments that changed the conversation, like the release of ChatGPT and the letter calling for a pause on AI.
     </>
   ),
-  5: "Now watch it build from 2009. It takes two minutes.",
+  5: "Now watch it build from 2009. It takes a minute and a half.",
 };
 /** Which layer each step of the opening is about. */
 const FOCUS: Record<number, "grains" | "dots" | "flags"> = { 2: "grains", 3: "dots", 4: "flags" };
@@ -69,11 +69,39 @@ const INTRO_LAST = 5;
 /** The step at which the score plays. */
 const PLAYING = 6;
 
-const SPEEDS: { label: string; seconds: number }[] = [
-  { label: "1 min", seconds: 60 },
-  { label: "2 min", seconds: 120 },
-  { label: "4 min", seconds: 240 },
+/** Base speeds: seconds for the whole width at 1×. The quiet early years play faster (see rateAt), so a play is shorter. */
+const SPEEDS: { seconds: number }[] = [
+  { seconds: 60 },
+  { seconds: 120 },
+  { seconds: 240 },
 ];
+
+/**
+ * The playhead's velocity curve. The quiet years run fast and the sweep brakes into the release of ChatGPT
+ * (30 Nov 2022), from where it plays at the listed speed. Multiplier on the base rate, by position across the width.
+ */
+const FAST = 3.5;
+const U_QUIET = uOf(Date.UTC(2015, 0, 1));
+const U_GPT = uOf(Date.UTC(2022, 10, 30));
+const rateAt = (x: number) => {
+  if (x <= U_QUIET) return FAST;
+  if (x >= U_GPT) return 1;
+  const k = (x - U_QUIET) / (U_GPT - U_QUIET);
+  return 1 + (FAST - 1) * (1 - k * k * (3 - 2 * k)); // smoothstep: holds the pace through the 2010s, brakes towards ChatGPT
+};
+/** How long a whole play lasts, as a share of the base seconds. */
+const PLAY_SHARE = (() => {
+  let t = 0;
+  const N = 2000;
+  for (let i = 0; i < N; i++) t += 1 / N / rateAt((i + 0.5) / N);
+  return t;
+})();
+const fmtLength = (s: number) => {
+  const sec = Math.round((s * PLAY_SHARE) / 15) * 15;
+  if (sec < 60) return `${sec} s`;
+  const m = Math.floor(sec / 60), r = sec % 60;
+  return `${m}${r === 30 ? "½" : r ? `:${String(r).padStart(2, "0")}` : ""} min`;
+};
 
 const PAD = { l: 58, r: 64, t: 92, b: 44 };
 const LABEL_ROWS = 5;
@@ -317,18 +345,20 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
       const dt = lastFrame.current == null ? 0 : (now - lastFrame.current) / 1000;
       lastFrame.current = now;
       const u0 = uRef.current;
-      const u1 = Math.min(1, u0 + dt / seconds);
+      // seconds per full width at the playhead's current velocity
+      const sec = seconds / rateAt(u0);
+      const u1 = Math.min(1, u0 + dt / sec);
       if (u1 > u0) {
         // sounds are started early by the audio output's own delay, so they are heard as the playhead crosses the mark
         const lead = Math.min(0.35, a.latency() + 0.012);
-        const leadU = lead / seconds;
+        const leadU = lead / sec;
         for (const r of rows) if (r.u > u0 + leadU && r.u <= u1 + leadU) play(r, false, now + lead * 1000);
         if (momentRef.current === "riser") {
           // the riser starts 1.6 s out and its hit lands on the moment as heard (the output's delay taken off);
           // a moment nearer than that when play starts, like the first one in 2009, gets a shorter rise, still on time
           for (const m of mos) {
             if (m.u <= u0 || risen.current.has(m.id)) continue;
-            const toCrest = (m.u - u1) * seconds - lead;
+            const toCrest = (m.u - u1) * sec - lead;
             if (toCrest <= 1.6) {
               risen.current.add(m.id);
               a.moment("riser", 1, toCrest);
@@ -348,7 +378,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
             const m = months[i];
             if (m.u > u0 && m.u <= u1 && m.total > 0) {
               const next = months[i + 1]?.u ?? 1;
-              const span = (next - m.u) * seconds;
+              const span = ((next - m.u) * seconds) / rateAt(m.u);
               // clicks per month on a square-root scale, like the pile: 1 for a lone item, about 50 for the busiest month,
               // louder and brighter as the month fills, scattered unevenly across the month so it reads as rain, not a metronome
               const k = pileH(m.total, maxMonth);
@@ -1381,8 +1411,8 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
           <span>Length</span>
           <select value={speed} onChange={(e) => setSpeed(+e.target.value)}>
             {SPEEDS.map((s, i) => (
-              <option key={s.label} value={i}>
-                {s.label}
+              <option key={s.seconds} value={i}>
+                {fmtLength(s.seconds)}
               </option>
             ))}
           </select>
@@ -1449,7 +1479,7 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
           <button type="button" className="fa-btn fa-btn--primary ds-bigplay" onClick={openHero} tabIndex={phase === "open" ? -1 : 0}>
             <span aria-hidden="true">▶</span> Play
           </button>
-          <small>{SPEEDS[speed].label}, with sound</small>
+          <small>{fmtLength(SPEEDS[speed].seconds)}, with sound</small>
         </div>
       ) : (
       <div className="ds-legend">

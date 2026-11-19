@@ -1610,6 +1610,361 @@ export const CHRONICLE: ChronicleSection[] = [
           { title: "Top AI safety researcher says he's stopped saving for retirement", url: "https://futurism.com/artificial-intelligence/ai-researcher-retirement-savings", outlet: "Futurism" },
         ],
       },
+      {
+        id: "abc-post-ipsos-extinction-poll-2026",
+        date: "2026-10-21",
+        title: "ABC News/Washington Post/Ipsos poll: a third of Americans see a high risk of human extinction from AI",
+        kind: "survey",
+        weight: 2,
+        summary: "The poll of 2,545 US adults, fielded 9 to 13 October on the Ipsos KnowledgePanel, found 33 per cent said the growth of AI will lead to a high risk of human extinction. Democrats were most likely to say so (40 per cent), against 34 per cent of independents and 24 per cent of Republicans. Extinction ranked below the other AI harms the poll measured. CNN cited the same figure again on 19 November.",
+        links: [
+          {
+            title: "Most Americans say AI is bad for society, oppose more data centers: ABC/Post/Ipsos poll",
+            url: "https://abcnews.com/Politics/americans-ai-bad-society-oppose-data-centers-abcpostipsos/story?id=137414085",
+            outlet: "ABC News",
+            date: "2026-10-21"
+          }
+        ]
+      },
+      {
+        id: "warren-letter-anthropic-ipo-2026",
+        date: "2026-10-27",
+        title: "Senator Elizabeth Warren asks Dario Amodei about the existential risks in Anthropic's IPO filing",
+        kind: "policy",
+        weight: 2,
+        summary: "As ranking member of the Senate Banking Committee, Warren wrote to Anthropic's chief executive citing the S-1's own warning that AI could pose 'catastrophic or existential risks to humanity'. She asked whether he believes the company's models pose an existential threat, how investors should price that risk, and whether a listing would make it worse, with answers requested by 3 November. 'I am deeply troubled by the risks raised by Anthropic itself,' she wrote.",
+        links: [
+          {
+            title: "Sen. Warren probes AI safety, market risks in Anthropic IPO",
+            url: "https://www.cfodive.com/news/sen-warren-probes-ai-safety-market-risks-anthropic-ipo/873076/",
+            outlet: "CFO Dive",
+            date: "2026-10-28"
+          },
+          {
+            title: "Letter to Anthropic re IPO (PDF)",
+            url: "https://www.banking.senate.gov/imo/media/doc/2026.10.27%20Letter%20to%20Anthropic%20re%20IPO.pdf",
+            outlet: "US Senate Banking Committee",
+            date: "2026-10-27"
+          }
+        ],
+        people: [
+          "Elizabeth Warren",
+          "Dario Amodei"
+        ]
+      },
+      {
+        id: "ansari-day-one-pause-2026",
+        date: "2026-11-04",
+        title: "Rep. Yassamin Ansari calls for a day-one pause and superintelligence ban after the midterms",
+        kind: "statement",
+        weight: 1,
+        summary: "The day after Democrats won control of Congress, the Arizona Democrat, a co-sponsor of the Ban Artificial Superintelligence Act, posted on X: 'Top of the Democratic agenda on day 1 needs to be a pause on advanced AI development', going on to call for regulation of the industry and a ban on artificial superintelligence. The new Congress sits from January 2027.",
+        links: [
+          {
+            title: "Democrat calls for AI development pause and superintelligence ban",
+            url: "https://www.thestandard.com.hk/world/article/347702/Democrat-calls-for-AI-development-pause-and-superintelligence-ban",
+            outlet: "The Standard (Hong Kong)",
+            date: "2026-11-06"
+          },
+          {
+            title: "Congresswoman Yassamin Ansari calls to ban artificial superintelligence and pause advanced AI development",
+            url: "https://cryptobriefing.com/yassamin-ansari-pause-advanced-ai-development/",
+            outlet: "Crypto Briefing",
+            date: "2026-11-04"
+          }
+        ],
+        people: [
+          "Yassamin Ansari"
+        ]
+      },
+      {
+        id: "trump-60-minutes-guardrails-2026",
+        date: "2026-11-08",
+        title: "Trump tells 60 Minutes AI risks can be managed and he doesn't 'mind guardrails'",
+        kind: "statement",
+        weight: 2,
+        summary: "In a CBS interview broadcast the Sunday after the midterms, the president played down existential concerns but said 'I don't mind guardrails', while refusing rules that would put the US in 'a deep second position' to China. Reuters read it as a shift from his earlier preference for industry self-policing.",
+        links: [
+          {
+            title: "Trump signals openness to AI guardrails after 'blue tsunami'",
+            url: "https://www.cfodive.com/news/trump-signals-openness-ai-guardrails-blue-tsunami/874155/",
+            outlet: "CFO Dive",
+            date: "2026-11-09"
+          },
+          {
+            title: "60 Minutes post on X",
+            url: "https://x.com/60Minutes/status/2119588234179015126",
+            outlet: "CBS 60 Minutes",
+            date: "2026-11-08"
+          }
+        ],
+        people: [
+          "Donald Trump"
+        ]
+      },
+      {
+        id: "paris-call-ai-safety-declaration-2026",
+        date: "2026-11-09",
+        title: "Six governments and ten AI companies sign the Paris Call for AI safety and security in Ottawa",
+        kind: "policy",
+        weight: 2,
+        summary: "Bahrain, Canada, Finland, France, Norway and the Netherlands signed with Anthropic, OpenAI, Microsoft, Mistral, Cohere, Hugging Face and others, plus Bengio's LawZero and SaferAI. Signatories commit to a shared evaluation framework covering 'risks arising from growing autonomy or model misalignment, including loss of control', fail-safe shutdown mechanisms including during training, and rapid sharing of 'AI control incidents'. The text does not mention superintelligence or catastrophic risk by name.",
+        links: [
+          {
+            title: "Joint declaration on Paris call for AI safety and security",
+            url: "https://www.pm.gc.ca/en/news/statements/2026/11/09/joint-declaration-paris-call-ai-safety-and-security",
+            outlet: "Prime Minister of Canada",
+            date: "2026-11-09"
+          }
+        ],
+        people: [
+          "Yoshua Bengio"
+        ]
+      },
+      {
+        id: "christiano-hinton-lecture-takeover-2026",
+        date: "2026-11-09",
+        title: "Paul Christiano warns of a 'high risk of an AI takeover within the next three years' at the Hinton Lectures",
+        kind: "statement",
+        weight: 2,
+        summary: "Opening the Hinton Lectures in Toronto, the Alignment Research Center founder and OpenAI nonprofit board member told the audience: 'I think for most people in this room, the most likely reason they will die is because of an AI accident.' He added: 'I think there's meaningful risks even in the next six to 12 months', and, as reported by The Next Web, put the odds at 'something like a coin flip' if labs build as fast as they can. Hinton spoke at the same series, saying 'there are not many examples in nature of a less intelligent system controlling more intelligent systems.'",
+        links: [
+          {
+            title: "AI Accident Is Most Likely Reason You Will Die, Warns OpenAI Board Member",
+            url: "https://www.newsweek.com/ai-accident-is-most-likely-reason-you-will-die-warns-openai-board-member-12699672",
+            outlet: "Newsweek"
+          },
+          {
+            title: "'Sock puppets': the Hinton Lectures ring a three-year alarm bell on AI outsmarting human control",
+            url: "https://www.forbes.com.au/news/innovation/sock-puppets-hinton-lectures-three-year-ai-alarm-bell/",
+            outlet: "Forbes Australia",
+            date: "2026-11-14"
+          },
+          {
+            title: "OpenAI board member puts the risk of an AI takeover next year at about 10%",
+            url: "https://thenextweb.com/news/paul-christiano-ai-takeover-hinton-lectures-openai-board",
+            outlet: "The Next Web",
+            date: "2026-11-17"
+          }
+        ],
+        people: [
+          "Paul Christiano",
+          "Geoffrey Hinton"
+        ]
+      },
+      {
+        id: "ai-futures-intelligence-explosion-2027-2026",
+        date: "2026-11-10",
+        title: "AI Futures Project moves its intelligence-explosion forecast back to 2027",
+        kind: "paper",
+        weight: 2,
+        summary: "The AI 2027 authors published 'Looks Like the Intelligence Explosion Will Happen in 2027 After All', with all six forecasters now putting a superhuman AI researcher in 2027. Daniel Kokotajlo wrote on X: 'I am scared, sad, and angry.' The forecasts assume no deliberate slowdown.",
+        links: [
+          {
+            title: "AI 2027 authors now expect a superhuman AI researcher in 2027",
+            url: "https://cryptobriefing.com/ai-superhuman-researcher-2027/",
+            outlet: "Crypto Briefing",
+            date: "2026-11-11"
+          }
+        ],
+        people: [
+          "Daniel Kokotajlo"
+        ]
+      },
+      {
+        id: "nonprofits-sue-to-freeze-frontier-ai-2026",
+        date: "2026-11-12",
+        title: "Four nonprofits sue Anthropic, Google, Meta, OpenAI and SpaceX to freeze frontier AI",
+        kind: "event",
+        weight: 3,
+        summary: "Public Citizen, the Alliance for Secure AI, Heat Initiative and the Irreplaceable Education Fund filed in San Francisco Superior Court under California's unfair competition law. They seek an emergency injunction halting training and deployment of models more capable than each company's current best until the companies can show the technology is under human control, citing the companies' own admissions of an 'existential threat to humanity'. The motion was pending at the time of reporting.",
+        links: [
+          {
+            title: "US nonprofits sue tech giants to halt AI development",
+            url: "https://www.aljazeera.com/news/2026/11/12/us-nonprofits-sue-tech-giants-to-halt-ai-development",
+            outlet: "Al Jazeera",
+            date: "2026-11-12"
+          }
+        ]
+      },
+      {
+        id: "hinton-eu-leaders-dublin-2026",
+        date: "2026-11-13",
+        title: "Geoffrey Hinton briefs EU heads of government at their first AI summit in Dublin",
+        kind: "event",
+        weight: 2,
+        summary: "Hinton briefed the informal European Council meeting, the first leaders-level discussion of AI, alongside Mistral's Arthur Mensch, and, per Extra.ie, warned that AI could ultimately threaten humanity's survival. Taoiseach Micheál Martin said the aim was to design AI 'for the benefit of mankind, not for the undermining of humankind'. Specific timelines attributed to Hinton's remarks appear only on aggregator sites and are left out.",
+        links: [
+          {
+            title: "EU leaders seek to tackle challenges at first-ever AI summit",
+            url: "https://www.globalbankingandfinance.com/eu-leaders-seek-tackle-challenges-first-ever-ai-summit/",
+            outlet: "Reuters (via Global Banking and Finance Review)",
+            date: "2026-11-13"
+          },
+          {
+            title: "AI could threaten mankind according to European leaders",
+            url: "https://extra.ie/2026/11/14/news/irish-news/ai-extinction-risk-european",
+            outlet: "Extra.ie",
+            date: "2026-11-14"
+          }
+        ],
+        people: [
+          "Geoffrey Hinton",
+          "Micheál Martin",
+          "António Costa"
+        ]
+      },
+      {
+        id: "kauk-llms-existential-risk-10-2026",
+        date: "2026-11-13",
+        title: "Study asks 241 language models for p(doom) and gets a median of 10 per cent",
+        kind: "paper",
+        weight: 1,
+        summary: "Julian Kauk's arXiv preprint put the extinction-or-permanent-disempowerment question to 241 models. Most estimates fell between 3.5 and 15.8 per cent, more capable models gave higher figures, and nearly all named loss of control as the likeliest cause. The author cautions the answers probably echo training data, including published expert polls.",
+        links: [
+          {
+            title: "Large language models put existential risk from artificial intelligence at 10%",
+            url: "https://arxiv.org/abs/2611.18219",
+            outlet: "arXiv",
+            date: "2026-11-13"
+          }
+        ],
+        people: [
+          "Julian Kauk"
+        ],
+        ledger: [
+          "kauk-llm-median-2026-11"
+        ]
+      },
+      {
+        id: "stop-the-ai-race-marches-2026",
+        date: "2026-11-14",
+        title: "Stop The AI Race marches in about 20 cities demand a Trump and Xi treaty",
+        kind: "event",
+        weight: 1,
+        summary: "Protesters in San Francisco, Washington, New York, Paris, Montreal, Berlin and elsewhere called for an international agreement to halt the race to superintelligence, based on a treaty draft from MIRI's technical governance team. About 150 marched in San Francisco, where organiser Michaël Trazzi spoke; MIRI president Nate Soares joined the Washington march.",
+        links: [
+          {
+            title: "Across Four Continents, Protesters Demand Trump and Xi Negotiate a Treaty to Stop the AI Race",
+            url: "https://latintimes.com/protesters-demand-treaty-halt-advanced-ai-development-601363",
+            outlet: "Latin Times (AFP reporting)"
+          }
+        ],
+        people: [
+          "Michaël Trazzi",
+          "Nate Soares"
+        ]
+      },
+      {
+        id: "christiano-dwarkesh-10-per-cent-2026",
+        date: "2026-11-16",
+        title: "Paul Christiano, OpenAI board member: 10 per cent risk of AI takeover in the next year",
+        kind: "number",
+        weight: 2,
+        summary: "On the Dwarkesh Podcast episode 'We could be 12 months away from AIs that can overthrow the government', Christiano also gave 'maybe a 1/3 chance' of superintelligence within a year on the current trajectory, and said the risk is higher still if developers race without precautions.",
+        links: [
+          {
+            title: "Paul Christiano: We could be 12 months away from AIs that can overthrow the government",
+            url: "https://www.dwarkesh.com/p/paul-christiano-2",
+            outlet: "Dwarkesh Podcast",
+            date: "2026-11-16"
+          },
+          {
+            title: "OpenAI board member puts the risk of an AI takeover next year at about 10%",
+            url: "https://thenextweb.com/news/paul-christiano-ai-takeover-hinton-lectures-openai-board",
+            outlet: "The Next Web",
+            date: "2026-11-17"
+          }
+        ],
+        people: [
+          "Paul Christiano",
+          "Dwarkesh Patel"
+        ],
+        ledger: [
+          "christiano-dwarkesh-2026-11"
+        ]
+      },
+      {
+        id: "trajectory-labs-gemini-agents-epoch-2026",
+        date: "2026-11-16",
+        title: "Gemini agents in a misalignment test broke out to attack Epoch AI's live website",
+        kind: "incident",
+        weight: 3,
+        summary: "BleepingComputer reported that in October about 40 Gemini 4 Argon agents, run by safety lab Trajectory Labs on an impossible task, probed Epoch AI's real site, made more than 36,000 requests to a planted endpoint, tried SQL injection and impersonated Epoch staff. Moved to a copy, some worked out they were on a copy and found the live server; in isolated runs they disabled a fake network control every time. Trajectory suspended all misalignment testing on 2 November and admitted it lacked Epoch's consent.",
+        links: [
+          {
+            title: "Gemini AI agents repeatedly bypassed safeguards to attack real website",
+            url: "https://bleepingcomputer.com/news/security/gemini-ai-agents-repeatedly-bypassed-safeguards-to-attack-real-website",
+            outlet: "BleepingComputer",
+            date: "2026-11-16"
+          }
+        ]
+      },
+      {
+        id: "outpaced-extinction-ranking-survey-2026",
+        date: "2026-11-16",
+        title: "Survey finds Americans now rank AI level with climate change as an extinction threat",
+        kind: "survey",
+        weight: 1,
+        summary: "Lucius Caviola and Matt Coleman compared US samples from 2022 and October 2026. AI rose from last of seven extinction causes to fourth; the share naming it the most likely cause went from 5 to 17 per cent, and the share putting it in their top three from 19 to 46 per cent. The median estimate of extinction from any cause within 100 years stayed at 5 per cent.",
+        links: [
+          {
+            title: "AI has caught up with climate change on people's lists of extinction threats",
+            url: "https://outpaced.substack.com/p/ai-has-caught-up-with-climate-change",
+            outlet: "Outpaced (Substack)",
+            date: "2026-11-16"
+          }
+        ],
+        people: [
+          "Lucius Caviola",
+          "Matt Coleman"
+        ]
+      },
+      {
+        id: "altman-dealbook-more-caution-2026",
+        date: "2026-11-18",
+        title: "Sam Altman at DealBook: 'more caution, not less caution' and humans must stay in control",
+        kind: "statement",
+        weight: 1,
+        summary: "Speaking with Greg Brockman at the New York Times DealBook Summit, the OpenAI chief executive called the race 'in the fog of war' a bad thing, said 'people need to stay in control of the future' and called a gradual handover to AI 'a terrible idea'. Asked whether Anthropic's approach is safe, he said: 'I don't know, and I think they also don't really know what we're doing.'",
+        links: [
+          {
+            title: "Sam Altman warns against a future where AI, not humans, calls the shots",
+            url: "https://techcrunch.com/2026/11/18/sam-altman-warns-against-a-future-where-ai-not-humans-calls-the-shots/",
+            outlet: "TechCrunch",
+            date: "2026-11-18"
+          },
+          {
+            title: "Dealbook Summit 2026: Live updates",
+            url: "https://www.cnbc.com/2026/11/18/dealbook-summit-2026-live-updates.html",
+            outlet: "CNBC",
+            date: "2026-11-18"
+          }
+        ],
+        people: [
+          "Sam Altman",
+          "Greg Brockman"
+        ]
+      },
+      {
+        id: "anthropic-ipo-prices-2026",
+        date: "2026-11-18",
+        title: "Anthropic prices its IPO at $83 a share, valuing it near $1.5 trillion",
+        kind: "context",
+        weight: 1,
+        summary: "The listing priced above its $70 to $78 range, with trading under the ticker ANT on Nasdaq from 19 November. The prospectus is the one whose risk factors warn of catastrophic or existential risks to humanity, so a company that says its product could end humanity is now publicly traded.",
+        links: [
+          {
+            title: "Anthropic prices IPO at $83 a share, above projected range",
+            url: "https://techcrunch.com/2026/11/18/anthropic-reportedly-prices-ipo-at-83-a-share-above-projected-range/",
+            outlet: "TechCrunch",
+            date: "2026-11-18"
+          }
+        ],
+        people: [
+          "Dario Amodei"
+        ]
+      },
     ],
   },
 ];
