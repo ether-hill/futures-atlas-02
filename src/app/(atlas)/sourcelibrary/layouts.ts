@@ -24,11 +24,11 @@ export const H = 900;
 export type LayoutKey = "circuit" | "constellation" | "when" | "languages" | "pages";
 
 export const LAYOUTS: { key: LayoutKey; label: string }[] = [
-  { key: "circuit", label: "Circuit" },
-  { key: "constellation", label: "Constellation" },
-  { key: "when", label: "When" },
+  { key: "circuit", label: "Subjects" },
+  { key: "constellation", label: "Connections" },
+  { key: "when", label: "Dates" },
   { key: "languages", label: "Languages" },
-  { key: "pages", label: "Pages" },
+  { key: "pages", label: "Length" },
 ];
 
 /** Centre, size, and a tilt that only the opening cloud uses. */

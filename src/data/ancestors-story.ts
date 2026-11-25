@@ -29,7 +29,7 @@ export interface ThreadStory {
 export const THREAD_STORIES: ThreadStory[] = [
   {
     key: "reasoning",
-    question: "Can reasoning be done by a mechanism?",
+    question: "Can a machine think?",
     modern: "artificial intelligence",
     heralds: [
       { id: "695592c17bd6d2cd1d61afec", label: "Ars magna generalis" },
@@ -39,7 +39,7 @@ export const THREAD_STORIES: ThreadStory[] = [
     named: {
       year: 1955,
       word: "artificial intelligence",
-      what: "The term artificial intelligence first appears, in the proposal for the Dartmouth summer project.",
+      what: "The term artificial intelligence first appears, in a proposal for a summer research project at Dartmouth.",
       source: "https://ojs.aaai.org/index.php/aimagazine/article/view/1904",
       sourceName: "AI Magazine reprint of the proposal",
     },
@@ -47,7 +47,7 @@ export const THREAD_STORIES: ThreadStory[] = [
   },
   {
     key: "automata",
-    question: "Can something made be said to be alive?",
+    question: "Can something we build be alive?",
     modern: "robots",
     heralds: [
       { id: "695aa9a4be4023bd34bd6b7d", label: "De gli automati" },
@@ -57,7 +57,7 @@ export const THREAD_STORIES: ThreadStory[] = [
     named: {
       year: 1920,
       word: "robot",
-      what: "Karel Čapek's play R.U.R. is published and gives the word robot to every language.",
+      what: "Karel Čapek's play R.U.R. is published and gives the world the word robot.",
       source: "https://www.lindahall.org/about/news/scientist-of-the-day/karel-capek-2",
       sourceName: "Linda Hall Library",
     },
@@ -75,7 +75,7 @@ export const THREAD_STORIES: ThreadStory[] = [
     named: {
       year: 1900,
       word: "quanta",
-      what: "Max Planck presents his radiation law to the German Physical Society, with energy arriving in quanta.",
+      what: "Max Planck tells the German Physical Society that energy comes in small packets, called quanta.",
       source: "https://nbarchive.ku.dk/nba_calendar/1999-2011/100years_quanta/",
       sourceName: "Niels Bohr Archive",
     },
@@ -83,7 +83,7 @@ export const THREAD_STORIES: ThreadStory[] = [
   },
   {
     key: "forecast",
-    question: "Can the future be worked out in advance?",
+    question: "Can we predict the future?",
     modern: "foresight",
     heralds: [
       { id: "69dbcac31040d1d5e20ae6df", label: "Prognosticatio" },
@@ -93,7 +93,7 @@ export const THREAD_STORIES: ThreadStory[] = [
     named: {
       year: 1943,
       word: "futurology",
-      what: "Ossip Flechtheim coins futurology for the systematic study of what is coming.",
+      what: "Ossip Flechtheim coins the word futurology for the study of the future.",
       source: "https://sf-encyclopedia.com/entry/futurology",
       sourceName: "The Encyclopedia of Science Fiction",
     },
@@ -101,7 +101,7 @@ export const THREAD_STORIES: ThreadStory[] = [
   },
   {
     key: "worlds",
-    question: "What could be arranged differently?",
+    question: "Could society be organised differently?",
     modern: "speculative design",
     heralds: [
       { id: "69b2ff0ea1a4246ddb45adbb", label: "Utopia" },
@@ -111,7 +111,7 @@ export const THREAD_STORIES: ThreadStory[] = [
     named: {
       year: 1516,
       word: "utopia",
-      what: "Thomas More's Utopia is first printed, at Louvain, and its title becomes the word. The shelf holds the 1518 edition.",
+      what: "Thomas More's Utopia is first printed and its title becomes a word. The book here is the 1518 edition.",
       source: "https://en.wikipedia.org/wiki/Utopia_(book)",
       sourceName: "Wikipedia, Utopia (book)",
     },

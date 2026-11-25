@@ -90,8 +90,8 @@ export function ReadingList({ selected, onPick }: { selected: string | null; onP
         The reading list
       </h2>
       <p className="mt-3 max-w-[64ch] text-[15.5px] leading-[1.6] text-ink-70">
-        All {SHELF_BOOKS.length} books, in five subjects, oldest first. Under each cover is one sentence on why the
-        book is here. Select a book for the full note, its figures and the scan.
+        All {SHELF_BOOKS.length} books in five subjects, oldest first. Each has one sentence on why it is here.
+        Select a book to read more, see its pictures and open the scan.
       </p>
 
       <div className="mt-[clamp(32px,4vw,64px)] min-[1100px]:grid min-[1100px]:grid-cols-[300px_minmax(0,1fr)] min-[1100px]:gap-x-[clamp(32px,4vw,64px)]">
@@ -101,7 +101,7 @@ export function ReadingList({ selected, onPick }: { selected: string | null; onP
           style={{ top: "calc(var(--fa-nav-now, var(--fa-nav-h)) + 16px)" }}
         >
           <div className="flex items-baseline gap-3">
-            <h3 className="text-[16px] font-extrabold leading-tight text-ink">Narrow the list</h3>
+            <h3 className="text-[16px] font-extrabold leading-tight text-ink">Filter the list</h3>
             {narrowed && (
               <button
                 type="button"
@@ -113,7 +113,7 @@ export function ReadingList({ selected, onPick }: { selected: string | null; onP
             )}
           </div>
           <p className="mt-1 text-[13px] leading-[1.5] text-graphite">
-            Turn a ring, or select a segment, to pick a subject, a century and a language.
+            Turn the rings or select a segment to filter by subject, century and language.
           </p>
           <div className="mx-auto mt-2 max-w-[280px]">
             <LlullWheel value={wheel} onChange={setWheel} count={shown.length} />
@@ -130,8 +130,8 @@ export function ReadingList({ selected, onPick }: { selected: string | null; onP
             className="mt-3 w-full rounded-[3px] border border-ink/25 bg-transparent px-3.5 py-2.5 text-[16px] text-ink outline-none transition-colors placeholder:text-faint focus:border-accent"
           />
           <p className="mt-3 text-[12px] leading-[1.5] text-faint">
-            The wheel is borrowed from the oldest book on the reasoning shelf, Llull&apos;s Great Art, which combines
-            ideas on three lettered rings.
+            The wheel copies the one in Ramon Llull&apos;s Great Art, the oldest book on thinking machines here, which
+            combines ideas on three rotating rings.
           </p>
         </aside>
 
@@ -233,10 +233,10 @@ export function Method() {
     <Container className="mt-[clamp(20px,3vw,40px)]">
       <div className="grid max-w-[1100px] gap-x-[clamp(24px,4vw,64px)] gap-y-5 border-t border-ink/[0.14] pt-5 min-[820px]:grid-cols-2">
         <p className="text-[13.5px] leading-[1.7] text-graphite">
-          Found by running concept searches against the library&apos;s semantic index rather than keyword search,
-          since none of these books contain the words we use now. Titles, dates, cover plates and the grey
-          summaries are the library&apos;s own; the notes, the groupings and the {SHELF_EDGES.length} cross
-          references are ours. Every entry opens the scan at{" "}
+          We found these books by searching the library by meaning rather than by keyword, because they do not use
+          today&apos;s words for these subjects. Titles, dates, covers and the library summaries come from Source
+          Library. The notes, the five subjects and the {SHELF_EDGES.length} links between books are ours. Every
+          book links to its scan at{" "}
           <a
             href="https://sourcelibrary.org"
             target="_blank"
@@ -249,8 +249,8 @@ export function Method() {
         </p>
         <div className="text-[13.5px] leading-[1.7] text-graphite">
           <p>
-            Figures are the library&apos;s own extractions from the scans, with its descriptions. The diamond on each
-            line of the circuit marks the year the subject got the name it goes by now:
+            The pictures were taken from the scans by Source Library, with its captions. The diamond on each line in
+            the first view marks the year the subject got its modern name:
           </p>
           <ul className="mt-1.5 list-none p-0">
             {[...THREAD_STORIES]

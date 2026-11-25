@@ -55,11 +55,11 @@ export interface ShelfBook {
 export type ShelfEdge = [string, string, string];
 
 export const SHELF_CATEGORIES: ShelfCategory[] = [
-  { key: "reasoning", name: "Reasoning machines", short: "Reasoning", blurb: "Four hundred years of trying to make inference mechanical, from a Majorcan friar's rotating discs to the algebra that switching circuits run on." },
-  { key: "automata", name: "Automata and made bodies", short: "Automata", blurb: "Machines that move on their own, and the older argument about whether anything made by art can be said to be alive." },
-  { key: "physics", name: "Before quantum", short: "Physics", blurb: "Atoms and void, light as wave or particle, forces that act at a distance, worlds without number. The questions quantum mechanics inherited, in the centuries when they were still open." },
-  { key: "forecast", name: "Forecasting practice", short: "Forecasting", blurb: "Prediction as a working technique with rules, tables and a publishing industry, long before anyone called it foresight." },
-  { key: "worlds", name: "Built worlds", short: "Worlds", blurb: "Complete alternative societies and journeys off the planet, written as arguments about what could be arranged differently." },
+  { key: "reasoning", name: "Thinking machines", short: "Reasoning", blurb: "Attempts to turn reasoning into a mechanical process, from Ramon Llull's rotating discs to the algebra that computer circuits run on." },
+  { key: "automata", name: "Automata and robots", short: "Automata", blurb: "Machines that move by themselves, and the old question of whether something people make could be alive." },
+  { key: "physics", name: "Before quantum physics", short: "Physics", blurb: "Atoms, light as a wave or a particle, forces that act at a distance, other worlds. The open questions that quantum physics later took up." },
+  { key: "forecast", name: "Forecasting", short: "Forecasting", blurb: "Predicting the future with rules and tables, sold as printed books, long before anyone called it foresight." },
+  { key: "worlds", name: "Imagined worlds", short: "Worlds", blurb: "Whole imaginary societies and journeys to the moon, written to show that things could be arranged differently." },
 ];
 
 /** Sorted oldest first, which is also the order the sections read in. */

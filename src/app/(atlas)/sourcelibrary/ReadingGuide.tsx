@@ -44,24 +44,24 @@ const crossThread = LINKS.filter((l) => !l.same).length;
 /** What each view shows, said once, in the order the scroll meets them. */
 const VIEWS: Record<LayoutKey, { title: string; text: string }> = {
   circuit: {
-    title: "Five subjects, five lines",
-    text: "Each line is one subject. A book sits at the year it was printed, and a curve joins two books worth reading together. The diamond marks the year the subject got the name we use now.",
+    title: "By subject",
+    text: "Each line is one subject. Each book sits at the year it was printed. A curve joins two books that are worth reading together. The diamond marks the year the subject got its modern name.",
   },
   constellation: {
-    title: "What reads with what",
-    text: `The same books, pulled together by their ${LINKS.length} cross references. Dotted lines are the ${crossThread} that cross from one subject into another.`,
+    title: "Which books connect",
+    text: `The same books, grouped by the ${LINKS.length} links between them. The ${crossThread} dotted lines link books from different subjects.`,
   },
   when: {
     title: "When they were printed",
-    text: `Stacked by half century, subjects in bands. ${busiest.count} of the ${SHELF_BOOKS.length} come from ${busiest.from} to ${busiest.from + 50}.`,
+    text: `Grouped in fifty-year periods. ${busiest.count} of the ${SHELF_BOOKS.length} were printed between ${busiest.from} and ${busiest.from + 50}.`,
   },
   languages: {
-    title: "What they were written in",
+    title: "What language they are in",
     text: `One row per language, oldest first. ${latin} of the ${SHELF_BOOKS.length} are in Latin.`,
   },
   pages: {
     title: "How long they are",
-    text: `Each book stands beside a block as thick as its page count. Together they run to ${GEOMETRY.pages.extras.total.toLocaleString("en-GB")} pages.`,
+    text: `Next to each book is a block as thick as its page count. Together they have ${GEOMETRY.pages.extras.total.toLocaleString("en-GB")} pages.`,
   },
 };
 
@@ -328,10 +328,10 @@ export function ReadingGuide() {
               className="max-w-[54ch]"
               style={{ fontSize: "var(--text-lead)", lineHeight: "var(--lh-snug)", color: "var(--text-body)" }}
             >
-              Fifty works from the Source Library, chosen because each one is an early version of something the
-              rest of the Atlas is still doing: making inference mechanical, building bodies that move on their
-              own, arguing about what light is, predicting on the record, and specifying whole societies that do
-              not exist yet.
+              Source Library collects old books and translates them into English, many for the first time. We
+              picked fifty that show how people thought about thinking machines, robots, the nature of light,
+              predicting the future and imagined societies, centuries before these became the technology and
+              science we know today.
             </p>
             {/* the line that names one subject at a time */}
             <p className="min-h-[5.4em] max-w-[30ch] text-[clamp(19px,1.9vw,27px)] font-extrabold leading-[1.28] tracking-[-0.014em] text-ink min-[980px]:min-h-[4.2em]">
@@ -358,7 +358,7 @@ export function ReadingGuide() {
         <ShelfStrip onPick={pick} />
         <Container className="pb-[clamp(18px,2.4vw,32px)] pt-3">
           <p className="text-[13px] font-semibold text-graphite">
-            Scroll for five views of the whole shelf, then the reading list.
+            Scroll down to see the books five ways, then the full list.
           </p>
         </Container>
       </header>

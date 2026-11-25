@@ -94,12 +94,12 @@ export function BookSheet({
         </div>
         {plates.length > 0 && (
           <p className="mt-1 text-[12px] text-faint">
-            {plates.length} {plates.length === 1 ? "figure" : "figures"} from the scan. Select one to enlarge it.
+            {plates.length} {plates.length === 1 ? "figure" : "figures"} from the scan. Select one to see it larger.
           </p>
         )}
 
         <div className="mt-5">
-          <span className={label}>Why it is on the shelf</span>
+          <span className={label}>Why it is here</span>
           <p className="mt-1.5 text-[15.5px] leading-[1.65] text-ink-70">{book.note}</p>
         </div>
 
@@ -139,7 +139,7 @@ export function BookSheet({
 
         {book.description && (
           <p className="mt-6 border-t border-ink/[0.14] pt-4 text-[13.5px] leading-[1.6] text-graphite">
-            <span className={`${label} mr-2`}>From the library</span>
+            <span className={`${label} mr-2`}>Source Library summary</span>
             {book.description}
           </p>
         )}
