@@ -49,11 +49,11 @@ const ROUTES = [
 // Projects of their own that run on the same bundle: same body, their own address and card.
 const SOLO = [
   {
-    slug: 'twelve-futures',
-    path: '/twelve-futures',
-    title: 'Max Tegmark’s twelve futures. Futures Atlas',
+    slug: 'max-tegmark-ai-futures',
+    path: '/max-tegmark-ai-futures',
+    title: 'Max Tegmark’s AI futures. Futures Atlas',
     ogTitle: 'What happens when AI gets smarter than us?',
-    desc: "Draw a card from MIT physicist Max Tegmark's twelve futures for life with AI. Three of them end without us.",
+    desc: "Draw a card from MIT physicist Max Tegmark's AI futures for life with AI. Three of them end without us.",
     image: '/og/max-tegmark.png',
   },
 ];

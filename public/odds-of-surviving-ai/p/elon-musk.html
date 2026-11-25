@@ -118,7 +118,7 @@ button,.od-roll,.od-pill,.od-tile,.od-pcard,.od-land-cta,.od-link{
 body.od-menu-open .fa-share{display:none!important}
 /* persistent extinctions tally — sits below the global SHARE button, right-aligned to match */
 .od-extinctions{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 66px);z-index:59;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:right;pointer-events:none}
-/* /twelve-futures: Tegmark alone, so nothing offers another player */
+/* /max-tegmark-ai-futures: Tegmark alone, so nothing offers another player */
 .od-solo .od-pill,.od-solo .od-choose-inline,.od-solo .od-game-choose{display:none!important}
 /* TEST-ONLY force-outcome buttons (sit just under the global SHARE button) */
 .od-forcetest{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 92px);z-index:60;display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em}
@@ -1298,8 +1298,8 @@ class Component extends DCLogic {
   parseRoute() {
     let path = '/theodds';
     try { path = (location.pathname || '').replace(/\/+$/, ''); } catch (e) {}
-    // /twelve-futures is Max Tegmark's cards as a project of its own: one player, no chooser
-    if (/\/twelve-futures$/.test(path)) { this.solo = true; return { screen: 'play', id: 'tegmark' }; }
+    // /max-tegmark-ai-futures is Max Tegmark's cards as a project of its own: one player, no chooser
+    if (/\/max-tegmark-ai-futures$/.test(path)) { this.solo = true; return { screen: 'play', id: 'tegmark' }; }
     // tolerate the legacy /odds-of-surviving-ai base too (server-side redirects handle it)
     const m = path.match(/\/(?:theodds|odds-of-surviving-ai)(?:\/([^\/]+))?$/);
     if (!m || !m[1]) return { screen: 'landing' };

@@ -388,8 +388,8 @@ export const projects: Project[] = [
   },
   {
     // The Odds' Tegmark card draw on its own: same bundle, one player, no chooser.
-    id: "twelve-futures",
-    title: "Max Tegmark's twelve futures",
+    id: "max-tegmark-ai-futures",
+    title: "Max Tegmark's AI futures",
     tagline:
       "What happens when AI gets smarter than us? The MIT physicist Max Tegmark sketched twelve futures. Draw one. Three of them end without us.",
     year: "2026",
@@ -400,8 +400,8 @@ export const projects: Project[] = [
     status: "live",
     visibility: "draft",
     stage: "ready",
-    path: "/twelve-futures",
-    image: "/projects/twelve-futures.jpg",
+    path: "/max-tegmark-ai-futures",
+    image: "/projects/max-tegmark-ai-futures.jpg",
     cta: "Draw a card",
   },
   {
@@ -761,7 +761,7 @@ export const homepageProjects: Project[] = liveProjects.filter(
  */
 const DRAFT_ORDER = [
   // ready
-  "twelve-futures",
+  "max-tegmark-ai-futures",
   "cymatics-simulator",
   "interactive-quantum-interference",
   "futures-in-figures",

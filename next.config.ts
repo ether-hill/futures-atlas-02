@@ -84,9 +84,9 @@ const nextConfig: NextConfig = {
         { source: "/theodds/max-tegmark", destination: "/odds-of-surviving-ai/p/max-tegmark.html" },
         { source: "/theodds/research", destination: "/odds-of-surviving-ai/research.html" },
         { source: "/theodds/stats", destination: "/odds-of-surviving-ai/stats.html" },
-        // Max Tegmark's twelve futures: The Odds' card draw as a project of its own,
+        // Max Tegmark's AI futures: The Odds' card draw as a project of its own,
         // the same bundle locked to one player (it reads the path).
-        { source: "/twelve-futures", destination: "/odds-of-surviving-ai/p/twelve-futures.html" },
+        { source: "/max-tegmark-ai-futures", destination: "/odds-of-surviving-ai/p/max-tegmark-ai-futures.html" },
         // Interference — hand-authored static bundle (gallery + embed.html player)
         { source: "/interference", destination: "/interference/index.html" },
         // …/solo is the same bundle with the global bar and footer left off, for
