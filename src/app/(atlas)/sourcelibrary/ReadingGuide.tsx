@@ -32,7 +32,6 @@ interface Cam {
 
 const NO_IDS = new Set<string>();
 const NO_LINKS = new Set<number>();
-const OPENING_STEP_MS = 1100;
 /** how much scroll one view gets, in viewport heights */
 const SCROLL_PER_VIEW = 0.85;
 /** how far past a boundary, in views, the scroll goes before the view changes */
@@ -100,9 +99,8 @@ export function ReadingGuide() {
       ([entry]) => {
         if (!entry?.isIntersecting) return;
         io.disconnect();
-        timers = THREADS.map((_, i) =>
-          window.setTimeout(() => setSorted((n) => Math.max(n, i + 1)), 350 + i * OPENING_STEP_MS),
-        );
+        // all five subjects sort at once (one at a time was too slow)
+        timers = [window.setTimeout(() => setSorted(THREADS.length), 350)];
       },
       { threshold: 0.45 },
     );
