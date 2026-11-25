@@ -3,7 +3,7 @@
 import { memo, useMemo, type CSSProperties, type RefObject } from "react";
 import { SHELF_BOOKS, SHELF_CATEGORIES, type ShelfCategoryKey } from "@/data/library-shelf";
 import { THREAD_STORY } from "@/data/ancestors-story";
-import { GEOMETRY, H, LINKS, THREADS, W, threadIndex, type Box, type LayoutKey } from "./layouts";
+import { LINKS, THREADS, threadIndex, type Box, type LayoutKey, type World as WorldGeo } from "./layouts";
 import { CAT, CAT_COLOR, shortTitle, smallCover } from "./shared";
 
 /**
@@ -33,6 +33,8 @@ function linkPath(layout: LayoutKey, A: Box, B: Box, same: boolean) {
 }
 
 export interface WorldProps {
+  /** the wide world, or the tall one phones get */
+  world: WorldGeo;
   layout: LayoutKey;
   /** how many threads the opening has put on their wires; 5 is all of them */
   sorted: number;
@@ -47,6 +49,7 @@ export interface WorldProps {
 }
 
 export const World = memo(function World({
+  world,
   layout,
   sorted,
   selected,
@@ -58,6 +61,10 @@ export const World = memo(function World({
   dragged,
 }: WorldProps) {
   const opening = layout === "circuit" && sorted < THREADS.length;
+  const { W, H, GEOMETRY } = world;
+  const tall = world.kind === "tall";
+  /** type in the tall world is drawn larger, since a phone shows that world at under half size */
+  const F = tall ? 1.4 : 1;
 
   const boxes = useMemo(() => {
     if (!opening) return GEOMETRY[layout].boxes;
@@ -66,7 +73,7 @@ export const World = memo(function World({
       mixed[b.id] = threadIndex(b.cat) < sorted ? GEOMETRY.circuit.boxes[b.id]! : GEOMETRY.cloud[b.id]!;
     }
     return mixed;
-  }, [layout, sorted, opening]);
+  }, [layout, sorted, opening, GEOMETRY]);
 
   const cx = GEOMETRY.circuit.extras;
   const linksOn = !opening && (layout === "circuit" || layout === "constellation");
@@ -75,7 +82,7 @@ export const World = memo(function World({
       layout === "circuit" || layout === "constellation"
         ? LINKS.map((l) => linkPath(layout, GEOMETRY[layout].boxes[l.a]!, GEOMETRY[layout].boxes[l.b]!, l.same))
         : [],
-    [layout],
+    [layout, GEOMETRY],
   );
 
   return (
@@ -90,7 +97,7 @@ export const World = memo(function World({
               y={46}
               textAnchor="middle"
               className="font-condensed"
-              style={{ fontSize: 18, fill: "var(--c-graphite)", letterSpacing: "0.06em" }}
+              style={{ fontSize: 18 * F, fill: "var(--c-graphite)", letterSpacing: "0.06em" }}
             >
               {t.year}
             </text>
@@ -149,9 +156,9 @@ export const World = memo(function World({
               />
               <text
                 x={n.x + (end ? 4 : -4)}
-                y={n.y - 36}
+                y={n.y - (tall ? 30 : 36)}
                 textAnchor={end ? "end" : "start"}
-                style={{ fontSize: 18, fill: "var(--c-ink)", paintOrder: "stroke", stroke: "var(--c-surface)", strokeWidth: 6 }}
+                style={{ fontSize: 18 * F, fill: "var(--c-ink)", paintOrder: "stroke", stroke: "var(--c-surface)", strokeWidth: 6 }}
               >
                 <tspan className="font-condensed" style={{ fontWeight: 600, letterSpacing: "0.04em" }}>
                   {n.year}
@@ -190,6 +197,20 @@ export const World = memo(function World({
 
       {/* --------------------------------------------------------------------- when */}
       <svg className={`anc-deco ${layout === "when" ? "is-on" : ""}`} width={W} height={H} aria-hidden>
+        {GEOMETRY.when.extras.rows?.map((r) => (
+          <g key={r.from}>
+            <line x1={40} x2={W - 30} y1={r.y + 40} y2={r.y + 40} style={{ stroke: "var(--c-ink)", opacity: 0.1 }} />
+            <text x={40} y={r.y + 9} className="font-condensed" style={{ fontSize: 19 * F, fill: "var(--c-graphite)", letterSpacing: "0.05em" }}>
+              {r.from}
+            </text>
+            {r.count > 0 && (
+              <text x={r.x1 + 10} y={r.y + 9} className="font-condensed" style={{ fontSize: 20 * F, fontWeight: 600, fill: "var(--c-ink)" }}>
+                {r.count}
+              </text>
+            )}
+          </g>
+        ))}
+        {!tall && (
         <line
           x1={GEOMETRY.when.extras.bins[0]!.x - 10}
           x2={W - GEOMETRY.when.extras.bins[0]!.x + 10}
@@ -197,6 +218,7 @@ export const World = memo(function World({
           y2={GEOMETRY.when.extras.base}
           style={{ stroke: "var(--c-ink)", strokeWidth: 2 }}
         />
+        )}
         {GEOMETRY.when.extras.bins.map((b) => (
           <g key={b.from}>
             <line x1={b.x} x2={b.x} y1={GEOMETRY.when.extras.base} y2={GEOMETRY.when.extras.base + 8} style={{ stroke: "var(--c-ink)" }} />
@@ -228,13 +250,13 @@ export const World = memo(function World({
       <svg className={`anc-deco ${layout === "languages" ? "is-on" : ""}`} width={W} height={H} aria-hidden>
         {GEOMETRY.languages.extras.rows.map((r) => (
           <g key={r.name}>
-            <text x={60} y={r.y + 2} style={{ fontSize: 24, fontWeight: 800, fill: "var(--c-ink)" }}>
+            <text x={tall ? 34 : 60} y={r.y + 2} style={{ fontSize: 24 * F, fontWeight: 800, fill: "var(--c-ink)" }}>
               {r.name}
             </text>
-            <text x={60} y={r.y + 26} className="font-condensed" style={{ fontSize: 18, fill: "var(--c-graphite)", letterSpacing: "0.05em" }}>
+            <text x={tall ? 34 : 60} y={r.y + 2 + 24 * F} className="font-condensed" style={{ fontSize: 18 * F, fill: "var(--c-graphite)", letterSpacing: "0.05em" }}>
               {r.count} {r.count === 1 ? "work" : "works"}
             </text>
-            <line x1={r.x1 + 6} x2={W - 60} y1={r.y} y2={r.y} style={{ stroke: "var(--c-ink)", opacity: 0.1 }} />
+            {!tall && <line x1={r.x1 + 6} x2={W - 60} y1={r.y} y2={r.y} style={{ stroke: "var(--c-ink)", opacity: 0.1 }} />}
           </g>
         ))}
       </svg>
@@ -249,7 +271,7 @@ export const World = memo(function World({
           ))}
         </defs>
         {GEOMETRY.pages.extras.shelves.map((y) => (
-          <line key={y} x1={60} x2={W - 60} y1={y + 5} y2={y + 5} style={{ stroke: "var(--c-ink)", strokeWidth: 2 }} />
+          <line key={y} x1={tall ? 30 : 60} x2={W - (tall ? 30 : 60)} y1={y + 5} y2={y + 5} style={{ stroke: "var(--c-ink)", strokeWidth: 2 }} />
         ))}
         {GEOMETRY.pages.extras.slabs.map((s) => (
           <g key={s.id}>
@@ -257,10 +279,10 @@ export const World = memo(function World({
             <rect x={s.x} y={s.y} width={s.w} height={s.h} style={{ fill: "none", stroke: CAT_COLOR[s.cat], strokeWidth: 1 }} />
             <text
               x={s.x - 2}
-              y={s.y + s.h + 26}
+              y={s.y + s.h + 26 * (tall ? 1.15 : 1)}
               textAnchor="middle"
               className="font-condensed"
-              style={{ fontSize: 17, fill: "var(--c-graphite)", letterSpacing: "0.04em" }}
+              style={{ fontSize: 17 * (tall ? 1.25 : 1), fill: "var(--c-graphite)", letterSpacing: "0.04em" }}
             >
               {s.pages > 0 ? s.pages : ""}
             </text>
@@ -321,18 +343,32 @@ export const World = memo(function World({
             key={key}
             type="button"
             className="anc-fade group absolute text-left"
-            style={{ left: 22, top: y - 30, width: 214, opacity: on ? 1 : 0, pointerEvents: on ? "auto" : "none" }}
+            style={
+              tall
+                ? { left: 40, top: y - 118, opacity: on ? 1 : 0, pointerEvents: on ? "auto" : "none", whiteSpace: "nowrap" }
+                : { left: 22, top: y - 30, width: 214, opacity: on ? 1 : 0, pointerEvents: on ? "auto" : "none" }
+            }
             onClick={() => {
               if (!dragged.current) onThread(key);
             }}
           >
-            <span className="flex items-start gap-2.5 text-[21px] font-extrabold leading-[1.08] text-ink group-hover:text-accent">
-              <i className="mt-[5px] block h-[13px] w-[13px] shrink-0" style={{ background: CAT_COLOR[key] }} />
-              {CAT[key].name}
-            </span>
-            <span className="mt-1 block pl-[23px] font-condensed text-[17px] tracking-[0.05em] text-graphite">
-              {COUNT[key]} works
-            </span>
+            {tall ? (
+              <span className="flex items-center gap-3 text-[29px] font-extrabold leading-none text-ink group-hover:text-accent">
+                <i className="block h-[17px] w-[17px] shrink-0" style={{ background: CAT_COLOR[key] }} />
+                {CAT[key].name}
+                <span className="font-condensed text-[24px] font-normal tracking-[0.05em] text-graphite">{COUNT[key]}</span>
+              </span>
+            ) : (
+              <>
+                <span className="flex items-start gap-2.5 text-[21px] font-extrabold leading-[1.08] text-ink group-hover:text-accent">
+                  <i className="mt-[5px] block h-[13px] w-[13px] shrink-0" style={{ background: CAT_COLOR[key] }} />
+                  {CAT[key].name}
+                </span>
+                <span className="mt-1 block pl-[23px] font-condensed text-[17px] tracking-[0.05em] text-graphite">
+                  {COUNT[key]} works
+                </span>
+              </>
+            )}
           </button>
         );
       })}
@@ -341,12 +377,12 @@ export const World = memo(function World({
       <svg className={`anc-deco ${layout === "constellation" ? "is-on" : ""}`} width={W} height={H} aria-hidden>
         {GEOMETRY.constellation.extras.labels.map((l) => (
           <g key={l.key}>
-            <rect x={l.x - 7} y={l.y - 40} width={14} height={14} style={{ fill: CAT_COLOR[l.key] }} />
+            <rect x={l.x - 7} y={l.y - 40 * F} width={14} height={14} style={{ fill: CAT_COLOR[l.key] }} />
             <text
               x={l.x}
               y={l.y}
               textAnchor="middle"
-              style={{ fontSize: 23, fontWeight: 800, fill: "var(--c-ink)", paintOrder: "stroke", stroke: "var(--c-surface)", strokeWidth: 6 }}
+              style={{ fontSize: 23 * F, fontWeight: 800, fill: "var(--c-ink)", paintOrder: "stroke", stroke: "var(--c-surface)", strokeWidth: 6 }}
             >
               {CAT[l.key].name}
             </text>

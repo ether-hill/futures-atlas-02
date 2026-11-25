@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties }
 import { Container } from "@/components/Container";
 import { SHELF_BOOKS, SHELF_CATEGORIES, type ShelfCategoryKey } from "@/data/library-shelf";
 import { THREAD_STORIES } from "@/data/ancestors-story";
-import { GEOMETRY, H, LAYOUTS, LINKS, THREADS, W, type LayoutKey } from "./layouts";
+import { GEOMETRY, LAYOUTS, LINKS, THREADS, WORLDS, type LayoutKey } from "./layouts";
 import { BookSheet } from "./Panels";
 import { Method, ReadingList, ShelfStrip, threadAnchor } from "./Sections";
 import { World } from "./World";
@@ -196,8 +196,17 @@ export function ReadingGuide() {
     };
   }, []);
 
+  // phones get the tall world: the same five views re-arranged to fit the screen whole
+  const world = WORLDS[size && size.w < 700 ? "tall" : "wide"];
+  const { W, H } = world;
+
   const dims = useMemo(() => {
     if (!size) return null;
+    if (world.kind === "tall") {
+      const ceiling = Math.max(300, size.winH - 66 - size.bar);
+      const s0 = Math.min(size.w / W, ceiling / H);
+      return { w: size.w, h: Math.round(H * s0), s0 };
+    }
     const fitW = size.w / W;
     // the pinned block has to fit under the nav, caption bar included
     const ceiling = Math.max(340, size.winH - 66 - size.bar);
@@ -207,7 +216,7 @@ export function ReadingGuide() {
     // (up to half scale) and is dragged sideways instead of shrinking to a stamp.
     const s0 = H * fitW <= h ? Math.max(fitW, Math.min(h / H, 0.5)) : h / H;
     return { w: size.w, h, s0 };
-  }, [size]);
+  }, [size, world, W, H]);
 
   const cam = useMemo<Cam>(() => {
     if (!dims) return { x: W / 2, y: H / 2, s: 0.6 };
@@ -215,7 +224,7 @@ export function ReadingGuide() {
     const hw = dims.w / (2 * s);
     const want = pan?.x ?? (layout === "constellation" ? W / 2 : 0);
     return { s, x: W * s <= dims.w ? W / 2 : Math.min(W - hw, Math.max(hw, want)), y: H / 2 };
-  }, [dims, pan, layout]);
+  }, [dims, pan, layout, W, H]);
 
   // a new arrangement starts from its own beginning, not where the last was dragged to
   useEffect(() => setPan(null), [layout]);
@@ -371,12 +380,12 @@ export function ReadingGuide() {
           style={{ top: "var(--fa-nav-now, var(--fa-nav-h))" }}
         >
           <div ref={bar}>
-            <Container className="pb-[clamp(16px,1.8vw,26px)] pt-[clamp(14px,1.5vw,22px)]">
+            <Container className="pb-3 pt-3 min-[680px]:pb-[clamp(16px,1.8vw,26px)] min-[680px]:pt-[clamp(14px,1.5vw,22px)]">
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
                 <div
                   role="tablist"
                   aria-label="View"
-                  className="flex flex-wrap gap-1.5"
+                  className="flex gap-1 min-[680px]:flex-wrap min-[680px]:gap-1.5"
                 >
                   {LAYOUTS.map((l, i) => (
                     <button
@@ -385,7 +394,7 @@ export function ReadingGuide() {
                       role="tab"
                       aria-selected={step === i}
                       onClick={() => goToView(i)}
-                      className={`shrink-0 whitespace-nowrap rounded-[2px] border px-2.5 py-1.5 text-[13px] font-semibold transition-colors min-[680px]:px-3.5 min-[680px]:py-2 min-[680px]:text-[13.5px] ${
+                      className={`min-w-0 flex-auto whitespace-nowrap rounded-[2px] border px-1 py-1.5 text-center min-[680px]:flex-none text-[12.5px] font-semibold transition-colors min-[680px]:px-3.5 min-[680px]:py-2 min-[680px]:text-[13.5px] ${
                         step === i
                           ? "border-ink bg-ink text-surface"
                           : "border-ink/[0.18] text-graphite hover:border-ink hover:text-ink"
@@ -400,13 +409,14 @@ export function ReadingGuide() {
                 </div>
 
                 {/* what the five colours mean, wherever you are */}
-                <ul className="flex list-none flex-wrap items-center gap-x-4 gap-y-0 p-0 min-[1180px]:ml-auto">
+                {/* on a phone the views name their own subjects, so the key gives its room to the picture */}
+                <ul className="hidden list-none flex-wrap items-center gap-x-4 gap-y-0 p-0 min-[680px]:flex min-[1180px]:ml-auto">
                   {SHELF_CATEGORIES.map((c) => (
                     <li key={c.key}>
                       <button
                         type="button"
                         onClick={() => toThread(c.key)}
-                        className="flex min-h-[32px] items-center gap-1.5 text-[12.5px] font-semibold text-graphite hover:text-ink"
+                        className="flex min-h-[32px] items-center gap-1.5 text-[12px] min-[680px]:text-[12.5px] font-semibold text-graphite hover:text-ink"
                       >
                         <i className="block h-[9px] w-[9px]" style={{ background: CAT_COLOR[c.key] }} />
                         <span className="min-[680px]:hidden">{c.short}</span>
@@ -421,7 +431,7 @@ export function ReadingGuide() {
                   one shows, so the bar is always as tall as the longest. When its
                   height followed the caption, the stage resized at every view
                   change, which moved the scroll position and flipped the view back. */}
-              <div className="mt-[clamp(16px,1.9vw,28px)] grid">
+              <div className="mt-3 grid min-[680px]:mt-[clamp(16px,1.9vw,28px)]">
                 {LAYOUTS.map((l, i) => {
                   const v = VIEWS[l.key];
                   const on = i === step;
@@ -431,10 +441,10 @@ export function ReadingGuide() {
                       aria-hidden={!on}
                       className={`[grid-area:1/1] grid gap-x-[clamp(24px,3vw,48px)] gap-y-1.5 min-[900px]:grid-cols-[auto_minmax(0,1fr)_auto] min-[900px]:items-baseline ${on ? "anc-swap" : "invisible"}`}
                     >
-                      <h2 className="text-[clamp(20px,2vw,29px)] font-extrabold leading-[1.1] tracking-[-0.018em] text-ink">
+                      <h2 className="text-[clamp(18px,2vw,29px)] font-extrabold leading-[1.1] tracking-[-0.018em] text-ink">
                         {v.title}
                       </h2>
-                      <p className="max-w-[92ch] text-[14.5px] leading-[1.55] text-ink-70">{v.text}</p>
+                      <p className="max-w-[92ch] text-[13px] leading-[1.45] text-ink-70 min-[680px]:text-[14.5px] min-[680px]:leading-[1.55]">{v.text}</p>
                       <p className="hidden whitespace-nowrap text-[12.5px] font-semibold text-graphite min-[900px]:block">
                         {i < LAYOUTS.length - 1 ? "Keep scrolling for the next view" : "The reading list is next"}
                       </p>
@@ -468,6 +478,7 @@ export function ReadingGuide() {
               }
             >
               <World
+                world={world}
                 layout={layout}
                 sorted={sorted}
                 selected={selected}
@@ -490,7 +501,7 @@ export function ReadingGuide() {
                 >
                   Skip the opening
                 </button>
-              ) : (
+              ) : world.kind === "tall" ? null : (
                 <span className="rounded-[2px] bg-surface/85 px-2.5 py-1 text-[12.5px] font-semibold text-graphite backdrop-blur-sm">
                   {pannable ? "Drag sideways for more. Select a book to open it" : "Select any book to see why it is here"}
                 </span>
