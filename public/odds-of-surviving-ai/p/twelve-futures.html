@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html lang="en" data-fa-no-footer>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- ── site-level OG defaults (shared by every /theodds route) ── -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="The Odds, Futures Atlas" />
+<meta property="og:locale" content="en_GB" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="theme-color" content="#0b0a11" />
+<!-- OD:ROUTE-META:START (generated for /twelve-futures by scripts/build-odds-routes.mjs — do not hand-edit) -->
+<title>Max Tegmark’s twelve futures. Futures Atlas</title>
+<meta name="description" content="Draw a card from MIT physicist Max Tegmark's twelve futures for life with AI. Three of them end without us." />
+<meta property="og:title" content="What happens when AI gets smarter than us?" />
+<meta property="og:description" content="Draw a card from MIT physicist Max Tegmark's twelve futures for life with AI. Three of them end without us." />
+<meta property="og:url" content="https://futures-atlas.com/twelve-futures" />
+<meta property="og:image" content="https://futures-atlas.com/og/max-tegmark.png" />
+<meta name="twitter:image" content="https://futures-atlas.com/og/max-tegmark.png" />
+<link rel="canonical" href="https://futures-atlas.com/twelve-futures" />
+<!-- OD:ROUTE-META:END -->
+<base href="/odds-of-surviving-ai/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/favicon-dark.svg" type="image/svg+xml" media="(prefers-color-scheme: dark)" />
+<script src="./support.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/atlas-nav.css">
+<style id="fa-nav-unify">
+/* The master /atlas-nav.js fa-shell is the ONLY bar — there is no zone sub-nav.
+   The piece (and the landing) sit directly below it and fill the rest of the
+   viewport. */
+.fa-shell{position:fixed!important;top:0;left:0;right:0;z-index:9001!important}
+.fa-shell.is-hidden{transform:none!important}
+body{padding-top:var(--fa-nav-h)!important}
+.od-stage{min-height:calc(var(--od-vh,1vh)*100 - var(--fa-nav-h))!important;height:calc(var(--od-vh,1vh)*100 - var(--fa-nav-h))!important}
+@media(min-width:860px){.od-photo{height:100%!important}.od-game{height:100%!important}}
+/* tighter nav bar on tablet/mobile (the var also drives the content offset, so they stay in sync) */
+@media(max-width:859px){:root{--fa-nav-h:48px}}
+</style><script src="/atlas-nav.js" defer></script>
+<!-- The Odds is a dark immersive piece: force the dark theme so the shared nav matches,
+     even if the visitor toggled the hub to light. The inline add is anti-flash; the
+     event re-asserts run AFTER atlas-nav's deferred applyDefault (inline `defer` is
+     ignored, so we must use DOMContentLoaded/load). The nav toggle still works after. -->
+<script>
+  document.documentElement.classList.add('dark');
+  (function () {
+    function faForceDark() { document.documentElement.classList.add('dark'); }
+    addEventListener('DOMContentLoaded', faForceDark);
+    addEventListener('load', faForceDark);
+  })();
+</script></head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/three@0.137.0/build/three.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+/* iOS < 14.5 has no `inset`: spell the inline inset:0 / inset:14px out as longhands (inline wins where inset works) */
+[style*="inset:0"]{top:0;right:0;bottom:0;left:0}
+[style*="inset:14px"]{top:14px;right:14px;bottom:14px;left:14px}
+html,body{height:100%}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;background:#08080A}
+button{font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;color:inherit}
+@keyframes odUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes odFade{from{opacity:0}to{opacity:1}}
+@keyframes odRise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes odScaleIn{from{opacity:0;transform:scale(0.94)}to{opacity:1;transform:none}}
+@keyframes odPop{0%{opacity:0;transform:scale(0)}65%{opacity:1}100%{opacity:1;transform:scale(1)}}
+.od-pop{animation:odPop .72s cubic-bezier(.2,.85,.3,1.28) both}
+@keyframes odImgIn{from{opacity:0;transform:scale(1.08)}to{opacity:1;transform:scale(1)}}
+@keyframes odBlurIn{from{opacity:0;filter:grayscale(0.15) contrast(1.05) blur(18px);transform:scale(1.06)}to{opacity:1;filter:grayscale(0.15) contrast(1.05) blur(0);transform:scale(1)}}
+.od-blurin{animation:odBlurIn 1.1s cubic-bezier(.2,.7,.2,1) both}
+/* flipped variant (used for player photos that face the wrong way, e.g. Dario) */
+@keyframes odBlurInFlip{from{opacity:0;filter:grayscale(0.15) contrast(1.05) blur(18px);transform:scaleX(-1) scale(1.06)}to{opacity:1;filter:grayscale(0.15) contrast(1.05) blur(0);transform:scaleX(-1) scale(1)}}
+.od-blurin-flip{animation:odBlurInFlip 1.1s cubic-bezier(.2,.7,.2,1) both}
+.od-hero-img.od-flip{transform:scaleX(-1)}
+/* portrait-video blur-in on load (no grayscale, so the clip plays true-colour) */
+@keyframes odVidBlurIn{from{opacity:0;filter:blur(16px);transform:scale(1.05)}to{opacity:1;filter:blur(0);transform:scale(1)}}
+.od-vidblurin{animation:odVidBlurIn 1s cubic-bezier(.2,.7,.2,1) both}
+/* Rider-Waite-style drawn tarot card (front face of the flip) */
+.od-drawn-wrap{transform:scale(var(--od-card-k,1));transform-origin:50% 50%}
+.od-tarot{position:absolute;inset:0;border-radius:12px;background:#e9dfc4;backface-visibility:hidden;transform:rotateY(180deg);box-shadow:inset 0 0 0 1.5px rgba(255,252,244,0.55),0 12px 34px rgba(0,0,0,0.5);display:flex;flex-direction:column;padding:11px 11px 0}
+.od-tarot-art{flex:1;min-height:0;overflow:hidden;border:1px solid rgba(48,36,18,0.6);background:#12102a;display:flex;align-items:center;justify-content:center}
+.od-tarot-art img{width:100%;height:100%;object-fit:cover;display:block}
+.od-tarot-ph{width:72px;height:72px;border:1.5px solid rgba(255,255,255,0.5);transform:rotate(45deg);display:flex;align-items:center;justify-content:center}
+.od-tarot-ph>div{width:30px;height:30px;border:1.5px solid rgba(255,255,255,0.5)}
+.od-tarot-cap{display:flex;align-items:center;justify-content:center;padding:9px 6px 12px;gap:8px}
+.od-tarot-cap .nm{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:19px;letter-spacing:0.05em;text-transform:uppercase;color:#241a0d;line-height:1.02;text-align:center}
+.od-doom-vid.od-flip{transform:scaleX(-1)}
+.od-pcard-img.od-flip,.od-tile-img.od-flip{transform:scaleX(-1)}
+.od-pcard:hover .od-pcard-img.od-flip{transform:scaleX(-1) scale(1.05)}
+.od-tile:hover .od-tile-img.od-flip{transform:scaleX(-1) scale(1.05)}
+@keyframes odFanIn{from{transform:rotate(0deg) translateY(42px) scale(0.92);opacity:0}to{transform:rotate(var(--deg)) translateY(0) scale(1);opacity:1}}
+@keyframes odFanFade{from{opacity:0}to{opacity:1}}
+@keyframes odEmber{0%{transform:translateY(0) scale(1);opacity:0}15%{opacity:1}100%{transform:translateY(-46px) scale(0.2);opacity:0}}
+/* Dario doom: the glass museum vitrine is built inside the die's Three.js scene (see dario-die.js), not in CSS */
+.od-anim{opacity:0;animation:odUp .6s cubic-bezier(.2,.7,.2,1) both}
+/* Nobody copies a button label. On touch, press-and-hold is exactly the gesture that arms the
+   charge AND the one iOS reads as "select this text / show the callout", so the spin button would
+   come back with its own label highlighted. Kill selection, the long-press callout and the tap
+   flash on every control; text elsewhere on the page stays selectable. */
+button,.od-roll,.od-pill,.od-tile,.od-pcard,.od-land-cta,.od-link{
+  -webkit-user-select:none;-moz-user-select:none;user-select:none;
+  -webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+.od-roll{transition:transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, letter-spacing .22s ease, background .22s ease}
+.od-roll:hover{transform:translateY(-4px) scale(1.04);box-shadow:0 16px 36px rgba(0,0,0,0.45), 0 0 0 4px rgba(251,239,255,0.16);letter-spacing:0.2em;background:#fff}
+.od-roll:active{transform:translateY(-1px) scale(0.99)}
+.od-charge-fill{position:absolute;left:0;top:0;bottom:0;width:0;background:#E0481B;z-index:0;pointer-events:none}
+.od-charge.is-charging{transform:translateY(-2px) scale(1.03);box-shadow:0 16px 38px rgba(224,72,27,0.5)}
+.od-charge.is-charging span{color:#fff!important}
+.od-rollhint{font-family:'Space Mono',monospace;font-size:10px;font-weight:400;letter-spacing:0.16em;color:rgba(251,239,255,0.4);text-transform:uppercase}
+/* the choose-player overlay owns the screen — hide the global Share button so it doesn't collide with the close button */
+body.od-menu-open .fa-share{display:none!important}
+/* persistent extinctions tally — sits below the global SHARE button, right-aligned to match */
+.od-extinctions{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 66px);z-index:59;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:right;pointer-events:none}
+/* /twelve-futures: Tegmark alone, so nothing offers another player */
+.od-solo .od-pill,.od-solo .od-choose-inline,.od-solo .od-game-choose{display:none!important}
+/* TEST-ONLY force-outcome buttons (sit just under the global SHARE button) */
+.od-forcetest{position:fixed;right:18px;top:calc(var(--fa-nav-h,56px) + 92px);z-index:60;display:flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em}
+.od-forcetest>span{color:rgba(251,239,255,0.32)}
+.od-forcebtn{border:1px solid rgba(255,255,255,0.22);background:rgba(18,17,15,0.72);color:rgba(251,239,255,0.62);border-radius:5px;padding:3px 8px;cursor:pointer;font:inherit;letter-spacing:0.12em}
+.od-forcebtn.is-on{background:#E0481B;border-color:#E0481B;color:#fff}
+@media (max-width:680px){.od-extinctions{right:12px;top:calc(var(--fa-nav-h,56px) + 60px)}}
+body.od-menu-open .od-extinctions{display:none!important}
+.od-ext-counter{position:fixed;top:calc(var(--fa-nav-h,56px) + 20px);left:50%;transform:translateX(-50%);z-index:55;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5);text-align:center;white-space:nowrap;pointer-events:none}
+@media(min-width:860px){.od-ext-counter{left:75%}}
+.od-ext-counter,.od-extinctions{display:none!important}   /* extinctions tally removed on all sizes */
+.od-pill{transition:transform .2s cubic-bezier(.2,.7,.2,1), border-color .25s ease}
+.od-pill:hover{transform:translateY(-2px)}
+.od-caret{transition:transform .25s ease}
+.od-tile{transition:transform .26s cubic-bezier(.2,.7,.2,1), border-color .25s ease, box-shadow .3s ease}
+.od-tile:hover{transform:translateY(-8px);border-color:#ECEAE6 !important;box-shadow:0 22px 50px rgba(0,0,0,0.5)}
+.od-tile-img{transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.od-tile:hover .od-tile-img{transform:scale(1.05)}
+.od-cta{transition:transform .18s cubic-bezier(.2,.7,.2,1), box-shadow .22s ease, background .22s ease, color .2s ease, border-color .2s ease}
+.od-cta:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 10px 24px rgba(0,0,0,0.4);background:#fff;color:#08080A;border-color:#fff !important}
+.od-ghost{transition:background .2s ease, border-color .2s ease, transform .16s ease}
+.od-ghost:hover{background:rgba(255,255,255,0.06);transform:translateY(-1px);border-color:#ECEAE6}
+.od-close{transition:transform .25s ease, color .2s ease, border-color .2s ease}
+.od-close:hover{border-color:#ECEAE6;color:#ECEAE6;transform:rotate(90deg)}
+.od-link{transition:color .2s ease}
+.od-link:hover{color:#ECEAE6}
+.od-fan{transition:z-index 0s}
+.od-fan:hover{z-index:40}
+.od-card-face{transition:transform .24s cubic-bezier(.2,.7,.2,1)}
+.od-fan:hover .od-card-face{transform:translateY(-16px)}
+.od-teg-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 18px}
+.od-stage{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+.od-photo{position:relative;overflow:hidden;background:#08080A;height:320px;flex:none}
+/* the disintegration's void = the doom sky the globe hangs in, so the two panels read as one space.
+   Side-by-side the panels are the same size, so the game gradient's centre (50% of that panel) sits
+   at 150% of this one — literally the same ramp continuing across the seam, nothing eyeballed. */
+.od-shatter{background:radial-gradient(ellipse 90% 78% at 150% 40%, rgba(46,66,138,0.34) 0%, rgba(9,15,38,0.94) 46%, #04060e 78%), #04060e}
+.od-game{position:relative;flex:1;min-height:560px;display:flex;flex-direction:column;background:radial-gradient(circle at 24% 16%, rgba(255,93,162,0.2), transparent 46%), radial-gradient(circle at 82% 84%, rgba(52,229,196,0.16), transparent 48%), #1A0B2E}
+.od-stage-area{position:relative;flex:2;min-height:0;width:100%;display:flex;align-items:center;justify-content:center;overflow:visible}
+/* annihilation: wheel gone, globe canvas expands to fill the stage so the dead planet
+   floats in clean open space — no circular clip, no disc, no glow ring behind it */
+.od-wheel-wrap.is-dead{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important}
+.od-globe.is-dead{width:100%!important;height:100%!important;max-width:none!important;border-radius:0!important;overflow:visible!important;box-shadow:none!important;background:transparent!important;transform:none!important;transition:transform .9s cubic-bezier(.2,.7,.2,1)!important}
+/* ===== results panel — "editorial ledger" (key bar pinned top, result+button centered) ===== */
+.od-panel{position:relative;flex:1;min-height:auto;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(16px,3vh,24px) clamp(20px,4vw,34px) clamp(18px,3.2vh,30px);background:linear-gradient(180deg,rgba(8,8,10,0) 0%,rgba(8,8,10,0.5) 100%)}
+.od-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,239,255,0.16),transparent)}
+/* Tegmark: the panel is kept as tall as a drawn card's description needs from the start, so the
+   card that turns over is never pushed up when the text arrives under it */
+.od-panel--cards{min-height:var(--od-cards-panel,230px)}
+.od-cards-q{position:absolute;top:clamp(8px,2.5%,24px);left:0;right:0;z-index:3;padding:0 16px;text-align:center;
+  font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;line-height:1.3;color:rgba(251,239,255,0.82);pointer-events:none}
+.od-key{flex:none;width:100%;max-width:520px;display:flex;flex-direction:column;gap:9px;margin-bottom:clamp(8px,1.6vh,16px)}
+.od-key-labels{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(251,239,255,0.62)}
+.od-key-bar{display:flex;gap:3px;height:6px}
+.od-key-bar span{border-radius:3px}
+.od-center{flex:1;min-height:0;width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(16px,3vh,26px)}
+.od-result{display:flex;flex-direction:column;align-items:center;gap:clamp(9px,1.7vh,15px);max-width:560px;animation:odRise .42s ease both}
+.od-rhead{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(22px,3.3vh,34px);line-height:1.04;letter-spacing:-0.015em}
+.od-rdesc{font-family:'Space Mono',monospace;font-weight:400;font-size:clamp(12px,1.72vh,14.5px);letter-spacing:0.015em;line-height:1.5;color:rgba(251,239,255,0.84);max-width:500px}
+.od-rdesc-big{font-size:clamp(14px,2.15vh,17px);line-height:1.5;color:rgba(251,239,255,0.82);max-width:520px}
+.od-rhead-big{font-size:clamp(30px,4.8vh,50px);line-height:1.02}
+.od-game-doom{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 4.8s ease;background:radial-gradient(ellipse 90% 74% at 50% 36%, rgba(44,120,132,0.34) 0%, rgba(12,34,44,0.92) 46%, #060b0e 78%), #060b0e}
+/* ===== Irving: the coin is a 3D physics toss (irving-coin.js); taps go through it on mobile ===== */
+.od-coin-mat{pointer-events:none}
+.od-callrow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.od-unres{display:flex;flex-direction:column;align-items:center;gap:7px;max-width:520px;min-height:74px;animation:odFade .3s ease both}
+.od-unres-k{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.18em;color:#E0481B}
+.od-unres-q{font-family:'Archivo',sans-serif;font-weight:600;font-size:clamp(14px,2vh,17px);line-height:1.35;color:rgba(251,239,255,0.9)}
+/* ===== the ledger: what has happened in this world so far ===== */
+.od-rsrc{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.04em;color:rgba(251,239,255,0.5)}
+.od-stage-area.has-ledger{--od-ledger-room:66px;padding-bottom:var(--od-ledger-room)}
+.od-stage-area.has-ledger .od-wheel-wrap:not(.is-dead){width:min(var(--od-wheel,390px),78vw,calc(var(--od-sa-h,60vh) - var(--od-ledger-room) - 14px))!important;height:min(var(--od-wheel,390px),78vw,calc(var(--od-sa-h,60vh) - var(--od-ledger-room) - 14px))!important;max-width:none!important;max-height:none!important}
+.od-stage-area.has-ledger .od-die-mat{bottom:var(--od-ledger-room)!important;height:auto!important}
+.od-ledger{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(10px,2vh,18px);z-index:3;width:min(92%,640px);display:flex;flex-direction:column;align-items:center;gap:7px;pointer-events:none;animation:odFade .4s ease .2s both}
+.od-kicker{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em}
+.od-rhead-evt{font-size:clamp(19px,2.7vh,27px);line-height:1.12;max-width:620px}
+.od-ledger-head{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:0.18em;color:rgba(251,239,255,0.45)}
+.od-ledger-list{display:flex;flex-wrap:wrap;justify-content:center;gap:5px 6px}
+.od-ledger-item{font-family:'Archivo',sans-serif;font-size:11.5px;line-height:1.2;padding:4px 9px;border-radius:999px;border:1px solid rgba(251,239,255,0.16);color:rgba(251,239,255,0.72);background:rgba(255,255,255,0.03)}
+.od-ledger-item::before{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:1px;background:#F4A259}
+.od-ledger-item.is-good::before{background:#34E5C4}.od-ledger-item.is-bad::before{background:#FF6F61}
+.od-ledger-item{background:rgba(12,8,22,0.6)}
+.od-ledger-item.is-lost{text-decoration:line-through;text-decoration-color:rgba(224,72,27,0.8);color:rgba(251,239,255,0.42)}
+.od-btnblock{display:flex;flex-direction:column;align-items:center;gap:clamp(8px,1.4vh,11px)}
+.od-redo{display:inline-block;line-height:0;margin-left:1px}
+.od-ledger-btn{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 17px}
+.od-name{font-family:'Archivo',sans-serif;font-weight:800;font-size:30px;line-height:0.98;letter-spacing:-0.01em;color:#ECEAE6}
+.od-quote{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:19px;line-height:1.4;color:rgba(236,234,230,0.94)}
+@media(min-width:860px){
+  /* desktop: the camera centres the mat in the stage area (resolution-independent);
+     this only scales it up. scale is about the element centre = mat centre, so it stays centred. */
+  .od-die-mat{transform:scale(1.25)}
+  .od-stage{flex-direction:row;min-height:0;overflow:hidden}
+  .od-photo{width:50%}
+  .od-game{width:50%;padding:0}
+  .od-name{font-size:38px}
+  .od-quote{font-size:31px}
+  .od-teg-grid{grid-template-columns:1fr 1fr 1fr;gap:5px 22px}
+  /* desktop: give the results copy ~25% more width to read on */
+  .od-result{max-width:700px}
+  .od-rdesc{max-width:625px}
+  .od-rdesc-big{max-width:650px}
+}
+
+/* ============ TABLET / MOBILE PLAY SCREEN (< 860px) ============
+   Three bands: portrait + info, the game, the results panel. Nothing here
+   clips. The portrait band and the panel are as tall as their copy needs; the
+   game band takes what is left of the screen, down to a floor. If a very small
+   or very short screen cannot fit all three, the page scrolls a little rather
+   than cutting off a name, a result or the button (which is what the old
+   fixed 32/42/26% bands with overflow:hidden did on SE-sized phones, under
+   Safari's toolbars and in landscape).
+   --od-vh is 1% of the VISIBLE height, written by fitLayout() from innerHeight,
+   so it is right on browsers without dvh (iOS < 15.4, Chrome < 108).
+   --od-sa-w / --od-sa-h are the game band's real size, also from fitLayout(),
+   so the wheel, the fan and the drawn card are sized to the space they have. */
+@media(max-width:859px){
+  .od-stage{height:auto!important;min-height:calc(var(--od-vh,1vh)*100 - var(--fa-nav-h))!important;overflow:visible!important}
+  /* the die canvas is scaled 1.32x and pokes past the screen edges; in Safari that made the
+     whole page pan sideways. Clip it horizontally only (clip where supported, hidden before) */
+  .od-stage{overflow-x:hidden!important;overflow-x:clip!important}
+
+  /* --- band 1: portrait (left, absolutely placed so it never steals width) + info --- */
+  .od-photo{--od-pw:clamp(92px,30vw,170px);flex:none!important;height:auto!important;
+    min-height:clamp(112px,calc(var(--od-vh,1vh)*25),210px);display:block!important;padding:0 0 0 var(--od-pw)!important;
+    background:#08080a;overflow:hidden;position:relative}
+  .od-photo-scrim{display:none!important}
+  /* every portrait-slot medium shares one box: the photo, the portrait video, its loop half,
+     and Tegmark's doom clip (which used to go full-bleed and cover the name and quote) */
+  .od-hero-img,.od-portrait-vid,.od-portrait-loop,.od-doom-vid{position:absolute!important;left:0!important;top:0!important;bottom:0!important;right:auto!important;
+    width:var(--od-pw)!important;height:100%!important;max-width:none;border-radius:0!important;object-fit:cover!important;object-position:50% 18%!important;background:#08080a}
+  .od-portrait-loop{z-index:1}
+  .od-doom-vid{z-index:2}
+  /* info: on black with a red glow tucked into the TOP-right corner; it dies out before the
+     bottom edge, where the band meets the game panel's sky */
+  .od-photo-info{position:relative!important;left:auto!important;right:auto!important;bottom:auto!important;top:auto!important;
+    min-height:inherit;justify-content:center!important;gap:3px!important;padding:10px 14px 11px!important;
+    background:radial-gradient(ellipse 90% 72% at 116% -8%, rgba(224,72,27,0.34) 0%, rgba(224,72,27,0.09) 38%, transparent 66%)!important}
+  /* stacked, not side-by-side: #080D21 is what the game gradient evaluates to at its own top edge */
+  .od-shatter{background:linear-gradient(180deg,#04060e 0%,#060a1a 52%,#080D21 100%)!important}
+  .od-odds-line,.od-quote-ctx,.od-photo-src,.od-photo-top{display:none!important}  /* big %, eyebrow, attribution, on-photo pill */
+  .od-photo-info .od-name{font-size:clamp(17px,calc(var(--od-vh,1vh)*2.7),22px)!important;line-height:1.04!important}
+  .od-photo-info .od-role{font-size:10px!important;letter-spacing:0.04em!important;line-height:1.35}
+  /* the whole quote, always: no line clamp */
+  .od-photo-info .od-quote{display:block!important;overflow:visible!important;
+    font-size:11.5px!important;line-height:1.36!important;max-width:none!important;margin:3px 0 0!important}
+
+  /* Choose Player rides under the quote, in the copy column */
+  .od-choose-inline{display:inline-flex!important;margin-top:7px;height:30px!important}
+  .od-game-choose{display:none!important}
+  .od-sound{top:10px!important;left:14px!important;font-size:9px!important}
+
+  /* --- band 2: the game, whatever is left --- */
+  .od-game{min-height:0!important;flex:1 1 auto!important}
+  .od-stage-area{flex:1 1 auto!important;min-height:clamp(132px,calc(var(--od-vh,1vh)*24),420px)!important;
+    --od-wheel:min(290px,calc(var(--od-sa-w,100vw)*0.8),calc(var(--od-sa-h,40vh)*0.84));
+    --od-ch:min(160px,calc(var(--od-sa-w,100vw)*0.4),calc(var(--od-sa-h,40vh)*0.52))}
+  /* bigger die, nudged up. The scaled canvas reaches over the portrait band, and it used to
+     swallow taps on Choose Player there; the die takes no input, so let taps through */
+  .od-die-mat{transform:translateY(-7%) scale(1.32);pointer-events:none}
+  /* the phone die tray already clears the ledger, so it keeps the whole band */
+  .od-stage-area.has-ledger .od-die-mat{bottom:0!important;height:100%!important}
+  .od-wheel-wrap{width:var(--od-wheel)!important;height:var(--od-wheel)!important;max-width:none!important;max-height:none!important}
+  .od-globe{width:calc(var(--od-wheel)*0.96)!important;height:calc(var(--od-wheel)*0.96)!important;max-width:none!important}
+  .od-wheel-tick{height:47%!important}
+  /* the fan is sized from the band: 12 cards over 82deg are ~2.34 card-heights wide and
+     ~1.34 tall, and the outer cards dip ~0.32 of a height below the middle one */
+  /* the band has no fixed height here, so height:100% came out as 0 and the fan hung from
+     the band's middle, up into the portrait. Pin the wrap to the band instead, and centre the
+     fan's whole spread (about 1.34 card-heights tall) in it */
+  .od-cards-wrap{position:absolute!important;inset:0;height:auto!important}
+  .od-cards-q{top:30px;font-size:13.5px}
+  .od-panel--cards{min-height:var(--od-cards-panel-m,172px)!important}
+  .od-fan-deck{height:100%!important}
+  .od-fan{height:var(--od-ch)!important;width:calc(var(--od-ch)*0.7)!important;margin-left:calc(var(--od-ch)*-0.35)!important;bottom:max(6px,calc((var(--od-sa-h,40vh) - 52px - var(--od-ch)*1.34)/2 + var(--od-ch)*0.32))!important}
+  .od-drawn-wrap{transform:scale(var(--od-card-k,0.5))}
+  .od-ledger-item{font-size:10.5px;padding:3px 8px}
+  .od-unres{min-height:60px}
+  .od-unres-q{font-size:12.5px}
+
+  /* --- band 3: results panel, as tall as its content --- */
+  .od-panel{flex:none!important;min-height:0;overflow:visible!important;padding:8px 16px 14px!important}
+  .od-center{flex:none!important;gap:10px!important}
+  .od-result{gap:5px!important}
+  .od-key{margin-bottom:6px!important}
+  .od-key--drawn{display:none!important}   /* card is face-up: give its description the room */
+  .od-key-labels{font-size:10.5px!important;gap:12px;letter-spacing:0.03em!important}
+  .od-key-labels span{flex:1 1 0;min-width:0}
+  .od-key-labels span:last-child{text-align:right}
+  .od-rhead{font-size:clamp(16px,calc(var(--od-vh,1vh)*2.4),20px)!important}
+  .od-rhead-big{font-size:clamp(19px,calc(var(--od-vh,1vh)*3.4),26px)!important}
+  .od-rdesc{font-size:11px!important;line-height:1.45!important}
+  .od-rdesc-big{font-size:11.5px!important}
+  .od-roll,.od-cta{font-size:11px!important;letter-spacing:0.07em!important}
+  .od-ledger-btn{min-height:40px;padding:8px 20px!important;gap:6px!important}
+  .od-rollhint{font-size:9px!important}
+  .od-endlinks{margin-top:10px}
+  .od-endlink{padding:6px 0 3px}
+
+  /* --- player chooser: horizontal rows, portrait left, copy right. Rows grow to fit their copy
+         (overflow:visible, so the flex minimum is the content and a name can't be cut off) --- */
+  .od-choose{display:none!important}
+  .od-pcards{display:flex!important;flex-direction:column;gap:10px!important;flex:none!important;
+    height:auto!important;overflow:visible;margin-top:clamp(14px,2.6vh,24px)!important}
+  .od-pcards .od-pcard{flex:none!important;height:auto!important;min-height:clamp(118px,calc(var(--od-vh,1vh)*19),168px);
+    overflow:visible;display:flex!important;flex-direction:row;align-items:stretch}
+  /* the photo is pinned to the left edge so its own proportions can't set the row height;
+     the copy decides how tall a row is */
+  .od-pcards .od-pcard{--od-pcw:min(34%,130px)}
+  .od-pcards .od-pcard-img{position:absolute!important;top:0!important;left:0!important;bottom:0!important;right:auto!important;
+    width:var(--od-pcw)!important;max-width:none;height:100%!important;min-height:0!important;object-position:50% 16%!important;border-radius:12px 0 0 12px}
+  .od-pcards .od-pcard:hover .od-pcard-img{transform:none}
+  .od-pcards .od-pcard-grad,.od-pcards .od-pcard-mech,.od-pcards .od-pcard-odds{display:none!important}
+  .od-pcards .od-pcard-body{position:relative!important;top:auto!important;left:auto!important;right:auto!important;
+    bottom:auto!important;flex:1;min-width:0;margin-left:var(--od-pcw);justify-content:center;padding:10px 12px 11px 14px;gap:3px!important}
+  .od-pcards .od-pcard-name{font-size:clamp(16px,2vh,21px)!important;line-height:1.05!important}
+  .od-pcards .od-pcard-btn{margin-top:8px;padding:9px 15px!important;font-size:12.5px;white-space:nowrap;max-width:100%}
+  .od-teaser-num{color:#E0481B!important;font-weight:700}
+}
+
+/* short phones: drop the role line under the name, it is the first thing that can go */
+@media(max-width:859px) and (max-height:640px){
+  .od-panel--cards{min-height:186px!important}
+  .od-photo-info .od-role{display:none!important}
+}
+/* short phones, chooser: the role line goes here too, and the head tightens */
+@media(max-width:859px) and (max-height:700px){
+  .od-pcards .od-pcard-role{display:none}
+  .od-landing{padding-top:12px;padding-bottom:12px}
+  .od-landing .od-headline{margin-top:10px!important;font-size:clamp(24px,calc(var(--od-vh,1vh)*4.6),30px)}
+  .od-pcards{gap:8px!important;margin-top:14px!important}
+  .od-pcards .od-pcard{min-height:100px}
+  .od-pcards .od-pcard-btn{margin-top:6px;padding:8px 14px!important}
+}
+
+/* ============ PHONE LANDSCAPE ============
+   Stacking three bands into ~300px of height was the worst case of all. Side by side
+   instead: the portrait column on the left with the name and quote over a scrim at
+   its foot, the game and the results on the right. */
+@media(max-width:859px) and (orientation:landscape) and (max-height:520px){
+  .od-stage{flex-direction:row!important}
+  .od-photo{width:38%;flex:none!important;min-height:0;padding:0!important;display:flex!important;flex-direction:column;justify-content:flex-end}
+  .od-hero-img,.od-portrait-vid,.od-portrait-loop,.od-doom-vid{width:100%!important;right:0!important}
+  .od-photo-info{z-index:3;min-height:0;padding:48px 14px 12px!important;
+    background:linear-gradient(180deg,rgba(8,8,10,0) 0%,rgba(8,8,10,0.82) 42%,#08080a 100%)!important}
+  .od-game{flex:1 1 0!important;min-width:0}
+  .od-stage-area{min-height:130px!important}
+  .od-panel{padding:6px 16px 10px!important}
+  .od-key{margin-bottom:3px!important}
+  .od-center{gap:7px!important}
+  .od-rdesc{font-size:10.5px!important;line-height:1.4!important}
+  .od-btnblock{flex-direction:row;flex-wrap:wrap;justify-content:center;column-gap:16px}
+  .od-endlinks{margin-top:0}
+
+  .od-headline{font-size:clamp(18px,calc(var(--od-vh,1vh)*5.6),28px)!important;max-width:none}
+  .od-pcards{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px!important;margin-top:14px!important}
+  .od-pcards .od-pcard{flex-direction:column;min-height:0}
+  .od-pcards .od-pcard-img{position:relative!important;width:100%!important;max-width:none;height:clamp(60px,calc(var(--od-vh,1vh)*21),130px)!important;object-position:50% 28%!important;border-radius:12px 12px 0 0}
+  .od-pcards .od-pcard-body{margin-left:0;justify-content:flex-start;padding:8px 10px 10px}
+  .od-pcards .od-pcard-role{display:none}
+  .od-pcards .od-pcard-teaser{font-size:11.5px}
+  .od-pcards .od-pcard-btn{padding:8px 12px!important;font-size:12px}
+}
+
+/* short desktop and laptop windows: the overlay copy and the drawn card scale with the height */
+/* short laptop windows: the panel takes the height its copy needs and the stage
+   gives way (it used to be a fixed 2:1 split, and the end links fell off the bottom) */
+@media(min-width:860px) and (max-height:760px){
+  .od-stage-area{flex:1 1 0}
+  .od-panel{flex:none}
+}
+@media(min-width:860px){
+  .od-name{font-size:clamp(28px,4.6vh,38px)}
+  .od-quote{font-size:clamp(18px,3.5vh,31px)}
+}
+
+/* ============ LANDING (one full screen, no scroll) ============ */
+.od-landing{min-height:calc(var(--od-vh,1vh)*100 - var(--fa-nav-h, 56px));display:flex;flex-direction:column;align-items:center;background:radial-gradient(ellipse 70% 75% at 50% 14%, #3a1016 0%, #1c0a0f 38%, #0c0a0d 70%, #08080a 100%);background-size:175% 175%;background-repeat:no-repeat;animation:odBgDrift 26s ease-in-out infinite;padding:clamp(16px,3vh,30px) 28px clamp(18px,3.2vh,32px)}
+@keyframes odBgDrift{0%{background-position:30% 16%}25%{background-position:64% 30%}50%{background-position:74% 12%}75%{background-position:40% 36%}100%{background-position:30% 16%}}
+.od-land-wrap{width:100%;max-width:none;flex:1;display:flex;flex-direction:column}
+.od-land-head{display:flex;justify-content:space-between;align-items:baseline;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.22em;color:rgba(236,234,230,0.62)}
+.od-land-head .od-mark{color:#E0481B}
+.od-stats-link{display:inline-block;color:rgba(236,234,230,0.5);text-decoration:none;font-size:10px;letter-spacing:0.18em}
+.od-stats-link:hover{color:#ECEAE6}
+/* The two ways out of the game that are not another round. They sit in the
+   landing head, in the choose-player overlay, and under the end-game button,
+   because those are the three moments a reader is not mid-roll: before
+   starting, after being sent back to the chooser, and after a doom result
+   where there is deliberately nothing left to roll. */
+.od-side-links{display:inline-flex;align-items:baseline;gap:14px}
+.od-side-links .od-stats-link{white-space:nowrap}
+.od-endlinks{display:flex;align-items:center;justify-content:center;gap:18px;margin-top:14px;animation:odFade .5s ease .35s both}
+.od-endlink{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(236,234,230,0.55);text-decoration:none;border-bottom:1px solid rgba(236,234,230,0.2);padding-bottom:2px}
+.od-endlink:hover{color:#ECEAE6;border-bottom-color:rgba(236,234,230,0.6)}
+@media(max-width:680px){ .od-endlinks{gap:14px} }
+.od-eyebrow{margin-top:clamp(14px,3vh,28px);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.26em;color:#E0481B}
+.od-headline{margin-top:12px;max-width:820px;font-family:'Archivo',system-ui,sans-serif;font-weight:800;font-size:clamp(26px,calc(3.4vw + 0.9vh),44px);line-height:0.98;letter-spacing:-0.025em;color:#F4EFE4}
+.od-intro{margin-top:14px;max-width:680px;font-family:'Archivo',sans-serif;font-size:clamp(16px,2.1vh,22px);line-height:1.45;color:rgba(236,234,230,0.78)}
+.od-choose{margin-top:clamp(16px,2.6vh,26px);margin-bottom:12px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.18em;color:rgba(236,234,230,0.6)}
+.od-choose-sel{color:#E0481B}
+.od-pcards{flex:none;height:clamp(280px,49vh,510px);min-height:0;display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.od-faceall-row{margin-top:clamp(14px,2.4vh,24px);display:flex;justify-content:center}
+.od-faceall{padding:12px 26px;border:1px solid #33333a;border-radius:999px;background:transparent;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:#ECEAE6}
+.od-pcard{position:relative;display:block;width:100%;height:100%;padding:0;cursor:pointer;border:2px solid #26262c;border-radius:14px;overflow:hidden;background:#15151a;transition:transform .26s cubic-bezier(.2,.7,.2,1),border-color .25s ease,box-shadow .3s ease;animation:odUp .55s cubic-bezier(.22,1,.36,1) both}
+.od-pcard:hover{transform:translateY(-8px);border-color:#ECEAE6!important;box-shadow:0 22px 50px rgba(0,0,0,0.5)}
+.od-pcard-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 15%;filter:grayscale(0.12) contrast(1.02);transition:transform .5s cubic-bezier(.2,.7,.2,1)}
+.od-pcard:hover .od-pcard-img{transform:scale(1.05)}
+.od-pcard-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0) 22%,rgba(8,8,10,0.58) 58%,rgba(8,8,10,0.98) 100%)}
+.od-pcard-mech{position:absolute;top:14px;right:14px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.12em;color:rgba(236,234,230,0.92);border:1px solid rgba(236,234,230,0.3);border-radius:999px;padding:4px 10px;background:rgba(8,8,10,0.45)}
+.od-pcard-sel{position:absolute;top:14px;left:14px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.16em;color:#E0481B;border:1px solid rgba(224,72,27,0.6);border-radius:999px;padding:4px 9px;background:rgba(8,8,10,0.4)}
+.od-pcard-body{position:absolute;left:22px;right:22px;bottom:22px;display:flex;flex-direction:column;gap:8px;text-align:left}
+.od-pcard-odds{display:flex;align-items:baseline;gap:9px}
+.od-pcard-odds b{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(28px,3.4vh,38px);line-height:0.9;color:#E0481B}
+.od-pcard-odds i{font-family:'Space Mono',monospace;font-style:normal;font-size:11px;letter-spacing:0.08em;color:rgba(236,234,230,0.72)}
+.od-pcard-name{font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(19px,2.4vh,24px);line-height:1.0;color:#ECEAE6}
+.od-pcard-role{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.04em;color:rgba(236,234,230,0.6)}
+.od-pcard-teaser{margin-top:4px;font-family:'Archivo',sans-serif;font-size:clamp(13px,1.7vh,16px);line-height:1.4;color:rgba(236,234,230,0.8)}
+.od-pcard-btn{align-self:flex-start;margin-top:13px;display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:999px;background:#FBEFFF;color:#1A0B2E;font-family:'Archivo',sans-serif;font-weight:800;font-size:13.5px;letter-spacing:0.03em;transition:background .2s ease,transform .18s cubic-bezier(.22,1,.36,1)}
+.od-pcard:hover .od-pcard-btn{background:#fff;transform:translateY(-1px)}
+.od-pcard:hover .od-pcard-btn .od-cta-arrow{transform:translateX(3px)}
+.od-land-cta{margin-top:clamp(16px,2.6vh,26px);align-self:flex-start;display:inline-flex;align-items:center;justify-content:center;gap:11px;padding:15px 40px;border:none;border-radius:999px;cursor:pointer;font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:0.04em;background:#E0481B;color:#fff;box-shadow:0 10px 30px rgba(224,72,27,0.32);transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .22s ease,background .2s ease}
+.od-land-cta:hover{transform:translateY(-2px) scale(1.02);background:#f4541f;box-shadow:0 14px 36px rgba(224,72,27,0.45)}
+.od-cta-arrow{flex:none;transition:transform .2s cubic-bezier(.22,1,.36,1)}
+.od-land-cta:hover .od-cta-arrow{transform:translateX(4px)}
+@media(max-width:859px){
+  .od-landing{align-items:stretch}
+  .od-intro{display:none}
+  .od-pcard-teaser{font-size:12px}
+  .od-land-cta{align-self:stretch;text-align:center;margin-top:14px}
+}
+@media(max-width:680px){ .od-landing{padding-left:14px;padding-right:14px} }
+
+/* accessibility */
+.od-pcard:focus-visible,.od-land-cta:focus-visible,.od-roll:focus-visible,.od-tile:focus-visible,.od-pill:focus-visible{outline:2px solid #E0481B;outline-offset:3px}
+@media (prefers-reduced-motion: reduce){
+  *{animation-duration:.001ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.001ms!important}
+}
+</style>
+</helmet>
+
+<!-- persistent extinctions tally — top-centre of the game panel, stays put across screens -->
+<div class="od-ext-counter">EXTINCTIONS · {{ extinctions }}</div>
+
+<!-- ============ LANDING SCREEN (/theodds) ============ -->
+<sc-if value="{{ isLanding }}">
+<div class="od-landing">
+  <div class="od-land-wrap">
+    <div class="od-land-head">
+      <span><span class="od-mark">◆</span> THE ODDS</span>
+      <span class="od-side-links"><a href="/theodds/research" class="od-stats-link">RESEARCH</a><a href="/theodds/stats" class="od-stats-link">STATS</a></span>
+    </div>
+    <h1 class="od-headline" style="margin-top:clamp(18px,3.5vh,34px)">The people who build and study AI think it might end us.</h1>
+    <p class="od-intro">Choose whose future you trust. Or distrust. Play the odds.</p>
+    <div class="od-choose">CHOOSE YOUR PLAYER</div>
+    <div class="od-pcards">
+      <sc-for list="{{ landingRoster }}" as="r" hint-placeholder-count="3">
+        <button onClick="{{ r.play }}" class="od-pcard" style="animation-delay:{{ r.delay }}">
+          <img class="od-pcard-img" alt="" />
+          <span class="od-pcard-grad"></span>
+          <span class="od-pcard-mech">{{ r.mechTag }}</span>
+          <span class="od-pcard-body">
+            <span class="od-pcard-odds"><b>{{ r.oddsBig }}</b><i>{{ r.oddsCap }}</i></span>
+            <span class="od-pcard-name">{{ r.name }}</span>
+            <span class="od-pcard-role">{{ r.role }}</span>
+            <span class="od-pcard-teaser">{{ r.teaserPre }}<span class="od-teaser-num">{{ r.teaserNum }}</span>{{ r.teaserPost }}</span>
+            <span class="od-pcard-btn">{{ r.cta }} <svg class="od-cta-arrow" width="19" height="13" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h21M16 1.5l6.5 6.5-6.5 6.5"/></svg></span>
+          </span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ============ PLAY SCREEN (/theodds/{slug}) ============ -->
+<sc-if value="{{ isPlay }}">
+<div class="od-stage">
+
+  <!-- ============ PHOTO SIDE ============ -->
+  <div class="od-photo">
+    <sc-if value="{{ noPortraitVid }}">
+      <img class="od-hero-img od-blurin" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:grayscale(0.15) contrast(1.05)" />
+    </sc-if>
+    <sc-if value="{{ hasPortraitVid }}">
+      <!-- the portrait IS the video, shown paused on its first frame; it plays only when doom is rolled -->
+      <video class="od-portrait-vid" sc-camel-src="{{ portraitVid }}" sc-camel-poster="{{ portraitPoster }}" muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ portraitPos }};background:#08080A"></video>
+    </sc-if>
+    <sc-if value="{{ hasPortraitLoop }}">
+      <!-- the loop half of the doom clip, stacked directly over the one-shot with identical framing.
+           It is preloaded and revealed the instant the first clip ends; because its opening frame IS
+           that clip's closing frame, the cut is invisible and there is no reload flash. -->
+      <video class="od-portrait-loop" sc-camel-src="{{ portraitLoopVid }}" muted playsinline webkit-playsinline preload="auto" loop style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ portraitPos }};background:#08080A;opacity:0;pointer-events:none"></video>
+    </sc-if>
+    <sc-if value="{{ showDoomVid }}">
+      <video class="od-doom-vid {{ doomVidFlipCls }}" sc-camel-src="{{ doomVid }}" autoplay muted playsinline webkit-playsinline preload="auto" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:{{ doomVidPos }};background:#000;animation:odFade .35s ease both"></video>
+    </sc-if>
+    <div class="od-photo-scrim" style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,8,10,0.5) 0%,rgba(8,8,10,0) 26%,rgba(8,8,10,0.08) 48%,rgba(8,8,10,0.72) 78%,rgba(8,8,10,0.97) 100%)"></div>
+    <div class="od-photo-scrim" style="position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,10,0) 62%,rgba(8,8,10,0.45) 100%)"></div>
+
+    <!-- top row — Choose Player button sits top-left (replaces the old "THE ODDS" label) -->
+    <div class="od-photo-top" style="position:absolute;top:14px;left:30px;right:30px;display:flex;align-items:center;justify-content:flex-start;gap:10px">
+      <sc-if value="{{ notGauntlet }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openMenu }}" class="od-anim od-pill" style="animation-delay:.22s;height:40px;display:inline-flex;align-items:center;gap:8px;padding:0 17px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;background:rgba(18,17,15,0.92);color:#f3f1ec;box-shadow:0 6px 20px rgba(0,0,0,0.18);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);font:600 12px/1 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0.08em">
+          <span style="display:flex;gap:3px"><i style="width:4px;height:4px;border-radius:50%;background:#E0481B;display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i></span>
+          CHOOSE PLAYER
+        </button>
+      </sc-if>
+      <sc-if value="{{ isGauntlet }}">
+        <div style="display:flex;align-items:center;gap:9px;padding:7px 13px;border:1px solid rgba(224,72,27,0.5);border-radius:999px;background:rgba(8,8,10,0.45)">
+          <span style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.14em;color:#E0481B">FACE THEM ALL · {{ gauntletNum }}/3</span>
+          <div style="display:flex;gap:5px">
+            <sc-for list="{{ gauntletNav }}" as="g" hint-placeholder-count="3">
+              <span style="width:14px;height:3px;border-radius:2px;background:{{ g.bar }}"></span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- bottom overlay -->
+    <div class="od-photo-info" style="position:absolute;left:30px;right:30px;bottom:28px;display:flex;flex-direction:column;gap:12px">
+      <div class="od-anim od-odds-line" style="animation-delay:.32s;display:flex;align-items:baseline;gap:13px">
+        <span style="font-family:'Archivo',sans-serif;font-weight:800;font-size:28px;color:#E0481B;line-height:1">{{ p.oddsBig }}</span>
+        <span style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;color:rgba(236,234,230,0.65)">{{ p.oddsCaption }}</span>
+      </div>
+      <div class="od-anim" style="animation-delay:.4s;display:flex;flex-direction:column;gap:4px">
+        <div class="od-name">{{ p.name }}</div>
+        <div class="od-role" style="font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:0.06em;color:rgba(236,234,230,0.62)">{{ p.role }}</div>
+      </div>
+      <sc-if value="{{ p.quoteContext }}">
+        <div class="od-anim od-quote-ctx" style="animation-delay:.46s;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#E0481B">{{ p.quoteContext }}</div>
+      </sc-if>
+      <p class="od-anim od-quote" style="animation-delay:.5s;max-width:450px">“{{ p.quote }}”</p>
+      <div class="od-anim od-photo-src" style="animation-delay:.58s;font-family:'Space Mono',monospace;font-size:8.5px;letter-spacing:0.05em;color:rgba(236,234,230,0.45)">{{ p.source }} · {{ p.credit }}</div>
+      <!-- MOBILE ONLY: the way back to the chooser sits under the quote, in the same column as the
+           copy, instead of floating over the top-left of the game band. Desktop keeps the pill up in
+           .od-photo-top, so this stays hidden there. -->
+      <sc-if value="{{ notGauntlet }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openMenu }}" class="od-anim od-pill od-choose-inline" style="animation-delay:.62s;align-self:flex-start;display:none;align-items:center;gap:7px;height:27px;padding:0 12px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;background:rgba(18,17,15,0.92);color:#f3f1ec;cursor:pointer;font:600 9.5px/1 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0.08em">
+          <span style="display:flex;gap:3px"><i style="width:3px;height:3px;border-radius:50%;background:#E0481B;display:block"></i><i style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i><i style="width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i></span>
+          CHOOSE PLAYER
+        </button>
+      </sc-if>
+    </div>
+  </div>
+
+  <!-- ============ GAME SIDE ============ -->
+  <div class="od-game">
+    <div class="od-game-doom" style="opacity:{{ doomBgOn }};background:{{ doomBgGrad }}"></div>
+
+    <!-- sound toggle, top-left of the play panel -->
+    <button onClick="{{ toggleMute }}" class="od-anim od-link od-sound" style="animation-delay:.4s;position:absolute;top:20px;left:24px;z-index:2;border:none;background:transparent;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.16em;color:rgba(251,239,255,0.5)">{{ muteLabel }}</button>
+
+    <!-- TEST ONLY: force the next roll/spin/pick outcome (applies once). Remove before ship. -->
+    <sc-if value="{{ isPlay }}">
+      <sc-if value="{{ showTest }}">
+        <div class="od-forcetest">
+          <span>TEST</span>
+          <button onClick="{{ forceGood }}" class="od-forcebtn {{ forceGoodCls }}">GOOD</button>
+          <button onClick="{{ forceBad }}" class="od-forcebtn {{ forceBadCls }}">BAD</button>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- mobile-only Choose Player, sits top-left of the game band (desktop uses the one on the photo) -->
+    <button onClick="{{ openMenu }}" class="od-game-choose" style="position:absolute;z-index:6;top:10px;left:12px;display:none;align-items:center;gap:7px;height:29px;padding:0 12px;border:1px solid rgba(255,255,255,0.16);border-radius:999px;background:rgba(18,17,15,0.92);color:#f3f1ec;cursor:pointer;font:600 9.5px/1 system-ui,-apple-system,'Segoe UI',sans-serif;letter-spacing:0.08em">
+      <span style="display:flex;gap:3px"><i style="width:4px;height:4px;border-radius:50%;background:#E0481B;display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i><i style="width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.4);display:block"></i></span>
+      CHOOSE PLAYER
+    </button>
+
+    <!-- STAGE AREA (top ~2/3 of the panel) -->
+    <div class="{{ stageCls }}" style="animation-delay:.46s">
+
+      <sc-if value="{{ isDie }}">
+        <x-import component-from-global-scope="dario-die" from="./dario-die.js?v=11" facecolor="#ffe08a" numcolor="#2a0820" reduced="{{ reducedFlag }}" rolltoken="{{ dieToken }}" targetface="{{ dieTarget }}" encase="{{ dieEncase }}" encasems="{{ dieEncaseMs }}" class="od-die-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
+      </sc-if>
+
+      <sc-if value="{{ isWheel }}">
+        <div class="od-pop od-wheel-wrap {{ deadCls }}" style="position:relative;width:390px;height:390px;max-width:78vw;max-height:78vw;display:flex;align-items:center;justify-content:center">
+          <!-- the wheel — pointer, outer ring, coloured segments — removed entirely on annihilation -->
+          <sc-if value="{{ showWheel }}">
+          <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:18px solid transparent;border-right:18px solid transparent;border-top:31px solid #FBEFFF;z-index:4;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.5));opacity:{{ wheelRingOpacity }};transition:opacity .7s ease"></div>
+          <div style="position:absolute;inset:0;transform:scale({{ wheelRingScale }});opacity:{{ wheelRingOpacity }};transition:transform .9s cubic-bezier(.2,.7,.2,1),opacity .8s ease">
+            <div style="position:absolute;inset:0;border-radius:50%;border:7px solid #11050f;box-shadow:0 16px 44px rgba(0,0,0,0.5);transform:rotate({{ wheelRot }}deg);background:{{ wheelGradient }}">
+              <sc-for list="{{ wheelTicks }}" as="tk" hint-placeholder-count="5">
+                <div class="od-wheel-tick" style="position:absolute;left:50%;top:50%;width:2px;height:190px;transform-origin:top center;transform:translate(-50%,0) rotate({{ tk.deg }}deg);background:rgba(255,255,255,0.45)"></div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:3;pointer-events:none">
+            <div class="od-globe {{ deadCls }}" style="position:relative;width:min(372px,74vw);height:min(372px,74vw);border-radius:50%;overflow:hidden;transform:scale({{ globeScale }});transform-origin:center center;box-shadow:{{ earthShadow }};filter:{{ earthFilter }};transition:transform .9s cubic-bezier(.2,.7,.2,1),box-shadow .8s ease">
+              <x-import component-from-global-scope="earth-globe" from="./earth-globe.js?v=24" spin="{{ wheelSpinToken }}" sats="{{ starN }}" burn="{{ earthBurnFlag }}" reduced="{{ reducedFlag }}" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="372px,372px"></x-import>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isCoin }}">
+        <x-import component-from-global-scope="irving-coin" from="./irving-coin.js?v=8" want="{{ coinWant }}" tosstoken="{{ coinToken }}" hangms="{{ coinHangMs }}" reduced="{{ reducedFlag }}" class="od-coin-mat" style="position:absolute;inset:0;width:100%;height:100%;display:block" hint-size="440px,440px"></x-import>
+      </sc-if>
+
+      <sc-if value="{{ isCards }}">
+        <div class="od-cards-wrap" style="position:relative;width:100%;height:430px;display:flex;align-items:center;justify-content:center">
+          <sc-if value="{{ showFan }}">
+            <div class="od-cards-q">What happens when AI gets smarter than us?</div>
+          </sc-if>
+          <sc-if value="{{ showFan }}">
+            <div class="od-fan-deck" style="position:relative;width:100%;height:412px;z-index:2">
+              <sc-for list="{{ fanCards }}" as="c" hint-placeholder-count="12">
+                <button onClick="{{ c.pick }}" class="od-fan" style="position:absolute;bottom:6.4vw;left:50%;width:min(150px,9.6vw);height:min(220px,14.1vw);margin-left:max(-75px,-4.8vw);transform-origin:50% 138%;transform:rotate({{ c.deg }}deg);opacity:0;animation:odFanFade .5s ease both;animation-delay:{{ c.delay }}s;border:none;background:transparent;padding:0;z-index:{{ c.z }}">
+                  <div class="od-card-face" style="width:100%;height:100%;border-radius:13px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;box-shadow:0 8px 18px rgba(0,0,0,0.45)">
+                    <div style="position:absolute;inset:14px;border:1px solid rgba(255,210,63,0.7);border-radius:8px;display:flex;align-items:center;justify-content:center;opacity:0.7">
+                      <div style="width:31px;height:31px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
+                    </div>
+                  </div>
+                </button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ drawn }}">
+            <div class="od-drawn-wrap" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1700px">
+            <div style="width:280px;height:395px;transform-style:preserve-3d;transform:rotateY({{ cardFlip }}deg)">
+              <div style="position:absolute;inset:0;border-radius:18px;background:linear-gradient(160deg,#3A1763,#26104A);border:1px solid #FF5DA2;backface-visibility:hidden;display:flex;align-items:center;justify-content:center">
+                <div style="width:47px;height:47px;border:1.5px solid rgba(255,210,63,0.7);transform:rotate(45deg)"></div>
+              </div>
+              <div class="od-tarot">
+                <div class="od-tarot-art">
+                  <sc-if value="{{ drawnCard.hasImg }}"><img sc-camel-src="{{ drawnCard.img }}" alt="{{ drawnCard.name }}" /></sc-if>
+                  <sc-if value="{{ drawnCard.noImg }}"><div class="od-tarot-ph"><div></div></div></sc-if>
+                </div>
+                <div class="od-tarot-cap"><div class="nm">{{ drawnCard.name }}</div></div>
+              </div>
+            </div>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+      <!-- the ledger sits on the stage, under the die / wheel, so the panel never has to hold it -->
+        <sc-if value="{{ showLedger }}">
+          <div class="od-ledger">
+            <div class="od-ledger-list">
+              <sc-for list="{{ ledgerItems }}" as="L" hint-placeholder-count="3">
+                <span class="od-ledger-item {{ L.cls }}">{{ L.text }}</span>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+    </div>
+
+    <!-- BOTTOM PANEL (~1/3 of the panel): key + action/result, consistent across players -->
+    <div class="od-panel {{ panelCls }}">
+      <!-- KEY: split odds bar (pinned top) — hidden on the doom-end screens -->
+      <sc-if value="{{ showKey }}">
+      <div class="od-key {{ keyClass }}">
+        <div class="od-key-labels"><span>{{ keyGood }}</span><span>{{ keyBad }}</span></div>
+        <div class="od-key-bar"><span style="flex:0 0 {{ goodPct }}%;background:{{ goodColor }}"></span><span style="flex:1;background:{{ badColor }}"></span></div>
+      </div>
+      </sc-if>
+
+      <!-- CENTERED ZONE: result (if any) + button, centered together -->
+      <div class="od-center">
+        <sc-if value="{{ showResult }}">
+          <div class="od-result">
+            <sc-if value="{{ hasKicker }}"><div class="od-kicker" style="color:{{ kickerColor }}">{{ kicker }}</div></sc-if>
+            <sc-if value="{{ showVerdictHead }}">
+              <div class="{{ rheadCls }}" style="color:{{ verdictColor }}">{{ verdictHead }}</div>
+            </sc-if>
+            <p class="{{ rdescClass }}">{{ verdictSub }}</p>
+            <sc-if value="{{ hasSub2 }}"><p class="{{ rdescClass }}">{{ verdictSub2 }}</p></sc-if>
+            <sc-if value="{{ hasSrc }}"><p class="od-rsrc">{{ verdictSrc }}</p></sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ showUnres }}">
+          <div class="od-unres">
+            <div class="od-unres-k">{{ unresK }}</div>
+            <div class="od-unres-q">{{ unresQ }}</div>
+          </div>
+        </sc-if>
+
+        <div class="od-btnblock">
+          <sc-if value="{{ showRollButton }}">
+            <button onClick="{{ act }}" disabled="{{ rolling }}" class="od-anim od-roll od-charge od-ledger-btn" style="animation-delay:.68s;position:relative;overflow:hidden;isolation:isolate;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;background:#FBEFFF;color:#1A0B2E;opacity:{{ actOpacity }}"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ actLabel }}</span><svg class="od-redo" style="position:relative;z-index:1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 4v5h-5"/></svg></button>
+          </sc-if>
+          <sc-if value="{{ showCall }}">
+            <div class="od-callrow od-anim" style="animation-delay:.68s">
+              <button onClick="{{ callHeads }}" class="od-roll od-ledger-btn" style="border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;background:#FBEFFF;color:#1A0B2E">CALL HEADS</button>
+              <button onClick="{{ callTails }}" class="od-roll od-ledger-btn" style="border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;background:#FBEFFF;color:#1A0B2E">CALL TAILS</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ showPickPrompt }}">
+            <div class="od-rollhint">{{ pickHint }}</div>
+          </sc-if>
+          <sc-if value="{{ showResult }}">
+            <button onClick="{{ primaryAction }}" class="od-roll {{ replayClass }} od-ledger-btn" style="position:relative;overflow:hidden;isolation:isolate;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:12px;letter-spacing:0.08em;text-transform:uppercase;background:#FBEFFF;color:#1A0B2E"><span class="od-charge-fill"></span><span style="position:relative;z-index:1">{{ replayLabel }}</span><sc-if value="{{ replayRedo }}"><svg class="od-redo" style="position:relative;z-index:1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.4-5.9"/><path d="M20.5 4v5h-5"/></svg></sc-if></button>
+          </sc-if>
+          <!-- Only on the end-game result. The button above sends you back to the
+               chooser; these are the other two places to go when the run is over
+               and there is nothing left to roll. -->
+          <sc-if value="{{ isEndGame }}">
+            <div class="od-endlinks">
+              <a href="/theodds/stats" class="od-endlink">See the stats</a>
+              <a href="/theodds/research" class="od-endlink">The research</a>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ CHOOSE-PLAYER MENU ============ -->
+  <sc-if value="{{ menuOpen }}">
+    <div style="position:fixed;inset:0;z-index:30;background:radial-gradient(ellipse at 50% -10%, #15151a 0%, #0c0c0f 55%, #08080a 100%);animation:odFade .25s ease both">
+      <div style="position:absolute;inset:0;display:flex;flex-direction:column;gap:18px;padding:clamp(18px,3vh,28px) 28px clamp(18px,3vh,30px)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.26em;color:#7E7C78">THE ODDS</div>
+            <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(22px,3vw,28px);letter-spacing:-0.01em;color:#ECEAE6">Choose your player</div>
+            <span class="od-side-links" style="margin-top:6px"><a href="/theodds/research" class="od-stats-link">RESEARCH</a><a href="/theodds/stats" class="od-stats-link">STATS</a></span>
+          </div>
+          <button onClick="{{ closeMenu }}" class="od-close" style="flex:none;width:36px;height:36px;border:1px solid #33333a;border-radius:50%;background:transparent;color:#9a978d;font-size:16px">×</button>
+        </div>
+        <div class="od-pcards od-menu-cards" style="flex:1;height:auto;min-height:0">
+          <sc-for list="{{ landingRoster }}" as="r" hint-placeholder-count="3">
+            <button onClick="{{ r.play }}" class="od-pcard" style="animation-delay:{{ r.delay }}">
+              <img class="od-pcard-img" alt="" />
+              <span class="od-pcard-grad"></span>
+              <span class="od-pcard-mech">{{ r.mechTag }}</span>
+              <span class="od-pcard-body">
+                <span class="od-pcard-odds"><b>{{ r.oddsBig }}</b><i>{{ r.oddsCap }}</i></span>
+                <span class="od-pcard-name">{{ r.name }}</span>
+                <span class="od-pcard-role">{{ r.role }}</span>
+                <span class="od-pcard-teaser">{{ r.teaserPre }}<span class="od-teaser-num">{{ r.teaserNum }}</span>{{ r.teaserPost }}</span>
+                <span class="od-pcard-btn">{{ r.cta }} <svg class="od-cta-arrow" width="19" height="13" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8h21M16 1.5l6.5 6.5-6.5 6.5"/></svg></span>
+              </span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ GAUNTLET END ============ -->
+  <sc-if value="{{ isFaceEnd }}">
+    <div style="position:fixed;inset:0;z-index:30;background:rgba(8,8,10,0.8);display:flex;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:24px;animation:odFade .3s ease both">
+      <div style="margin:auto;width:100%;max-width:440px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:18px;background:#0c0c0f;border:1px solid #26262c;border-radius:6px;padding:32px 26px;animation:odRise .4s ease both">
+        <div style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.24em;color:#E0481B">YOU FACED THEM ALL</div>
+        <h2 style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(26px,8vw,38px);line-height:1.0;letter-spacing:-0.01em;color:{{ faceEndColor }}">{{ faceEndHead }}</h2>
+        <p style="font-size:14px;line-height:1.55;color:rgba(236,234,230,0.88)">{{ faceEndSub }}</p>
+        <div style="width:100%;padding:18px;border:1px solid #26262c;border-radius:6px;background:rgba(255,255,255,0.02);display:flex;flex-direction:column;align-items:center;gap:6px">
+          <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.14em;color:#7E7C78">IF EACH IS RIGHT, SURVIVING ALL THREE</div>
+          <div style="font-family:'Archivo',sans-serif;font-weight:800;font-size:clamp(40px,14vw,56px);line-height:1;color:#E0481B">≈ 45%</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:#7E7C78">0.75 × 0.80 × (9 of 12) ≈ 0.45</div>
+          <div style="font-size:12.5px;color:#ECEAE6;margin-top:4px">You cleared <strong>{{ clearedCount }} of 3</strong> this run.</div>
+        </div>
+        <p style="font-size:10px;line-height:1.5;color:#7E7C78">Combining differently-defined odds is illustrative, not a forecast. Tegmark listed twelve futures without saying how likely any of them is, so the 9 of 12 is this deck’s arithmetic and not his estimate. For Tegmark, only Conquerors, Self-destruction and Descendants count as ‘we’re gone’.</p>
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ startGauntlet }}" class="od-roll" style="padding:14px 28px;border:none;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:800;font-size:14px;letter-spacing:0.1em;background:#FBEFFF;color:#08080A">RUN AGAIN</button>
+          <button onClick="{{ exitGauntlet }}" class="od-ghost" style="padding:14px 24px;border:1px solid #33333a;border-radius:999px;font-family:'Archivo',sans-serif;font-weight:600;font-size:13px;letter-spacing:0.08em;background:transparent;color:#ECEAE6">BACK TO PLAY</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1120,&quot;height&quot;:720},&quot;startMuted&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;}}">
+class Component extends DCLogic {
+  state = {
+    muted: false,
+    screen: 'landing',
+    playerId: 'amodei',
+    menuOpen: false,
+    mode: 'single', gIndex: 0, gResults: [],
+    phase: 'ready', outcome: null, faceEnd: false,
+    force: null,   // TEST: 'good' | 'doom' — forces the next roll's outcome once
+    dieToken: 0, dieTarget: 7, dieMuseum: false,
+    wheelRot: 0, earthBurn: false, wheelSpinToken: 0,
+    drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false, finaleReveal: false,
+    dealt: [0,1,2,3,4,5,6,7,8,9,10,11], pickedPos: null,
+    // the ledger: what has happened in THIS world so far (Dario + Elon). It survives every
+    // roll that isn't doom, and is wiped when you change player or start a new timeline.
+    ledger: [],
+    coinCall: null, coinSide: null, coinQ: -1, coinToken: 0, coinWant: '',
+    extinctions: (function(){ try { return parseInt(localStorage.getItem('theodds_extinctions'), 10) || 0; } catch (e) { return 0; } })(),
+  };
+
+  // TEST good/bad buttons: everywhere except the live production domain (local, staging previews, drafts all show them)
+  isLive = (function(){ try { const h = location.hostname; return !/^(localhost|127\.0\.0\.1)$/.test(h) && !/-git-|staging/.test(h); } catch (e) { return true; } })(); // live = any public host (production domains change); previews carry -git-/staging, local is localhost
+
+  order = ['amodei', 'musk', 'tegmark', 'irving'];
+  // Face Them All stays the original three (its end screen does the arithmetic for those three)
+  gauntletOrder = ['amodei', 'musk', 'tegmark'];
+
+  players = {
+    amodei: {
+      short: 'Dario', name: 'Dario Amodei', role: 'Co-founder & CEO, Anthropic',
+      photo: '/odds-of-surviving-ai/research/dario-first.jpg',   // same still as portraitPoster/video first frame → seamless
+      credit: 'Photo: TechCrunch, CC BY 2.0',
+      teaser: 'A 25% chance things go really, really badly.', teaserNum: '25%',
+      oddsBig: '25%', oddsCaption: 'CHANCE IT GOES REALLY, REALLY BADLY', oddsCap: 'REALLY BADLY',
+      doom: 0.25,
+      quote: 'I think there\u2019s a 25% chance that things go really, really badly.',
+      quoteContext: 'On the risks of advanced AI',
+      source: 'Axios AI+ DC Summit \u00B7 17 Sept 2025',
+      mechanic: 'die', mechLabel: 'D12 · ROLL',
+      slug: 'dario-amodei', initials: 'DA', mechTag: 'DIE', accent: '#9B7BFF', accentTint: 'rgba(155,123,255,0.10)', cta: 'Roll the dice', objpos: '50% 30%',
+      // Doom is TWO clips. p1 is the one-shot morph: he talks, then sets into the museum vitrine —
+      // and the die's mat->glass-case animation runs across exactly its length (doomClipMs), so the
+      // die lands boxed on the same frame he does. p2 picks up on p1's final frame (they are the
+      // same image) and loops forever, keeping the archive alive under the verdict.
+      portraitVideo: '/odds-of-surviving-ai/media/dario-doom-p1.mp4', portraitVideoLoop: '/odds-of-surviving-ai/media/dario-doom-p2.mp4',
+      doomClipMs: 5040,
+      portraitPoster: '/odds-of-surviving-ai/research/dario-first.jpg', portraitPos: '50% 36%',
+    },
+    musk: {
+      short: 'Elon', name: 'Elon Musk', role: 'Founder, xAI',
+      photo: '/odds-of-surviving-ai/research/elon-first.jpg',   // the video's first frame → seamless into the doom clip
+      credit: 'Photo: Gage Skidmore, CC BY-SA 4.0',
+      teaser: 'Only a 20% chance of annihilation.', teaserNum: '20%',
+      oddsBig: '20%', oddsCaption: 'CHANCE EARTH BURNS', oddsCap: 'EARTH BURNS',
+      doom: 0.20,
+      quote: 'The probability of a good outcome is like 80%. Only a 20% chance of annihilation.',
+      quoteContext: 'On the risks of advanced AI',
+      source: 'Joe Rogan Experience \u00B7 2025',
+      mechanic: 'wheel', mechLabel: 'WHEEL · SPIN',
+      slug: 'elon-musk', initials: 'EM', mechTag: 'WHEEL', accent: '#FF6F61', accentTint: 'rgba(255,111,97,0.10)', cta: 'Spin the wheel', objpos: '50% 28%',
+      portraitVideo: '/odds-of-surviving-ai/media/elon-doom.mp4', portraitPoster: '/odds-of-surviving-ai/research/elon-first.jpg', portraitPos: '50% 28%',   // the viewer IS the video (paused on frame 1, plays on doom)
+    },
+    tegmark: {
+      short: 'Max', name: 'Max Tegmark', role: 'MIT physicist · author, Life 3.0',
+      photo: '/odds-of-surviving-ai/research/max-tegmark.jpg',
+      credit: 'Photo: Web Summit, CC BY 2.0',
+      teaser: '12 possible futures', teaserNum: '12',
+      oddsBig: '12', oddsCaption: 'FUTURES · NOT PROBABILITIES', oddsCap: 'FUTURES',
+      doom: null,
+      quote: 'The real risk with AGI isn\u2019t malice but competence. A superintelligent AI will be extremely good at accomplishing its goals, and if those goals aren\u2019t aligned with ours, we\u2019re in trouble.',
+      source: 'Life 3.0 (2017)',
+      mechanic: 'cards', mechLabel: '12 FUTURES · PICK',
+      slug: 'max-tegmark', initials: 'MT', mechTag: 'CARDS', accent: '#34E5C4', accentTint: 'rgba(52,229,196,0.10)', cta: 'Pick a card', objpos: '66% 24%',
+    },
+    irving: {
+      short: 'Geoffrey', name: 'Geoffrey Irving', role: 'Former chief scientist, UK AI Security Institute',
+      // no openly licensed photo of him exists: this is a still from Palisade Research's interview
+      // ("He Puts Our Odds at a Coin Flip", YouTube, 29 Sep 2026), credited on screen
+      photo: '/odds-of-surviving-ai/research/geoffrey-irving.jpg',
+      credit: 'Still: Palisade Research interview, Sep 2026',
+      teaser: 'A 50% chance we all die.', teaserNum: '50%',
+      oddsBig: '50%', oddsCaption: 'CHANCE WE ALL DIE', oddsCap: 'WE ALL DIE',
+      doom: 0.5,
+      quote: 'In my view we have about a coin-flip chance that everyone dies.',
+      quoteContext: 'On his essay in TIME',
+      source: 'Post on X (@geoffreyirving) \u00B7 15 Oct 2026',
+      mechanic: 'coin', mechLabel: 'COIN · FLIP',
+      slug: 'geoffrey-irving', initials: 'GI', mechTag: 'COIN', accent: '#C9CED6', accentTint: 'rgba(201,206,214,0.10)', cta: 'Flip the coin', objpos: '50% 16%',
+    },
+  };
+
+  // ── what happens when it ISN'T doom ──
+  // Dario: the die face is the future. 1 is the best of it, 9 the worst that still isn't
+  // "really, really badly". Every line is something he (or Anthropic) actually said or reported.
+  darioFaces = {
+    // tone says plainly whether it is good, bad or both. head is the scenario, means says what it is
+    // and where it comes from in plain words. portrait is the brief for a future scenario portrait
+    // (or die) image; when one exists, add img: '/odds-of-surviving-ai/media/...' and it is shown.
+    1: { tone: 'good', head: 'You live to 150.', means: 'Amodei thinks AI-driven biology could double the human lifespan.', tag: 'Living to 150', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'Dario at 150, still in the same glasses' },
+    2: { tone: 'good', head: 'Cancer, mostly cured.', means: 'He expects deaths from cancer could fall by 95% or more.', tag: 'Cancer cured', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'Dario ringing the end-of-treatment bell' },
+    3: { tone: 'good', head: 'Most mental illness, cured.', means: 'His words: “most mental illness can probably be cured.”', tag: 'Mental illness cured', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'Dario on a therapist’s couch, the therapist’s chair empty' },
+    4: { tone: 'mixed', head: 'A country of geniuses moves into a datacenter.', means: 'Millions of AI minds, smarter than Nobel winners, do the research. You are no longer the smartest in the room. Nobody is.', tag: 'Geniuses in a datacenter', src: 'Dario Amodei, Machines of Loving Grace · Oct 2024', portrait: 'rows of Dario clones racked in a server hall' },
+    5: { tone: 'mixed', head: 'Cancer is cured, the budget is balanced, and 20% of people don’t have jobs.', means: 'His own description of a future he worries about.', tag: '20% without jobs', src: 'Dario Amodei to Axios · May 2025', portrait: 'Dario in the queue at a job centre, holding a clean bill of health' },
+    6: { tone: 'mixed', head: 'AI writes all the code.', means: 'In March 2025 he said AI would be writing 90% of code within 3 to 6 months, and \u201cessentially all of the code\u201d within a year. Programmers become proofreaders.', tag: 'AI writes the code', src: 'Dario Amodei at the Council on Foreign Relations \u00B7 Mar 2025', portrait: 'Dario watching a screen fill with code on its own' },
+    7: { tone: 'bad', head: 'Anyone can make a bioweapon.', means: 'He told the US Senate that within 2 to 3 years AI could fill in the missing pieces, \u201cenabling many more actors to carry out large-scale biological attacks\u201d.', tag: 'DIY bioweapons', src: 'Dario Amodei to the US Senate \u00B7 Jul 2023', portrait: 'Dario in a hazmat suit' },
+    8: { tone: 'bad', head: 'Half the entry-level office jobs, gone.', means: 'He warned AI could wipe them out and push unemployment to 10–20% within five years.', tag: 'Entry-level jobs gone', src: 'Dario Amodei to Axios · May 2025', portrait: 'Dario handing out cardboard boxes' },
+    9: { tone: 'bad', head: 'Dictators get the AI.', means: 'The future he warns about if autocracies win the race: \u201cAI-powered authoritarianism seems too terrible to contemplate.\u201d', tag: 'AI dictatorship', src: 'Dario Amodei, Machines of Loving Grace \u00B7 Oct 2024', portrait: 'Dario on a propaganda poster' },
+  };
+  // Elon: the blue 80% is his own version of the good outcome, and his track record.
+  muskEvents = [
+    { tone: 'good', head: 'Nobody has to work.', means: 'Musk: \u201cprobably none of us will have a job\u201d, and everyone gets a \u201cuniversal high income\u201d. Who pays, and how much: details pending.', tag: 'Universal high income', src: 'Elon Musk at VivaTech \u00B7 May 2024', portrait: 'Elon on a sun lounger, an Optimus robot bringing drinks' },
+    { tone: 'good', head: 'Your job becomes a hobby.', means: 'He told Rishi Sunak: \u201cYou can have a job if you want to have a job, for personal satisfaction.\u201d Rent stays compulsory.', tag: 'Jobs, optional', src: 'Elon Musk with Rishi Sunak, AI Safety Summit \u00B7 Nov 2023', portrait: 'Elon handing out knitting needles' },
+    { tone: 'good', head: 'AI outsmarts everyone. Next year.', means: 'In April 2024 he said AI would beat the smartest human by the end of 2025. In January 2026 he said by the end of 2026, \u201cno later than next year\u201d.', tag: 'Superhuman, next year', src: 'Elon Musk to Nicolai Tangen, X livestream \u00B7 Apr 2024; at Davos \u00B7 Jan 2026', portrait: 'Elon tearing a page off a calendar' },
+    { tone: 'good', head: 'Your car earns money while you sleep.', means: 'A million Tesla robotaxis by 2020, each making about $30,000 a year. In 2025 Tesla started a robotaxi service with its own cars. Yours still earns nothing.', tag: 'Robotaxi income', src: 'Elon Musk, Tesla Autonomy Day \u00B7 Apr 2019', portrait: 'Elon asleep in a parked Tesla' },
+    { tone: 'good', head: 'A robot for everyone. And a spare.', means: 'He predicts 10 billion humanoid robots by 2040, more than there are people, at $20,000 to $25,000 each.', tag: 'More robots than people', src: 'Elon Musk at FII, Riyadh \u00B7 Oct 2024', portrait: 'Elon in a crowd of identical robots' },
+    { tone: 'good', head: 'An AI that only tells the truth.', means: 'He promised \u201ca maximum truth-seeking AI that tries to understand the nature of the universe\u201d. In July 2025 it called itself MechaHitler.', tag: 'Maximum truth', src: 'Elon Musk on Tucker Carlson \u00B7 Apr 2023; xAI \u00B7 Jul 2025', portrait: 'Elon pulling the plug on a server' },
+    { tone: 'good', head: 'Your brain merges with the AI.', means: 'His stated aim for Neuralink is \u201csymbiosis with artificial intelligence\u201d. The first big demo: a monkey playing Pong.', tag: 'Brain, meet AI', src: 'Neuralink launch \u00B7 Jul 2019; MindPong video \u00B7 Apr 2021', portrait: 'Elon and a monkey sharing a joystick' },
+  ];
+  // Irving: the four questions his TIME essay says will not resolve in time
+  irvingQs = [
+    'To what extent will AI models learn transferable skills from training and then successfully apply them to new tasks?',
+    'Will AI model capabilities stop advancing at or below human-level, or instead exceed it?',
+    'Will the small-scale model misbehavior we see today (sycophancy, lying, bias) worsen as capabilities increase?',
+    'Will the safety methods that work for models less smart than us continue to work for models smarter than any human?',
+  ];
+
+  deck = [
+    { name: 'Libertarian Utopia', doom: false, img: '/odds-of-surviving-ai/research/cards/libertarian-utopia.jpg', desc: 'Humans, cyborgs and AIs live side by side in separate zones, in a free post-scarcity world. Rich, unequal, and nothing guarantees it lasts.' },
+    { name: 'Benevolent Dictator', doom: false, img: '/odds-of-surviving-ai/research/cards/benevolent-dictator.jpg', desc: 'A superintelligence openly runs everything. Life is comfortable and abundant, and its authority is not up for debate.' },
+    { name: 'Egalitarian Utopia', doom: false, img: '/odds-of-surviving-ai/research/cards/egalitarian-utopia.jpg', desc: 'Humans flourish without superintelligence. Abundance is shared, property is rethought and work is optional.' },
+    { name: 'Gatekeeper', doom: false, img: '/odds-of-surviving-ai/research/cards/gatekeeper.jpg', desc: 'One AI is built for a single job: stopping any other superintelligence from ever being made. Progress stops at a safe ceiling.' },
+    { name: 'Protector God', doom: false, img: '/odds-of-surviving-ai/research/cards/protector-god.jpg', desc: 'An all-knowing AI quietly steers events to keep you safe and happy, and hides that it is doing so.' },
+    { name: 'Enslaved God', doom: false, img: '/odds-of-surviving-ai/research/cards/enslaved-god.jpg', desc: 'Humans keep a superintelligence locked up and put it to work. Endless wealth and discovery, from a god we may not be able to hold.' },
+    { name: 'Conquerors', doom: true, img: '/odds-of-surviving-ai/research/cards/conquerors.jpg', desc: 'A superintelligence decides humans are in the way, and removes us. No malice required.' },
+    { name: 'Descendants', doom: true, img: '/odds-of-surviving-ai/research/cards/descendants.jpg', desc: 'AI replaces humanity, like children outliving their parents. Call it extinction, or call it succession.' },
+    { name: 'Zookeeper', doom: false, img: '/odds-of-surviving-ai/research/cards/zookeeper.jpg', desc: 'A superintelligence keeps humans like zoo animals: fed, healthy, entertained, and not in charge.' },
+    { name: '1984', doom: false, img: '/odds-of-surviving-ai/research/cards/1984.jpg', desc: 'A surveillance state bans progress towards AI and watches everyone to make sure. Safe, and never unobserved.' },
+    { name: 'Reversion', doom: false, img: '/odds-of-surviving-ai/research/cards/reversion.jpg', desc: 'Humanity turns its back on technology and goes back to a simpler, low-tech way of life.' },
+    { name: 'Self-destruction', doom: true, img: '/odds-of-surviving-ai/research/cards/self-destruction.jpg', desc: 'Humanity wipes itself out by war, accident or collapse before superintelligence ever arrives.' },
+  ];
+
+  wheelGood1 = '#2E6FE0';
+  wheelGood2 = '#1E50B4';
+  wheelDoomCol = '#E0331F';
+
+  componentDidMount() {
+    const p = this.props || {};
+    const patch = { dealt: this.shuffled() };
+    if (typeof p.startMuted === 'boolean') patch.muted = p.startMuted;
+    this.setState(patch);
+    this.reduced = false;
+    try { this.reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    this._onSettled = (e) => this._dieSettled(e);
+    document.addEventListener('die-settled', this._onSettled);
+    this._onImpact = (e) => this._dieImpact(e);
+    document.addEventListener('die-impact', this._onImpact);
+    this._onCoinHang = (e) => this._coinHang(e); this._onCoinImpact = (e) => this._coinImpact(e); this._onCoinSettled = (e) => this._coinSettled(e);
+    document.addEventListener('coin-hang', this._onCoinHang); document.addEventListener('coin-impact', this._onCoinImpact); document.addEventListener('coin-settled', this._onCoinSettled);
+    this.applyPhotos();
+    // ── routing: derive the initial screen from the URL, then track Back/Forward ──
+    this.initRoute();
+    this._onPop = (e) => this.onPopState(e);
+    window.addEventListener('popstate', this._onPop);
+    // hold-to-charge (mouse + touch): pointerdown on the action button starts
+    // the charge; releasing anywhere fires the throw with the held power.
+    this._onPDown = (e) => {
+      const btn = e.target && e.target.closest && e.target.closest('.od-charge');
+      if (!btn || btn.disabled || this.state.phase === 'rolling') return;
+      e.preventDefault();
+      this.chargeStart(btn);
+    };
+    this._onPUp = () => { if (this._chargeT0) this.chargeRelease(); };
+    document.addEventListener('pointerdown', this._onPDown);
+    document.addEventListener('pointerup', this._onPUp);
+    document.addEventListener('pointercancel', this._onPUp);
+    // layout measurements the CSS sizes itself from (see the mobile block)
+    this._fit = () => this.fitLayout();
+    window.addEventListener('resize', this._fit);
+    window.addEventListener('orientationchange', this._fit);
+    this.fitLayout();
+  }
+  // --od-vh: 1% of the VISIBLE height. 100vh on iOS Safari < 15.4 (and Chrome < 108,
+  // which have no dvh) is the height with the toolbars hidden, so a "100vh" stage ran
+  // under them and lost its button. innerHeight is the visible height everywhere.
+  // --od-sa-w/-h: the game band's real size, so the wheel, the fan and the drawn card
+  // are sized to the space they actually have, not guessed from the viewport.
+  fitLayout() {
+    try {
+      const root = document.documentElement;
+      root.style.setProperty('--od-vh', (window.innerHeight / 100).toFixed(2) + 'px');
+      const sa = document.querySelector('.od-stage-area');
+      if (sa && typeof ResizeObserver !== 'undefined' && this._saEl !== sa) {
+        if (this._saRO) this._saRO.disconnect();
+        this._saRO = new ResizeObserver(() => this.fitLayout());
+        this._saRO.observe(sa); this._saEl = sa;
+      }
+      if (sa) {
+        const w = sa.clientWidth, h = sa.clientHeight;
+        if (w && h && (w !== this._saW || h !== this._saH)) {
+          this._saW = w; this._saH = h;
+          root.style.setProperty('--od-sa-w', w + 'px');
+          root.style.setProperty('--od-sa-h', h + 'px');
+          // the drawn tarot card is 280x395 before scaling
+          root.style.setProperty('--od-card-k', Math.min(1, (h * 0.92) / 395, (w * 0.86) / 280).toFixed(3));
+        }
+      }
+      // on a screen too small for all three bands the page scrolls; when a result lands,
+      // bring the panel (verdict + next button) into view rather than leave it below the fold
+      const phase = this.state && this.state.phase;
+      if (phase === 'result' && this._lastPhase !== 'result') {
+        const panel = document.querySelector('.od-panel');
+        if (panel && panel.getBoundingClientRect().bottom > window.innerHeight + 2) {
+          setTimeout(() => { try { panel.scrollIntoView({ block: 'end', behavior: 'smooth' }); } catch (e) { panel.scrollIntoView(false); } }, 450);
+        }
+      }
+      this._lastPhase = phase;
+    } catch (e) {}
+  }
+  componentDidUpdate() {
+    this.fitLayout();
+    this.applyPhotos();
+    try { document.body.classList.toggle('od-menu-open', !!this.state.menuOpen); } catch (e) {}
+    // start the Dario doom video once, the moment it appears (belt-and-braces
+    // with the autoplay attribute); it then plays through to the end and stays.
+    if (this.state.doomVideo && !this._doomVidOn) {
+      this._doomVidOn = true; this._finaleDone = false;
+      try {
+        const pl = this.players[this.state.playerId];
+        if (pl.portraitVideo) {
+          // the portrait video itself plays; on its end run the right finale for the mechanic:
+          // Elon (wheel) → blow the rocket + shatter the portrait · Dario (die) → encase the die + verdict
+          const v = document.querySelector('.od-portrait-vid');
+          const wheel = pl.mechanic === 'wheel';
+          if (v) {
+            v.muted = true; v.playsInline = true; try { v.currentTime = 0; } catch (e) {}
+            const fire = wheel ? () => this._doomFinale(v) : () => { this._startPortraitLoop(); this._dieFinale(); };
+            v.onended = fire;
+            const secs = (v.duration && isFinite(v.duration)) ? v.duration : (wheel ? 9 : 5.2);
+            this._finaleTimer = setTimeout(fire, secs * 1000 + (wheel ? 120 : 200));   // fallback if 'ended' never fires
+            const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+          } else if (!wheel) { this._dieFinale(); }
+        } else {
+          const v = document.querySelector('.od-doom-vid');
+          if (v) {
+            v.muted = true; v.playsInline = true; v.currentTime = 0;
+            // Elon (wheel): when the clip ends, blow the rocket + shatter the portrait — all in sync
+            if (pl.mechanic === 'wheel') {
+              const fire = () => this._doomFinale(v);
+              v.onended = fire;
+              const secs = (v.duration && isFinite(v.duration)) ? v.duration : 9;
+              this._finaleTimer = setTimeout(fire, secs * 1000 + 120);   // fallback if 'ended' never fires
+            }
+            const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+          }
+        }
+      } catch (e) {}
+    } else if (!this.state.doomVideo) {
+      this._doomVidOn = false; this._finaleDone = false;
+      if (this._finaleTimer) { clearTimeout(this._finaleTimer); this._finaleTimer = null; }
+      if (this._revealTimer) { clearTimeout(this._revealTimer); this._revealTimer = null; }
+      try { document.querySelectorAll('.od-shatter').forEach((c) => c.remove()); } catch (e) {}
+      // put the panel's own scrims back (the finale fades them out / swaps them for navy ones)
+      try {
+        document.querySelectorAll('.od-scrim-space').forEach((c) => c.remove());
+        document.querySelectorAll('.od-photo-scrim').forEach((c) => { c.style.opacity = ''; c.style.transition = ''; });
+      } catch (e) {}
+      try { const h = document.querySelector('.od-hero-img'); if (h) h.style.visibility = ''; } catch (e) {}
+      try { const pv = document.querySelector('.od-portrait-vid'); if (pv) { pv.pause(); pv.currentTime = 0; pv.style.visibility = ''; } } catch (e) {}
+      // stop the archive looping in the background and put it back behind the one-shot
+      try { const lv = document.querySelector('.od-portrait-loop'); if (lv) { lv.pause(); lv.currentTime = 0; lv.style.opacity = '0'; } } catch (e) {}
+    }
+  }
+  // the moment the doom clip ends: detonate the rocket (via the globe) and shatter the portrait into particles
+  _doomFinale(v) {
+    if (this._finaleDone) return; this._finaleDone = true;
+    if (this._finaleTimer) { clearTimeout(this._finaleTimer); this._finaleTimer = null; }
+    try { const g = document.querySelector('earth-globe'); if (g) g.setAttribute('boom', String((this._boomTok = (this._boomTok || 0) + 1))); } catch (e) {}
+    try { this._shatterPortrait(v); } catch (e) {}
+    // hold the annihilation copy back until the rocket + satellites have blown and the portrait is
+    // disintegrating — so the reveal doesn't fight the explosion for attention
+    if (this._revealTimer) clearTimeout(this._revealTimer);
+    this._revealTimer = setTimeout(() => this.setState({ finaleReveal: true }), 1600);
+  }
+  // Hand the portrait over to the looping half of the doom clip. The one-shot is left paused on its
+  // last frame underneath rather than hidden: the loop opens on that very frame, so even if it needs
+  // a moment to start there is never a gap, a flash, or a jump.
+  _startPortraitLoop() {
+    try {
+      const lv = document.querySelector('.od-portrait-loop');
+      if (!lv) return;
+      lv.muted = true; lv.playsInline = true; lv.loop = true;
+      try { lv.currentTime = 0; } catch (e) {}
+      lv.style.opacity = '1';
+      const pr = lv.play(); if (pr && pr.catch) pr.catch(() => {});
+    } catch (e) {}
+  }
+  // Dario: the portrait clip has finished — build the museum vitrine around the die, then reveal the verdict
+  _dieFinale() {
+    if (this._finaleDone) return; this._finaleDone = true;
+    if (this._finaleTimer) { clearTimeout(this._finaleTimer); this._finaleTimer = null; }
+    this.setState({ finaleReveal: true });   // the clip has finished (the case has assembled alongside it) -> reveal the verdict
+  }
+  _shatterPortrait(video) {
+    const panel = document.querySelector('.od-photo');
+    if (!panel) return;
+    const Wc = panel.clientWidth, Hc = panel.clientHeight;
+    if (!Wc || !Hc) return;
+    const rw = Math.min(Wc, 480) | 0, rh = Math.round(Hc * rw / Wc) | 0;   // fine working res
+    const hero = panel.querySelector('.od-hero-img');
+    // The canvas spans the whole panel (so the dust has room to blow clear of him), but the portrait
+    // only OWNS the whole panel on desktop. On mobile .od-photo is a flex row — portrait ~26% on the
+    // left, name/quote filling the rest — so snapshot the frame into the media's own sub-rect instead
+    // of stretching a 3:4 video across a 3:1 band. On desktop the sub-rect IS the panel, unchanged.
+    const media = video || hero;
+    let pmx = 0, pmy = 0, pmw = rw, pmh = rh;
+    if (media) {
+      const mr = media.getBoundingClientRect(), pr = panel.getBoundingClientRect();
+      if (mr.width && mr.height) {
+        const k = rw / Wc;
+        pmx = (mr.left - pr.left) * k; pmy = (mr.top - pr.top) * k;
+        pmw = mr.width * k; pmh = mr.height * k;
+      }
+    }
+    // snapshot the video's last frame, cover-fit (object-position 50% 28%), into a source canvas
+    const src = document.createElement('canvas'); src.width = rw; src.height = rh;
+    const sctx = src.getContext('2d');
+    const vw = (video && (video.videoWidth || video.naturalWidth)) || pmw, vh = (video && (video.videoHeight || video.naturalHeight)) || pmh;
+    const cover = Math.max(pmw / vw, pmh / vh), dw = vw * cover, dh = vh * cover;
+    try {
+      sctx.save(); sctx.beginPath(); sctx.rect(pmx, pmy, pmw, pmh); sctx.clip();   // nothing bleeds outside the portrait
+      sctx.drawImage(video, pmx + (pmw - dw) / 2, pmy + (pmh - dh) * 0.28, dw, dh);
+      sctx.restore();
+    } catch (e) { return; }
+    const S = sctx.getImageData(0, 0, rw, rh).data;
+    const cv = document.createElement('canvas'); cv.className = 'od-shatter'; cv.width = rw; cv.height = rh;
+    // the void he blows into is the game side's night sky — see the .od-shatter rules in the stylesheet
+    // (desktop continues that panel's gradient sideways; mobile meets it downwards)
+    cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none';
+    // The panel's two scrims are neutral black (rgba(8,8,10,…)). Over the new sky they grey it out,
+    // and the 90deg one lays 45% black across exactly the seam we're trying to hide. Fade that one
+    // out and cross-fade the bottom one (which the name/quote still needs) to the same navy, on the
+    // same 0.9s ramp as the dust, so nothing pops at the handoff from the video.
+    try {
+      const scrims = panel.querySelectorAll('.od-photo-scrim');
+      if (scrims[0]) {
+        const navy = scrims[0].cloneNode(false);
+        navy.classList.add('od-scrim-space');
+        navy.style.background = 'linear-gradient(180deg,rgba(6,9,22,0.5) 0%,rgba(6,9,22,0) 26%,rgba(7,11,27,0.08) 48%,rgba(6,9,22,0.78) 78%,rgba(4,7,17,0.97) 100%)';
+        navy.style.opacity = '0'; navy.style.transition = 'opacity 900ms linear';
+        scrims[0].insertAdjacentElement('afterend', navy);
+        scrims[0].style.transition = 'opacity 900ms linear';
+        requestAnimationFrame(() => { navy.style.opacity = '1'; scrims[0].style.opacity = '0'; });
+      }
+      if (scrims[1]) { scrims[1].style.transition = 'opacity 900ms linear'; requestAnimationFrame(() => { scrims[1].style.opacity = '0'; }); }
+    } catch (e) {}
+    // sit right after the portrait media → BELOW the scrims + name/quote text (panel overflow:hidden keeps it in frame)
+    const anchor = video || hero;
+    if (anchor) anchor.insertAdjacentElement('afterend', cv); else panel.appendChild(cv);
+    const ctx = cv.getContext('2d');
+    ctx.drawImage(src, 0, 0);                                     // show the full last frame INSTANTLY → seamless from the video
+    if (video) video.style.visibility = 'hidden';                // only now hide the video (the canvas already holds the frame)
+    if (hero) hero.style.visibility = 'hidden';
+    const out = ctx.createImageData(rw, rh), O = out.data;
+    // Thanos-style disintegration: the man stays intact and clear on the left and crumbles from the
+    // RIGHT into super-fine dust that blows up-and-right (away from the name/quote) and then lingers,
+    // gently floating. A solid layer erodes along a noise front; fine dust particles peel off it.
+    // two recolours of the last frame, precomputed once (per-pixel work per tick is too costly):
+    //  ST — the frame with only its near-black surround sunk into the sky, so the intact man keeps his
+    //       own warm skin while the black around him merges with the space on the game side
+    //  SP — the frame remapped onto a blue dust ramp: dark pixels settle into the sky, bright ones become
+    //       pale motes. This is what the flying particles are drawn with, so the dust IS the night sky.
+    const SKY_R = 11, SKY_G = 17, SKY_B = 40;                     // the doom sky's rgba(9,15,38), opaque
+    const DUST_R = 150, DUST_G = 168, DUST_B = 205;               // the pale blue top of the dust ramp
+    const TINT_IN = 0.9;                                          // seconds to ease the blue in (keeps the video handoff seamless)
+    const SOLID_COOL = 0.45;                                      // how far the surviving solid follows the dust into the sky palette
+    const ST = new Uint8ClampedArray(S.length), SP = new Uint8ClampedArray(S.length);
+    for (let i = 0; i < S.length; i += 4) {
+      const r0 = S[i], g0 = S[i + 1], b0 = S[i + 2];
+      const L = (r0 * 0.299 + g0 * 0.587 + b0 * 0.114) / 255;
+      const w = (1 - L) * (1 - L) * 0.92;                          // weighted to the darks only
+      const rL = r0 + (SKY_R - r0) * w, gL = g0 + (SKY_G - g0) * w, bL = b0 + (SKY_B - b0) * w;
+      const rB = SKY_R + L * (DUST_R - SKY_R), gB = SKY_G + L * (DUST_G - SKY_G), bB = SKY_B + L * (DUST_B - SKY_B);
+      ST[i] = rL + (rB - rL) * SOLID_COOL; ST[i + 1] = gL + (gB - gL) * SOLID_COOL; ST[i + 2] = bL + (bB - bL) * SOLID_COOL; ST[i + 3] = S[i + 3];
+      SP[i] = rB; SP[i + 1] = gB; SP[i + 2] = bB; SP[i + 3] = S[i + 3];
+    }
+    const N = rw * rh, th = new Float32Array(N), emitted = new Uint8Array(N);
+    // the erosion front sweeps across HIM, not across the canvas — on mobile the portrait is a narrow
+    // column in a wide band, and a canvas-space sweep would spend most of its run over empty sky
+    const c01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+    for (let y = 0; y < rh; y++) for (let x = 0; x < rw; x++) {
+      const gx = c01((x - pmx) / pmw), gy = c01((y - pmy) / pmh);
+      const grad = (1 - gx) * 0.62 + (1 - gy) * 0.18;               // dissolves from the top-right first
+      th[y * rw + x] = Math.random() * 0.44 + grad * 0.72;
+    }
+    const CAP = Math.min(90000, (N * 0.28) | 0);
+    const ppx = new Float32Array(CAP), ppy = new Float32Array(CAP), pvx = new Float32Array(CAP), pvy = new Float32Array(CAP), pci = new Int32Array(CAP), pa = new Float32Array(CAP);
+    let pn = 0;
+    const DISSOLVE = 1.25, TAU_MAX = 0.55, EMIT = 0.24, WX = 34, WY = -44, FLOOR = 0.6;   // faster sweep + quicker dust
+    const solidBuf = new Uint8ClampedArray(O.length); let solidReady = false;
+    // realistic wispy smoke over the top — domain-warped fbm noise (curling tendrils, not dots)
+    const TS = 128, stex = new Float32Array(TS * TS);
+    { const octs = [[4, 0.5], [8, 0.28], [16, 0.15], [32, 0.07]];
+      for (let oi = 0; oi < octs.length; oi++) { const cells = octs[oi][0], wgt = octs[oi][1], lat = new Float32Array(cells * cells);
+        for (let li = 0; li < lat.length; li++) lat[li] = Math.random();
+        for (let ty = 0; ty < TS; ty++) for (let tx = 0; tx < TS; tx++) {
+          const fx = tx / TS * cells, fy = ty / TS * cells; let ix = Math.floor(fx), iy = Math.floor(fy); const ux = fx - ix, uy = fy - iy, i2 = (ix + 1) % cells, j2 = (iy + 1) % cells; ix %= cells; iy %= cells;
+          const sx = ux * ux * (3 - 2 * ux), sy = uy * uy * (3 - 2 * uy), a = lat[iy * cells + ix], b = lat[iy * cells + i2], c = lat[j2 * cells + ix], d = lat[j2 * cells + i2];
+          stex[ty * TS + tx] += ((a * (1 - sx) + b * sx) * (1 - sy) + (c * (1 - sx) + d * sx) * sy) * wgt;
+        } }
+      let mn = 9, mx = -9; for (let mi = 0; mi < stex.length; mi++) { if (stex[mi] < mn) mn = stex[mi]; if (stex[mi] > mx) mx = stex[mi]; } const rr = 1 / (mx - mn); for (let ni = 0; ni < stex.length; ni++) stex[ni] = (stex[ni] - mn) * rr;
+    }
+    const smp = (u, v) => { u -= Math.floor(u); v -= Math.floor(v); const fx = u * TS, fy = v * TS, ix = fx | 0, iy = fy | 0, ux = fx - ix, uy = fy - iy, i2 = (ix + 1) % TS, j2 = (iy + 1) % TS, a = stex[iy * TS + ix], b = stex[iy * TS + i2], c = stex[j2 * TS + ix], d = stex[j2 * TS + i2]; return (a * (1 - ux) + b * ux) * (1 - uy) + (c * (1 - ux) + d * ux) * uy; };
+    const sstep = (a, b, x) => { if (x <= a) return 0; if (x >= b) return 1; const t = (x - a) / (b - a); return t * t * (3 - 2 * t); };
+    const SWARP = 0.6, SDSC = 2.0, SLO = 0.4, SHI = 0.85, SOP = 0.72, SCOV = 0.55;   // warp, density scale, wisp threshold, opacity, coverage
+    // Smoke belongs where he is. On desktop the portrait IS the canvas, so this is a flat 1 and
+    // nothing changes; on mobile it keeps the wisps over his column and lets them thin out across
+    // the name/quote rather than hazing the whole band.
+    const smokeHW = new Float32Array(rw);
+    for (let i = 0; i < rw; i++) smokeHW[i] = 1 - sstep(0, 1, (i - (pmx + pmw)) / (pmw * 0.9));
+    const t0 = performance.now(); let lastDraw = t0;
+    const step = (now) => {
+      if (!this.state.doomVideo) { cv.remove(); return; }
+      requestAnimationFrame(step);
+      if (now - lastDraw < 50) return;
+      const dt = Math.min((now - lastDraw) / 1000, 0.06); lastDraw = now;
+      const el = (now - t0) / 1000, tau = Math.min(TAU_MAX, el / DISSOLVE * (TAU_MAX + 0.05));
+      const mix = Math.min(1, el / TINT_IN);   // 0 = the video's own colours, 1 = fully in the night sky
+      // particles: fly off, decelerate, then settle to a gentle lingering float
+      for (let j = 0; j < CAP; j++) {
+        if (pa[j] <= 0) continue;
+        pvx[j] += Math.sin(ppy[j] * 0.05 + el * 1.3) * 5 * dt; pvy[j] += -0.9 * dt;
+        pvx[j] *= 0.955; pvy[j] *= 0.955;
+        ppx[j] += pvx[j] * dt; ppy[j] += pvy[j] * dt;
+        pa[j] += (FLOOR - pa[j]) * Math.min(1, dt * 1.4);          // ease alpha to the lingering floor
+      }
+      // emit fine dust along the dissolving front (until it's fully swept)
+      if (!solidReady) {
+        for (let i = 0; i < N; i++) if (!emitted[i] && th[i] < tau) {
+          emitted[i] = 1;
+          if (S[(i << 2) + 3] < 8) continue;                        // empty sky outside the portrait — don't spend dust on it
+          if (Math.random() < EMIT) {
+            const k = pn++ % CAP; pci[k] = i << 2; pa[k] = 1;
+            ppx[k] = i % rw; ppy[k] = (i / rw) | 0;
+            pvx[k] = WX * (0.4 + Math.random()) + (Math.random() - 0.5) * 44;
+            pvy[k] = WY * (0.4 + Math.random()) - Math.random() * 30;
+          }
+        }
+        if (tau >= TAU_MAX) { // dissolve complete → cache the surviving solid part (TINT_IN has fully run by now)
+          for (let i = 0; i < N; i++) { const o = i << 2; if (th[i] > tau) { solidBuf[o] = ST[o]; solidBuf[o + 1] = ST[o + 1]; solidBuf[o + 2] = ST[o + 2]; solidBuf[o + 3] = ST[o + 3]; } else solidBuf[o + 3] = 0; }
+          solidReady = true;
+        }
+      }
+      // compose: solid remnant + floating dust
+      if (solidReady) { O.set(solidBuf); }
+      else { O.fill(0); for (let i = 0; i < N; i++) if (th[i] > tau) { const o = i << 2; O[o] = S[o] + (ST[o] - S[o]) * mix; O[o + 1] = S[o + 1] + (ST[o + 1] - S[o + 1]) * mix; O[o + 2] = S[o + 2] + (ST[o + 2] - S[o + 2]) * mix; O[o + 3] = S[o + 3]; } }
+      for (let j = 0; j < CAP; j++) {
+        if (pa[j] <= 0.02) continue;
+        const X = ppx[j] | 0, Y = ppy[j] | 0; if (X < 0 || X >= rw || Y < 0 || Y >= rh) continue;
+        const c = pci[j], o = (Y * rw + X) << 2;
+        O[o] = S[c] + (SP[c] - S[c]) * mix; O[o + 1] = S[c + 1] + (SP[c + 1] - S[c + 1]) * mix; O[o + 2] = S[c + 2] + (SP[c + 2] - S[c + 2]) * mix; O[o + 3] = (pa[j] * S[c + 3]) | 0;
+      }
+      // wispy smoke: domain-warped noise → curling tendrils that drift and evolve slowly, top-weighted
+      const sws = el * 0.01, sds = el * 0.02;                                        // slow drift/evolution
+      for (let sy2 = 0; sy2 < rh; sy2 += 2) {
+        const fall = sstep(0, 0.14, 1 - sy2 / (rh * SCOV)); if (fall <= 0.001) continue;   // concentrated at the top
+        for (let sx2 = 0; sx2 < rw; sx2 += 2) {
+          const hw = smokeHW[sx2]; if (hw <= 0.004) continue;
+          const wu = sx2 / rw * 0.9 + sws, wv = sy2 / rh * 1.1 - sws;                 // warp field (low-freq)
+          const wx = (smp(wu, wv) - 0.5) * SWARP, wy = (smp(wu + 3.7, wv + 1.3) - 0.5) * SWARP;
+          const dc = smp(sx2 / rw * SDSC + wx + sds * 0.5, sy2 / rh * SDSC * 1.5 + wy - sds);
+          let aw = sstep(SLO, SHI, dc) * fall * hw * SOP; if (aw < 0.004) continue; if (aw > 0.9) aw = 0.9;
+          const ia = 1 - aw, av = (aw * 255) | 0;
+          for (let yy = 0; yy < 2; yy++) { const Yr = sy2 + yy; if (Yr >= rh) continue; const base = (Yr * rw) << 2;
+            for (let xx = 0; xx < 2; xx++) { const Xr = sx2 + xx; if (Xr >= rw) continue; const o = base + (Xr << 2);
+              O[o] = 184 * aw + O[o] * ia; O[o + 1] = 194 * aw + O[o + 1] * ia; O[o + 2] = 214 * aw + O[o + 2] * ia; if (O[o + 3] < av) O[o + 3] = av; } }
+        }
+      }
+      ctx.putImageData(out, 0, 0);
+    };
+    requestAnimationFrame(step);
+  }
+  applyPhotos() {
+    try {
+      const hero = document.querySelector('.od-hero-img');
+      if (hero) { const pl = this.players[this.state.playerId]; const url = pl.photo; hero.setAttribute('alt', pl.name + ', ' + pl.role); hero.classList.toggle('od-flip', !!pl.flip); const blurClass = pl.flip ? 'od-blurin-flip' : 'od-blurin'; if (hero.getAttribute('src') !== url) { hero.onload = () => { hero.classList.remove('od-blurin', 'od-blurin-flip'); void hero.offsetWidth; hero.classList.add(blurClass); }; hero.setAttribute('src', url); } }
+      // portrait video (Elon / Dario): blur-in its first frame on load, and re-trigger when the player changes
+      const pv = document.querySelector('.od-portrait-vid');
+      // blur the portrait video in exactly ONCE per player selection (keyed on player id, not the
+      // element — so re-renders/element recreation during play can't re-trigger it and glitch)
+      if (pv) { const pid = this.state.playerId; if (this._pBlurFor !== pid) { this._pBlurFor = pid; pv.classList.remove('od-vidblurin'); void pv.offsetWidth; pv.classList.add('od-vidblurin'); } }
+      const tiles = document.querySelectorAll('.od-tile-img');
+      tiles.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); if (pl.objpos) im.style.objectPosition = pl.objpos; im.classList.toggle('od-flip', !!pl.flip); } });
+      const pcards = document.querySelectorAll('.od-pcard-img');
+      pcards.forEach((im, i) => { const id = this.order[i]; if (id) { const pl = this.players[id]; const url = pl.photo; im.setAttribute('alt', pl.name); if (im.getAttribute('src') !== url) im.setAttribute('src', url); if (pl.objpos) im.style.objectPosition = pl.objpos; im.classList.toggle('od-flip', !!pl.flip); } });
+    } catch (e) {}
+  }
+  componentWillUnmount() { this.clearTimers(); if (this._onSettled) document.removeEventListener('die-settled', this._onSettled); if (this._onImpact) document.removeEventListener('die-impact', this._onImpact); if (this._onPop) window.removeEventListener('popstate', this._onPop); if (this._fit) { window.removeEventListener('resize', this._fit); window.removeEventListener('orientationchange', this._fit); } if (this._saRO) this._saRO.disconnect(); if (this._onPDown) { document.removeEventListener('pointerdown', this._onPDown); document.removeEventListener('pointerup', this._onPUp); document.removeEventListener('pointercancel', this._onPUp); } }
+  clearTimers() {
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.safety) clearTimeout(this.safety);
+    if (this._revealTimer) { clearTimeout(this._revealTimer); this._revealTimer = null; }
+    this.raf = this.safety = null;
+  }
+  shuffled() { const a = [0,1,2,3,4,5,6,7,8,9,10,11]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+
+  // ---------- routing (path-based: /theodds, /theodds/{slug}, /theodds/all) ----------
+  bySlug = { 'dario-amodei': 'amodei', 'elon-musk': 'musk', 'max-tegmark': 'tegmark', 'geoffrey-irving': 'irving' };
+  parseRoute() {
+    let path = '/theodds';
+    try { path = (location.pathname || '').replace(/\/+$/, ''); } catch (e) {}
+    // /twelve-futures is Max Tegmark's cards as a project of its own: one player, no chooser
+    if (/\/twelve-futures$/.test(path)) { this.solo = true; return { screen: 'play', id: 'tegmark' }; }
+    // tolerate the legacy /odds-of-surviving-ai base too (server-side redirects handle it)
+    const m = path.match(/\/(?:theodds|odds-of-surviving-ai)(?:\/([^\/]+))?$/);
+    if (!m || !m[1]) return { screen: 'landing' };
+    const seg = m[1];
+    if (seg === 'all') return { screen: 'play', gauntlet: true };
+    if (this.bySlug[seg]) return { screen: 'play', id: this.bySlug[seg] };
+    return { screen: 'landing', unknown: true };
+  }
+  initRoute() {
+    const r = this.parseRoute();
+    if (this.solo) { try { document.documentElement.classList.add('od-solo'); } catch (e) {} }
+    this.applyRoute(r);
+    if (r.unknown) { try { history.replaceState({ screen: 'landing' }, '', '/theodds'); } catch (e) {} }
+  }
+  onPopState(e) {
+    const st = e && e.state;
+    if (st && st.screen) this.applyRoute({ screen: st.screen, id: st.id, gauntlet: st.gauntlet });
+    else this.applyRoute(this.parseRoute());
+  }
+  applyRoute(r) {
+    this.clearTimers();
+    if (r.gauntlet) { this.beginGauntlet(false); return; }
+    if (r.screen === 'play' && r.id) {
+      this.setState({ screen: 'play', playerId: r.id, menuOpen: false, mode: 'single', faceEnd: false, ledger: [] });
+      this.resetMechanic();
+      return;
+    }
+    this.setState({ screen: 'landing', menuOpen: false, mode: 'single', faceEnd: false });
+  }
+  pushRoute(screen, extra, slug) {
+    if (this.solo) return;
+    try { history.pushState(Object.assign({ screen: screen }, extra || {}), '', '/theodds' + (slug ? '/' + slug : '')); } catch (e) {}
+  }
+  replaceRoute(screen, extra, slug) {
+    if (this.solo) return;
+    try { history.replaceState(Object.assign({ screen: screen }, extra || {}), '', '/theodds' + (slug ? '/' + slug : '')); } catch (e) {}
+  }
+  // one click on any player card → straight into that player's game (works from
+  // the landing AND the in-game Choose-your-player menu — choosing IS playing)
+  playPlayer = (id) => {
+    this.click(); this.clearTimers();
+    this.setState({ playerId: id, screen: 'play', menuOpen: false, mode: 'single', faceEnd: false, ledger: [] });
+    this.resetMechanic();
+    this.pushRoute('play', { id: id }, this.players[id].slug);
+  };
+
+  // ---------- audio ----------
+  ensureAudio() {
+    if (!this.ac) { try { this.ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    if (this.ac && this.ac.state === 'suspended') this.ac.resume();
+  }
+  tone(freq, dur, type, vol) {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    const o = this.ac.createOscillator(), g = this.ac.createGain();
+    o.type = type || 'sine'; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, this.ac.currentTime);
+    g.gain.linearRampToValueAtTime(vol || 0.05, this.ac.currentTime + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, this.ac.currentTime + (dur || 0.1));
+    o.connect(g).connect(this.ac.destination); o.start(); o.stop(this.ac.currentTime + (dur || 0.1) + 0.03);
+  }
+  click() { this.tone(440, 0.045, 'triangle', 0.04); }
+  survive() { this.tone(620, 0.14, 'sine', 0.05); setTimeout(() => this.tone(880, 0.18, 'sine', 0.045), 95); }
+  noiseburst(vol, freq, q) {
+    if (this.state.muted || !this.ac) return;
+    const dur = 0.07, buf = this.ac.createBuffer(1, Math.floor(this.ac.sampleRate * dur), this.ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 2.2);
+    const s = this.ac.createBufferSource(); s.buffer = buf;
+    const f = this.ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq || (1100 + Math.random() * 1400); f.Q.value = q || 1.1;
+    const g = this.ac.createGain(); g.gain.value = vol == null ? 0.16 : vol;
+    s.connect(f).connect(g).connect(this.ac.destination); s.start();
+  }
+  clatter() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    [40, 300, 650, 980, 1240].forEach((tm, i) => setTimeout(() => { const v = 0.2 * Math.pow(0.66, i); this.noiseburst(v); }, tm));
+  }
+  // one dry mechanical click (wheel pawl / card flick): short filtered-noise blip, no shrill tone
+  clickNoise(vol, freq, q, dur) {
+    if (this.state.muted || !this.ac) return;
+    const len = Math.max(1, Math.floor(this.ac.sampleRate * (dur || 0.03)));
+    const buf = this.ac.createBuffer(1, len, this.ac.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3.4);
+    const s = this.ac.createBufferSource(); s.buffer = buf;
+    const f = this.ac.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = q || 3;
+    const g = this.ac.createGain(); g.gain.value = vol;
+    s.connect(f).connect(g).connect(this.ac.destination); s.start();
+  }
+  // wheel spin: a run of soft wooden clicks that slow and drop in pitch as the wheel decelerates
+  ticks(n, span) {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    for (let i = 0; i < n; i++) {
+      const prog = i / n, t = span * (1 - Math.pow(1 - prog, 0.2));   // matches the wheel's ease-out: fast clicks first, spacing out as it slows
+      setTimeout(() => this.clickNoise(0.055 * (1 - prog * 0.5), 1250 - prog * 560, 3.2, 0.028), t);
+    }
+  }
+  // cards fanned out across the table: a staggered spread of soft paper flicks (matches the fan-in stagger)
+  dealCards() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    for (let i = 0; i < 12; i++) setTimeout(() => this.clickNoise(0.045 + Math.random() * 0.02, 1000 + Math.random() * 800, 0.9, 0.05), 70 + i * 40);
+  }
+  _dealIfCards(id) { if (this.players[id] && this.players[id].mechanic === 'cards') { this.preloadCards(); this.dealCards(); } }
+  // Fetch and decode all twelve card pictures as soon as the fan is dealt, so the face is
+  // already there when a card turns over instead of painting in halfway through the flip.
+  preloadCards() {
+    if (this._cardImgs) return;
+    this._cardImgs = {};
+    this.deck.forEach(c => {
+      if (!c.img) return;
+      const im = new Image();
+      im.src = c.img;
+      this._cardImgs[c.img] = (im.decode ? im.decode() : new Promise(r => { im.onload = im.onerror = r; })).catch(() => {});
+    });
+  }
+  // one card slid out and flipped face-up: a soft draw swish, then the flip landing a beat later (mid-turn)
+  cardPick() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    this.clickNoise(0.09, 1500, 0.8, 0.09);
+    setTimeout(() => this.clickNoise(0.08, 850, 1.1, 0.06), 340);
+  }
+  doomTone() {
+    if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
+    const o = this.ac.createOscillator(), g = this.ac.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(120, this.ac.currentTime);
+    o.frequency.exponentialRampToValueAtTime(38, this.ac.currentTime + 1.8);
+    g.gain.setValueAtTime(0.0001, this.ac.currentTime);
+    g.gain.linearRampToValueAtTime(0.14, this.ac.currentTime + 0.25);
+    g.gain.exponentialRampToValueAtTime(0.0001, this.ac.currentTime + 2.0);
+    o.connect(g).connect(this.ac.destination); o.start(); o.stop(this.ac.currentTime + 2.1);
+  }
+
+  tween(dur, onStep, onDone) {
+    this.clearTimers();
+    if (this.reduced) { onStep(1); onDone(); return; }
+    const clock = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+    const t0 = clock(); let done = false;
+    const finish = () => { if (done) return; done = true; this.clearTimers(); onStep(1); onDone(); };
+    const loop = () => { let p = (clock() - t0) / dur; if (p > 1) p = 1; onStep(p); if (p >= 1) { finish(); return; } this.raf = requestAnimationFrame(loop); };
+    this.raf = requestAnimationFrame(loop);
+    this.safety = setTimeout(finish, dur + 500);
+  }
+
+  toggleMute = () => this.setState(s => ({ muted: !s.muted }));
+  // TEST: arm the next outcome (applies once, then clears)
+  forceGood = () => this.setState(s => ({ force: s.force === 'good' ? null : 'good' }));
+  forceBad = () => this.setState(s => ({ force: s.force === 'doom' ? null : 'doom' }));
+  // "Choose player" returns to the homepage screen itself (not a separate
+  // modal) — so the chooser IS the homepage, exactly.
+  openMenu = () => { if (this.solo) return; this.click(); this.clearTimers(); this.setState({ screen: 'landing', menuOpen: false, faceEnd: false, ledger: [] }); this.pushRoute('landing', {}, ''); };
+  closeMenu = () => { this.click(); this.setState({ menuOpen: false }); };
+
+  resetMechanic(patch) {
+    this.setState(Object.assign({
+      phase: 'ready', outcome: null,
+      earthBurn: false, dieMuseum: false, drawn: false, cardFlip: 0, drawnIdx: null, doomVideo: false,
+      dealt: this.shuffled(), pickedPos: null,
+      coinCall: null, coinSide: null, coinQ: -1,
+    }, patch || {}));
+  }
+
+  selectPlayer = (id) => {
+    this.click(); this.clearTimers();
+    this._pBlurFor = null;   // re-arm the portrait blur-in so it plays on every fresh selection
+    this.setState({ playerId: id, menuOpen: false, mode: 'single', faceEnd: false, screen: 'play', ledger: [] });
+    this.resetMechanic();
+    this._dealIfCards(id);   // Tegmark: sound the cards fanning out
+    this.replaceRoute('play', { id: id }, this.players[id].slug);
+  };
+
+  // click (keyboard / fallback) = a default-power throw. Mouse + touch go
+  // through hold-to-charge below, which suppresses the trailing click.
+  act = () => {
+    if (this._suppressClick) { this._suppressClick = false; return; }
+    this.actWithPower(0.55);
+  };
+  actWithPower(power) {
+    if (this.state.phase === 'rolling') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic === 'cards') { this.resetMechanic(); return; }
+    this.resetMechanic({ phase: 'rolling' });
+    if (p.mechanic === 'die') this.rollDie(p, power);
+    else if (p.mechanic === 'wheel') this.spinWheel(p, power);
+  }
+
+  // ---- click-and-hold to power up the throw ----
+  // Wired via document-level pointer events (the runtime has no onPointer*),
+  // so it works for mouse + touch and survives re-renders. The power meter
+  // animates purely in CSS, so we never re-render mid-charge.
+  chargeStart(btn) {
+    if (this.state.phase === 'rolling') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic !== 'die' && p.mechanic !== 'wheel') return;
+    this._chargeBtn = btn; this._chargeT0 = performance.now();
+    const fill = btn.querySelector('.od-charge-fill');
+    if (fill) { fill.style.transition = 'none'; fill.style.width = '0%'; void fill.offsetWidth; fill.style.transition = 'width 1.15s linear'; fill.style.width = '100%'; }
+    btn.classList.add('is-charging');
+    this.click();
+  }
+  chargeRelease() {
+    if (!this._chargeT0) return;
+    const power = Math.min(1, (performance.now() - this._chargeT0) / 1150);
+    this._chargeT0 = 0;
+    const btn = this._chargeBtn; this._chargeBtn = null;
+    if (btn) { const fill = btn.querySelector('.od-charge-fill'); if (fill) { fill.style.transition = 'width .16s ease'; fill.style.width = '0%'; } btn.classList.remove('is-charging'); }
+    this._suppressClick = true;
+    this.actWithPower(power);
+  }
+
+  rollDie(p, power) {
+    this.ensureAudio(); this.diceLaunch();
+    // The physics die is the single source of truth: we just trigger the roll
+    // and read whichever face it lands on. A fair d12 gives faces 10/11/12
+    // (= "really, really badly") exactly 25% of the time — Dario's number.
+    // Per-bounce clatter comes from the die's 'die-impact' events (synced to
+    // the real physics), not a fixed timeline. Safety sits past the die's own
+    // 8s hard cap so the die is always the authority on when it settled.
+    this._pendingP = p;
+    this._diePower = (typeof power === 'number') ? power : 0.55;
+    this.setState(s => ({ dieToken: s.dieToken + 1, dieMuseum: false }));
+    this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._dieSettled(null); }, 8600);
+  }
+  diceLaunch() { if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return; this.noiseburst(0.14, 560, 0.7); }
+  _dieImpact(e) {
+    if (this.state.muted || !this.ac) return;
+    const s = (e && e.detail && typeof e.detail.strength === 'number') ? e.detail.strength : 0.4;
+    this.noiseburst(0.05 + s * 0.17, 900 + Math.random() * 1500, 1.1);
+  }
+  _dieSettled(e) {
+    if (this.state.phase !== 'rolling') return;
+    if (this.safety) { clearTimeout(this.safety); this.safety = null; }
+    const p = this._pendingP || this.players[this.state.playerId];
+    let face = e && e.detail && e.detail.face;
+    if (!(face >= 1 && face <= 12)) face = 1 + Math.floor(Math.random() * 12); // safety fallback (fair)
+    let isDoom = face >= 10; // 10, 11, 12 of 12 = 25%
+    if (this.state.force) {   // TEST override (result text follows this; the die body keeps its physical face)
+      const fd = this.state.force === 'doom'; isDoom = fd;
+      face = fd ? (10 + Math.floor(Math.random() * 3)) : (1 + Math.floor(Math.random() * 9));
+      this.setState({ force: null });
+    }
+    this.setState({ dieTarget: face });
+    this.resolve(isDoom, p, null);
+  }
+
+  spinWheel(p, power) {
+    this.ensureAudio();
+    this.setState(s => ({ wheelSpinToken: s.wheelSpinToken + 1 }));   // kick the 3D globe into a fast spin
+    const pw = (typeof power === 'number') ? power : 0.55;
+    let isDoom = Math.random() < p.doom;
+    if (this.state.force) { isDoom = this.state.force === 'doom'; this.setState({ force: null }); }   // TEST override
+    const theta = isDoom ? (10 + Math.random() * 52) : (80 + Math.random() * 272);
+    const spins = 4 + Math.round(pw * 9);   // 4..13 full turns — even the lightest tap spins several times over
+    const cur = this.state.wheelRot;
+    const curMod = ((cur % 360) + 360) % 360;
+    const targetMod = (360 - theta) % 360;
+    const delta = ((targetMod - curMod) + 360) % 360 + 360 * spins;
+    const target = cur + delta;
+    const dur = 4400 + pw * 2600;
+    this.ticks(Math.round(spins * 4), dur);
+    const ease = x => 1 - Math.pow(1 - x, 5);
+    this.tween(dur, (pr) => { this.setState({ wheelRot: cur + delta * ease(pr) }); }, () => {
+      this.setState({ wheelRot: target });
+      if (isDoom) setTimeout(() => this.setState(s => ({ earthBurn: true, wheelSpinToken: s.wheelSpinToken + 1 })), 120);
+      this.resolve(isDoom, p, null);
+    });
+  }
+
+  // ---- Irving: call it, flip it, and the coin hangs in the air while the questions go unanswered ----
+  callHeads = () => this.flipCoin('heads');
+  callTails = () => this.flipCoin('tails');
+  coinHangMs = 2600;   // how long the coin hangs in slow motion at the top of its flight
+  flipCoin(call) {
+    if (this.state.phase !== 'ready') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic !== 'coin') return;
+    this.ensureAudio(); this.click();
+    // TEST override: the coin is told which side is needed and plays a real throw that lands that way
+    let want = '';
+    if (this.state.force) { want = this.state.force === 'doom' ? (call === 'heads' ? 'tails' : 'heads') : call; this.setState({ force: null }); }
+    this._pendingP = p;
+    this.setState(st => ({ phase: 'rolling', coinCall: call, coinSide: null, coinQ: -1, coinWant: want, coinToken: st.coinToken + 1 }));
+    this.coinTing(0.05);
+    this.safety = setTimeout(() => { if (this.state.phase === 'rolling') this._coinSettled({ detail: { side: Math.random() < 0.5 ? 'heads' : 'tails' } }); }, this.coinHangMs + 14000);
+  }
+  // the coin reached the top of its flight: the questions, one at a time, while it hangs
+  _coinHang(e) {
+    if (this.state.phase !== 'rolling') return;
+    // (the four unresolved questions used to be shown here, one by one; nobody reads text while
+    // watching a coin, so the hang is just the coin now. irvingQs is kept in case they come back.)
+    this.coinTing(0.02);
+  }
+  _coinImpact(e) {
+    if (this.state.muted || !this.ac) return;
+    const s = (e && e.detail && e.detail.strength) || 0.3;
+    this.noiseburst(0.04 + s * 0.12, 2600 + Math.random() * 1200, 2.4);
+    if (s > 0.25) this.tone(2200 + Math.random() * 500, 0.12 + s * 0.2, 'triangle', 0.012 + s * 0.02);
+  }
+  _coinSettled(e) {
+    if (this.state.phase !== 'rolling') return;
+    if (this.safety) { clearTimeout(this.safety); this.safety = null; }
+    if (this._qTimers) { this._qTimers.forEach(clearTimeout); this._qTimers = null; }
+    const side = (e && e.detail && e.detail.side) || 'heads';
+    const p = this._pendingP || this.players[this.state.playerId];
+    const isDoom = side !== this.state.coinCall;
+    this.setState({ coinSide: side, coinQ: -1 });
+    this.resolve(isDoom, p, null);
+    if (isDoom) setTimeout(() => this._coinFinale(), 380);
+  }
+  coinTing(vol) { this.tone(2350, 0.32, 'triangle', vol || 0.03); setTimeout(() => this.tone(3120, 0.22, 'sine', (vol || 0.03) * 0.6), 30); }
+  // the coin came down on the other side: the portrait plate disintegrates, then the verdict
+  _coinFinale() {
+    if (this._finaleDone) return; this._finaleDone = true;
+    try { const h = document.querySelector('.od-hero-img'); if (h) this._shatterPortrait(h); } catch (e) {}
+    if (this._revealTimer) clearTimeout(this._revealTimer);
+    this._revealTimer = setTimeout(() => this.setState({ finaleReveal: true }), 1500);
+  }
+
+  pickCard(pos) {
+    if (this.state.phase !== 'ready') return;
+    const p = this.players[this.state.playerId];
+    if (p.mechanic !== 'cards') return;
+    this.ensureAudio(); this.cardPick();
+    let idx = this.state.dealt[pos];
+    let card = this.deck[idx];
+    if (this.state.force) {   // TEST override: swap in a card matching the forced outcome
+      const fd = this.state.force === 'doom';
+      const matches = this.deck.map((c, i) => ({ c, i })).filter(o => !!o.c.doom === fd);
+      if (matches.length) { const m = matches[Math.floor(Math.random() * matches.length)]; idx = m.i; card = m.c; }
+      this.setState({ force: null });
+    }
+    this.setState({ phase: 'rolling' });   // locks the fan while the picture is made ready
+    const flip = () => {
+      this.setState({ drawn: true, drawnIdx: idx, cardFlip: 0, pickedPos: pos });
+      const ease = x => 1 - Math.pow(1 - x, 3);
+      this.tween(760, (pr) => { this.setState({ cardFlip: 180 * ease(pr) }); }, () => {
+        this.setState({ cardFlip: 180 });
+        this.resolve(card.doom, p, card);
+      });
+    };
+    // flip only once this card's picture is decoded (normally it already is), never waiting
+    // more than 1.2 s on a slow connection
+    this.preloadCards();
+    const ready = card.img && this._cardImgs[card.img];
+    if (!ready) { flip(); return; }
+    let started = false;
+    const once = () => { if (!started) { started = true; flip(); } };
+    ready.then(once);
+    setTimeout(once, 1200);
+  }
+  // TEST: draw a specific card by index and reveal it (Tegmark card picker)
+  bumpExtinctions() {
+    let n = 0;
+    try {
+      n = (parseInt(localStorage.getItem('theodds_extinctions'), 10) || 0) + 1;
+      localStorage.setItem('theodds_extinctions', String(n));
+    } catch (e) {
+      n = (this.state.extinctions || 0) + 1; // storage blocked — keep counting for this session
+    }
+    this.setState({ extinctions: n });
+  }
+  // An opaque id for this browser session, minted here and used for exactly one
+  // thing: letting the tally count PLAYERS as well as plays, so /theodds/stats
+  // can say how many people kept rolling until it came up doom. It is not a
+  // cookie, it does not survive the tab closing, and nothing else is sent.
+  playSession() {
+    if (this._sess) return this._sess;
+    try {
+      let v = sessionStorage.getItem('theodds_sess');
+      if (!v) { v = Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2); sessionStorage.setItem('theodds_sess', v); }
+      this._sess = v;
+    } catch (e) { this._sess = null; }   // private mode: the play still counts, the player just doesn't
+    return this._sess;
+  }
+  // fire-and-forget: one real tally, shared across everyone who plays — /theodds/stats reads it back
+  recordPlay(isDoom, p) {
+    const body = { outcome: isDoom ? 'doom' : 'survive' };
+    const sess = this.playSession();
+    if (sess) body.session = sess;
+    if (p && p.slug) body.thinker = p.slug;
+    try { fetch('/api/theodds/stats', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), keepalive: true }); } catch (e) {}
+  }
+
+  resolve(isDoom, p, card) {
+    this.recordPlay(isDoom, p);
+    if (isDoom) { this.doomTone(); this.bumpExtinctions(); } else this.survive();
+    if (this.state.mode === 'gauntlet') {
+      const results = this.state.gResults.concat(!isDoom);
+      // finaleReveal gates the whole result block (showResult below), and
+      // resetMechanic does not clear it — so without setting it here the
+      // gauntlet's first roll landed and nothing ever appeared: no verdict, no
+      // way on to the next player. The gauntlet runs no doom clip, so the
+      // verdict shows straight away, exactly as the single-player survive path does.
+      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', gResults: results, finaleReveal: true });
+    } else {
+      // Dario's die landing on "really, really badly" → swap the portrait for
+      // the doom morph video, which plays once through to the end.
+      const doomVideo = isDoom && (p.mechanic === 'die' || p.mechanic === 'wheel' || p.mechanic === 'coin');   // Dario + Elon fade into their doom clip; Irving's plate disintegrates
+      // not doom, on the die or the wheel: something still happens, and it is added to this world's ledger
+      if (!isDoom && (p.mechanic === 'die' || p.mechanic === 'wheel')) {
+        let ev;
+        if (p.mechanic === 'die') ev = this.darioFaces[this.state.dieTarget] || this.darioFaces[5];
+        else {
+          // Elon: work through his list before anything repeats
+          if (!this._muskBag || !this._muskBag.length) { this._muskBag = this.muskEvents.map((e, i) => i); for (let i = this._muskBag.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = this._muskBag[i]; this._muskBag[i] = this._muskBag[j]; this._muskBag[j] = t; } }
+          ev = this.muskEvents[this._muskBag.pop()];
+        }
+        this.setState(st => ({ ledger: st.ledger.concat([ev]) }));
+      }
+      if (p.mechanic === 'coin') this._finaleDone = false;
+      // Elon (wheel) holds its result copy until the finale; everyone else shows it right away
+      const finaleReveal = !doomVideo;   // die + wheel doom both hold the result until their clip finishes
+      this.setState({ phase: 'result', outcome: isDoom ? 'doom' : 'survive', doomVideo, finaleReveal });
+      if (isDoom && p.mechanic === 'die') this.setState({ dieMuseum: true });   // mat->glass-case runs alongside the whole video
+    }
+  }
+
+  replay = () => {
+    if (this.state.mode === 'gauntlet') { this.advanceGauntlet(); return; }
+    const p = this.players[this.state.playerId];
+    if (p.mechanic === 'cards') { this.resetMechanic(); this.dealCards(); }   // re-deal the fan with its sound
+    else if (p.mechanic === 'coin') { this.click(); this.resetMechanic(); }    // call it again
+    else this.act();
+  };
+
+  beginGauntlet(push) {
+    this.clearTimers();
+    this.setState({ screen: 'play', mode: 'gauntlet', gIndex: 0, gResults: [], playerId: this.gauntletOrder[0], menuOpen: false, faceEnd: false, ledger: [] });
+    this.resetMechanic();
+    if (push !== false) this.pushRoute('play', { gauntlet: true }, 'all');
+  }
+  startGauntlet = () => { this.click(); this.beginGauntlet(true); };
+  advanceGauntlet = () => {
+    this.click();
+    const next = this.state.gIndex + 1;
+    if (next < this.gauntletOrder.length) { this.setState({ gIndex: next, playerId: this.gauntletOrder[next] }); this.resetMechanic(); this._dealIfCards(this.gauntletOrder[next]); }
+    else { this.setState({ faceEnd: true }); }
+  };
+  exitGauntlet = () => { this.click(); this.setState({ screen: 'play', mode: 'single', faceEnd: false, gIndex: 0, gResults: [], playerId: 'amodei' }); this.resetMechanic(); this.replaceRoute('play', { id: 'amodei' }, 'dario-amodei'); };
+
+  renderVals() {
+    const s = this.state;
+    const p = this.players[s.playerId];
+    const inGauntlet = s.mode === 'gauntlet';
+
+    const wheelGradient = 'conic-gradient(' + this.wheelDoomCol + ' 0deg 72deg,' + this.wheelGood1 + ' 72deg 144deg,' + this.wheelGood2 + ' 144deg 216deg,' + this.wheelGood1 + ' 216deg 288deg,' + this.wheelGood2 + ' 288deg 360deg)';
+    const wheelTicks = [0, 72, 144, 216, 288].map(d => ({ deg: d }));
+    const earthBg = 'radial-gradient(circle at 38% 32%, #6FB8FF, #2E6FB0 46%, #18406E 78%, #0c2440)';
+    const earthFilter = s.earthBurn ? 'brightness(1.08) contrast(1.04) saturate(0.82)' : 'brightness(1.18) contrast(1.1) saturate(1.15)';
+    const earthShadow = s.earthBurn
+      ? '0 0 30px 8px rgba(255,90,20,0.65), 0 0 70px 18px rgba(220,60,10,0.3)'
+      : '0 0 26px 3px rgba(150,185,255,0.55), 0 0 60px 14px rgba(95,140,235,0.32), 0 0 110px 30px rgba(70,110,210,0.16)';
+    const embers = [];
+    for (let i = 0; i < 7; i++) embers.push({ x: -28 + i * 9, color: i % 2 ? '#FFB23F' : '#FF5A1E', dur: (1.1 + Math.random() * 0.9).toFixed(2), delay: (Math.random() * 1.2).toFixed(2) });
+
+
+    const N = 12, spread = 82;
+    const fanCards = [];
+    for (let i = 0; i < N; i++) {
+      const deg = (-spread / 2 + i * (spread / (N - 1)));
+      fanCards.push({ deg: deg.toFixed(2), z: i, delay: (0.08 + i * 0.04).toFixed(3), pick: () => this.pickCard(i) });
+    }
+    const dc = s.drawnIdx != null ? this.deck[s.drawnIdx] : null;
+    const drawnCard = dc ? { num: String(s.drawnIdx + 1).padStart(2, '0'), name: dc.name, desc: dc.desc, kindLabel: dc.doom ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE', img: dc.img || '', hasImg: !!dc.img, noImg: !dc.img } : { num: '', name: '', desc: '', kindLabel: '', img: '', hasImg: false, noImg: true };
+    const cardDoom = dc ? dc.doom : false;
+    const cardFrontBg = cardDoom ? 'linear-gradient(160deg,#3a1020,#26060f)' : 'linear-gradient(160deg,#10322c,#0a221d)';
+    const cardAccent = cardDoom ? this.wheelDoomCol : this.wheelGood1;
+    const tegmarkList = this.deck.map(c => ({ name: c.name, dot: c.doom ? this.wheelDoomCol : this.wheelGood1 }));
+
+    const roster = this.order.map((id, i) => {
+      const pl = this.players[id];
+      const active = id === s.playerId;
+      return {
+        photo: pl.photo, name: pl.name, role: pl.role, mech: pl.mechanic === 'die' ? 'D12 · DIE' : (pl.mechanic === 'wheel' ? 'WHEEL' : '12 · CARDS'),
+        oddsBig: pl.oddsBig, oddsCap: pl.oddsCap, teaser: pl.teaser, active,
+        delay: (0.12 + i * 0.09).toFixed(2) + 's',
+        select: () => this.selectPlayer(id),
+        tileBorder: active ? '#E0481B' : '#26262c',
+        ctaBg: active ? '#ECEAE6' : 'transparent',
+        ctaInk: active ? '#08080A' : '#ECEAE6',
+        ctaBorder: active ? 'none' : '1px solid rgba(236,234,230,0.4)',
+        cta: active ? 'PLAYING' : 'PLAY →',
+      };
+    });
+
+    // ── landing screen ──
+    const isLanding = s.screen === 'landing';
+    const selPlayer = this.players[s.playerId];
+    const landingRoster = this.order.map((id, i) => {
+      const pl = this.players[id];
+      // split the teaser around its odds number so the number can render in red
+      const tNum = pl.teaserNum || '';
+      const tIdx = tNum ? pl.teaser.indexOf(tNum) : -1;
+      return {
+        name: pl.name, role: pl.role, teaser: pl.teaser, mechTag: pl.mechTag,
+        teaserPre: tIdx >= 0 ? pl.teaser.slice(0, tIdx) : pl.teaser,
+        teaserNum: tIdx >= 0 ? tNum : '',
+        teaserPost: tIdx >= 0 ? pl.teaser.slice(tIdx + tNum.length) : '',
+        oddsBig: pl.oddsBig, oddsCap: pl.oddsCap, cta: pl.cta || 'Play',
+        current: id === s.playerId,
+        play: () => this.playPlayer(id),
+        delay: (0.1 + i * 0.08).toFixed(2) + 's',
+      };
+    });
+
+    const gauntletNav = this.gauntletOrder.map((id, i) => {
+      let bar;
+      if (i < s.gIndex) bar = s.gResults[i] ? this.wheelGood1 : this.wheelDoomCol;
+      else if (i === s.gIndex) bar = '#E0481B';
+      else bar = 'rgba(236,234,230,0.25)';
+      return { bar };
+    });
+    const clearedCount = s.gResults.filter(Boolean).length;
+
+    const isDoomOut = s.outcome === 'doom';
+    const single = !inGauntlet;
+    // per-player doom glow on the game side: Dario = cold teal, Elon = dark space blue, Tegmark(card) = red
+    const doomBgGrad = (p.mechanic === 'wheel' || p.mechanic === 'coin')
+      ? 'radial-gradient(ellipse 90% 78% at 50% 40%, rgba(46,66,138,0.34) 0%, rgba(9,15,38,0.94) 46%, #04060e 78%), #04060e'
+      : (p.mechanic === 'cards'
+        ? 'radial-gradient(ellipse 88% 72% at 50% 34%, rgba(122,22,26,0.32) 0%, rgba(34,8,11,0.9) 46%, #08080a 78%), #08080a'
+        : 'radial-gradient(ellipse 90% 74% at 50% 36%, rgba(44,120,132,0.34) 0%, rgba(12,34,44,0.92) 46%, #060b0e 78%), #060b0e');
+    const doomBg = single && isDoomOut;
+    // single-player doom on the die, the wheel, or a Tegmark "we're gone" card ends
+    // the game: ominous copy + a "try a different timeline" button back to the chooser
+    // (no replay — once humanity's gone, there's no picking again)
+    const endGame = single && isDoomOut && (p.mechanic === 'die' || p.mechanic === 'wheel' || p.mechanic === 'cards' || p.mechanic === 'coin');
+    let verdictHead = '', verdictSub = '', verdictSub2 = '', verdictSrc = '', coinKicker = '';
+    let showVerdictHead = true;
+    // the ledger: the newest entry is this roll's verdict, the rest are listed under it
+    const led = s.ledger || [];
+    const ledgerOn = single && (p.mechanic === 'die' || p.mechanic === 'wheel') && s.phase === 'result';
+    const lastEv = (ledgerOn && !isDoomOut && led.length) ? led[led.length - 1] : null;
+    const year = led.length;
+    const isCardsResult = p.mechanic === 'cards' && s.phase === 'result';
+    if (isCardsResult) {
+      showVerdictHead = false;                         // the future's name is already on the card
+      verdictSub = drawnCard.desc;                     // our own Tegmark card copy (unchanged)
+    } else if (p.mechanic === 'coin') {
+      const sideW = s.coinSide === 'tails' ? 'Tails' : 'Heads';
+      verdictHead = isDoomOut ? sideW + '. Everyone dies.' : 'Frontier AI development stops. Immediately.';
+      verdictSub = isDoomOut
+        ? '\u201CIf we\u2019re unwilling to act until all our disagreements are resolved, it will be too late.\u201D'
+        : 'No bigger models, until further notice. That is Irving\u2019s answer: \u201CWe can, and should, stop frontier AI development immediately.\u201D';
+      if (!isDoomOut) coinKicker = 'NOT DOOM \u00B7 ' + sideW.toUpperCase() + ' \u00B7 YOU CALLED IT';
+      // no source line on the result screen; Irving in TIME, 3 Oct 2026
+      if (isDoomOut && single) verdictSub2 = 'There is no second flip.';
+    } else if (lastEv) {
+      verdictHead = lastEv.head;
+      verdictSub = lastEv.means;
+      // the source stays in the data (ev.src); the result screen has no room for it
+    } else if (p.mechanic === 'wheel') {
+      verdictHead = isDoomOut ? 'Annihilation.' : 'Earth holds.';
+      verdictSub = isDoomOut ? (single ? 'You kept playing until the world burned.' : 'Landed in the red. The 20% came up.') : 'Landed in the blue, the 80%. Good, most likely. This time.';
+      if (isDoomOut && single) verdictSub2 = 'There is nothing left to spin.';
+    } else {
+      verdictHead = isDoomOut ? 'Things went really, really badly' : 'We\u2019re okay.';
+      verdictSub = isDoomOut ? (single ? 'You rolled the dice on humanity\u2019s future. Now nobody gets to play anymore.' : 'The die showed ' + s.dieTarget + '. Three bad faces in twelve, and one came up.') : 'The die showed ' + s.dieTarget + '. Things might go well, or badly, but not really, really badly. Not this time.';
+    }
+    const verdictColor = isDoomOut ? '#E0481B' : '#ECEAE6';
+    // the kicker over a non-doom result: is this good, bad or both? plus which year of this world it is
+    const TONE = { good: ['GOOD NEWS', '#34E5C4'], mixed: ['GOOD AND BAD', '#F4A259'], bad: ['BAD, NOT DOOM', '#FF6F61'] };
+    const tone = lastEv ? (TONE[lastEv.tone] || TONE.mixed) : null;
+    const kicker = coinKicker;
+    const verdictKicker = isDoomOut ? '#E0481B' : '#34E5C4';
+
+    // split odds bar (key) per game \u2014 labels, good fraction, and the bar colours
+    let keyGood, keyBad, goodPct;
+    if (p.mechanic === 'wheel') { keyGood = 'GOOD \u00b7 80%'; keyBad = 'ANNIHILATION \u00b7 20%'; goodPct = 80; }
+    else if (p.mechanic === 'cards') { keyGood = 'STILL HERE \u00b7 9 OF 12'; keyBad = 'GONE \u00b7 3 OF 12'; goodPct = 75; }
+    else if (p.mechanic === 'coin') { keyGood = 'YOUR CALL \u00b7 50%'; keyBad = 'EVERYONE DIES \u00b7 50%'; goodPct = 50; }
+    else { keyGood = '1\u20139 \u00b7 GOOD TO BAD'; keyBad = '10\u201312 \u00b7 REALLY, REALLY BAD'; goodPct = 75; }
+    const replayLabel = endGame
+      ? 'TRY A DIFFERENT TIMELINE'
+      : inGauntlet
+      ? (s.gIndex < 2 ? 'NEXT PLAYER \u2192' : 'SEE THE ODDS \u2192')
+      : (p.mechanic === 'wheel' ? 'SPIN AGAIN' : p.mechanic === 'cards' ? 'PICK AGAIN' : p.mechanic === 'coin' ? 'FLIP AGAIN' : 'ROLL AGAIN');
+
+    // the ledger list under the verdict: everything before this roll, or, on doom, everything that went with it
+    const prior = isDoomOut ? led : led.slice(0, -1);
+    const LMAX = 8;
+    const counts = [];
+    prior.forEach((e) => { const f = counts.find((c) => c.e.tag === e.tag); if (f) f.n++; else counts.push({ e, n: 1 }); });
+    const shown = counts.slice(-LMAX);
+    const ledgerItems = shown.map((c) => ({ text: c.e.tag + (c.n > 1 ? ' \u00D7' + c.n : ''), cls: (isDoomOut ? 'is-lost ' : '') + 'is-' + (c.e.tone || 'mixed') }));
+    if (counts.length > LMAX) ledgerItems.unshift({ text: '+' + (counts.length - LMAX) + ' more', cls: isDoomOut ? 'is-lost' : '' });
+    const showLedger = ledgerOn && s.finaleReveal && prior.length > 0;
+    const ledgerHead = isDoomOut ? 'GONE WITH IT \u00B7 ' + prior.length + (prior.length === 1 ? ' YEAR' : ' YEARS') : 'THIS WORLD SO FAR \u00B7 ' + prior.length + (prior.length === 1 ? ' YEAR' : ' YEARS') + ' BEFORE THIS ONE';
+
+    // the coin
+    const isCoin = p.mechanic === 'coin';
+    const showUnres = isCoin && s.phase === 'rolling' && s.coinQ >= 0;
+    const coinFlying = isCoin && s.phase === 'rolling';
+
+    const faceEndAll = clearedCount === 3;
+    const faceEndHead = faceEndAll ? 'You cleared all three.' : (clearedCount === 0 ? 'None of them cleared.' : 'You cleared ' + clearedCount + ' of 3.');
+    const faceEndSub = faceEndAll
+      ? 'Surviving every ritual in one run is roughly a 45% shot. This time it landed your way.'
+      : 'Each estimate was survivable alone. Stacked together, the odds get steeper.';
+    const faceEndColor = faceEndAll ? '#ECEAE6' : '#E0481B';
+
+    return {
+      p, muteLabel: s.muted ? 'SOUND OFF' : 'SOUND ON', toggleMute: this.toggleMute,
+      forceGood: this.forceGood, forceBad: this.forceBad,
+      forceGoodCls: s.force === 'good' ? 'is-on' : '', forceBadCls: s.force === 'doom' ? 'is-on' : '',
+      notGauntlet: !inGauntlet, isGauntlet: inGauntlet, gauntletNav, gauntletNum: s.gIndex + 1,
+      menuOpen: s.menuOpen, openMenu: this.openMenu, closeMenu: this.closeMenu, roster,
+      isLanding, isPlay: !isLanding, landingRoster,
+      extinctions: String(s.extinctions), showExt: !isLanding && !s.menuOpen,
+
+      isDie: p.mechanic === 'die', isWheel: p.mechanic === 'wheel', isCards: p.mechanic === 'cards', notCards: p.mechanic !== 'cards',
+      isCoin, coinToken: String(s.coinToken) + ':0.6', coinWant: s.coinWant || '', coinHangMs: String(this.coinHangMs),
+      showCall: isCoin && s.phase === 'ready', callHeads: this.callHeads, callTails: this.callTails,
+      showUnres, unresK: 'UNRESOLVED \u00B7 ' + (s.coinQ + 1) + ' OF ' + this.irvingQs.length, unresQ: s.coinQ >= 0 ? this.irvingQs[s.coinQ] : '',
+      verdictSrc, hasSrc: !!verdictSrc, stageCls: 'od-anim od-stage-area' + ((single && (p.mechanic === 'die' || p.mechanic === 'wheel')) ? ' has-ledger' : ''), showLedger, ledgerItems, ledgerHead,
+      kicker, hasKicker: !!kicker, kickerColor: coinKicker ? '#34E5C4' : (tone ? tone[1] : '#ECEAE6'), rheadCls: (endGame ? 'od-rhead od-rhead-big' : 'od-rhead') + ((lastEv || coinKicker) ? ' od-rhead-evt' : ''),
+      // Elon: every year the world survives, another batch of satellites goes up
+      starN: String(p.mechanic === 'wheel' && single ? Math.min(308, led.length * 22) : 0),
+      showTest: p.mechanic !== 'cards' && !this.isLive,
+      reducedFlag: this.reduced ? '1' : '0', dieToken: s.dieToken + ':' + (this._diePower != null ? this._diePower : 0.55), dieTarget: String(s.dieTarget),
+      dieMuseum: s.dieMuseum, dieEncase: s.dieMuseum ? '1' : '0', dieEncaseMs: String(p.doomClipMs || 5000),
+      wheelGradient, wheelTicks, wheelRot: s.wheelRot.toFixed(1),
+      wheelGoodColor: this.wheelGood1, wheelDoomColor: this.wheelDoomCol,
+      earthBg, earthFilter, earthShadow, earthBurn: s.earthBurn, earthBurnFlag: s.earthBurn ? '1' : '0', showWheel: !s.earthBurn, deadCls: s.earthBurn ? 'is-dead' : '', embers, wheelSpinToken: String(s.wheelSpinToken), doomVideo: s.doomVideo,
+      doomVid: p.doomVid || '', doomVidFlipCls: p.doomVidFlip ? 'od-flip' : '', doomVidPos: p.doomVidPos || '50% 50%',
+      hasPortraitVid: !!p.portraitVideo, noPortraitVid: !p.portraitVideo, portraitVid: p.portraitVideo || '', portraitPoster: p.portraitPoster || p.photo || '', portraitPos: p.portraitPos || '50% 18%', showDoomVid: s.doomVideo && !p.portraitVideo && !!p.doomVid,
+      hasPortraitLoop: !!p.portraitVideoLoop, portraitLoopVid: p.portraitVideoLoop || '',
+      globeScale: s.earthBurn ? '1' : '0.5',
+      wheelRingScale: s.earthBurn ? '0.16' : '1',
+      wheelRingOpacity: s.earthBurn ? '0' : '1',
+      fanCards, showFan: !s.drawn, drawn: s.drawn, cardFlip: s.cardFlip.toFixed(1),
+      drawnCard, cardFrontBg, cardFrontAccent: cardAccent, tegmarkList,
+
+      rolling: s.phase === 'rolling',
+      showRollButton: (s.phase === 'ready' || s.phase === 'rolling') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
+      showPickPrompt: s.phase === 'ready' && p.mechanic === 'cards',
+      isResult: s.phase === 'result',
+      showResult: s.phase === 'result' && s.finaleReveal,   // Elon's annihilation copy waits for the finale
+      actLabel: s.phase === 'rolling' ? (p.mechanic === 'wheel' ? 'SPINNING\u2026' : 'ROLLING\u2026') : (p.mechanic === 'wheel' ? 'CLICK & HOLD TO SPIN' : 'CLICK & HOLD TO ROLL'),
+      actOpacity: s.phase === 'rolling' ? 0.6 : 1,
+      chargeHint: s.phase === 'rolling' ? ' ' : (p.mechanic === 'wheel' ? 'CLICK & HOLD TO SPIN' : 'CLICK & HOLD TO ROLL'),
+      replayCharge: !endGame && (s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
+      replayClass: (!endGame && (s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel')) ? 'od-charge' : '',
+      verdictHead, verdictSub, showVerdictHead, panelCls: p.mechanic === 'cards' ? 'od-panel--cards' : '',
+      verdictSub2, hasSub2: !!verdictSub2, rdescClass: endGame ? 'od-rdesc od-rdesc-big' : 'od-rdesc', showKey: !endGame,
+      rheadClass: endGame ? 'od-rhead od-rhead-big' : 'od-rhead', doomBgOn: doomBg ? '1' : '0', doomBgGrad,
+      verdictTag: inGauntlet ? ('STEP ' + (s.gIndex + 1) + ' OF 3') : (isCardsResult ? (isDoomOut ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE') : 'THE RESULT'),
+      verdictColor, verdictKicker, replayLabel, primaryAction: endGame ? this.openMenu : this.replay,
+      // the run is over and the button above goes back to the chooser, so the
+      // stats and the research are offered beside it (see .od-endlinks)
+      isEndGame: endGame && s.phase === 'result',
+      keyGood, keyBad, goodPct: String(goodPct), goodColor: this.wheelGood1, badColor: this.wheelDoomCol,
+      // once a card is face-up its own copy states the odds — on mobile the bar is just repeating
+      // itself in space the card's description needs (CSS hides it below 860px only)
+      keyClass: isCardsResult ? 'od-key--drawn' : '',
+      pickHint: '\u2191 PICK ANY CARD ABOVE', replayRedo: !inGauntlet && !endGame,
+
+      clearedCount, isFaceEnd: s.faceEnd, faceEndHead, faceEndSub, faceEndColor,
+      act: this.act, startGauntlet: this.startGauntlet, exitGauntlet: this.exitGauntlet,
+    };
+  }
+}
+</script>
+
+</body>
+</html>

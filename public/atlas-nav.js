@@ -197,6 +197,7 @@
     // Research and Stats are public routes of this project, and until they were
     // listed here the only way to either of them on a phone was a 63x15 link in
     // the bundle's own corner. The sheet lists a project's pages at full size.
+    { name: "Max Tegmark's twelve futures", path: "/twelve-futures", theme: "dark", draft: true },
     { name: "The Odds", path: "/theodds", theme: "dark", draft: true, pages: [
       { name: "Home", path: "/theodds" },
       { name: "Research", path: "/theodds/research" },

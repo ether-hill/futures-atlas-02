@@ -46,6 +46,18 @@ const ROUTES = [
   },
 ];
 
+// Projects of their own that run on the same bundle: same body, their own address and card.
+const SOLO = [
+  {
+    slug: 'twelve-futures',
+    path: '/twelve-futures',
+    title: 'Max Tegmark’s twelve futures. Futures Atlas',
+    ogTitle: 'What happens when AI gets smarter than us?',
+    desc: "Draw a card from MIT physicist Max Tegmark's twelve futures for life with AI. Three of them end without us.",
+    image: '/og/max-tegmark.png',
+  },
+];
+
 const META_RE = /<!-- OD:ROUTE-META:START[\s\S]*?OD:ROUTE-META:END -->/;
 
 const src = readFileSync(join(BUNDLE, 'index.html'), 'utf8');
@@ -54,21 +66,21 @@ if (!META_RE.test(src)) {
   process.exit(1);
 }
 
-const block = (r) => `<!-- OD:ROUTE-META:START (generated for /theodds/${r.slug} by scripts/build-odds-routes.mjs — do not hand-edit) -->
+const block = (r) => `<!-- OD:ROUTE-META:START (generated for ${r.path ?? `/theodds/${r.slug}`} by scripts/build-odds-routes.mjs — do not hand-edit) -->
 <title>${r.title}</title>
 <meta name="description" content="${r.desc}" />
 <meta property="og:title" content="${r.ogTitle}" />
 <meta property="og:description" content="${r.desc}" />
-<meta property="og:url" content="${DOMAIN}/theodds/${r.slug}" />
+<meta property="og:url" content="${DOMAIN}${r.path ?? `/theodds/${r.slug}`}" />
 <meta property="og:image" content="${DOMAIN}${r.image}" />
 <meta name="twitter:image" content="${DOMAIN}${r.image}" />
-<link rel="canonical" href="${DOMAIN}/theodds/${r.slug}" />
+<link rel="canonical" href="${DOMAIN}${r.path ?? `/theodds/${r.slug}`}" />
 <!-- OD:ROUTE-META:END -->`;
 
 mkdirSync(join(BUNDLE, 'p'), { recursive: true });
-for (const r of ROUTES) {
+for (const r of [...ROUTES, ...SOLO]) {
   const out = src.replace(META_RE, block(r));
   writeFileSync(join(BUNDLE, 'p', `${r.slug}.html`), out);
   console.log(`✓ p/${r.slug}.html`);
 }
-console.log(`Done — ${ROUTES.length} route files written to public/odds-of-surviving-ai/p/`);
+console.log(`Done — ${ROUTES.length + SOLO.length} route files written to public/odds-of-surviving-ai/p/`);

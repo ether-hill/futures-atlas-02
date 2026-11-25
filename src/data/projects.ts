@@ -387,6 +387,24 @@ export const projects: Project[] = [
     cta: "Play the odds",
   },
   {
+    // The Odds' Tegmark card draw on its own: same bundle, one player, no chooser.
+    id: "twelve-futures",
+    title: "Max Tegmark's twelve futures",
+    tagline:
+      "What happens when AI gets smarter than us? The MIT physicist Max Tegmark sketched twelve futures. Draw one. Three of them end without us.",
+    year: "2026",
+    date: "2026-11-25",
+    field: "AI & risk",
+    topics: ["AI", "Futures"],
+    kind: "game",
+    status: "live",
+    visibility: "draft",
+    stage: "ready",
+    path: "/twelve-futures",
+    image: "/projects/twelve-futures.jpg",
+    cta: "Draw a card",
+  },
+  {
     id: "signal-reactor",
     title: "Signal Reactor",
     tagline:
@@ -743,6 +761,7 @@ export const homepageProjects: Project[] = liveProjects.filter(
  */
 const DRAFT_ORDER = [
   // ready
+  "twelve-futures",
   "cymatics-simulator",
   "interactive-quantum-interference",
   "futures-in-figures",
