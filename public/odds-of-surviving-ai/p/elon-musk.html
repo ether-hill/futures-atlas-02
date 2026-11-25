@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<!-- the page is dark from the first paint, so arriving from another page never flashes white -->
+<style>html,body{background:#08080a}</style>
 <!-- ── site-level OG defaults (shared by every /theodds route) ── -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="The Odds, Futures Atlas" />
@@ -55,7 +58,6 @@ body{padding-top:var(--fa-nav-h)!important}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/three@0.137.0/build/three.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 /* iOS < 14.5 has no `inset`: spell the inline inset:0 / inset:14px out as longhands (inline wins where inset works) */
