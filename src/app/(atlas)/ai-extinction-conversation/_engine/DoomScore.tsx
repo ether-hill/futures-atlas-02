@@ -215,6 +215,20 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
     [moments],
   );
 
+  // Every key moment's picture is fetched and decoded as soon as the score is on the page.
+  // Moments that fall close together swap the panel every few hundred milliseconds, and a
+  // picture only requested at that point was replaced before it arrived, so the panel stayed empty.
+  const thumbs = useRef<HTMLImageElement[]>([]);
+  useEffect(() => {
+    thumbs.current = moments.flatMap((m) => {
+      if (!m.thumb) return [];
+      const i = new Image();
+      i.decoding = "async";
+      i.src = m.thumb.src;
+      return [i];
+    });
+  }, [moments]);
+
   const canvas = useRef<HTMLCanvasElement>(null);
   const audio = useRef<DoomAudio | null>(null);
   const uRef = useRef(0);
@@ -1474,7 +1488,17 @@ export function DoomScore({ mentions, pile, moments, hero }: { mentions: Mention
               <div className="ds-moment-pic">
                 {current.thumb ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={current.thumb.src} width={current.thumb.w} height={current.thumb.h} alt="" onLoad={(e) => e.currentTarget.classList.add("is-loaded")} />
+                  <img
+                    src={current.thumb.src}
+                    width={current.thumb.w}
+                    height={current.thumb.h}
+                    alt=""
+                    // a picture already in the cache shows at once; Safari does not always fire load for it
+                    ref={(el) => {
+                      if (el && el.complete && el.naturalWidth > 0) el.classList.add("is-loaded");
+                    }}
+                    onLoad={(e) => e.currentTarget.classList.add("is-loaded")}
+                  />
                 ) : null}
               </div>
               <span className="ds-moment-date">{new Date(current.t).toLocaleDateString("en-GB", { day: current.date.length > 7 ? "numeric" : undefined, month: "long", year: "numeric", timeZone: "UTC" })}</span>
