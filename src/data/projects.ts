@@ -398,8 +398,7 @@ export const projects: Project[] = [
     topics: ["AI", "Futures"],
     kind: "game",
     status: "live",
-    visibility: "draft",
-    stage: "ready",
+    visibility: "live",
     path: "/max-tegmark-ai-futures",
     image: "/projects/max-tegmark-ai-futures.jpg",
     cta: "Draw a card",
@@ -761,7 +760,6 @@ export const homepageProjects: Project[] = liveProjects.filter(
  */
 const DRAFT_ORDER = [
   // ready
-  "max-tegmark-ai-futures",
   "cymatics-simulator",
   "interactive-quantum-interference",
   "futures-in-figures",
