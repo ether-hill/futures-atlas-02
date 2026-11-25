@@ -277,9 +277,12 @@ body.od-menu-open .od-extinctions{display:none!important}
   .od-wheel-tick{height:47%!important}
   /* the fan is sized from the band: 12 cards over 82deg are ~2.34 card-heights wide and
      ~1.34 tall, and the outer cards dip ~0.32 of a height below the middle one */
-  .od-cards-wrap{height:100%!important}
+  /* the band has no fixed height here, so height:100% came out as 0 and the fan hung from
+     the band's middle, up into the portrait. Pin the wrap to the band instead, and centre the
+     fan's whole spread (about 1.34 card-heights tall) in it */
+  .od-cards-wrap{position:absolute!important;inset:0;height:auto!important}
   .od-fan-deck{height:100%!important}
-  .od-fan{height:var(--od-ch)!important;width:calc(var(--od-ch)*0.7)!important;margin-left:calc(var(--od-ch)*-0.35)!important;bottom:calc(var(--od-ch)*0.34 + 6px)!important}
+  .od-fan{height:var(--od-ch)!important;width:calc(var(--od-ch)*0.7)!important;margin-left:calc(var(--od-ch)*-0.35)!important;bottom:max(6px,calc((var(--od-sa-h,40vh) - var(--od-ch)*1.34)/2 + var(--od-ch)*0.32))!important}
   .od-drawn-wrap{transform:scale(var(--od-card-k,0.5))}
   .od-ledger-item{font-size:10.5px;padding:3px 8px}
   .od-unres{min-height:60px}
@@ -1377,7 +1380,19 @@ class Component extends DCLogic {
     if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
     for (let i = 0; i < 12; i++) setTimeout(() => this.clickNoise(0.045 + Math.random() * 0.02, 1000 + Math.random() * 800, 0.9, 0.05), 70 + i * 40);
   }
-  _dealIfCards(id) { if (this.players[id] && this.players[id].mechanic === 'cards') this.dealCards(); }
+  _dealIfCards(id) { if (this.players[id] && this.players[id].mechanic === 'cards') { this.preloadCards(); this.dealCards(); } }
+  // Fetch and decode all twelve card pictures as soon as the fan is dealt, so the face is
+  // already there when a card turns over instead of painting in halfway through the flip.
+  preloadCards() {
+    if (this._cardImgs) return;
+    this._cardImgs = {};
+    this.deck.forEach(c => {
+      if (!c.img) return;
+      const im = new Image();
+      im.src = c.img;
+      this._cardImgs[c.img] = (im.decode ? im.decode() : new Promise(r => { im.onload = im.onerror = r; })).catch(() => {});
+    });
+  }
   // one card slid out and flipped face-up: a soft draw swish, then the flip landing a beat later (mid-turn)
   cardPick() {
     if (this.state.muted) return; this.ensureAudio(); if (!this.ac) return;
@@ -1593,12 +1608,24 @@ class Component extends DCLogic {
       if (matches.length) { const m = matches[Math.floor(Math.random() * matches.length)]; idx = m.i; card = m.c; }
       this.setState({ force: null });
     }
-    this.setState({ phase: 'rolling', drawn: true, drawnIdx: idx, cardFlip: 0, pickedPos: pos });
-    const ease = x => 1 - Math.pow(1 - x, 3);
-    this.tween(760, (pr) => { this.setState({ cardFlip: 180 * ease(pr) }); }, () => {
-      this.setState({ cardFlip: 180 });
-      this.resolve(card.doom, p, card);
-    });
+    this.setState({ phase: 'rolling' });   // locks the fan while the picture is made ready
+    const flip = () => {
+      this.setState({ drawn: true, drawnIdx: idx, cardFlip: 0, pickedPos: pos });
+      const ease = x => 1 - Math.pow(1 - x, 3);
+      this.tween(760, (pr) => { this.setState({ cardFlip: 180 * ease(pr) }); }, () => {
+        this.setState({ cardFlip: 180 });
+        this.resolve(card.doom, p, card);
+      });
+    };
+    // flip only once this card's picture is decoded (normally it already is), never waiting
+    // more than 1.2 s on a slow connection
+    this.preloadCards();
+    const ready = card.img && this._cardImgs[card.img];
+    if (!ready) { flip(); return; }
+    let started = false;
+    const once = () => { if (!started) { started = true; flip(); } };
+    ready.then(once);
+    setTimeout(once, 1200);
   }
   // TEST: draw a specific card by index and reveal it (Tegmark card picker)
   bumpExtinctions() {
