@@ -145,7 +145,7 @@ export function ReadingList({ selected, onPick }: { selected: string | null; onP
               </button>
             </p>
           )}
-          {SHELF_CATEGORIES.map((c, i) => {
+          {SHELF_CATEGORIES.map((c) => {
             const list = shown.filter((b) => b.cat === c.key);
             if (list.length === 0) return null;
             const story = THREAD_STORY[c.key];
@@ -155,19 +155,9 @@ export function ReadingList({ selected, onPick }: { selected: string | null; onP
                 id={threadAnchor(c.key)}
                 className="mb-[clamp(88px,11vw,168px)] scroll-mt-[calc(var(--fa-nav-h)+20px)] last:mb-[clamp(40px,5vw,72px)]"
               >
-                {/* the subject announces itself: a heavy rule in its colour, its
-                    place in the five, then the question at display size */}
+                {/* the subject announces itself: a heavy rule in its colour, then one title that names the topic */}
                 <header className="border-t-[6px] pt-5" style={{ borderColor: CAT_COLOR[c.key] }}>
-                  <div className="flex items-baseline gap-3">
-                    <span className="font-condensed text-[15px] tracking-[0.08em] text-graphite">
-                      {i + 1} of {SHELF_CATEGORIES.length}
-                    </span>
-                    <span className="text-[15px] font-extrabold text-ink">{c.name}</span>
-                    <span className="ml-auto font-condensed text-[15px] tracking-[0.06em] text-graphite">
-                      {list.length} {list.length === 1 ? "book" : "books"}
-                    </span>
-                  </div>
-                  <h3 className="mt-[clamp(18px,2.4vw,36px)] max-w-[18ch] text-[clamp(34px,4.9vw,74px)] font-extrabold leading-[0.97] tracking-[-0.028em] text-ink text-balance">
+                  <h3 className="mt-[clamp(14px,1.8vw,28px)] max-w-[20ch] text-[clamp(34px,4.9vw,74px)] font-extrabold leading-[0.97] tracking-[-0.028em] text-ink text-balance">
                     {story.question}
                   </h3>
                   <p
@@ -213,12 +203,12 @@ function Card({ book, on, onPick }: { book: ShelfBook; on: boolean; onPick: (id:
         />
       </span>
       <span className="flex flex-1 flex-col px-[clamp(12px,1.3vw,18px)] pb-[clamp(14px,1.5vw,20px)] pt-[clamp(12px,1.3vw,16px)]">
-        <span className="flex items-baseline gap-2 text-[13px] text-graphite">
+        <span className="flex flex-wrap items-baseline gap-x-2 text-[13px] text-graphite">
           <span className="font-condensed text-[15px] tracking-[0.05em] text-ink">{book.year}</span>
-          <span className="truncate">{shortAuthor(book.author)}</span>
+          <span>{shortAuthor(book.author)}</span>
         </span>
-        <span className="mt-1.5 line-clamp-2 text-[clamp(15px,1.25vw,17.5px)] font-extrabold leading-[1.2] tracking-[-0.01em] text-ink group-hover:text-accent">
-          {shortTitle(book.title, 64)}
+        <span className="mt-1.5 text-[clamp(15px,1.25vw,17.5px)] font-extrabold leading-[1.2] tracking-[-0.01em] text-ink group-hover:text-accent">
+          {shortTitle(book.title, 120)}
         </span>
         <span className="mt-2 block text-[13.5px] leading-[1.5] text-ink-70">{SHELF_SHORT[book.id] ?? book.note}</span>
       </span>

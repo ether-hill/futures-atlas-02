@@ -25,7 +25,7 @@ export type LayoutKey = "circuit" | "constellation" | "when" | "languages" | "pa
 
 export const LAYOUTS: { key: LayoutKey; label: string }[] = [
   { key: "circuit", label: "Subjects" },
-  { key: "constellation", label: "Connections" },
+  { key: "constellation", label: "Links" },
   { key: "when", label: "Dates" },
   { key: "languages", label: "Languages" },
   { key: "pages", label: "Length" },

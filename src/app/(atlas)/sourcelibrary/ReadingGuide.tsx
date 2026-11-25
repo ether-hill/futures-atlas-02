@@ -376,7 +376,7 @@ export function ReadingGuide() {
                 <div
                   role="tablist"
                   aria-label="View"
-                  className="-mx-4 flex gap-1.5 overflow-x-auto px-4 [scrollbar-width:none] min-[680px]:mx-0 min-[680px]:px-0 [&::-webkit-scrollbar]:hidden"
+                  className="flex flex-wrap gap-1.5"
                 >
                   {LAYOUTS.map((l, i) => (
                     <button
@@ -385,13 +385,13 @@ export function ReadingGuide() {
                       role="tab"
                       aria-selected={step === i}
                       onClick={() => goToView(i)}
-                      className={`shrink-0 whitespace-nowrap rounded-[2px] border px-3.5 py-2 text-[13.5px] font-semibold transition-colors ${
+                      className={`shrink-0 whitespace-nowrap rounded-[2px] border px-2.5 py-1.5 text-[13px] font-semibold transition-colors min-[680px]:px-3.5 min-[680px]:py-2 min-[680px]:text-[13.5px] ${
                         step === i
                           ? "border-ink bg-ink text-surface"
                           : "border-ink/[0.18] text-graphite hover:border-ink hover:text-ink"
                       }`}
                     >
-                      <span className={`mr-2 font-condensed tracking-[0.04em] ${step === i ? "opacity-60" : "opacity-50"}`}>
+                      <span className={`mr-2 hidden font-condensed tracking-[0.04em] min-[680px]:inline ${step === i ? "opacity-60" : "opacity-50"}`}>
                         {i + 1}
                       </span>
                       {l.label}

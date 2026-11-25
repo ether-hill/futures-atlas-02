@@ -14,7 +14,7 @@ import type { ShelfCategoryKey } from "./library-shelf";
 
 export interface ThreadStory {
   key: ShelfCategoryKey;
-  /** the question a guided run follows, taken from the category blurb */
+  /** the subject's title over its section of the reading list, naming the modern topic */
   question: string;
   /** "Before …" on the masthead */
   modern: string;
@@ -29,7 +29,7 @@ export interface ThreadStory {
 export const THREAD_STORIES: ThreadStory[] = [
   {
     key: "reasoning",
-    question: "Can a machine think?",
+    question: "Thinking machines before AI",
     modern: "artificial intelligence",
     heralds: [
       { id: "695592c17bd6d2cd1d61afec", label: "Ars magna generalis" },
@@ -47,7 +47,7 @@ export const THREAD_STORIES: ThreadStory[] = [
   },
   {
     key: "automata",
-    question: "Can something we build be alive?",
+    question: "Robots and automata before the word robot",
     modern: "robots",
     heralds: [
       { id: "695aa9a4be4023bd34bd6b7d", label: "De gli automati" },
@@ -65,7 +65,7 @@ export const THREAD_STORIES: ThreadStory[] = [
   },
   {
     key: "physics",
-    question: "What is light made of?",
+    question: "The questions behind quantum physics",
     modern: "quantum physics",
     heralds: [
       { id: "69b221fe08069e96e8431e0a", label: "De rerum natura" },
@@ -83,7 +83,7 @@ export const THREAD_STORIES: ThreadStory[] = [
   },
   {
     key: "forecast",
-    question: "Can we predict the future?",
+    question: "Forecasting the future before futurology",
     modern: "foresight",
     heralds: [
       { id: "69dbcac31040d1d5e20ae6df", label: "Prognosticatio" },
@@ -101,7 +101,7 @@ export const THREAD_STORIES: ThreadStory[] = [
   },
   {
     key: "worlds",
-    question: "Could society be organised differently?",
+    question: "Utopias and imagined societies",
     modern: "speculative design",
     heralds: [
       { id: "69b2ff0ea1a4246ddb45adbb", label: "Utopia" },
