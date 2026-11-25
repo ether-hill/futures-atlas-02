@@ -133,8 +133,7 @@ export const projects: Project[] = [
     topics: [],
     kind: "tool",
     status: "live",
-    visibility: "draft",
-    stage: "ready",
+    visibility: "live",
     path: "/cymatics-simulator",
     image: "/projects/cymatics-simulator.jpg", // the simulator's own render, 140 Hz
     cta: "Open the simulator",
@@ -196,7 +195,7 @@ export const projects: Project[] = [
   },
   {
     id: "doom-score",
-    title: "The Doom Score",
+    title: "The AI extinction conversation",
     tagline:
       "How talk of AI ending humanity grew from a forum footnote to a flood, 2009 to now, played as sound. Every dot is someone's guess at the chance, played as a note.",
     year: "2026",
@@ -207,7 +206,7 @@ export const projects: Project[] = [
     status: "live",
     visibility: "live",
     // the home is the score itself, with Play and Read (the chronicle)
-    path: "/doom-score",
+    path: "/ai-extinction-conversation",
     image: "/projects/doom-score.jpg",
     cta: "Play the score",
   },
@@ -798,14 +797,14 @@ export function kindsOf(items: Project[]): ProjectKind[] {
 export const projectFields: string[] = fieldsOf(liveProjects);
 
 /** In-site paths belonging to draft projects, what the middleware gate closes. */
-// Paths closed like a draft project's although their project is live: The Doom Score is public at its
+// Paths closed like a draft project's although their project is live: The AI extinction conversation is public at its
 // home and its chronicle, and its trial pages stay closed (open on staging previews via PREVIEW_PUBLIC).
 const DRAFT_TRIALS = [
-  "/doom-score/play-v02",
-  "/doom-score/play-v03",
-  "/doom-score/play-response",
-  "/doom-score/response",
-  "/doom-score/pages",
+  "/ai-extinction-conversation/play-v02",
+  "/ai-extinction-conversation/play-v03",
+  "/ai-extinction-conversation/play-response",
+  "/ai-extinction-conversation/response",
+  "/ai-extinction-conversation/pages",
   "/doom-score-v02",
 ];
 export const draftPaths: string[] = [...draftProjects.flatMap((p) => (p.path ? [p.path] : [])), ...DRAFT_TRIALS];

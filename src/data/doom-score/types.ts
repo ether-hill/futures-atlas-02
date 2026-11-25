@@ -1,5 +1,5 @@
 /**
- * The Doom Score ledger: every row is one moment somebody put a number (or a
+ * The AI extinction conversation ledger: every row is one moment somebody put a number (or a
  * named fear) on humanity's extinction or permanent collapse. The timeline,
  * the film, the article and the instrument are all views of this one list.
  *

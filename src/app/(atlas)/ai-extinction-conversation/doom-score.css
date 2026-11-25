@@ -1,4 +1,4 @@
-/* The Doom Score. Tokens from the atlas; nothing hard-coded. */
+/* The AI extinction conversation. Tokens from the atlas; nothing hard-coded. */
 /* The home hero fits one screen: control bar, the plot, the legend. */
 .ds { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; gap: 10px; height: calc(100svh - var(--fa-nav-h, 64px) - 200px); min-height: 480px; }
 .ds-options { display: flex; flex-wrap: wrap; gap: 4px 18px; }

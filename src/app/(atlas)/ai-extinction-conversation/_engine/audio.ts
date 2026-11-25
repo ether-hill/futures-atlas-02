@@ -1,7 +1,7 @@
 import { hzFor, ROOT_HZ, type ScaleName } from "./scale";
 
 /**
- * The sound of The Doom Score. One shared AudioContext; everything is
+ * The sound of The AI extinction conversation. One shared AudioContext; everything is
  * synthesised, nothing sampled, so the page weighs nothing.
  *
  *  - A drone under the whole sweep: detuned saws an octave below the root

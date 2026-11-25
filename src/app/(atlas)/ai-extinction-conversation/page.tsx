@@ -5,16 +5,16 @@ import { AI_ROWS, buildMoments, buildPile } from "./_hub/home-data";
 import "./doom-score.css";
 
 // One entry for both this page's metadata and the card a link preview gets.
-const CARD = SHARE_CARDS["/doom-score"];
+const CARD = SHARE_CARDS["/ai-extinction-conversation"];
 const TITLE = CARD.title;
 const DESC = CARD.description;
 const OG = { url: CARD.image, width: CARD.width, height: CARD.height, alt: CARD.alt };
 
 export const metadata: Metadata = {
-  title: `${TITLE}. The Doom Score. Futures Atlas`,
+  title: `${TITLE}. Futures Atlas`,
   description: DESC,
-  alternates: { canonical: "/doom-score" },
-  openGraph: { type: "website", siteName: "Futures Atlas", title: TITLE, description: DESC, url: "/doom-score", images: [OG] },
+  alternates: { canonical: "/ai-extinction-conversation" },
+  openGraph: { type: "website", siteName: "Futures Atlas", title: TITLE, description: DESC, url: "/ai-extinction-conversation", images: [OG] },
   twitter: { card: "summary_large_image", title: TITLE, description: DESC, images: [OG.url] },
 };
 
@@ -26,7 +26,7 @@ export default function DoomScoreHome() {
         hero={{
           title: "The AI extinction conversation",
           lead: "How talk of extinction from AI grew from a forum footnote to a flood, from 2009 to 19 November 2026. Every square is one thing said; every dot is a number given, played as a note: the higher the chance, the higher the note.",
-          read: { href: "/doom-score/chronicle", label: "Read" },
+          read: { href: "/ai-extinction-conversation/chronicle", label: "Read" },
         }}
         mentions={AI_ROWS}
         pile={buildPile()}

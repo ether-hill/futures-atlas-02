@@ -72,7 +72,7 @@ export function BookSheet({
             href={shelfBookUrl(book)}
             target="_blank"
             rel="noopener"
-            className="block shrink-0 border border-ink/[0.14] bg-haze"
+            className="block shrink-0 border border-ink/[0.14] bg-surface"
             style={{ height: stripH, width: stripH * coverAspect }}
           >
             {/* eslint-disable-next-line @next/next/no-img-element -- the library's image host, not ours to optimise */}

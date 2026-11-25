@@ -7,7 +7,7 @@ import { buildTalk } from "../_hub/home-data";
 import "../doom-score.css";
 
 export const metadata: Metadata = {
-  title: "Play the response. The Doom Score. Futures Atlas",
+  title: "Play the response. The AI extinction conversation. Futures Atlas",
   description: "Ten years of talk about extinction from AI, played as clicks, against every law, rule and pledge that answered it, played as notes.",
   robots: { index: false },
 };

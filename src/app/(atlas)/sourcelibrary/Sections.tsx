@@ -203,7 +203,7 @@ function Card({ book, on, onPick }: { book: ShelfBook; on: boolean; onPick: (id:
     >
       {/* One plate, the same on every card, and the cover standing whole inside
           it at its own shape: a folio is tall, a print is wide, nothing is cropped. */}
-      <span className="relative block aspect-square w-full overflow-hidden bg-haze">
+      <span className="relative block aspect-square w-full overflow-hidden bg-surface">
         {/* eslint-disable-next-line @next/next/no-img-element -- the library's image host, not ours to optimise */}
         <img
           src={book.thumbnail}

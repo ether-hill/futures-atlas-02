@@ -35,6 +35,8 @@ const NO_LINKS = new Set<number>();
 const OPENING_STEP_MS = 1100;
 /** how much scroll one view gets, in viewport heights */
 const SCROLL_PER_VIEW = 0.85;
+/** how far past a boundary, in views, the scroll goes before the view changes */
+const HYSTERESIS = 0.08;
 
 const latin = SHELF_BOOKS.filter((b) => b.language === "Latin").length;
 const busiest = [...GEOMETRY.when.extras.bins].sort((a, b) => b.count - a.count)[0]!;
@@ -134,8 +136,13 @@ export function ReadingGuide() {
       if (travel <= 0) return;
       // how far the pinned block has slid down inside its tall container
       const done = (pin.getBoundingClientRect().top - outer.getBoundingClientRect().top) / travel;
-      const next = Math.min(LAYOUTS.length - 1, Math.max(0, Math.floor(done * LAYOUTS.length)));
-      if (next === shownStep.current) return;
+      const at = done * LAYOUTS.length;
+      // A little give at each boundary, so a scroll that stops right on one
+      // (or a nav that slides in and nudges the pin) does not flip the view back and forth.
+      const cur = shownStep.current;
+      if (at > cur - HYSTERESIS && at < cur + 1 + HYSTERESIS) return;
+      const next = Math.min(LAYOUTS.length - 1, Math.max(0, Math.floor(at)));
+      if (next === cur) return;
       shownStep.current = next;
       setStep(next);
       if (next > 0) setSorted(THREADS.length); // scrolling on ends the opening
@@ -169,8 +176,17 @@ export function ReadingGuide() {
   useEffect(() => {
     const el = viewport.current;
     if (!el) return;
+    // A phone's toolbar sliding in and out as the page scrolls changes the
+    // window height by a few dozen pixels; resizing the stage for that made it
+    // jump mid-scroll. Only a real change (rotation, a new window size) counts.
     const measure = () =>
-      setSize({ w: el.clientWidth, winH: window.innerHeight, bar: bar.current?.offsetHeight ?? 120 });
+      setSize((prev) => {
+        const w = el.clientWidth;
+        const barH = bar.current?.offsetHeight ?? 120;
+        const winH = window.innerHeight;
+        if (prev && prev.w === w && prev.bar === barH && Math.abs(prev.winH - winH) < 140) return prev;
+        return { w, winH, bar: barH };
+      });
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
@@ -285,7 +301,6 @@ export function ReadingGuide() {
 
   const book = selected ? BOOK.get(selected) : undefined;
   const heraldStory = THREAD_STORIES[herald]!;
-  const view = VIEWS[layout];
   const pannable = !!dims && W * cam.s > dims.w + 1;
 
   const transform = dims
@@ -305,10 +320,10 @@ export function ReadingGuide() {
       >
         <Container className="flex flex-1 flex-col justify-center pb-[clamp(20px,4vw,56px)] pt-[clamp(28px,6vw,88px)] supports-[height:1svh]:pb-[clamp(20px,min(4vw,4svh),56px)] supports-[height:1svh]:pt-[clamp(28px,min(6vw,7svh),88px)]">
           <p className="text-[13.5px] font-semibold text-graphite">
-            A reading guide · {SHELF_BOOKS.length} books from the Source Library · {FIRST_YEAR} to {LAST_YEAR}
+            {SHELF_BOOKS.length} books from the Source Library · {FIRST_YEAR} to {LAST_YEAR}
           </p>
           <h1 className="mt-[clamp(14px,1.8vw,26px)] max-w-[13ch] text-[clamp(42px,7.4vw,116px)] supports-[height:1svh]:text-[clamp(42px,min(7.4vw,11.5svh),116px)] font-extrabold leading-[0.93] tracking-[-0.032em] text-ink text-balance">
-            The ancestors of the questions we work on
+            Recommended reading
           </h1>
           <div className="mt-[clamp(22px,4vw,60px)] supports-[height:1svh]:mt-[clamp(22px,min(4vw,5svh),60px)] grid gap-x-[clamp(32px,6vw,96px)] gap-y-7 min-[980px]:grid-cols-2 min-[980px]:items-start">
             <p
@@ -404,14 +419,30 @@ export function ReadingGuide() {
                 </ul>
               </div>
 
-              <div key={layout} className="anc-swap mt-[clamp(16px,1.9vw,28px)] grid gap-x-[clamp(24px,3vw,48px)] gap-y-1.5 min-[900px]:grid-cols-[auto_minmax(0,1fr)_auto] min-[900px]:items-baseline">
-                <h2 className="text-[clamp(20px,2vw,29px)] font-extrabold leading-[1.1] tracking-[-0.018em] text-ink">
-                  {view.title}
-                </h2>
-                <p className="max-w-[92ch] text-[14.5px] leading-[1.55] text-ink-70">{view.text}</p>
-                <p className="hidden whitespace-nowrap text-[12.5px] font-semibold text-graphite min-[900px]:block">
-                  {step < LAYOUTS.length - 1 ? "Keep scrolling for the next view" : "The reading list is next"}
-                </p>
+              {/* All five captions sit in the same grid cell and only the current
+                  one shows, so the bar is always as tall as the longest. When its
+                  height followed the caption, the stage resized at every view
+                  change, which moved the scroll position and flipped the view back. */}
+              <div className="mt-[clamp(16px,1.9vw,28px)] grid">
+                {LAYOUTS.map((l, i) => {
+                  const v = VIEWS[l.key];
+                  const on = i === step;
+                  return (
+                    <div
+                      key={l.key}
+                      aria-hidden={!on}
+                      className={`[grid-area:1/1] grid gap-x-[clamp(24px,3vw,48px)] gap-y-1.5 min-[900px]:grid-cols-[auto_minmax(0,1fr)_auto] min-[900px]:items-baseline ${on ? "anc-swap" : "invisible"}`}
+                    >
+                      <h2 className="text-[clamp(20px,2vw,29px)] font-extrabold leading-[1.1] tracking-[-0.018em] text-ink">
+                        {v.title}
+                      </h2>
+                      <p className="max-w-[92ch] text-[14.5px] leading-[1.55] text-ink-70">{v.text}</p>
+                      <p className="hidden whitespace-nowrap text-[12.5px] font-semibold text-graphite min-[900px]:block">
+                        {i < LAYOUTS.length - 1 ? "Keep scrolling for the next view" : "The reading list is next"}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             </Container>
           </div>

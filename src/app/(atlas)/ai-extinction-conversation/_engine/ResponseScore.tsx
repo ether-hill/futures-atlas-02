@@ -615,7 +615,7 @@ export function ResponseScore({ rows, talk }: { rows: Row[]; talk: Talk[] }) {
               <span className="ds-moment-date">
                 {placeOf(current.jurisdiction).join(" ")} · {new Date(current.t).toLocaleDateString("en-GB", { day: current.date.length > 7 ? "numeric" : undefined, month: "long", year: "numeric", timeZone: "UTC" })}
               </span>
-              <a href={`/doom-score/response#${current.id}`}>
+              <a href={`/ai-extinction-conversation/response#${current.id}`}>
                 <b>{current.title}</b>
               </a>
             </div>
@@ -630,7 +630,7 @@ export function ResponseScore({ rows, talk }: { rows: Row[]; talk: Talk[] }) {
                 .reverse()
                 .map((m) => (
                   <li key={m.id}>
-                    <a href={`/doom-score/response#${m.id}`}>
+                    <a href={`/ai-extinction-conversation/response#${m.id}`}>
                       <small>
                         {placeOf(m.jurisdiction)[0]} {new Date(m.t).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" })}
                       </small>

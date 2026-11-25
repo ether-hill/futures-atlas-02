@@ -285,6 +285,15 @@ const nextConfig: NextConfig = {
        */
       { source: "/interference/solo", destination: "/interference", permanent: true },
       { source: "/prism", destination: "/generatives", permanent: true },
+      // The Doom Score was renamed The AI extinction conversation on 2026-11-25.
+      // Only the pages move: /doom-score/{thumbs,grabs,people,cards} are still
+      // the image folders, so no catch-all here.
+      { source: "/doom-score", destination: "/ai-extinction-conversation", permanent: true },
+      {
+        source: "/doom-score/:page(chronicle|play-v02|play-v03|play-response|response|pages)",
+        destination: "/ai-extinction-conversation/:page",
+        permanent: true,
+      },
       // The Source Library reading guide was first shared, as a draft, under
       // /ancestors. Not permanent: the old name was never public.
       { source: "/ancestors", destination: "/sourcelibrary", permanent: false },

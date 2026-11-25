@@ -11,14 +11,13 @@ import "./cymatics.css";
  * The engine lives in src/lib/cymatics/ (dish.ts verbatim, engine.ts with only
  * its imports and styles changed). Fix behaviour upstream and re-copy.
  *
- * Draft. `visibility: "draft"` in src/data/projects.ts gates this URL,
- * mirrored in public/atlas-nav.js.
+ * Live since 2026-11-25 (`visibility` in src/data/projects.ts, mirrored in
+ * public/atlas-nav.js).
  */
 export const metadata: Metadata = {
   title: "Cymatics Simulator. Futures Atlas",
   description:
     "The dish, in code: Faraday waves on a circular dish of water, computed from the water's dispersion relation and the dish's own modes, lit by a ring of LEDs and drawn as the camera sees its reflection. Dial the frequency, the dish and the light; hear the drive tone.",
-  robots: { index: false },
 };
 
 export default function CymaticsSimulatorPage() {

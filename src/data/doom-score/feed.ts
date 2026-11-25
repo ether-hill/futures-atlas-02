@@ -1,7 +1,7 @@
 import type { FeedItem, FeedNet } from "./types";
 
 /**
- * The Doom Score feed, compiled by scripts/doom-score/build-feed.mjs on
+ * The AI extinction conversation feed, compiled by scripts/doom-score/build-feed.mjs on
  * 2026-11-19 from src/data/doom-score/auto/ and the ledger's sources.
  * 1140 items. Generated: do not edit by hand.
  */

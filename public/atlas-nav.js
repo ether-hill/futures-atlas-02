@@ -165,7 +165,7 @@
   // publish in the month after launch; it only changes the tag an editor sees.
   var FA_PROJECTS = [
     { name: "Glossary", path: "/glossary" },
-    { name: "Cymatics Simulator", path: "/cymatics-simulator", draft: true },
+    { name: "Cymatics Simulator", path: "/cymatics-simulator" },
     { name: "Dramaturge", path: "/dramaturge", draft: true },
     { name: "Shop", path: "/shelflife", draft: true },
     { name: "Quantum Interference Visuals", path: "/interference" },
@@ -174,7 +174,7 @@
     { name: "Quantum Superposition Visuals", path: "/superposition", draft: true },
     { name: "Throat singing and quantum physics", path: "/throat-singing-quantum", draft: true },
     { name: "Mappings", path: "/mappings", draft: true },
-    { name: "The Doom Score", path: "/doom-score" },
+    { name: "The AI extinction conversation", path: "/ai-extinction-conversation" },
     { name: "Horizon Scan", path: "/horizon-scan", draft: "month-1" },
     { name: "Hypothetica Magnifica", path: "/magnifica", draft: "month-1" },
     { name: "Trajectories", path: "/trajectories", draft: true },

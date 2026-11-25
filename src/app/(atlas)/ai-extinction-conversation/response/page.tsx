@@ -11,7 +11,7 @@ import { ResponseBrowser } from "./ResponseBrowser";
 import "../doom-score.css";
 
 export const metadata: Metadata = {
-  title: "Response. The Doom Score. Futures Atlas",
+  title: "Response. The AI extinction conversation. Futures Atlas",
   description: "What governments, international bodies and the AI labs have done about AI risk: laws, executive actions, summits, institutes and commitments, each from its primary text.",
   robots: { index: false },
 };

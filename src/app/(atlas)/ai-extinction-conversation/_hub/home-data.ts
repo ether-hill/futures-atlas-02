@@ -107,7 +107,7 @@ export function buildMoments(): Moment[] {
         .map((l) => thumbFor(l.url))
         .find((t) => t && t.w >= 300) ?? null;
       const first = e.summary.split(/(?<=[.!?])\s+/)[0] ?? e.summary;
-      out.push({ id: e.id, date: e.date, title: e.title, blurb: first.length > 170 ? `${first.slice(0, 168)}…` : first, thumb: thumb ? { src: thumb.src, w: thumb.w, h: thumb.h } : null, href: linkable(`/doom-score/chronicle#${e.id}`) ? `/doom-score/chronicle#${e.id}` : "", outlet: e.links[0]?.outlet });
+      out.push({ id: e.id, date: e.date, title: e.title, blurb: first.length > 170 ? `${first.slice(0, 168)}…` : first, thumb: thumb ? { src: thumb.src, w: thumb.w, h: thumb.h } : null, href: linkable(`/ai-extinction-conversation/chronicle#${e.id}`) ? `/ai-extinction-conversation/chronicle#${e.id}` : "", outlet: e.links[0]?.outlet });
     }
   return out;
 }

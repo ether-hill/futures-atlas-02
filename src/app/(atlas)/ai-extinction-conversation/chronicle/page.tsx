@@ -13,9 +13,9 @@ import { Chronicle } from "./Chronicle";
 import "../doom-score.css";
 
 export const metadata: Metadata = {
-  title: "Chronicle. The Doom Score. Futures Atlas",
+  title: "Chronicle. The AI extinction conversation. Futures Atlas",
   description: "The extended timeline: how extinction risk from AI became a public question, section by section, with the numbers, the quotes and the press that carried them.",
-  alternates: { canonical: "/doom-score/chronicle" },
+  alternates: { canonical: "/ai-extinction-conversation/chronicle" },
 };
 
 /** All talk a month: forum mentions, papers, news, markets, broadcasts. */
