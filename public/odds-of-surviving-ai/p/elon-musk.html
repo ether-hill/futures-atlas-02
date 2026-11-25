@@ -161,6 +161,11 @@ body.od-menu-open .od-extinctions{display:none!important}
 /* ===== results panel — "editorial ledger" (key bar pinned top, result+button centered) ===== */
 .od-panel{position:relative;flex:1;min-height:auto;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center;padding:clamp(16px,3vh,24px) clamp(20px,4vw,34px) clamp(18px,3.2vh,30px);background:linear-gradient(180deg,rgba(8,8,10,0) 0%,rgba(8,8,10,0.5) 100%)}
 .od-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(251,239,255,0.16),transparent)}
+/* Tegmark: the panel is kept as tall as a drawn card's description needs from the start, so the
+   card that turns over is never pushed up when the text arrives under it */
+.od-panel--cards{min-height:var(--od-cards-panel,230px)}
+.od-cards-q{position:absolute;top:clamp(8px,2.5%,24px);left:0;right:0;z-index:3;padding:0 16px;text-align:center;
+  font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;line-height:1.3;color:rgba(251,239,255,0.82);pointer-events:none}
 .od-key{flex:none;width:100%;max-width:520px;display:flex;flex-direction:column;gap:9px;margin-bottom:clamp(8px,1.6vh,16px)}
 .od-key-labels{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:rgba(251,239,255,0.62)}
 .od-key-bar{display:flex;gap:3px;height:6px}
@@ -281,8 +286,10 @@ body.od-menu-open .od-extinctions{display:none!important}
      the band's middle, up into the portrait. Pin the wrap to the band instead, and centre the
      fan's whole spread (about 1.34 card-heights tall) in it */
   .od-cards-wrap{position:absolute!important;inset:0;height:auto!important}
+  .od-cards-q{top:30px;font-size:13.5px}
+  .od-panel--cards{min-height:var(--od-cards-panel-m,172px)!important}
   .od-fan-deck{height:100%!important}
-  .od-fan{height:var(--od-ch)!important;width:calc(var(--od-ch)*0.7)!important;margin-left:calc(var(--od-ch)*-0.35)!important;bottom:max(6px,calc((var(--od-sa-h,40vh) - var(--od-ch)*1.34)/2 + var(--od-ch)*0.32))!important}
+  .od-fan{height:var(--od-ch)!important;width:calc(var(--od-ch)*0.7)!important;margin-left:calc(var(--od-ch)*-0.35)!important;bottom:max(6px,calc((var(--od-sa-h,40vh) - 52px - var(--od-ch)*1.34)/2 + var(--od-ch)*0.32))!important}
   .od-drawn-wrap{transform:scale(var(--od-card-k,0.5))}
   .od-ledger-item{font-size:10.5px;padding:3px 8px}
   .od-unres{min-height:60px}
@@ -330,6 +337,7 @@ body.od-menu-open .od-extinctions{display:none!important}
 
 /* short phones: drop the role line under the name, it is the first thing that can go */
 @media(max-width:859px) and (max-height:640px){
+  .od-panel--cards{min-height:186px!important}
   .od-photo-info .od-role{display:none!important}
 }
 /* short phones, chooser: the role line goes here too, and the head tightens */
@@ -612,6 +620,9 @@ body.od-menu-open .od-extinctions{display:none!important}
       <sc-if value="{{ isCards }}">
         <div class="od-cards-wrap" style="position:relative;width:100%;height:430px;display:flex;align-items:center;justify-content:center">
           <sc-if value="{{ showFan }}">
+            <div class="od-cards-q">What happens when AI gets smarter than us?</div>
+          </sc-if>
+          <sc-if value="{{ showFan }}">
             <div class="od-fan-deck" style="position:relative;width:100%;height:412px;z-index:2">
               <sc-for list="{{ fanCards }}" as="c" hint-placeholder-count="12">
                 <button onClick="{{ c.pick }}" class="od-fan" style="position:absolute;bottom:6.4vw;left:50%;width:min(150px,9.6vw);height:min(220px,14.1vw);margin-left:max(-75px,-4.8vw);transform-origin:50% 138%;transform:rotate({{ c.deg }}deg);opacity:0;animation:odFanFade .5s ease both;animation-delay:{{ c.delay }}s;border:none;background:transparent;padding:0;z-index:{{ c.z }}">
@@ -656,7 +667,7 @@ body.od-menu-open .od-extinctions{display:none!important}
     </div>
 
     <!-- BOTTOM PANEL (~1/3 of the panel): key + action/result, consistent across players -->
-    <div class="od-panel">
+    <div class="od-panel {{ panelCls }}">
       <!-- KEY: split odds bar (pinned top) — hidden on the doom-end screens -->
       <sc-if value="{{ showKey }}">
       <div class="od-key {{ keyClass }}">
@@ -1813,7 +1824,7 @@ class Component extends DCLogic {
     const year = led.length;
     const isCardsResult = p.mechanic === 'cards' && s.phase === 'result';
     if (isCardsResult) {
-      verdictHead = drawnCard.name;                    // the future's name
+      showVerdictHead = false;                         // the future's name is already on the card
       verdictSub = drawnCard.desc;                     // our own Tegmark card copy (unchanged)
     } else if (p.mechanic === 'coin') {
       const sideW = s.coinSide === 'tails' ? 'Tails' : 'Heads';
@@ -1920,7 +1931,7 @@ class Component extends DCLogic {
       chargeHint: s.phase === 'rolling' ? ' ' : (p.mechanic === 'wheel' ? 'CLICK & HOLD TO SPIN' : 'CLICK & HOLD TO ROLL'),
       replayCharge: !endGame && (s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel'),
       replayClass: (!endGame && (s.mode !== 'gauntlet') && (p.mechanic === 'die' || p.mechanic === 'wheel')) ? 'od-charge' : '',
-      verdictHead, verdictSub, showVerdictHead,
+      verdictHead, verdictSub, showVerdictHead, panelCls: p.mechanic === 'cards' ? 'od-panel--cards' : '',
       verdictSub2, hasSub2: !!verdictSub2, rdescClass: endGame ? 'od-rdesc od-rdesc-big' : 'od-rdesc', showKey: !endGame,
       rheadClass: endGame ? 'od-rhead od-rhead-big' : 'od-rhead', doomBgOn: doomBg ? '1' : '0', doomBgGrad,
       verdictTag: inGauntlet ? ('STEP ' + (s.gIndex + 1) + ' OF 3') : (isCardsResult ? (isDoomOut ? 'WE\u2019RE GONE' : 'WE\u2019RE STILL HERE') : 'THE RESULT'),
